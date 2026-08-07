@@ -570,7 +570,7 @@ describe('Page List', () => {
       const ops = Array.isArray(body) ? body : [body]
       const clearOp = ops.find((op) => (op.query || '').includes('clearCache'))
       expect(clearOp).to.exist
-      expect(clearOp.variables.id).to.equal('1')
+      expect(clearOp.variables.ids).to.deep.equal(['1'])
     })
   })
 

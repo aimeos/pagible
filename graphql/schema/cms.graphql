@@ -152,25 +152,19 @@ extend type Mutation {
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@create")
 
   "Replace directly assigned frontend access values for a user"
-  setUserAccess(
-    id: ID!
-    access: [String!]! @rulesForArray(apply: ["max:250"])
-  ): [String!]!
+  setUserAccess(id: ID!, access: [String!]! @rulesForArray(apply: ["max:250"])): [String!]!
     @guard @cmsPermission(action: "user:access")
     @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@setAccess")
 
   "Replace raw CMS roles and permissions assigned to a user (super-admin capability)"
-  setUserPermissions(
-    id: ID!
-    permissions: [String!]! @rulesForArray(apply: ["max:250"])
-  ): [String!]!
+  setUserPermissions(id: ID!, permissions: [String!]! @rulesForArray(apply: ["max:250"])): [String!]!
     @guard @cmsPermission(action: "user:permission")
     @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@setPermissions")
 
-  "Clear cached frontend pages in the selected page subtree"
-  clearCache(id: ID!): Int!
+  "Clear cached frontend pages in selected page subtrees"
+  clearCache(ids: [ID!]! @rulesForArray(apply: ["max:1000"])): Int!
     @guard @cmsPermission(action: "cache:clear") @throttle(name: "cms-graphql")
 
   "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
@@ -186,11 +180,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
-  setPageAccess(
-    id: [ID!]! @rulesForArray(apply: ["max:1000"])
-    access: [String!] @rulesForArray(apply: ["nullable", "max:250"])
-    descendants: Boolean = false
-  ): Int!
+  setPageAccess(id: [ID!]! @rulesForArray(apply: ["max:1000"]), access: [String!] @rulesForArray(apply: ["nullable", "max:250"]), descendants: Boolean = false): Int!
     @guard @cmsPermission(action: "page:access") @throttle(name: "cms-graphql")
 
   "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"

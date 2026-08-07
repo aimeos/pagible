@@ -526,7 +526,7 @@ describe('PageListItems', () => {
 
       return vm.clear({ data: { id: 'page-1' } }).then(() => {
         expect(mutate).to.have.been.calledOnce
-        expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: 'page-1' })
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({ ids: ['page-1'] })
       })
     })
   })
