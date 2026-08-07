@@ -48,15 +48,23 @@ class GraphqlCacheTest extends GraphqlTestAbstract
             ->firstOrFail()
             ->update( ['domain' => 'other.example'] );
         $root2->update( ['domain' => 'another.example'] );
-        $pages = Page::query()
-            ->where( NestedSet::LFT, '>=', $root->getLft() )
-            ->where( NestedSet::RGT, '<=', $root->getRgt() )
-            ->get( ['domain', 'path'] );
-        $pages2 = Page::query()
-            ->where( NestedSet::LFT, '>=', $root2->getLft() )
-            ->where( NestedSet::RGT, '<=', $root2->getRgt() )
-            ->get( ['domain', 'path'] );
-        $all = $pages->merge( $pages2 )->unique( fn( $page ) => $page->getAttribute( 'domain' ) . '|' . $page->getAttribute( 'path' ) );
+        $ids = [$root->id, $root2->id];
+        $roots = Page::query()
+            ->withTrashed()
+            ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
+            ->whereIn( 'id', $ids )
+            ->get();
+
+        $pages = collect();
+        foreach( $roots as $node ) {
+            $pages = $pages->merge( Page::query()
+                ->withTrashed()
+                ->whereBetween( NestedSet::LFT, [(int) $node->getAttribute( NestedSet::LFT ), (int) $node->getAttribute( NestedSet::RGT )] )
+                ->get( ['domain', 'path'] )
+            );
+        }
+
+        $all = $pages->unique( fn( $page ) => $page->getAttribute( 'domain' ) . '|' . $page->getAttribute( 'path' ) );
 
         Event::fake( [PageInvalidated::class] );
 
