@@ -1760,6 +1760,17 @@ export default {
                   }}</v-btn>
                 </v-list-item>
 
+                <v-list-item v-if="!node.deleted_at && user.can('page:save') && !node.status">
+                  <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">
+                    {{ $gettext('Enable') }}
+                  </v-btn>
+                </v-list-item>
+                <v-list-item v-if="!node.deleted_at && user.can('page:save') && node.status">
+                  <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">
+                    {{ $gettext('Disable') }}
+                  </v-btn>
+                </v-list-item>
+
                 <v-divider v-if="!node.deleted_at && !node.published && user.can('page:publish')"></v-divider>
 
                 <v-list-item v-if="user.can('page:save')">

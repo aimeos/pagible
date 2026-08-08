@@ -405,13 +405,32 @@ describe('Page List', () => {
     })
   })
 
-  it('context menu hides status change actions', () => {
+  it('context menu shows Disable for enabled pages', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.get('.v-card .v-list').should('not.contain', 'Enable')
-    cy.get('.v-card .v-list').should('not.contain', 'Disable')
-    cy.get('.v-card .v-list').should('not.contain', 'Hide')
+    cy.contains('.page-action-menu .v-btn', 'Disable').should('be.visible')
+    cy.get('.page-action-menu .v-btn').then(($btns) => {
+      const texts = [...$btns].map((btn) => btn.textContent.trim())
+      expect(texts).to.not.include('Enable')
+      expect(texts).to.not.include('Hide')
+    })
+  })
+
+  it('context menu shows Enable for disabled pages', () => {
+    const page = makePage()
+    page.latest.data = JSON.stringify({
+      ...JSON.parse(page.latest.data),
+      status: 0,
+    })
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.page-action-menu .v-btn', 'Enable').should('be.visible')
+    cy.get('.page-action-menu .v-btn').then(($btns) => {
+      const texts = [...$btns].map((btn) => btn.textContent.trim())
+      expect(texts).to.not.include('Disable')
+      expect(texts).to.not.include('Hide')
+    })
   })
 
   it('context menu shows Delete for non-trashed page', () => {
