@@ -122,6 +122,10 @@
     padding-inline: 1rem 0;
 }
 
+.cms-content .list nav .pagination {
+    margin: auto;
+}
+
 @media (min-width: 768px) {
     .cms-content .list .list-default {
         flex-direction: row;
@@ -134,11 +138,5 @@
 
     .cms-content .list .list-cards {
         grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 767px) {
-    .cms-content .list nav .pagination {
-        margin: auto;
     }
 }

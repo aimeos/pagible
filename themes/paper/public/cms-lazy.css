@@ -186,7 +186,7 @@ footer.cms-content {
 
 footer.cms-content .container {
     max-width: 1280px;
-    padding: 0;
+    padding-block: 0;
 }
 
 footer.cms-content .cards .card-list {
@@ -218,7 +218,7 @@ footer.cms-content .cards .card-item:hover {
 
 footer.cms-content .cards .title {
     color: #9CA3AF;
-    font-size: calc(var(--pico-font-size) * 0.65);
+    font-size: calc(var(--pico-font-size) * 0.75);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }

@@ -43,14 +43,14 @@
     aspect-ratio: 16 / 9;
 }
 
-.heading h1,
-.heading h2,
-.heading h3 {
+main .heading h1,
+main .heading h2,
+main .heading h3 {
     margin: 0;
 }
 
-.heading h1,
-.heading h2 {
+main .heading h1,
+main .heading h2 {
     text-align: center;
 }
 

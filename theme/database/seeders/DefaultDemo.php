@@ -329,7 +329,7 @@ class DefaultDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'Project governance',
-            'title' => 'Project Governance | Meridian Works Client Handbook',
+            'title' => 'Project Governance',
             'path' => 'docs/project-governance',
             'type' => 'docs',
             'status' => 1,
