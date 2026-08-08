@@ -207,7 +207,7 @@ footer.cms-content > :nth-child(odd) {
 }
 
 footer.cms-content .container {
-    padding-block: 0;
+    padding-block: 4rem;
 }
 
 footer.cms-content .cards .card-list {
@@ -242,7 +242,7 @@ footer.cms-content .cards h2 {
 
 footer.cms-content .cards .title {
     color: var(--pico-contrast-hover-background);
-    font-size: calc(var(--pico-font-size) * 0.8);
+    font-size: calc(var(--pico-font-size) * 1.1);
     margin-bottom: 1.5rem;
 }
 

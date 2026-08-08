@@ -146,7 +146,7 @@
                         </a>
                     </li>
                     @foreach($nav->items() as $item)
-                        <li>
+                        <li class="{{ $item->path === 'reserve' ? 'reserve' : '' }}">
                             @if($item->children->count())
                                 <details class="dropdown is-menu">
                                     <summary>{{ cms($item, 'name') }}</summary>
