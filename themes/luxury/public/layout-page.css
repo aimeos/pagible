@@ -44,9 +44,9 @@ main .heading h2 {
     background-color: var(--pico-secondary);
 }
 
-.container h1:first-child,
-.container h2:first-child,
-.container h3:first-child {
+.container .cms-text h1:first-child,
+.container .cms-text h2:first-child,
+.container .cms-text h3:first-child {
     margin-top: 0;
 }
 

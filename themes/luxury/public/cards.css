@@ -41,15 +41,6 @@
     padding: 0;
 }
 
-.cards .card-item img {
-    border-radius: var(--pico-border-radius);
-    background-color: var(--pico-secondary);
-    padding: 0.25rem;
-    height: 2rem;
-    width: 2rem;
-    margin: 0;
-}
-
 .cards .title {
     font-family: var(--pico-font-family-display);
     font-size: calc(var(--pico-font-size) * 1.15);

@@ -146,20 +146,20 @@ header nav > ul:not(.menu) > li {
     padding: 0;
 }
 
-header nav ul.menu > li:has(+ li.login) > a {
-    color: var(--pico-primary-inverse);
-    background-color: var(--pico-primary);
-    border: 1px solid var(--pico-primary);
+header nav ul.menu > li.reserve > a {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast);
     border-radius: var(--pico-border-radius);
     padding: 0.6rem 1.5rem;
     text-wrap: nowrap;
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
-header nav ul.menu > li:has(+ li.login) > a:hover {
-    color: var(--pico-primary-inverse);
-    background-color: var(--pico-primary-hover);
-    border-color: var(--pico-primary-hover);
+header nav ul.menu > li.reserve > a:hover {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-hover);
+    border-color: var(--pico-contrast-hover);
 }
 
 header nav a,
@@ -189,8 +189,8 @@ header nav a:not([role]):active {
     text-decoration: none;
 }
 
-header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
-header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
+header nav ul.menu > li:not(.reserve):not(.login) > a:hover,
+header nav ul.menu > li:not(.reserve):not(.login) > a:focus,
 header nav details.dropdown > summary:not([role]):hover,
 header nav details.dropdown > summary:not([role]):focus,
 header nav details.dropdown > summary:not([role]):focus-visible,
@@ -202,10 +202,10 @@ header nav details.dropdown[open] > summary:not([role]) {
     border: 0;
 }
 
-header nav ul.menu > li:has(+ li.login) > a:hover,
-header nav ul.menu > li:has(+ li.login) > a:focus,
-header nav ul.menu > li:has(+ li.login) > a:active {
-    color: var(--pico-primary-inverse);
+header nav ul.menu > li.reserve > a:hover,
+header nav ul.menu > li.reserve > a:focus,
+header nav ul.menu > li.reserve > a:active {
+    color: var(--pico-contrast-inverse);
 }
 
 header nav details summary::marker,
