@@ -93,6 +93,68 @@ class DemoTest extends ThemeTestAbstract
     }
 
 
+    public function testSeedBoldImages(): void
+    {
+        $this->assertThemeImages(
+            'bold',
+            \Aimeos\Cms\BoldServiceProvider::class,
+            \Database\Seeders\BoldDemo::class,
+            3,
+            'photo-1517836357463-d25dfeac3438',
+            3,
+        );
+    }
+
+
+    public function testSeedLuxuryImages(): void
+    {
+        $this->assertThemeImages(
+            'luxury',
+            \Aimeos\Cms\LuxuryServiceProvider::class,
+            \Database\Seeders\LuxuryDemo::class,
+            1,
+            'photo-1566073771259-6a8506099945',
+        );
+    }
+
+
+    public function testSeedPaperImages(): void
+    {
+        $this->assertThemeImages(
+            'paper',
+            \Aimeos\Cms\PaperServiceProvider::class,
+            \Database\Seeders\PaperDemo::class,
+            1,
+            'photo-1499750310107-5fef28a66643',
+        );
+    }
+
+
+    public function testSeedPremiumImages(): void
+    {
+        $this->assertThemeImages(
+            'premium',
+            \Aimeos\Cms\PremiumServiceProvider::class,
+            \Database\Seeders\PremiumDemo::class,
+            3,
+            'photo-1507473885765-e6ed057f782c',
+            3,
+        );
+    }
+
+
+    public function testSeedStyleImages(): void
+    {
+        $this->assertThemeImages(
+            'style',
+            \Aimeos\Cms\StyleServiceProvider::class,
+            \Database\Seeders\StyleDemo::class,
+            3,
+            'photo-1580478491436-fd6a937acc9e',
+        );
+    }
+
+
     public function testSeedTheme(): void
     {
         ( new DefaultDemo( 'luxury', 'luxury' ) )->seed();
@@ -125,5 +187,45 @@ class DemoTest extends ThemeTestAbstract
         Tenancy::$callback = fn() => 'luxury';
 
         $this->assertSame( 'luxury', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+    }
+
+
+    /**
+     * @param class-string<\Illuminate\Support\ServiceProvider> $provider
+     * @param class-string<\Database\Seeders\AbstractDemo> $seeder
+     */
+    private function assertThemeImages( string $theme, string $provider, string $seeder, int $heroFiles,
+        string $image, ?int $slides = null
+    ) : void {
+        $class = basename( str_replace( '\\', '/', $seeder ) );
+
+        require_once dirname( __DIR__, 2 ) . "/themes/{$theme}/database/seeders/{$class}.php";
+
+        app()->register( $provider );
+
+        ( new $seeder( $theme, $theme ) )->seed();
+
+        Tenancy::$callback = fn() => $theme;
+        app()->forgetInstance( Tenancy::class );
+
+        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $hero = collect( (array) $home->content )
+            ->first( fn( $item ) => ( $item->type ?? null ) === 'hero' );
+
+        $this->assertIsObject( $hero );
+        $this->assertCount( $heroFiles, (array) ( $hero->data->files ?? [] ) );
+
+        Page::with( ['files', 'latest.files'] )->get()->each( function( Page $page ) {
+            $this->assertEqualsCanonicalizing( $page->latest->files->keys()->all(), $page->files->keys()->all(), $page->path );
+        } );
+
+        $response = $this->get( '/' );
+
+        $response->assertOk();
+        $response->assertSee( $image, false );
+
+        if( $slides !== null ) {
+            $this->assertSame( $slides, substr_count( (string) $response->getContent(), 'class="hero-slide"' ) );
+        }
     }
 }

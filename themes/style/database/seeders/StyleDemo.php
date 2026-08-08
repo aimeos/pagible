@@ -654,7 +654,6 @@ class StyleDemo extends AbstractDemo
                     'name' => 'Veyra footer',
                     'data' => ['title' => 'Veyra', 'cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -812,7 +811,6 @@ class StyleDemo extends AbstractDemo
                 'cache' => 5,
             ],
             'aux' => ['config' => $config, 'meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -946,7 +944,6 @@ SVG;
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
