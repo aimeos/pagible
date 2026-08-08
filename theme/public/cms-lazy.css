@@ -183,7 +183,7 @@ footer.cms-content {
 }
 
 footer.cms-content .container {
-    padding: 0;
+    padding-block: 0;
 }
 
 footer.cms-content .cards .card-list {
@@ -201,7 +201,7 @@ footer.cms-content .cards .card-item {
 
 footer.cms-content .cards .title {
     color: var(--pico-contrast-inverse);
-    font-size: calc(var(--pico-font-size) * 0.65);
+    font-size: calc(var(--pico-font-size) * 0.75);
     font-weight: 700;
     letter-spacing: 0.05em;
     margin-bottom: 1.5rem;

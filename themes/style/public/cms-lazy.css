@@ -194,7 +194,7 @@ footer.cms-content {
 }
 
 footer.cms-content .container {
-    padding: 0;
+    padding-block: 0;
 }
 
 footer.cms-content + footer.bottom .container {

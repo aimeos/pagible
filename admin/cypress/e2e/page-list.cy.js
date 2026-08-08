@@ -204,7 +204,7 @@ describe('Page List', () => {
 
   it('shows "Pages" title in app bar', () => {
     visitPages()
-    cy.get('.v-app-bar-title').should('contain', 'Pages')
+    cy.get('.v-app-bar .v-app-bar-title').find('h1').should('contain', 'Pages')
   })
 
   it('shows navigation toggle and aside toggle buttons in app bar', () => {
@@ -405,13 +405,32 @@ describe('Page List', () => {
     })
   })
 
-  it('context menu hides status change actions', () => {
+  it('context menu shows Disable for enabled pages', () => {
     const page = makePage()
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
-    cy.get('.v-card .v-list').should('not.contain', 'Enable')
-    cy.get('.v-card .v-list').should('not.contain', 'Disable')
-    cy.get('.v-card .v-list').should('not.contain', 'Hide')
+    cy.contains('.page-action-menu .v-btn', 'Disable').should('be.visible')
+    cy.get('.page-action-menu .v-btn').then(($btns) => {
+      const texts = [...$btns].map((btn) => btn.textContent.trim())
+      expect(texts).to.not.include('Enable')
+      expect(texts).to.not.include('Hide')
+    })
+  })
+
+  it('context menu shows Enable for disabled pages', () => {
+    const page = makePage()
+    page.latest.data = JSON.stringify({
+      ...JSON.parse(page.latest.data),
+      status: 0,
+    })
+    visitPages([page])
+    cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
+    cy.contains('.page-action-menu .v-btn', 'Enable').should('be.visible')
+    cy.get('.page-action-menu .v-btn').then(($btns) => {
+      const texts = [...$btns].map((btn) => btn.textContent.trim())
+      expect(texts).to.not.include('Disable')
+      expect(texts).to.not.include('Hide')
+    })
   })
 
   it('context menu shows Delete for non-trashed page', () => {
@@ -570,7 +589,7 @@ describe('Page List', () => {
       const ops = Array.isArray(body) ? body : [body]
       const clearOp = ops.find((op) => (op.query || '').includes('clearCache'))
       expect(clearOp).to.exist
-      expect(clearOp.variables.id).to.equal('1')
+      expect(clearOp.variables.ids).to.deep.equal(['1'])
     })
   })
 

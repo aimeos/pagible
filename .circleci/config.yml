@@ -339,8 +339,15 @@ jobs:
             - ./.npm
             - ~/.cache/Cypress
       - run: npm run build
-      - run: npx start-server-and-test preview http://localhost:4173 \
-          "npx cypress run --spec $(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings | tr '\n' ',')"
+      - run: |
+          SPECS="$(circleci tests glob 'cypress/e2e/**/*.cy.{js,ts}' | circleci tests split --split-by=timings)"
+          SPECS="$(printf '%s\n' "$SPECS" | paste -sd ',' - | sed 's/,$//')"
+          if [ -z "$SPECS" ]; then
+            echo "No e2e specs were assigned to this container; running full e2e suite"
+            SPECS="cypress/e2e/**/*.cy.{js,ts}"
+          fi
+          npx start-server-and-test preview http://localhost:4173 \
+            "npx cypress run --spec \"$SPECS\""
       - store_artifacts:
           path: cypress
 

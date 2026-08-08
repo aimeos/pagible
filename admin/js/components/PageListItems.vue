@@ -81,8 +81,8 @@ const ADD_PAGE = gql`
 `
 
 const CLEAR_CACHE = gql`
-  mutation ($id: ID!) {
-    clearCache(id: $id)
+  mutation ($ids: [ID!]!) {
+    clearCache(ids: $ids)
   }
 `
 
@@ -491,9 +491,20 @@ export default {
       }
     },
 
-    clear(stat) {
+    clear(stat = null) {
       if (!this.user.can('cache:clear')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const list = stat
+        ? [stat]
+        : this.$refs.tree.statsFlat.filter((stat) => {
+            return stat._checked && stat.data?.id
+          })
+      const ids = list.map((stat) => stat.data.id)
+
+      if (!list.length) {
         return
       }
 
@@ -501,7 +512,7 @@ export default {
         .mutate({
           mutation: CLEAR_CACHE,
           variables: {
-            id: stat.data.id
+            ids: ids
           }
         })
         .then((result) => {
@@ -509,11 +520,20 @@ export default {
             throw result.errors
           }
 
-          this.messages.add(this.$gettext('Cache cleared'), 'success')
+          const done = result.data?.clearCache || ids.length
+          this.messages.add(
+            done === 1 ? this.$gettext('Cache cleared') : this.$ngettext(
+              'Cache cleared for %{num} page.',
+              'Cache cleared for %{num} pages.',
+              done,
+              { num: done }
+            ),
+            'success'
+          )
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error clearing cache') + ':\n' + error, 'error')
-          this.$log(`PageList::clear(): Error clearing cache`, stat, error)
+          this.$log(`PageList::clear(): Error clearing cache`, list, error)
         })
     },
 
@@ -1573,6 +1593,7 @@ export default {
                   $gettext('Disable')
                 }}</v-btn>
               </v-list-item>
+              <v-divider></v-divider>
               <v-list-item v-if="isChecked && user.can('page:save')">
                 <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()">{{
                   $gettext('Edit properties')
@@ -1581,6 +1602,11 @@ export default {
               <v-list-item v-if="isChecked && user.can('page:access')">
                 <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess()">{{
                   $gettext('Access')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="isChecked && user.can('cache:clear')">
+                <v-btn :prepend-icon="mdiCached" variant="text" @click="clear()">{{
+                  $gettext('Clear cache')
                 }}</v-btn>
               </v-list-item>
 
@@ -1732,6 +1758,17 @@ export default {
                   <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(stat)">{{
                     $gettext('Publish')
                   }}</v-btn>
+                </v-list-item>
+
+                <v-list-item v-if="!node.deleted_at && user.can('page:save') && !node.status">
+                  <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">
+                    {{ $gettext('Enable') }}
+                  </v-btn>
+                </v-list-item>
+                <v-list-item v-if="!node.deleted_at && user.can('page:save') && node.status">
+                  <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">
+                    {{ $gettext('Disable') }}
+                  </v-btn>
                 </v-list-item>
 
                 <v-divider v-if="!node.deleted_at && !node.published && user.can('page:publish')"></v-divider>

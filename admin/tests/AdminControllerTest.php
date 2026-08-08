@@ -194,9 +194,11 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyConnectionException()
     {
+        config( ['cms.allow-internal' => true] );
+
         Http::fake( fn() => throw new \Illuminate\Http\Client\ConnectionException( 'Connection timed out' ) );
 
-        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://localhost/video.mp4'] ) );
 
         $response->assertStatus( 504 );
     }
@@ -204,16 +206,18 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testProxyGetRequest()
     {
+        config( ['cms.allow-internal' => true] );
+
         $body = 'fake-media-content';
 
         Http::fake( [
-            'example.com/*' => Http::response( $body, 200, [
+            'localhost/*' => Http::response( $body, 200, [
                 'Content-Type' => 'video/mp4',
                 'Content-Length' => strlen( $body ),
             ] ),
         ] );
 
-        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://localhost/video.mp4'] ) );
 
         $response->assertStatus( 200 );
         $this->assertEquals( 'video/mp4', $response->headers->get( 'Content-Type' ) );

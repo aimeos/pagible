@@ -157,7 +157,7 @@ pre:has(code[class*="language-"]) {
 
 
 footer.cms-content .container {
-    padding: 0;
+    padding-block: 0;
 }
 
 footer.cms-content .cards :is(.text, .cms-text) a,

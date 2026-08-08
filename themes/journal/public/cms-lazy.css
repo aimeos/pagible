@@ -174,7 +174,7 @@ footer.cms-content {
 
 footer.cms-content .container {
     max-width: var(--journal-content-width);
-    padding: 0;
+    padding-block: 0;
 }
 
 footer.cms-content .heading h1,
