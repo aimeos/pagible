@@ -592,7 +592,6 @@ class PaperDemo extends AbstractDemo
                     'name' => 'Margin & Matter footer',
                     'data' => ['cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -733,7 +732,6 @@ class PaperDemo extends AbstractDemo
                 'meta' => $meta,
                 'content' => $content,
             ],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -868,7 +866,6 @@ SVG;
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 

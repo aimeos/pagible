@@ -729,7 +729,6 @@ class PremiumDemo extends AbstractDemo
                     'name' => 'Stillform footer',
                     'data' => ['title' => 'Stillform', 'cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -881,7 +880,6 @@ class PremiumDemo extends AbstractDemo
                 'meta' => $meta,
                 'content' => $content,
             ],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -1018,7 +1016,6 @@ SVG;
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 

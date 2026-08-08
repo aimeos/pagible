@@ -848,7 +848,6 @@ class BoldDemo extends AbstractDemo
                     'name' => 'RALLY footer',
                     'data' => ['title' => 'RALLY Training Club', 'cards' => $cards],
                 ],
-                'published' => true,
                 'editor' => 'demo',
             ] );
 
@@ -1044,7 +1043,6 @@ class BoldDemo extends AbstractDemo
                 'meta' => $meta,
                 'content' => $content,
             ],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
@@ -1175,7 +1173,6 @@ SVG;
                 'theme' => $this->theme,
             ],
             'aux' => ['meta' => $meta, 'content' => $content],
-            'published' => true,
             'editor' => 'demo',
         ] );
 
