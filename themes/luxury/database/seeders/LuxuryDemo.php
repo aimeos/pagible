@@ -23,7 +23,6 @@ class LuxuryDemo extends AbstractDemo
     private const DESCRIPTIONS = [
         'stay' => 'Explore Avelune Retreat rooms and suites, from quiet garden rooms to a private limestone house with its own pool and terrace.',
         'experiences' => 'Discover Avelune wellness rituals, restorative treatments, private retreats, island sails, guided ridge walks, and unhurried Mallorca experiences.',
-        'table' => 'Meet the growers, cooks, and island ingredients behind Avelune Table, with seasonal menus served in the courtyard and olive grove.',
         'journal' => 'Read the Avelune Journal: field notes on sleep, bathing, Mallorca landscapes, seasonal cooking, and the quiet details of the retreat.',
         'why-rest-begins-before-bedtime' => 'Avelune sleep practitioner Mara Vidal explains how daylight, movement, food, and evening habits prepare the body for restorative sleep.',
         'the-old-grove-at-first-light' => 'Walk through Avelune olive grove at first light and meet the family restoring its dry-stone terraces, soil, and century-old trees.',
@@ -44,7 +43,6 @@ class LuxuryDemo extends AbstractDemo
         'bath' => ['photo-1600566753086-00f18fb6b3ea', 'Avelune stone bath', 'Quiet stone bathroom with warm natural light and a deep soaking bath'],
         'chef' => ['photo-1577219491135-ce391730fb2c', 'Avelune kitchen', 'Chef preparing the evening menu in a calm professional kitchen'],
         'coast' => ['photo-1507525428034-b723cf961d3e', 'Mallorca cove', 'Clear blue water meeting a quiet pale-sand cove'],
-        'dining' => ['photo-1517248135467-4c7edcad34c4', 'Avelune dining room', 'Intimate restaurant dining room set for an evening meal'],
         'forest' => ['photo-1441974231531-c6227db76b6e', 'Pine woodland', 'Sunlight filtering through a quiet woodland path near the retreat'],
         'garden' => ['photo-1416879595882-3373a0480b5b', 'Avelune kitchen garden', 'Lush kitchen garden planted with herbs and seasonal vegetables'],
         'home' => ['photo-1566073771259-6a8506099945', 'Avelune Retreat', 'Boutique limestone retreat surrounded by palms and Mediterranean planting'],
@@ -245,77 +243,6 @@ class LuxuryDemo extends AbstractDemo
             ]],
             $this->articleHero( 'Take a seat at Avelune Table', 'Breakfast, lunch, and dinner are open to resident guests, with a few evening tables held for neighbours.' ),
         ], $journal );
-
-        return $this;
-    }
-
-
-    /**
-     * Creates the dining page below the home page.
-     */
-    protected function addDining( Page $home ) : static
-    {
-        $this->page( [
-            'lang' => 'en',
-            'name' => 'Table',
-            'title' => 'Avelune Table | Seasonal Dining in Mallorca',
-            'path' => 'table',
-            'type' => 'page',
-            'status' => 1,
-        ], [
-            ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'The island decides the menu',
-                'subtitle' => 'Avelune Table',
-                'text' => 'Breakfast under the vines, lunch from the garden, and an evening menu shaped by the small boats and farms we know by name.',
-                'url' => '/reserve',
-                'button' => 'Request a table',
-                'files' => [['id' => $this->img( 'dining' ), 'type' => 'file']],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
-                'file' => ['id' => $this->img( 'chef' ), 'type' => 'file'],
-                'position' => 'end',
-                'ratio' => '1-2',
-                'text' => "## Cooked close to the source\n\nInes Ferrer and her team write the menu after speaking with growers and fishers each morning. The cooking is Mediterranean in rhythm rather than decoration: vegetables at the centre, fish bought in small quantities, meat used thoughtfully, and fruit served when it is ready.\n\nResident guests can eat simply or follow the full tasting menu. Vegetarian menus need no advance notice; vegan and allergy-aware menus are best arranged before arrival.",
-            ]],
-            ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
-                'title' => 'Through the day',
-                'cards' => [
-                    ['title' => 'Breakfast', 'text' => '07:30–11:00. Fruit, warm bread, eggs, sheep yoghurt, garden herbs, and coffee roasted in Palma.'],
-                    ['title' => 'Lunch', 'text' => '12:30–15:00. A short terrace menu of salads, grilled fish, rice, and dishes from the wood oven.'],
-                    ['title' => 'Dinner', 'text' => '19:00–22:00. Four or seven courses, with a daily vegetarian menu and island-led wine pairing.'],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
-                'title' => 'A late-summer evening',
-                'header' => 'row',
-                'table' => [
-                    ['Course', 'Plate', 'Pairing'],
-                    ['Garden', 'Fig leaf, young almond, cucumber, and fennel pollen', 'Dry Malvasia'],
-                    ['Sea', 'Charred red mullet, tomato water, and wild caper', 'Giró Ros rosé'],
-                    ['Grove', 'Olive-oil rice with courgette flower and aged sheep cheese', 'Callet red'],
-                    ['Orchard', 'Roasted peach, bay custard, and green almond', 'Herbal infusion or sweet Moscatel'],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'slideshow', 'group' => 'main', 'data' => [
-                'title' => 'From garden to table',
-                'main' => true,
-                'files' => [
-                    ['id' => $this->slideImg( 'garden' ), 'type' => 'file'],
-                    ['id' => $this->slideImg( 'chef' ), 'type' => 'file'],
-                    ['id' => $this->slideImg( 'plate' ), 'type' => 'file'],
-                    ['id' => $this->slideImg( 'dining' ), 'type' => 'file'],
-                ],
-            ]],
-            ['id' => Utils::uid(), 'type' => 'questions', 'group' => 'main', 'data' => [
-                'title' => 'Dining details',
-                'items' => [
-                    ['title' => 'Is breakfast included?', 'text' => 'Breakfast is included in every room and suite rate and may be taken in the courtyard or in your room.'],
-                    ['title' => 'Can non-residents dine?', 'text' => 'A small number of dinner reservations are released to non-residents seven days ahead.'],
-                    ['title' => 'How are allergies handled?', 'text' => 'Tell us before arrival. The kitchen will explain what can be adapted and where cross-contact cannot be ruled out.'],
-                    ['title' => 'Is there a dress code?', 'text' => 'No formal dress code. The courtyard is stone, so comfortable footwear is useful.'],
-                ],
-            ]],
-        ], $home );
 
         return $this;
     }
@@ -770,7 +697,7 @@ class LuxuryDemo extends AbstractDemo
         if( !isset( $this->element ) )
         {
             $cards = [
-                ['title' => 'Avelune', 'text' => "- [Stay](/stay)\n- [Experiences](/experiences)\n- [Table](/table)"],
+                ['title' => 'Avelune', 'text' => "- [Stay](/stay)\n- [Experiences](/experiences)"],
                 ['title' => 'Plan', 'text' => "- [Reserve](/reserve)\n- [Guest guide](/guest-guide)\n- [Arrival](/guest-guide/arrival)\n- [Wellness visits](/guest-guide/wellness)"],
                 ['title' => 'Stories', 'text' => "- [Journal](/journal)\n- [The old grove at first light](/the-old-grove-at-first-light)\n- [A kitchen led by the island](/a-kitchen-led-by-the-island)"],
                 ['title' => 'Contact', 'text' => "- [stay@avelune.example](mailto:stay@avelune.example)\n- [wellness@avelune.example](mailto:wellness@avelune.example)\n- +34 971 000 000\n- Mallorca, Spain"],
@@ -851,7 +778,6 @@ class LuxuryDemo extends AbstractDemo
                 'cards' => [
                     ['title' => 'Stay', 'text' => "Rooms and suites in the old house, garden, and olive terraces.\n\n[Explore the rooms](/stay)", 'file' => ['id' => $this->img( 'suite' ), 'type' => 'file']],
                     ['title' => 'Experiences', 'text' => "Bathing, skilled touch, movement, private programmes, and unhurried ways into the island.\n\n[Explore Avelune experiences](/experiences)", 'file' => ['id' => $this->img( 'spa' ), 'type' => 'file']],
-                    ['title' => 'Table', 'text' => "Island cooking led by the garden, small boats, old groves, and the morning market.\n\n[Meet Avelune Table](/table)", 'file' => ['id' => $this->img( 'plate' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -1077,7 +1003,6 @@ SVG;
 
         $this->addStay( $home )
             ->addExperiences( $home )
-            ->addDining( $home )
             ->addBlog( $home, $journalId )
             ->addGuide( $home )
             ->addReserve( $home );
