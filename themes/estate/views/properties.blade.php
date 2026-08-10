@@ -79,19 +79,21 @@
                     'total' => $items->total(),
                 ]) }}
             </p>
-            <div class="list-items list-{{ $data->layout ?? 'cards' }}" data-list="{{ $data->{'parent-page'}?->value ?? '' }}" role="list" aria-describedby="property-list-summary-{{ $data->id ?? 'list' }}">
+            <ul class="list-items list-{{ $data->layout ?? 'cards' }}" data-list="{{ $data->{'parent-page'}?->value ?? '' }}" aria-describedby="property-list-summary-{{ $data->id ?? 'list' }}">
                 @foreach($items as $item)
-                    @include('estate::property-item', [
-                        'item' => $item,
-                        'layout' => $data->layout ?? 'cards',
-                        'featured' => false,
-                        'property' => collect(cms($item, 'content'))
-                            ->filter(fn($element) => ($element->type ?? null) === 'estate::property')
-                            ->map(fn($element) => (object) data_get($element, 'data', []))
-                            ->first(),
-                    ])
+                    <li class="property-list-item">
+                        @include('estate::property-item', [
+                            'item' => $item,
+                            'layout' => $data->layout ?? 'cards',
+                            'featured' => false,
+                            'property' => collect(cms($item, 'content'))
+                                ->filter(fn($element) => ($element->type ?? null) === 'estate::property')
+                                ->map(fn($element) => (object) data_get($element, 'data', []))
+                                ->first(),
+                        ])
+                    </li>
                 @endforeach
-            </div>
+            </ul>
             {{ $items->links() }}
         @else
             <div class="list-empty" role="status">

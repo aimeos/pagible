@@ -59,11 +59,11 @@
                 },
                 "--pico-primary": {
                     "type": "color",
-                    "default": "#9A7112"
+                    "default": "#8C620C"
                 },
                 "--pico-primary-background": {
                     "type": "color",
-                    "default": "#9A711214"
+                    "default": "#8C620C14"
                 },
                 "--pico-primary-hover": {
                     "type": "color",

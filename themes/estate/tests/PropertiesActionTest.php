@@ -80,6 +80,23 @@ class PropertiesActionTest extends ThemeTestAbstract
     }
 
 
+    public function testPropertyListUsesNativeListSemantics(): void
+    {
+        require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
+
+        ( new EstateDemo( 'estate', 'estate' ) )->seed();
+        Tenancy::$callback = fn() => 'estate';
+        app()->forgetInstance( Tenancy::class );
+
+        $response = $this->get( '/properties' );
+
+        $response->assertOk();
+        $response->assertSee( '<ul class="list-items list-cards"', false );
+        $response->assertSee( '<li class="property-list-item">', false );
+        $response->assertDontSee( 'role="listitem"', false );
+    }
+
+
     public function testFiltersByRequestedTypeAndCity()
     {
         $root = Page::where( 'tag', 'root' )->firstOrFail();

@@ -557,9 +557,9 @@ class JournalDemo extends AbstractDemo
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96" role="img" aria-labelledby="title desc">
   <title id="title">Kontur logo</title>
   <desc id="desc">Kontur wordmark with a gold accent line</desc>
-  <rect x="2" y="16" width="10" height="64" fill="#9A7112"/>
+  <rect x="2" y="16" width="10" height="64" fill="#8C620C"/>
   <text x="30" y="68" fill="#1F1E1C" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" letter-spacing="-3">KONTUR</text>
-  <path d="M32 80h354" stroke="#9A7112" stroke-width="3"/>
+  <path d="M32 80h354" stroke="#8C620C" stroke-width="3"/>
   <text x="400" y="79" fill="#65615B" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700" letter-spacing="2">JOURNAL</text>
 </svg>
 SVG;
