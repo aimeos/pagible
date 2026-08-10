@@ -186,6 +186,10 @@ footer.cms-content .container {
     padding-block: 0;
 }
 
+footer.cms-content h2 {
+    text-align: start;
+}
+
 footer.cms-content .cards .card-list {
     grid-template-columns: 2fr 1fr;
     justify-self: normal;
