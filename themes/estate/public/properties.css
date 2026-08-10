@@ -2,6 +2,17 @@
  * @license MIT, https://opensource.org/license/MIT
  */
 
+.cms-content .property-list .list-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cms-content .property-list .property-list-item {
+    margin: 0;
+    padding: 0;
+}
+
 .cms-content .property-list .list-cards .list-item {
     background-color: transparent;
     border: 1px solid var(--pico-muted-border-color);
@@ -145,7 +156,7 @@
 
 .cms-content .list .property-line span.property-status-available {
     background-color: color-mix(in srgb, var(--pico-form-element-valid-border-color) 14%, transparent);
-    color: var(--pico-form-element-valid-border-color);
+    color: color-mix(in srgb, var(--pico-form-element-valid-border-color) 60%, var(--pico-contrast));
 }
 
 .cms-content .list .property-line span.property-status-under_offer {

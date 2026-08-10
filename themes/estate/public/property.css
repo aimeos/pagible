@@ -469,7 +469,7 @@ body.type-property .property-gallery .cover img {
 
 .property .property-status-available {
     background-color: color-mix(in srgb, var(--pico-form-element-valid-border-color) 12%, transparent);
-    color: var(--pico-form-element-valid-border-color);
+    color: color-mix(in srgb, var(--pico-form-element-valid-border-color) 60%, var(--pico-contrast));
 }
 
 .property .property-status-under_offer {

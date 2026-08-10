@@ -44,7 +44,7 @@ It creates Economy, Money, Property, and Work sections with original articles, a
 |----------|---------|-------------|
 | `--pico-color` | `#1F1E1C` | Body and headline color |
 | `--pico-background-color` | `#F1EFEC` | Page surround |
-| `--pico-primary` | `#9A7112` | Editorial accent |
+| `--pico-primary` | `#8C620C` | Editorial accent |
 | `--pico-secondary` | `#4C5558` | Secondary accent |
 | `--pico-border-radius` | `0` | Sharp editorial geometry |
 

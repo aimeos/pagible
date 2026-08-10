@@ -68,6 +68,7 @@
 
 .cards .card-item:nth-child(even) {
     background-color: var(--pico-primary);
+    color: var(--pico-contrast-inverse);
 }
 
 .cards .card-item:nth-child(odd):hover {
@@ -133,8 +134,9 @@
 }
 
 .cards .card-item:nth-child(even) h3,
-.cards .card-item:nth-child(even) p {
-    color: var(--pico-contrast-inverse);
+.cards .card-item:nth-child(even) p,
+.cards .card-item:nth-child(even) a {
+    color: inherit;
 }
 
 .cards .card-item a {

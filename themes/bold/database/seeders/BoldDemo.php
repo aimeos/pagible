@@ -610,7 +610,7 @@ class BoldDemo extends AbstractDemo
     {
         $this->page( [
             'lang' => 'en',
-            'name' => 'Start',
+            'name' => 'Book now',
             'title' => 'Start Training at RALLY',
             'path' => 'start',
             'type' => 'page',
@@ -737,7 +737,7 @@ class BoldDemo extends AbstractDemo
                 'subtitle' => 'First class · 15€',
                 'text' => 'Choose a session with a coach and leave knowing what should come next.',
                 'url' => '/start',
-                'button' => 'Book your first class',
+                'button' => 'Book now',
                 'url-alternative' => '/studio-guide',
                 'button-alternative' => 'Read the studio guide',
             ]],
@@ -779,7 +779,7 @@ class BoldDemo extends AbstractDemo
             'subtitle' => 'RALLY Training Club',
             'text' => $text,
             'url' => '/start',
-            'button' => 'Book your first class',
+            'button' => 'Book now',
             'url-alternative' => '/journal',
             'button-alternative' => 'Back to field notes',
         ]];
@@ -932,7 +932,7 @@ class BoldDemo extends AbstractDemo
                 'subtitle' => 'RALLY Training Club · Berlin',
                 'text' => 'Coached strength and conditioning for people who want serious progress, clear direction, and enough energy left for the rest of life.',
                 'url' => '/start',
-                'button' => 'Book your first class',
+                'button' => 'Book now',
                 'url-alternative' => '/training',
                 'button-alternative' => 'See how we train',
                 'files' => [

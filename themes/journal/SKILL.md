@@ -14,7 +14,7 @@ Build credible editorial pages that make dense reporting easy to scan without tu
 
 ## Brand
 
-Journal is sober, structured, and image-led. The page surround is warm gray (`#F1EFEC`), story modules are white, text is charcoal (`#1F1E1C`), and ochre (`#9A7112`) marks sections, actions, and active states. It uses Pico CSS and the existing markup in `theme/views/`.
+Journal is sober, structured, and image-led. The page surround is warm gray (`#F1EFEC`), story modules are white, text is charcoal (`#1F1E1C`), and ochre (`#8C620C`) marks sections, actions, and active states. It uses Pico CSS and the existing markup in `theme/views/`.
 
 ## Style Foundations
 
