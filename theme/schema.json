@@ -905,6 +905,79 @@
                 }
             }
         },
+        "security": {
+            "group": "expert",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2 4 5v6c0 5.05 3.41 9.77 8 11 4.59-1.23 8-5.95 8-11V5l-8-3m0 2.18L18 6.43V11c0 3.94-2.55 7.86-6 8.93C8.55 18.86 6 14.94 6 11V6.43l6-2.25M11 7v6h2V7h-2m0 8v2h2v-2h-2Z\" /></svg>",
+            "fields": {
+                "contact": {
+                    "type": "url",
+                    "label": "Contact URL",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true,
+                    "required": true
+                },
+                "email": {
+                    "type": "string",
+                    "label": "Contact email",
+                    "max": 254,
+                    "pattern": "^(?:[^\\s@]+@[^\\s@]+\\.[^\\s@]+)?$"
+                },
+                "expires": {
+                    "type": "date",
+                    "required": true
+                },
+                "encryption": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                },
+                "acknowledgments": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                },
+                "preferred-languages": {
+                    "type": "string",
+                    "label": "Preferred languages",
+                    "max": 255,
+                    "pattern": "^[A-Za-z0-9-]+(?:\\s*,\\s*[A-Za-z0-9-]+)*$"
+                },
+                "canonical": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                },
+                "policy": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                },
+                "hiring": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                },
+                "csaf": {
+                    "type": "url",
+                    "allowed": [
+                        "https"
+                    ],
+                    "absolute": true
+                }
+            }
+        },
         "styles": {
             "group": "expert",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5,3L4.35,6.34H17.94L17.5,8.5H3.92L3.26,11.83H16.85L16.09,15.64L10.61,17.45L5.86,15.64L6.19,14H2.85L2.06,18L9.91,21L18.96,18L20.16,11.97L20.4,10.76L21.94,3H5Z\" /></svg>",
