@@ -62,7 +62,7 @@
     padding: 2rem;
 }
 
-.cards .title {
+.cards .card-item .title {
     font-size: calc(var(--pico-font-size) * 1.2);
     margin: 1rem 0;
 }
