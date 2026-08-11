@@ -585,29 +585,30 @@ class CmsEngineTest extends SearchTestAbstract
         $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', Page::class )
             ->whereIn( 'indexable_id', $ids );
-        $rows = $query->count();
+        $indexed = fn( bool $latest ) => ( clone $query )
+            ->where( 'latest', $latest )->pluck( 'indexable_id' )->map( strval(...) )->all();
 
-        $this->assertGreaterThan( 0, $rows );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
         Resource::drop( Page::class, [(string) $parent->id], $user );
 
-        $this->assertSame( $rows, $query->count() );
-        $this->assertCount( 0, Page::search( 'ztretainrows' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
         Resource::bulkPage( [(string) $parent->id], ['title' => 'Trashed edit'], $user );
 
-        $this->assertLessThan( $rows, $query->count() );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
+        $this->assertSame( [(string) $child->id], $indexed( false ) );
 
         Resource::restore( Page::class, [(string) $parent->id], $user );
-        $this->waitIndex();
 
-        $found = Page::search( 'ztretainrows' )->searchFields( 'content' )->take( 25 )->get();
-
-        $this->assertSame( $rows, $query->count() );
-        $this->assertEqualsCanonicalizing( $ids, array_map( strval(...), $found->modelKeys() ) );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
+        $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
         Resource::purge( Page::class, [(string) $parent->id], $user );
 
-        $this->assertSame( 0, $query->count() );
+        $this->assertSame( [], $indexed( true ) );
+        $this->assertSame( [], $indexed( false ) );
     }
 }
