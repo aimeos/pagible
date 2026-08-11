@@ -54,7 +54,11 @@ final class Write
                 foreach( File::whereIn( 'id', $args['files'] )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get() as $file )
                 {
                     $files[] = str_starts_with( (string) $file->path, 'http' )
-                        ? \Aimeos\Prisma\Files\File::fromUrl( (string) $file->path, $file->mime )
+                        ? \Aimeos\Prisma\Files\File::fromUrl(
+                            (string) $file->path,
+                            $file->mime,
+                            !(bool) config( 'cms.allow-internal' ),
+                        )
                         : \Aimeos\Prisma\Files\File::fromStoragePath(
                             (string) $file->path,
                             File::diskName( (string) $file->disk ),

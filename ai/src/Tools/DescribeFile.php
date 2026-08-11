@@ -67,7 +67,11 @@ class DescribeFile extends Tool
         $model = config( 'cms.ai.describe.model' );
 
         if( str_starts_with( (string) $file->path, 'http' ) ) {
-            $doc = $class::fromUrl( (string) $file->path, $file->mime );
+            $doc = $class::fromUrl(
+                (string) $file->path,
+                $file->mime,
+                !(bool) config( 'cms.allow-internal' ),
+            );
         } else {
             $doc = $class::fromStoragePath(
                 (string) $file->path,
