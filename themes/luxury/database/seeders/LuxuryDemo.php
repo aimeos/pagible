@@ -778,6 +778,7 @@ class LuxuryDemo extends AbstractDemo
                 'cards' => [
                     ['title' => 'Stay', 'text' => "Rooms and suites in the old house, garden, and olive terraces.\n\n[Explore the rooms](/stay)", 'file' => ['id' => $this->img( 'suite' ), 'type' => 'file']],
                     ['title' => 'Experiences', 'text' => "Bathing, skilled touch, movement, private programmes, and unhurried ways into the island.\n\n[Explore Avelune experiences](/experiences)", 'file' => ['id' => $this->img( 'spa' ), 'type' => 'file']],
+                    ['title' => 'Journal', 'text' => "Field notes from the grove, bath house, kitchen, and mountains, written by the people who know their seasons.\n\n[Read the Avelune Journal](/journal)", 'file' => ['id' => $this->img( 'forest' ), 'type' => 'file']],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
