@@ -9,6 +9,7 @@ use Aimeos\Cms\Listeners\AuthLogListener;
 use Aimeos\Cms\Listeners\UserLogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
+use GraphQL\Validator\Rules\DisableIntrospection;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -67,7 +68,7 @@ class GraphqlServiceProvider extends Provider
         }
 
         if( !config( 'app.debug' ) ) {
-            config( ['lighthouse.security.disable_introspection' => true] );
+            config( ['lighthouse.security.disable_introspection' => DisableIntrospection::ENABLED] );
         }
     }
 
