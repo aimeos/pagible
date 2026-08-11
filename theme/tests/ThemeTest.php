@@ -49,6 +49,32 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterSecurityConfig() : void
+	{
+		$security = Schema::schemas( section: 'config' )['security'];
+
+		$this->assertSame( 'expert', $security['group'] );
+		$this->assertSame( 'url', $security['fields']['contact']['type'] );
+		$this->assertSame( ['https'], $security['fields']['contact']['allowed'] );
+		$this->assertTrue( $security['fields']['contact']['absolute'] );
+		$this->assertTrue( $security['fields']['contact']['required'] );
+		$this->assertSame( 'string', $security['fields']['email']['type'] );
+		$this->assertArrayNotHasKey( 'required', $security['fields']['email'] );
+		$this->assertSame( 'date', $security['fields']['expires']['type'] );
+		$this->assertTrue( $security['fields']['expires']['required'] );
+
+		foreach( ['encryption', 'acknowledgments', 'canonical', 'policy', 'hiring', 'csaf'] as $name )
+		{
+			$this->assertSame( 'url', $security['fields'][$name]['type'] );
+			$this->assertSame( ['https'], $security['fields'][$name]['allowed'] );
+			$this->assertTrue( $security['fields'][$name]['absolute'] );
+		}
+
+		$this->assertArrayHasKey( 'preferred-languages', $security['fields'] );
+		$this->assertArrayHasKey( 'csaf', $security['fields'] );
+	}
+
+
 	public function testRegisterCardsUrl()
 	{
 		$url = Schema::get( 'cms' )['content']['cards']['fields']['cards']['item']['url'];

@@ -20,6 +20,8 @@ Route::group($options, function() {
     // visitor actually submits a form. See theme/public/csrf.js.
     Route::get('cmsapi/csrf', [Controllers\PageController::class, 'csrf'])->middleware(['web', 'throttle:60,1'])->name('cms.api.csrf');
 
+    Route::get('security.txt', [Controllers\SecurityController::class, 'index'])->name('cms.security');
+
     $sitemap = config('cms.theme.sitemap', 'sitemap');
     Route::get("{$sitemap}.xml", [Controllers\SitemapController::class, 'index'])->middleware('throttle:cms-sitemap')->name('cms.sitemap');
     Route::get("{$sitemap}-{page}.xml", [Controllers\SitemapController::class, 'chunk'])->where('page', '[0-9]+')->middleware('throttle:cms-sitemap')->name('cms.sitemap.chunk');
