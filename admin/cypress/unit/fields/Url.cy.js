@@ -61,6 +61,34 @@ describe('Url', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
+  it('rejects relative paths when an absolute URL is required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Url, {
+      props: { modelValue: '/some/path', config: { absolute: true }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('rejects an absolute URL without slashes', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Url, {
+      props: { modelValue: 'https:example.com', config: { absolute: true }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('accepts an allowed absolute URL when required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Url, {
+      props: {
+        modelValue: 'https://example.com/security',
+        config: { absolute: true, allowed: ['https'] },
+        onError
+      }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
   it('accepts fragment and query links as valid', () => {
     for (const value of ['#contact', '?dialog=contact']) {
       const onError = cy.spy()

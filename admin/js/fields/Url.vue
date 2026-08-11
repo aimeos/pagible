@@ -3,6 +3,7 @@
 <script>
 /**
  * Configuration:
+ * - `absolute`: boolean, if true, relative paths and fragment/query links are rejected
  * - `allowed`: array of strings, allowed URL schemas (e.g., ['http', 'https'])
  * - `placeholder`: string, placeholder text for the input field
  * - `required`: boolean, if true, the field is required
@@ -70,11 +71,22 @@ export default {
         return this.$gettext('Invalid URL schema configuration')
       }
 
+      if (v && this.config.absolute) {
+        try {
+          const url = new URL(v)
+          const scheme = url.protocol.slice(0, -1)
+
+          return allowed.includes(scheme) && v.toLowerCase().startsWith(`${scheme}://`) && !!url.hostname
+        } catch {
+          return false
+        }
+      }
+
       return v ? /^[#?][^\s]*$/.test(v) || this.regex.test(v) : true
     },
 
     search(value) {
-      if (!value) {
+      if (!value || this.config.absolute) {
         this.pages = []
         return
       }
