@@ -49,6 +49,43 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterCardsUrl()
+	{
+		$url = Schema::get( 'cms' )['content']['cards']['fields']['cards']['item']['url'];
+		$content = Validation::page( ['content' => [[
+			'type' => 'cards',
+			'data' => ['cards' => [['title' => 'Linked', 'url' => '/target']]],
+		]]] )['content'];
+
+		$this->assertSame( 'url', $url['type'] );
+		$this->assertArrayNotHasKey( 'required', $url );
+		$this->assertSame( '/target', $content[0]->data->cards[0]->url );
+	}
+
+
+	public function testCardsImagesLinkToOptionalUrl()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$file = (object) [
+			'id' => 'image',
+			'name' => 'Card image',
+			'path' => 'https://example.com/card.jpg',
+			'previews' => [],
+		];
+		$data = (object) ['cards' => [
+			(object) ['title' => 'Linked', 'file' => (object) ['id' => 'image'], 'url' => '/target'],
+			(object) ['title' => 'Unlinked', 'file' => (object) ['id' => 'image']],
+			(object) ['title' => 'Unsafe', 'file' => (object) ['id' => 'image'], 'url' => 'javascript:alert(1)'],
+		]];
+
+		$html = view( 'cms::cards', ['data' => $data, 'files' => collect( ['image' => $file] ), 'page' => $page] )->render();
+
+		$this->assertSame( 3, substr_count( $html, '<picture class="image"' ) );
+		$this->assertSame( 1, substr_count( $html, '<a class="card-image"' ) );
+		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
+	}
+
+
 	public function testRegisterPricingIdentities()
 	{
 		$fields = Schema::get( 'cms' )['content']['pricing']['fields'];
