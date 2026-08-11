@@ -10,7 +10,13 @@
 	@foreach($data->cards ?? [] as $card)
 		<div class="card-item">
 			@if($file = cms($files, $card->file?->id ?? null))
-				@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => '(max-width: 576px) 100vw, (max-width: 768px) 66vw, 33vw'])
+				@if($url = cmslink($card->url ?? null))
+					<a class="card-image" href="{{ $url }}">
+						@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => '(max-width: 576px) 100vw, (max-width: 768px) 66vw, 33vw'])
+					</a>
+				@else
+					@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => '(max-width: 576px) 100vw, (max-width: 768px) 66vw, 33vw'])
+				@endif
 			@endif
 			<div class="card-text">
 				<h3 class="title">{{ $card->title ?? '' }}</h3>

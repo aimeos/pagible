@@ -68,7 +68,8 @@
     width: 100%;
 }
 
-.cards .card-item > picture {
+.cards .card-item > picture,
+.cards .card-item > .card-image {
     display: block;
     padding: 0;
     margin: 0;

@@ -395,6 +395,9 @@
                         },
                         "text": {
                             "type": "markdown"
+                        },
+                        "url": {
+                            "type": "url"
                         }
                     }
                 }

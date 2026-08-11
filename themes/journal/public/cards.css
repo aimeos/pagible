@@ -26,7 +26,8 @@
     border-bottom-color: var(--pico-primary);
 }
 
-.cards .card-item > picture {
+.cards .card-item > picture,
+.cards .card-item > .card-image {
     display: block;
     margin: 0 0 1rem;
     overflow: hidden;
