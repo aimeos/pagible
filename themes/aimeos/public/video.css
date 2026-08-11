@@ -1,0 +1,14 @@
+/**
+ * Aimeos Theme
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 4);
+    box-shadow: none;
+    max-width: 100%;
+    display: block;
+    padding: 2rem;
+}

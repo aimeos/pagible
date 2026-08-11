@@ -1,0 +1,248 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero:not(:first-child) {
+    border-block: 1px solid var(--pico-muted-border-color);
+    background-color: var(--pico-muted-background-color);
+}
+
+.hero .background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.hero .background::after {
+    position: absolute;
+    inset: 0;
+    background-color: #071D31B8;
+    content: "";
+}
+
+.hero .background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .background.zoom img {
+        animation: hero-zoom 12s ease-in-out infinite alternate;
+    }
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-block: 4rem;
+}
+
+.hero .first {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.hero .second {
+    display: none;
+}
+
+.hero h1 {
+    margin: 0 0 1.5rem;
+    font-size: calc(var(--pico-font-size) * 2.5);
+    font-weight: 400;
+    line-height: 1.05;
+}
+
+.hero .subtitle {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.7);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero .subtitle::after {
+    display: block;
+    width: 3rem;
+    margin: 0.65rem auto 0;
+    border-bottom: 1px solid currentColor;
+    content: "";
+}
+
+.hero .cms-text {
+    max-width: 42rem;
+    margin-inline: auto;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 1.05);
+    line-height: 1.65;
+}
+
+.hero .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.hero .actions .btn {
+    width: auto;
+    padding: 0.75rem 1.1rem;
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+.hero:first-child {
+    border-bottom: 0.25rem solid var(--pico-primary);
+    background:
+        linear-gradient(90deg, #071D31 0%, #102D4B 55%, #165078 100%);
+}
+
+.hero:first-child .container {
+    min-height: 32rem;
+}
+
+.hero:first-child .first {
+    position: relative;
+}
+
+.hero:first-child h1,
+.hero:first-child .cms-text {
+    color: var(--pico-contrast-inverse);
+}
+
+.hero:first-child .cms-text :where(p, li, strong) {
+    color: #DCE8EF;
+}
+
+.hero:first-child .subtitle {
+    color: #D9B978;
+}
+
+.hero:first-child .btn:first-child {
+    color: var(--pico-contrast);
+    background-color: var(--pico-contrast-inverse);
+    border-color: var(--pico-contrast-inverse);
+}
+
+.hero:first-child .btn:first-child:hover {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-primary);
+    border-color: var(--pico-primary);
+}
+
+.hero:first-child .btn.url-alternative {
+    color: var(--pico-contrast-inverse);
+    background-color: transparent;
+    border-color: #FFFFFF80;
+}
+
+.hero:first-child .btn.url-alternative:hover {
+    color: var(--pico-contrast);
+    background-color: var(--pico-contrast-inverse);
+    border-color: var(--pico-contrast-inverse);
+}
+
+@media screen and (min-width: 768px) {
+    .hero .first:has(+ .second) {
+        width: 50%;
+        margin: 0;
+        text-align: start;
+    }
+
+    .hero .first:has(+ .second) .cms-text {
+        margin-inline: 0;
+    }
+
+    .hero .first:has(+ .second) .actions {
+        justify-content: flex-start;
+    }
+
+    .hero .first:has(+ .second) .subtitle::after {
+        margin-inline: 0;
+    }
+
+    .hero .second {
+        display: block;
+        width: 50%;
+    }
+
+    .hero .second picture,
+    .hero .second video {
+        display: block;
+        overflow: hidden;
+        border: 1px solid #FFFFFF40;
+    }
+
+    .hero .second img,
+    .hero .second video {
+        width: 100%;
+        max-height: 32rem;
+        object-fit: cover;
+    }
+
+    .hero .second.multiple {
+        display: block;
+    }
+
+    .hero:first-child .container:not(:has(.second)) {
+        justify-content: flex-start;
+    }
+
+    .hero:first-child .container:not(:has(.second))::after {
+        position: absolute;
+        z-index: -1;
+        inset-block: 1.5rem;
+        inset-inline-end: -6rem;
+        width: 70%;
+        background: url('commerce-network.png') no-repeat center / contain;
+        opacity: 0.9;
+        pointer-events: none;
+        content: "";
+    }
+
+    .hero:first-child .container:not(:has(.second)) .first {
+        width: 48%;
+        max-width: 36rem;
+        margin: 0;
+        text-align: start;
+    }
+
+    .hero:first-child .container:not(:has(.second)) .cms-text {
+        margin-inline: 0;
+    }
+
+    .hero:first-child .container:not(:has(.second)) .actions {
+        justify-content: flex-start;
+    }
+
+    .hero:first-child .container:not(:has(.second)) .subtitle::after {
+        margin-inline: 0;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 3.35);
+    }
+
+    .hero:first-child .container {
+        min-height: 38rem;
+    }
+}

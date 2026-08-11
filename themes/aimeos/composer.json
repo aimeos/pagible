@@ -1,0 +1,24 @@
+{
+    "name": "aimeos/pagible-themes-aimeos",
+    "description": "Pagible CMS - Aimeos-inspired enterprise ecommerce theme",
+    "keywords": ["laravel", "cms", "theme", "aimeos", "ecommerce"],
+    "homepage": "https://aimeos.org",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\AimeosServiceProvider"
+            ]
+        }
+    }
+}
