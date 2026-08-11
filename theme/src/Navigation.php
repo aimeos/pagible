@@ -109,7 +109,7 @@ final class Navigation
 
 
     /**
-     * Filters unpublished nodes and recursively prunes nested children.
+     * Filters unpublished nodes and recursively prunes hidden branches.
      *
      * @param iterable<int, mixed> $items
      * @return Collection<int, Page>
@@ -124,17 +124,21 @@ final class Navigation
                 continue;
             }
 
+            $status = $page->status;
+
+            if( $page->relationLoaded( 'latest' ) ) {
+                $status = $page->getRelation( 'latest' )?->data->status ?? $status;
+            }
+
+            if( (int) $status === 2 ) {
+                continue;
+            }
+
             $children = collect();
 
             if( $nested && $page->relationLoaded( 'children' ) ) {
                 $children = $this->visible( $page->getRelation( 'children' ), true );
                 $page->setRelation( 'children', $children );
-            }
-
-            $status = $page->status;
-
-            if( $page->relationLoaded( 'latest' ) ) {
-                $status = $page->getRelation( 'latest' )?->data->status ?? $status;
             }
 
             if( (int) $status !== 1 )

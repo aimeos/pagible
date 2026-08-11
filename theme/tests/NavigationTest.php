@@ -61,6 +61,23 @@ class NavigationTest extends ThemeTestAbstract
     }
 
 
+    public function testHiddenParentHidesVisibleDescendants(): void
+    {
+        config( ['cms.navdepth' => 3] );
+
+        $hidden = Page::where( 'path', 'hidden' )->firstOrFail();
+        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        $dev = Page::where( 'path', 'dev' )->firstOrFail();
+        $blog->appendToNode( $hidden )->save();
+
+        $ids = ( new Navigation( $hidden, null ) )->items()->pluck( 'id' );
+
+        $this->assertNotContains( $hidden->id, $ids );
+        $this->assertNotContains( $blog->id, $ids );
+        $this->assertContains( $dev->id, $ids );
+    }
+
+
     public function testAuthenticatedNavigationIncludesAuthenticationOnlyPages(): void
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();
