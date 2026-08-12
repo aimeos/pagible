@@ -53,7 +53,11 @@ final class Describe
                     $file->mime,
                 );
             } else {
-                $doc = $class::fromUrl( $file->path, $file->mime );
+                $doc = $class::fromUrl(
+                    $file->path,
+                    $file->mime,
+                    !(bool) config( 'cms.allow-internal' ),
+                );
             }
 
             return Prisma::type( $type )->observe( $this->observer() )

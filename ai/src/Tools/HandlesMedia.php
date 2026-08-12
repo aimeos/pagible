@@ -120,7 +120,11 @@ trait HandlesMedia
         }
 
         if( str_starts_with( (string) $file->path, 'http' ) ) {
-            return Image::fromUrl( (string) $file->path, $file->mime );
+            return Image::fromUrl(
+                (string) $file->path,
+                $file->mime,
+                !(bool) config( 'cms.allow-internal' ),
+            );
         }
 
         return Image::fromStoragePath(

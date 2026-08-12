@@ -64,7 +64,11 @@ class TranscribeAudio extends Tool
         $model = config( 'cms.ai.transcribe.model' );
 
         if( str_starts_with( (string) $file->path, 'http' ) ) {
-            $doc = Audio::fromUrl( (string) $file->path, $file->mime );
+            $doc = Audio::fromUrl(
+                (string) $file->path,
+                $file->mime,
+                !(bool) config( 'cms.allow-internal' ),
+            );
         } else {
             $doc = Audio::fromStoragePath(
                 (string) $file->path,

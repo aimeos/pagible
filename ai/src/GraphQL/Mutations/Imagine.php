@@ -76,7 +76,11 @@ final class Imagine
             }
 
             if( str_starts_with( (string) $file->path, 'http' ) ) {
-                return Image::fromUrl( (string) $file->path, $file->mime );
+                return Image::fromUrl(
+                    (string) $file->path,
+                    $file->mime,
+                    !(bool) config( 'cms.allow-internal' ),
+                );
             }
 
             return Image::fromStoragePath( (string) $file->path, File::diskName( (string) $file->disk ) );
