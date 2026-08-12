@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const announce = list => list?.closest('.list')?.querySelector('[role="status"][aria-live]');
 
         item.addEventListener('click', ev => {
-            const items = ev.target.closest('.list-items')
-            const a = ev.target.closest('.list-items .pagination a.page-link');
+            const a = ev.target.closest('.pagination a.page-link');
+            const items = item.querySelector('.list-items');
             const status = announce(items);
 
-            if(a && document.body.contains(a)) {
+            if(a && items && item.contains(a)) {
                 ev.preventDefault();
-                items.setAttribute('aria-busy', 'true');
+                item.setAttribute('aria-busy', 'true');
 
                 fetch(a.href).then(response => {
                     if(!response.ok) {
@@ -27,16 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).then(text => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(text, 'text/html');
-                    const newitems = doc.querySelector(`.list-items[data-list="${items.dataset.list}"]`);
+                    const element = item.closest('.cms-content [id]');
+                    const newitem = element?.id ? doc.getElementById(element.id)?.querySelector('.list') : null;
+                    const newitems = newitem?.querySelector('.list-items') || Array.from(doc.querySelectorAll('.list-items'))
+                        .find(candidate => candidate.dataset.list === items.dataset.list);
+                    const replacement = newitems?.closest('.list');
 
-                    if(newitems) {
-                        const newStatus = newitems.closest('.list')
-                            ?.querySelector('[role="status"][aria-live]');
-                        items.replaceWith(newitems);
-                        item.scrollIntoView({ behavior: 'smooth' });
+                    if(replacement) {
+                        const newStatus = announce(newitems);
                         if(status && newStatus) {
                             status.textContent = newStatus.textContent;
+                            newStatus.replaceWith(status);
                         }
+                        item.replaceChildren(...replacement.childNodes);
+                        item.scrollIntoView({ behavior: 'smooth' });
                         return;
                     }
 
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).catch(error => {
                     console.error(error);
                 }).finally(() => {
-                    items.removeAttribute('aria-busy');
+                    item.removeAttribute('aria-busy');
                 });
             }
         });
