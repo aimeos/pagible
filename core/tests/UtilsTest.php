@@ -137,6 +137,13 @@ class UtilsTest extends CoreTestAbstract
         $this->assertFalse( Utils::isValidUrl( '/path/../etc/passwd' ) );
         $this->assertFalse( Utils::isValidUrl( '../secret' ) );
         $this->assertFalse( Utils::isValidUrl( 'https://example.com/a/../b' ) );
+        $this->assertFalse( Utils::isValidUrl( 'https://example.com/a/%2e%2e/b', false ) );
+        $this->assertFalse( Utils::isValidUrl( 'https://example.com/a%2f..%2fb', false ) );
+        $this->assertFalse( Utils::isValidUrl( 'https://example.com/a%252f..%252fb', false ) );
+
+        $this->assertTrue( Utils::isValidUrl(
+            'https://aimeos.org/fileadmin/user_upload/slaapwereldonline.nl..jpg', false
+        ) );
     }
 
 
