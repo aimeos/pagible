@@ -55,7 +55,6 @@
 				"themes/bold/src/",
 				"themes/premium/src/",
 				"themes/luxury/src/",
-				"themes/aimeos/src/",
 				"themes/style/src/"
 			],
 			"Tests\\": [
