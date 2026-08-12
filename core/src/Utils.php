@@ -331,10 +331,19 @@ class Utils
             return false;
         }
 
-        // Reject paths with directory traversal
-        if( !empty( $parsed['path'] ) && str_contains( $parsed['path'], '..' ) ) {
-            return false;
+        // Reject traversal segments at every encoding layer so intermediaries can't expose one
+        $path = (string) ( $parsed['path'] ?? '' );
+
+        do
+        {
+            if( preg_match( '~(?:^|[/\\\\])\.\.(?:[/\\\\]|$)~', $path ) ) {
+                return false;
+            }
+
+            $previous = $path;
+            $path = rawurldecode( $path );
         }
+        while( $path !== $previous );
 
         // Relative and absolute paths (no scheme/host) are valid
         if( !$strict && empty( $parsed['scheme'] ) && empty( $parsed['host'] ) ) {
