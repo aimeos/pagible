@@ -186,4 +186,26 @@ describe('Fields', () => {
     })
     cy.get('.item').should('exist')
   })
+
+  it('immutably updates an items field when the data object is frozen', () => {
+    const data = Object.freeze({
+      cards: [{ position: 'start' }],
+    })
+    const onUpdate = cy.spy().as('updateData')
+
+    mountFields({
+      fields: { cards: { type: 'items', label: 'Footer cards' } },
+      data,
+      'onUpdate:data': onUpdate,
+    }).then(({ wrapper }) => {
+      wrapper.findComponent(Fields).vm.update('cards', [...data.cards, { position: 'end' }])
+
+      expect(onUpdate).to.have.been.calledOnce
+      expect(onUpdate.firstCall.args[0]).to.deep.equal({
+        cards: [{ position: 'start' }, { position: 'end' }],
+      })
+      expect(onUpdate.firstCall.args[0]).not.to.equal(data)
+      expect(data.cards).to.deep.equal([{ position: 'start' }])
+    })
+  })
 })
