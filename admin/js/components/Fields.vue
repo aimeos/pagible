@@ -28,7 +28,7 @@ export default {
     type: { type: String, default: '' }
   },
 
-  emits: ['change', 'error', 'update:files'],
+  emits: ['change', 'error', 'update:data', 'update:files'],
 
   inject: ['write', 'translate'],
 
@@ -194,10 +194,11 @@ export default {
 
     resetField(code) {
       if (code in this.original) {
-        this.data[code] = this.original[code]
+        const value = this.original[code]
         this.dirty.delete(code)
         delete this.original[code]
-        this.$emit('change', this.data[code])
+        this.$emit('update:data', { ...this.data, [code]: value })
+        this.$emit('change', value)
       }
     },
 
@@ -205,9 +206,9 @@ export default {
       if (!this.dirty.has(code)) {
         this.original[code] = this.data[code]
       }
-      this.data[code] = value
       this.dirty.add(code)
-      this.$emit('change', this.data[code])
+      this.$emit('update:data', { ...this.data, [code]: value })
+      this.$emit('change', value)
     },
 
     writeText(code) {
