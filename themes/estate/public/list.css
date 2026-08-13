@@ -51,7 +51,7 @@
     }
 }
 
-.cms-content .list img {
+.cms-content .list .list-cards img {
     display: block;
     aspect-ratio: 4 / 3;
     object-fit: cover;

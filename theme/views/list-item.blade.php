@@ -17,7 +17,7 @@
             @endif
             <h3>{{ cms($item, 'title') }}</h3>
             @if(($layout ?? '') === 'list' && ($text = $article->text ?? null))
-                <p class="intro">{{ str($text)->limit(500) }}</p>
+                <p class="intro">{{ str($text)->markdown()->stripTags()->squish()->limit(500) }}</p>
             @endif
         </div>
     @else

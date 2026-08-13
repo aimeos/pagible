@@ -53,7 +53,7 @@
     overflow: hidden;
 }
 
-.cms-content .list img {
+.cms-content .list .list-cards img {
     aspect-ratio: 16 / 9;
     border-block: 1px solid var(--pico-muted-border-color);
     display: block;

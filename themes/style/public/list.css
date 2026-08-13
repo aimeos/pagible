@@ -50,7 +50,7 @@
     transform: translateY(-0.1875rem);
 }
 
-.cms-content .list img {
+.cms-content .list .list-cards img {
     display: block;
     aspect-ratio: 5 / 3;
     object-fit: cover;

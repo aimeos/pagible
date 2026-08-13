@@ -36,7 +36,7 @@
     background-color: var(--pico-contrast-hover-background);
 }
 
-.cms-content .list img {
+.cms-content .list .list-cards img {
     aspect-ratio: 5 / 3;
     object-fit: cover;
 }

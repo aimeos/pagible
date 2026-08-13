@@ -45,7 +45,7 @@
     border-color: var(--pico-contrast-hover-border);
 }
 
-.cms-content .list img {
+.cms-content .list .list-cards img {
     display: block;
     aspect-ratio: 5 / 3;
     object-fit: cover;
