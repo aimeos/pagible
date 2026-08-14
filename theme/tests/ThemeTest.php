@@ -112,6 +112,18 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testCardsWithoutTitleDoNotRenderEmptyHeading()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$data = (object) ['cards' => [(object) ['text' => '- [Contact](/contact)']]];
+
+		$html = view( 'cms::cards', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringNotContainsString( '<h3', $html );
+		$this->assertStringContainsString( '<a href="/contact">Contact</a>', $html );
+	}
+
+
 	public function testRegisterPricingIdentities()
 	{
 		$fields = Schema::get( 'cms' )['content']['pricing']['fields'];
