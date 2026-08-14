@@ -80,7 +80,7 @@ final class Refine
                     Tools::provider( 'web_fetch' )
                 ] )
                 ->ensure( 'structure' )
-                ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema, [], ['mode' => 'json'] ); // @phpstan-ignore-line method.notFound
+                ->structure( $args['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema ); // @phpstan-ignore-line method.notFound
 
             $structured = $response->structured();
 
