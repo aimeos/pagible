@@ -1,5 +1,5 @@
 import ElementDetail from '../../../js/views/ElementDetail.vue'
-import { useUserStore } from '../../../js/stores'
+import { useSchemaStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
@@ -18,6 +18,8 @@ const baseItem = {
   published: false,
 }
 
+let schemaLoad
+
 function mountDetail(perms = {}, item = {}) {
   return cy.mount(ElementDetail, {
     props: { item: { ...baseItem, ...item } },
@@ -28,6 +30,9 @@ function mountDetail(perms = {}, item = {}) {
       },
       plugins: [{
         install() {
+          schemaLoad = Cypress.sinon.stub().resolves()
+          useSchemaStore().load = schemaLoad
+
           const user = useUserStore()
           user.me = { permission: perms }
         }
@@ -37,6 +42,12 @@ function mountDetail(perms = {}, item = {}) {
 }
 
 describe('ElementDetail', () => {
+  it('loads the element schemas', () => {
+    mountDetail().then(() => {
+      expect(schemaLoad).to.have.been.calledOnce
+    })
+  })
+
   it('renders the app bar', () => {
     mountDetail()
     cy.get('.v-app-bar').should('exist')

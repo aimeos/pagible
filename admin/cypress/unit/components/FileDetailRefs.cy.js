@@ -1,5 +1,6 @@
 import FileDetailRefs from '../../../js/components/FileDetailRefs.vue'
-import { useUserStore } from '../../../js/stores'
+import { isReactive } from 'vue'
+import { useUserStore, useViewStack } from '../../../js/stores'
 
 const stubs = {
 }
@@ -85,6 +86,19 @@ describe('FileDetailRefs', () => {
       cy.get('@openElement').should('have.been.calledOnceWith', { id: 'element-1' })
       cy.get('@openFile').should('have.been.calledOnceWith', { id: 'file-1' })
       cy.get('@openPage').should('have.been.calledOnceWith', { id: 'page-1' })
+    })
+  })
+
+  it('opens referenced pages with a reactive stacked item', () => {
+    mountRefs().then(async ({ wrapper }) => {
+      const viewStack = useViewStack()
+
+      await wrapper.findComponent(FileDetailRefs).vm.openPage({ id: 'page-1' })
+
+      expect(viewStack.stack).to.have.length(1)
+      expect(viewStack.stack[0].props.stacked).to.be.true
+      expect(viewStack.stack[0].props.item.id).to.equal('page-1')
+      expect(isReactive(viewStack.stack[0].props.item)).to.be.true
     })
   })
 

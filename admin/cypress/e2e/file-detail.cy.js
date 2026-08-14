@@ -22,6 +22,8 @@ const ALL_PERMISSIONS = {
   'file:describe': true,
   'audio:transcribe': true,
   'text:translate': true,
+  'page:access': true,
+  'page:save': true,
   'page:view': true,
   'element:view': true,
 }
@@ -31,6 +33,24 @@ const ME_ADMIN = {
   email: 'admin@example.com',
   name: 'Admin',
 }
+
+const ELEMENT_SCHEMAS = [{
+  name: 'cms',
+  label: 'CMS',
+  types: '{}',
+  content: JSON.stringify({
+    heading: { group: 'basic', fields: { title: { type: 'string' } } },
+  }),
+  meta: '{}',
+  config: '{}',
+}, {
+  name: 'pagible',
+  label: 'Pagible',
+  types: JSON.stringify({ page: { sections: ['main', 'footer'] } }),
+  content: '{}',
+  meta: '{}',
+  config: '{}',
+}]
 
 /**
  * A minimal file entry as the GraphQL `files` query would return. File identity
@@ -72,6 +92,37 @@ function makeFile(overrides = {}) {
   }, overrides)
 }
 
+/** Full referenced page response shape for the `page(id)` query. */
+function makePageDetail(overrides = {}) {
+  return Object.assign({
+    id: 'page-version-1',
+    aux: JSON.stringify({
+      content: [{ id: 'heading-1', type: 'heading', group: 'main', data: { title: 'Welcome' } }],
+      meta: {},
+      config: {},
+    }),
+    data: JSON.stringify({
+      name: 'Referenced page',
+      title: 'Referenced page',
+      path: 'referenced-page',
+      lang: 'en',
+      status: 1,
+      domain: '',
+      to: '',
+      tag: '',
+      type: 'page',
+      theme: 'pagible',
+      cache: 5,
+    }),
+    published: true,
+    publish_at: null,
+    created_at: '2026-01-01 00:00:00',
+    editor: 'admin@example.com',
+    files: [],
+    elements: [],
+  }, overrides)
+}
+
 /** Wraps a files array in the paginated GraphQL response shape. */
 function filesResponse(files) {
   return {
@@ -88,9 +139,12 @@ function filesResponse(files) {
 function setupIntercept({
   meResponse = ME_ADMIN,
   files = [],
+  fileRefs = null,
+  pageDetail = null,
   versions = [],
   saveFile = null,
   pubFile = null,
+  schemas = ELEMENT_SCHEMAS,
 } = {}) {
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
@@ -118,6 +172,12 @@ function setupIntercept({
       if (query.includes('pubFile')) {
         return { data: { pubFile: pubFile || { id: '1' } } }
       }
+      if (query.includes('schemas')) {
+        return { data: { schemas } }
+      }
+      if (query.includes('bypages') || query.includes('byelements')) {
+        return { data: { file: fileRefs } }
+      }
       // Single file query for detail view — check BEFORE 'files('
       if (query.includes('file(') && !query.includes('files(')) {
         const f = files[0] || makeFile()
@@ -130,6 +190,19 @@ function setupIntercept({
               byelements: [],
               byversions: [],
             },
+          },
+        }
+      }
+      if (query.includes('page(') && !query.includes('pages(')) {
+        return {
+          data: {
+            page: pageDetail ? {
+              id: op.variables?.id || 'page-1',
+              access: [],
+              has: 0,
+              restricted: false,
+              latest: pageDetail,
+            } : null,
           },
         }
       }
@@ -285,6 +358,35 @@ describe('File Detail', () => {
     visitFileDetail()
     cy.get('.file-details > .v-form > .v-tabs').contains('.v-tab', 'Used by').click()
     cy.get('.file-details > .v-form > .v-tabs .v-tab--selected').should('contain', 'Used by')
+  })
+
+  it('shows content added to a referenced page opened from the shared file', () => {
+    const file = makeFile()
+
+    setupIntercept({
+      files: [file],
+      fileRefs: {
+        id: file.id,
+        bypages: [{ id: 'page-1', path: 'referenced-page', name: 'Referenced page', restricted: false }],
+        byelements: [],
+        byversions: [],
+      },
+      pageDetail: makePageDetail(),
+    })
+
+    cy.visit('/files')
+    cy.get('.item-text').first().click()
+    detailView().find('.v-tab').contains('Used by').click()
+    detailView().find('.v-table.pages tbody tr').click()
+
+    detailView().find('.page-details').should('be.visible')
+    detailView().find('.v-tab').contains('Content').click()
+    detailView().find('.content').should('have.length', 1)
+    detailView().find('button.btn-add').click()
+    cy.get('.v-dialog').contains('button', 'heading').click()
+
+    detailView().find('.content').should('have.length', 2)
+    detailView().find('.menu-save').should('not.be.disabled')
   })
 
   // ---- Detail fields ----
