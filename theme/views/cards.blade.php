@@ -19,7 +19,9 @@
 				@endif
 			@endif
 			<div class="card-text">
-				<h3 class="title">{{ $card->title ?? '' }}</h3>
+				@if($card->title ?? null)
+					<h3 class="title">{{ $card->title }}</h3>
+				@endif
 				@if($card->text ?? null)
 					<div class="cms-text">@markdown($card->text)</div>
 				@endif
