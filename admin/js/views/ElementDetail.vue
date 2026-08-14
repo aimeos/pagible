@@ -6,7 +6,7 @@ import AsideMeta from '../components/AsideMeta.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
+import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useSchemaStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { publishDate, publishItem } from '../publish'
@@ -114,6 +114,7 @@ export default {
   setup() {
     const dirtyStore = useDirtyStore()
     const messages = useMessageStore()
+    const schemas = useSchemaStore()
     const side = useSideStore()
     const user = useUserStore()
     const viewStack = useViewStack()
@@ -121,6 +122,7 @@ export default {
 
     return {
       dirtyStore,
+      schemas,
       side,
       user,
       messages,
@@ -131,6 +133,7 @@ export default {
 
   created() {
     this.dirtyStore.register(() => this.save(true))
+    this.schemas.load()
 
     if (!this.item?.id || !this.user.can('element:view')) {
       this.loading = false

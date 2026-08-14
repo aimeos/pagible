@@ -1,5 +1,6 @@
 import App from '../../js/App.vue'
 import { createPinia, setActivePinia } from 'pinia'
+import { isReactive } from 'vue'
 import { slugify, srcset, toBlob, debounce, locales, txlocales, url } from '../../js/utils'
 import { write, translate, transcribe } from '../../js/ai'
 import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../../js/stores'
@@ -148,6 +149,15 @@ describe('viewStack', () => {
     const before = viewStack.stack.length
     viewStack.openView(null)
     expect(viewStack.stack).to.have.length(before)
+  })
+
+  it('keeps mutable detail items reactive in stacked views', () => {
+    const viewStack = useViewStack()
+    const item = { id: 'page-1', content: [] }
+
+    viewStack.openView({ render() { return 'test' } }, { item, stacked: true })
+
+    expect(isReactive(viewStack.stack[0].props.item)).to.be.true
   })
 
   it('closeView() pops the last view', () => {

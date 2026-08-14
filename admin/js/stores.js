@@ -3,7 +3,7 @@
  */
 
 import gql from 'graphql-tag'
-import { defineAsyncComponent, h, markRaw } from 'vue'
+import { defineAsyncComponent, h, markRaw, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect } from './echo'
@@ -662,9 +662,15 @@ export const useViewStack = defineStore('viewStack', {
         this.stack.splice(0, this.stack.length - 2)
       }
 
+      // Detail views mutate their item and replace nested state such as page content. Keep that
+      // item reactive while leaving the surrounding props bag raw for callbacks and other data.
+      const viewProps = props?.item
+        ? { ...props, item: reactive(props.item) }
+        : props || {}
+
       this.stack.push({
         component: markRaw(component),
-        props: markRaw(props || {})
+        props: markRaw(viewProps)
       })
     }
   }
