@@ -25,8 +25,12 @@ export function reloadVersion(vm, query, key, message, apply, keep = null, varia
     .then((result) => {
       if (vm.destroyed) return false
 
-      if (result.errors || !result.data[key]) {
-        throw result
+      if (result.errors) {
+        throw result.errors
+      }
+
+      if (!result.data?.[key]) {
+        throw new Error(vm.$gettext('No data available'))
       }
 
       if (!result.data[key].latest) {
@@ -43,9 +47,24 @@ export function reloadVersion(vm, query, key, message, apply, keep = null, varia
       return true
     })
     .catch((error) => {
+      const detail = errorMessage(error)
+
       vm.loading = false
-      vm.messages.add(message + ':\n' + error, 'error')
+      vm.messages.add(message + (detail ? ':\n' + detail : ''), 'error')
       vm.$log('reloadVersion(' + key + ')', error)
       return false
     })
+}
+
+
+function errorMessage(error) {
+  if (Array.isArray(error)) {
+    return error.map(errorMessage).filter(Boolean).join('\n')
+  }
+
+  if (typeof error === 'string') return error
+  if (error?.message) return error.message
+  if (error?.errors) return errorMessage(error.errors)
+
+  return ''
 }

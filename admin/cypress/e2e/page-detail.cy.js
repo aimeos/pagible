@@ -261,6 +261,16 @@ describe('Page Detail', () => {
     detailView().find('.v-app-bar-title').should('contain', 'Page: Home')
   })
 
+  it('shows a readable error when the selected page no longer exists', () => {
+    setupIntercept({ pages: [makePage()] })
+    cy.visit('/pages')
+    cy.get('.item-text').first().click()
+    cy.get('.v-snackbar__content')
+      .should('contain', 'Error fetching page')
+      .and('contain', 'No data available')
+      .and('not.contain', '[object Object]')
+  })
+
   it('back button closes the detail view', () => {
     visitPageDetail()
     detailView().find('.v-btn.btn-back').click()
