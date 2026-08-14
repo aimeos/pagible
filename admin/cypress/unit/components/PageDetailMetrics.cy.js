@@ -29,7 +29,7 @@ function mountMetrics(props = {}) {
       plugins: [{
         install() {
           const app = useAppStore()
-          app.urlpage = 'http://localhost/_domain_/_path_'
+          app.urlpage = 'http://_domain_:8000/_path_'
         }
       }],
     },
@@ -70,5 +70,26 @@ describe('PageDetailMetrics', () => {
     mountMetrics()
     // "—" is shown for empty data
     cy.contains('—').should('exist')
+  })
+
+  it('uses the public origin for pages without a domain', () => {
+    mountMetrics().then(({ wrapper }) => {
+      const metrics = wrapper.findComponent(PageDetailMetrics)
+      const expected = new URL('/test-page', window.location.origin)
+
+      expect(metrics.vm.url(item)).to.equal(expected.href)
+    })
+  })
+
+  it('uses the page domain with the public protocol and port', () => {
+    const page = { ...item, domain: 'paper.themes.pagible.com' }
+
+    mountMetrics({ item: page }).then(({ wrapper }) => {
+      const metrics = wrapper.findComponent(PageDetailMetrics)
+      const expected = new URL('/test-page', window.location.origin)
+      expected.hostname = page.domain
+
+      expect(metrics.vm.url(page)).to.equal(expected.href)
+    })
   })
 })

@@ -350,10 +350,18 @@ export default {
     },
 
     url(node) {
-      return this.app.urlpage
-        .replace(/_domain_/, node.domain || '')
-        .replace(/_path_/, node.path || '/')
-        .replace(/\/{2,}$/, '/')
+      const url = new URL(
+        this.app.urlpage
+          .replace(/_domain_/, node.domain || window.location.hostname)
+          .replace(/_path_/, node.path || '/')
+          .replace(/\/{2,}$/, '/'),
+        window.location.origin
+      )
+
+      url.protocol = window.location.protocol
+      url.port = window.location.port
+
+      return url.href
     },
 
     value(v) {
