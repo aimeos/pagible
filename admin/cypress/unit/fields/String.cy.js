@@ -1,4 +1,5 @@
 import StringField from '../../../js/fields/String.vue'
+import '../../../js/assets/base.css'
 
 describe('String (textarea)', () => {
   it('renders a textarea', () => {
@@ -81,5 +82,16 @@ describe('String (textarea)', () => {
   it('is readonly when readonly prop is true', () => {
     cy.mount(StringField, { props: { config: {}, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
+  })
+
+  it('uses the muted surface color in readonly mode', () => {
+    cy.mount(StringField, { props: { config: {}, readonly: true } })
+    cy.get('.v-field').should(($field) => {
+      const style = getComputedStyle($field[0])
+      const muted = style.getPropertyValue('--v-theme-surface-light').match(/\d+/g)
+      const background = style.backgroundColor.match(/\d+/g)?.slice(0, 3)
+
+      expect(background).to.deep.equal(muted)
+    })
   })
 })
