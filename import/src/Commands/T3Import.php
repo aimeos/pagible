@@ -194,7 +194,7 @@ class T3Import extends Command
 
     /**
      * Selects requested pages while keeping the full source collection available
-     * for parent, domain, shortcut, link and inherited-footer resolution.
+     * for parent, domain, shortcut and link resolution.
      *
      * @param  Collection<int|string, mixed>  $pages
      * @param  list<int>  $ids
@@ -224,93 +224,29 @@ class T3Import extends Command
         $elements = [];
         $fileIds = [];
         $elementIds = [];
-        $homepage = $this->isAimeosHomepage($records);
-        $b2b = $this->isAimeosB2b($records);
-        $marketplace = $this->isAimeosMarketplace($records);
-        $saas = $this->isAimeosSaas($records);
-        $typo3 = $this->isAimeosTypo3($records);
-        $laravelPlatform = $this->isAimeosLaravelPlatform($records);
-        $features = $this->isAimeosFeatures($records);
-        $showcases = $this->isAimeosShowcases($records);
-        $caseStudies = $this->isAimeosCaseStudies($records);
-        $caseStudy = $this->isAimeosCaseStudy($records);
-        $roadmap = $this->isAimeosRoadmap($records);
-        $contact = $this->isAimeosContact($records);
-        $structuredCaseStudy = $caseStudy && \Aimeos\Cms\Schema::get('aimeos');
-        $structuredContact = $contact && \Aimeos\Cms\Schema::get('aimeos');
-        $sharedContext = match (true) {
-            $b2b => 'b2b',
-            $marketplace => 'marketplace',
-            $saas => 'saas',
-            $typo3 => 'typo3',
-            $laravelPlatform => 'laravel-platform',
-            $features => 'features',
-            $showcases => 'showcases',
-            $caseStudies => 'case-studies',
-            $caseStudy => 'case-study',
-            $homepage => 'homepage',
-            default => 'default',
-        };
 
         foreach ($records as $record) {
-            if ($features && $this->isFeaturesHead($record)) {
-                continue;
-            }
-
-            if ($structuredCaseStudy
-                && $this->isCaseStudyLayoutRecord($record)
-                && ! $this->isCaseStudyStage($record)) {
-                continue;
-            }
-
-            if ($structuredContact
-                && $this->isContactLayoutRecord($record)
-                && ! $this->isContactStage($record)) {
-                continue;
-            }
-
-            $group = in_array((int) ($record->colPos ?? 0), [10, 11, 12], true)
-                ? 'footer'
-                : 'main';
             $filesBefore = clone $this->createdFiles;
             $urlsBefore = clone $this->createdFileUrls;
             $this->contentUid = (string) ($record->uid ?? '?');
 
             try {
-                $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($record, $records, $group, $homepage, $b2b, $marketplace, $saas, $typo3, $laravelPlatform, $features, $showcases, $structuredCaseStudy, $structuredContact, $roadmap, $sharedContext, $filesBefore) {
+                $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($record, $filesBefore) {
                     try {
-                        $result = match (true) {
-                            $group === 'footer' && $record->CType === 'text' => $this->convertFooterText($record), // @phpstan-ignore property.notFound
-                            $group === 'footer' => $this->convertContentElement($record, false),
-                            $structuredCaseStudy && $this->isCaseStudyStage($record) => $this->convertCaseStudy($records),
-                            $structuredContact && $this->isContactStage($record) => $this->convertContactPage($records),
-                            $b2b => $this->convertProductLandingContentElement($record, 'b2b'),
-                            $marketplace => $this->convertProductLandingContentElement($record, 'marketplace'),
-                            $saas => $this->convertProductLandingContentElement($record, 'saas'),
-                            $typo3 => $this->convertProductLandingContentElement($record, 'typo3'),
-                            $laravelPlatform && $record->CType === 'html' => $this->convertLaravelPlatformHtml($record), // @phpstan-ignore property.notFound
-                            $laravelPlatform && \Aimeos\Cms\Schema::get('aimeos') && $record->CType === 'textpic' => $this->convertFeature($record), // @phpstan-ignore property.notFound
-                            $features && \Aimeos\Cms\Schema::get('aimeos') && $record->CType === 'textpic' => $this->convertFeature($record), // @phpstan-ignore property.notFound
-                            $features && \Aimeos\Cms\Schema::get('aimeos') && $record->CType === 'accordion' => $this->convertFeatureList($record), // @phpstan-ignore property.notFound
-                            $showcases && \Aimeos\Cms\Schema::get('aimeos') && $record->CType === 'image' => $this->convertShowcases($record), // @phpstan-ignore property.notFound
-                            $roadmap && $record->CType === 'html' => $this->convertRoadmapHtml($record), // @phpstan-ignore property.notFound
-                            default => $this->convertContentElement($record, $homepage),
-                        };
+                        $result = $this->convertContentElement($record);
 
                         if (! $result) {
                             return null;
                         }
 
                         foreach ($result['elements'] as &$element) {
-                            $element['group'] = $group;
+                            $element['group'] = 'main';
                         }
                         unset($element);
 
                         if (! isset($record->_pagible_shared)) {
                             return $result + ['elementIds' => []];
                         }
-
-                        $record->_pagible_shared_context = $sharedContext.'-'.$group;
 
                         $references = [];
                         $elementIds = [];
@@ -322,7 +258,7 @@ class T3Import extends Command
                                 $result['fileIds'] ?? [],
                                 $position,
                             );
-                            $references[] = ['type' => 'reference', 'refid' => $id, 'group' => $group];
+                            $references[] = ['type' => 'reference', 'refid' => $id, 'group' => 'main'];
                             $elementIds[] = $id;
                         }
 
@@ -427,19 +363,14 @@ class T3Import extends Command
     {
         $connection = isset($this->t3Connection) ? $this->t3Connection : 'typo3';
         $lang = isset($this->lang) ? $this->lang : 'en';
-        $parts = [
+
+        return implode(':', [
             sha1($connection),
             (int) ($record->_pagible_shared_page ?? $record->pid ?? 0),
             (int) ($record->_pagible_shared_uid ?? $record->uid ?? 0),
             $position,
             $lang,
-        ];
-
-        if (($record->_pagible_shared ?? null) !== 'footer') {
-            $parts[] = (string) ($record->_pagible_shared_context ?? 'default-main');
-        }
-
-        return implode(':', $parts);
+        ]);
     }
 
     /**
@@ -448,17 +379,13 @@ class T3Import extends Command
     protected function sharedElementName(object $record, int $position): string
     {
         $parts = explode(':', $this->sharedElementKey($record, $position));
-        $kind = ($record->_pagible_shared ?? null) === 'footer' ? 'footer' : 'element';
-        $context = $kind === 'footer' ? '' : '/'.preg_replace('/[^a-z0-9-]+/i', '-', (string) end($parts));
 
         return sprintf(
-            'TYPO3 %s %s/%d/%d/%d%s',
-            $kind,
+            'TYPO3 element %s/%d/%d/%d',
             substr($parts[0], 0, 12),
             (int) $parts[1],
             (int) $parts[2],
             (int) $parts[3],
-            $context,
         );
     }
 
@@ -580,28 +507,17 @@ class T3Import extends Command
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds?: string[]}|null
      */
-    protected function convertContentElement(object $record, bool $convertStats = true): ?array
+    protected function convertContentElement(object $record): ?array
     {
-        $html = (string) ($record->bodytext ?? '');
-
-        if (\Aimeos\Cms\Schema::get('aimeos')) {
-            if (str_contains($html, 'landing users') && ($result = $this->convertLogoCloud($record))) {
-                return $result;
-            }
-
-            if ($convertStats && str_contains($html, 'landing qualities') && ($result = $this->convertStats($record))) {
-                return $result;
-            }
-        }
-
-        return match ($record->CType) { // @phpstan-ignore property.notFound
+        return match ((string) ($record->CType ?? '')) {
             'header' => $this->convertHeader($record),
             'text' => $this->convertText($record),
             'textpic', 'textmedia' => $this->convertTextpic($record),
             'image' => $this->convertImage($record),
             'html' => $this->convertHtml($record),
             'accordion' => $this->convertAccordion($record),
-            'shortcut' => $this->convertShortcut($record, $convertStats),
+            'carousel' => $this->convertCarousel($record),
+            'shortcut' => $this->convertShortcut($record),
             default => $this->convertDefault($record),
         };
     }
@@ -611,7 +527,7 @@ class T3Import extends Command
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
      */
-    protected function convertShortcut(object $record, bool $convertStats = true): ?array
+    protected function convertShortcut(object $record): ?array
     {
         preg_match_all('/\d+/', (string) ($record->records ?? ''), $matches);
         $elements = [];
@@ -624,7 +540,7 @@ class T3Import extends Command
                 continue;
             }
 
-            $result = $this->convertContentElement($target, $convertStats);
+            $result = $this->convertContentElement($target);
 
             if ($result) {
                 $elements = array_merge($elements, $result['elements']);
@@ -755,218 +671,14 @@ class T3Import extends Command
     }
 
     /**
-     * Converts the Aimeos customer strip into an editable logo-cloud element.
+     * Converts a Bootstrap Package accordion into a questions element.
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertLogoCloud(object $record): ?array
-    {
-        $document = $this->htmlDocument((string) ($record->bodytext ?? ''));
-
-        if (! $document) {
-            return null;
-        }
-
-        $xpath = new \DOMXPath($document);
-        $nodes = $xpath->query('//a[.//img]');
-        $items = [];
-        $fileIds = [];
-
-        foreach ($nodes ?: [] as $node) {
-            $image = $xpath->query('.//img', $node)?->item(0);
-            $source = $image?->attributes?->getNamedItem('src')?->nodeValue
-                ?: $image?->attributes?->getNamedItem('data-src')?->nodeValue;
-
-            if (! $source || ! ($file = $this->importFileSafely(
-                fn () => $this->importHtmlFile($source)
-            ))) {
-                continue;
-            }
-
-            $name = trim((string) ($image->attributes?->getNamedItem('alt')?->nodeValue
-                ?: $node->attributes?->getNamedItem('title')?->nodeValue));
-            $url = trim((string) $node->attributes?->getNamedItem('href')?->nodeValue);
-
-            $items[] = [
-                'name' => $name ?: 'Organization',
-                'file' => ['id' => $file['id'], 'type' => 'file'],
-                'url' => $this->rewriteTypo3Url($url) ?? $url,
-            ];
-            $fileIds[] = $file['id'];
-        }
-
-        if (count($items) < 2) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::logo-cloud',
-            'group' => 'main',
-            'data' => ['items' => $items],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts the Aimeos quality figures into an editable statistics element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertStats(object $record): ?array
-    {
-        $document = $this->htmlDocument((string) ($record->bodytext ?? ''));
-
-        if (! $document) {
-            return null;
-        }
-
-        $xpath = new \DOMXPath($document);
-        $nodes = $xpath->query(
-            '//*[contains(concat(" ", normalize-space(@class), " "), " quality ")]'
-        );
-        $items = [];
-        $fileIds = [];
-
-        foreach ($nodes ?: [] as $node) {
-            $labelNode = $xpath->query(
-                './/*[contains(concat(" ", normalize-space(@class), " "), " header ")]',
-                $node
-            )?->item(0);
-            $valueNode = $xpath->query(
-                './/*[contains(concat(" ", normalize-space(@class), " "), " number ")]',
-                $node
-            )?->item(0);
-
-            if (! $labelNode || ! $valueNode) {
-                continue;
-            }
-
-            $link = $xpath->query('.//a[@href]', $node)?->item(0);
-            $url = trim((string) $link?->attributes?->getNamedItem('href')?->nodeValue);
-            $reviewNode = $xpath->query('.//*[@itemprop="reviewCount"]', $node)?->item(0);
-            $text = $reviewNode ? $this->nodeText($reviewNode).' reviews' : '';
-            $classes = preg_split('/\s+/', trim((string) $node->attributes?->getNamedItem('class')?->nodeValue)) ?: [];
-            $kind = match (true) {
-                in_array('github', $classes, true) => 'github',
-                in_array('capterra', $classes, true) => 'capterra',
-                in_array('downloads', $classes, true) => 'downloads',
-                in_array('scrutinizer', $classes, true), in_array('code', $classes, true) => 'code',
-                default => '',
-            };
-            $image = $xpath->query('.//a[@href]//img', $node)?->item(0);
-            $source = $image?->attributes?->getNamedItem('src')?->nodeValue
-                ?: $image?->attributes?->getNamedItem('data-src')?->nodeValue;
-            $file = $source ? $this->importFileSafely(
-                fn () => $this->importHtmlFile($source)
-            ) : null;
-
-            $item = [
-                'value' => $this->nodeText($valueNode),
-                'label' => $this->nodeText($labelNode),
-                'text' => $text,
-                'url' => $this->rewriteTypo3Url($url) ?? $url,
-            ];
-
-            if ($kind !== '') {
-                $item['kind'] = $kind;
-            }
-
-            if ($file) {
-                $item['file'] = ['id' => $file['id'], 'type' => 'file'];
-                $fileIds[] = $file['id'];
-            }
-
-            $items[] = $item;
-        }
-
-        if (empty($items)) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::stats',
-            'group' => 'main',
-            'data' => ['items' => $items],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Keeps a TYPO3 footer heading and its body together as one grid item.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertFooterText(object $record): ?array
-    {
-        $header = trim((string) ($record->header ?? ''));
-        $body = trim((string) ($record->bodytext ?? ''));
-
-        // TYPO3 uses non-breaking-space list items as visual spacers. They
-        // become empty bullets in Pagible and carry no footer content.
-        $body = (string) preg_replace(
-            '/<li\b[^>]*>(?:\s|&nbsp;|&#0*160;|&#x0*a0;)*<\/li>/i',
-            '',
-            $body
-        );
-
-        if ($header === '' && $body === '') {
-            return null;
-        }
-
-        $slug = trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($header)), '-');
-        $html = '<div class="footer-links footer-'.$slug.'">';
-
-        if ($header !== '') {
-            $html .= '<h2>'.htmlspecialchars($header, ENT_QUOTES | ENT_HTML5, 'UTF-8').'</h2>';
-        }
-
-        $result = $this->rewriteHtmlFiles($html.$body.'</div>');
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'footer',
-            'data' => ['text' => Utils::html($result['html'])],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Parses an HTML fragment for semantic TYPO3 import conversions.
-     */
-    protected function htmlDocument(string $html): ?\DOMDocument
-    {
-        $document = new \DOMDocument('1.0', 'UTF-8');
-        $previous = libxml_use_internal_errors(true);
-
-        try {
-            $loaded = $document->loadHTML(
-                '<?xml encoding="UTF-8"><div id="pagible-import">'.$html.'</div>',
-                LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
-            );
-        } finally {
-            libxml_clear_errors();
-            libxml_use_internal_errors($previous);
-        }
-
-        return $loaded ? $document : null;
-    }
-
-    /**
-     * Returns normalized text content from a DOM node.
-     */
-    protected function nodeText(\DOMNode $node): string
-    {
-        return trim((string) preg_replace('/\s+/u', ' ', $node->textContent));
-    }
-
-    /**
-     * Converts an accordion content element into a questions element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>}|null
      */
     protected function convertAccordion(object $record): ?array
     {
         $items = [];
+        $fileIds = [];
         $children = $this->accordionItems?->get((int) ($record->uid ?? 0), Collection::make())
             ?? Collection::make();
 
@@ -975,17 +687,21 @@ class T3Import extends Command
                 continue;
             }
 
+            $result = $this->rewriteHtmlFiles((string) $child->bodytext);
             $items[] = [
                 'title' => $child->header,
-                'text' => $this->htmlToMarkdown($this->rewriteTypo3Links($child->bodytext)),
+                'text' => $this->htmlToMarkdown($result['html']),
             ];
+            $fileIds = array_merge($fileIds, $result['fileIds']);
         }
 
         if (empty($items) && ! empty($record->bodytext)) {
+            $result = $this->rewriteHtmlFiles((string) $record->bodytext);
             $items[] = [
                 'title' => $record->header ?: 'Item', // @phpstan-ignore property.notFound
-                'text' => $this->htmlToMarkdown($this->rewriteTypo3Links($record->bodytext)),
+                'text' => $this->htmlToMarkdown($result['html']),
             ];
+            $fileIds = array_merge($fileIds, $result['fileIds']);
         }
 
         if (empty($items)) {
@@ -1000,266 +716,47 @@ class T3Import extends Command
                 'title' => (string) ($record->header ?? ''),
                 'items' => $items,
             ],
-        ]]];
+        ]], 'fileIds' => array_values(array_unique($fileIds))];
     }
 
     /**
-     * Converts one Aimeos feature highlight into an editable theme element.
+     * Converts a Bootstrap Package carousel into a slideshow.
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
      */
-    protected function convertFeature(object $record): ?array
+    protected function convertCarousel(object $record): ?array
     {
-        $fileId = $this->importFileForContent((int) ($record->uid ?? 0));
-        $title = trim((string) ($record->header ?? ''));
-        $body = trim((string) ($record->bodytext ?? ''));
-
-        if (! $fileId || $title === '' || $body === '') {
-            return $this->convertTextpic($record);
-        }
-
-        $result = $this->rewriteHtmlFiles($body);
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::feature',
-            'group' => 'main',
-            'data' => [
-                'title' => $title,
-                'text' => $this->htmlToMarkdown($result['html']),
-                'file' => ['id' => $fileId, 'type' => 'file'],
-                'position' => $this->imagePosition((int) ($record->imageorient ?? 0)),
-            ],
-        ]], 'fileIds' => array_values(array_unique([$fileId, ...$result['fileIds']]))];
-    }
-
-    /**
-     * Converts one Aimeos feature category and its TYPO3 accordion items.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertFeatureList(object $record): ?array
-    {
-        $children = $this->accordionItems?->get((int) ($record->uid ?? 0), Collection::make())
-            ?? Collection::make();
-        $items = [];
+        $files = [];
         $fileIds = [];
+        $children = $this->carouselItems?->get((int) ($record->uid ?? 0), Collection::make())
+            ?? Collection::make();
 
         foreach ($children as $child) {
-            if (empty($child->header) || empty($child->bodytext)) {
-                continue;
-            }
+            foreach ($this->carouselFileRefs?->get((int) ($child->uid ?? 0), Collection::make()) ?? [] as $ref) {
+                $id = $this->importFileSafely(fn () => $this->importFileReference($ref));
 
-            $result = $this->rewriteHtmlFiles($child->bodytext);
-            $items[] = [
-                'title' => $child->header,
-                'text' => $this->htmlToMarkdown($result['html']),
-            ];
-            $fileIds = array_merge($fileIds, $result['fileIds']);
-        }
-
-        if (empty($items)) {
-            return $this->convertAccordion($record);
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::feature-list',
-            'group' => 'main',
-            'data' => [
-                'title' => (string) ($record->header ?? ''),
-                'icon' => $this->featureIcon((string) ($record->header ?? '')),
-                'items' => $items,
-            ],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts the column-based Aimeos contact page into one structured element.
-     *
-     * TYPO3 renders the records in each backend column inside a shared frontend
-     * block. Keeping them as independent Pagible elements would split headings
-     * from their link groups and expose the Form Framework configuration as raw
-     * TypoScript instead of a working form.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertContactPage(Collection $records): ?array
-    {
-        $record = fn (string $header) => $records->first(
-            fn ($record) => trim((string) ($record->header ?? '')) === $header
-        );
-        $links = fn (int $column) => $records->first(
-            fn ($record) => (int) ($record->colPos ?? 0) === $column
-                && (string) ($record->CType ?? '') === 'html'
-                && preg_match('/class=["\'][^"\']*\blinks\b/i', (string) ($record->bodytext ?? '')) === 1
-        );
-
-        $informed = $record('Stay informed');
-        $support = $record('Help & Support');
-        $contact = $record('Contact Us');
-        $imprint = $record('Imprint');
-        $privacy = $record('Privacy policy');
-        $credits = $records->first(
-            fn ($record) => trim((string) ($record->header ?? '')) === 'Credits'
-                && trim((string) ($record->bodytext ?? '')) !== ''
-        );
-
-        if (! $informed || ! $support || ! $contact || ! $imprint || ! $privacy || ! $credits) {
-            return null;
-        }
-
-        $fileIds = [];
-        $informedLinks = $this->contactLinks($links(0), $fileIds);
-        $supportLinks = $this->contactLinks($links(21), $fileIds);
-
-        if ($informedLinks === [] || $supportLinks === []) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::contact-page',
-            'group' => 'main',
-            'data' => [
-                'informed_title' => (string) $informed->header,
-                'informed_links' => $informedLinks,
-                'support_title' => (string) $support->header,
-                'support_links' => $supportLinks,
-                'contact_title' => (string) $contact->header,
-                'contact_text' => $this->contactMarkdown($contact, $fileIds),
-                'form_title' => 'Your personal data',
-                'mandatory_text' => '* Mandatory fields',
-                'imprint_title' => (string) $imprint->header,
-                'imprint_text' => $this->contactMarkdown($imprint, $fileIds),
-                'privacy_title' => (string) $privacy->header,
-                'privacy_text' => $this->contactMarkdown($privacy, $fileIds),
-                'credits_title' => (string) $credits->header,
-                'credits_text' => $this->contactMarkdown($credits, $fileIds),
-            ],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Returns editable link items from one TYPO3 `landing links` fragment.
-     *
-     * @param  string[]  $fileIds
-     * @return list<array{label: string, url: string, icon: string}>
-     */
-    protected function contactLinks(?object $record, array &$fileIds): array
-    {
-        if (! $record || empty($record->bodytext)) {
-            return [];
-        }
-
-        $result = $this->rewriteHtmlFiles((string) $record->bodytext);
-        $fileIds = array_merge($fileIds, $result['fileIds']);
-        $document = $this->htmlDocument($result['html']);
-
-        if (! $document) {
-            return [];
-        }
-
-        $xpath = new \DOMXPath($document);
-        $nodes = $xpath->query(
-            '//*[contains(concat(" ", normalize-space(@class), " "), " links ")]'
-            .'//a[contains(concat(" ", normalize-space(@class), " "), " link ")]'
-        );
-        $items = [];
-
-        foreach ($nodes ?: [] as $node) {
-            $url = trim((string) $node->attributes?->getNamedItem('href')?->nodeValue);
-            $label = $this->nodeText($node);
-            $icon = '';
-            $class = (string) $xpath->query('.//i', $node)?->item(0)?->attributes?->getNamedItem('class')?->nodeValue;
-
-            if (preg_match('/(?:^|\s)fa-([a-z0-9-]+)(?:\s|$)/i', $class, $matches)) {
-                $icon = strtolower($matches[1]);
-            }
-
-            if ($label !== '' && $url !== '') {
-                $items[] = ['label' => $label, 'url' => $url, 'icon' => $icon];
-            }
-        }
-
-        return $items;
-    }
-
-    /**
-     * Converts contact-page rich text while keeping address line breaks.
-     *
-     * @param  string[]  $fileIds
-     */
-    protected function contactMarkdown(object $record, array &$fileIds): string
-    {
-        $result = $this->rewriteHtmlFiles((string) ($record->bodytext ?? ''));
-        $fileIds = array_merge($fileIds, $result['fileIds']);
-        $html = (string) preg_replace('/<br\s*\/?>/i', "  \n", $result['html']);
-
-        if (preg_match('/<ul\b/i', $html)) {
-            return $this->contactListMarkdown($html);
-        }
-
-        return $this->htmlToMarkdown($html);
-    }
-
-    /**
-     * Converts nested contact-page credit lists without flattening child items.
-     */
-    protected function contactListMarkdown(string $html): string
-    {
-        $document = $this->htmlDocument($html);
-
-        if (! $document) {
-            return $this->htmlToMarkdown($html);
-        }
-
-        $xpath = new \DOMXPath($document);
-        $list = $xpath->query('//*[@id="pagible-import"]/ul')?->item(0);
-
-        if (! $list instanceof \DOMElement) {
-            return $this->htmlToMarkdown($html);
-        }
-
-        return implode("\n", $this->contactListItems($list));
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected function contactListItems(\DOMElement $list, int $depth = 0): array
-    {
-        $lines = [];
-
-        foreach ($list->childNodes as $item) {
-            if (! $item instanceof \DOMElement || strtolower($item->tagName) !== 'li') {
-                continue;
-            }
-
-            $inline = '';
-            $nested = [];
-
-            foreach ($item->childNodes as $child) {
-                if ($child instanceof \DOMElement && strtolower($child->tagName) === 'ul') {
-                    $nested[] = $child;
-                } else {
-                    $inline .= (string) $item->ownerDocument?->saveHTML($child);
+                if ($id) {
+                    $files[] = ['id' => $id, 'type' => 'file'];
+                    $fileIds[] = $id;
                 }
             }
-
-            $text = $this->htmlToMarkdown($inline);
-
-            if ($text !== '') {
-                $lines[] = str_repeat('  ', $depth).'- '.$text;
-            }
-
-            foreach ($nested as $childList) {
-                array_push($lines, ...$this->contactListItems($childList, $depth + 1));
-            }
         }
 
-        return $lines;
+        if ($files === []) {
+            return $this->convertDefault($record);
+        }
+
+        $type = count($files) > 1 ? 'slideshow' : 'image';
+        $data = $type === 'slideshow'
+            ? ['title' => (string) ($record->header ?? ''), 'files' => $files]
+            : ['file' => $files[0]];
+
+        return ['elements' => [[
+            'id' => Utils::uid(),
+            'type' => $type,
+            'group' => 'main',
+            'data' => $data,
+        ]], 'fileIds' => array_values(array_unique($fileIds))];
     }
 
     /**
@@ -1338,8 +835,7 @@ class T3Import extends Command
             return null;
         }
 
-        $html = $this->normalizeLandingCardMarkup((string) $record->bodytext);
-        $result = $this->rewriteHtmlFiles($html);
+        $result = $this->rewriteHtmlFiles((string) $record->bodytext);
 
         return ['elements' => [[
             'id' => Utils::uid(),
@@ -1347,32 +843,6 @@ class T3Import extends Command
             'group' => 'main',
             'data' => ['text' => Utils::html($result['html'])],
         ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Repairs the source roadmap legend before HTMLPurifier processes it.
-     *
-     * TYPO3 renders the two legend headings directly below `thead`. Browsers
-     * implicitly add the missing row, but HTMLPurifier otherwise removes them.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertRoadmapHtml(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-
-        if (preg_match('/<table\b[^>]*\bclass=["\'][^"\']*\blegend\b/i', $html)) {
-            $html = (string) preg_replace(
-                '/(<thead\b[^>]*>)\s*((?:<th\b[^>]*>.*?<\/th>\s*)+)(<\/thead>)/is',
-                '$1<tr>$2</tr>$3',
-                $html
-            );
-        }
-
-        $normalizedRecord = clone $record;
-        $normalizedRecord->bodytext = $html;
-
-        return $this->convertHtml($normalizedRecord);
     }
 
     /**
@@ -1410,395 +880,6 @@ class T3Import extends Command
         ];
 
         return ['elements' => $elements, 'fileIds' => [$fileId]];
-    }
-
-    /**
-     * Converts all file references of the Aimeos showcase gallery.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertShowcases(object $record): ?array
-    {
-        $refs = $this->fileRefs->get((int) ($record->uid ?? 0), Collection::make());
-        $items = [];
-        $fileIds = [];
-
-        foreach ($refs as $ref) {
-            if (! ($fileId = $this->importFileSafely(
-                fn () => $this->importFileReference($ref)
-            ))) {
-                continue;
-            }
-
-            $url = $this->showcaseUrl((string) ($ref->link ?? ''));
-            [$name, $text] = $this->showcaseCaption((string) ($ref->description ?? ''));
-            $items[] = [
-                'name' => $name,
-                'text' => $text,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-                'url' => $url,
-            ];
-            $fileIds[] = $fileId;
-        }
-
-        if (empty($items)) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::showcases',
-            'group' => 'main',
-            'data' => ['items' => $items],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts the column-based TYPO3 single case-study layout into one
-     * structured and editable theme element.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertCaseStudy(Collection $records): ?array
-    {
-        $stageRecord = $records->first(fn ($record) => $this->isCaseStudyStage($record));
-
-        if (! $stageRecord || ! ($stage = $this->caseStudyStage($stageRecord))) {
-            return null;
-        }
-
-        $sections = [];
-        $fileIds = $stage['fileIds'];
-
-        foreach ([[31, 30, 'start'], [32, 33, 'end'], [35, 34, 'start']] as [$textCol, $imageCol, $position]) {
-            if ($section = $this->caseStudySection($records, $textCol, $imageCol, $position)) {
-                $sections[] = $section['data'];
-                $fileIds = array_merge($fileIds, $section['fileIds']);
-            }
-        }
-
-        $screenshots = $this->caseStudyScreenshots($records);
-        $implementer = $this->caseStudyImplementer($records);
-        $back = $this->caseStudyBackLink($records);
-        $fileIds = array_merge($fileIds, $screenshots['fileIds'], $implementer['fileIds']);
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'aimeos::case-study',
-            'group' => 'main',
-            'data' => [
-                ...$stage['data'],
-                'sections' => $sections,
-                'gallery_title' => $screenshots['title'],
-                'screenshots' => $screenshots['files'],
-                ...$implementer['data'],
-                ...$back,
-            ],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Extracts the title, tags, introduction and lead image from the stage.
-     *
-     * @return array{data: array<string, mixed>, fileIds: string[]}|null
-     */
-    protected function caseStudyStage(object $record): ?array
-    {
-        $document = $this->htmlDocument((string) ($record->bodytext ?? ''));
-
-        if (! $document) {
-            return null;
-        }
-
-        $xpath = new \DOMXPath($document);
-        $stage = $xpath->query(
-            '//*[contains(concat(" ", normalize-space(@class), " "), " stage ")]'
-        )?->item(0);
-
-        if (! $stage) {
-            return null;
-        }
-
-        $title = $xpath->query('.//h1', $stage)?->item(0);
-        $intro = $xpath->query(
-            './/*[contains(concat(" ", normalize-space(@class), " "), " container ")]//p',
-            $stage
-        )?->item(0) ?? $xpath->query('.//p', $stage)?->item(0);
-        $image = $xpath->query('.//img', $stage)?->item(0);
-        $source = trim((string) ($image?->attributes?->getNamedItem('src')?->nodeValue
-            ?: $image?->attributes?->getNamedItem('data-src')?->nodeValue));
-        $file = null;
-        $fileIds = [];
-
-        if ($source !== '') {
-            $file = $this->forContentRecord(
-                $record,
-                fn () => $this->importFileSafely(fn () => $this->importHtmlFile($source))
-            );
-
-            if ($file) {
-                $fileIds[] = $file['id'];
-            }
-        }
-
-        $tags = [];
-
-        foreach ($xpath->query(
-            './/*[contains(concat(" ", normalize-space(@class), " "), " stage-tags ")]//li',
-            $stage
-        ) ?: [] as $tag) {
-            if ($label = $this->nodeText($tag)) {
-                $tags[] = ['label' => $label];
-            }
-        }
-
-        return ['data' => [
-            'title' => $title ? $this->nodeText($title) : '',
-            'tags' => $tags,
-            'intro' => $intro ? $this->htmlToMarkdown($document->saveHTML($intro) ?: '') : '',
-            'stage_file' => $file ? ['id' => $file['id'], 'type' => 'file'] : null,
-        ], 'fileIds' => $fileIds];
-    }
-
-    /**
-     * Builds one alternating text/image row from its TYPO3 layout columns.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{data: array<string, mixed>, fileIds: string[]}|null
-     */
-    protected function caseStudySection(Collection $records, int $textCol, int $imageCol, string $position): ?array
-    {
-        $textRecord = $records->first(
-            fn ($record) => (int) ($record->colPos ?? 0) === $textCol
-                && in_array((string) ($record->CType ?? ''), ['text', 'textpic', 'textmedia'], true)
-        );
-        $imageRecords = $records->filter(
-            fn ($record) => (int) ($record->colPos ?? 0) === $imageCol
-                && (string) ($record->CType ?? '') === 'image'
-        );
-        $images = $this->caseStudyImages($imageRecords);
-        $title = trim((string) ($textRecord->header ?? ''));
-        $text = '';
-        $fileIds = $images['fileIds'];
-
-        if ($textRecord && trim((string) ($textRecord->bodytext ?? '')) !== '') {
-            $result = $this->forContentRecord(
-                $textRecord,
-                fn () => $this->rewriteHtmlFiles((string) $textRecord->bodytext)
-            );
-            $text = $this->htmlToMarkdown($result['html']);
-            $fileIds = array_merge($fileIds, $result['fileIds']);
-        }
-
-        if ($title === '' && $text === '' && empty($images['items'])) {
-            return null;
-        }
-
-        return ['data' => [
-            'title' => $title,
-            'text' => $text,
-            'files' => array_column($images['items'], 'file'),
-            'url' => $images['items'][0]['url'] ?? '',
-            'position' => $position,
-        ], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Imports the screenshots belonging to a case-study carousel.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{title: string, files: array<int, array{id: string, type: string}>, fileIds: string[]}
-     */
-    protected function caseStudyScreenshots(Collection $records): array
-    {
-        $record = $records->first(
-            fn ($record) => (int) ($record->colPos ?? 0) === 36
-                && (string) ($record->CType ?? '') === 'carousel'
-        );
-        $files = [];
-        $fileIds = [];
-
-        if (! $record) {
-            return ['title' => '', 'files' => [], 'fileIds' => []];
-        }
-
-        foreach ($this->carouselItems?->get((int) ($record->uid ?? 0), Collection::make()) ?? [] as $item) {
-            $ref = $this->carouselFileRefs?->get((int) ($item->uid ?? 0))?->first();
-
-            if (! $ref || ! ($fileId = $this->forContentRecord(
-                $record,
-                fn () => $this->importFileSafely(fn () => $this->importFileReference($ref))
-            ))) {
-                continue;
-            }
-
-            $files[] = ['id' => $fileId, 'type' => 'file'];
-            $fileIds[] = $fileId;
-        }
-
-        return [
-            'title' => trim((string) ($record->header ?? '')),
-            'files' => $files,
-            'fileIds' => array_values(array_unique($fileIds)),
-        ];
-    }
-
-    /**
-     * Extracts the implementer logo, name, link and description.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{data: array<string, mixed>, fileIds: string[]}
-     */
-    protected function caseStudyImplementer(Collection $records): array
-    {
-        $record = $records->first(
-            fn ($record) => (int) ($record->colPos ?? 0) === 37
-                && trim((string) ($record->header ?? '')) !== ''
-        );
-
-        if (! $record) {
-            return ['data' => [], 'fileIds' => []];
-        }
-
-        $result = $this->forContentRecord(
-            $record,
-            fn () => $this->rewriteHtmlFiles((string) ($record->bodytext ?? ''))
-        );
-        $document = $this->htmlDocument($result['html']);
-        $images = $this->caseStudyImages(Collection::make([$record]));
-        $name = '';
-        $url = $images['items'][0]['url'] ?? '';
-        $text = '';
-
-        if ($document) {
-            $xpath = new \DOMXPath($document);
-            $heading = $xpath->query('//h3')?->item(0);
-            $link = $heading ? $xpath->query('.//a[@href]', $heading)?->item(0) : null;
-            $name = $heading ? $this->nodeText($heading) : '';
-            $href = trim((string) $link?->attributes?->getNamedItem('href')?->nodeValue);
-            $url = $href !== '' ? ($this->rewriteTypo3Url($href) ?? $href) : $url;
-            $paragraphs = '';
-
-            foreach ($xpath->query('//p') ?: [] as $paragraph) {
-                $paragraphs .= $document->saveHTML($paragraph) ?: '';
-            }
-
-            $text = $this->htmlToMarkdown($paragraphs);
-        }
-
-        return ['data' => [
-            'implementer_title' => trim((string) ($record->header ?? '')),
-            'implementer_name' => $name,
-            'implementer_text' => $text,
-            'implementer_file' => $images['items'][0]['file'] ?? null,
-            'implementer_url' => $url,
-        ], 'fileIds' => array_values(array_unique(array_merge($result['fileIds'], $images['fileIds'])))];
-    }
-
-    /**
-     * Extracts the link back to the case-study overview.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{back_label: string, back_url: string}
-     */
-    protected function caseStudyBackLink(Collection $records): array
-    {
-        $record = $records->first(
-            fn ($record) => (int) ($record->colPos ?? 0) === 37
-                && trim((string) ($record->header ?? '')) === ''
-                && str_contains((string) ($record->bodytext ?? ''), 'href=')
-        );
-        $document = $record ? $this->htmlDocument((string) ($record->bodytext ?? '')) : null;
-        $link = $document ? (new \DOMXPath($document))->query('//a[@href]')?->item(0) : null;
-        $url = trim((string) $link?->attributes?->getNamedItem('href')?->nodeValue);
-
-        return [
-            'back_label' => $link ? $this->nodeText($link) : '',
-            'back_url' => $this->rewriteTypo3Url($url) ?? $url,
-        ];
-    }
-
-    /**
-     * Imports all image references for a set of TYPO3 content records.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return array{items: array<int, array{file: array{id: string, type: string}, url: string}>, fileIds: string[]}
-     */
-    protected function caseStudyImages(Collection $records): array
-    {
-        $items = [];
-        $fileIds = [];
-
-        foreach ($records->sortBy('sorting') as $record) {
-            foreach ($this->fileRefs->get((int) ($record->uid ?? 0), Collection::make()) as $ref) {
-                $fileId = $this->forContentRecord(
-                    $record,
-                    fn () => $this->importFileSafely(fn () => $this->importFileReference($ref))
-                );
-
-                if (! $fileId) {
-                    continue;
-                }
-
-                $items[] = [
-                    'file' => ['id' => $fileId, 'type' => 'file'],
-                    'url' => $this->showcaseUrl((string) ($ref->link ?? '')),
-                ];
-                $fileIds[] = $fileId;
-            }
-        }
-
-        return ['items' => $items, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Runs conversion work with warnings attributed to its source content UID.
-     *
-     * @template T
-     *
-     * @param  callable(): T  $callback
-     * @return T
-     */
-    protected function forContentRecord(object $record, callable $callback): mixed
-    {
-        $previous = $this->contentUid;
-        $this->contentUid = (string) ($record->uid ?? '?');
-
-        try {
-            return $callback();
-        } finally {
-            $this->contentUid = $previous;
-        }
-    }
-
-    /**
-     * Splits a TYPO3 image description into the visible site name and segment.
-     *
-     * @return array{string, string}
-     */
-    protected function showcaseCaption(string $description): array
-    {
-        $caption = $this->htmlToMarkdown($description);
-        $lines = preg_split('/\n+/', $caption) ?: [];
-        $lines = array_values(array_filter(array_map('trim', $lines), fn ($line) => $line !== ''));
-        $name = (string) array_shift($lines);
-
-        return [$name, implode(' ', $lines)];
-    }
-
-    /**
-     * Extracts the URL from a TYPO3 file-reference link value.
-     */
-    protected function showcaseUrl(string $link): string
-    {
-        $tokens = array_values(array_filter(
-            str_getcsv(trim($link), ' ', '"', '\\'),
-            fn ($value) => $value !== ''
-        ));
-        $target = (string) ($tokens[0] ?? '');
-
-        return $this->resolveTypo3Target($target) ?? $target;
     }
 
     /**
@@ -1910,1078 +991,6 @@ class T3Import extends Command
         }
 
         return ['elements' => $elements, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Detects the source-specific Aimeos landing page layout.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosHomepage(Collection $records): bool
-    {
-        return $records->contains(
-            fn ($record) => str_contains((string) ($record->bodytext ?? ''), 'landing welcome')
-        );
-    }
-
-    /**
-     * Detects the Aimeos B2B commerce landing page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosB2b(Collection $records): bool
-    {
-        $hasStage = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing welcome')
-                && str_contains($html, 'b2b ecommerce');
-        });
-        $hasHighlights = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing highlights-image')
-                && (str_contains($html, 'b2b_multi')
-                    || str_contains($html, 'multi portal, multi channel'));
-        });
-
-        return $hasStage && $hasHighlights;
-    }
-
-    /**
-     * Detects the Aimeos Laravel marketplace landing page.
-     *
-     * Its TYPO3 backend columns do not follow their frontend order. Detecting
-     * it separately also keeps the branded quality logos instead of replacing
-     * them with the generic homepage statistics element.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosMarketplace(Collection $records): bool
-    {
-        $hasStage = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing welcome')
-                && str_contains($html, 'laravel marketplace');
-        });
-        $hasHighlights = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing highlights-image')
-                && str_contains($html, 'marketplace');
-        });
-
-        return $hasStage && $hasHighlights;
-    }
-
-    /**
-     * Detects the Aimeos Laravel multi-vendor SaaS landing page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosSaas(Collection $records): bool
-    {
-        $hasStage = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing welcome')
-                && str_contains($html, 'laravel ecommerce saas');
-        });
-        $hasHighlights = $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing highlights-image')
-                && str_contains($html, 'saas');
-        });
-
-        return $hasStage && $hasHighlights;
-    }
-
-    /**
-     * Detects the Aimeos TYPO3 shop-extension landing page.
-     *
-     * The TYPO3 page uses the same `landing welcome` marker as the homepage,
-     * but its branded trust cards and direct hero screen must stay intact.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosTypo3(Collection $records): bool
-    {
-        return $records->contains(function ($record): bool {
-            $html = $this->linkedRecordHtml($record);
-
-            return str_contains($html, 'landing welcome')
-                && str_contains($html, 'typo3 shop')
-                && (str_contains($html, 'screen-typo3') || str_contains($html, 'typo3.png'));
-        });
-    }
-
-    /**
-     * Detects the column-based Aimeos Laravel platform landing page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosLaravelPlatform(Collection $records): bool
-    {
-        $hasLaravelStage = $records->contains(function ($record): bool {
-            $html = strtolower((string) ($record->bodytext ?? ''));
-
-            return str_contains($html, 'landing welcome')
-                && (str_contains($html, 'laravel-gold')
-                    || str_contains($html, 'aimeos-screen-laravel-ecommerce'));
-        });
-        $hasDistributions = $records->contains(
-            fn ($record) => str_contains(
-                strtolower((string) ($record->bodytext ?? '')),
-                'landing dists'
-            )
-        );
-
-        return $hasLaravelStage && $hasDistributions;
-    }
-
-    /**
-     * Detects the Aimeos feature overview page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosFeatures(Collection $records): bool
-    {
-        $hasTitle = $records->contains(
-            fn ($record) => trim((string) ($record->header ?? '')) === 'Aimeos Features'
-        );
-        $accordions = $records->filter(
-            fn ($record) => (string) ($record->CType ?? '') === 'accordion'
-        )->count();
-
-        return $hasTitle && $accordions >= 3;
-    }
-
-    /**
-     * Detects the Aimeos showcase gallery page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosShowcases(Collection $records): bool
-    {
-        if ($this->isAimeosHomepage($records)) {
-            return false;
-        }
-
-        $hasTitle = $records->contains(
-            fn ($record) => trim((string) ($record->header ?? '')) === 'Aimeos Showcases'
-        );
-        $hasGallery = $records->contains(
-            fn ($record) => (string) ($record->CType ?? '') === 'image'
-        );
-
-        return $hasTitle && $hasGallery;
-    }
-
-    /**
-     * Detects the Aimeos case-study overview page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosCaseStudies(Collection $records): bool
-    {
-        return $records->contains(
-            fn ($record) => (string) ($record->CType ?? '') === 'header'
-                && trim((string) ($record->header ?? '')) === 'Aimeos Case Studies'
-        );
-    }
-
-    /**
-     * Detects an Aimeos single case-study page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosCaseStudy(Collection $records): bool
-    {
-        $hasStage = $records->contains(fn ($record) => $this->isCaseStudyStage($record));
-        $hasAbout = $records->contains(
-            fn ($record) => (int) ($record->colPos ?? 0) === 31
-                && trim((string) ($record->header ?? '')) === 'About'
-        );
-
-        return $hasStage && $hasAbout;
-    }
-
-    /**
-     * Detects the Aimeos release roadmap and support-period chart.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosRoadmap(Collection $records): bool
-    {
-        $hasTitle = $records->contains(
-            fn ($record) => trim((string) ($record->header ?? '')) === 'Aimeos Roadmap'
-        );
-        $hasChart = $records->contains(
-            fn ($record) => preg_match(
-                '/<table\b[^>]*\bclass=["\'][^"\']*\broadmap\b/i',
-                (string) ($record->bodytext ?? '')
-            ) === 1
-        );
-
-        return $hasTitle && $hasChart;
-    }
-
-    /**
-     * Detects the Aimeos contact, support and legal-information page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosContact(Collection $records): bool
-    {
-        $headers = $records
-            ->map(fn ($record) => trim((string) ($record->header ?? '')))
-            ->filter()
-            ->all();
-        $hasForm = $records->contains(
-            fn ($record) => (string) ($record->CType ?? '') === 'form_formframework'
-        );
-        $linkGroups = $records->filter(
-            fn ($record) => preg_match(
-                '/class=["\'][^"\']*\blanding\b[^"\']*\blinks\b/i',
-                (string) ($record->bodytext ?? '')
-            ) === 1
-        )->count();
-
-        return $hasForm
-            && $linkGroups >= 2
-            && count(array_intersect(
-                ['Stay informed', 'Help & Support', 'Contact Us', 'Imprint', 'Privacy policy', 'Credits'],
-                $headers
-            )) === 6;
-    }
-
-    /**
-     * Detects the first record used to create the structured contact element.
-     */
-    protected function isContactStage(object $record): bool
-    {
-        return trim((string) ($record->header ?? '')) === 'Stay informed';
-    }
-
-    /**
-     * Detects source records consumed by the structured contact element.
-     */
-    protected function isContactLayoutRecord(object $record): bool
-    {
-        return ! in_array((int) ($record->colPos ?? 0), [10, 11, 12], true);
-    }
-
-    /**
-     * Detects the Aimeos partner directory.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function isAimeosPartners(Collection $records): bool
-    {
-        $hasTitle = $records->contains(
-            fn ($record) => trim((string) ($record->header ?? '')) === 'Recommended Partners'
-        );
-        $hasDirectory = $records->contains(
-            fn ($record) => preg_match(
-                '/class=["\'][^"\']*\bpartner\b/i',
-                (string) ($record->bodytext ?? '')
-            ) === 1
-        );
-
-        return $hasTitle && $hasDirectory;
-    }
-
-    /**
-     * Detects the stage record of an Aimeos single case study.
-     */
-    protected function isCaseStudyStage(object $record): bool
-    {
-        return (int) ($record->colPos ?? 0) === 3
-            && (string) ($record->CType ?? '') === 'html'
-            && preg_match('/class=["\'][^"\']*\bstage\b/i', (string) ($record->bodytext ?? '')) === 1;
-    }
-
-    /**
-     * Detects records consumed by the structured single case-study element.
-     */
-    protected function isCaseStudyLayoutRecord(object $record): bool
-    {
-        $colPos = (int) ($record->colPos ?? 0);
-
-        return $this->isCaseStudyStage($record) || ($colPos >= 30 && $colPos <= 37);
-    }
-
-    /**
-     * Detects a decorative Features heading superseded by feature-list data.
-     */
-    protected function isFeaturesHead(object $record): bool
-    {
-        return (string) ($record->CType ?? '') === 'html'
-            && preg_match('/class=["\'][^"\']*\bhead\b/i', (string) ($record->bodytext ?? '')) === 1;
-    }
-
-    /**
-     * Restores the frontend order of the column-based TYPO3 Features layout.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortFeaturesRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $type = (string) ($record->CType ?? '');
-            $colPos = (int) ($record->colPos ?? 0);
-
-            if ($type === 'header' && trim((string) ($record->header ?? '')) === 'Aimeos Features') {
-                return 1000000;
-            }
-
-            if ($type === 'textpic' && $colPos === 0) {
-                return 2000000 + (int) ($record->sorting ?? 0);
-            }
-
-            if (in_array($type, ['html', 'accordion'], true) && $colPos >= 20 && $colPos <= 28) {
-                return (100 + $colPos) * 100000 + ($type === 'html' ? 0 : 1);
-            }
-
-            if ($type === 'shortcut' && $colPos === 29) {
-                return 13000000;
-            }
-
-            if (in_array($colPos, [10, 11, 12], true)) {
-                return 20000000 + $this->homepageWeight($record) * 1000;
-            }
-
-            return 14000000 + (int) ($record->sorting ?? 0);
-        })->values();
-    }
-
-    /**
-     * Restores the title, gallery, partner block and footer order of the showcase page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortShowcaseRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $type = (string) ($record->CType ?? '');
-            $html = strtolower((string) ($record->bodytext ?? ''));
-            $colPos = (int) ($record->colPos ?? 0);
-
-            if (trim((string) ($record->header ?? '')) === 'Aimeos Showcases') {
-                return 1000000;
-            }
-
-            if ($type === 'image') {
-                return 2000000;
-            }
-
-            if (str_contains($html, 'class="partnering')) {
-                return 3000000;
-            }
-
-            if (in_array($colPos, [10, 11, 12], true)) {
-                return 10000000 + $this->homepageWeight($record) * 1000;
-            }
-
-            return 4000000 + (int) ($record->sorting ?? 0);
-        })->values();
-    }
-
-    /**
-     * Restores the frontend order of the column-based TYPO3 case-study layout.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortCaseStudyOverviewRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $type = (string) ($record->CType ?? '');
-            $colPos = (int) ($record->colPos ?? 0);
-
-            if ($type === 'header' && trim((string) ($record->header ?? '')) === 'Aimeos Case Studies') {
-                return 1000000;
-            }
-
-            if ($colPos >= 20 && $colPos <= 27) {
-                return 2000000 + ($colPos - 20) * 100000 + (int) ($record->sorting ?? 0);
-            }
-
-            return 10000000 + (int) ($record->sorting ?? 0);
-        })->values();
-    }
-
-    /**
-     * Restores the stage-to-implementer order of a TYPO3 single case study.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortSingleCaseStudyRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $colPos = (int) ($record->colPos ?? 0);
-
-            if ($this->isCaseStudyStage($record)) {
-                return 1000000;
-            }
-
-            if ($colPos >= 30 && $colPos <= 37) {
-                return 2000000 + ($colPos - 30) * 100000 + (int) ($record->sorting ?? 0);
-            }
-
-            if (in_array($colPos, [10, 11, 12], true)) {
-                return 20000000 + $this->homepageWeight($record) * 1000;
-            }
-
-            return 10000000 + (int) ($record->sorting ?? 0);
-        })->values();
-    }
-
-    /**
-     * Maps Aimeos feature section titles to theme icon names.
-     */
-    protected function featureIcon(string $title): string
-    {
-        return match (strtolower(trim($title))) {
-            'advantages' => 'check',
-            'for developers' => 'code',
-            'catalog' => 'list',
-            'products' => 'cube',
-            'basket' => 'basket',
-            'checkout' => 'payment',
-            'customer related' => 'customer',
-            'shop administration' => 'settings',
-            'asynchronous tasks' => 'tasks',
-            default => 'check',
-        };
-    }
-
-    /**
-     * Restores the visual column order of the Aimeos TYPO3 homepage.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortHomepageRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            return $this->homepageWeight($record) * 100000 + (int) ($record->sorting ?? 0);
-        })->values();
-    }
-
-    /**
-     * Restores the B2B page order rendered by the TYPO3 frontend.
-     *
-     * The hero and both call-to-action sections consist of independent or
-     * shared TYPO3 records whose backend order differs from their page order.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortB2bRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $html = $this->linkedRecordHtml($record);
-            $sorting = (int) ($record->sorting ?? 0);
-            $weight = match (true) {
-                str_contains($html, 'landing welcome') => 10,
-                str_contains($html, 'b2b.png') && str_contains($html, 'class="logo') => 20,
-                str_contains($html, 'build complex b2b ecommerce platforms') => 30,
-                str_contains($html, 'landing qualities') => 40,
-                str_contains($html, 'landing highlights-image') => 50,
-                str_contains($html, 'landing showcases') => 60,
-                str_contains($html, 'want to know more') => 70,
-                str_contains($html, 'landing casestudies') => 80,
-                str_contains($html, 'get free consulting now') => 90,
-                str_contains($html, 'class="landing') && str_contains($html, '>contact<') => 100,
-                in_array((int) ($record->colPos ?? 0), [10, 11, 12], true) => $this->homepageWeight($record),
-                default => 110,
-            };
-
-            return $weight * 100000 + $sorting;
-        })->values();
-    }
-
-    /**
-     * Restores the marketplace page order rendered by the TYPO3 frontend.
-     *
-     * Several call-to-action blocks are shortcuts to shared content records,
-     * so their target HTML must participate in the semantic sort as well.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortMarketplaceRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $html = $this->linkedRecordHtml($record);
-            $type = (string) ($record->CType ?? '');
-            $sorting = (int) ($record->sorting ?? 0);
-            $weight = match (true) {
-                str_contains($html, 'landing welcome') => 10,
-                str_contains($html, 'marketplace.png') && str_contains($html, 'class="logo') => 20,
-                str_contains($html, 'create your own feature rich') => 30,
-                str_contains($html, 'landing qualities') => 40,
-                str_contains($html, 'landing explain') => 50,
-                str_contains($html, 'landing highlights-image') => 60,
-                str_contains($html, 'landing showcases') => 70,
-                str_contains($html, 'want to see a demo') => 80,
-                str_contains($html, 'landing casestudies') => 90,
-                str_contains($html, 'landing faq') => 100,
-                $type === 'accordion' => 110,
-                str_contains($html, 'want to know more') => 120,
-                in_array((int) ($record->colPos ?? 0), [10, 11, 12], true) => $this->homepageWeight($record),
-                default => 130,
-            };
-
-            return $weight * 100000 + $sorting;
-        })->values();
-    }
-
-    /**
-     * Returns the body HTML of a record or the records referenced by a shortcut.
-     */
-    protected function linkedRecordHtml(object $record): string
-    {
-        $html = (string) ($record->header ?? '').' '.(string) ($record->bodytext ?? '');
-
-        if ((string) ($record->CType ?? '') === 'shortcut') {
-            preg_match_all('/\d+/', (string) ($record->records ?? ''), $matches);
-
-            foreach (array_unique(array_map('intval', $matches[0] ?? [])) as $uid) {
-                $target = $this->contentRecords?->get($uid);
-
-                if ($target && (int) ($target->uid ?? 0) !== (int) ($record->uid ?? 0)) {
-                    $html .= ' '.(string) ($target->header ?? '').' '.(string) ($target->bodytext ?? '');
-                }
-            }
-        }
-
-        return strtolower($html);
-    }
-
-    /**
-     * Converts product landing-page records and follows shared TYPO3 content
-     * shortcuts without falling back to the generic homepage statistics.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds?: string[]}|null
-     */
-    protected function convertProductLandingContentElement(object $record, string $page): ?array
-    {
-        if ((string) ($record->CType ?? '') === 'shortcut') {
-            preg_match_all('/\d+/', (string) ($record->records ?? ''), $matches);
-            $elements = [];
-            $fileIds = [];
-
-            foreach (array_unique(array_map('intval', $matches[0] ?? [])) as $uid) {
-                $target = $this->contentRecords?->get($uid);
-
-                if (! $target || (int) ($target->uid ?? 0) === (int) ($record->uid ?? 0)) {
-                    continue;
-                }
-
-                if ($result = $this->convertProductLandingContentElement($target, $page)) {
-                    $elements = array_merge($elements, $result['elements']);
-                    $fileIds = array_merge($fileIds, $result['fileIds'] ?? []);
-                }
-            }
-
-            return $elements === [] ? null : [
-                'elements' => $elements,
-                'fileIds' => array_values(array_unique($fileIds)),
-            ];
-        }
-
-        if ($page === 'marketplace' && (string) ($record->CType ?? '') === 'accordion') {
-            $result = $this->convertAccordion($record);
-
-            if ($result) {
-                $result['elements'][0]['data']['title'] = '';
-            }
-
-            return $result;
-        }
-
-        if ($page === 'b2b'
-            && (string) ($record->CType ?? '') === 'header'
-            && str_contains(strtolower((string) ($record->header ?? '')), 'get free consulting now')) {
-            $title = htmlspecialchars((string) $record->header, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
-            return ['elements' => [[
-                'id' => Utils::uid(),
-                'type' => 'html',
-                'group' => 'main',
-                'data' => ['text' => Utils::html('<div class="landing b2b-consulting-heading"><h2>'.$title.'</h2></div>')],
-            ]], 'fileIds' => []];
-        }
-
-        if ($page === 'b2b' && in_array((string) ($record->CType ?? ''), ['html', 'text'], true)) {
-            return $this->convertB2bHtml($record);
-        }
-
-        if ($page === 'saas' && in_array((string) ($record->CType ?? ''), ['html', 'text'], true)) {
-            return $this->convertSaasHtml($record);
-        }
-
-        if ($page === 'typo3' && (string) ($record->CType ?? '') === 'html') {
-            if (str_contains(strtolower((string) ($record->bodytext ?? '')), 'landing users')) {
-                return $this->convertContentElement($record, false);
-            }
-
-            return $this->convertTypo3Html($record);
-        }
-
-        if ((string) ($record->CType ?? '') !== 'html') {
-            return $this->convertContentElement($record);
-        }
-
-        return $this->convertMarketplaceHtml($record);
-    }
-
-    /**
-     * Adds a stable page hook while retaining the TYPO3-specific trust cards.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertTypo3Html(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-
-        if ($html === '') {
-            return null;
-        }
-
-        $lower = strtolower($html);
-
-        if (str_contains($lower, 'landing welcome') && ! str_contains($lower, 'typo3-welcome')) {
-            $html = (string) preg_replace('/\blanding\s+welcome\b/i', 'landing welcome typo3-welcome', $html, 1);
-        }
-
-        $html = $this->normalizeLandingCardMarkup($html);
-        $result = $this->rewriteHtmlFiles($html);
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'main',
-            'data' => ['text' => Utils::html($result['html'])],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Adds stable semantic hooks to the source SaaS landing-page HTML.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertSaasHtml(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-
-        if ($html === '') {
-            return null;
-        }
-
-        $lower = strtolower($html);
-
-        if (str_contains($lower, 'landing welcome') && ! str_contains($lower, 'saas-welcome')) {
-            $html = (string) preg_replace('/\blanding\s+welcome\b/i', 'landing welcome saas-welcome', $html, 1);
-        } elseif (str_contains($lower, 'marketplace.png') && str_contains($lower, 'class="logo')) {
-            $html = '<div class="landing saas-logo">'.$html.'</div>';
-        } elseif (str_contains($lower, 'create your own feature rich') && str_contains($lower, 'saas')) {
-            $html = '<div class="landing saas-intro">'.$html.'</div>';
-        } elseif (str_contains($lower, 'want to start')) {
-            $html = '<div class="landing saas-start">'.$html.'</div>';
-        }
-
-        $html = $this->normalizeLandingCardMarkup($html);
-        $result = $this->rewriteHtmlFiles($html);
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'main',
-            'data' => ['text' => Utils::html($result['html'])],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Adds stable semantic hooks to the source B2B landing-page HTML.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertB2bHtml(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-        $header = trim((string) ($record->header ?? ''));
-
-        if ($html === '') {
-            return null;
-        }
-
-        $lower = strtolower($html);
-        $headerLower = strtolower($header);
-
-        if (str_contains($headerLower, 'get free consulting now')) {
-            $title = htmlspecialchars($header, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $html = '<div class="landing b2b-consulting"><h2>'.$title.'</h2>'.$html.'</div>';
-        } elseif (str_contains($lower, 'landing welcome') && ! str_contains($lower, 'b2b-welcome')) {
-            $html = (string) preg_replace('/\blanding\s+welcome\b/i', 'landing welcome b2b-welcome', $html, 1);
-        } elseif (str_contains($lower, 'b2b.png') && str_contains($lower, 'class="logo')) {
-            $html = '<div class="landing b2b-logo">'.$html.'</div>';
-        } elseif (str_contains($lower, 'build complex b2b ecommerce platforms')) {
-            $html = '<div class="landing b2b-intro">'.$html.'</div>';
-        } elseif (str_contains($lower, 'want to know more')) {
-            $html = '<div class="landing b2b-more">'.$html.'</div>';
-        } elseif (str_contains($lower, 'class="landing') && str_contains($lower, '>contact<')) {
-            $html = '<div class="landing b2b-consulting-action">'.$html.'</div>';
-        }
-
-        $html = $this->normalizeLandingCardMarkup($html);
-        $result = $this->rewriteHtmlFiles($html);
-        $html = $result['html'];
-
-        if (str_contains($html, 'b2b-more') && ! str_contains($html, '<a ')) {
-            $html = (string) preg_replace(
-                '/\bGet in touch\b/i',
-                '<a href="https://aimeos.com/aimeos-gmbh/contact" class="btn">Get in touch</a>',
-                $html,
-                1
-            );
-        }
-
-        if (str_contains($html, 'b2b-consulting-action') || str_contains($html, 'b2b-consulting')) {
-            $html = (string) preg_replace(
-                '/href=(["\'])\/(?:aimeos-gmbh\/)?contact\1/i',
-                'href=$1https://aimeos.com/aimeos-gmbh/contact$1',
-                $html
-            );
-
-            if (! str_contains($html, '<a ')) {
-                $html = (string) preg_replace(
-                    '/(?<![-\w])Contact(?![-\w])/i',
-                    '<a href="https://aimeos.com/aimeos-gmbh/contact" class="btn">Contact</a>',
-                    $html,
-                    1
-                );
-            }
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'main',
-            'data' => ['text' => Utils::html($html)],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Adds stable semantic hooks to the source marketplace HTML.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertMarketplaceHtml(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-
-        if ($html === '') {
-            return null;
-        }
-
-        $lower = strtolower($html);
-
-        if (str_contains($lower, 'landing welcome') && ! str_contains($lower, 'marketplace-welcome')) {
-            $html = (string) preg_replace('/\blanding\s+welcome\b/i', 'landing welcome marketplace-welcome', $html, 1);
-        } elseif (str_contains($lower, 'marketplace.png') && str_contains($lower, 'class="logo')) {
-            $html = '<div class="landing marketplace-logo">'.$html.'</div>';
-        } elseif (str_contains($lower, 'create your own feature rich')) {
-            $html = '<div class="landing marketplace-intro">'.$html.'</div>';
-        } elseif (str_contains($lower, 'want to see a demo')) {
-            $html = '<div class="landing marketplace-demo">'.$html.'</div>';
-        } elseif (str_contains($lower, 'want to know more')) {
-            $html = '<div class="landing marketplace-contact">'.$html.'</div>';
-        }
-
-        $html = $this->normalizeLandingCardMarkup($html);
-        $result = $this->rewriteHtmlFiles($html);
-        $html = $result['html'];
-
-        if (str_contains($html, 'marketplace-demo') && ! str_contains($html, '<a ')) {
-            $html = (string) preg_replace(
-                '/\bRequest access\b/i',
-                '<a href="https://aimeos.com/aimeos-gmbh/contact" class="btn">Request access</a>',
-                $html,
-                1
-            );
-        }
-
-        if (str_contains($html, 'marketplace-contact') && ! str_contains($html, '<a ')) {
-            $html = (string) preg_replace(
-                '/(?<![-\w])Contact(?![-\w])/i',
-                '<a href="https://aimeos.com/aimeos-gmbh/contact" class="btn">Contact</a>',
-                $html,
-                1
-            );
-            $html = (string) preg_replace(
-                '/(?<![-\w])Pricing(?![-\w])/i',
-                '<a href="https://aimeos.com/extensions#c436" class="btn">Pricing</a>',
-                $html,
-                1
-            );
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'main',
-            'data' => ['text' => Utils::html($html)],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Restores the Laravel platform page's TYPO3 backend-column sequence.
-     *
-     * The live page renders column 20 as one long feature section and then
-     * columns 21-27 in ascending order. Their local sorting values are only
-     * meaningful inside each column.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function sortLaravelPlatformRecords(Collection $records): Collection
-    {
-        return $records->sortBy(function ($record): int {
-            $html = strtolower((string) ($record->bodytext ?? ''));
-            $colPos = (int) ($record->colPos ?? 0);
-            $sorting = (int) ($record->sorting ?? 0);
-
-            if (str_contains($html, 'landing welcome')) {
-                return 1000000 + $sorting;
-            }
-
-            if ($colPos >= 20 && $colPos <= 27) {
-                return 2000000 + ($colPos - 20) * 1000000 + $sorting;
-            }
-
-            if (in_array($colPos, [10, 11, 12], true)) {
-                return 20000000 + $this->homepageWeight($record) * 1000 + $sorting;
-            }
-
-            return 19000000 + $sorting;
-        })->values();
-    }
-
-    /**
-     * Keeps linked quality and distribution cards intact during purification.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertLaravelPlatformHtml(object $record): ?array
-    {
-        $html = (string) ($record->bodytext ?? '');
-
-        $normalized = $this->normalizeLandingCardMarkup($html);
-
-        if ($normalized === $html) {
-            return $this->convertHtml($record);
-        }
-
-        $normalizedRecord = clone $record;
-        $normalizedRecord->bodytext = $normalized;
-
-        return $this->convertHtml($normalizedRecord);
-    }
-
-    /**
-     * Replaces block headings and containers inside linked TYPO3 cards with spans.
-     *
-     * HTML Purifier uses an HTML4 content model and otherwise closes the link
-     * before block-level headings, stars and button nodes. Keeping only inline
-     * children preserves one accessible link and the source layout.
-     */
-    protected function normalizeLandingCardMarkup(string $html): string
-    {
-        $lower = strtolower($html);
-
-        if (! str_contains($lower, 'landing qualities')
-            && ! str_contains($lower, 'landing dists')
-            && ! str_contains($lower, 'welcome-box')
-        ) {
-            return $html;
-        }
-
-        $document = $this->htmlDocument($html);
-
-        if (! $document) {
-            return $html;
-        }
-
-        $xpath = new \DOMXPath($document);
-        $anchors = $xpath->query(
-            '//*[contains(concat(" ", normalize-space(@class), " "), " landing ")'
-            .' and (contains(concat(" ", normalize-space(@class), " "), " qualities ")'
-            .' or contains(concat(" ", normalize-space(@class), " "), " dists "))]'
-            .'//*[contains(concat(" ", normalize-space(@class), " "), " quality ")'
-            .' or contains(concat(" ", normalize-space(@class), " "), " dist ")]/a'
-            .' | //*[contains(concat(" ", normalize-space(@class), " "), " welcome-box ")]'
-            .'/a[contains(concat(" ", normalize-space(@class), " "), " box-detail ")]'
-        );
-        $changed = false;
-
-        foreach ($anchors ?: [] as $anchor) {
-            foreach (iterator_to_array($anchor->childNodes) as $child) {
-                if (! $child instanceof \DOMElement) {
-                    continue;
-                }
-
-                $tag = strtolower($child->tagName);
-                $classes = preg_split('/\s+/', trim($child->getAttribute('class'))) ?: [];
-                $replacementClass = in_array($tag, ['h2', 'h3'], true) ? 'header' : '';
-
-                if ($tag !== 'div' && $replacementClass === '') {
-                    continue;
-                }
-
-                if ($replacementClass === '' && ! array_intersect($classes, ['header', 'stars', 'button'])) {
-                    continue;
-                }
-
-                $span = $document->createElement('span');
-
-                foreach (iterator_to_array($child->attributes) as $attribute) {
-                    $span->setAttribute($attribute->nodeName, $attribute->nodeValue);
-                }
-
-                if ($replacementClass !== '' && ! in_array($replacementClass, $classes, true)) {
-                    $span->setAttribute('class', trim($child->getAttribute('class').' '.$replacementClass));
-                }
-
-                while ($child->firstChild) {
-                    $span->appendChild($child->firstChild);
-                }
-
-                $anchor->replaceChild($span, $child);
-                $changed = true;
-            }
-        }
-
-        if (! $changed) {
-            return $html;
-        }
-
-        $root = $document->getElementById('pagible-import');
-        $normalized = '';
-
-        foreach ($root?->childNodes ?? [] as $child) {
-            $normalized .= $document->saveHTML($child) ?: '';
-        }
-
-        return $normalized !== '' ? $normalized : $html;
-    }
-
-    /**
-     * Returns the semantic order for one Aimeos homepage record.
-     */
-    protected function homepageWeight(object $record): int
-    {
-        $html = strtolower((string) ($record->bodytext ?? ''));
-        $header = strtolower(trim((string) ($record->header ?? '')));
-        $colPos = (int) ($record->colPos ?? 0);
-
-        if (str_contains($html, 'landing welcome')) {
-            return 10;
-        }
-        if (str_contains($html, 'landing users')) {
-            return 20;
-        }
-        if (str_contains($html, 'landing qualities')) {
-            return 30;
-        }
-        if (str_contains($html, 'landing highlights') && ! str_contains($html, 'class="highlight"')) {
-            return 40;
-        }
-        if (str_contains($html, 'landing integrations')) {
-            return 50;
-        }
-        if (str_contains($html, 'landing explain')) {
-            return 60;
-        }
-        if (str_contains($html, 'landing highlights')) {
-            return 70;
-        }
-        if (str_contains($html, 'landing showcases')) {
-            return 80;
-        }
-        if (str_contains($html, 'landing demo')) {
-            return 90;
-        }
-        if (str_contains($html, 'landing casestudies')) {
-            return 100;
-        }
-        if (str_contains($html, 'class="partnering')) {
-            return 110;
-        }
-        if (str_contains($html, 'landing support')) {
-            return 120;
-        }
-        if (str_contains($html, 'landing links')) {
-            return 130;
-        }
-
-        if ($colPos === 10) {
-            return match ($header) {
-                'available for' => 200,
-                'developers' => 210,
-                'softwareworld' => 220,
-                default => 225,
-            };
-        }
-
-        if ($colPos === 11) {
-            return match ($header) {
-                'extensions' => 230,
-                'partners' => 240,
-                'capterra rating' => 250,
-                default => 255,
-            };
-        }
-
-        if ($colPos === 12) {
-            return 260;
-        }
-
-        return 140;
-    }
-
-    /**
-     * Selects the explicit theme or recognizes the bundled Aimeos landing page.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     */
-    protected function themeForRecords(Collection $records): string
-    {
-        if ($this->theme !== '') {
-            return $this->theme;
-        }
-
-        return ($this->isAimeosHomepage($records)
-            || $this->isAimeosB2b($records)
-            || $this->isAimeosMarketplace($records)
-            || $this->isAimeosSaas($records)
-            || $this->isAimeosTypo3($records)
-            || $this->isAimeosFeatures($records)
-            || $this->isAimeosShowcases($records)
-            || $this->isAimeosCaseStudies($records)
-            || $this->isAimeosCaseStudy($records)
-            || $this->isAimeosRoadmap($records)
-            || $this->isAimeosPartners($records))
-            && \Aimeos\Cms\Schema::get('aimeos')
-            ? 'aimeos'
-            : '';
     }
 
     /**
@@ -3685,7 +1694,7 @@ class T3Import extends Command
         $pageData = $this->buildPageData($t3Root, $slug, $domain);
         $pageData['tag'] = 'root';
         $records = $this->recordsForPage($t3Root, $contentElements);
-        $pageData['theme'] = $this->themeForRecords($records);
+        $pageData['theme'] = $this->theme;
         $content = $this->buildContent($records);
         $page = $this->createRootPage($pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
 
@@ -3699,7 +1708,13 @@ class T3Import extends Command
      */
     protected function findRootPage(string $domain): ?Page
     {
-        return Page::where('tag', 'root')->where('domain', $domain)->first();
+        $page = Page::withTrashed()->where('tag', 'root')->where('domain', $domain)->first();
+
+        if ($page?->trashed()) {
+            $page->restore();
+        }
+
+        return $page;
     }
 
     /**
@@ -3707,7 +1722,13 @@ class T3Import extends Command
      */
     protected function findPage(string $domain, string $path): ?Page
     {
-        return Page::where('domain', $domain)->where('path', $path)->first();
+        $page = Page::withTrashed()->where('domain', $domain)->where('path', $path)->first();
+
+        if ($page?->trashed()) {
+            $page->restore();
+        }
+
+        return $page;
     }
 
     /**
@@ -3728,10 +1749,9 @@ class T3Import extends Command
     }
 
     /**
-     * Returns page records and inherited site fragments required by source layouts.
+     * Returns the source records used by a TYPO3 page.
      *
      * @param  Collection<int|string, mixed>  $contentElements
-     * @return Collection<int|string, mixed>
      */
     protected function recordsForPage(object $t3Page, Collection $contentElements): Collection
     {
@@ -3739,62 +1759,12 @@ class T3Import extends Command
         $contentPageUid = $this->contentSourcePageUid($t3Page);
         $records = $this->sortRecordsBySourceLayout(
             $contentElements->get($contentPageUid, Collection::make()),
-            $t3Page
+            $t3Page,
         );
 
-        if ($contentPageUid !== $pageUid) {
-            $records = $this->markSharedRecords($records, 'reference', $contentPageUid);
-        }
-
-        if ($records->contains(
-            fn ($record) => in_array((int) ($record->colPos ?? 0), [10, 11, 12], true)
-        )) {
-            return $this->markSharedFooterRecords($records, $contentPageUid);
-        }
-
-        $root = $t3Page;
-        $seen = [];
-
-        while (empty($root->is_siteroot) && (int) ($root->pid ?? 0) > 0) {
-            $uid = (int) ($root->uid ?? 0);
-
-            if (isset($seen[$uid]) || ! ($parent = $this->t3Pages?->get((int) $root->pid))) {
-                break;
-            }
-
-            $seen[$uid] = true;
-            $root = $parent;
-        }
-
-        $rootUid = (int) ($root->uid ?? 0);
-        $footer = $this->markSharedFooterRecords(
-            $contentElements->get($rootUid, Collection::make())
-                ->filter(fn ($record) => in_array((int) ($record->colPos ?? 0), [10, 11, 12], true)),
-            $rootUid,
-        );
-
-        return $this->sortRecordsBySourceLayout($records->concat($footer), $t3Page);
-    }
-
-    /**
-     * Marks cloned footer records for conversion into reusable Pagible elements.
-     *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int, mixed>
-     */
-    protected function markSharedFooterRecords(Collection $records, int $sourcePage): Collection
-    {
-        return $records->map(function ($record) use ($sourcePage) {
-            if (! in_array((int) ($record->colPos ?? 0), [10, 11, 12], true)) {
-                return $record;
-            }
-
-            $record = clone $record;
-            $record->_pagible_shared = 'footer';
-            $record->_pagible_shared_page = $sourcePage;
-
-            return $record;
-        })->values();
+        return $contentPageUid === $pageUid
+            ? $records
+            : $this->markSharedRecords($records, 'reference', $contentPageUid);
     }
 
     /**
@@ -4213,7 +2183,7 @@ class T3Import extends Command
         }
 
         $records = $this->recordsForPage($t3Page, $contentElements);
-        $pageData['theme'] = $this->themeForRecords($records);
+        $pageData['theme'] = $this->theme;
         $content = $this->buildContent($records);
 
         if ($page) {
@@ -4318,44 +2288,64 @@ class T3Import extends Command
     {
         $pageMap = $pages->groupBy('pid');
         $pagesById = $pages->keyBy('uid');
-        $createdPages = Collection::make();
         $imported = 0;
+        $reused = 0;
 
-        $importChildren = function (int $parentUid, Page $parentPage, string $domain) use (&$importChildren, $pageMap, $pagesById, $contentElements, &$createdPages, &$imported) {
+        $importChildren = function (int $parentUid, Page $parentPage, string $domain) use (&$importChildren, $pageMap, $pagesById, $contentElements, &$imported, &$reused) {
             $children = $pageMap->get($parentUid, Collection::make());
 
             foreach ($children as $t3Page) {
+                $filesBefore = clone $this->createdFiles;
+                $urlsBefore = clone $this->createdFileUrls;
+
                 try {
-                    DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($t3Page, $parentPage, $domain, $pagesById, $contentElements, &$createdPages, &$imported) {
-                        $slug = $this->slugFromPath($t3Page->slug);
-                        $to = $this->redirectTarget($t3Page, $pagesById);
-                        $pageData = $this->buildPageData($t3Page, $slug, $domain, $to);
-                        $records = $this->recordsForPage($t3Page, $contentElements);
-                        $pageData['theme'] = $this->themeForRecords($records);
-                        $content = $this->buildContent($records);
+                    $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($t3Page, $parentPage, $domain, $pagesById, $contentElements, $filesBefore) {
+                        try {
+                            $slug = $this->slugFromPath($t3Page->slug);
 
-                        $page = $this->createPage($pageData, $content['elements'], $parentPage);
-                        $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
+                            if ($page = $this->findPage($domain, $slug)) {
+                                return ['page' => $page, 'path' => $slug, 'reused' => true];
+                            }
 
-                        if ($t3Page->crdate > 0) {
-                            $page->update(['created_at' => date('Y-m-d H:i:s', $t3Page->crdate)]);
+                            $to = $this->redirectTarget($t3Page, $pagesById);
+                            $pageData = $this->buildPageData($t3Page, $slug, $domain, $to);
+                            $records = $this->recordsForPage($t3Page, $contentElements);
+                            $pageData['theme'] = $this->theme;
+                            $content = $this->buildContent($records);
+
+                            $page = $this->createPage($pageData, $content['elements'], $parentPage);
+                            $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
+
+                            if ($t3Page->crdate > 0) {
+                                $page->update(['created_at' => date('Y-m-d H:i:s', $t3Page->crdate)]);
+                            }
+
+                            return ['page' => $page, 'path' => $slug, 'reused' => false];
+                        } catch (\Throwable $e) {
+                            $this->removeFilesCreatedAfter($filesBefore);
+
+                            throw $e;
                         }
-
-                        $createdPages->put($t3Page->uid, $page);
-                        $imported++;
-                        $this->info("  Imported: {$t3Page->title} (/{$slug}) [{$domain}]");
                     });
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
+                    $this->createdFiles = $filesBefore;
+                    $this->createdFileUrls = $urlsBefore;
                     $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
 
                     continue;
                 }
 
-                if ($createdPages->has($t3Page->uid)) {
-                    /** @var Page $childParent */
-                    $childParent = $createdPages->get($t3Page->uid);
-                    $importChildren($t3Page->uid, $childParent, $domain);
+                if ($result['reused']) {
+                    $reused++;
+                    $this->info("  Reused: {$t3Page->title} (/{$result['path']}) [{$domain}] (destination route already exists)");
+                } else {
+                    $imported++;
+                    $this->info("  Imported: {$t3Page->title} (/{$result['path']}) [{$domain}]");
                 }
+
+                /** @var Page $childParent */
+                $childParent = $result['page'];
+                $importChildren($t3Page->uid, $childParent, $domain);
             }
         };
 
@@ -4369,12 +2359,14 @@ class T3Import extends Command
         }
 
         $rootCount = $rootPages->count();
-        $total = $imported + $rootCount;
+        $total = $imported + $reused + $rootCount;
         $totalLabel = $total === 1 ? 'page' : 'pages';
         $pageLabel = $imported === 1 ? 'child page' : 'child pages';
         $rootLabel = $rootCount === 1 ? 'root page' : 'root pages';
+        $reusedLabel = $reused === 1 ? 'existing child route reused' : 'existing child routes reused';
+        $reusedSummary = $reused > 0 ? ", {$reused} {$reusedLabel}" : '';
 
-        $this->info("Import complete. {$total} TYPO3 {$totalLabel} processed ({$rootCount} {$rootLabel}, {$imported} {$pageLabel} imported).");
+        $this->info("Import complete. {$total} TYPO3 {$totalLabel} processed ({$rootCount} {$rootLabel}, {$imported} {$pageLabel} imported{$reusedSummary}).");
     }
 
     /**
