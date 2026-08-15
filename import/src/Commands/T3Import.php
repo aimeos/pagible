@@ -51,7 +51,7 @@ class T3Import extends Command
 
     protected string $fileBase;
 
-    /** @var Collection<int|string, mixed> */
+    /** @var Collection<int, mixed> */
     protected Collection $sysFiles;
 
     /** @var Collection<string, mixed> */
@@ -72,7 +72,7 @@ class T3Import extends Command
     /** @var Collection<int|string, mixed>|null */
     protected ?Collection $contentRecords = null;
 
-    /** @var Collection<int|string, mixed> */
+    /** @var Collection<string, string> */
     protected Collection $createdFiles;
 
     /** @var Collection<string, string> */
@@ -81,7 +81,7 @@ class T3Import extends Command
     /** @var array<int, string> */
     protected array $domainMap = [];
 
-    /** @var Collection<int|string, mixed>|null */
+    /** @var Collection<int, mixed>|null */
     protected ?Collection $t3Pages = null;
 
     /** @var Collection<int|string, mixed>|null */
@@ -150,7 +150,7 @@ class T3Import extends Command
             fn ($file) => '/'.ltrim((string) $file->identifier, '/')
         );
         $this->fileRefs = $this->fetchFileReferences();
-        $this->t3Pages = $pages->keyBy('uid');
+        $this->t3Pages = $pages->keyBy(fn ($page) => (int) $page->uid);
         $this->accordionItems = $this->fetchAccordionItems();
         $this->carouselItems = $this->fetchCarouselItems();
         $this->carouselFileRefs = $this->fetchCarouselFileReferences();
@@ -196,9 +196,9 @@ class T3Import extends Command
      * Selects requested pages while keeping the full source collection available
      * for parent, domain, shortcut and link resolution.
      *
-     * @param  Collection<int|string, mixed>  $pages
+     * @param  Collection<int, mixed>  $pages
      * @param  list<int>  $ids
-     * @return Collection<int|string, mixed>
+     * @return Collection<int, mixed>
      */
     protected function selectPages(Collection $pages, array $ids): Collection
     {
@@ -215,7 +215,7 @@ class T3Import extends Command
     /**
      * Builds content elements array from TYPO3 tt_content records.
      *
-     * @param  Collection<int|string, mixed>  $records
+     * @param  Collection<int, mixed>  $records
      * @return array{elements: array<int, array<string, mixed>>, fileIds: string[], elementIds: string[]}
      */
     protected function buildContent(Collection $records): array
@@ -533,7 +533,7 @@ class T3Import extends Command
         $elements = [];
         $fileIds = [];
 
-        foreach (array_unique(array_map('intval', $matches[0] ?? [])) as $uid) {
+        foreach (array_unique(array_map('intval', $matches[0])) as $uid) {
             $target = $this->contentRecords?->get($uid);
 
             if (! $target || (int) ($target->uid ?? 0) === (int) ($record->uid ?? 0)) {
@@ -558,7 +558,7 @@ class T3Import extends Command
      * Replaces TYPO3 content shortcuts with their canonical target records and
      * marks every referenced source record for Pagible shared-element storage.
      *
-     * @param  Collection<int|string, mixed>  $records
+     * @param  Collection<int, mixed>  $records
      * @return Collection<int, mixed>
      */
     protected function expandReferencedRecords(Collection $records): Collection
@@ -636,20 +636,21 @@ class T3Import extends Command
             return [$record];
         }
 
-        $copy = clone $record;
+        $data = get_object_vars($record);
 
         if ($placement) {
-            $copy->colPos = (int) ($placement->colPos ?? $copy->colPos ?? 0);
-            $copy->sorting = (int) ($placement->sorting ?? $copy->sorting ?? 0);
+            $placement = get_object_vars($placement);
+            $data['colPos'] = (int) ($placement['colPos'] ?? $data['colPos'] ?? 0);
+            $data['sorting'] = (int) ($placement['sorting'] ?? $data['sorting'] ?? 0);
         }
 
         if ($kind !== '') {
-            $copy->_pagible_shared = $kind;
-            $copy->_pagible_shared_page = (int) ($record->_pagible_shared_page ?? $record->pid ?? 0);
-            $copy->_pagible_shared_uid = $uid;
+            $data['_pagible_shared'] = $kind;
+            $data['_pagible_shared_page'] = (int) ($record->_pagible_shared_page ?? $record->pid ?? 0);
+            $data['_pagible_shared_uid'] = $uid;
         }
 
-        return [$copy];
+        return [(object) $data];
     }
 
     /**
@@ -1102,7 +1103,8 @@ class T3Import extends Command
 
         parse_str(html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'), $query);
         $uid = (int) ($query['uid'] ?? 0);
-        $fragment = (string) ($query['fragment'] ?? $matches[2] ?? '');
+        $fragment = $query['fragment'] ?? $matches[2] ?? '';
+        $fragment = is_string($fragment) ? $fragment : '';
 
         return $uid > 0 ? $this->resolveTypo3Page($uid, $fragment) : null;
     }
@@ -1118,9 +1120,9 @@ class T3Import extends Command
             return null;
         }
 
-        $url = in_array((int) $page->doktype, [3, 4], true) // @phpstan-ignore property.notFound
+        $url = in_array((int) $page->doktype, [3, 4], true)
             ? $this->redirectDestination($page, $this->t3Pages, [])
-            : '/'.$this->slugFromPath($page->slug); // @phpstan-ignore property.notFound
+            : '/'.$this->slugFromPath($page->slug);
 
         if ($url === '') {
             return null;
@@ -1647,11 +1649,10 @@ class T3Import extends Command
     /**
      * Fetches non-deleted TYPO3 pages in default language.
      *
-     * @return Collection<int|string, mixed>
+     * @return Collection<int, mixed>
      */
     protected function fetchPages(): Collection
     {
-        /** @var Collection<int|string, mixed> */
         return DB::connection($this->t3Connection)
             ->table('pages')
             ->where('deleted', 0)
@@ -1665,14 +1666,14 @@ class T3Import extends Command
     /**
      * Fetches sys_file records keyed by UID.
      *
-     * @return Collection<int|string, mixed>
+     * @return Collection<int, mixed>
      */
     protected function fetchSysFiles(): Collection
     {
         return DB::connection($this->t3Connection)
             ->table('sys_file')
             ->get()
-            ->keyBy('uid');
+            ->keyBy(fn ($file) => (int) $file->uid);
     }
 
     /**
@@ -1752,6 +1753,7 @@ class T3Import extends Command
      * Returns the source records used by a TYPO3 page.
      *
      * @param  Collection<int|string, mixed>  $contentElements
+     * @return Collection<int, mixed>
      */
     protected function recordsForPage(object $t3Page, Collection $contentElements): Collection
     {
@@ -1770,18 +1772,18 @@ class T3Import extends Command
     /**
      * Marks cloned TYPO3 records for conversion into reusable Pagible elements.
      *
-     * @param  Collection<int|string, mixed>  $records
+     * @param  Collection<int, mixed>  $records
      * @return Collection<int, mixed>
      */
     protected function markSharedRecords(Collection $records, string $kind, int $sourcePage): Collection
     {
         return $records->map(function ($record) use ($kind, $sourcePage) {
-            $record = clone $record;
-            $record->_pagible_shared = $kind;
-            $record->_pagible_shared_page = $sourcePage;
-            $record->_pagible_shared_uid = (int) ($record->uid ?? 0);
+            $data = get_object_vars($record);
+            $data['_pagible_shared'] = $kind;
+            $data['_pagible_shared_page'] = $sourcePage;
+            $data['_pagible_shared_uid'] = (int) ($data['uid'] ?? 0);
 
-            return $record;
+            return (object) $data;
         })->values();
     }
 
@@ -1816,8 +1818,8 @@ class T3Import extends Command
      * Orders records like the TYPO3 frontend: backend-layout row/column order,
      * followed by the record sorting value inside each content column.
      *
-     * @param  Collection<int|string, mixed>  $records
-     * @return Collection<int|string, mixed>
+     * @param  Collection<int, mixed>  $records
+     * @return Collection<int, mixed>
      */
     protected function sortRecordsBySourceLayout(Collection $records, object $t3Page): Collection
     {
@@ -1875,15 +1877,17 @@ class T3Import extends Command
                 $t3Page,
                 substr($layout, strlen('pagets__'))
             ),
-            str_starts_with($layout, 'db__') => (string) ($this->backendLayouts?->get(
-                (int) substr($layout, strlen('db__'))
-            )?->config ?? ''),
+            str_starts_with($layout, 'db__') => (string) data_get(
+                $this->backendLayouts?->get((int) substr($layout, strlen('db__'))),
+                'config',
+                '',
+            ),
             default => '',
         };
 
         preg_match_all('/\bcolPos\s*=\s*(-?\d+)/i', $config, $matches);
 
-        return array_values(array_unique(array_map('intval', $matches[1] ?? [])));
+        return array_values(array_unique(array_map('intval', $matches[1])));
     }
 
     /**
@@ -1942,7 +1946,7 @@ class T3Import extends Command
     /**
      * Resolves the redirect target of TYPO3 external URL and selected-page shortcut records.
      *
-     * @param  Collection<int|string, mixed>  $pages  TYPO3 pages keyed by UID
+     * @param  Collection<int, mixed>  $pages  TYPO3 pages keyed by UID
      */
     protected function redirectTarget(object $t3Page, Collection $pages): string
     {
@@ -1962,7 +1966,7 @@ class T3Import extends Command
     /**
      * Resolves a TYPO3 shortcut destination to an external URL or Pagible path.
      *
-     * @param  Collection<int|string, mixed>  $pages  TYPO3 pages keyed by UID
+     * @param  Collection<int, mixed>  $pages  TYPO3 pages keyed by UID
      * @param  array<int, bool>  $seen
      */
     protected function redirectDestination(object $t3Page, Collection $pages, array $seen): string
@@ -2073,13 +2077,14 @@ class T3Import extends Command
      */
     protected function importFileReference(object $ref): ?string
     {
-        $sysFile = $this->sysFiles->get($ref->uid_local);
+        $reference = get_object_vars($ref);
+        $sysFile = $this->sysFiles->get((int) ($reference['uid_local'] ?? 0));
 
         if (! $sysFile) {
             return null;
         }
 
-        $name = $ref->title ?: $ref->alternative ?: $sysFile->name;
+        $name = ($reference['title'] ?? '') ?: ($reference['alternative'] ?? '') ?: $sysFile->name;
         $extension = trim((string) ($sysFile->extension ?? ''))
             ?: pathinfo((string) $sysFile->identifier, PATHINFO_EXTENSION);
         $mime = $this->normalizeMime((string) $sysFile->mime_type, $extension);
@@ -2093,8 +2098,8 @@ class T3Import extends Command
      * routes with a new published version and creating missing pages when their
      * destination parent already exists.
      *
-     * @param  Collection<int|string, mixed>  $selectedPages
-     * @param  Collection<int|string, mixed>  $pages
+     * @param  Collection<int, mixed>  $selectedPages
+     * @param  Collection<int, mixed>  $pages
      * @param  Collection<int|string, mixed>  $contentElements
      */
     protected function importSelectedPages(Collection $selectedPages, Collection $pages, Collection $contentElements): void
@@ -2125,16 +2130,16 @@ class T3Import extends Command
             } catch (\Throwable $e) {
                 $this->createdFiles = $filesBefore;
                 $this->createdFileUrls = $urlsBefore;
-                $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage()); // @phpstan-ignore property.notFound, property.notFound
+                $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
 
                 continue;
             }
 
-            $processed->put((int) $t3Page->uid, $result['page']); // @phpstan-ignore property.notFound
+            $processed->put((int) $t3Page->uid, $result['page']);
             $result['updated'] ? $updated++ : $imported++;
             $action = $result['updated'] ? 'Updated' : 'Imported';
             $path = $result['path'] === '' ? '/' : '/'.$result['path'];
-            $this->info("  {$action}: {$t3Page->title} ({$path}) [{$result['domain']}]"); // @phpstan-ignore property.notFound
+            $this->info("  {$action}: {$t3Page->title} ({$path}) [{$result['domain']}]");
         }
 
         $importedLabel = $imported === 1 ? 'page' : 'pages';
@@ -2145,7 +2150,7 @@ class T3Import extends Command
     /**
      * Imports or updates one selected TYPO3 page.
      *
-     * @param  Collection<int|string, mixed>  $pagesById
+     * @param  Collection<int, mixed>  $pagesById
      * @param  Collection<int|string, mixed>  $contentElements
      * @param  Collection<int|string, Page>  $processed
      * @return array{page: Page, updated: bool, path: string, domain: string}
@@ -2170,14 +2175,14 @@ class T3Import extends Command
                 throw new \RuntimeException('TYPO3 parent page is missing from the source tree.');
             }
 
-            $parent = $processed->get((int) $parentRecord->uid) // @phpstan-ignore property.notFound
+            $parent = $processed->get((int) $parentRecord->uid)
                 ?: $this->findSourcePage($parentRecord, $domain);
 
             if (! $parent) {
                 throw new \RuntimeException(sprintf(
                     'Destination parent page [%d] %s has not been imported.',
-                    (int) $parentRecord->uid, // @phpstan-ignore property.notFound
-                    (string) $parentRecord->title, // @phpstan-ignore property.notFound
+                    (int) $parentRecord->uid,
+                    (string) $parentRecord->title,
                 ));
             }
         }
@@ -2196,7 +2201,7 @@ class T3Import extends Command
             $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
 
             if ((int) ($t3Page->crdate ?? 0) > 0) {
-                $page->update(['created_at' => date('Y-m-d H:i:s', (int) $t3Page->crdate)]);
+                $page->update(['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))]);
             }
         }
 
@@ -2218,7 +2223,7 @@ class T3Import extends Command
     /**
      * Returns the root source record for a TYPO3 page.
      *
-     * @param  Collection<int|string, mixed>  $pagesById
+     * @param  Collection<int, mixed>  $pagesById
      */
     protected function sourceRootPage(object $t3Page, Collection $pagesById): object
     {
@@ -2251,7 +2256,7 @@ class T3Import extends Command
     /**
      * Returns a source page's depth for deterministic parent-first imports.
      *
-     * @param  Collection<int|string, mixed>  $pagesById
+     * @param  Collection<int, mixed>  $pagesById
      */
     protected function sourcePageDepth(object $t3Page, Collection $pagesById): int
     {
@@ -2281,13 +2286,13 @@ class T3Import extends Command
     /**
      * Imports all pages recursively following the TYPO3 page hierarchy.
      *
-     * @param  Collection<int|string, mixed>  $pages
+     * @param  Collection<int, mixed>  $pages
      * @param  Collection<int|string, mixed>  $contentElements
      */
     protected function importPages(Collection $pages, Collection $contentElements): void
     {
         $pageMap = $pages->groupBy('pid');
-        $pagesById = $pages->keyBy('uid');
+        $pagesById = $pages->keyBy(fn ($page) => (int) $page->uid);
         $imported = 0;
         $reused = 0;
 
@@ -2406,7 +2411,7 @@ class T3Import extends Command
     /**
      * Prints a dry run summary of page hierarchy.
      *
-     * @param  Collection<int|string, mixed>  $pages
+     * @param  Collection<int, mixed>  $pages
      */
     protected function printDryRun(Collection $pages): void
     {
@@ -2431,14 +2436,14 @@ class T3Import extends Command
     /**
      * Prints explicitly selected pages for a dry run.
      *
-     * @param  Collection<int|string, mixed>  $pages
+     * @param  Collection<int, mixed>  $pages
      */
     protected function printSelectedDryRun(Collection $pages): void
     {
         foreach ($pages as $page) {
-            $type = $page->doktype == 4 ? ' [shortcut]' : ''; // @phpstan-ignore property.notFound
-            $hidden = $page->hidden ? ' [hidden]' : ''; // @phpstan-ignore property.notFound
-            $this->line("[{$page->uid}] {$page->title} ({$page->slug}){$type}{$hidden}"); // @phpstan-ignore property.notFound, property.notFound, property.notFound
+            $type = $page->doktype == 4 ? ' [shortcut]' : '';
+            $hidden = $page->hidden ? ' [hidden]' : '';
+            $this->line("[{$page->uid}] {$page->title} ({$page->slug}){$type}{$hidden}");
         }
 
         $this->info('Dry run complete. No changes were made.');
