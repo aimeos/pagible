@@ -39,7 +39,14 @@ export default {
     },
 
     rules() {
-      return [(v) => !this.config.required || !!v || this.$gettext('Value is required')]
+      return [
+        (v) => !this.config.required || !!v || this.$gettext('Value is required'),
+        (v) =>
+          !Array.isArray(v) ||
+          !this.config.max ||
+          v.length <= this.config.max ||
+          this.$gettext('Maximum is %{num} entries', { num: this.config.max })
+      ]
     }
   },
 

@@ -51,6 +51,18 @@ describe('Combobox', () => {
     cy.get('.v-chip').should('have.length', 2)
   })
 
+  it('emits error:true when the maximum selection is exceeded', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Combobox, {
+      props: {
+        modelValue: ['cat', 'dog'],
+        config: { options: staticOptions, multiple: true, max: 1 },
+        onError,
+      },
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits error:true when required and value is null', () => {
     const onError = cy.spy().as('error')
     cy.mount(Combobox, {
