@@ -227,7 +227,9 @@ class JsonSchema
                 break;
 
             case 'combobox':
-                $schema = ['type' => 'string'];
+                $schema = !empty( $field['multiple'] )
+                    ? ['type' => 'array', 'items' => ['type' => 'string']]
+                    : ['type' => 'string'];
                 break;
 
             default:
