@@ -91,8 +91,15 @@ if ($pgettext) {
   $pgettext('fn', 'Billing interval')
   $pgettext('fn', 'Price unit')
   $pgettext('fn', 'Target page or link')
+  $pgettext('fn', 'Mandatory fields')
+  $pgettext('fn', 'Optional fields')
 
   // option labels
+  $pgettext('op', 'Name')
+  $pgettext('op', 'Company')
+  $pgettext('op', 'Telephone')
+  $pgettext('op', 'E-Mail')
+  $pgettext('op', 'Subject')
   $pgettext('op', 'Follow')
   $pgettext('op', 'Index')
   $pgettext('op', 'No follow')

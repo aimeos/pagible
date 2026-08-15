@@ -719,6 +719,67 @@
             "fields": {
                 "title": {
                     "type": "string"
+                },
+                "mandatory": {
+                    "type": "combobox",
+                    "label": "Mandatory fields",
+                    "multiple": true,
+                    "max": 20,
+                    "default": [
+                        "name",
+                        "email"
+                    ],
+                    "options": [
+                        {
+                            "value": "name",
+                            "label": "Name"
+                        },
+                        {
+                            "value": "company",
+                            "label": "Company"
+                        },
+                        {
+                            "value": "telephone",
+                            "label": "Telephone"
+                        },
+                        {
+                            "value": "email",
+                            "label": "E-Mail"
+                        },
+                        {
+                            "value": "subject",
+                            "label": "Subject"
+                        }
+                    ]
+                },
+                "optional": {
+                    "type": "combobox",
+                    "label": "Optional fields",
+                    "multiple": true,
+                    "max": 20,
+                    "default": [],
+                    "options": [
+                        {
+                            "value": "name",
+                            "label": "Name"
+                        },
+                        {
+                            "value": "company",
+                            "label": "Company"
+                        },
+                        {
+                            "value": "telephone",
+                            "label": "Telephone"
+                        },
+                        {
+                            "value": "email",
+                            "label": "E-Mail"
+                        },
+                        {
+                            "value": "subject",
+                            "label": "Subject"
+                        }
+                    ]
                 }
             }
         }
