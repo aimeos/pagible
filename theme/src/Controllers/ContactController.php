@@ -21,7 +21,26 @@ class ContactController extends Controller
     public function send( ContactRequest $request ): \Illuminate\Http\JsonResponse
     {
         $start = hrtime( true );
-        $data = $request->validated();
+        $values = $request->safe()->except( ['h-captcha-response', 'schema', 'signature'] );
+        $fields = array_map( fn( $field ) => [
+            'name' => $field,
+            'value' => $values[ContactRequest::key( $field )],
+            'required' => true,
+        ], $request->mandatory() );
+
+        foreach( $request->optional() as $field ) {
+            $fields[] = [
+                'name' => $field,
+                'value' => $values[ContactRequest::key( $field )] ?? null,
+                'required' => false,
+            ];
+        }
+
+        $data = [
+            'fields' => $fields,
+            'message' => $values['message'],
+            'source' => $values['source'] ?? null,
+        ];
 
         Mail::to(config('mail.from.address'))->send(
             new ContactMail( $data )
@@ -32,7 +51,7 @@ class ContactController extends Controller
         $tenant = Tenancy::value();
 
         Watch::dispatchWhen( 'cms.theme.watch', CmsContact::class, fn() => new CmsContact(
-            email: (string) ( $data['email'] ?? '' ),
+            email: (string) ( $values['email'] ?? '' ),
             ip: $ip,
             durationMs: $duration,
             tenant: $tenant,

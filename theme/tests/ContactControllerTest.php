@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Mails\ContactMail;
+use Aimeos\Cms\Requests\ContactRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -41,6 +42,161 @@ class ContactControllerTest extends ThemeTestAbstract
             return $mail->hasTo( 'test@example.com' )
                 && $mail->data['source'] === $source;
         } );
+    }
+
+
+    public function testSendConfiguredAndCustomFields()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema(
+            ['company', 'email', 'subject'],
+            ['telephone', 'Customer number']
+        );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'company' => 'Example Ltd.',
+            'telephone' => '+49 123 456789',
+            'email' => 'sender@google.com',
+            'subject' => 'Product question',
+            ContactRequest::key( 'Customer number' ) => 'C-123',
+            'ignored' => 'Must not be mailed',
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertOk();
+
+        Mail::assertSent( ContactMail::class, function( $mail ) {
+            return $mail->data['fields'] === [
+                ['name' => 'company', 'value' => 'Example Ltd.', 'required' => true],
+                ['name' => 'email', 'value' => 'sender@google.com', 'required' => true],
+                ['name' => 'subject', 'value' => 'Product question', 'required' => true],
+                ['name' => 'telephone', 'value' => '+49 123 456789', 'required' => false],
+                ['name' => 'Customer number', 'value' => 'C-123', 'required' => false],
+            ]
+                && !array_key_exists( 'ignored', $mail->data );
+        } );
+    }
+
+
+    public function testSendOptionalFieldsCanBeEmpty()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( [], ['company', 'Customer number'] );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertOk();
+
+        Mail::assertSent( ContactMail::class, fn( $mail ) => $mail->data['fields'] === [
+            ['name' => 'company', 'value' => null, 'required' => false],
+            ['name' => 'Customer number', 'value' => null, 'required' => false],
+        ] );
+    }
+
+
+    public function testSendOptionalEmailMustBeValidWhenPresent()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( [], ['email'] );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'email' => 'not-an-email',
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'email' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testMandatoryFieldsTakePrecedenceOverOptionalFields()
+    {
+        $schema = ContactRequest::schema( ['email'], ['email', 'subject'] );
+
+        $this->assertSame( [
+            'mandatory' => ['email'],
+            'optional' => ['subject'],
+        ], json_decode( $schema, true ) );
+    }
+
+
+    public function testSendMissingConfiguredField()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( ['company', 'Customer number'], [] );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'company' => 'Example Ltd.',
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( ContactRequest::key( 'Customer number' ) );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendNonStringConfiguredField()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( ['company'], [] );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'company' => ['Example Ltd.'],
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'company' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendTamperedFieldSchema()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( ['name'], [] );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => ContactRequest::schema( ['subject'], [] ),
+            'signature' => ContactRequest::signature( $schema ),
+            'subject' => 'Product question',
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'schema' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendInvalidCustomFieldSchema()
+    {
+        Mail::fake();
+        $schema = '{"mandatory":["customer\\nnumber"],"optional":[]}';
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'schema' );
+        Mail::assertNothingSent();
     }
 
 

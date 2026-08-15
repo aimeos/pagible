@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Requests\ContactRequest;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Aimeos\Cms\Validation;
@@ -86,6 +87,65 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 'url', $url['type'] );
 		$this->assertArrayNotHasKey( 'required', $url );
 		$this->assertSame( '/target', $content[0]->data->cards[0]->url );
+	}
+
+
+	public function testRegisterContactFields()
+	{
+		$fields = Schema::get( 'cms' )['content']['contact']['fields'];
+		$mandatory = $fields['mandatory'];
+		$optional = $fields['optional'];
+
+		$this->assertSame( 'combobox', $mandatory['type'] );
+		$this->assertSame( 'Mandatory fields', $mandatory['label'] );
+		$this->assertTrue( $mandatory['multiple'] );
+		$this->assertSame( 20, $mandatory['max'] );
+		$this->assertSame( ['name', 'email'], $mandatory['default'] );
+		$this->assertSame( 'combobox', $optional['type'] );
+		$this->assertSame( 'Optional fields', $optional['label'] );
+		$this->assertTrue( $optional['multiple'] );
+		$this->assertSame( 20, $optional['max'] );
+		$this->assertSame( [], $optional['default'] );
+		$this->assertSame(
+			['name', 'company', 'telephone', 'email', 'subject'],
+			array_column( $mandatory['options'], 'value' )
+		);
+		$this->assertSame( $mandatory['options'], $optional['options'] );
+	}
+
+
+	public function testContactRendersConfiguredFields()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) [
+			'id' => 'contact-id',
+			'title' => 'Contact us',
+			'mandatory' => ['company', 'telephone'],
+			'optional' => ['email', 'Account reference'],
+		];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="company"[^>]+required[^>]*>/', $html );
+		$this->assertMatchesRegularExpression( '/type="tel"\s+name="telephone"/', $html );
+		$this->assertMatchesRegularExpression( '/type="email"\s+name="email"/', $html );
+		$this->assertStringContainsString( 'name="' . ContactRequest::key( 'Account reference' ) . '"', $html );
+		$this->assertStringContainsString( '>Account Reference</label>', $html );
+		$this->assertSame( 1, preg_match( '/<input[^>]+name="email"[^>]*>/', $html, $email ) );
+		$this->assertStringNotContainsString( 'required', $email[0] );
+		$this->assertStringNotContainsString( 'name="name"', $html );
+		$this->assertMatchesRegularExpression( '/name="signature" value="[a-f0-9]{64}"/', $html );
+	}
+
+
+	public function testContactRendersLegacyFieldsAsMandatory()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id', 'fields' => ['subject']];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="subject"[^>]+required[^>]*>/', $html );
 	}
 
 
