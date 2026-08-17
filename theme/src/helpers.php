@@ -252,42 +252,34 @@ if( !function_exists( 'cmsref' ) )
 if( !function_exists( 'cmsroute' ) )
 {
     /**
-     * Generate a route for a CMS page, using the latest version if the user has permission to view it.
+     * Generate a URL for a CMS page or named route.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page for which to generate the route
-     * @return string The generated route URL for the page
+     * @param \Aimeos\Cms\Models\Page|string $route CMS page or route name
+     * @param array<string, mixed> $params Named route parameters
+     * @param string|null $domain Explicit page domain, or null for the request host
+     * @return string The generated route URL
      */
-    function cmsroute( \Aimeos\Cms\Models\Page $page ) : string
+    function cmsroute( \Aimeos\Cms\Models\Page|string $route, array $params = [], ?string $domain = null ) : string
     {
+        if( is_string( $route ) )
+        {
+            if( config( 'cms.multidomain' ) ) {
+                $params['domain'] = $domain ?: ( $params['domain'] ?? null ) ?: request()->getHost();
+            }
+
+            return route( $route, $params );
+        }
+
+        $page = $route;
         $preview = \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() );
         $version = $preview ? $page->latest?->data : null;
         $to = $preview ? ( $version->to ?? null ) : $page->to;
-        $params = cmsrouteparams(
+
+        return $to ? url( $to ) : cmsroute(
+            'cms.page',
             ['path' => $version->path ?? $page->path],
             $version->domain ?? $page->domain,
         );
-
-        return $to ? url( $to ) : route( 'cms.page', $params );
-    }
-}
-
-
-if( !function_exists( 'cmsrouteparams' ) )
-{
-    /**
-     * Add the current or supplied host required by multi-domain CMS routes.
-     *
-     * @param array<string, mixed> $params Existing route parameters
-     * @param string|null $domain Explicit page domain, or null for the request host
-     * @return array<string, mixed> Route parameters including the domain when required
-     */
-    function cmsrouteparams( array $params = [], ?string $domain = null ) : array
-    {
-        if( config( 'cms.multidomain' ) ) {
-            $params['domain'] = $domain ?: ( $params['domain'] ?? null ) ?: request()->getHost();
-        }
-
-        return $params;
     }
 }
 

@@ -126,6 +126,7 @@ class ThemeTest extends ThemeTestAbstract
 
 		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
 
+		$this->assertStringContainsString( 'action="http://localhost/cmsapi/contact"', $html );
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="company"[^>]+required[^>]*>/', $html );
 		$this->assertMatchesRegularExpression( '/type="tel"\s+name="telephone"/', $html );
 		$this->assertMatchesRegularExpression( '/type="email"\s+name="email"/', $html );

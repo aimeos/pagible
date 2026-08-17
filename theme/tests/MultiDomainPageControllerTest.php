@@ -33,7 +33,9 @@ class MultiDomainPageControllerTest extends ThemeTestAbstract
     {
         $this->get( 'https://mydomain.tld/' )
             ->assertOk()
-            ->assertSee( 'Welcome to Laravel CMS' );
+            ->assertSee( 'Welcome to Laravel CMS' )
+            ->assertSee( '<link rel="canonical" href="https://mydomain.tld"', false )
+            ->assertSee( 'action="https://mydomain.tld/cmsapi/search?q=_term_"', false );
 
         $this->get( 'https://mydomain.tld/?source=test' )
             ->assertOk()

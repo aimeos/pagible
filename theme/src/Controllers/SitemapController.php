@@ -54,7 +54,13 @@ class SitemapController extends Controller
      */
     public function chunk( int|string $page ) : StreamedResponse
     {
-        $page = (int) ( request()->route( 'page' ) ?? $page );
+        $route = request()->route( 'page' );
+
+        if( is_int( $route ) || is_string( $route ) ) {
+            $page = $route;
+        }
+
+        $page = (int) $page;
 
         if( $page < 1 ) {
             abort( 404 );
@@ -206,7 +212,7 @@ class SitemapController extends Controller
 
         for( $n = 1; $n <= $pages; $n++ )
         {
-            $route = route( 'cms.sitemap.chunk', cmsrouteparams( ['page' => $n] ) );
+            $route = cmsroute( 'cms.sitemap.chunk', ['page' => $n] );
             $entries[] = '<sitemap><loc>' . $route . '</loc><lastmod>' . $lastmod . '</lastmod></sitemap>';
         }
 

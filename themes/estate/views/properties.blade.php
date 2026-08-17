@@ -115,7 +115,7 @@
                     'item' => [
                         '@@type' => 'RealEstateListing',
                         'name' => cms($item, 'title'),
-                        'url' => route('cms.page', cmsrouteparams(['path' => $item->path], $item->domain ?? null)),
+                        'url' => cmsroute('cms.page', ['path' => $item->path], $item->domain ?? null),
                     ],
                 ] )->all(),
             ]) !!}</script>

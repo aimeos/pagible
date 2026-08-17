@@ -32,7 +32,7 @@
     $formid = $data->id ?? cms($page, 'id');
 @endphp
 
-<form action="{{ route('cms.api.contact', cmsrouteparams()) }}" method="POST" aria-describedby="contact-errors-{{ $formid }}"
+<form action="{{ cmsroute('cms.api.contact') }}" method="POST" aria-describedby="contact-errors-{{ $formid }}"
     toolname="contact" tooldescription="{{ __('Send a message to the site owner through the contact form') }}">
     <input type="hidden" name="_token" value="">
     <input type="hidden" name="schema" value="{{ $schema }}">
