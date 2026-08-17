@@ -37,7 +37,7 @@
                 {
                     "@@type": "BlogPosting",
                     "headline": {!! cmsjson(cms($item, 'title')) !!},
-                    "url": {!! cmsjson(route('cms.page', ['path' => $item->path])) !!},
+                    "url": {!! cmsjson(cmsroute('cms.page', ['path' => $item->path], $item->domain ?? null)) !!},
                     "datePublished": "{{ $item->created_at->toIso8601String() }}"
                 }
                 @if(!$loop->last),@endif

@@ -9,7 +9,7 @@
 
 <h2 class="title">{{ $data->title ?? '' }}</h2>
 
-<form action="{{ route('cms.api.contact') }}" method="POST" aria-describedby="contact-errors-{{ $data->id ?? cms($page, 'id') }}" toolname="contact" tooldescription="{{ __('Send a message to the site owner through the contact form') }}">
+<form action="{{ cmsroute('cms.api.contact') }}" method="POST" aria-describedby="contact-errors-{{ $data->id ?? cms($page, 'id') }}" toolname="contact" tooldescription="{{ __('Send a message to the site owner through the contact form') }}">
     <input type="hidden" name="_token" value="">
     @if($source ?? null)
         <input type="hidden" name="source" value="{{ $source }}">

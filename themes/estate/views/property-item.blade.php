@@ -1,4 +1,4 @@
-<a href="{{ route('cms.page', ['path' => $item->path]) }}" class="list-item"
+<a href="{{ cmsroute('cms.page', ['path' => $item->path], $item->domain ?? null) }}" class="list-item"
     aria-labelledby="property-title-{{ cms($item, 'id') ?: md5((string) $item->path) }}"
     aria-describedby="property-meta-{{ cms($item, 'id') ?: md5((string) $item->path) }}">
 @if($property = $property ?? collect(cms($item, 'content'))

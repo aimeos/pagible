@@ -49,6 +49,17 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testContactRoute()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id'];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		$this->assertStringContainsString( 'action="http://localhost/cmsapi/contact"', $html );
+	}
+
+
 	public function testRegisterCardsUrl()
 	{
 		$url = Schema::get( 'cms' )['content']['cards']['fields']['cards']['item']['url'];
