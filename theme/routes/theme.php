@@ -8,7 +8,7 @@ use Aimeos\Cms\Controllers;
 use Aimeos\Cms\Http\Middleware\Origin;
 use Illuminate\Support\Facades\Route;
 
-$options = config('cms.multidomain') ? ['domain' => '{domain}'] : [];
+$options = config('cms.multidomain') ? ['domain' => '{domain}', 'where' => ['domain' => '.+']] : [];
 $options['middleware'] = Origin::class;
 
 Route::group($options, function() {

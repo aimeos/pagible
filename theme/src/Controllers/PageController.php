@@ -57,8 +57,13 @@ class PageController extends Controller
      * @param string $domain Requested domain
      * @return Response|RedirectResponse Response of the controller action
      */
-    public function index( Request $request, string $path, string $domain = '' )
+    public function index( Request $request, string $path = '', string $domain = '' )
     {
+        if( $request->route() ) {
+            $path = (string) $request->route( 'path', '' );
+            $domain = (string) $request->route( 'domain', '' );
+        }
+
         $user = $request->user();
 
         if( Permission::can( 'page:view', $user ) ) {

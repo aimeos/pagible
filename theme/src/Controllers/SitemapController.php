@@ -49,11 +49,13 @@ class SitemapController extends Controller
      * Each chunk contains up to {@see self::URLS_PER_SITEMAP} URLs ordered by
      * id. Aborts with HTTP 404 if `$page` is outside the available range.
      *
-     * @param int $page One-based chunk index
+     * @param int|string $page One-based chunk index or leading multi-domain route parameter
      * @return StreamedResponse `<urlset>` XML response
      */
-    public function chunk( int $page ) : StreamedResponse
+    public function chunk( int|string $page ) : StreamedResponse
     {
+        $page = (int) ( request()->route( 'page' ) ?? $page );
+
         if( $page < 1 ) {
             abort( 404 );
         }
@@ -204,7 +206,7 @@ class SitemapController extends Controller
 
         for( $n = 1; $n <= $pages; $n++ )
         {
-            $route = route( 'cms.sitemap.chunk', ['page' => $n] );
+            $route = route( 'cms.sitemap.chunk', cmsrouteparams( ['page' => $n] ) );
             $entries[] = '<sitemap><loc>' . $route . '</loc><lastmod>' . $lastmod . '</lastmod></sitemap>';
         }
 

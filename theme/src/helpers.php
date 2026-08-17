@@ -259,12 +259,35 @@ if( !function_exists( 'cmsroute' ) )
      */
     function cmsroute( \Aimeos\Cms\Models\Page $page ) : string
     {
-        if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) ) {
-            $to = $page->latest?->data->to ?? null;
-            return $to ? url( $to ) : route( 'cms.page', ['path' => $page->latest?->data->path ?? $page->path] );
+        $preview = \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() );
+        $version = $preview ? $page->latest?->data : null;
+        $to = $preview ? ( $version->to ?? null ) : $page->to;
+        $params = cmsrouteparams(
+            ['path' => $version->path ?? $page->path],
+            $version->domain ?? $page->domain,
+        );
+
+        return $to ? url( $to ) : route( 'cms.page', $params );
+    }
+}
+
+
+if( !function_exists( 'cmsrouteparams' ) )
+{
+    /**
+     * Add the current or supplied host required by multi-domain CMS routes.
+     *
+     * @param array<string, mixed> $params Existing route parameters
+     * @param string|null $domain Explicit page domain, or null for the request host
+     * @return array<string, mixed> Route parameters including the domain when required
+     */
+    function cmsrouteparams( array $params = [], ?string $domain = null ) : array
+    {
+        if( config( 'cms.multidomain' ) ) {
+            $params['domain'] = $domain ?: ( $params['domain'] ?? null ) ?: request()->getHost();
         }
 
-        return $page->to ? url( $page->to ) : route( 'cms.page', ['path' => $page->path] );
+        return $params;
     }
 }
 
