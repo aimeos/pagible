@@ -120,8 +120,7 @@ export default {
           })
           .then((result) => {
             if (
-              result?.data?.pages?.data?.length > 0 &&
-              result?.data?.pages?.data?.some((page) => page.id != this.item.id)
+              result?.data?.pages?.data?.some((page) => page.id !== this.item.id)
             ) {
               this.messages.path = [this.$gettext('The path is already in use by another page')]
             } else {

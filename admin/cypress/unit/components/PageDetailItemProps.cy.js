@@ -19,7 +19,7 @@ const item = {
   domain: '',
 }
 
-function mountProps(props = {}, perms = {}) {
+function mountProps(props = {}, perms = {}, apollo = {}) {
   return cy.mount(PageDetailItemProps, {
     props: {
       item: { ...item },
@@ -27,6 +27,12 @@ function mountProps(props = {}, perms = {}) {
       ...props,
     },
     global: {
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({ data: { pages: { data: [] } } }),
+          ...apollo,
+        },
+      },
       stubs,
       provide: {
         debounce: (fn) => fn,
@@ -89,5 +95,39 @@ describe('PageDetailItemProps', () => {
   it('does not show domain field when multidomain is false', () => {
     mountProps()
     cy.contains('Domain').should('not.exist')
+  })
+
+  it('checks the published route while excluding the current page ID', () => {
+    const query = cy.stub().resolves({ data: { pages: { data: [{ id: 'page-id' }] } } })
+    const current = { ...item, id: 'page-id', path: 'features', domain: 'dev.example' }
+
+    mountProps({ item: current }, { 'page:save': true }, { query }).then(({ wrapper }) => {
+      const component = wrapper.findComponent(PageDetailItemProps)
+
+      return component.vm.checkPath().then(() => {
+        expect(query).to.have.been.called
+        expect(query.lastCall.args[0].variables).to.deep.equal({
+          filter: {
+            path: 'features',
+            domain: 'dev.example',
+          },
+        })
+        expect(component.vm.messages.path).to.deep.equal([])
+      })
+    })
+  })
+
+  it('shows an error when another published page uses the route', () => {
+    const query = cy.stub().resolves({ data: { pages: { data: [{ id: 'another-page' }] } } })
+
+    mountProps({}, { 'page:save': true }, { query }).then(({ wrapper }) => {
+      const component = wrapper.findComponent(PageDetailItemProps)
+
+      return component.vm.checkPath().then(() => {
+        expect(component.vm.messages.path).to.deep.equal([
+          'The path is already in use by another page',
+        ])
+      })
+    })
   })
 })

@@ -104,13 +104,24 @@ final class Query
     public function pages( $rootValue, array $args ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
+        $route = array_key_exists( 'path', $filter )
+            ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
+            : [];
         $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
         $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
         $search = Page::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
             ->searchFields( 'draft' );
 
-        Filter::pages( $search, $filter + $args );
+        Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
+
+        if( $route ) {
+            $search->query( function( $query ) use ( $route ) {
+                foreach( $route as $field => $value ) {
+                    $query->where( 'cms_pages.' . $field, (string) ( $value ?? '' ) );
+                }
+            } );
+        }
 
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
         $this->sort( $search, $args['sort'] ?? [], $allowed, NestedSet::LFT, 'asc' );

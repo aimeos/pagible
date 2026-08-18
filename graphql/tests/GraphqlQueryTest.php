@@ -60,6 +60,36 @@ class GraphqlQueryTest extends GraphqlTestAbstract
     }
 
 
+    public function testPagePathFilterUsesPublishedPageColumns()
+    {
+        $live = Page::where( 'path', 'blog' )->firstOrFail();
+        $dev = Page::where( 'path', 'hidden' )->firstOrFail();
+
+        $live->forceFill( ['path' => 'features', 'domain' => 'live.example'] )->saveQuietly();
+        $dev->forceFill( ['path' => 'features', 'domain' => 'dev.example'] )->saveQuietly();
+
+        $draft = $live->versions()->forceCreate( [
+            'lang' => 'en',
+            'data' => ['path' => 'features', 'domain' => 'dev.example'],
+            'editor' => 'test',
+        ] );
+        $live->forceFill( ['latest_id' => $draft->id] )->saveQuietly();
+
+        $response = $this->actingAs( $this->user )->graphQL( <<<'GRAPHQL'
+            query($filter: PageFilter) {
+                pages(filter: $filter) {
+                    data {
+                        id
+                    }
+                }
+            }
+            GRAPHQL, ['filter' => ['path' => 'features', 'domain' => 'dev.example']] );
+
+        $response->assertJsonCount( 1, 'data.pages.data' );
+        $this->assertSame( $dev->id, $response->json( 'data.pages.data.0.id' ) );
+    }
+
+
     public function testElements()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
