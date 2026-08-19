@@ -1060,9 +1060,10 @@ a.item-usage {
 }
 
 .items.list .v-list-item {
-  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
   content-visibility: auto;
   contain-intrinsic-size: auto 56px;
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  border-radius: 0;
   padding: 4px 0;
 }
 
@@ -1110,9 +1111,9 @@ a.item-usage {
 }
 
 .items.grid {
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   display: grid;
-  gap: 16px;
+  gap: 8px;
 }
 
 .items.grid .v-list-item {
@@ -1134,6 +1135,10 @@ a.item-usage {
   left: 0;
 }
 
+.items.grid .item-usage {
+  margin-top: 8px;
+}
+
 .items.grid .v-list-item .item-menu {
   background: rgb(var(--v-theme-surface-variant));
   color: rgb(var(--v-theme-surface));
@@ -1144,7 +1149,7 @@ a.item-usage {
 
 .items.grid .item-preview {
   display: flex;
-  height: 180px;
+  height: 160px;
   z-index: 1;
 }
 
@@ -1159,6 +1164,7 @@ a.item-usage {
 .items.grid .item-content {
   flex-direction: column;
   margin-top: 16px;
+  display: none;
 }
 
 .items.grid .item-aux {

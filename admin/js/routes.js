@@ -51,6 +51,26 @@ const router = createRouter({
       }
     },
     {
+      path: '/files',
+      name: 'file:view',
+      component: () => import('./views/FileList.vue'),
+      meta: {
+        auth: true,
+        title: gettext.$gettext('Media')
+      }
+    },
+    {
+      path: '/files/:id',
+      name: 'file:detail',
+      component: () => import('./views/FileDetail.vue'),
+      props: itemProps(),
+      meta: {
+        auth: true,
+        permission: 'file:view',
+        title: gettext.$gettext('File')
+      }
+    },
+    {
       path: '/elements',
       name: 'element:view',
       component: () => import('./views/ElementList.vue'),
@@ -71,33 +91,13 @@ const router = createRouter({
       }
     },
     {
-      path: '/files',
-      name: 'file:view',
-      component: () => import('./views/FileList.vue'),
-      meta: {
-        auth: true,
-        title: gettext.$gettext('Files')
-      }
-    },
-    {
-      path: '/files/:id',
-      name: 'file:detail',
-      component: () => import('./views/FileDetail.vue'),
-      props: itemProps(),
-      meta: {
-        auth: true,
-        permission: 'file:view',
-        title: gettext.$gettext('File')
-      }
-    },
-    {
       path: '/access',
       name: 'access:view',
       component: () => import('./views/AccessList.vue'),
       meta: {
         auth: true,
         permission: ['access:view', 'user:access', 'user:permission', 'user:create'],
-        title: gettext.$gettext('Access')
+        title: gettext.$gettext('Users')
       }
     }
   ]

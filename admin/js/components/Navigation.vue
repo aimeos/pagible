@@ -19,14 +19,9 @@ export default {
     builtins() {
       return [
         { permission: 'page:view', path: '/pages', icon: mdiFileTree, label: this.$gettext('Pages') },
-        {
-          permission: 'element:view',
-          path: '/elements',
-          icon: mdiShareVariant,
-          label: this.$gettext('Shared elements')
-        },
-        { permission: 'file:view', path: '/files', icon: mdiFolderMultipleImage, label: this.$gettext('Files') },
-        { permission: 'access:view', path: '/access', icon: mdiKeyVariant, label: this.$gettext('Access') }
+        { permission: 'file:view', path: '/files', icon: mdiFolderMultipleImage, label: this.$gettext('Media') },
+        { permission: 'element:view', path: '/elements', icon: mdiShareVariant, label: this.$gettext('Shared elements') },
+        { permission: 'access:view', path: '/access', icon: mdiKeyVariant, label: this.$gettext('Users') }
       ]
     }
   },
@@ -65,8 +60,15 @@ export default {
 </template>
 
 <style scoped>
-.v-navigation-drawer {
-  border-top-right-radius: 8px;
+.v-navigation-drawer--left {
+  background-color: rgb(var(--v-theme-background));
+  border: none;
+  color: rgb(var(--v-theme-on-background));
+}
+
+.v-navigation-drawer--left .v-list {
+  background-color: transparent;
+  color: rgb(var(--v-theme-on-background));
 }
 
 .v-locale--is-rtl .v-navigation-drawer {
@@ -83,7 +85,7 @@ a.router-link:focus-visible {
 a.router-link,
 a.router-link:focus,
 a.router-link:visited {
-  color: rgb(var(--v-theme-on-surface-light));
+  color: rgb(var(--v-theme-on-background));
   align-items: center;
   display: flex;
   gap: 8px;
@@ -91,9 +93,8 @@ a.router-link:visited {
   padding: 8px;
 }
 
-.v-list-item:has(.router-link-active),
-.v-list-item:has(.router-link-active) a {
-  background-color: rgb(var(--v-theme-surface-light));
+.v-list-item:has(.router-link-active) {
+  background-color: rgba(var(--v-theme-on-background), var(--v-selected-opacity));
 }
 
 .v-list-item .icon {

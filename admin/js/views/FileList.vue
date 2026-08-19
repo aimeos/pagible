@@ -141,7 +141,7 @@ export default {
     </template>
 
     <v-app-bar-title
-      ><h1>{{ $gettext('Files') }}</h1></v-app-bar-title
+      ><h1>{{ $gettext('Media') }}</h1></v-app-bar-title
     >
 
     <template #append>
@@ -158,7 +158,7 @@ export default {
 
   <Navigation />
 
-  <v-main class="file-list" :aria-label="$gettext('Files')">
+  <v-main class="file-list" :aria-label="$gettext('Media')">
     <v-container>
       <v-sheet class="box scroll">
         <FileListItems @select="open($event)" :filter="filter" />

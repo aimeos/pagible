@@ -15,7 +15,7 @@ return [
     'colors' => [
         'light' => [
             'colors' => [
-                'background' => '#F8FAFC',
+                'background' => '#1E293B',
                 'surface' => '#FFFFFF',
                 'primary' => '#002F6C',
                 'primary-darken-1' => '#001F4D',

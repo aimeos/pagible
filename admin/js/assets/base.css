@@ -62,6 +62,7 @@ input:-webkit-autofill:focus {
 
 .v-app-bar.v-toolbar {
   background-color: rgb(var(--v-theme-background));
+  color: rgb(var(--v-theme-on-background));
 }
 
 .v-toolbar .v-btn.error,
@@ -104,6 +105,7 @@ input:-webkit-autofill:focus {
 }
 
 .v-container {
+  height: 100%;
   padding: 0;
 }
 
@@ -123,7 +125,9 @@ input:-webkit-autofill:focus {
 }
 
 .v-sheet.box {
-  border-radius: 8px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  height: 100%;
   margin: 0 1%;
 }
 

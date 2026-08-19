@@ -142,13 +142,26 @@ function setupIntercept({
 
 function visitAccess(options) {
   const requests = setupIntercept(options)
+  const permissions = options?.permissions ?? ALL_PERMISSIONS
+  const canManageUsers = ['user:access', 'user:create', 'user:permission'].some(
+    (permission) => permissions[permission]
+  )
+
   cy.visit('/access')
-  cy.wait('@initialAccess')
+  if (canManageUsers) cy.contains('.v-tab', 'Roles', { timeout: 20000 }).click()
   cy.get('.access-roles', { timeout: 20000 }).should('exist')
   return requests
 }
 
 describe('Access list', () => {
+  it('shows Users first and by default when available', () => {
+    setupIntercept()
+    cy.visit('/access')
+
+    cy.get('.v-tab', { timeout: 20000 }).first().should('contain', 'Users').and('have.class', 'v-tab--selected')
+    cy.get('.access-users').should('exist')
+  })
+
   it('lists and filters access values', () => {
     visitAccess()
 
@@ -156,7 +169,7 @@ describe('Access list', () => {
     cy.contains('.v-tab', 'Roles').should('have.class', 'v-tab--selected')
     cy.contains('.v-tab', 'Users').should('exist')
     cy.get('.item-title').should('have.length', 2)
-    cy.get('.search input').type('mem')
+    cy.get('.access-roles .search input').type('mem')
     cy.get('.item-title').should('have.length', 1).and('contain', 'member')
   })
 

@@ -25,7 +25,7 @@ export default {
 
 <template>
   <v-dialog
-    :aria-label="$gettext('Files')"
+    :aria-label="$gettext('Media')"
     :modelValue="modelValue"
     @afterLeave="$emit('update:modelValue', false)"
     max-width="1200"
@@ -33,7 +33,7 @@ export default {
   >
     <v-card>
       <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Files') }}</v-toolbar-title>
+        <v-toolbar-title>{{ $gettext('Media') }}</v-toolbar-title>
         <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
       </v-toolbar>
       <v-card-text>
