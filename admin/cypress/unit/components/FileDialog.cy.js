@@ -24,9 +24,9 @@ describe('FileDialog', () => {
     cy.get('.v-dialog').should('exist')
   })
 
-  it('shows "Files" as the title', () => {
+  it('shows "Media" as the title', () => {
     mountDialog()
-    cy.contains('Files').should('exist')
+    cy.contains('Media').should('exist')
   })
 
   it('renders a close button', () => {

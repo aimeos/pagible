@@ -248,7 +248,7 @@ describe('File Filter Sidebar', () => {
 // Test Suite: Navigation Drawer (from files route)
 // ---------------------------------------------------------------------------
 
-describe('Navigation Drawer (Files)', () => {
+describe('Navigation Drawer (Media)', () => {
   it('nav toggle button opens the navigation drawer', () => {
     visitFiles([makeFile()])
     cy.get('.v-app-bar').first().find('.v-btn').first().click()
@@ -275,10 +275,10 @@ describe('Navigation Drawer (Files)', () => {
     cy.get('.v-navigation-drawer--left').contains('Shared elements').should('exist')
   })
 
-  it('shows Files link when user has file:view permission', () => {
+  it('shows Media link when user has file:view permission', () => {
     visitFiles([makeFile()])
     cy.get('.v-app-bar').first().find('.v-btn').first().click()
-    cy.get('.v-navigation-drawer--left').contains('Files').should('exist')
+    cy.get('.v-navigation-drawer--left').contains('Media').should('exist')
   })
 
   it('hides Pages link when user lacks page:view permission', () => {

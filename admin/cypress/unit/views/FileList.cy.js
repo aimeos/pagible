@@ -35,9 +35,9 @@ describe('FileList', () => {
     cy.get('.v-app-bar').should('exist')
   })
 
-  it('shows "Files" in the app bar title', () => {
+  it('shows "Media" in the app bar title', () => {
     mountFileList()
-    cy.get('.v-app-bar-title').should('contain', 'Files')
+    cy.get('.v-app-bar-title').should('contain', 'Media')
   })
 
   it('renders the navigation toggle button', () => {

@@ -159,9 +159,9 @@ function visitFiles(files = [], meResponse = ME_ADMIN) {
 describe('File List', () => {
   // ---- Layout & app bar ----
 
-  it('shows "Files" title in app bar', () => {
+  it('shows "Media" title in app bar', () => {
     visitFiles()
-    cy.get('.v-app-bar-title').should('contain', 'Files')
+    cy.get('.v-app-bar-title').should('contain', 'Media')
   })
 
   it('shows navigation toggle and aside toggle buttons in app bar', () => {

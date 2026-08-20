@@ -262,10 +262,10 @@ describe('Navigation Drawer (Elements)', () => {
     cy.get('.v-navigation-drawer--left').contains('Shared elements').should('exist')
   })
 
-  it('shows Files link when user has file:view permission', () => {
+  it('shows Media link when user has file:view permission', () => {
     visitElements([makeElement()])
     cy.get('.v-app-bar').first().find('.v-btn').first().click()
-    cy.get('.v-navigation-drawer--left').contains('Files').should('exist')
+    cy.get('.v-navigation-drawer--left').contains('Media').should('exist')
   })
 
   it('hides Pages link when user lacks page:view permission', () => {
@@ -282,7 +282,7 @@ describe('Navigation Drawer (Elements)', () => {
     cy.get('.v-navigation-drawer--left').contains('Pages').should('not.exist')
   })
 
-  it('hides Files link when user lacks file:view permission', () => {
+  it('hides Media link when user lacks file:view permission', () => {
     const perms = { ...ALL_PERMISSIONS }
     delete perms['file:view']
     const me = {
@@ -293,6 +293,6 @@ describe('Navigation Drawer (Elements)', () => {
     visitElements([], me)
     cy.get('.v-app-bar').first().find('.v-btn').first().click()
     cy.get('.v-navigation-drawer--left').should('be.visible')
-    cy.get('.v-navigation-drawer--left').contains('Files').should('not.exist')
+    cy.get('.v-navigation-drawer--left').contains('Media').should('not.exist')
   })
 })

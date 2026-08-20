@@ -1,10 +1,8 @@
 /**
  * E2E tests for the element detail view.
  *
- * The ElementDetail component opens via Vue Router navigation when an
- * element item is clicked in the list (/elements → /elements/:id). The
- * list view is replaced by the detail view inside the same router-view
- * container.
+ * The ElementDetail component opens through its Vue Router route
+ * (/elements/:id) and is replaced by the list view when navigating back.
  *
  * GraphQL is intercepted at POST /graphql. Apollo's BatchHttpLink sends
  * requests as JSON arrays, so the handler checks whether req.body is an
@@ -66,7 +64,7 @@ function makeElement(overrides = {}) {
       id: '10',
       published: true,
       publish_at: null,
-      data: JSON.stringify({ name: 'Hero Banner', type: 'heading', lang: 'en' }),
+      data: JSON.stringify({ name: 'Hero Banner', type: 'heading', lang: 'en', data: {} }),
       editor: 'admin@example.com',
       created_at: '2026-01-01 00:00:00',
     },
@@ -81,7 +79,7 @@ function makeElementDetail(overrides = {}) {
     latest: {
       id: '10',
       published: true,
-      data: JSON.stringify({ name: 'Hero Banner', type: 'heading', lang: 'en' }),
+      data: JSON.stringify({ name: 'Hero Banner', type: 'heading', lang: 'en', data: {} }),
       editor: 'admin@example.com',
       created_at: '2026-01-01 00:00:00',
       files: [],
@@ -155,6 +153,10 @@ function setupIntercept({
   cy.intercept('POST', '/graphql', (req) => {
     const isBatch = Array.isArray(req.body)
     const ops = isBatch ? req.body : [req.body]
+
+    if (ops.some((op) => /\belement\s*\(/.test(op.query || '') && !/\belements\s*\(/.test(op.query || ''))) {
+      req.alias = 'elementDetail'
+    }
 
     const responses = ops.map((op) => {
       const query = op.query || ''
@@ -232,17 +234,16 @@ function setupIntercept({
 }
 
 /**
- * Navigate to /elements, wait for initial queries, click an element to
- * navigate to /elements/:id, and wait for the detail data query.
+ * Navigate to /elements/:id and wait for the detail data query.
  */
 function visitElementDetail(elementOverrides = {}, detailOverrides = {}, meResponse = ME_ADMIN) {
   const element = makeElement(elementOverrides)
   const detail = makeElementDetail(detailOverrides)
-  setupIntercept({ meResponse, elements: [element], elementDetail: detail })
-  cy.visit('/elements')
-  cy.get('.item-text').first().click()
+  setupIntercept({ meResponse, elementDetail: detail })
+  cy.visit(`/elements/${element.id}`)
+  cy.wait('@elementDetail', { requestTimeout: 20000 })
   cy.url().should('include', '/elements/')
-  cy.get('.element-details').should('be.visible')
+  cy.get('.element-details', { timeout: 10000 }).should('be.visible')
 }
 
 /** Shorthand to scope selectors to the detail view. */
@@ -405,7 +406,6 @@ describe('Element Detail', () => {
     const page = makePageDetail()
 
     setupIntercept({
-      elements: [element],
       elementDetail: detail,
       elementRefs: {
         id: element.id,
@@ -415,8 +415,8 @@ describe('Element Detail', () => {
       pageDetail: page,
     })
 
-    cy.visit('/elements')
-    cy.get('.item-text').first().click()
+    cy.visit(`/elements/${element.id}`)
+    cy.wait('@elementDetail', { requestTimeout: 20000 })
     detailView().find('.v-tab').contains('Used by').click()
     detailView().find('.v-table.pages tbody tr').click()
 
