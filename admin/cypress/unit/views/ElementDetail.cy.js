@@ -1,5 +1,6 @@
 import ElementDetail from '../../../js/views/ElementDetail.vue'
 import { useSchemaStore, useUserStore } from '../../../js/stores'
+import '../../../js/assets/base.css'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
@@ -71,7 +72,10 @@ describe('ElementDetail', () => {
 
   it('shows the Element tab as active by default', () => {
     mountDetail()
-    cy.contains('.v-tab', 'Element').should('have.class', 'v-tab--selected')
+    cy.contains('.detail-tabs .v-tab', 'Element')
+      .should('have.class', 'v-tab--selected')
+      .and('have.css', 'background-color', 'rgba(0, 0, 0, 0.08)')
+    cy.get('.detail-tabs .v-tab__slider').should('not.exist')
   })
 
   it('renders the ElementDetailItem stub in the Element tab', () => {

@@ -1,5 +1,6 @@
 import FileDetail from '../../../js/views/FileDetail.vue'
 import { useUserStore, useMessageStore } from '../../../js/stores'
+import '../../../js/assets/base.css'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
@@ -69,7 +70,10 @@ describe('FileDetail', () => {
 
   it('shows the File tab as active by default', () => {
     mountDetail()
-    cy.contains('.v-tab', 'File').should('have.class', 'v-tab--selected')
+    cy.contains('.detail-tabs .v-tab', 'File')
+      .should('have.class', 'v-tab--selected')
+      .and('have.css', 'background-color', 'rgba(0, 0, 0, 0.08)')
+    cy.get('.detail-tabs .v-tab__slider').should('not.exist')
   })
 
   it('renders the FileDetailItem stub', () => {

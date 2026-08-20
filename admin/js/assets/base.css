@@ -84,6 +84,11 @@ input:-webkit-autofill:focus {
   border-radius: 8px;
 }
 
+.detail-tabs .v-tab--selected {
+  background-color: rgba(var(--v-theme-on-background), var(--v-selected-opacity));
+  border-radius: 8px;
+}
+
 .v-tab.changed:before,
 .v-tab.error:before {
   content: '•';

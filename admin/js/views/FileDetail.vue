@@ -405,7 +405,7 @@ export default {
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />
     <v-form v-else @submit.prevent>
-      <v-tabs fixed-tabs v-model="tab">
+      <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
         <v-tab value="file" :class="{ changed: dirty, error: error }">{{
           $gettext('File')
         }}</v-tab>

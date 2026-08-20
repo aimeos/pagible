@@ -1,5 +1,6 @@
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { useUserStore } from '../../../js/stores'
+import '../../../js/assets/base.css'
 
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
@@ -76,6 +77,14 @@ describe('PageDetail', () => {
     cy.contains('.v-tab', 'Editor').should('exist')
     cy.contains('.v-tab', 'Content').should('exist')
     cy.contains('.v-tab', 'Page').should('exist')
+  })
+
+  it('uses the drawer active state for the selected detail tab', () => {
+    mountDetail()
+    cy.contains('.detail-tabs .v-tab', 'Editor')
+      .should('have.class', 'v-tab--selected')
+      .and('have.css', 'background-color', 'rgba(0, 0, 0, 0.08)')
+    cy.get('.detail-tabs .v-tab__slider').should('not.exist')
   })
 
   it('shows Metrics tab when page:metrics permission is granted', () => {
