@@ -51,21 +51,7 @@ const socketLink = new ApolloLink((operation, forward) => {
   return forward(operation)
 })
 
-const errorLink = onError(({ errors }) => {
-  if (!errors) return
-
-  for (const err of errors) {
-    if (
-      err.message === 'This action is unauthorized.' ||
-      err.extensions?.code === 'UNAUTHENTICATED' ||
-      err.extensions?.http?.status === 401
-    ) {
-      useUserStore().me = null
-      router.push({ name: 'login' })
-      break
-    }
-  }
-})
+const errorLink = onError(handleError)
 
 let uploadLink = null
 
@@ -81,6 +67,18 @@ export function graphqlFetch(input, init) {
 
     return response
   })
+}
+
+export function handleError({ errors, networkError }) {
+  const unauthorized = networkError?.statusCode === 419 || errors?.some((err) =>
+    err.extensions?.code === 'UNAUTHENTICATED' ||
+    err.extensions?.http?.status === 401
+  )
+
+  if (!unauthorized) return
+
+  useUserStore().me = null
+  router.push({ name: 'login' })
 }
 
 const lazyUploadLink = new ApolloLink((operation, forward) => {
