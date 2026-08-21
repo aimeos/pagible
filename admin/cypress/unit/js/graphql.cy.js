@@ -1,4 +1,25 @@
-import { graphqlFetch } from '../../../js/graphql'
+import { createPinia, setActivePinia } from 'pinia'
+import router from '../../../js/routes'
+import { useUserStore } from '../../../js/stores'
+import { graphqlFetch, handleError } from '../../../js/graphql'
+
+describe('handleError()', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('redirects to login on an HTTP 419 error', () => {
+    const user = useUserStore()
+    user.me = { id: 'user-1' }
+
+    cy.stub(router, 'push').as('routerPush').resolves()
+
+    handleError({ networkError: { statusCode: 419 } })
+
+    expect(user.me).to.equal(null)
+    cy.get('@routerPush').should('have.been.calledOnceWith', { name: 'login' })
+  })
+})
 
 describe('graphqlFetch()', () => {
   it('passes successful responses through', () => {
