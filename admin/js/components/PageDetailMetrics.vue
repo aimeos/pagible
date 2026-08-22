@@ -627,7 +627,17 @@ export default {
 }
 
 .emphasis-bg {
-  background-color: rgb(var(--v-theme-background));
+  background-color: rgb(var(--v-theme-emphasis, var(--v-theme-surface-light)));
+  color: rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)));
+}
+
+.emphasis-bg .text-medium-emphasis {
+  color: color-mix(
+    in srgb,
+    rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)))
+      calc(var(--v-medium-emphasis-opacity) * 100%),
+    transparent
+  );
 }
 
 .title,

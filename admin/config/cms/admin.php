@@ -17,6 +17,8 @@ return [
             'colors' => [
                 'background' => '#1E293B',
                 'surface' => '#FFFFFF',
+                'emphasis' => '#F8FAFC',
+                'on-emphasis' => '#0F172A',
                 'primary' => '#002F6C',
                 'primary-darken-1' => '#001F4D',
                 'secondary' => '#10B981',
@@ -35,6 +37,8 @@ return [
             'colors' => [
                 'background' => '#0F172A',
                 'surface' => '#1E293B',
+                'emphasis' => '#0F172A',
+                'on-emphasis' => '#F1F5F9',
                 'primary' => '#3B82F6',
                 'primary-darken-1' => '#2563EB',
                 'secondary' => '#34D399',

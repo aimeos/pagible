@@ -61,9 +61,21 @@ describe('PageDetailMetrics', () => {
     cy.get('.v-progress-circular').should('exist')
   })
 
-  it('renders the weekly insights card', () => {
+  it('renders the weekly insights card with emphasis colors', () => {
     mountMetrics()
-    cy.contains('Weekly Insights').should('exist')
+    cy.contains('.v-card-title', 'Weekly Insights')
+      .closest('.v-card')
+      .should('have.class', 'emphasis-bg')
+      .then(($card) => {
+        $card[0].style.setProperty('--v-theme-emphasis', '248, 250, 252')
+        $card[0].style.setProperty('--v-theme-on-emphasis', '15, 23, 42')
+        $card[0].style.setProperty('--v-medium-emphasis-opacity', '1')
+      })
+      .should('have.css', 'background-color', 'rgb(248, 250, 252)')
+      .and('have.css', 'color', 'rgb(15, 23, 42)')
+      .find('.text-medium-emphasis')
+      .first()
+      .should('have.css', 'color', 'rgb(15, 23, 42)')
   })
 
   it('shows dash when no data is available', () => {
