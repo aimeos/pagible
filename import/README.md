@@ -15,6 +15,8 @@ This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pag
 ### cms:wp-import
 
 Imports WordPress posts into Pagible CMS as blog article pages.
+Re-importing the same domain and post slug updates and republishes the existing
+article instead of creating another page.
 
 ```bash
 php artisan cms:wp-import [options]
@@ -29,7 +31,8 @@ php artisan cms:wp-import [options]
 | `--blog-path` | `blog` | URL path of the parent blog page |
 | `--blog-name` | `Blog` | Name of the parent blog page |
 | `--type` | `blog` | Page type for imported pages |
-| `--media-url` | | Base URL for WordPress uploads (replaces `wp-content/uploads` path) |
+| `--theme` | | Pagible theme assigned to imported pages and the blog parent |
+| `--media-url` | | Media base URL; repeatable, with the first replacing `wp-content/uploads` paths |
 | `--editor` | `wp-import` | Editor name for imported records |
 | `--dry-run` | | Show what would be imported without making changes |
 
@@ -59,7 +62,10 @@ The importer converts WordPress Gutenberg blocks to Pagible content elements:
 - Video and audio embeds
 - Notice/callout blocks
 
-Featured images and inline media are imported as Pagible File records with published versions.
+Media below `wp-content/uploads` or any configured `--media-url` base is
+downloaded into Pagible file storage and imported with a published File version.
+The first media base also replaces `wp-content/uploads` URLs. Media outside
+those locations remains an external URL reference.
 
 ## License
 
