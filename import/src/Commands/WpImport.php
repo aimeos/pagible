@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\File;
@@ -27,7 +28,8 @@ class WpImport extends Command
         {--blog-path=blog : Path of the parent blog page}
         {--blog-name=Blog : Name of the parent blog page}
         {--type=blog : Page type for imported pages (blog, docs, page, ...)}
-        {--media-url= : Base URL for WordPress uploads (replaces wp-content/uploads path)}
+        {--theme= : Pagible theme name applied to imported pages}
+        {--media-url=* : Media base URL; repeatable, first value replaces wp-content/uploads paths}
         {--editor=wp-import : Editor name for imported records}
         {--dry-run : Show what would be imported without making changes}';
 
@@ -40,12 +42,16 @@ class WpImport extends Command
     protected string $domain;
     protected string $lang;
     protected string $type;
-    protected string $mediaUrl;
+    protected string $theme;
+    /** @var array<string> */
+    protected array $mediaUrls = [];
     protected string $editor;
     /** @var array<int|string, array{guid: string, title: string, mime: string}> */
     protected array $attachmentsById = [];
     /** @var array<string, array{guid: string, title: string, mime: string}> */
     protected array $attachmentsByBasename = [];
+    /** @var array<string, string> */
+    protected array $createdFileIds = [];
 
 
     /**
@@ -61,10 +67,21 @@ class WpImport extends Command
         $this->lang = is_string( $optLang ) ? $optLang : 'en';
         $optType = $this->option( 'type' );
         $this->type = is_string( $optType ) ? $optType : 'blog';
+        $optTheme = $this->option( 'theme' );
+        $this->theme = is_string( $optTheme ) ? $optTheme : '';
         $optMedia = $this->option( 'media-url' );
-        $this->mediaUrl = rtrim( is_string( $optMedia ) ? $optMedia : '', '/' );
+        $this->mediaUrls = [];
+
+        foreach( is_array( $optMedia ) ? $optMedia : [$optMedia] as $url )
+        {
+            if( is_string( $url ) && ( $url = rtrim( trim( $url ), '/' ) ) !== ''
+                && !in_array( $url, $this->mediaUrls, true ) ) {
+                $this->mediaUrls[] = $url;
+            }
+        }
         $optEditor = $this->option( 'editor' );
         $this->editor = is_string( $optEditor ) ? $optEditor : 'wp-import';
+        $this->createdFileIds = [];
 
         $this->setupTenant();
 
@@ -133,6 +150,7 @@ class WpImport extends Command
             'path' => $slug,
             'tag' => 'article',
             'type' => $this->type,
+            'theme' => $this->theme,
             'domain' => $this->domain,
             'lang' => $this->lang,
             'status' => 1,
@@ -238,7 +256,7 @@ class WpImport extends Command
     /**
      * Creates a File record with a published version.
      */
-    protected function createFile( string $mime, string $name, string $path ): ?string
+    protected function createFile( string $mime, string $name, string $path, bool $download = false ): ?string
     {
         $path = $this->rewriteMediaUrl( $path );
 
@@ -246,22 +264,71 @@ class WpImport extends Command
             return null;
         }
 
-        $file = File::forceCreate( [
-            'mime' => $mime,
-            'name' => $name,
-            'path' => $path,
-            'editor' => $this->editor,
-        ] );
+        if( ( $id = $this->createdFileIds[$path] ?? null ) && File::whereKey( $id )->exists() ) {
+            return $id;
+        }
 
-        $version = $file->versions()->forceCreate( [
-            'data' => ['mime' => $mime, 'name' => $name, 'path' => $path, 'previews' => []],
-            'editor' => $this->editor,
-        ] );
+        $file = new File();
+        $resource = null;
 
-        $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $file->publish( $version );
+        try
+        {
+            $file->mime = $mime;
+            $file->name = $name;
+            $file->editor = $this->editor;
 
-        return $file->id ?? '';
+            if( $download )
+            {
+                $resource = $this->downloadFile( $path );
+
+                if( $mime === 'image/svg+xml' ) {
+                    $this->prepareSvgResource( $resource );
+                }
+
+                $tmp = stream_get_meta_data( $resource )['uri'] ?? null;
+                $filename = basename( rawurldecode( (string) parse_url( $path, PHP_URL_PATH ) ) ) ?: $name;
+
+                if( !is_string( $tmp ) ) {
+                    throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
+                }
+
+                $file->ingest( new UploadedFile( $tmp, $filename, $mime, null, true ) );
+            }
+            else
+            {
+                $file->path = $path;
+                $file->previews = [];
+            }
+
+            $file->save();
+
+            $snapshot = File::snapshot( $file->toArray() );
+            $version = $file->versions()->forceCreate( [
+                'lang' => $file->lang,
+                'data' => $snapshot['data'],
+                'aux' => $snapshot['aux'],
+                'editor' => $this->editor,
+            ] );
+
+            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $file->publish( $version );
+
+            $id = $file->id ?? '';
+            $this->createdFileIds[$path] = $id;
+
+            return $id;
+        }
+        catch( \Throwable $e )
+        {
+            $file->removePreviews()->removeFile();
+            throw $e;
+        }
+        finally
+        {
+            if( is_resource( $resource ) ) {
+                fclose( $resource );
+            }
+        }
     }
 
 
@@ -276,7 +343,7 @@ class WpImport extends Command
         $name = $alt ?: $attachment['title'] ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
         $mime = $attachment['mime'] ?: $this->guessMimeFromUrl( $url );
 
-        return $this->createFile( $mime, $name, $url );
+        return $this->createFile( $mime, $name, $url, $this->isManagedMediaUrl( $url ) );
     }
 
 
@@ -288,7 +355,91 @@ class WpImport extends Command
         $name = $alt ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
         $mime = $this->guessMimeFromUrl( $url );
 
-        return $this->createFile( $mime, $name, $url );
+        return $this->createFile( $mime, $name, $url, $this->isManagedMediaUrl( $url ) );
+    }
+
+
+    /**
+     * Downloads a remote file into a bounded temporary stream.
+     *
+     * @return resource
+     */
+    protected function downloadFile( string $url )
+    {
+        $response = Utils::http( $url, ['stream' => true] );
+
+        if( !$response->successful() ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
+        }
+
+        $limit = max( 0, (float) config( 'cms.upload.filesize', 50 ) );
+        $max = (int) ( $limit * 1024 * 1024 );
+        $body = $response->toPsrResponse()->getBody();
+        $length = trim( $response->header( 'Content-Length' ) );
+
+        if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
+            $body->close();
+            throw new \Aimeos\Cms\Exception( 'Remote file exceeds the maximum upload size' );
+        }
+
+        if( !( $tmp = tmpfile() ) ) {
+            $body->close();
+            throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
+        }
+
+        $size = 0;
+
+        while( !$body->eof() )
+        {
+            $chunk = $body->read( min( 1048576, $max - $size + 1 ) );
+            $size += strlen( $chunk );
+
+            if( $size > $max ) {
+                $body->close();
+                fclose( $tmp );
+                throw new \Aimeos\Cms\Exception( 'Remote file exceeds the maximum upload size' );
+            }
+
+            fwrite( $tmp, $chunk );
+        }
+
+        $body->close();
+        fseek( $tmp, 0 );
+
+        return $tmp;
+    }
+
+
+    /**
+     * Adds an XML declaration so fileinfo recognizes plain SVG markup.
+     *
+     * @param resource $resource
+     */
+    protected function prepareSvgResource( $resource ): void
+    {
+        rewind( $resource );
+        $content = stream_get_contents( $resource );
+
+        if( !is_string( $content ) ) {
+            throw new \Aimeos\Cms\Exception( 'Unable to read SVG file' );
+        }
+
+        $normalized = (string) preg_replace( '/^\xEF\xBB\xBF/', '', $content );
+
+        if( preg_match( '/^\s*<\?xml\b/i', $normalized ) !== 1 ) {
+            $normalized = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $normalized;
+        }
+
+        if( $normalized !== $content )
+        {
+            rewind( $resource );
+
+            if( !ftruncate( $resource, 0 ) || fwrite( $resource, $normalized ) !== strlen( $normalized ) ) {
+                throw new \Aimeos\Cms\Exception( 'Unable to normalize SVG file' );
+            }
+        }
+
+        rewind( $resource );
     }
 
 
@@ -320,6 +471,7 @@ class WpImport extends Command
     protected function fetchAttachments(): void
     {
         $this->attachmentsById = [];
+        $this->attachmentsByBasename = [];
 
         DB::connection( $this->wpConnection )
             ->table( 'wp_posts' )
@@ -357,6 +509,24 @@ class WpImport extends Command
 
 
     /**
+     * Finds an existing article by its unique destination route.
+     */
+    protected function findArticlePage( string $slug ): ?Page
+    {
+        $page = Page::withTrashed()
+            ->where( 'domain', $this->domain )
+            ->where( 'path', $slug )
+            ->first();
+
+        if( $page?->trashed() ) {
+            $page->restore();
+        }
+
+        return $page;
+    }
+
+
+    /**
      * Finds a WordPress attachment matching the given image URL.
      */
     /**
@@ -376,6 +546,35 @@ class WpImport extends Command
 
 
     /**
+     * Publishes the selected theme for an existing blog page.
+     */
+    protected function updateBlogTheme( Page $page ): void
+    {
+        if( $this->theme === '' || $page->theme === $this->theme ) {
+            return;
+        }
+
+        $data = $page->toArray();
+        $data['theme'] = $this->theme;
+        $version = $page->versions()->forceCreate( [
+            'lang' => $page->lang ?: $this->lang,
+            'data' => $data,
+            'aux' => [
+                'content' => (array) $page->content,
+                'config' => $page->config,
+                'meta' => $page->meta,
+            ],
+            'editor' => $this->editor,
+        ] );
+
+        $version->files()->attach( $page->files->keys()->all() );
+        $version->elements()->attach( $page->elements->keys()->all() );
+        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $page->publish( $version );
+    }
+
+
+    /**
      * Finds or creates the parent blog page.
      */
     protected function getBlogPage(): Page
@@ -385,9 +584,18 @@ class WpImport extends Command
         $optName = $this->option( 'blog-name' );
         $blogName = is_string( $optName ) ? $optName : 'Blog';
 
-        $page = Page::where( 'path', $blogPath )->first();
+        $page = Page::withTrashed()
+            ->where( 'domain', $this->domain )
+            ->where( 'path', $blogPath )
+            ->first();
 
         if( $page ) {
+            if( $page->trashed() ) {
+                $page->restore();
+            }
+
+            $this->updateBlogTheme( $page );
+
             $this->info( "Using existing blog page: {$page->name} (/{$blogPath})" );
             return $page;
         }
@@ -398,6 +606,8 @@ class WpImport extends Command
             'path' => $blogPath,
             'domain' => $this->domain,
             'lang' => $this->lang,
+            'type' => $this->type,
+            'theme' => $this->theme,
             'status' => 1,
             'editor' => $this->editor,
             'content' => [
@@ -405,7 +615,7 @@ class WpImport extends Command
             ],
         ] );
 
-        if( $root = Page::where( 'tag', 'root' )->first() ) {
+        if( $root = Page::where( 'tag', 'root' )->where( 'domain', $this->domain )->first() ) {
             $page->appendToNode( $root )->save();
         }
 
@@ -416,6 +626,8 @@ class WpImport extends Command
                 'title' => $blogName,
                 'path' => $blogPath,
                 'domain' => $this->domain,
+                'type' => $this->type,
+                'theme' => $this->theme,
                 'status' => 1,
                 'editor' => $this->editor,
             ],
@@ -569,11 +781,13 @@ class WpImport extends Command
     /**
      * Imports a single WordPress post as a Pagible blog article page.
      */
-    protected function importPost( object $post, Page $blogPage ): void
+    protected function importPost( object $post, Page $blogPage ): bool
     {
         $slug = $post->post_name ?: Utils::slugify( $post->post_title ); // @phpstan-ignore-line property.notFound
         $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ); // @phpstan-ignore-line property.notFound
         $intro = $post->post_excerpt ?: $this->extractIntro( $post->post_content ); // @phpstan-ignore-line property.notFound
+        $page = $this->findArticlePage( $slug );
+        $updated = $page !== null;
 
         $content = $this->parseContent( $post->post_content ); // @phpstan-ignore property.notFound
         $coverFileId = $this->importFeaturedImage( $post->ID ); // @phpstan-ignore property.notFound
@@ -582,12 +796,19 @@ class WpImport extends Command
         $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
         $pageData = $this->buildPageData( $title, $slug );
 
-        $page = $this->createArticlePage( $pageData, $contentElements, $blogPage );
+        if( !$page ) {
+            $page = $this->createArticlePage( $pageData, $contentElements, $blogPage );
+        } elseif( $page->parent_id !== $blogPage->id ) {
+            $page->appendToNode( $blogPage )->save();
+        }
+
         $this->createArticleVersion( $page, $pageData, $contentElements, $fileIds );
 
         if( $post->post_date && $post->post_date !== '0000-00-00 00:00:00' ) { // @phpstan-ignore property.notFound
             $page->update( ['created_at' => $post->post_date] );
         }
+
+        return $updated;
     }
 
 
@@ -597,24 +818,85 @@ class WpImport extends Command
     protected function importPosts( \Illuminate\Database\Query\Builder $query, Page $blogPage, int $total ): void
     {
         $imported = 0;
+        $updated = 0;
 
-        $query->chunk( 100, function( $posts ) use ( $blogPage, &$imported ) {
+        $query->chunk( 100, function( $posts ) use ( $blogPage, &$imported, &$updated ) {
             foreach( $posts as $post )
             {
                 try {
-                    DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
-                        $this->importPost( $post, $blogPage );
+                    $existing = DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
+                        return $this->importPost( $post, $blogPage );
                     } );
 
-                    $imported++;
-                    $this->info( "  Imported: {$post->post_title}" );
+                    $existing ? $updated++ : $imported++;
+                    $action = $existing ? 'Updated' : 'Imported';
+                    $this->info( "  {$action}: {$post->post_title}" );
                 } catch( \Exception $e ) {
                     $this->error( "  Failed to import [{$post->ID}] {$post->post_title}: " . $e->getMessage() );
                 }
             }
         } );
 
-        $this->info( "Import complete. {$imported}/{$total} posts imported." );
+        $processed = $imported + $updated;
+        $this->info( "Import complete. {$imported} imported, {$updated} updated ({$processed}/{$total} posts processed)." );
+    }
+
+
+    /**
+     * Tests whether a media URL belongs to WordPress-managed uploads.
+     */
+    protected function isManagedMediaUrl( string $url ): bool
+    {
+        $url = html_entity_decode( trim( $url ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+        $path = parse_url( $url, PHP_URL_PATH );
+
+        if( is_string( $path ) && preg_match( '#(?:^|/)wp-content/uploads(?:/|$)#i', $path ) === 1 ) {
+            return true;
+        }
+
+        foreach( $this->mediaUrls as $base )
+        {
+            if( $this->matchesMediaBase( $url, $base ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Tests whether a URL is located at or below a configured media base URL.
+     */
+    protected function matchesMediaBase( string $url, string $base ): bool
+    {
+        $candidate = parse_url( $url );
+        $configured = parse_url( $base );
+
+        if( !is_array( $candidate ) || !is_array( $configured ) ) {
+            return false;
+        }
+
+        $scheme = strtolower( (string) ( $candidate['scheme'] ?? '' ) );
+        $baseScheme = strtolower( (string) ( $configured['scheme'] ?? '' ) );
+        $host = strtolower( (string) ( $candidate['host'] ?? '' ) );
+        $baseHost = strtolower( (string) ( $configured['host'] ?? '' ) );
+
+        if( !in_array( $scheme, ['http', 'https'], true ) || $scheme !== $baseScheme || $host === '' || $host !== $baseHost ) {
+            return false;
+        }
+
+        $port = (int) ( $candidate['port'] ?? ( $scheme === 'https' ? 443 : 80 ) );
+        $basePort = (int) ( $configured['port'] ?? ( $baseScheme === 'https' ? 443 : 80 ) );
+
+        if( $port !== $basePort ) {
+            return false;
+        }
+
+        $path = '/' . ltrim( (string) ( $candidate['path'] ?? '/' ), '/' );
+        $basePath = rtrim( '/' . ltrim( (string) ( $configured['path'] ?? '/' ), '/' ), '/' ) ?: '/';
+
+        return $basePath === '/' || $path === $basePath || str_starts_with( $path, $basePath . '/' );
     }
 
 
@@ -1335,18 +1617,16 @@ class WpImport extends Command
      */
     protected function rewriteMediaUrl( string $url ): string
     {
-        if( empty( $this->mediaUrl ) ) {
+        $base = $this->mediaUrls[0] ?? '';
+
+        if( $base === '' ) {
             return $url;
         }
 
-        // Replace everything up to and including wp-content/uploads/
-        if( preg_match( '#^(https?://[^/]+)?/.+?/wp-content/uploads/(.+)$#i', $url, $m ) ) {
-            return $this->mediaUrl . '/' . $m[2];
-        }
+        $path = parse_url( html_entity_decode( $url, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), PHP_URL_PATH );
 
-        // Handle relative paths starting with wp-content/uploads/
-        if( preg_match( '#^/?wp-content/uploads/(.+)$#i', $url, $m ) ) {
-            return $this->mediaUrl . '/' . $m[1];
+        if( is_string( $path ) && preg_match( '#(?:^|/)wp-content/uploads/(.+)$#i', $path, $m ) ) {
+            return $base . '/' . $m[1];
         }
 
         return $url;

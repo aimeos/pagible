@@ -18,6 +18,9 @@
     <testsuite name="GraphQL">
       <directory>./graphql/tests/</directory>
     </testsuite>
+    <testsuite name="Import">
+      <directory>./import/tests/</directory>
+    </testsuite>
     <testsuite name="AI">
       <directory>./ai/tests/</directory>
     </testsuite>
