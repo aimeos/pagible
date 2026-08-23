@@ -46,6 +46,7 @@ class WpImportTest extends ImportTestAbstract
             $table->string( 'post_type' );
             $table->string( 'post_status' );
             $table->dateTime( 'post_date' );
+            $table->dateTime( 'post_date_gmt' )->nullable();
             $table->string( 'post_name' );
             $table->string( 'post_title' );
             $table->text( 'post_excerpt' );
@@ -75,6 +76,13 @@ class WpImportTest extends ImportTestAbstract
             'data' => ['text' => 'Shared footer'],
             'editor' => 'test',
         ] );
+        $footerFile = File::forceCreate( [
+            'mime' => 'image/png',
+            'name' => 'Footer image',
+            'path' => 'footer.png',
+            'editor' => 'test',
+        ] );
+        $footer->files()->attach( $footerFile->id );
         $blog->forceFill( ['content' => [[
             'type' => 'reference',
             'refid' => $footer->id,
@@ -87,6 +95,7 @@ class WpImportTest extends ImportTestAbstract
             'post_type' => 'post',
             'post_status' => 'publish',
             'post_date' => '2025-01-02 03:04:05',
+            'post_date_gmt' => '2025-01-02 02:04:05',
             'post_name' => 'example-post',
             'post_title' => 'Original title',
             'post_excerpt' => 'Original introduction',
@@ -116,6 +125,7 @@ class WpImportTest extends ImportTestAbstract
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->where( 'ID', 1 )->update( [
             'post_date' => '2026-02-03 04:05:06',
+            'post_date_gmt' => '2026-02-03 03:05:06',
             'post_title' => 'Updated title',
             'post_excerpt' => 'Updated introduction',
             'post_content' => '<p>Updated body</p>',
@@ -136,11 +146,13 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( $article->id, $updated->id );
         $this->assertSame( $blog->id, $updated->parent_id );
         $this->assertSame( 'Updated title', $updated->title );
+        $this->assertSame( '2026-02-03 03:05:06', $updated->getRawOriginal( 'created_at' ) );
         $this->assertSame( 'Updated introduction', $content[0]->data->text ?? null );
         $this->assertSame( 'Updated body', $content[1]->data->text ?? null );
         $this->assertSame( $footer->id, $content[2]->refid ?? null );
         $this->assertSame( 'footer', $content[2]->group ?? null );
         $this->assertSame( [$footer->id], $updated->elements()->pluck( 'cms_elements.id' )->all() );
+        $this->assertSame( [$footerFile->id], $updated->files()->pluck( 'cms_files.id' )->all() );
         $this->assertSame( 1, Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->count() );
         $this->assertSame( 2, $updated->versions()->count() );
     }

@@ -539,7 +539,7 @@ class WpImport extends Command
     /**
      * Returns the shared footer references inherited from the blog parent.
      *
-     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>}
+     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>, fileIds: array<string>}
      */
     protected function findFooterReferences( Page $blogPage ): array
     {
@@ -552,9 +552,20 @@ class WpImport extends Command
             ->values()
             ->all();
 
+        $elementIds = array_values( array_unique( array_column( $elements, 'refid' ) ) );
+        $fileIds = $blogPage->elements()
+            ->whereIn( 'cms_elements.id', $elementIds )
+            ->with( 'files:id' )
+            ->get()
+            ->flatMap( fn( $element ) => $element->files->pluck( 'id' ) )
+            ->unique()
+            ->values()
+            ->all();
+
         return [
             'elements' => $elements,
-            'elementIds' => array_values( array_unique( array_column( $elements, 'refid' ) ) ),
+            'elementIds' => $elementIds,
+            'fileIds' => $fileIds,
         ];
     }
 
@@ -850,7 +861,10 @@ class WpImport extends Command
             $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId ),
             $footer['elements']
         );
-        $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
+        $fileIds = array_values( array_unique( array_merge(
+            $this->collectFileIds( $content['fileIds'], $coverFileId ),
+            $footer['fileIds']
+        ) ) );
         $pageData = $this->buildPageData( $title, $slug );
 
         if( !$page ) {
@@ -861,8 +875,14 @@ class WpImport extends Command
 
         $this->createArticleVersion( $page, $pageData, $contentElements, $fileIds, $footer['elementIds'] );
 
-        if( $post->post_date && $post->post_date !== '0000-00-00 00:00:00' ) { // @phpstan-ignore property.notFound
-            $page->update( ['created_at' => $post->post_date] );
+        $date = $post->post_date_gmt ?? null;
+
+        if( !$date || $date === '0000-00-00 00:00:00' ) {
+            $date = $post->post_date ?? null;
+        }
+
+        if( $date && $date !== '0000-00-00 00:00:00' ) {
+            $page->forceFill( ['created_at' => $date] )->saveQuietly();
         }
 
         return $updated;
