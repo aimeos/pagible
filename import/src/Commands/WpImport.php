@@ -239,9 +239,11 @@ class WpImport extends Command
      * @param array<string, mixed> $pageData
      * @param array<int|string, mixed> $contentElements
      * @param array<string> $fileIds
+     * @param array<string> $elementIds
      */
-    protected function createArticleVersion( Page $page, array $pageData, array $contentElements, array $fileIds ): void
-    {
+    protected function createArticleVersion( Page $page, array $pageData, array $contentElements, array $fileIds,
+        array $elementIds
+    ): void {
         $version = $page->versions()->forceCreate( [
             'lang' => $this->lang,
             'data' => $pageData,
@@ -251,6 +253,9 @@ class WpImport extends Command
 
         if( !empty( $fileIds ) ) {
             $version->files()->attach( $fileIds );
+        }
+        if( !empty( $elementIds ) ) {
+            $version->elements()->attach( $elementIds );
         }
 
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
@@ -528,6 +533,29 @@ class WpImport extends Command
         }
 
         return $page;
+    }
+
+
+    /**
+     * Returns the shared footer references inherited from the blog parent.
+     *
+     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>}
+     */
+    protected function findFooterReferences( Page $blogPage ): array
+    {
+        $elements = collect( (array) $blogPage->content )
+            ->filter( fn( $item ) => ( $item->type ?? null ) === 'reference'
+                && ( $item->group ?? null ) === 'footer'
+                && is_string( $item->refid ?? null )
+                && $item->refid !== '' )
+            ->map( fn( $item ) => (array) $item )
+            ->values()
+            ->all();
+
+        return [
+            'elements' => $elements,
+            'elementIds' => array_values( array_unique( array_column( $elements, 'refid' ) ) ),
+        ];
     }
 
 
@@ -816,8 +844,12 @@ class WpImport extends Command
         $content = $this->parseContent( $post->post_content ); // @phpstan-ignore property.notFound
         $coverFileId = $this->importFeaturedImage( $post->ID ); // @phpstan-ignore property.notFound
         $previewFileId = $coverFileId ?? $this->findPreviewFileId( $content['fileIds'] );
+        $footer = $this->findFooterReferences( $blogPage );
 
-        $contentElements = $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId );
+        $contentElements = array_merge(
+            $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId ),
+            $footer['elements']
+        );
         $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
         $pageData = $this->buildPageData( $title, $slug );
 
@@ -827,7 +859,7 @@ class WpImport extends Command
             $page->appendToNode( $blogPage )->save();
         }
 
-        $this->createArticleVersion( $page, $pageData, $contentElements, $fileIds );
+        $this->createArticleVersion( $page, $pageData, $contentElements, $fileIds, $footer['elementIds'] );
 
         if( $post->post_date && $post->post_date !== '0000-00-00 00:00:00' ) { // @phpstan-ignore property.notFound
             $page->update( ['created_at' => $post->post_date] );

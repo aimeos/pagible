@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Database\Schema\Blueprint;
@@ -67,6 +68,19 @@ class WpImportTest extends ImportTestAbstract
         $oldBlog = $this->page( 'Tips', 'tips', 'old.example', 'page', $oldRoot );
         $root = $this->page( 'New root', '', 'new.example', 'root' );
         $blog = $this->page( 'Tips', 'tips', 'new.example', 'page', $root );
+        $footer = Element::forceCreate( [
+            'lang' => 'en',
+            'type' => 'footer',
+            'name' => 'Shared footer',
+            'data' => ['text' => 'Shared footer'],
+            'editor' => 'test',
+        ] );
+        $blog->forceFill( ['content' => [[
+            'type' => 'reference',
+            'refid' => $footer->id,
+            'group' => 'footer',
+        ]]] )->saveQuietly();
+        $blog->elements()->attach( $footer->id );
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
             'ID' => 1,
@@ -124,6 +138,9 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( 'Updated title', $updated->title );
         $this->assertSame( 'Updated introduction', $content[0]->data->text ?? null );
         $this->assertSame( 'Updated body', $content[1]->data->text ?? null );
+        $this->assertSame( $footer->id, $content[2]->refid ?? null );
+        $this->assertSame( 'footer', $content[2]->group ?? null );
+        $this->assertSame( [$footer->id], $updated->elements()->pluck( 'cms_elements.id' )->all() );
         $this->assertSame( 1, Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->count() );
         $this->assertSame( 2, $updated->versions()->count() );
     }
