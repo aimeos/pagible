@@ -11,6 +11,8 @@ use Aimeos\Cms\Requests\ContactRequest;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Aimeos\Cms\Validation;
+use Aimeos\Cms\Models\Page;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
@@ -182,6 +184,35 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertStringNotContainsString( '<h3', $html );
 		$this->assertStringContainsString( '<a href="/contact">Contact</a>', $html );
+	}
+
+
+	public function testListItemUsesIndexedArticleImage() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'content' => [[
+				'type' => 'article',
+				'files' => ['image'],
+				'data' => ['text' => 'Article introduction'],
+			]],
+			'created_at' => Carbon::parse( '2026-08-23 12:00:00' ),
+			'domain' => 'localhost',
+			'lang' => 'en',
+			'path' => 'article',
+			'title' => 'Article',
+		] );
+		$file = (object) [
+			'id' => 'image',
+			'name' => 'Article image',
+			'path' => 'https://example.com/article.jpg',
+			'previews' => [],
+		];
+		$page->setRelation( 'files', collect( ['image' => $file] ) );
+
+		$html = view( 'cms::list-item', ['item' => $page, 'layout' => 'list', 'page' => $page] )->render();
+
+		$this->assertStringContainsString( '<picture', $html );
+		$this->assertStringContainsString( 'https://example.com/article.jpg', $html );
 	}
 
 
