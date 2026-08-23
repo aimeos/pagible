@@ -11,6 +11,14 @@ const item = {
   domain: '',
 }
 
+function colorChannels(value) {
+  const channels = value.match(/[\d.]+/g)?.slice(0, 3).map(Number) || []
+
+  return value.startsWith('color(srgb')
+    ? channels.map(channel => Math.round(channel * 255))
+    : channels
+}
+
 function mountMetrics(props = {}) {
   return cy.mount(PageDetailMetrics, {
     props: {
@@ -67,6 +75,7 @@ describe('PageDetailMetrics', () => {
       .closest('.v-card')
       .should('have.class', 'emphasis-bg')
       .then(($card) => {
+        $card[0].style.setProperty('transition', 'none')
         $card[0].style.setProperty('--v-theme-emphasis', '248, 250, 252')
         $card[0].style.setProperty('--v-theme-on-emphasis', '15, 23, 42')
         $card[0].style.setProperty('--v-medium-emphasis-opacity', '1')
@@ -75,7 +84,9 @@ describe('PageDetailMetrics', () => {
       .and('have.css', 'color', 'rgb(15, 23, 42)')
       .find('.text-medium-emphasis')
       .first()
-      .should('have.css', 'color', 'rgb(15, 23, 42)')
+      .should(($label) => {
+        expect(colorChannels(getComputedStyle($label[0]).color)).to.deep.equal([15, 23, 42])
+      })
   })
 
   it('shows dash when no data is available', () => {
