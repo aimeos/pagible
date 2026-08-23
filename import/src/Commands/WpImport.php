@@ -122,16 +122,21 @@ class WpImport extends Command
      * @param array<int|string, mixed> $bodyElements
      * @return array<int|string, mixed>
      */
-    protected function buildContentElements( string $intro, ?string $coverFileId, array $bodyElements ): array
+    protected function buildContentElements( string $intro, ?string $coverFileId, array $bodyElements,
+        ?string $previewFileId = null
+    ): array
     {
         $articleData = ['text' => $intro];
+        $articleFiles = $previewFileId ? [$previewFileId] : [];
 
         if( $coverFileId ) {
             $articleData['file'] = ['id' => $coverFileId, 'type' => 'file'];
+            $articleFiles = [$coverFileId];
         }
 
         return array_merge(
-            [['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'data' => $articleData]],
+            [['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => $articleFiles,
+                'data' => $articleData]],
             $bodyElements
         );
     }
@@ -527,6 +532,25 @@ class WpImport extends Command
 
 
     /**
+     * Returns the first imported image file ID while preserving content order.
+     *
+     * @param array<string> $fileIds
+     */
+    protected function findPreviewFileId( array $fileIds ): ?string
+    {
+        $files = File::whereIn( 'id', array_unique( $fileIds ) )->get( ['id', 'mime'] )->keyBy( 'id' );
+
+        foreach( $fileIds as $id ) {
+            if( str_starts_with( (string) $files->get( $id )?->mime, 'image/' ) ) {
+                return $id;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
      * Finds a WordPress attachment matching the given image URL.
      */
     /**
@@ -791,8 +815,9 @@ class WpImport extends Command
 
         $content = $this->parseContent( $post->post_content ); // @phpstan-ignore property.notFound
         $coverFileId = $this->importFeaturedImage( $post->ID ); // @phpstan-ignore property.notFound
+        $previewFileId = $coverFileId ?? $this->findPreviewFileId( $content['fileIds'] );
 
-        $contentElements = $this->buildContentElements( $intro, $coverFileId, $content['elements'] );
+        $contentElements = $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId );
         $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
         $pageData = $this->buildPageData( $title, $slug );
 

@@ -147,18 +147,37 @@ class WpImportTest extends ImportTestAbstract
         $root = $this->page( 'Root', '', 'new.example', 'root' );
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
-            'ID' => 10,
-            'post_type' => 'post',
-            'post_status' => 'publish',
-            'post_date' => '2026-08-22 12:00:00',
-            'post_name' => 'media-post',
-            'post_title' => 'Media post',
-            'post_excerpt' => 'Media introduction',
-            'post_content' => '<!-- wp:image --><figure><img src="https://old.example/wp-content/uploads/2026/inside.png" alt="Inside"></figure><!-- /wp:image -->'
-                . '<!-- wp:image --><figure><img src="http://127.0.0.1/assets/direct.png" alt="Configured base"></figure><!-- /wp:image -->'
-                . '<!-- wp:image --><figure><img src="https://cdn.example/external.png" alt="External"></figure><!-- /wp:image -->',
-            'post_mime_type' => '',
-            'guid' => '',
+            [
+                'ID' => 10,
+                'post_type' => 'post',
+                'post_status' => 'publish',
+                'post_date' => '2026-08-22 12:00:00',
+                'post_name' => 'media-post',
+                'post_title' => 'Media post',
+                'post_excerpt' => 'Media introduction',
+                'post_content' => '<!-- wp:image --><figure><img src="https://old.example/wp-content/uploads/2026/inside.png" alt="Inside"></figure><!-- /wp:image -->'
+                    . '<!-- wp:image --><figure><img src="http://127.0.0.1/assets/direct.png" alt="Configured base"></figure><!-- /wp:image -->'
+                    . '<!-- wp:image --><figure><img src="https://cdn.example/external.png" alt="External"></figure><!-- /wp:image -->',
+                'post_mime_type' => '',
+                'guid' => '',
+            ],
+            [
+                'ID' => 11,
+                'post_type' => 'attachment',
+                'post_status' => 'inherit',
+                'post_date' => '2026-08-22 12:00:00',
+                'post_name' => 'cover',
+                'post_title' => 'Cover',
+                'post_excerpt' => '',
+                'post_content' => '',
+                'post_mime_type' => 'image/png',
+                'guid' => 'https://old.example/wp-content/uploads/2026/cover.png',
+            ],
+        ] );
+        DB::connection( 'wordpress' )->table( 'wp_postmeta' )->insert( [
+            'post_id' => 10,
+            'meta_key' => '_thumbnail_id',
+            'meta_value' => '11',
         ] );
 
         $result = Artisan::call( 'cms:wp-import', [
@@ -177,13 +196,17 @@ class WpImportTest extends ImportTestAbstract
         $blog = Page::where( 'domain', 'new.example' )->where( 'path', 'tips' )->firstOrFail();
         $local = File::where( 'path', 'not like', 'http%' )->get();
         $external = File::where( 'path', 'https://cdn.example/external.png' )->firstOrFail();
+        $cover = File::where( 'name', 'Cover' )->firstOrFail();
+        $lead = collect( (array) $article->content )->first( fn( $item ) => $item->type === 'article' );
 
         $this->assertSame( $root->id, $blog->parent_id );
         $this->assertSame( 'pagible', $blog->theme );
         $this->assertSame( 'pagible', $article->theme );
-        $this->assertCount( 3, $article->files );
-        $this->assertCount( 2, $local );
+        $this->assertCount( 4, $article->files );
+        $this->assertCount( 3, $local );
         $this->assertSame( 'https://cdn.example/external.png', $external->path );
+        $this->assertSame( $cover->id, $lead->data->file->id ?? null );
+        $this->assertSame( [$cover->id], (array) ( $lead->files ?? [] ) );
 
         foreach( $local as $file )
         {
@@ -194,9 +217,48 @@ class WpImportTest extends ImportTestAbstract
             Storage::disk( 'wp-import-media' )->assertExists( $file->path );
         }
 
-        Http::assertSentCount( 2 );
+        Http::assertSentCount( 3 );
         Http::assertSent( fn( $request ) => $request->url() === 'http://127.0.0.1/media/2026/inside.png' );
         Http::assertSent( fn( $request ) => $request->url() === 'http://127.0.0.1/assets/direct.png' );
+        Http::assertSent( fn( $request ) => $request->url() === 'http://127.0.0.1/media/2026/cover.png' );
+    }
+
+
+    public function testUsesFirstInlineImageAsListCover(): void
+    {
+        $this->page( 'Root', '', 'new.example', 'root' );
+
+        DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
+            'ID' => 20,
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'post_date' => '2026-08-23 12:00:00',
+            'post_name' => 'inline-cover',
+            'post_title' => 'Inline cover',
+            'post_excerpt' => 'Inline introduction',
+            'post_content' => '<!-- wp:image --><figure><img src="https://cdn.example/first.png" alt="First"></figure><!-- /wp:image -->'
+                . '<!-- wp:image --><figure><img src="https://cdn.example/second.png" alt="Second"></figure><!-- /wp:image -->',
+            'post_mime_type' => '',
+            'guid' => '',
+        ] );
+
+        $result = Artisan::call( 'cms:wp-import', [
+            '--connection' => 'wordpress',
+            '--domain' => 'new.example',
+            '--blog-path' => 'tips',
+            '--theme' => 'pagible',
+        ] );
+
+        $this->assertSame( 0, $result );
+
+        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'inline-cover' )->firstOrFail();
+        $content = array_values( (array) $article->content );
+        $lead = $content[0];
+        $firstImage = $content[1];
+
+        $this->assertNull( $lead->data->file ?? null );
+        $this->assertSame( [$firstImage->data->file->id], (array) ($lead->files ?? []) );
+        $this->assertSame( 'https://cdn.example/first.png', $article->files->get( $firstImage->data->file->id )?->path );
     }
 
 
