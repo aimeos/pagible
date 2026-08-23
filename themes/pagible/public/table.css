@@ -3,13 +3,20 @@
  */
 
 .table-responsive {
-    background-color: var(--pico-background-color);
+    background-color: transparent;
 }
 
 .table-responsive .table-row {
     display: flex;
     align-items: center;
-    border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+}
+
+.table-responsive .table-row:nth-child(odd) {
+    background-color: var(--cms-table-row-background-color);
+}
+
+.table-responsive .table-row:nth-child(even) {
+    background-color: var(--cms-table-row-alternate-background-color);
 }
 
 .table-responsive .table-col {
@@ -22,7 +29,7 @@
     flex-direction: column;
     justify-content: center;
     align-self: stretch;
-    background-color: var(--pico-muted-background-color);
+    background-color: transparent;
     text-align: center;
     font-weight: 500;
 }

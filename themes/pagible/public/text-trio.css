@@ -1,0 +1,53 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.text-trio {
+    display: grid;
+    grid-template-areas:
+        "title"
+        "leading"
+        "supporting";
+    gap: 2rem;
+    align-items: center;
+    min-height: 28rem;
+    padding-block: clamp(4rem, 12vw, 9rem);
+}
+
+.text-trio .text-trio-title {
+    grid-area: title;
+    max-width: 14ch;
+    margin: 0 auto;
+    color: var(--pico-contrast-hover);
+    font-size: clamp(2rem, 3.2vw, 3.5rem);
+    line-height: 1.25;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.text-trio .text-trio-leading,
+.text-trio .text-trio-supporting {
+    max-width: 18rem;
+    margin: 0;
+    color: var(--pico-color);
+}
+
+.text-trio .text-trio-leading {
+    grid-area: leading;
+}
+
+.text-trio .text-trio-supporting {
+    grid-area: supporting;
+}
+
+@media screen and (min-width: 768px) {
+    .text-trio {
+        grid-template-areas: "leading title supporting";
+        grid-template-columns: minmax(0, 1fr) minmax(16rem, 1.25fr) minmax(0, 1fr);
+        min-height: 34rem;
+    }
+
+    .text-trio .text-trio-supporting {
+        justify-self: end;
+    }
+}

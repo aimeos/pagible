@@ -67,6 +67,8 @@
     --cms-accent-gradient-tight:
         radial-gradient(circle at 90% -50%, var(--pico-primary-background) 0, transparent 66%),
         radial-gradient(circle at 10% 150%, var(--pico-secondary-background) 0, transparent 66%);
+    --cms-table-row-background-color: rgb(14 52 93 / 40%);
+    --cms-table-row-alternate-background-color: rgb(13 85 155 / 40%);
 }
 
 * {

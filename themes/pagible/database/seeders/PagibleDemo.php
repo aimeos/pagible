@@ -511,16 +511,17 @@ HTML,
         if( !isset( $this->element ) )
         {
             $cards = [
-                ['title' => 'Product', 'text' => "- [Platform](/)\n- [Documentation](/docs)\n- [GitHub](https://github.com/aimeos/pagible)"],
-                ['title' => 'For developers', 'text' => "- [Build a content element](/docs/build-a-content-element)\n- [Configure editorial AI](/docs/configure-editorial-ai)\n- [Journal](/blog)"],
-                ['title' => 'Project', 'text' => "- MIT licensed\n- Laravel 11, 12 and 13\n- PHP 8.2+"],
+                ['title' => 'PagibleAI', 'text' => "- [Features](/features)\n- [Themes](/themes)\n- [For Editors](/cms-for-editors)"],
+                ['title' => 'Developers', 'text' => "- [Documentation](/docs)\n- [Install PagibleAI](/install-pagibleai-cms)\n- [REST API](/json-rest-api)\n- [GraphQL API](/graphql-api)\n- [MCP AI](/configure-mcp)"],
+                ['title' => 'CMS', 'text' => "- [Laravel CMS](/laravel-cms)\n- [Headless CMS](/headless-cms)\n- [Cloud-Native CMS](/cloud-native-cms)\n- [Agentic CMS](/agentic-cms)"],
+                ['title' => 'Resources', 'text' => "- [Blog](/blog)\n- [Upgrade Guide](/upgrade-pagibleai-cms)\n- [Star Repo](https://github.com/aimeos/pagible)"],
             ];
 
             $element = Element::forceCreate( [
                 'lang' => 'en',
                 'type' => 'cards',
                 'name' => 'PagibleAI footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
+                'data' => ['type' => 'cards', 'data' => ['columns' => '4', 'cards' => $cards]],
                 'editor' => 'demo',
             ] );
 
@@ -530,7 +531,7 @@ HTML,
                     'lang' => 'en',
                     'type' => 'cards',
                     'name' => 'PagibleAI footer',
-                    'data' => ['cards' => $cards],
+                    'data' => ['columns' => '4', 'cards' => $cards],
                 ],
                 'editor' => 'demo',
             ] );
@@ -618,6 +619,11 @@ HTML,
                     ['id' => $this->img( 'hero-team' ), 'type' => 'file'],
                 ],
             ]],
+            ['id' => Utils::uid(), 'type' => 'pagible::text-trio', 'group' => 'main', 'data' => [
+                'leading' => 'Create, manage, and translate content with AI.',
+                'title' => 'For editors who need to keep creating',
+                'supporting' => 'Ready to help whenever ideas, time, or language get in the way.',
+            ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'One system, clear responsibilities',
                 'cards' => [
@@ -686,7 +692,7 @@ HTML,
             ['id' => 'contact', 'type' => 'contact', 'group' => 'main', 'data' => [
                 'title' => 'Tell us what your publishing workflow needs',
             ]],
-            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']],
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'footer', 'data' => ['file' => ['id' => $logoId, 'type' => 'file']]],
             ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
@@ -823,6 +829,7 @@ HTML,
     {
         $elementId = $this->element();
         $fileId = $this->file();
+        $logoId = $this->logoFile();
         $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
         $meta = $data['meta'] ?? $meta ?: [
@@ -837,7 +844,7 @@ HTML,
             ], 'meta' ),
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'PagibleAI CMS']];
+        $content[] = ['id' => Utils::uid(), 'type' => 'image', 'group' => 'footer', 'data' => ['file' => ['id' => $logoId, 'type' => 'file']]];
         $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
 
         $page = Page::forceCreate( $data + [

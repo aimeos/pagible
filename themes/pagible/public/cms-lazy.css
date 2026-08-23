@@ -159,8 +159,55 @@ pre:has(code[class*="language-"]) {
 }
 
 
+footer.cms-content {
+    background:
+        radial-gradient(ellipse at 0 100%, var(--pico-primary) 0, transparent 55%),
+        var(--pico-background-color);
+    padding: 5rem 0 2rem;
+}
+
 footer.cms-content .container {
     padding-block: 0;
+}
+
+footer.cms-content .image picture {
+    background: none;
+    padding: 0;
+}
+
+footer.cms-content .image picture img {
+    display: block;
+    width: min(100%, 32rem);
+    margin: 0 auto 3rem;
+}
+
+footer.cms-content .cards .card-list {
+    border-top: 1px solid transparent;
+    border-image: linear-gradient(90deg, var(--pico-primary), var(--pico-secondary)) 1;
+    gap: 0;
+    padding-top: 1.5rem;
+}
+
+footer.cms-content .cards .card-item {
+    background: transparent;
+    border: 0;
+    padding: 1rem 0;
+}
+
+footer.cms-content .cards .title {
+    color: var(--pico-contrast-hover);
+    font-size: var(--pico-font-size);
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) {
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.875);
+}
+
+footer.cms-content .cards :is(.text, .cms-text) p {
+    margin: 0;
 }
 
 footer.cms-content .cards :is(.text, .cms-text) a,
@@ -168,7 +215,30 @@ footer.cms-content .cards :is(.text, .cms-text) a:visited,
 footer.cms-content .cards :is(.text, .cms-text) a:hover,
 footer.cms-content .cards :is(.text, .cms-text) a:focus,
 footer.cms-content .cards :is(.text, .cms-text) a:active {
+    color: var(--pico-color);
+    display: inline-block;
+    padding: 0.25rem 0;
     text-decoration: none;
+}
+
+footer.cms-content .cards :is(.text, .cms-text) a:hover {
+    color: var(--pico-primary-hover);
+}
+
+footer.cms-content ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+footer.cms-content ul li {
+    list-style: none;
+}
+
+@media screen and (min-width: 768px) {
+    footer.cms-content .cards .card-item {
+        padding-inline: 1rem;
+    }
 }
 
 footer.bottom {
@@ -180,18 +250,26 @@ footer.bottom {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background-color: var(--pico-background-color);
+    background-color: transparent;
+}
+
+.cms-content tr:nth-child(odd) {
+    background-color: var(--cms-table-row-background-color);
+}
+
+.cms-content tr:nth-child(even) {
+    background-color: var(--cms-table-row-alternate-background-color);
 }
 
 .cms-content th,
 .cms-content td {
     padding: calc(var(--pico-spacing) / 2) var(--pico-spacing);
-    border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+    background-color: transparent;
+    border-bottom: 0;
     vertical-align: middle;
 }
 
 .cms-content th {
-    background-color: var(--pico-muted-background-color);
     font-weight: 500;
     text-align: center;
 }

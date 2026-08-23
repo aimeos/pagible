@@ -23,7 +23,7 @@ Dark, immersive, and modern. Deep navy background (#080040) with blue (#0868D0) 
 - Max widths: 1200px (header/container/main), 960px (blog content), 800px (hero text-only) | Breakpoints: 576px, 768px, 992px
 - Gradient accents: --cms-accent-gradient (radial blue top-right + purple bottom-left, full spread), --cms-accent-gradient-tight (same, 66% spread). Applied to images, videos, code blocks, slideshows, and search dialog
 - Body background: multiple large radial gradients alternating blue/purple at different vertical positions
-- Components: hero, cards (1->2->3 col grid, alternating background), blog (featured+list), questions/FAQ (details accordion, 2-col at 768px), contact form, toc, slideshow (swiffy-slider), pricing (toggle, highlight), article, search dialog, docs sidebar (20rem, sticky), image-text (float/grid layouts), bottom footer
+- Components: hero, text-trio (three-part text statement), cards (1->2->3 col grid, alternating background), blog (featured+list), questions/FAQ (details accordion, 2-col at 768px), contact form, toc, slideshow (swiffy-slider), pricing (toggle, highlight), article, search dialog, docs sidebar (20rem, sticky), image-text (float/grid layouts), bottom footer
 - Buttons (.btn): pill-shaped (2rem radius), gradient background (90deg, primary to secondary), white text, arrow-circle icon after
 
 ## Accessibility

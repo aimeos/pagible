@@ -28,6 +28,12 @@ php artisan vendor:publish --tag=cms-theme
 | `docs` | Documentation with sidebar navigation |
 | `blog` | Blog with featured post and article list |
 
+## Theme Content Elements
+
+| Type | Description |
+|------|-------------|
+| `pagible::text-trio` | Three-part text statement with leading, central and supporting text |
+
 ## Customization
 
 Theme colors and properties can be customized in the admin panel:
@@ -50,6 +56,7 @@ Theme colors and properties can be customized in the admin panel:
 ├── public/              CSS files published to public/vendor/cms/pagible/
 │   ├── cms.css          Base styles and layout
 │   ├── cms-lazy.css     Lazy-loaded component styles
+│   ├── text-trio.css    Three-part text statement
 │   ├── hero.css         Hero section
 │   ├── cards.css        Card grid
 │   ├── blog.css         Blog components
@@ -67,6 +74,7 @@ Theme colors and properties can be customized in the admin panel:
 │   ├── layout-blog.css  Blog layout
 │   └── layout-docs.css  Documentation layout
 └── views/
+    ├── text-trio.blade.php
     └── layouts/
         └── main.blade.php
 ```
