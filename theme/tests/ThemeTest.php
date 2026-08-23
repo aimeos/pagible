@@ -11,6 +11,8 @@ use Aimeos\Cms\Requests\ContactRequest;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Aimeos\Cms\Validation;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -172,6 +174,28 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 3, substr_count( $html, '<picture class="image"' ) );
 		$this->assertSame( 1, substr_count( $html, '<a class="card-image"' ) );
 		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
+	}
+
+
+	public function testCmsDataIncludesSharedElementFiles() : void
+	{
+		$page = ( new Page() )->forceFill( ['id' => 'page'] );
+		$pageFile = ( new File() )->forceFill( ['id' => 'page-file'] );
+		$elementFile = ( new File() )->forceFill( ['id' => 'element-file'] );
+		$element = ( new Element() )->forceFill( [
+			'id' => 'element',
+			'type' => 'cards',
+			'name' => 'Shared footer',
+			'data' => ['cards' => []],
+		] );
+
+		$page->setRelation( 'files', collect( [$pageFile] ) );
+		$element->setRelation( 'files', collect( [$elementFile] ) );
+
+		$data = cmsdata( $page, $element );
+
+		$this->assertSame( ['page-file', 'element-file'], $data['files']->keys()->all() );
+		$this->assertSame( 'cards', $data['type'] );
 	}
 
 

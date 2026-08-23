@@ -539,7 +539,7 @@ class WpImport extends Command
     /**
      * Returns the shared footer references inherited from the blog parent.
      *
-     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>, fileIds: array<string>}
+     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>}
      */
     protected function findFooterReferences( Page $blogPage ): array
     {
@@ -552,20 +552,9 @@ class WpImport extends Command
             ->values()
             ->all();
 
-        $elementIds = array_values( array_unique( array_column( $elements, 'refid' ) ) );
-        $fileIds = $blogPage->elements()
-            ->whereIn( 'cms_elements.id', $elementIds )
-            ->with( 'files:id' )
-            ->get()
-            ->flatMap( fn( $element ) => $element->files->pluck( 'id' ) )
-            ->unique()
-            ->values()
-            ->all();
-
         return [
             'elements' => $elements,
-            'elementIds' => $elementIds,
-            'fileIds' => $fileIds,
+            'elementIds' => array_values( array_unique( array_column( $elements, 'refid' ) ) ),
         ];
     }
 
@@ -861,10 +850,7 @@ class WpImport extends Command
             $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId ),
             $footer['elements']
         );
-        $fileIds = array_values( array_unique( array_merge(
-            $this->collectFileIds( $content['fileIds'], $coverFileId ),
-            $footer['fileIds']
-        ) ) );
+        $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
         $pageData = $this->buildPageData( $title, $slug );
 
         if( !$page ) {

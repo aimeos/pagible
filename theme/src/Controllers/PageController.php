@@ -209,6 +209,7 @@ class PageController extends Controller
         $query = Page::with( [
             'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
+            'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
         ] )
             ->withGlobalScope( 'status', new Status() )
             ->withAccess( $user );

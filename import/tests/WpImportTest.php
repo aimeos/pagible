@@ -76,13 +76,6 @@ class WpImportTest extends ImportTestAbstract
             'data' => ['text' => 'Shared footer'],
             'editor' => 'test',
         ] );
-        $footerFile = File::forceCreate( [
-            'mime' => 'image/png',
-            'name' => 'Footer image',
-            'path' => 'footer.png',
-            'editor' => 'test',
-        ] );
-        $footer->files()->attach( $footerFile->id );
         $blog->forceFill( ['content' => [[
             'type' => 'reference',
             'refid' => $footer->id,
@@ -152,7 +145,6 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( $footer->id, $content[2]->refid ?? null );
         $this->assertSame( 'footer', $content[2]->group ?? null );
         $this->assertSame( [$footer->id], $updated->elements()->pluck( 'cms_elements.id' )->all() );
-        $this->assertSame( [$footerFile->id], $updated->files()->pluck( 'cms_files.id' )->all() );
         $this->assertSame( 1, Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->count() );
         $this->assertSame( 2, $updated->versions()->count() );
     }
