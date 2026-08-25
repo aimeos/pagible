@@ -81,7 +81,8 @@ export default {
 }
 
 .v-tabs {
-  background-color: rgb(var(--v-theme-background));
+  background-color: rgb(var(--v-theme-emphasis, var(--v-theme-surface-light)));
+  color: rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)));
 }
 
 .v-card {

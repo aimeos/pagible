@@ -50,6 +50,23 @@ describe('PageListItems', () => {
     cy.get('.header').should('exist')
   })
 
+  it('uses the surface color for the drag placeholder', () => {
+    mountList({}, { 'page:view': true })
+    cy.get('.draggable-stub').then(($tree) => {
+      const wrapper = document.createElement('div')
+      const inner = document.createElement('div')
+
+      wrapper.className = 'drag-placeholder-wrapper'
+      wrapper.style.setProperty('--v-theme-background', '30, 41, 59')
+      wrapper.style.setProperty('--v-theme-surface', '255, 255, 255')
+      inner.className = 'tree-node-inner'
+      wrapper.append(inner)
+      $tree[0].append(wrapper)
+    })
+    cy.get('.drag-placeholder-wrapper .tree-node-inner')
+      .should('have.css', 'background-color', 'rgb(255, 255, 255)')
+  })
+
   it('renders search field', () => {
     mountList({}, { 'page:view': true })
     cy.get('.v-text-field').should('exist')

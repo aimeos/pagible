@@ -58,6 +58,18 @@ describe('FileDetailItem', () => {
     cy.get('.v-container').should('exist')
   })
 
+  it('uses the surface color for the URL and copy button area', () => {
+    mountDetail()
+    cy.get('.file-url-col')
+      .then(($col) => {
+        $col[0].style.setProperty('--v-theme-background', '30, 41, 59')
+        $col[0].style.setProperty('--v-theme-surface', '255, 255, 255')
+      })
+      .should('have.css', 'background-color', 'rgb(255, 255, 255)')
+      .find('.v-btn')
+      .should('exist')
+  })
+
   it('renders the name text field with item name', () => {
     mountDetail()
     cy.get('input').first().should('have.value', 'photo.jpg')

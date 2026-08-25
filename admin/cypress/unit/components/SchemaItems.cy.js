@@ -32,6 +32,19 @@ describe('SchemaItems', () => {
     cy.get('.v-tab').should('contain', 'media')
   })
 
+  it('uses emphasis colors for schema group tabs', () => {
+    mountWithSchemas()
+    cy.get('.v-tabs')
+      .then(($tabs) => {
+        $tabs[0].style.setProperty('transition', 'none')
+        $tabs[0].style.setProperty('--v-theme-background', '30, 41, 59')
+        $tabs[0].style.setProperty('--v-theme-emphasis', '248, 250, 252')
+        $tabs[0].style.setProperty('--v-theme-on-emphasis', '15, 23, 42')
+      })
+      .should('have.css', 'background-color', 'rgb(248, 250, 252)')
+      .and('have.css', 'color', 'rgb(15, 23, 42)')
+  })
+
   it('renders a button for each item in the active group', () => {
     mountWithSchemas()
     // "basic" tab is active by default

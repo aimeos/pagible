@@ -573,7 +573,7 @@ export default {
 .file-url-col {
   display: flex;
   align-items: center;
-  background-color: rgb(var(--v-theme-background));
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .file-url {

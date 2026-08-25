@@ -1999,7 +1999,7 @@ export default {
 }
 
 .drag-placeholder-wrapper .tree-node-inner {
-  background-color: rgb(var(--v-theme-background));
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .tree-node-inner {
