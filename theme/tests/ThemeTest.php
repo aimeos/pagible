@@ -240,6 +240,39 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testArticleRendersGalleryAndLegacyImageFields() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-08-23 12:00:00' ),
+			'updated_at' => Carbon::parse( '2026-08-24 12:00:00' ),
+			'id' => 'page',
+			'lang' => 'en',
+			'title' => 'Article',
+		] );
+		$file = (object) [
+			'id' => 'image',
+			'name' => 'Article image',
+			'path' => 'https://example.com/article.jpg',
+			'previews' => [],
+		];
+		$files = collect( ['image' => $file] );
+		$fields = [
+			'gallery' => ['files' => [(object) ['id' => 'image', 'type' => 'file']]],
+			'legacy' => ['file' => (object) ['id' => 'image', 'type' => 'file']],
+		];
+
+		foreach( $fields as $name => $field )
+		{
+			$data = (object) ( $field + ['text' => 'Article introduction'] );
+			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertStringContainsString( '<picture class="cover"', $html, $name );
+			$this->assertStringContainsString( 'https://example.com/article.jpg', $html, $name );
+			$this->assertStringContainsString( '"image":', $html, $name );
+		}
+	}
+
+
 	public function testRegisterPricingIdentities()
 	{
 		$fields = Schema::get( 'cms' )['content']['pricing']['fields'];
