@@ -21,6 +21,6 @@ trait CashierAccess
     {
         $this->mergeCasts( ['access' => 'array'] );
         $this->mergeGuarded( ['access'] );
-        $this->mergeHidden( ['access'] );
+        $this->setHidden( array_unique( [...$this->getHidden(), 'access'] ) );
     }
 }

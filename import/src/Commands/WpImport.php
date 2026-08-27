@@ -15,6 +15,23 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 
 
+/**
+ * @phpstan-type WpAttachment object{
+ *   ID: int|string,
+ *   guid: string,
+ *   post_title: string,
+ *   post_mime_type: string,
+ * }
+ * @phpstan-type WpPost object{
+ *   ID: int,
+ *   post_name: string,
+ *   post_title: string,
+ *   post_excerpt: string,
+ *   post_content: string,
+ *   post_date_gmt: string|null,
+ *   post_date: string,
+ * }
+ */
 class WpImport extends Command
 {
     /**
@@ -113,6 +130,28 @@ class WpImport extends Command
         $blogPage = $this->getBlogPage();
 
         $this->importPosts( $postQuery, $blogPage, $postCount );
+    }
+
+
+    /**
+     * Validates a WordPress attachment database row.
+     *
+     * @return WpAttachment
+     */
+    protected function attachment( object $attachment ): object
+    {
+        $data = get_object_vars( $attachment );
+        $id = $data['ID'] ?? null;
+        $guid = $data['guid'] ?? null;
+        $title = $data['post_title'] ?? null;
+        $mime = $data['post_mime_type'] ?? null;
+
+        if( !( is_int( $id ) || is_string( $id ) ) || !is_string( $guid )
+            || !is_string( $title ) || !is_string( $mime ) ) {
+            throw new \UnexpectedValueException( 'Invalid WordPress attachment row.' );
+        }
+
+        return (object) ['ID' => $id, 'guid' => $guid, 'post_title' => $title, 'post_mime_type' => $mime];
     }
 
 
@@ -492,6 +531,7 @@ class WpImport extends Command
             ->chunk( 100, function( $chunk ) {
                 foreach( $chunk as $attachment )
                 {
+                    $attachment = $this->attachment( $attachment );
                     $this->attachmentsById[$attachment->ID] = [
                         'guid' => $attachment->guid,
                         'title' => $attachment->post_title,
@@ -832,17 +872,19 @@ class WpImport extends Command
 
     /**
      * Imports a single WordPress post as a Pagible blog article page.
+     *
+     * @param WpPost $post
      */
     protected function importPost( object $post, Page $blogPage ): bool
     {
-        $slug = $post->post_name ?: Utils::slugify( $post->post_title ); // @phpstan-ignore-line property.notFound
-        $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' ); // @phpstan-ignore-line property.notFound
-        $intro = $post->post_excerpt ?: $this->extractIntro( $post->post_content ); // @phpstan-ignore-line property.notFound
+        $slug = $post->post_name ?: Utils::slugify( $post->post_title );
+        $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' );
+        $intro = $post->post_excerpt ?: $this->extractIntro( $post->post_content );
         $page = $this->findArticlePage( $slug );
         $updated = $page !== null;
 
-        $content = $this->parseContent( $post->post_content ); // @phpstan-ignore property.notFound
-        $coverFileId = $this->importFeaturedImage( $post->ID ); // @phpstan-ignore property.notFound
+        $content = $this->parseContent( $post->post_content );
+        $coverFileId = $this->importFeaturedImage( $post->ID );
         $previewFileId = $coverFileId ?? $this->findPreviewFileId( $content['fileIds'] );
         $footer = $this->findFooterReferences( $blogPage );
 
@@ -886,7 +928,14 @@ class WpImport extends Command
         $query->chunk( 100, function( $posts ) use ( $blogPage, &$imported, &$updated ) {
             foreach( $posts as $post )
             {
+                $data = get_object_vars( $post );
+                $id = $data['ID'] ?? '?';
+                $title = $data['post_title'] ?? '';
+                $id = is_int( $id ) || is_string( $id ) ? $id : '?';
+                $title = is_string( $title ) ? $title : '';
+
                 try {
+                    $post = $this->post( $post );
                     $existing = DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
                         return $this->importPost( $post, $blogPage );
                     } );
@@ -895,7 +944,7 @@ class WpImport extends Command
                     $action = $existing ? 'Updated' : 'Imported';
                     $this->info( "  {$action}: {$post->post_title}" );
                 } catch( \Exception $e ) {
-                    $this->error( "  Failed to import [{$post->ID}] {$post->post_title}: " . $e->getMessage() );
+                    $this->error( "  Failed to import [{$id}] {$title}: " . $e->getMessage() );
                 }
             }
         } );
@@ -1659,6 +1708,43 @@ class WpImport extends Command
 
 
     /**
+     * Validates a WordPress post database row.
+     *
+     * @return WpPost
+     */
+    protected function post( object $post ): object
+    {
+        $data = get_object_vars( $post );
+        $id = $data['ID'] ?? null;
+        $name = $data['post_name'] ?? null;
+        $title = $data['post_title'] ?? null;
+        $excerpt = $data['post_excerpt'] ?? null;
+        $content = $data['post_content'] ?? null;
+        $dateGmt = $data['post_date_gmt'] ?? null;
+        $date = $data['post_date'] ?? null;
+
+        if( is_string( $id ) && ctype_digit( $id ) ) {
+            $id = filter_var( $id, FILTER_VALIDATE_INT );
+        }
+
+        if( !is_int( $id ) || !is_string( $name ) || !is_string( $title ) || !is_string( $excerpt )
+            || !is_string( $content ) || !( is_string( $dateGmt ) || $dateGmt === null ) || !is_string( $date ) ) {
+            throw new \UnexpectedValueException( 'Invalid WordPress post row.' );
+        }
+
+        return (object) [
+            'ID' => $id,
+            'post_name' => $name,
+            'post_title' => $title,
+            'post_excerpt' => $excerpt,
+            'post_content' => $content,
+            'post_date_gmt' => $dateGmt,
+            'post_date' => $date,
+        ];
+    }
+
+
+    /**
      * Prints a dry run summary.
      *
      * @param \Illuminate\Database\Query\Builder $query
@@ -1666,6 +1752,7 @@ class WpImport extends Command
     protected function printDryRun( \Illuminate\Database\Query\Builder $query ): void
     {
         foreach( $query->cursor() as $post ) {
+            $post = $this->post( $post );
             $this->line( "  [{$post->ID}] {$post->post_title} ({$post->post_name})" );
         }
         $this->info( 'Dry run complete. No changes were made.' );

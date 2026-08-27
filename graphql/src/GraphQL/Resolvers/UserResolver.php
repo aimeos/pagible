@@ -90,6 +90,11 @@ class UserResolver
         }
 
         $user = $provider->createModel();
+
+        if( !$user instanceof Authenticatable ) {
+            throw new \LogicException( 'The Eloquent authentication model must implement Authenticatable.' );
+        }
+
         $attributes = [
             'cmsperms' => [],
             'email' => $email,
