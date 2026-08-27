@@ -103,33 +103,35 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to) => {
-  const dirtyStore = useDirtyStore()
-  const user = useUserStore()
-  const message = useMessageStore()
+export async function guard(to) {
+  const dirty = useDirtyStore()
 
-  if (dirtyStore.dirty) {
-    const allowed = await dirtyStore.confirm()
+  if (dirty.dirty) {
+    const allowed = await dirty.confirm()
     if (!allowed) return false
     return
   }
 
-  const authenticated = await user.isAuthenticated()
+  if (!to.matched.some((record) => record.meta.auth)) return
 
-  if (to.matched.some((record) => record.meta.auth) && !authenticated) {
+  const user = useUserStore()
+
+  if (!await user.isAuthenticated()) {
     user.intended(to.fullPath)
     return { name: 'login' }
   }
 
   const permission = to.meta.permission || to.name
-  if (to.name !== 'login' && !user.can(permission)) {
-    message.add(
+  if (!user.can(permission)) {
+    useMessageStore().add(
       gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
     )
     return false
   }
-})
+}
+
+router.beforeEach(guard)
 
 router.afterEach((to, from) => {
   document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
