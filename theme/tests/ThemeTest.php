@@ -99,6 +99,28 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testCmsDataIncludesSharedElementFiles() : void
+	{
+		$page = ( new Page() )->forceFill( ['id' => 'page'] );
+		$pageFile = ( new File() )->forceFill( ['id' => 'page-file'] );
+		$elementFile = ( new File() )->forceFill( ['id' => 'element-file'] );
+		$element = ( new Element() )->forceFill( [
+			'id' => 'element',
+			'type' => 'cards',
+			'name' => 'Shared footer',
+			'data' => ['cards' => []],
+		] );
+
+		$page->setRelation( 'files', collect( [$pageFile] ) );
+		$element->setRelation( 'files', collect( [$elementFile] ) );
+
+		$data = cmsdata( $page, $element );
+
+		$this->assertSame( [$pageFile->id, $elementFile->id], $data['files']->keys()->all() );
+		$this->assertSame( 'cards', $data['type'] );
+	}
+
+
 	public function testCardsWithoutTitleDoNotRenderEmptyHeading()
 	{
 		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );

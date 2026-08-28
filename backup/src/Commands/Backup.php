@@ -72,7 +72,7 @@ class Backup extends Command
                 $allTables = $db->getSchemaBuilder()->getTables();
                 $cmsTables = array_filter(
                     array_column( $allTables, 'name' ),
-                    fn( string $t ) => str_starts_with( $t, 'cms_' ) && $t !== 'cms_index'
+                    fn( string $t ) => str_starts_with( $t, 'cms_' ) && !str_starts_with( $t, 'cms_index' )
                 );
                 $columns = $this->classify( $db, $cmsTables );
                 $counts = [];
