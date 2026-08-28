@@ -194,7 +194,7 @@ class ThemeTest extends ThemeTestAbstract
 
 		$data = cmsdata( $page, $element );
 
-		$this->assertSame( ['page-file', 'element-file'], $data['files']->keys()->all() );
+		$this->assertSame( [$pageFile->id, $elementFile->id], $data['files']->keys()->all() );
 		$this->assertSame( 'cards', $data['type'] );
 	}
 

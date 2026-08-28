@@ -139,7 +139,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( $article->id, $updated->id );
         $this->assertSame( $blog->id, $updated->parent_id );
         $this->assertSame( 'Updated title', $updated->title );
-        $this->assertSame( '2026-02-03 03:05:06', $updated->getRawOriginal( 'created_at' ) );
+        $this->assertSame( '2026-02-03 03:05:06', $updated->created_at->format( 'Y-m-d H:i:s' ) );
         $this->assertSame( 'Updated introduction', $content[0]->data->text ?? null );
         $this->assertSame( 'Updated body', $content[1]->data->text ?? null );
         $this->assertSame( $footer->id, $content[2]->refid ?? null );
