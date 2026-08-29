@@ -26,7 +26,11 @@ function mountList(props = {}, perms = {}, apollo = {}) {
             data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
           }),
           mutate: () => Promise.resolve({ data: {} }),
-          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          provider: {
+            defaultClient: {
+              cache: { evict() {}, gc() {} },
+            },
+          },
           ...apollo,
         },
       },
@@ -155,8 +159,73 @@ describe('PageListItems', () => {
 
     mountList({ filter: { view: 'list', status: 0 } }, { 'page:view': true }, { query }).then(() => {
       expect(query).to.have.been.calledOnce
+      expect(query.firstCall.args[0].fetchPolicy).to.equal('cache-first')
       expect(query.firstCall.args[0].variables.filter).to.deep.equal({ status: 0 })
       expect(query.firstCall.args[0].variables.sort).to.deep.equal([{ column: 'LFT', order: 'ASC' }])
+    })
+  })
+
+  it('uses the Apollo cache for page tree queries', () => {
+    const query = cy.stub().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+
+    mountList({ filter: { view: 'tree' } }, { 'page:view': true }, { query }).then(() => {
+      expect(query).to.have.been.calledOnce
+      expect(query.firstCall.args[0].fetchPolicy).to.equal('cache-first')
+    })
+  })
+
+  it('clears the complete Apollo cache before a manual reload', () => {
+    const calls = []
+    const query = cy.stub().callsFake(() => {
+      calls.push('query')
+      return Promise.resolve({
+        data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+      })
+    })
+    const evict = cy.stub()
+    const gc = cy.stub()
+    const clearStore = cy.stub().callsFake(() => {
+      calls.push('clearStore')
+      return Promise.resolve()
+    })
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, {
+      query,
+      provider: {
+        defaultClient: {
+          cache: { evict, gc },
+          clearStore,
+        },
+      },
+    })
+
+    cy.get('button.btn-reload').click()
+    cy.then(() => {
+      expect(clearStore).to.have.been.calledOnce
+      expect(evict).not.to.have.been.called
+      expect(gc).not.to.have.been.called
+      expect(query).to.have.been.calledTwice
+      expect(calls).to.deep.equal(['query', 'clearStore', 'query'])
+    })
+  })
+
+  it('removes every page list query', () => {
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    mountList({}, { 'page:view': true }, {
+      provider: {
+        defaultClient: {
+          cache: { evict, gc },
+        },
+      },
+    }).then(({ wrapper }) => {
+      wrapper.findComponent(PageListItems).vm.invalidate()
+
+      expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
+      expect(gc).to.have.been.calledOnce
     })
   })
 

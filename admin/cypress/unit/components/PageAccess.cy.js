@@ -9,6 +9,8 @@ function mountAccess(access, props = {}) {
     .stub()
     .resolves({ data: { setPageAccess: 1 } })
     .as('mutate')
+  const evict = cy.stub().as('evict')
+  const gc = cy.stub().as('gc')
   const input = {
     ids: ['page-1'],
     descendants: 0,
@@ -21,7 +23,11 @@ function mountAccess(access, props = {}) {
     props: input,
     global: {
       mocks: {
-        $apollo: { query, mutate }
+        $apollo: {
+          query,
+          mutate,
+          provider: { defaultClient: { cache: { evict, gc } } }
+        }
       }
     }
   })
@@ -103,6 +109,10 @@ describe('PageAccess', () => {
         access: null,
         descendants: false
       })
+    cy.get('@evict').should((evict) => {
+      expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
+    })
+    cy.get('@gc').should('have.been.calledOnce')
   })
 
   it('supports descendants only for one selected root', () => {
@@ -116,6 +126,7 @@ describe('PageAccess', () => {
     cy.get('@mutate').should((mutate) => {
       expect(mutate.firstCall.args[0].variables.descendants).to.equal(true)
     })
+    cy.get('@evict').should('have.been.calledWith', { id: 'ROOT_QUERY', fieldName: 'pages' })
   })
 
   it('disables recursive changes above the page bulk limit', () => {

@@ -109,10 +109,16 @@ export function socketId() {
   return echoInstance?.socketId?.() || ''
 }
 
-export function setupEcho(vm, type, onEvent, actions = LIST_ACTIONS) {
-  vm.echoPromise = markRaw(subscribe(type, onEvent, actions).then((cleanup) => {
-    if (vm.destroyed) { cleanup?.() } else { vm.echoCleanup = cleanup }
+export function setupEcho(vm, type, onEvent, actions = LIST_ACTIONS, connect = subscribe) {
+  const pending = markRaw(connect(type, onEvent, actions).then((cleanup) => {
+    if (vm.echoPromise !== pending || vm.destroyed) return cleanup
+
+    vm.echoCleanup = cleanup
+    vm.echoPromise = null
+    return null
   }))
+
+  vm.echoPromise = pending
 }
 
 export function cleanEcho(vm) {

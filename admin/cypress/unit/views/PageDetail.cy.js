@@ -34,11 +34,19 @@ const baseItem = {
   published: false,
 }
 
-function mountDetail(perms = {}, item = {}) {
+function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(PageDetail, {
     props: { item: { ...baseItem, ...item } },
     global: {
       stubs,
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({ data: {} }),
+          mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          ...apollo,
+        },
+      },
       provide: {
         closeView: () => {},
       },
@@ -143,6 +151,21 @@ describe('PageDetail', () => {
   it('renders the history button', () => {
     mountDetail()
     cy.get('button.btn-history').should('exist')
+  })
+
+  it('invalidates page lists', () => {
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    mountDetail({}, {}, {
+      provider: { defaultClient: { cache: { evict, gc } } },
+    }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      vm.invalidate()
+
+      expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
+      expect(gc).to.have.been.calledOnce
+    })
   })
 
   describe('computed properties', () => {

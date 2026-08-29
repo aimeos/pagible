@@ -37,6 +37,7 @@ import ListSort from './ListSort.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
+import { invalidatePages } from '../graphql'
 
 const PAGE_TREE_FIELDS = new Set([
   'access',
@@ -63,7 +64,6 @@ const PAGE_TREE_FIELDS = new Set([
   'type',
   'updated_at'
 ])
-
 function patchData(data, item) {
   for (const key in item) {
     if (key in data || PAGE_TREE_FIELDS.has(key)) {
@@ -447,6 +447,7 @@ export default {
           const page = { ...result.data.addPage }
 
           this.$refs.tree.add(page)
+          this.invalidate()
           this.$emit('select', page)
         })
         .catch((error) => {
@@ -706,7 +707,7 @@ export default {
       return this.$apollo
         .query({
           query: FETCH_CHILD_PAGES,
-          fetchPolicy: 'no-cache',
+          fetchPolicy: 'cache-first',
           variables: {
             filter: filter,
             page: page,
@@ -811,10 +812,7 @@ export default {
     },
 
     invalidate() {
-      const cache = this.$apollo.provider.defaultClient.cache
-      cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
-      cache.evict({ id: 'ROOT_QUERY', fieldName: 'page' })
-      cache.gc()
+      invalidatePages(this.$apollo.provider.defaultClient.cache)
     },
 
     keep(stat) {
@@ -944,8 +942,6 @@ export default {
         this.updateHas(oldparent, -moved)
         this.updateHas(parent, moved)
 
-        this.invalidate()
-
         return true
       })
     },
@@ -966,6 +962,7 @@ export default {
             throw result.errors
           }
 
+          this.invalidate()
           return true
         })
         .catch((error) => {
@@ -1186,6 +1183,8 @@ export default {
             this.$refs.tree.remove(item)
             this.updateHas(parent, -removed)
           }
+
+          this.invalidate()
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error purging page') + ':\n' + error, 'error')
@@ -1235,7 +1234,7 @@ export default {
       this.outdated = false
 
       if (cache) {
-        this.invalidate()
+        return this.$apollo.provider.defaultClient.clearStore().then(() => this.refresh())
       }
 
       return this.refresh()
@@ -1364,7 +1363,7 @@ export default {
       return this.$apollo
         .query({
           query: SEARCH_PAGES,
-          fetchPolicy: 'no-cache',
+          fetchPolicy: 'cache-first',
           variables: {
             filter: filter,
             sort: this.sort ? [this.sort] : null,
@@ -1426,6 +1425,8 @@ export default {
               stat.data.status = val
             }
           })
+
+          this.invalidate()
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')

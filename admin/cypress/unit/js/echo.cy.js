@@ -1,9 +1,11 @@
 import {
   bulkPatch,
   channelName,
+  cleanEcho,
   eventPatch,
   listEcho,
   resync,
+  setupEcho,
   PATCH_ACTIONS,
   LIST_ACTIONS,
   RECONNECT,
@@ -147,5 +149,40 @@ describe('resync()', () => {
     resync([a, b])
 
     expect(calls).to.deep.equal([['b', null, RECONNECT]])
+  })
+})
+
+describe('Echo lifecycle', () => {
+  it('owns the cleanup returned by the current subscription', () => {
+    const cleanup = cy.stub()
+    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+
+    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => Promise.resolve(cleanup))
+    const pending = vm.echoPromise
+
+    return pending.then(() => {
+      expect(vm.echoCleanup).to.equal(cleanup)
+      expect(vm.echoPromise).to.equal(null)
+
+      cleanEcho(vm)
+      expect(cleanup).to.have.been.calledOnce
+    })
+  })
+
+  it('cleans a pending subscription after it is replaced', () => {
+    const cleanup = cy.stub()
+    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+    let resolve
+
+    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => new Promise((done) => { resolve = done }))
+    const pending = vm.echoPromise
+
+    cleanEcho(vm)
+    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => Promise.resolve(null))
+    resolve(cleanup)
+
+    return pending.then(() => {
+      expect(cleanup).to.have.been.calledOnce
+    })
   })
 })

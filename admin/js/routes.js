@@ -5,7 +5,6 @@
 import { reactive } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
-import { apolloClient } from './graphql'
 import { urladmin } from './config'
 import gettext from './i18n'
 
@@ -143,10 +142,6 @@ router.afterEach((to, from) => {
 
   if (toSection !== fromSection) {
     useClipboardStore().clear()
-    apolloClient.cache.evict({ fieldName: 'pages' })
-    apolloClient.cache.evict({ fieldName: 'elements' })
-    apolloClient.cache.evict({ fieldName: 'files' })
-    apolloClient.cache.gc()
   }
 })
 

@@ -78,7 +78,14 @@ export function handleError({ errors, networkError }) {
   if (!unauthorized) return
 
   useUserStore().me = null
+  apolloClient.clearStore().catch((error) => console.error('Failed to clear Apollo cache', error))
   router.push({ name: 'login' })
+}
+
+/** Removes every cached page-list variant. */
+export function invalidatePages(cache) {
+  cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
+  cache.gc()
 }
 
 const lazyUploadLink = new ApolloLink((operation, forward) => {
