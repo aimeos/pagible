@@ -2,17 +2,26 @@
 
 <script>
 import UnsavedDialog from './components/UnsavedDialog.vue'
-import { useDirtyStore, useMessageStore, useViewStack } from './stores'
+import { cleanEcho, setupEcho } from './echo'
+import { invalidatePages } from './graphql'
+import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './stores'
 
 export default {
   components: { UnsavedDialog },
 
+  data: () => ({
+    destroyed: true,
+    echoCleanup: null,
+    echoPromise: null
+  }),
+
   setup() {
     const dirtyStore = useDirtyStore()
     const messages = useMessageStore()
+    const user = useUserStore()
     const viewStack = useViewStack()
 
-    return { dirtyStore, messages, viewStack }
+    return { dirtyStore, messages, user, viewStack }
   },
 
   created() {
@@ -20,7 +29,23 @@ export default {
   },
 
   beforeUnmount() {
+    this.destroyed = true
+    cleanEcho(this)
     window.removeEventListener('beforeunload', this.beforeUnload)
+  },
+
+  watch: {
+    'user.me': {
+      handler(user) {
+        this.destroyed = !user
+        cleanEcho(this)
+
+        if (user && this.user.can('page:view')) {
+          setupEcho(this, 'page', () => invalidatePages(this.$apollo.provider.defaultClient.cache))
+        }
+      },
+      immediate: true
+    }
   },
 
   methods: {

@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import router from '../../../js/routes'
 import { useUserStore } from '../../../js/stores'
-import { graphqlFetch, handleError } from '../../../js/graphql'
+import { apolloClient, graphqlFetch, handleError, invalidatePages } from '../../../js/graphql'
 
 describe('handleError()', () => {
   beforeEach(() => {
@@ -12,11 +12,13 @@ describe('handleError()', () => {
     const user = useUserStore()
     user.me = { id: 'user-1' }
 
+    cy.stub(apolloClient, 'clearStore').as('clearStore').resolves()
     cy.stub(router, 'push').as('routerPush').resolves()
 
     handleError({ networkError: { statusCode: 419 } })
 
     expect(user.me).to.equal(null)
+    cy.get('@clearStore').should('have.been.calledOnce')
     cy.get('@routerPush').should('have.been.calledOnceWith', { name: 'login' })
   })
 })
@@ -79,5 +81,17 @@ describe('graphqlFetch()', () => {
         expect(error.message).to.equal('HTTP 500')
       },
     )
+  })
+})
+
+describe('invalidatePages()', () => {
+  it('removes every page list variant', () => {
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    invalidatePages({ evict, gc })
+
+    expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
+    expect(gc).to.have.been.calledOnce
   })
 })

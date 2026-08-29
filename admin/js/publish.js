@@ -68,6 +68,7 @@ export function publishItem(vm, type, msgs, at = null) {
             vm.messages.add(msgs.scheduled(at), 'info')
           }
 
+          vm.invalidate?.()
           useChangeStore().notify(type, vm.item)
 
           if (vm.stacked) {

@@ -2,6 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
+import { invalidatePages } from '../graphql'
 import { useMessageStore } from '../stores'
 import { debounce, PAGE_BULK_LIMIT } from '../utils'
 
@@ -97,6 +98,7 @@ export default {
 
         if (response.errors) throw response.errors
 
+        invalidatePages(this.$apollo.provider.defaultClient.cache)
         this.$emit('applied', this.value, descendants)
       } catch (error) {
         this.messages.add(this.$gettext('Error changing page access') + ':\n' + error, 'error')
