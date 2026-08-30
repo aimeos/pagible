@@ -65,6 +65,7 @@ function getEcho() {
       })
       .catch((err) => {
         console.warn('Laravel Echo not available:', err.message)
+        delete node.dataset.reverb
         echoPromise = null
         echoInstance = null
         return null
@@ -110,13 +111,34 @@ export function socketId() {
 }
 
 export function setupEcho(vm, type, onEvent, actions = LIST_ACTIONS, connect = subscribe) {
-  const pending = markRaw(connect(type, onEvent, actions).then((cleanup) => {
-    if (vm.echoPromise !== pending || vm.destroyed) return cleanup
+  const promise = Array.isArray(type)
+    ? Promise.allSettled(type.map((name) => connect(name, (event, action) => onEvent(event, action, name), actions)))
+        .then((results) => {
+          const cleanups = results.filter((result) => result.status === 'fulfilled').map((result) => result.value)
+          const failed = results.find((result) => result.status === 'rejected')
 
-    vm.echoCleanup = cleanup
-    vm.echoPromise = null
-    return null
-  }))
+          if (failed) {
+            cleanups.forEach((cleanup) => cleanup?.())
+            throw failed.reason
+          }
+
+          return () => cleanups.forEach((cleanup) => cleanup?.())
+        })
+    : connect(type, onEvent, actions)
+
+  const pending = markRaw(promise
+    .then((cleanup) => {
+      if (vm.echoPromise !== pending || vm.destroyed) return cleanup
+
+      vm.echoCleanup = cleanup
+      vm.echoPromise = null
+      return null
+    })
+    .catch((error) => {
+      if (vm.echoPromise === pending) vm.echoPromise = null
+      console.warn('Echo subscription failed:', error)
+      return null
+    }))
 
   vm.echoPromise = pending
 }

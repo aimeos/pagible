@@ -3,8 +3,10 @@
 <script>
 import UnsavedDialog from './components/UnsavedDialog.vue'
 import { cleanEcho, setupEcho } from './echo'
-import { invalidatePages } from './graphql'
+import { invalidateList } from './graphql'
 import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './stores'
+
+const CONTENT_TYPES = ['page', 'element', 'file']
 
 export default {
   components: { UnsavedDialog },
@@ -40,8 +42,12 @@ export default {
         this.destroyed = !user
         cleanEcho(this)
 
-        if (user && this.user.can('page:view')) {
-          setupEcho(this, 'page', () => invalidatePages(this.$apollo.provider.defaultClient.cache))
+        const types = user ? CONTENT_TYPES.filter((type) => this.user.can(`${type}:view`)) : []
+
+        if (types.length) {
+          setupEcho(this, types, (_event, _name, type) => {
+            invalidateList(this.$apollo.provider.defaultClient.cache, `${type}s`)
+          })
         }
       },
       immediate: true

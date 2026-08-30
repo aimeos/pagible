@@ -14,6 +14,7 @@ import {
 } from '../stores'
 import { changedState } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
+import { invalidateList } from '../graphql'
 import { debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import {
   mdiMenuDown,
@@ -515,6 +516,7 @@ export default {
             type: 'reference',
             refid: element.id
           }
+          invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
           this.$emit('update:content', this.content)
         })
         .catch((error) => {

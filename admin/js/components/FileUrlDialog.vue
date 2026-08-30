@@ -2,6 +2,7 @@
 
 <script>
 import { ADD_FILE, normalizeFile } from '../files'
+import { invalidateList } from '../graphql'
 import { useAppStore, useMessageStore } from '../stores'
 import { mdiClose, mdiCheck, mdiDelete } from '@mdi/js'
 
@@ -76,7 +77,8 @@ export default {
         )
       })
 
-      Promise.all(promises).then(() => {
+      return Promise.all(promises).then(() => {
+        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
         this.$emit('update:modelValue', false)
         this.$emit('add', items)
         this.input = ''

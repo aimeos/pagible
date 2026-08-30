@@ -33,6 +33,7 @@ function mountDetail(perms = {}, item = {}, apollo = {}) {
         $apollo: {
           query: () => Promise.resolve({ data: {} }),
           mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
           ...apollo,
         },
       },
@@ -129,6 +130,20 @@ describe('FileDetail', () => {
   it('renders the history button', () => {
     mountDetail()
     cy.get('button.btn-history').should('exist')
+  })
+
+  it('invalidates file lists', () => {
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    mountDetail({}, {}, {
+      provider: { defaultClient: { cache: { evict, gc } } },
+    }).then(() => {
+      Cypress.vueWrapper.findComponent(FileDetail).vm.invalidate()
+
+      expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'files' })
+      expect(gc).to.have.been.calledOnce
+    })
   })
 
   it('renders the aside toggle button', () => {

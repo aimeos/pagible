@@ -21,11 +21,19 @@ const baseItem = {
 
 let schemaLoad
 
-function mountDetail(perms = {}, item = {}) {
+function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(ElementDetail, {
     props: { item: { ...baseItem, ...item } },
     global: {
       stubs,
+      mocks: {
+        $apollo: {
+          query: () => Promise.resolve({ data: {} }),
+          mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          ...apollo,
+        },
+      },
       provide: {
         closeView: () => {},
       },
@@ -101,6 +109,20 @@ describe('ElementDetail', () => {
   it('renders the history button', () => {
     mountDetail()
     cy.get('button.btn-history').should('exist')
+  })
+
+  it('invalidates element lists', () => {
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    mountDetail({}, {}, {
+      provider: { defaultClient: { cache: { evict, gc } } },
+    }).then(() => {
+      Cypress.vueWrapper.findComponent(ElementDetail).vm.invalidate()
+
+      expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'elements' })
+      expect(gc).to.have.been.calledOnce
+    })
   })
 
   it('renders the aside toggle button', () => {

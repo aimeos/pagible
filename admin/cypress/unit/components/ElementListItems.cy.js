@@ -21,7 +21,12 @@ function mountList(props = {}, perms = {}, apollo = {}) {
             data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } },
           }),
           mutate: () => Promise.resolve({ data: {} }),
-          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
+          provider: {
+            defaultClient: {
+              cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+              clearStore: () => Promise.resolve(),
+            },
+          },
           ...apollo,
         },
       },
@@ -35,6 +40,14 @@ function mountList(props = {}, perms = {}, apollo = {}) {
 }
 
 describe('ElementListItems', () => {
+  beforeEach(() => {
+    document.querySelector('[data-cy-root]').id = 'app'
+  })
+
+  afterEach(() => {
+    document.querySelector('#app')?.removeAttribute('data-reverb')
+  })
+
   it('renders the component', () => {
     mountList({}, { 'element:view': true })
     cy.get('.header').should('exist')
@@ -116,6 +129,74 @@ describe('ElementListItems', () => {
   it('renders reload button', () => {
     mountList({}, { 'element:view': true })
     cy.get('button.btn-reload').should('exist')
+  })
+
+  it('uses the Apollo cache for element queries', () => {
+    document.querySelector('#app').dataset.reverb = '{}'
+    const query = cy.stub().resolves({
+      data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } },
+    })
+
+    mountList({ embed: true }, { 'element:view': true }, { query }).then(({ wrapper }) => {
+      return wrapper.findComponent(ElementListItems).vm.search().then(() => {
+        expect(query.lastCall.args[0].fetchPolicy).to.equal('cache-first')
+      })
+    })
+  })
+
+  it('requeries an evicted element list when reactivated', () => {
+    document.querySelector('#app').dataset.reverb = '{}'
+    const query = cy.stub().resolves({
+      data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } },
+    })
+    const diff = cy.stub().returns({ complete: false })
+
+    mountList({ embed: true }, { 'element:view': true }, {
+      query,
+      provider: {
+        defaultClient: {
+          cache: { diff, evict() {}, gc() {} },
+          clearStore: () => Promise.resolve(),
+        },
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ElementListItems).vm
+      const calls = query.callCount
+      vm.loading = false
+
+      return vm.revalidate().then(() => {
+        expect(diff).to.have.been.calledOnce
+        expect(query.callCount).to.equal(calls + 1)
+      })
+    })
+  })
+
+  it('clears the complete Apollo cache before a manual reload', () => {
+    const calls = []
+    const query = cy.stub().callsFake(() => {
+      calls.push('query')
+      return Promise.resolve({
+        data: { elements: { data: [], paginatorInfo: { lastPage: 1 } } },
+      })
+    })
+    const clearStore = cy.stub().callsFake(() => {
+      calls.push('clearStore')
+      return Promise.resolve()
+    })
+
+    mountList({}, { 'element:view': true }, {
+      query,
+      provider: {
+        defaultClient: {
+          cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+          clearStore,
+        },
+      },
+    }).then(({ wrapper }) => {
+      return wrapper.findComponent(ElementListItems).vm.reload().then(() => {
+        expect(calls).to.deep.equal(['clearStore', 'query'])
+      })
+    })
   })
 
   it('shows loading state initially', () => {

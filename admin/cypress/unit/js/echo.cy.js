@@ -169,6 +169,49 @@ describe('Echo lifecycle', () => {
     })
   })
 
+  it('owns several typed subscriptions as one lifecycle', () => {
+    const callbacks = {}
+    const cleanups = { element: cy.stub(), file: cy.stub() }
+    const connect = cy.stub().callsFake((type, callback) => {
+      callbacks[type] = callback
+      return Promise.resolve(cleanups[type])
+    })
+    const onEvent = cy.stub()
+    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+
+    setupEcho(vm, ['element', 'file'], onEvent, LIST_ACTIONS, connect)
+    const pending = vm.echoPromise
+
+    return pending.then(() => {
+      callbacks.file({ id: 'file-1' }, 'saved')
+      expect(onEvent).to.have.been.calledWith({ id: 'file-1' }, 'saved', 'file')
+
+      cleanEcho(vm)
+      expect(cleanups.element).to.have.been.calledOnce
+      expect(cleanups.file).to.have.been.calledOnce
+    })
+  })
+
+  it('cleans successful typed subscriptions when another one fails', () => {
+    const cleanup = cy.stub()
+    const warning = cy.stub(console, 'warn')
+    const connect = cy.stub().callsFake((type) => type === 'element'
+      ? Promise.resolve(cleanup)
+      : Promise.reject(new Error('denied'))
+    )
+    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+
+    setupEcho(vm, ['element', 'file'], () => {}, LIST_ACTIONS, connect)
+    const pending = vm.echoPromise
+
+    return pending.then(() => {
+      expect(cleanup).to.have.been.calledOnce
+      expect(warning).to.have.been.calledOnce
+      expect(vm.echoCleanup).to.equal(null)
+      expect(vm.echoPromise).to.equal(null)
+    })
+  })
+
   it('cleans a pending subscription after it is replaced', () => {
     const cleanup = cy.stub()
     const vm = { destroyed: false, echoCleanup: null, echoPromise: null }

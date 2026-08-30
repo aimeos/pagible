@@ -22,6 +22,7 @@ import {
 import EditBulkDialog from './EditBulkDialog.vue'
 import ListSort from './ListSort.vue'
 import { ADD_FILE, FILE_FIELDS, normalizeFile } from '../files'
+import { invalidateList, listFetchPolicy } from '../graphql'
 import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, fileurl, filesrcset } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
@@ -210,6 +211,7 @@ export default {
 
   activated() {
     this.sync()
+    this.revalidate()
   },
 
   computed: {
@@ -323,8 +325,22 @@ export default {
       this.outdated = false
       this.items = []
       this.loading = true
-      this.invalidate()
-      this.search()
+      return this.$apollo.provider.defaultClient.clearStore().then(() => this.search())
+    },
+
+    revalidate() {
+      if (this.loading) return
+
+      const options = this.options()
+      const cache = this.$apollo.provider.defaultClient.cache
+
+      if (options.fetchPolicy === 'network-only' || !cache.diff({
+        query: options.query,
+        variables: options.variables,
+        returnPartialData: true
+      }).complete) {
+        return this.search()
+      }
     },
 
     patch(item) {
@@ -369,9 +385,39 @@ export default {
     },
 
     invalidate() {
-      const cache = this.$apollo.provider.defaultClient.cache
-      cache.evict({ id: 'ROOT_QUERY', fieldName: 'files' })
-      cache.gc()
+      invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+    },
+
+    options() {
+      const publish = this.filter.publish || null
+      const trashed = this.filter.trashed || 'WITHOUT'
+      const filter = { ...this.filter }
+
+      delete filter.trashed
+      delete filter.publish
+
+      for(const key in filter) {
+        if(filter[key] === null) {
+          delete filter[key]
+        }
+      }
+
+      if (this.term) {
+        filter.any = this.term
+      }
+
+      return {
+        query: FETCH_FILES,
+        fetchPolicy: listFetchPolicy(),
+        variables: {
+          filter: filter,
+          page: this.page,
+          limit: this.limit,
+          sort: [this.sort],
+          trashed: trashed,
+          publish: publish
+        }
+      }
     },
 
     keep(item) {
@@ -535,38 +581,10 @@ export default {
         return Promise.resolve([])
       }
 
-      const publish = this.filter.publish || null
-      const trashed = this.filter.trashed || 'WITHOUT'
-      const filter = { ...this.filter }
-
-      delete filter.trashed
-      delete filter.publish
-
-      for(const key in filter) {
-        if(filter[key] === null) {
-          delete filter[key]
-        }
-      }
-
-      if (this.term) {
-        filter.any = this.term
-      }
-
       this.loading = true
 
       return this.$apollo
-        .query({
-          query: FETCH_FILES,
-          fetchPolicy: 'no-cache',
-          variables: {
-            filter: filter,
-            page: this.page,
-            limit: this.limit,
-            sort: [this.sort],
-            trashed: trashed,
-            publish: publish
-          }
-        })
+        .query(this.options())
         .then((result) => {
           if (result.errors) {
             throw result.errors
@@ -592,6 +610,7 @@ export default {
             })
           })
           this.checked = new Set()
+          this.outdated = false
           this.loading = false
 
           return this.items

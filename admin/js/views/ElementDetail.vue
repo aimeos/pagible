@@ -9,6 +9,7 @@ import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useSchemaStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
+import { invalidateList } from '../graphql'
 import { publishDate, publishItem } from '../publish'
 import { setupReload, cleanEcho } from '../echo'
 import { reloadVersion } from '../version'
@@ -238,6 +239,10 @@ export default {
       return map
     },
 
+    invalidate() {
+      invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
+    },
+
     itemUpdated() {
       this.$emit('update:item', this.item)
       this.dirty = true
@@ -328,6 +333,7 @@ export default {
           this.item.editor = version?.editor ?? this.item.editor
           this.item.updated_at = version?.created_at ?? this.item.updated_at
           this.item.latestId = this.latestId
+          this.invalidate()
           this.changes.notify('element', this.item)
 
           return true

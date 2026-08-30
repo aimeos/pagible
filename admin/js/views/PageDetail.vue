@@ -11,7 +11,7 @@ const PageDetailItem = defineAsyncComponent(() => import('../components/PageDeta
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
-import { invalidatePages } from '../graphql'
+import { invalidateList } from '../graphql'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
@@ -429,7 +429,7 @@ export default {
     },
 
     invalidate() {
-      invalidatePages(this.$apollo.provider.defaultClient.cache)
+      invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
     },
 
     loadVersions() {
