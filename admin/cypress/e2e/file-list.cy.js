@@ -41,6 +41,8 @@ const ME_ADMIN = {
  */
 function makeFile(overrides = {}) {
   return Object.assign({
+    __typename: 'File',
+    disk: 'public',
     id: '1',
     lang: 'en',
     name: 'test.png',
@@ -58,6 +60,7 @@ function makeFile(overrides = {}) {
       id: '10',
       published: true,
       publish_at: null,
+      aux: '{}',
       data: JSON.stringify({
         name: 'test.png',
         lang: 'en',
@@ -97,6 +100,17 @@ function setupIntercept({
     const isBatch = Array.isArray(req.body)
     const ops = isBatch ? req.body : [req.body]
 
+    if (ops.some((op) => /\bfiles\s*\(/.test(op.query || ''))) {
+      req.alias = 'files'
+    }
+
+    const mutation = ['bulkFile', 'dropFile', 'keepFile', 'pubFile', 'purgeFile']
+      .find((name) => ops.some((op) => (op.query || '').includes(name)))
+
+    if (mutation) {
+      req.alias = mutation
+    }
+
     const responses = ops.map((op) => {
       const query = op.query || ''
 
@@ -131,6 +145,8 @@ function setupIntercept({
           data: {
             me: {
               permission: meResponse.permission,
+              settings: meResponse.settings || '{}',
+              token: meResponse.token || null,
               email: meResponse.email,
               name: meResponse.name,
             },
@@ -144,12 +160,11 @@ function setupIntercept({
   }).as('gql')
 }
 
-/** Authenticate and navigate to /files, waiting for the initial GQL calls. */
+/** Authenticate and navigate to /files, waiting for the files query. */
 function visitFiles(files = [], meResponse = ME_ADMIN) {
   setupIntercept({ meResponse, files })
   cy.visit('/files')
-  cy.wait('@gql') // me query
-  cy.wait('@gql') // files query
+  cy.wait('@files')
 }
 
 // ---------------------------------------------------------------------------
@@ -218,7 +233,7 @@ describe('File List', () => {
     const file = makeFile()
     visitFiles([file])
     cy.get('.search input').type('test')
-    cy.wait('@gql') // debounced search query
+    cy.wait('@files')
   })
 
   // ---- Sort ----
@@ -241,7 +256,7 @@ describe('File List', () => {
     visitFiles()
     cy.get('.layout .btn-sort .v-btn').click()
     cy.contains('.v-list .v-btn', 'Name').click()
-    cy.wait('@gql')
+    cy.wait('@files')
   })
 
   // ---- Grid / list view toggle ----
@@ -395,10 +410,7 @@ describe('File List', () => {
     visitFiles([file])
     cy.get('.items .v-list-item .btn-actions.item-menu').first().click()
     cy.contains('.v-card .v-list .v-list-item:visible .v-btn', 'Publish').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('pubFile'))).to.be.true
-    })
+    cy.wait('@pubFile')
   })
 
   it('clicking Delete sends dropFile mutation', () => {
@@ -406,10 +418,7 @@ describe('File List', () => {
     visitFiles([file])
     cy.get('.items .v-list-item .btn-actions.item-menu').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Delete').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('dropFile'))).to.be.true
-    })
+    cy.wait('@dropFile')
   })
 
   it('clicking Purge sends purgeFile mutation', () => {
@@ -417,10 +426,7 @@ describe('File List', () => {
     visitFiles([file])
     cy.get('.items .v-list-item .btn-actions.item-menu').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Purge').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('purgeFile'))).to.be.true
-    })
+    cy.wait('@purgeFile')
   })
 
   // ---- Bulk actions ----
@@ -516,7 +522,7 @@ describe('File List', () => {
     cy.get('.v-card .v-field').realClick()
     cy.get('.v-overlay-container [role="option"]').first().should('be.visible').click()
     cy.get('.btn-apply').click()
-    cy.wait('@gql').its('request.body').should((body) => {
+    cy.wait('@bulkFile').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       const saveOp = ops.find((op) => (op.query || '').includes('bulkFile'))
       expect(saveOp).to.exist
