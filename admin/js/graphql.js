@@ -17,7 +17,7 @@ const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
-  attempts: { max: 2, retryIf: (error) => !!error }
+  attempts: { max: 2, retryIf: retry }
 })
 
 // Forwards Laravel's XSRF-TOKEN cookie as the X-XSRF-TOKEN header so cookie
@@ -77,7 +77,7 @@ export function handleError({ errors, networkError }) {
 
   if (!unauthorized) return
 
-  useUserStore().me = null
+  useUserStore().me = false
   apolloClient.clearStore().catch((error) => console.error('Failed to clear Apollo cache', error))
   router.push({ name: 'login' })
 }
@@ -91,6 +91,10 @@ export function invalidateList(cache, field) {
 /** Uses cached lists only when remote invalidation is configured. */
 export function listFetchPolicy() {
   return document.querySelector('#app')?.dataset?.reverb ? 'cache-first' : 'network-only'
+}
+
+export function retry(error) {
+  return !!error && error.statusCode !== 419
 }
 
 const lazyUploadLink = new ApolloLink((operation, forward) => {
