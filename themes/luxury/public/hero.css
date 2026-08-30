@@ -3,6 +3,7 @@
  */
 
 .hero {
+    isolation: isolate;
     overflow: hidden;
     position: relative;
 }
