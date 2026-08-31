@@ -69,6 +69,7 @@ export default defineConfig({
       // Vue/Vuetify/router export surface into the eager app bundle (~17 KB gzip) because the
       // shims share chunks with the main app. Scoping it keeps the host build unchanged.
       name: 'cms-plugin-shims',
+      apply: 'build',
       buildStart() {
         for(const name of ['vue', 'vue-router', 'vuetify', 'graphql-tag']) {
           this.emitFile({
@@ -90,6 +91,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
+      // Cypress loads the support module for every spec, so these must be ready before the first run.
+      'cypress-real-events',
+      'cypress/vue',
       'pinia',
       'vue',
       'vue3-gettext',
