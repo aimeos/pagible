@@ -29,6 +29,7 @@ function mountFile(props = {}, perms = {}, apollo = {}) {
         $apollo: {
           query: () => Promise.resolve({ data: {} }),
           mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
           ...apollo,
         },
       },

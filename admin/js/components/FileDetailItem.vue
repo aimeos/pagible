@@ -15,6 +15,7 @@ import {
 } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 import { RELOCATE_FILE } from '../files'
+import { invalidateList } from '../graphql'
 import { fileurl, toBlob, locales, txlocales } from '../utils'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
@@ -215,6 +216,7 @@ export default {
           }
 
           Object.assign(this.item, response.data.relocateFile[0])
+          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
           return true
         })
         .catch((error) => {

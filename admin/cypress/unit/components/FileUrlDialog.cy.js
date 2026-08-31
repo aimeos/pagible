@@ -14,6 +14,7 @@ function mountDialog(props = {}, apollo = {}) {
       mocks: {
         $apollo: {
           mutate: () => Promise.resolve({ data: {} }),
+          provider: { defaultClient: { cache: { evict() {}, gc() {} } } },
           ...apollo,
         },
       },

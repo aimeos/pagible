@@ -37,7 +37,7 @@ import ListSort from './ListSort.vue'
 import { useAppStore, useUserStore, useLanguageStore, useMessageStore, useChangeStore } from '../stores'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
-import { invalidatePages } from '../graphql'
+import { invalidateList, listFetchPolicy } from '../graphql'
 
 const PAGE_TREE_FIELDS = new Set([
   'access',
@@ -356,6 +356,10 @@ export default {
 
   activated() {
     this.sync()
+
+    if (!this.loading && listFetchPolicy() === 'network-only') {
+      return this.refresh()
+    }
   },
 
   beforeUnmount() {
@@ -707,7 +711,7 @@ export default {
       return this.$apollo
         .query({
           query: FETCH_CHILD_PAGES,
-          fetchPolicy: 'cache-first',
+          fetchPolicy: listFetchPolicy(),
           variables: {
             filter: filter,
             page: page,
@@ -812,7 +816,7 @@ export default {
     },
 
     invalidate() {
-      invalidatePages(this.$apollo.provider.defaultClient.cache)
+      invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
     },
 
     keep(stat) {
@@ -1363,7 +1367,7 @@ export default {
       return this.$apollo
         .query({
           query: SEARCH_PAGES,
-          fetchPolicy: 'cache-first',
+          fetchPolicy: listFetchPolicy(),
           variables: {
             filter: filter,
             sort: this.sort ? [this.sort] : null,

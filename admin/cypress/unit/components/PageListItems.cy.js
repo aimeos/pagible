@@ -46,7 +46,12 @@ function mountList(props = {}, perms = {}, apollo = {}) {
 
 describe('PageListItems', () => {
   beforeEach(() => {
+    document.querySelector('[data-cy-root]').id = 'app'
     cy.on('uncaught:exception', () => false)
+  })
+
+  afterEach(() => {
+    document.querySelector('#app')?.removeAttribute('data-reverb')
   })
 
   it('renders the component', () => {
@@ -153,11 +158,12 @@ describe('PageListItems', () => {
   })
 
   it('loads the saved list view with its active filters', () => {
+    document.querySelector('#app').dataset.reverb = '{}'
     const query = cy.stub().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
     })
 
-    mountList({ filter: { view: 'list', status: 0 } }, { 'page:view': true }, { query }).then(() => {
+    mountList({ embed: true, filter: { view: 'list', status: 0 } }, { 'page:view': true }, { query }).then(() => {
       expect(query).to.have.been.calledOnce
       expect(query.firstCall.args[0].fetchPolicy).to.equal('cache-first')
       expect(query.firstCall.args[0].variables.filter).to.deep.equal({ status: 0 })
@@ -166,13 +172,29 @@ describe('PageListItems', () => {
   })
 
   it('uses the Apollo cache for page tree queries', () => {
+    document.querySelector('#app').dataset.reverb = '{}'
     const query = cy.stub().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
     })
 
-    mountList({ filter: { view: 'tree' } }, { 'page:view': true }, { query }).then(() => {
+    mountList({ embed: true, filter: { view: 'tree' } }, { 'page:view': true }, { query }).then(() => {
       expect(query).to.have.been.calledOnce
       expect(query.firstCall.args[0].fetchPolicy).to.equal('cache-first')
+    })
+  })
+
+  it('reloads from the network when reactivated without remote invalidation', () => {
+    const query = cy.stub().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+
+    mountList({ embed: true, filter: { view: 'list' } }, { 'page:view': true }, { query }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      return vm.$options.activated.call(vm).then(() => {
+        expect(query).to.have.been.calledTwice
+        expect(query.lastCall.args[0].fetchPolicy).to.equal('network-only')
+      })
     })
   })
 

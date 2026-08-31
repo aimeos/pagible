@@ -82,10 +82,15 @@ export function handleError({ errors, networkError }) {
   router.push({ name: 'login' })
 }
 
-/** Removes every cached page-list variant. */
-export function invalidatePages(cache) {
-  cache.evict({ id: 'ROOT_QUERY', fieldName: 'pages' })
+/** Removes every cached variant of a root list field. */
+export function invalidateList(cache, field) {
+  cache.evict({ id: 'ROOT_QUERY', fieldName: field })
   cache.gc()
+}
+
+/** Uses cached lists only when remote invalidation is configured. */
+export function listFetchPolicy() {
+  return document.querySelector('#app')?.dataset?.reverb ? 'cache-first' : 'network-only'
 }
 
 export function retry(error) {

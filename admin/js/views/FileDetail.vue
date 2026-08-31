@@ -8,6 +8,7 @@ import FileDetailRefs from '../components/FileDetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
+import { invalidateList } from '../graphql'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { setupReload, cleanEcho } from '../echo'
@@ -211,6 +212,10 @@ export default {
       this.dirty = true
     },
 
+    invalidate() {
+      invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+    },
+
     loadVersions() {
       return this.versions(this.item.id)
     },
@@ -313,6 +318,7 @@ export default {
           this.item.published = latest?.published ?? false
           this.item.publish_at = latest?.publish_at ?? null
           this.item.editor = latest?.editor ?? this.item.editor
+          this.invalidate()
           this.changes.notify('file', this.item)
           this.onSaved?.()
 

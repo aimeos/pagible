@@ -1,9 +1,8 @@
 /**
  * E2E tests for the file detail view.
  *
- * The FileDetail component opens via Vue Router navigation when a file
- * item is clicked in the list (/files → /files/:id). The list view is
- * replaced by the detail view inside the same router-view container.
+ * The FileDetail component is mounted directly at /files/:id so these tests
+ * cover detail behavior independently of the file list.
  *
  * GraphQL is intercepted at POST /graphql. Apollo's BatchHttpLink sends
  * requests as JSON arrays, so the handler checks whether req.body is an
@@ -58,6 +57,8 @@ const ELEMENT_SCHEMAS = [{
  */
 function makeFile(overrides = {}) {
   return Object.assign({
+    __typename: 'File',
+    disk: 'public',
     id: '1',
     lang: 'en',
     name: 'test.png',
@@ -150,6 +151,15 @@ function setupIntercept({
     const isBatch = Array.isArray(req.body)
     const ops = isBatch ? req.body : [req.body]
 
+    const mutation = ['pubFile', 'saveFile']
+      .find((name) => ops.some((op) => (op.query || '').includes(name)))
+
+    if (mutation) {
+      req.alias = mutation
+    } else if (ops.some((op) => /\bfile\s*\(/.test(op.query || '') && (op.query || '').includes('latest'))) {
+      req.alias = 'fileDetail'
+    }
+
     const responses = ops.map((op) => {
       const query = op.query || ''
 
@@ -163,8 +173,18 @@ function setupIntercept({
         return {
           data: {
             saveFile: saveFile || {
+              disk: 'public',
               id: op.variables?.id || '1',
-              latest: { id: '11', data: '{}', aux: '{}', created_at: '2026-01-02 00:00:00' },
+              latest: {
+                id: '11',
+                data: '{}',
+                aux: '{}',
+                published: false,
+                publish_at: null,
+                editor: 'admin@example.com',
+                created_at: '2026-01-02 00:00:00',
+              },
+              changed: null,
             },
           },
         }
@@ -237,15 +257,14 @@ function setupIntercept({
 }
 
 /**
- * Navigate to /files, wait for initial queries, click a file to navigate
- * to /files/:id, and wait for the detail data query.
+ * Navigate directly to /files/:id and wait for the detail data query.
  */
 function visitFileDetail(fileOverrides = {}, meResponse = ME_ADMIN) {
   const file = makeFile(fileOverrides)
   const data = JSON.parse(file.latest.data)
   setupIntercept({ meResponse, files: [file] })
-  cy.visit('/files')
-  cy.get('.item-text').first().click()
+  cy.visit(`/files/${file.id}`)
+  cy.wait('@fileDetail', { requestTimeout: 20000 })
   cy.url().should('include', '/files/')
   cy.get('.file-details').should('be.visible')
   cy.get('.v-app-bar-title').last().should('contain', 'File: ' + data.name)
@@ -291,17 +310,7 @@ describe('File Detail', () => {
     visitFileDetail()
     detailView().find('input[maxlength="255"]').first().clear().type('renamed.png')
     detailView().find('.menu-save').click()
-    function waitForSaveFile() {
-      return cy.wait('@gql').then((interception) => {
-        const body = interception.request.body
-        const ops = Array.isArray(body) ? body : [body]
-        if (ops.some((op) => (op.query || '').includes('saveFile'))) {
-          return
-        }
-        return waitForSaveFile()
-      })
-    }
-    waitForSaveFile()
+    cy.wait('@saveFile')
   })
 
   // ---- Publish ----
@@ -319,17 +328,7 @@ describe('File Detail', () => {
   it('clicking publish fires pubFile mutation for unpublished file', () => {
     visitFileDetail({ latest: { ...makeFile().latest, published: false } })
     detailView().find('.menu-publish').last().click()
-    function waitForPubFile() {
-      return cy.wait('@gql').then((interception) => {
-        const body = interception.request.body
-        const ops = Array.isArray(body) ? body : [body]
-        if (ops.some((op) => (op.query || '').includes('pubFile'))) {
-          return
-        }
-        return waitForPubFile()
-      })
-    }
-    waitForPubFile()
+    cy.wait('@pubFile')
   })
 
   // ---- History ----
@@ -374,8 +373,8 @@ describe('File Detail', () => {
       pageDetail: makePageDetail(),
     })
 
-    cy.visit('/files')
-    cy.get('.item-text').first().click()
+    cy.visit(`/files/${file.id}`)
+    cy.wait('@fileDetail', { requestTimeout: 20000 })
     detailView().find('.v-tab').contains('Used by').click()
     detailView().find('.v-table.pages tbody tr').click()
 

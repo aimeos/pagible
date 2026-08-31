@@ -11,6 +11,7 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
+import { invalidateList } from '../graphql'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset } from '../utils'
 import { defineAsyncComponent } from 'vue'
@@ -129,6 +130,7 @@ export default {
             throw response.errors
           }
 
+          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
           return this.handle(normalizeFile(response.data?.addFile), path)
         })
         .catch((error) => {
@@ -259,6 +261,7 @@ export default {
 
           const data = response.data?.relocateFile?.[0] || {}
           this.file = { ...this.file, ...data }
+          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
           this.$emit('addFile', this.file)
         })
         .catch((error) => {

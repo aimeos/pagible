@@ -13,6 +13,7 @@ import {
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { ADD_FILE, FETCH_FILE_DISKS, RELOCATE_FILE, normalizeFile } from '../files'
+import { invalidateList } from '../graphql'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
@@ -172,7 +173,8 @@ export default {
         promises.push(promise)
       }
 
-      Promise.all(promises).then(() => {
+      return Promise.all(promises).then(() => {
+        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
         this.$emit(
           'update:modelValue',
           this.images.map((item) => ({ id: item.id, type: 'file' }))
@@ -282,6 +284,7 @@ export default {
         }
 
         this.sync(files, response.data?.relocateFile)
+        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
       } catch (error) {
         try {
           const response = await this.$apollo.query({

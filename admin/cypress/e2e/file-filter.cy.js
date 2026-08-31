@@ -31,6 +31,8 @@ const ME_ADMIN = {
  */
 function makeFile(overrides = {}) {
   return Object.assign({
+    __typename: 'File',
+    disk: 'public',
     id: '1',
     lang: 'en',
     name: 'test.png',
@@ -48,6 +50,7 @@ function makeFile(overrides = {}) {
       id: '10',
       published: true,
       publish_at: null,
+      aux: '{}',
       data: JSON.stringify({
         name: 'test.png',
         lang: 'en',
@@ -82,6 +85,10 @@ function setupIntercept({
     const isBatch = Array.isArray(req.body)
     const ops = isBatch ? req.body : [req.body]
 
+    if (ops.some((op) => /\bfiles\s*\(/.test(op.query || ''))) {
+      req.alias = 'files'
+    }
+
     const responses = ops.map((op) => {
       const query = op.query || ''
 
@@ -100,6 +107,8 @@ function setupIntercept({
           data: {
             me: {
               permission: meResponse.permission,
+              settings: meResponse.settings || '{}',
+              token: meResponse.token || null,
               email: meResponse.email,
               name: meResponse.name,
             },
@@ -113,12 +122,11 @@ function setupIntercept({
   }).as('gql')
 }
 
-/** Authenticate and navigate to /files, waiting for the initial GQL calls. */
+/** Authenticate and navigate to /files, waiting for the files query. */
 function visitFiles(files = [], meResponse = ME_ADMIN) {
   setupIntercept({ meResponse, files })
   cy.visit('/files')
-  cy.wait('@gql') // me query
-  cy.wait('@gql') // files query
+  cy.wait('@files')
 }
 
 /** At desktop viewport (>=960px) the aside drawer auto-opens on mount. */
@@ -188,7 +196,7 @@ describe('File Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql')
+    cy.wait('@files')
   })
 
   it('Reset button is disabled when filters are at defaults', () => {
@@ -202,7 +210,7 @@ describe('File Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql')
+    cy.wait('@files')
     cy.get('.v-navigation-drawer--right .v-btn.reset').should('not.be.disabled')
   })
 
@@ -211,7 +219,7 @@ describe('File Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql')
+    cy.wait('@files')
     cy.get('.v-navigation-drawer--right .v-btn.reset').click()
     cy.get('.v-navigation-drawer--right .v-btn.reset').should('be.disabled')
   })
@@ -222,7 +230,7 @@ describe('File Filter Sidebar', () => {
     visitFiles([makeFile()])
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('Only trashed').click()
-    cy.wait('@gql').its('request.body').should((body) => {
+    cy.wait('@files').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       const filesOp = ops.find((op) => (op.query || '').includes('files'))
       expect(filesOp).to.exist
@@ -235,7 +243,7 @@ describe('File Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql').its('request.body').should((body) => {
+    cy.wait('@files').its('request.body').should((body) => {
       const ops = Array.isArray(body) ? body : [body]
       const filesOp = ops.find((op) => (op.query || '').includes('files'))
       expect(filesOp).to.exist
