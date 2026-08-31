@@ -156,23 +156,25 @@ describe('ElementDetail', () => {
     })
   })
 
-  describe('publish schedule', () => {
-    it('renders the schedule publish button', () => {
+  describe('publish menu', () => {
+    it('renders one publish menu with both actions', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').should('exist')
+      cy.get('.menu-publish').should('have.length', 1).click()
+      cy.get('.menu-publish-now').should('contain', 'Publish')
+      cy.get('.menu-publish-at').should('contain', 'Schedule')
     })
 
     it('opens menu with date and time pickers', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').click()
+      cy.get('.menu-publish').click()
       cy.get('.v-date-picker').should('exist')
       cy.get('.v-time-picker').should('exist')
     })
 
-    it('disables publish button in menu when no date selected', () => {
+    it('disables publish-at action when no date selected', () => {
       mountDetail({ 'element:publish': true })
-      cy.get('.menu-publishat').click()
-      cy.get('.menu-content .v-btn').last().should('be.disabled')
+      cy.get('.menu-publish').click()
+      cy.get('.menu-publish-at').should('be.disabled')
     })
 
     it('published() combines date and time', () => {

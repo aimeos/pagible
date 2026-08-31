@@ -14,6 +14,8 @@ import {
 const allowedMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
 export default {
+  name: 'DetailAppBar',
+
   props: {
     changed: { type: Object, default: null },
     conflict: { type: Boolean, default: false },
@@ -31,7 +33,15 @@ export default {
     type: { type: String, required: true }
   },
 
-  emits: ['update:publishAt', 'update:publishTime', 'changes', 'history', 'publish', 'save', 'schedule'],
+  emits: [
+    'update:publishAt',
+    'update:publishTime',
+    'changes',
+    'history',
+    'publish',
+    'save',
+    'schedule'
+  ],
 
   setup() {
     const dirtyStore = useDirtyStore()
@@ -54,6 +64,10 @@ export default {
     }
   },
 
+  data: () => ({
+    publishMenu: false
+  }),
+
   methods: {
     async goBack() {
       if (this.stacked) {
@@ -65,6 +79,16 @@ export default {
       } else {
         this.$router.push({ name: `${this.type}:view` })
       }
+    },
+
+    publish() {
+      this.publishMenu = false
+      this.$emit('publish')
+    },
+
+    schedule() {
+      this.publishMenu = false
+      this.$emit('schedule')
     }
   },
 
@@ -114,7 +138,8 @@ export default {
         class="btn-history no-rtl"
       />
 
-      <v-btn v-if="changed"
+      <v-btn
+        v-if="changed"
         @click="$emit('changes')"
         :class="{ error: conflict }"
         :title="$gettext('View merge changes')"
@@ -133,56 +158,64 @@ export default {
         class="menu-save"
       />
 
-      <v-menu :close-on-content-click="false">
+      <v-menu v-model="publishMenu" :close-on-content-click="false">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
             icon
             :loading="publishing"
-            :title="$gettext('Schedule publishing')"
+            :title="$gettext('Publish')"
             :disabled="pubDisabled"
             :variant="pubDisabled ? 'plain' : 'flat'"
             :class="{ active: canPublish, error: error }"
-            class="menu-publishat"
+            class="menu-publish"
           >
             <v-icon>
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <path d="M2,1V3H16V1H2 M2,10H6V19H12V10H16L9,3L2,10Z" />
-                <path d="M16.7 11.4C16.7 11.4 16.61 11.4 16.7 11.4C13.19 11.49 10.4 14.28 10.4 17.7C10.4 21.21 13.19 24 16.7 24S23 21.21 23 17.7 20.21 11.4 16.7 11.4M16.7 22.2C14.18 22.2 12.2 20.22 12.2 17.7S14.18 13.2 16.7 13.2 21.2 15.18 21.2 17.7 19.22 22.2 16.7 22.2M15.6 13.1V17.6L18.84 19.58L19.56 18.5L16.95 16.97V13.1H15.6Z" />
+                <path d="M5,2V4H19V2H5 M5,12H9V21H15V12H19L12,5L5,12Z" />
               </svg>
             </v-icon>
           </v-btn>
         </template>
-        <div class="menu-content">
-          <div class="menu-publish-pickers">
-            <v-date-picker :model-value="publishAt" @update:model-value="$emit('update:publishAt', $event)" hide-header show-adjacent-months />
-            <v-time-picker :model-value="publishTime" @update:model-value="$emit('update:publishTime', $event)" :allowed-minutes="allowedMinutes" format="24hr" density="compact" hide-title />
-          </div>
-          <v-btn
-            @click="$emit('schedule')"
-            :disabled="!publishAt || error"
-            :color="publishAt ? 'primary' : ''"
-            variant="text"
-          >{{ $gettext('Publish') }}</v-btn>
-        </div>
+        <v-card class="menu-content publish-menu">
+          <v-card-actions class="publish-menu-actions">
+            <v-btn @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
+              {{ $gettext('Publish') }}
+            </v-btn>
+          </v-card-actions>
+          <v-divider />
+          <v-card-text class="publish-menu-schedule">
+            <div class="publish-menu-heading">{{ $gettext('Schedule') }}</div>
+            <div class="menu-publish-pickers">
+              <v-date-picker
+                :model-value="publishAt"
+                @update:model-value="$emit('update:publishAt', $event)"
+                hide-header
+                show-adjacent-months
+              />
+              <v-time-picker
+                :model-value="publishTime"
+                @update:model-value="$emit('update:publishTime', $event)"
+                :allowed-minutes="allowedMinutes"
+                format="24hr"
+                density="compact"
+                hide-title
+              />
+            </div>
+          </v-card-text>
+          <v-card-actions class="publish-menu-actions">
+            <v-btn
+              @click="schedule()"
+              :disabled="!publishAt || error"
+              :color="publishAt ? 'primary' : ''"
+              variant="flat"
+              class="menu-publish-at"
+              block
+              >{{ $gettext('Schedule') }}</v-btn
+            >
+          </v-card-actions>
+        </v-card>
       </v-menu>
-
-      <v-btn
-        icon
-        @click="$emit('publish')"
-        :loading="publishing"
-        :title="$gettext('Publish')"
-        :disabled="pubDisabled"
-        :variant="pubDisabled ? 'plain' : 'flat'"
-        :class="{ active: canPublish, error: error }"
-        class="menu-publish"
-      >
-        <v-icon>
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-            <path d="M5,2V4H19V2H5 M5,12H9V21H15V12H19L12,5L5,12Z" />
-          </svg>
-        </v-icon>
-      </v-btn>
 
       <v-btn
         @click.stop="drawer.toggle('aside')"
@@ -209,13 +242,60 @@ export default {
   color: rgb(var(--v-theme-on-warning));
 }
 
-.v-app-bar .v-btn.menu-publishat.active {
-  background-color: rgba(var(--v-theme-primary), 0.875);
-  color: rgb(var(--v-theme-on-primary));
-}
-
 .v-app-bar .v-btn.menu-publish.active {
   background-color: rgba(var(--v-theme-primary), 1);
   color: rgb(var(--v-theme-on-primary));
+}
+
+.publish-menu {
+  width: min(736px, calc(100vw - 24px));
+  padding: 0;
+}
+
+.publish-menu-actions {
+  padding: 12px 16px;
+}
+
+.publish-menu-schedule {
+  padding: 16px;
+}
+
+.publish-menu-heading {
+  margin-bottom: 12px;
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.menu-publish-pickers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.menu-publish-pickers :deep(.v-sheet.v-picker) {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.menu-publish-pickers :deep(.v-picker .v-date-picker-month__day--selected button) {
+  color: rgb(var(--v-theme-surface));
+}
+
+@media (max-width: 759px) {
+  .publish-menu {
+    width: min(360px, calc(100vw - 24px));
+  }
+
+  .menu-publish-pickers {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-publish-pickers :deep(.v-sheet.v-picker) {
+    height: auto;
+  }
 }
 </style>

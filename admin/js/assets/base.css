@@ -335,19 +335,6 @@ input:-webkit-autofill:focus {
   background-color: rgb(var(--v-theme-background));
 }
 
-.menu-content > .v-btn {
-  width: 100%;
-}
-
-.menu-publish-pickers {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.menu-publish-pickers > .v-time-picker {
-  flex: 0 0 auto;
-}
-
 .loading,
 .notfound {
   display: flex;
