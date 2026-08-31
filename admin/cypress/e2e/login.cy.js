@@ -102,8 +102,9 @@ describe('Login', () => {
     cy.get('input[autocomplete="current-password"]').type('secret')
     cy.get('button[type="submit"]').should('not.be.disabled').click()
     cy.wait('@gql')
+    cy.wait('@gql')
 
-    cy.url().should('include', '/pages')
+    cy.location('pathname').should('equal', '/pages')
   })
 
   it('shows "Not a CMS editor" when the logged-in user has no permissions', () => {

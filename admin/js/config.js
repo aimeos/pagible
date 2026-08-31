@@ -8,7 +8,9 @@ const el = document.querySelector('#app')
 const dataset = el?.dataset || {}
 
 export const multidomain = parseInt(dataset.multidomain) || 0
-export const urladmin = dataset.urladmin || '/cmsadmin'
+// An explicitly empty base is used by the Vite development page so its routes stay outside the
+// /cmsadmin proxy. Only a missing attribute should fall back to Laravel's admin route.
+export const urladmin = dataset.urladmin ?? '/cmsadmin'
 export const urlasset = dataset.urlasset || '/cmsadminasset/_file_/_variant_'
 export const urlproxy = dataset.urlproxy || '/cmsproxy?url=_url_'
 export const urlpage = dataset.urlpage || '/_path_'
