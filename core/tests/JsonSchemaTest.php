@@ -15,31 +15,52 @@ class JsonSchemaTest extends CoreTestAbstract
 {
     public function testMap() : void
     {
-        $schema = JsonSchema::build();
-        $variants = $schema['properties']['contents']['items']['anyOf'];
-        $variant = null;
+        Schema::source( fn() => [
+            'test' => [
+                'content' => [
+                    'map' => [
+                        'fields' => [
+                            'location' => ['type' => 'map', 'required' => true],
+                        ],
+                    ],
+                ],
+            ],
+        ] );
 
-        foreach( $variants as $item )
+        try
         {
-            if( is_array( $item ) && ( $item['properties']['type']['enum'][0] ?? null ) === 'map' ) {
-                $variant = $item;
-                break;
+            $schema = JsonSchema::build();
+            $variants = $schema['properties']['contents']['items']['anyOf'];
+            $variant = null;
+
+            foreach( $variants as $item )
+            {
+                if( is_array( $item )
+                    && ( $item['properties']['type']['enum'][0] ?? null ) === 'test::map'
+                ) {
+                    $variant = $item;
+                    break;
+                }
             }
+
+            $location = $variant['properties']['data']['properties']['location'] ?? null;
+
+            $this->assertIsArray( $location );
+            $this->assertSame( 'object', $location['type'] );
+            $this->assertSame( ['latitude', 'longitude', 'zoom'], $location['required'] );
+            $this->assertSame( -90, $location['properties']['latitude']['minimum'] );
+            $this->assertSame( 90, $location['properties']['latitude']['maximum'] );
+            $this->assertSame( -180, $location['properties']['longitude']['minimum'] );
+            $this->assertSame( 180, $location['properties']['longitude']['maximum'] );
+            $this->assertSame( 'integer', $location['properties']['zoom']['type'] );
+            $this->assertSame( 1, $location['properties']['zoom']['minimum'] );
+            $this->assertSame( 19, $location['properties']['zoom']['maximum'] );
+            $this->assertFalse( $location['additionalProperties'] );
         }
-
-        $location = $variant['properties']['data']['properties']['location'] ?? null;
-
-        $this->assertIsArray( $location );
-        $this->assertSame( 'object', $location['type'] );
-        $this->assertSame( ['latitude', 'longitude', 'zoom'], $location['required'] );
-        $this->assertSame( -90, $location['properties']['latitude']['minimum'] );
-        $this->assertSame( 90, $location['properties']['latitude']['maximum'] );
-        $this->assertSame( -180, $location['properties']['longitude']['minimum'] );
-        $this->assertSame( 180, $location['properties']['longitude']['maximum'] );
-        $this->assertSame( 'integer', $location['properties']['zoom']['type'] );
-        $this->assertSame( 1, $location['properties']['zoom']['minimum'] );
-        $this->assertSame( 19, $location['properties']['zoom']['maximum'] );
-        $this->assertFalse( $location['additionalProperties'] );
+        finally
+        {
+            Schema::source( null );
+        }
     }
 
 
