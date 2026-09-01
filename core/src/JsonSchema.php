@@ -210,6 +210,19 @@ class JsonSchema
                 $schema = ['type' => 'array', 'items' => ['type' => 'array', 'items' => ['type' => 'string']]];
                 break;
 
+            case 'map':
+                $schema = [
+                    'type' => 'object',
+                    'properties' => [
+                        'latitude' => ['type' => 'number', 'minimum' => -90, 'maximum' => 90],
+                        'longitude' => ['type' => 'number', 'minimum' => -180, 'maximum' => 180],
+                        'zoom' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 19],
+                    ],
+                    'required' => ['latitude', 'longitude', 'zoom'],
+                    'additionalProperties' => false,
+                ];
+                break;
+
             case 'url':
                 $schema = ['type' => 'string', 'description' => 'URL, either an absolute URL or a site-relative path'];
                 break;
