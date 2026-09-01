@@ -35,6 +35,7 @@ if ($pgettext) {
   $pgettext('st', 'slideshow')
   $pgettext('st', 'code')
   $pgettext('st', 'table')
+  $pgettext('st', 'map')
   $pgettext('st', 'html')
   $pgettext('st', 'image')
   $pgettext('st', 'video')
@@ -68,6 +69,7 @@ if ($pgettext) {
   $pgettext('fn', 'language')
   $pgettext('fn', 'level')
   $pgettext('fn', 'limit')
+  $pgettext('fn', 'location')
   $pgettext('fn', 'main')
   $pgettext('fn', 'order')
   $pgettext('fn', 'parent-page')
@@ -93,6 +95,7 @@ if ($pgettext) {
   $pgettext('fn', 'Target page or link')
   $pgettext('fn', 'Mandatory fields')
   $pgettext('fn', 'Optional fields')
+  $pgettext('fn', 'Link label')
 
   // option labels
   $pgettext('op', 'Name')
