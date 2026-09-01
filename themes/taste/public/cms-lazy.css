@@ -1,0 +1,216 @@
+/**
+ * Taste Theme - Lazy-loaded shared styles
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    height: calc(100vh - 2rem);
+    overflow: hidden;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    background: var(--pico-muted-background-color);
+}
+
+dialog header {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    background: var(--pico-muted-background-color);
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    margin: 0;
+    color: var(--pico-color);
+    background: var(--pico-background-color);
+}
+
+dialog input {
+    width: 100%;
+    border: 1px solid var(--pico-muted-border-color);
+}
+
+dialog button[type=reset] {
+    width: 3rem;
+    margin-inline-start: 0.5rem;
+    padding: 0.5rem;
+    border: 0;
+}
+
+dialog.search .results {
+    height: calc(100% - 6.5rem);
+    margin-block: 1rem;
+    padding-inline: 1rem;
+    overflow-y: auto;
+}
+
+dialog.search a.result-item {
+    display: block;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-inline-start: 0.25rem solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    color: var(--pico-color);
+    text-decoration: none;
+}
+
+dialog.search a.result-item:hover {
+    border-inline-start-color: var(--pico-primary);
+    background: var(--pico-muted-background-color);
+}
+
+dialog.search .result-title {
+    display: block;
+    font-weight: 800;
+}
+
+dialog.search .result-content {
+    display: block;
+    color: var(--pico-muted-color);
+    font-size: 0.8rem;
+}
+
+dialog.search .load-more {
+    display: block;
+    margin: 1rem auto;
+}
+
+blockquote {
+    padding-block: 0.25rem;
+}
+
+.caption:not(:empty) {
+    max-width: 60rem;
+    margin: 0.75rem auto;
+    color: var(--pico-muted-color);
+    font-size: 0.75rem;
+}
+
+pre:has(code[class*="language-"]) {
+    padding: 2rem;
+    border-radius: var(--pico-border-radius);
+    background: var(--pico-code-background-color);
+}
+
+footer.cms-content {
+    color: var(--pico-contrast-inverse);
+    background:
+        radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--pico-secondary) 15%, transparent) 0, transparent 24rem),
+        radial-gradient(circle at 90% 80%, var(--pico-contrast-focus) 0, transparent 28rem),
+        linear-gradient(135deg, var(--pico-code-background-color), color-mix(in srgb, var(--pico-background-color) 75%, var(--pico-secondary)) 58%, var(--pico-contrast-background));
+}
+
+footer.cms-content > div {
+    background: transparent;
+}
+
+footer.cms-content .container {
+    padding-block: 4rem;
+}
+
+footer.cms-content .cards h2 {
+    color: var(--pico-contrast-inverse);
+    text-align: start;
+}
+
+footer.cms-content .cards .card-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+}
+
+footer.cms-content .cards .card-item {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    color: var(--pico-contrast-inverse);
+    background: transparent;
+}
+
+footer.cms-content .cards .card-text {
+    padding: 0;
+}
+
+footer.cms-content .cards .title,
+footer.cms-content .cards .cms-text,
+footer.cms-content .cards .cms-text a {
+    color: var(--pico-contrast-inverse);
+}
+
+footer.cms-content .cards .cms-text p,
+footer.cms-content .cards .cms-text li {
+    color: inherit;
+}
+
+footer.cms-content .cards .title {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+}
+
+footer.cms-content .cards .cms-text {
+    font-size: 0.85rem;
+    line-height: 1.8;
+}
+
+footer.cms-content ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+footer.cms-content li {
+    list-style: none;
+}
+
+footer.cms-content a,
+footer.cms-content a:visited {
+    display: inline-block;
+    padding-block: 0.25rem;
+    color: var(--pico-contrast-inverse);
+    text-decoration: none;
+}
+
+footer.cms-content a:hover {
+    color: var(--pico-secondary);
+}
+
+footer.bottom {
+    margin: 0;
+    color: color-mix(in srgb, var(--pico-color) 70%, transparent);
+    background: var(--pico-code-background-color);
+    font-size: 0.75rem;
+}
+
+footer.bottom .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 1.5rem 1rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+@media (min-width: 768px) {
+    footer.cms-content .cards .card-list {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.cms-content table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.cms-content th,
+.cms-content td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    vertical-align: middle;
+}
+
+.cms-content th {
+    color: var(--pico-color);
+    font-weight: 800;
+}

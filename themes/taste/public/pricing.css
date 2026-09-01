@@ -1,0 +1,126 @@
+/**
+ * Taste Theme - Menu and pricing cards
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.pricing > .container > .subtitle {
+    max-width: 44rem;
+    margin: -1rem auto 2.5rem;
+    color: var(--pico-muted-color);
+    text-align: center;
+}
+
+.pricing-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+}
+
+.pricing-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    background:
+        linear-gradient(150deg, var(--pico-dropdown-background-color), var(--pico-contrast-background)) padding-box,
+        linear-gradient(135deg, var(--pico-secondary-focus), var(--pico-contrast-focus)) border-box;
+    box-shadow: var(--pico-box-shadow);
+}
+
+.pricing-item.highlight {
+    border: 1px solid transparent;
+    background:
+        linear-gradient(150deg, var(--pico-contrast-background), var(--pico-dropdown-hover-background-color)) padding-box,
+        linear-gradient(135deg, var(--pico-primary), var(--pico-secondary)) border-box;
+    box-shadow: 0 0 0 0.125rem var(--pico-primary-focus), var(--pico-box-shadow);
+}
+
+.pricing-item .badge {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    z-index: 2;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999rem;
+    color: var(--pico-primary-inverse);
+    background: var(--pico-primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.pricing-item picture {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.pricing-item .pricing-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+    object-position: center;
+}
+
+.pricing-header,
+.pricing-item .features,
+.pricing-item > .btn,
+.pricing-item > form {
+    margin-inline: 1.5rem;
+}
+
+.pricing-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem 1rem;
+    padding-top: 1.5rem;
+}
+
+.pricing-header .name {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+}
+
+.pricing-header .price {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--pico-secondary);
+    font-size: 1.15rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.pricing-header .cms-text {
+    grid-column: 1 / -1;
+    color: var(--pico-muted-color);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.pricing-item .features {
+    flex-grow: 1;
+    padding-block: 0.5rem 1rem;
+    color: var(--pico-muted-color);
+    font-size: 0.85rem;
+}
+
+.pricing-item .features ul {
+    margin-bottom: 0;
+    padding-inline-start: 1.1rem;
+}
+
+.pricing-item > .btn,
+.pricing-item > form {
+    margin-block: 0 1.5rem;
+}
+
+.pricing-item > form .btn {
+    width: 100%;
+}

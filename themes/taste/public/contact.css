@@ -1,0 +1,146 @@
+/**
+ * Taste Theme - Contact form
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.contact .title {
+    max-width: 52rem;
+    margin: 0 auto clamp(1.75rem, 4vw, 3rem);
+    color: var(--pico-contrast-inverse);
+    text-align: center;
+    text-wrap: balance;
+}
+
+.contact form {
+    position: relative;
+    max-width: 52rem;
+    margin: auto;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    overflow: hidden;
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--pico-dropdown-background-color) 95%, transparent) 0%, color-mix(in srgb, var(--pico-contrast-background) 95%, transparent) 100%);
+    box-shadow: 0 2rem 5rem color-mix(in srgb, var(--pico-code-background-color) 40%, transparent), 0 0 0 0.5rem color-mix(in srgb, var(--pico-contrast-hover) 4%, transparent);
+}
+
+.contact .grid {
+    gap: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.contact label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--pico-code-color);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.035em;
+}
+
+.contact input:not([type=hidden]),
+.contact textarea {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: var(--pico-border-radius);
+    color: var(--pico-contrast);
+    background: color-mix(in srgb, var(--pico-background-color) 72%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--pico-contrast-hover) 6%, transparent), 0 0.25rem 0.75rem color-mix(in srgb, var(--pico-code-background-color) 16%, transparent);
+}
+
+.contact input:not([type=hidden]) {
+    min-height: 3.25rem;
+}
+
+.contact textarea {
+    min-height: 11rem;
+    resize: vertical;
+}
+
+.contact input:not([type=hidden]):hover,
+.contact textarea:hover {
+    border-color: color-mix(in srgb, var(--pico-secondary) 50%, transparent);
+}
+
+.contact input:not([type=hidden]):focus,
+.contact textarea:focus {
+    border-color: var(--pico-secondary);
+    box-shadow: 0 0 0 0.25rem var(--pico-secondary-focus);
+}
+
+.contact input::placeholder,
+.contact textarea::placeholder {
+    color: var(--pico-muted-color);
+}
+
+.contact .submit {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.contact .h-captcha iframe {
+    max-width: 100%;
+}
+
+.contact button {
+    min-width: 12rem;
+    margin: 0;
+    border: 0;
+    border-radius: 9999px;
+    color: var(--pico-contrast-hover);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--pico-primary) 65%, var(--pico-background-color)), color-mix(in srgb, var(--pico-secondary) 55%, var(--pico-background-color)));
+    box-shadow: 0 0.75rem 1.75rem var(--pico-secondary-focus);
+    font-weight: 800;
+}
+
+.contact button:hover,
+.contact button:focus {
+    color: var(--pico-contrast-hover);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--pico-primary-hover) 60%, var(--pico-background-color)), color-mix(in srgb, var(--pico-secondary-hover) 45%, var(--pico-background-color)));
+}
+
+.contact button:disabled {
+    color: var(--pico-muted-color);
+    background: var(--pico-contrast-hover-background);
+    box-shadow: none;
+}
+
+.contact button:has(.success:not(.hidden)) {
+    color: var(--pico-contrast-hover);
+    background: color-mix(in srgb, var(--pico-secondary) 55%, var(--pico-background-color));
+}
+
+.contact button:has(.failure:not(.hidden)) {
+    color: var(--pico-contrast-hover);
+    background: color-mix(in srgb, var(--pico-primary) 65%, var(--pico-background-color));
+}
+
+.contact .errors:not(:empty) {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--pico-primary) 35%, transparent);
+    border-radius: var(--pico-border-radius);
+    color: var(--pico-primary-hover);
+    background: var(--pico-primary-background);
+}
+
+.contact .error {
+    border-color: var(--pico-primary);
+}
+
+@media (max-width: 767px) {
+    .contact .submit {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .contact .submit > div:last-child,
+    .contact button {
+        width: 100%;
+    }
+}

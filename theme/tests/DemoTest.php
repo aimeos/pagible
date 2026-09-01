@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Commands\Demo as DemoCommand;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Schema;
@@ -103,6 +104,57 @@ class DemoTest extends ThemeTestAbstract
 
         $this->assertSame( 'luxury', $home->theme );
         $this->assertSame( 'luxury', $home->tenant_id );
+    }
+
+
+    public function testSeedTaste(): void
+    {
+        require_once dirname( __DIR__, 2 ) . '/themes/taste/database/seeders/TasteDemo.php';
+
+        app()->register( \Aimeos\Cms\TasteServiceProvider::class );
+
+        ( new \Database\Seeders\TasteDemo( 'taste', 'taste' ) )->seed();
+
+        Tenancy::$callback = fn() => 'taste';
+        app()->forgetInstance( Tenancy::class );
+
+        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $restaurant = $home->config->{'taste::restaurant'}->data;
+        $hero = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'hero' );
+        $pricing = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'pricing' );
+
+        $this->assertSame( 'en', $home->latest->data->lang );
+        $this->assertSame( 'Kastanienallee 48', $restaurant->{'street-address'} );
+        $this->assertSame( 'Japanese, Ramen', $restaurant->cuisine );
+        $this->assertSame( '/menu', $restaurant->menu );
+        $this->assertSame( '€€', $restaurant->{'price-range'} );
+        $this->assertCount( 11, (array) $restaurant->hours );
+        $this->assertSame( 'Walk in with 1–3 guests · Tue–Sun from 12:00', $hero->data->subtitle );
+        $this->assertSame( '/visit#table-request', $hero->data->{'url-alternative'} );
+        $this->assertSame( [
+            'House bowl · gluten-free option',
+            'Gluten-free option',
+            'Vegan · gluten-free option',
+        ], array_map( fn( $item ) => $item->badge ?? null, (array) $pricing->data->items ) );
+
+        $images = File::where( 'mime', 'image/jpeg' )->get();
+
+        $this->assertCount( 10, $images );
+
+        foreach( $images as $image ) {
+            $this->assertNotSame( '', $image->description->en ?? '', $image->name );
+            $this->assertNotSame( '', $image->description->de ?? '', $image->name );
+        }
+
+        $response = $this->get( '/' );
+
+        $response->assertOk();
+        $response->assertSee( '"@type": "Restaurant"', false );
+        $response->assertSee( '"streetAddress": "Kastanienallee 48"', false );
+        $response->assertSee( '"servesCuisine": ["Japanese","Ramen"]', false );
+        $response->assertSee( '"openingHoursSpecification": [{"@type":"OpeningHoursSpecification"', false );
+        $response->assertSee( '"hasMenu": "' . url( '/menu' ) . '"', false );
+        $response->assertSee( '"priceRange": "€€"', false );
     }
 
 

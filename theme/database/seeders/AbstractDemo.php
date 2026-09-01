@@ -81,11 +81,11 @@ abstract class AbstractDemo
      *
      * @param string $photo Unsplash photo path, e.g. "photo-1517336714731-489689fd1ca8"
      * @param string $name File name
-     * @param string $desc Localized image description
+     * @param array<string, string>|string $desc Localized image description(s)
      * @param string $lang File and description language
      * @return string File ID
      */
-    protected function image( string $photo, string $name, string $desc, string $lang = 'en' ) : string
+    protected function image( string $photo, string $name, array|string $desc, string $lang = 'en' ) : string
     {
         $key = $photo . ':' . $lang;
 
@@ -100,7 +100,7 @@ abstract class AbstractDemo
                 'name' => $name,
                 'path' => $url( 1500 ),
                 'previews' => ['500' => $url( 500 ), '1000' => $url( 1000 )],
-                'description' => [$lang => $desc],
+                'description' => is_array( $desc ) ? $desc : [$lang => $desc],
             ];
 
             $this->images[$key] = $this->saveFile( $data );

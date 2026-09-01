@@ -1,0 +1,52 @@
+/**
+ * Taste Theme - Cards
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+}
+
+.cards .card-item {
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    background:
+        linear-gradient(145deg, var(--pico-dropdown-background-color), var(--pico-contrast-background)) padding-box,
+        linear-gradient(135deg, color-mix(in srgb, var(--pico-secondary) 40%, transparent), var(--pico-contrast-focus), color-mix(in srgb, var(--pico-primary) 40%, transparent)) border-box;
+    box-shadow: var(--pico-box-shadow);
+}
+
+.cards .card-item picture,
+.cards .card-item .card-image {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.cards .card-item img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+.cards .card-text {
+    padding: 1.5rem;
+}
+
+.cards .card-text .title {
+    margin-bottom: 0.75rem;
+}
+
+.cards .card-text .cms-text {
+    color: var(--pico-muted-color);
+    font-size: 0.92rem;
+    line-height: 1.7;
+}
+
+.cards .card-text .cms-text > :last-child {
+    margin-bottom: 0;
+}

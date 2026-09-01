@@ -128,9 +128,14 @@ class ThemeTest extends ThemeTestAbstract
 			'optional' => ['email', 'Account reference'],
 		];
 
-		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+		$html = Blade::render(
+			"@include('cms::contact', ['data' => \$data, 'page' => \$page])\n@stack('foot')",
+			compact( 'data', 'page' ),
+			true,
+		);
 
 		$this->assertStringContainsString( 'action="http://localhost/cmsapi/contact"', $html );
+		$this->assertStringContainsString( 'pico.grid.min.css', $html );
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="company"[^>]+required[^>]*>/', $html );
 		$this->assertMatchesRegularExpression( '/type="tel"\s+name="telephone"/', $html );
 		$this->assertMatchesRegularExpression( '/type="email"\s+name="email"/', $html );

@@ -1,0 +1,32 @@
+/**
+ * Taste Theme - Page layout
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content > div {
+    padding: clamp(4rem, 8vw, 7rem) 1rem;
+}
+
+.cms-content > .hero {
+    padding-block: 1rem;
+}
+
+.cms-content > .hero > .container {
+    max-width: 1280px !important;
+    padding: 0;
+}
+
+.cms-content[data-section=main] > :nth-child(odd):not(.hero) {
+    background:
+        radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--pico-secondary) 24%, transparent) 0, transparent 26rem),
+        radial-gradient(circle at 92% 82%, var(--pico-contrast-focus) 0, transparent 24rem),
+        linear-gradient(135deg, var(--pico-background-color) 0%, color-mix(in srgb, var(--pico-background-color) 75%, var(--pico-secondary)) 52%, var(--pico-contrast-background) 100%);
+}
+
+.cms-content[data-section=main] > :nth-child(even):not(.hero) {
+    background: var(--pico-background-color);
+}
+
+.cms-content > :last-child:not(.hero) {
+    padding-bottom: clamp(5rem, 9vw, 8rem);
+}

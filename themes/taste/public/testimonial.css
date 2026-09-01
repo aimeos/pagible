@@ -1,0 +1,59 @@
+/**
+ * Taste Theme - Testimonials
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.testimonial-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+}
+
+.testimonial-item {
+    margin: 0;
+    padding: 1.75rem;
+    border: 1px solid transparent;
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    background:
+        linear-gradient(145deg, var(--pico-dropdown-background-color), var(--pico-contrast-background)) padding-box,
+        linear-gradient(135deg, var(--pico-primary-focus), var(--pico-contrast-focus), var(--pico-secondary-focus)) border-box;
+    box-shadow: var(--pico-box-shadow);
+}
+
+.testimonial-item blockquote {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    border: 0;
+    color: var(--pico-color);
+    font-size: 1.05rem;
+    font-weight: 650;
+    line-height: 1.55;
+}
+
+.testimonial-item figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.testimonial-item .avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.testimonial-item .person,
+.testimonial-item .name,
+.testimonial-item .role {
+    display: block;
+}
+
+.testimonial-item .name {
+    font-weight: 800;
+}
+
+.testimonial-item .role {
+    color: var(--pico-muted-color);
+    font-size: 0.75rem;
+}

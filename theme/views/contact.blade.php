@@ -1,4 +1,4 @@
-@pushOnce('foot:grid')
+@pushOnce('foot')
 <link href="{{ cmstheme($page, 'pico.grid.min.css') }}" rel="preload" as="style">
 @endPushOnce
 

@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-themes-taste",
+    "description": "Pagible CMS - Taste theme for restaurants, bars and food businesses",
+    "keywords": ["laravel", "cms", "theme", "restaurant", "food", "drinks", "hospitality"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\TasteServiceProvider"
+            ]
+        }
+    }
+}

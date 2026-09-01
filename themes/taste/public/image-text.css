@@ -1,0 +1,64 @@
+/**
+ * Taste Theme - Image with text
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image-text > .container > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: clamp(2rem, 6vw, 5rem);
+}
+
+.image-text picture,
+.image-text img {
+    width: 100%;
+}
+
+.image-text img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.image-text .cms-text {
+    max-width: 35rem;
+    color: var(--pico-muted-color);
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+.image-text .cms-text h2,
+.image-text .cms-text h3 {
+    color: var(--pico-color);
+    text-align: start;
+}
+
+.image-text .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.image-text .end picture,
+.image-text .grid-end picture {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.image-text .end .cms-text,
+.image-text .grid-end .cms-text {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+@media (max-width: 767px) {
+    .image-text > .container > div {
+        grid-template-columns: 1fr;
+    }
+
+    .image-text .end picture,
+    .image-text .grid-end picture,
+    .image-text .end .cms-text,
+    .image-text .grid-end .cms-text {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
