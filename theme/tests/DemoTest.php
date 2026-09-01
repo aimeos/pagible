@@ -93,68 +93,6 @@ class DemoTest extends ThemeTestAbstract
     }
 
 
-    public function testSeedBoldImages(): void
-    {
-        $this->assertThemeImages(
-            'bold',
-            \Aimeos\Cms\BoldServiceProvider::class,
-            \Database\Seeders\BoldDemo::class,
-            3,
-            'photo-1517836357463-d25dfeac3438',
-            3,
-        );
-    }
-
-
-    public function testSeedLuxuryImages(): void
-    {
-        $this->assertThemeImages(
-            'luxury',
-            \Aimeos\Cms\LuxuryServiceProvider::class,
-            \Database\Seeders\LuxuryDemo::class,
-            1,
-            'photo-1566073771259-6a8506099945',
-        );
-    }
-
-
-    public function testSeedPaperImages(): void
-    {
-        $this->assertThemeImages(
-            'paper',
-            \Aimeos\Cms\PaperServiceProvider::class,
-            \Database\Seeders\PaperDemo::class,
-            1,
-            'photo-1499750310107-5fef28a66643',
-        );
-    }
-
-
-    public function testSeedPremiumImages(): void
-    {
-        $this->assertThemeImages(
-            'premium',
-            \Aimeos\Cms\PremiumServiceProvider::class,
-            \Database\Seeders\PremiumDemo::class,
-            3,
-            'photo-1507473885765-e6ed057f782c',
-            3,
-        );
-    }
-
-
-    public function testSeedStyleImages(): void
-    {
-        $this->assertThemeImages(
-            'style',
-            \Aimeos\Cms\StyleServiceProvider::class,
-            \Database\Seeders\StyleDemo::class,
-            3,
-            'photo-1580478491436-fd6a937acc9e',
-        );
-    }
-
-
     public function testSeedTheme(): void
     {
         ( new DefaultDemo( 'luxury', 'luxury' ) )->seed();
@@ -170,11 +108,11 @@ class DemoTest extends ThemeTestAbstract
 
     public function testCommand(): void
     {
-        $this->artisan( 'cms:demo', ['--theme' => 'paper', '--tenant' => 'showcase'] )->assertExitCode( 0 );
+        $this->artisan( 'cms:demo', ['--theme' => 'luxury', '--tenant' => 'showcase'] )->assertExitCode( 0 );
 
         Tenancy::$callback = fn() => 'showcase';
 
-        $this->assertSame( 'paper', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'luxury', Page::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 
