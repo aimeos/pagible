@@ -293,7 +293,7 @@ describe('Page Detail', () => {
     detailView().find('.menu-publish').should('have.class', 'active')
   })
 
-  it('shows schedule publish button', () => {
+  it('shows publish menu button', () => {
     visitPageDetail()
     detailView().find('.menu-publish').should('exist')
   })
@@ -418,7 +418,8 @@ describe('Page Detail', () => {
 
   it('clicking publish fires pubPage mutation for unpublished page', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publish').last().click()
+    detailView().find('.menu-publish').click()
+    cy.get('.v-overlay--active .menu-publish-now').click()
     // Wait for the pubPage mutation, skipping any intermediate queries
     function waitForPubPage() {
       return cy.wait('@gql').then((interception) => {
@@ -433,9 +434,9 @@ describe('Page Detail', () => {
     waitForPubPage()
   })
 
-  it('schedule publish button opens date picker', () => {
+  it('publish menu opens date picker', () => {
     visitPageDetail({ latest: { ...makePage().latest, published: false } }, { published: false })
-    detailView().find('.menu-publishat').click()
+    detailView().find('.menu-publish').click()
     cy.get('.v-date-picker', { timeout: 5000 }).should('exist')
   })
 

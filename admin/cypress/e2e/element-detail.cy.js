@@ -319,7 +319,8 @@ describe('Element Detail', () => {
       { latest: { ...makeElement().latest, published: false } },
       { latest: { ...makeElementDetail().latest, published: false } }
     )
-    detailView().find('.menu-publish').last().click()
+    detailView().find('.menu-publish').click()
+    cy.get('.v-overlay--active .menu-publish-now').click()
     function waitForPubElement() {
       return cy.wait('@gql').then((interception) => {
         const body = interception.request.body
@@ -335,7 +336,7 @@ describe('Element Detail', () => {
 
   // ---- Schedule publish ----
 
-  it('shows schedule publish button', () => {
+  it('shows publish menu button', () => {
     visitElementDetail(
       { latest: { ...makeElement().latest, published: false } },
       { latest: { ...makeElementDetail().latest, published: false } }

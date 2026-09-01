@@ -146,7 +146,7 @@ msgstr "검색"
 
 #: js/components/AccessUsers.vue:461
 #: js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:128
+#: js/components/DetailAppBar.vue:153
 #: js/components/FieldsDialog.vue:62
 msgid "Save"
 msgstr "저장"
@@ -407,7 +407,7 @@ msgstr "중지"
 msgid "Send"
 msgstr "보내기"
 
-#: js/components/DetailAppBar.vue:92
+#: js/components/DetailAppBar.vue:116
 #: js/views/AccessList.vue:227
 #: js/views/ElementList.vue:135
 #: js/views/FileList.vue:134
@@ -415,24 +415,23 @@ msgstr "보내기"
 msgid "Menu"
 msgstr "메뉴"
 
-#: js/components/DetailAppBar.vue:96
+#: js/components/DetailAppBar.vue:120
 msgid "Back to list view"
 msgstr "목록 보기로 돌아가기"
 
-#: js/components/DetailAppBar.vue:112
+#: js/components/DetailAppBar.vue:136
 msgid "View history"
 msgstr "기록 보기"
 
-#: js/components/DetailAppBar.vue:120
+#: js/components/DetailAppBar.vue:145
 msgid "View merge changes"
 msgstr "병합 변경 내용 보기"
 
-#: js/components/DetailAppBar.vue:142
-msgid "Schedule publishing"
-msgstr "게시 예약"
+#: js/components/DetailAppBar.vue:188 js/components/DetailAppBar.vue:214
+msgid "Schedule"
+msgstr "예약"
 
-#: js/components/DetailAppBar.vue:166
-#: js/components/DetailAppBar.vue:174
+#: js/components/DetailAppBar.vue:167 js/components/DetailAppBar.vue:183
 #: js/components/ElementListItems.vue:715
 #: js/components/ElementListItems.vue:829
 #: js/components/FileListItems.vue:701
@@ -442,7 +441,7 @@ msgstr "게시 예약"
 msgid "Publish"
 msgstr "게시"
 
-#: js/components/DetailAppBar.vue:189
+#: js/components/DetailAppBar.vue:218
 #: js/views/ElementList.vue:153
 #: js/views/FileList.vue:152
 #: js/views/PageList.vue:269

@@ -327,7 +327,8 @@ describe('File Detail', () => {
 
   it('clicking publish fires pubFile mutation for unpublished file', () => {
     visitFileDetail({ latest: { ...makeFile().latest, published: false } })
-    detailView().find('.menu-publish').last().click()
+    detailView().find('.menu-publish').click()
+    cy.get('.v-overlay--active .menu-publish-now').click()
     cy.wait('@pubFile')
   })
 
