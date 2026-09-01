@@ -233,13 +233,15 @@ class TasteDemo extends AbstractDemo
                     ['Sunday', '12:00–16:00', 'Closed'],
                 ],
             ]],
-            ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
-                'title' => 'Find the room',
-                'cards' => [
-                    ['title' => 'Address', 'text' => "Kastanienallee 48\n10435 Berlin\n\nTwo minutes from U Eberswalder Straße."],
-                    ['title' => 'Call', 'text' => "+49 30 555 01 48\n\nThe phone is answered Tuesday to Saturday from 11:00."],
-                    ['title' => 'Groups', 'text' => 'For eight to sixteen guests, the back table can be served family-style with advance notice.'],
+            ['id' => Utils::uid(), 'type' => 'map', 'group' => 'main', 'data' => [
+                'title' => 'Find Us',
+                'text' => "**Address**\nKastanienallee 48 · 10435 Berlin\nTwo minutes from U Eberswalder Straße.\n\n**Call**\n+49 30 555 01 48 · answered Tuesday to Saturday from 11:00.\n\nFor eight to sixteen guests, the back table can be served family-style with advance notice.",
+                'location' => [
+                    'latitude' => 52.538456,
+                    'longitude' => 13.409564,
+                    'zoom' => 16,
                 ],
+                'button' => 'Open in OpenStreetMap',
             ]],
             ['id' => 'table-request', 'type' => 'contact', 'group' => 'main', 'data' => [
                 'title' => 'Send a table request',

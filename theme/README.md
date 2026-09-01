@@ -89,13 +89,13 @@ Installations using only the core package remain independent of frontend caching
 
 ### Content Security Policy
 
-CSP directives are configured under the `csp` key, with defaults for hCaptcha:
+CSP directives are configured under the `csp` key, with defaults for hCaptcha and OpenStreetMap embeds:
 
 | Option | Env Variable | Default |
 |--------|-------------|---------|
 | `csp.media-src` | `CMS_CSP_MEDIA_SRC` | |
 | `csp.style-src` | `CMS_CSP_STYLE_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
-| `csp.frame-src` | `CMS_CSP_FRAME_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
+| `csp.frame-src` | `CMS_CSP_FRAME_SRC` | `https://hcaptcha.com https://*.hcaptcha.com https://www.openstreetmap.org` |
 | `csp.script-src` | `CMS_CSP_SCRIPT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 | `csp.connect-src` | `CMS_CSP_CONNECT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 

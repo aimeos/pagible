@@ -46,6 +46,10 @@
                     "label": "Location",
                     "min": 1
                 },
+                "map": {
+                    "type": "map",
+                    "zoom": 16
+                },
                 "reference": {
                     "type": "string",
                     "label": "Reference"

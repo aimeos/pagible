@@ -118,6 +118,60 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterMapField()
+	{
+		$fields = Schema::get( 'cms' )['content']['map']['fields'];
+
+		$this->assertSame( 'map', $fields['location']['type'] );
+		$this->assertTrue( $fields['location']['required'] );
+		$this->assertSame( 15, $fields['location']['zoom'] );
+	}
+
+
+	public function testMapRendersOpenStreetMap()
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$data = (object) [
+			'title' => 'Find us',
+			'text' => 'Kastanienallee 48',
+			'location' => (object) [
+				'latitude' => 52.538456,
+				'longitude' => 13.409564,
+				'zoom' => 16,
+			],
+			'button' => 'Open in OpenStreetMap',
+		];
+
+		$html = Blade::render(
+			"@include('cms::map', ['data' => \$data, 'page' => \$page])\n@stack('foot')",
+			compact( 'data', 'page' ),
+			true,
+		);
+
+		$this->assertStringContainsString( '<h2>Find us</h2>', $html );
+		$this->assertStringContainsString( 'Kastanienallee 48', $html );
+		$this->assertStringContainsString( 'https://www.openstreetmap.org/export/embed.html?', $html );
+		$this->assertStringContainsString( 'marker=52.538456%2C13.409564', $html );
+		$this->assertStringContainsString( '#map=16/52.538456/13.409564', $html );
+		$this->assertStringContainsString( '© OpenStreetMap contributors', $html );
+		$this->assertStringContainsString( 'vendor/cms/theme/map.css', $html );
+	}
+
+
+	public function testMapRejectsInvalidCoordinates()
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$data = (object) [
+			'location' => (object) ['latitude' => 91, 'longitude' => 13.409564, 'zoom' => 16],
+		];
+
+		$html = view( 'cms::map', compact( 'data', 'page' ) )->render();
+
+		$this->assertStringNotContainsString( '<iframe', $html );
+		$this->assertStringNotContainsString( 'openstreetmap.org', $html );
+	}
+
+
 	public function testContactRendersConfiguredFields()
 	{
 		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );

@@ -119,9 +119,11 @@ class DemoTest extends ThemeTestAbstract
         app()->forgetInstance( Tenancy::class );
 
         $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $visit = Page::where( 'path', 'visit' )->firstOrFail();
         $restaurant = $home->config->{'taste::restaurant'}->data;
         $hero = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'hero' );
         $pricing = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'pricing' );
+        $map = collect( (array) $visit->content )->first( fn( $item ) => ( $item->type ?? null ) === 'map' );
 
         $this->assertSame( 'en', $home->latest->data->lang );
         $this->assertSame( 'Kastanienallee 48', $restaurant->{'street-address'} );
@@ -131,6 +133,10 @@ class DemoTest extends ThemeTestAbstract
         $this->assertCount( 11, (array) $restaurant->hours );
         $this->assertSame( 'Walk in with 1–3 guests · Tue–Sun from 12:00', $hero->data->subtitle );
         $this->assertSame( '/visit#table-request', $hero->data->{'url-alternative'} );
+        $this->assertIsObject( $map );
+        $this->assertSame( 52.538456, $map->data->location->latitude );
+        $this->assertSame( 13.409564, $map->data->location->longitude );
+        $this->assertSame( 16, $map->data->location->zoom );
         $this->assertSame( [
             'House bowl · gluten-free option',
             'Gluten-free option',
@@ -155,6 +161,13 @@ class DemoTest extends ThemeTestAbstract
         $response->assertSee( '"openingHoursSpecification": [{"@type":"OpeningHoursSpecification"', false );
         $response->assertSee( '"hasMenu": "' . url( '/menu' ) . '"', false );
         $response->assertSee( '"priceRange": "€€"', false );
+
+        $response = $this->get( '/visit' );
+
+        $response->assertOk();
+        $response->assertSee( 'https://www.openstreetmap.org/export/embed.html?', false );
+        $response->assertSee( 'marker=52.538456%2C13.409564', false );
+        $response->assertSee( '© OpenStreetMap contributors', false );
     }
 
 

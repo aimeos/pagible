@@ -1,0 +1,67 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.map .map-layout {
+    display: grid;
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.map .map-layout.with-copy {
+    grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+}
+
+.map .map-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.map .map-copy h2 {
+    margin-top: 0;
+}
+
+.map .map-copy [role=button] {
+    align-self: flex-start;
+}
+
+.map .map-frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 24rem;
+    overflow: hidden;
+    border: var(--pico-border-width) solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    background: var(--pico-muted-background-color);
+}
+
+.map .map-frame iframe {
+    flex: 1;
+    display: block;
+    width: 100%;
+    min-height: 22rem;
+    border: 0;
+}
+
+.map .map-attribution {
+    align-self: flex-end;
+    padding: 0.35rem 0.6rem;
+    color: var(--pico-color);
+    font-size: 0.7rem;
+    line-height: 1.25;
+}
+
+@media (max-width: 767px) {
+    .map .map-layout.with-copy {
+        grid-template-columns: 1fr;
+    }
+
+    .map .map-frame {
+        min-height: 22rem;
+    }
+
+    .map .map-frame iframe {
+        min-height: 20rem;
+    }
+}

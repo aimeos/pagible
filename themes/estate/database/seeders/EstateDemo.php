@@ -139,6 +139,11 @@ class EstateDemo extends AbstractDemo
                     'rooms' => 10,
                     'year_built' => 2015,
                     'location' => 'Set between Prenzlauer Berg and the historic centre, the address offers quick tram and S-Bahn connections. Independent cafés, daily shopping, parks, and cultural venues are all within easy reach.',
+                    'map' => [
+                        'latitude' => 52.547914,
+                        'longitude' => 13.413557,
+                        'zoom' => 16,
+                    ],
                     'values' => [
                         ['Floor', '7'],
                         ['Parking', '2 parking spaces'],
@@ -190,6 +195,11 @@ class EstateDemo extends AbstractDemo
                     'rooms' => 8,
                     'year_built' => 2018,
                     'location' => 'The suite sits within Hamburg’s eastern HafenCity business district, close to the main station, riverfront restaurants, and mixed-use services. Local transit links connect the property directly with the city centre.',
+                    'map' => [
+                        'latitude' => 53.541900,
+                        'longitude' => 9.998200,
+                        'zoom' => 16,
+                    ],
                     'values' => [
                         ['Floor', '2'],
                         ['Parking', '6 parking spaces'],
@@ -239,6 +249,11 @@ class EstateDemo extends AbstractDemo
                     'rooms' => 5,
                     'year_built' => 2005,
                     'location' => 'The loft occupies a visible waterfront corner in HafenCity, surrounded by offices, apartments, hotels, and visitor destinations. Its broad frontage benefits from steady pedestrian movement throughout the working week and at weekends.',
+                    'map' => [
+                        'latitude' => 53.540759,
+                        'longitude' => 9.999568,
+                        'zoom' => 16,
+                    ],
                     'values' => [
                         ['Floor', 'Ground + 1'],
                         ['Parking', '1 valet bay'],
@@ -456,6 +471,7 @@ class EstateDemo extends AbstractDemo
             'rooms' => $extra['rooms'] ?? null,
             'year_built' => $extra['year_built'] ?? null,
             'location' => $extra['location'] ?? null,
+            'map' => $extra['map'] ?? null,
             'values' => $extra['values'] ?? [],
             'features' => $extra['features'] ?? null,
         ]];

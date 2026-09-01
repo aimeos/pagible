@@ -97,6 +97,37 @@ class PropertiesActionTest extends ThemeTestAbstract
     }
 
 
+    public function testDemoPropertyEntriesRenderMaps(): void
+    {
+        require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
+
+        ( new EstateDemo( 'estate', 'estate' ) )->seed();
+        Tenancy::$callback = fn() => 'estate';
+        app()->forgetInstance( Tenancy::class );
+
+        $maps = Page::where( 'type', 'property' )->defaultOrder()->get()
+            ->map( fn( $page ) => collect( (array) $page->content )
+                ->first( fn( $item ) => ( $item->type ?? null ) === 'estate::property' )?->data?->map
+            );
+
+        $this->assertCount( 3, $maps );
+        $this->assertTrue( $maps->every( fn( $map ) =>
+            is_numeric( $map?->latitude )
+            && is_numeric( $map?->longitude )
+            && $map?->zoom === 16
+        ) );
+
+        $response = $this->get( '/exposes/urban-penthouse-berlin' );
+
+        $response->assertOk();
+        $response->assertSee( 'class="property-location-description property-map map"', false );
+        $response->assertSee( 'https://www.openstreetmap.org/export/embed.html?', false );
+        $response->assertSee( 'marker=52.547914%2C13.413557', false );
+        $response->assertSee( '© OpenStreetMap contributors', false );
+        $response->assertDontSee( 'GeoCoordinates', false );
+    }
+
+
     public function testFiltersByRequestedTypeAndCity()
     {
         $root = Page::where( 'tag', 'root' )->firstOrFail();

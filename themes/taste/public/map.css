@@ -1,0 +1,82 @@
+/**
+ * Taste Theme - Map
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.map .map-layout {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: stretch;
+}
+
+.map .map-layout.with-copy {
+    grid-template-columns: minmax(16rem, 0.7fr) minmax(0, 1.3fr);
+}
+
+.map .map-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.map .map-copy h2 {
+    margin-top: 0;
+}
+
+.map .map-copy .cms-text {
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+}
+
+.map .map-copy [role=button] {
+    align-self: flex-start;
+    margin-top: 0.75rem;
+}
+
+.map .map-frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 28rem;
+    overflow: hidden;
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    background: var(--pico-contrast-background);
+    box-shadow: var(--pico-box-shadow);
+}
+
+.map .map-frame iframe {
+    flex: 1;
+    display: block;
+    width: 100%;
+    min-height: 26rem;
+    border: 0;
+}
+
+.map .map-attribution {
+    align-self: flex-end;
+    padding: 0.4rem 0.65rem;
+    color: var(--pico-color);
+    background: var(--pico-dropdown-background-color);
+    font-size: 0.7rem;
+    line-height: 1.25;
+    text-decoration-color: var(--pico-primary);
+}
+
+@media (max-width: 767px) {
+    .map .map-layout.with-copy {
+        grid-template-columns: 1fr;
+    }
+
+    .map .map-copy {
+        padding: 0;
+    }
+
+    .map .map-frame {
+        min-height: 23rem;
+    }
+
+    .map .map-frame iframe {
+        min-height: 21rem;
+    }
+}

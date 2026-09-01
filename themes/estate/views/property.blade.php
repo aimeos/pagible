@@ -265,7 +265,25 @@
         </section>
     @endif
 
-    @if($data->location ?? null)
+    @if(
+        is_numeric(data_get($data, 'map.latitude'))
+        && (float) data_get($data, 'map.latitude') >= -90
+        && (float) data_get($data, 'map.latitude') <= 90
+        && is_numeric(data_get($data, 'map.longitude'))
+        && (float) data_get($data, 'map.longitude') >= -180
+        && (float) data_get($data, 'map.longitude') <= 180
+    )
+        <section class="property-location-description property-map map">
+            @include('cms::map', [
+                'data' => (object) [
+                    'title' => __('Location'),
+                    'text' => $data->location ?? null,
+                    'location' => $data->map,
+                ],
+                'page' => $page,
+            ])
+        </section>
+    @elseif($data->location ?? null)
         <section class="property-location-description">
             <h2>{{ __('Location') }}</h2>
             <div class="cms-text">@markdown($data->location)</div>
