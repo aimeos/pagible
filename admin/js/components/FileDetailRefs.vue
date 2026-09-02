@@ -221,7 +221,7 @@ export default {
 
 <style scoped>
 .v-sheet.scroll {
-  max-height: calc(100vh - 96px);
+  height: calc(100vh - 96px);
 }
 
 .v-expansion-panel-title {
