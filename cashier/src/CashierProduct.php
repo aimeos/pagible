@@ -143,7 +143,7 @@ class CashierProduct
                 continue;
             }
 
-            $element = $page->elements->get( $elementId );
+            $element = $page->getElementsAttribute()->get( $elementId );
 
             if( $element && $element->type === 'pricing' ) {
                 return $element->data;

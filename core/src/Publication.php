@@ -190,19 +190,22 @@ final class Publication
 
                     if( !$unpublished->isEmpty() )
                     {
-                        if( !$at ) {
-                            $publication->prepare( $unpublished->pluck( 'latest' )->values(), $user );
-                            $publication->applyAll( $unpublished->map( function( Base $item ) {
-                                if( !( $version = $item->latest ) ) {
-                                    throw new \LogicException( 'Unpublished model has no latest version.' );
-                                }
+                        $pairs = $unpublished->map( function( Base $item ) {
+                            if( !( $version = $item->latest ) ) {
+                                throw new \LogicException( 'Unpublished model has no latest version.' );
+                            }
 
-                                return [$item, $version];
-                            } )->all() );
+                            return [$item, $version];
+                        } );
+                        $versions = $pairs->map( fn( array $pair ) : Version => $pair[1] )->values();
+
+                        if( !$at ) {
+                            $publication->prepare( $versions, $user );
+                            $publication->applyAll( $pairs->all() );
                             $publication->publishVersions();
                         } else {
                             if( $user ) {
-                                $publication->authorize( $unpublished->pluck( 'latest' )->values(), $user );
+                                $publication->authorize( $versions, $user );
                             }
 
                             $publication->schedule( $unpublished, $at, $editor );
