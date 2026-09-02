@@ -85,7 +85,9 @@ class SearchPages extends Tool
                 'status' => $data->status ?? null,
                 'cache' => $data->cache ?? null,
             ] ) + [
-                'url' => route( 'cms.page', ['path' => $data->path ?? ''] ),
+                'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
+                    'domain' => ( $data->domain ?? null ) ?: request()->getHost(),
+                ] : [] ) + ['path' => $data->path ?? ''] ),
             ];
         }
 

@@ -55,7 +55,11 @@ class RestorePage extends Tool
         /** @var Page $restored */
         $restored = $items->firstOrFail();
 
-        return Response::structured( ['id' => $restored->id] + $restored->toArray() + ['url' => route( 'cms.page', ['path' => $restored->path] )] );
+        return Response::structured( ['id' => $restored->id] + $restored->toArray() + [
+            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
+                'domain' => $restored->domain ?: request()->getHost(),
+            ] : [] ) + ['path' => $restored->path] ),
+        ] );
     }
 
 
