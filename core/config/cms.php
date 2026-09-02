@@ -27,7 +27,7 @@ return [
     'roles' => [
         'admin' => ['*'],
         'viewer' => ['page:view', 'element:view', 'file:view'],
-        'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'page:config'],
+        'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'page:config', 'cache:clear'],
         'editor' => ['publisher', '!*:publish', '!*:purge', '!page:access'],
     ],
 
