@@ -111,7 +111,9 @@ class SavePage extends Tool
             'changed' => $page->changed,
             'created_at' => (string) $page->created_at,
             'updated_at' => (string) $page->updated_at,
-            'url' => route( 'cms.page', ['path' => $data['path'] ?? ''] ),
+            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
+                'domain' => ( $data['domain'] ?? null ) ?: request()->getHost(),
+            ] : [] ) + ['path' => $data['path'] ?? ''] ),
         ] ) );
     }
 

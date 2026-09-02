@@ -47,7 +47,11 @@ class MovePage extends Tool
             return Response::structured( ['error' => 'Page not found.'] );
         }
 
-        return Response::structured( ['id' => $page->id, 'parent_id' => $page->parent_id] + $page->toArray() + ['url' => route( 'cms.page', ['path' => $page->path] )] );
+        return Response::structured( ['id' => $page->id, 'parent_id' => $page->parent_id] + $page->toArray() + [
+            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
+                'domain' => $page->domain ?: request()->getHost(),
+            ] : [] ) + ['path' => $page->path] ),
+        ] );
     }
 
 

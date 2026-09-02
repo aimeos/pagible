@@ -99,7 +99,9 @@ class GetPage extends Tool
             'publish_at' => $version->publish_at ?? null,
             'created_at' => $page->created_at?->format( 'Y-m-d H:i:s' ),
             'updated_at' => $version?->created_at?->format( 'Y-m-d H:i:s' ),
-            'url' => route( 'cms.page', ['path' => $vdata->path ?? ''] ),
+            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
+                'domain' => ( $vdata->domain ?? null ) ?: request()->getHost(),
+            ] : [] ) + ['path' => $vdata->path ?? ''] ),
         ];
 
         if( $canAccess ) {
