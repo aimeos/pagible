@@ -2788,3 +2788,11 @@ msgstr "AI kan oprette en side og indhold baseret på dit input og tilføje det 
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Tryk på Enter eller pilen for at åbne AI-assistenten og finjustere indholdet i en chat"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Vurder denne side, og foreslå forbedringer"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Brugeren ser siden med ID \"%{id}\". Når vedkommende henviser til \"denne side\", skal du bruge get-page med dette ID."

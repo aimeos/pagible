@@ -2788,3 +2788,11 @@ msgstr "AI saab teie sisendi põhjal luua lehe ja sisu ning lisada selle lehekü
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Vajutage sisestusklahvi või noolt, et avada tehisintellekti assistent ja täpsustada sisu vestluses"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Hinnake seda lehte ja soovitage parandusi"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Kasutaja vaatab lehte ID-ga „%{id}“. Kui ta viitab „sellele lehele“, kasutage selle ID-ga käsku get-page."

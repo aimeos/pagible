@@ -21,9 +21,10 @@ import { urlchat } from './config'
  * @param {Array<{role: string, content: string}>} history Prior conversation turns
  * @param {function|null} onDelta Streamed-chunk consumer: ({ text }) => void
  * @param {AbortSignal|null} signal Signal to abort the stream (the Stop button)
+ * @param {string} context Additional system context for the conversation
  * @returns {Promise<string>} The assistant text streamed so far (full text on normal completion)
  */
-export async function chat(prompt, history = [], onDelta = null, signal = null) {
+export async function chat(prompt, history = [], onDelta = null, signal = null, context = '') {
   const { $gettext } = gettext
 
   if (!urlchat) {
@@ -43,7 +44,7 @@ export async function chat(prompt, history = [], onDelta = null, signal = null) 
       headers: postHeaders('text/plain'),
       credentials: 'include',
       signal: signal,
-      body: JSON.stringify({ prompt: prompt, messages: history })
+      body: JSON.stringify({ prompt: prompt, messages: history, context: context })
     })
 
     if (!response.ok) {

@@ -2782,3 +2782,11 @@ msgstr "Trí tuệ nhân tạo (AI) có thể tạo ra một trang web và nội
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Nhấn Enter hoặc mũi tên để mở trợ lý AI và tinh chỉnh nội dung trong cuộc trò chuyện"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Đánh giá trang này và đề xuất các cải tiến"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Người dùng đang xem trang có ID \"%{id}\". Khi họ đề cập đến \"trang này\", hãy dùng get-page với ID đó."

@@ -26,6 +26,7 @@ export default {
   name: 'ChatDialog',
 
   props: {
+    context: { type: String, default: '' },
     modelValue: { type: Boolean, default: false }
   },
 
@@ -221,7 +222,8 @@ export default {
 
           this.scrollDown()
         },
-        controller.signal
+        controller.signal,
+        this.context
       )
         .then((result) => {
           // onDelta normally fills the bubble; fall back to the resolved text if it stayed empty.

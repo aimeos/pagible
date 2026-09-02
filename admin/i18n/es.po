@@ -2788,3 +2788,11 @@ msgstr "La IA puede crear una página y un contenido a partir de tus datos y añ
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Pulsa Enter o la flecha para abrir el asistente de IA y perfeccionar el contenido en un chat"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Evalúa esta página y sugiere mejoras"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "El usuario está viendo la página con el ID «%{id}». Cuando se refiera a «esta página», usa get-page con ese ID."

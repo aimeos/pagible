@@ -26,6 +26,7 @@ const ALL_PERMISSIONS = {
   'page:purge': true,
   'page:publish': true,
   'page:synthesize': true,
+  'page:chat': true,
   'page:metrics': true,
   'text:translate': true,
   'text:write': true,
@@ -306,6 +307,38 @@ describe('Page Detail', () => {
   it('shows translate button when user has text:translate permission', () => {
     visitPageDetail()
     detailView().find('.btn-translate-page .v-btn').should('exist')
+  })
+
+  it('opens AI chat and executes the page review question', () => {
+    visitPageDetail()
+    cy.intercept('POST', '**/cmsapi/chat', {
+      statusCode: 200,
+      headers: { 'content-type': 'text/plain' },
+      body: 'The page review is ready.',
+    }).as('chat')
+
+    detailView().find('.btn-review-page').click()
+    cy.contains('AI Assistant').should('be.visible')
+
+    cy.wait('@chat').its('request.body').should((body) => {
+      expect(body.prompt).to.eq('Rate this page and suggest improvements')
+      expect(body.context).to.contain('page with ID "1"')
+    })
+
+    cy.contains('.chat-row.user', 'Rate this page and suggest improvements').should('be.visible')
+    cy.contains('The page review is ready.').should('be.visible')
+  })
+
+  it('hides page review button without page:chat permission', () => {
+    const perms = { ...ALL_PERMISSIONS }
+    delete perms['page:chat']
+    const me = {
+      permission: JSON.stringify(perms),
+      email: 'editor@example.com',
+      name: 'Editor',
+    }
+    visitPageDetail({}, {}, me)
+    detailView().find('.btn-review-page').should('not.exist')
   })
 
   it('hides translate button when user lacks text:translate permission', () => {

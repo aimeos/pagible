@@ -2794,3 +2794,11 @@ msgstr "AI gali sukurti puslapį ir turinį pagal jūsų įvestį ir pridėti j�
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Paspauskite Enter arba rodyklę, kad atidarytumėte DI asistentą ir patobulintumėte turinį pokalbyje"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Įvertinkite šį puslapį ir pasiūlykite patobulinimų"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Naudotojas peržiūri puslapį, kurio ID yra „%{id}“. Kai kalbama apie „šį puslapį“, naudokite get-page su šiuo ID."

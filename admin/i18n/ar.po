@@ -2812,3 +2812,11 @@ msgstr "يمكن للذكاء الاصطناعي إنشاء صفحة ومحتو�
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "اضغط Enter أو السهم لفتح مساعد الذكاء الاصطناعي وتحسين المحتوى في محادثة"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "قيّم هذه الصفحة واقترح تحسينات"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "يعرض المستخدم الصفحة ذات المعرّف \"%{id}\". عندما يشير إلى \"هذه الصفحة\"، استخدم get-page مع هذا المعرّف."

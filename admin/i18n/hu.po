@@ -2788,3 +2788,11 @@ msgstr "A mesterséges intelligencia képes létrehozni egy oldalt és tartalmat
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Nyomja meg az Enter billentyűt vagy a nyilat az MI-asszisztens megnyitásához és a tartalom csevegésben történő finomításához"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Értékelje ezt az oldalt, és javasoljon fejlesztéseket"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "A felhasználó a(z) „%{id}” azonosítójú oldalt tekinti meg. Amikor „erre az oldalra” hivatkozik, használja a get-page eszközt ezzel az azonosítóval."

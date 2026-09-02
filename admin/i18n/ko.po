@@ -2782,3 +2782,11 @@ msgstr "AI는 사용자의 입력에 따라 페이지와 콘텐츠를 생성하�
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Enter 키 또는 화살표를 눌러 AI 어시스턴트를 열고 채팅에서 콘텐츠를 다듬으세요"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "이 페이지를 평가하고 개선 사항을 제안하세요"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "사용자가 ID가 \"%{id}\"인 페이지를 보고 있습니다. 사용자가 \"이 페이지\"라고 언급하면 해당 ID로 get-page를 사용하세요."

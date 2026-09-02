@@ -2788,3 +2788,11 @@ msgstr "Tekoäly voi luoda sivun ja sisällön syöttösi perusteella ja lisät�
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Avaa tekoälyavustaja ja tarkenna sisältöä keskustelussa painamalla Enter-näppäintä tai nuolta"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Arvioi tämä sivu ja ehdota parannuksia"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Käyttäjä tarkastelee sivua, jonka tunnus on \"%{id}\". Kun hän viittaa \"tähän sivuun\", käytä get-page-toimintoa kyseisellä tunnuksella."
