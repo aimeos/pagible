@@ -113,11 +113,14 @@ if( !function_exists( 'cmsdata' ) )
      */
     function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ) : array
     {
+        $files = cms( $page, 'files', collect() );
+
         if( $item instanceof \Aimeos\Cms\Models\Element ) {
+            $files = $files->union( cms( $item, 'files', collect() ) );
             $item = (object) ['id' => cms($item, 'id'), 'type' => cms($item, 'type'), 'name' => cms($item, 'name'), 'data' => cms($item, 'data')];
         }
 
-        $data = ['files' => cms($page, 'files')];
+        $data = ['files' => $files];
 
         // Resolve the action handler from the trusted schema by element type only. The handler
         // must never be taken from the stored element data, which a content author could set to

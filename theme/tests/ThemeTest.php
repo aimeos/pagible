@@ -10,6 +10,8 @@ namespace Tests;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Theme;
 use Aimeos\Cms\Validation;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
