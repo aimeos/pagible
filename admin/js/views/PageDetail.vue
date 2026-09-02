@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
 import AsideCount from '../components/AsideCount.vue'
+import ChatDialog from '../components/ChatDialog.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
 
@@ -29,6 +30,7 @@ import {
   useChangeStore
 } from '../stores'
 import {
+  mdiCreation,
   mdiTranslate,
   mdiArrowRightThin
 } from '@mdi/js'
@@ -103,6 +105,7 @@ export default {
   components: {
     AsideMeta,
     AsideCount,
+    ChatDialog,
     ChangesDialog,
     DetailAppBar,
     HistoryDialog,
@@ -144,6 +147,7 @@ export default {
       schemas,
       viewStack,
       changes,
+      mdiCreation,
       mdiTranslate,
       mdiArrowRightThin,
       txlocales
@@ -155,6 +159,7 @@ export default {
       tab: this.app.urlpage ? 'editor' : 'content',
       aside: '',
       asidePage: 'meta',
+      chatOpen: false,
       dirty: {},
       errors: {},
       assets: {},
@@ -178,6 +183,13 @@ export default {
   },
 
   computed: {
+    chatContext() {
+      return this.$gettext(
+        'The user is viewing the page with ID "%{id}". When they refer to "this page", use get-page with that ID.',
+        { id: this.item.id }
+      )
+    },
+
     hasChanged() {
       return hasTrue(this.dirty)
     },
@@ -479,6 +491,11 @@ export default {
       this.reset()
     },
 
+    review() {
+      this.chatOpen = true
+      this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Rate this page and suggest improvements')))
+    },
+
     async save(quiet = false) {
       await this.$nextTick()
       this.$refs.content?.flush()
@@ -774,6 +791,13 @@ export default {
     @changes="vchanged = true"
   >
     <template #actions>
+      <v-btn
+        v-if="user.can('page:chat')"
+        @click="review()"
+        :title="$gettext('Rate this page and suggest improvements')"
+        :icon="mdiCreation"
+        class="btn-review-page"
+      />
       <span class="btn-translate-page" v-if="user.can('text:translate')">
         <v-menu>
           <template #activator="{ props }">
@@ -878,6 +902,7 @@ export default {
   <AsideCount v-if="aside === 'count'" />
 
   <Teleport to="body">
+    <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" />
     <HistoryDialog
       ref="history"
       v-model="vhistory"

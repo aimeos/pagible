@@ -2794,3 +2794,11 @@ msgstr "Umelá inteligencia dokáže vytvoriť stránku a obsah na základe vaš
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Stlačením klávesu Enter alebo šípky otvoríte asistenta AI a upravíte obsah v chate"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Ohodnoťte túto stránku a navrhnite vylepšenia"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Používateľ si prezerá stránku s ID „%{id}“. Keď odkazuje na „túto stránku“, použite get-page s týmto ID."

@@ -2788,3 +2788,11 @@ msgstr "Yapay zeka, girdilerinize göre bir sayfa ve içerik oluşturabilir ve b
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "AI asistanını açmak ve içeriği sohbette geliştirmek için Enter tuşuna veya oka basın"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Bu sayfayı değerlendirin ve iyileştirmeler önerin"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Kullanıcı \"%{id}\" kimlikli sayfayı görüntülüyor. \"Bu sayfa\" ifadesini kullandığında, bu kimlikle get-page aracını kullanın."

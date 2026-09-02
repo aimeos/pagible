@@ -2794,3 +2794,11 @@ msgstr "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem dati
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Nospiediet Enter vai bultiņu, lai atvērtu MI asistentu un pilnveidotu saturu tērzēšanā"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Novērtējiet šo lapu un iesakiet uzlabojumus"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Lietotājs skata lapu ar ID “%{id}”. Ja tiek minēta “šī lapa”, izmantojiet get-page ar šo ID."

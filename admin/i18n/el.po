@@ -2788,3 +2788,11 @@ msgstr "Η τεχνητή νοημοσύνη μπορεί να δημιουργ�
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Πατήστε Enter ή το βέλος για να ανοίξετε τον βοηθό AI και να βελτιώσετε το περιεχόμενο σε μια συνομιλία"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Αξιολογήστε αυτή τη σελίδα και προτείνετε βελτιώσεις"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Ο χρήστης βλέπει τη σελίδα με αναγνωριστικό «%{id}». Όταν αναφέρεται σε «αυτή τη σελίδα», χρησιμοποιήστε το get-page με αυτό το αναγνωριστικό."

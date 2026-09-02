@@ -2788,3 +2788,11 @@ msgstr "AI може да създаде страница и съдържание
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Натиснете Enter или стрелката, за да отворите AI асистента и да прецизирате съдържанието в чат"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Оценете тази страница и предложете подобрения"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Потребителят разглежда страницата с ID „%{id}“. Когато говори за „тази страница“, използвайте get-page с този ID."

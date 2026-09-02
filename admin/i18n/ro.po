@@ -2794,3 +2794,11 @@ msgstr "AI poate crea o pagină și conținut pe baza datelor introduse de dvs. 
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "Apăsați Enter sau săgeata pentru a deschide asistentul AI și a rafina conținutul într-o conversație"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "Evaluați această pagină și sugerați îmbunătățiri"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "Utilizatorul vizualizează pagina cu ID-ul „%{id}”. Când se referă la „această pagină”, utilizați get-page cu acel ID."

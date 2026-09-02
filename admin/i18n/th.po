@@ -2782,3 +2782,11 @@ msgstr "AI สามารถสร้างหน้าและเนื้อ
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "กด Enter หรือลูกศรเพื่อเปิดผู้ช่วย AI และปรับแต่งเนื้อหาในแชท"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "ประเมินหน้านี้และเสนอแนะการปรับปรุง"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "ผู้ใช้กำลังดูหน้าที่มี ID \"%{id}\" เมื่อกล่าวถึง \"หน้านี้\" ให้ใช้ get-page กับ ID ดังกล่าว"

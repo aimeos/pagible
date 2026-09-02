@@ -2782,3 +2782,11 @@ msgstr "人工智能可以根据您的输入创建页面和内容，并将其添
 #: js/views/PageList.vue:334
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "按 Enter 键或箭头打开 AI 助手，并在聊天中完善内容"
+
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+msgid "Rate this page and suggest improvements"
+msgstr "评估此页面并提出改进建议"
+
+#: js/views/PageDetail.vue:188
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "用户正在查看 ID 为“%{id}”的页面。当用户提到“此页面”时，请使用该 ID 调用 get-page。"
