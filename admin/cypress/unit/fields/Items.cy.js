@@ -1,4 +1,5 @@
 import { h } from 'vue'
+import VirtualList from 'vue-virtual-sortable'
 import ItemsField from '../../../js/fields/Items.vue'
 import { useUserStore, useClipboardStore } from '../../../js/stores'
 
@@ -36,18 +37,77 @@ function mountItems(props = {}, perms = {}, stubs = {}) {
     })
 }
 
+function mountScrollable(items, style = {}) {
+  const Host = {
+    render() {
+      return h('div', { class: 'scroll', style }, [
+        h(ItemsField, { modelValue: items, config: itemConfig, assets: {} })
+      ])
+    }
+  }
+
+  return cy.mount(Host)
+}
+
 describe('Items', () => {
   it('renders expansion panels container', () => {
     mountItems({ modelValue: [{ title: 'First' }], config: itemConfig })
     cy.get('.v-expansion-panels').should('exist')
   })
 
-  it('renders one panel per item', () => {
+  it('renders one panel per item without configured identities', () => {
     mountItems({
       modelValue: [{ title: 'First' }, { title: 'Second' }],
-      config: itemConfig
+      config: { ...itemConfig, identity: undefined }
     })
     cy.get('.v-expansion-panel').should('have.length', 2)
+  })
+
+  it('virtualizes large item lists', () => {
+    const items = Array.from({ length: 100 }, (_, idx) => ({ title: `Item ${idx}` }))
+
+    mountItems({ modelValue: items, config: itemConfig })
+    cy.get('.v-expansion-panel').its('length').should('be.lessThan', items.length)
+    cy.contains('.element-title', 'Item 0').should('exist')
+    cy.contains('.element-title', 'Item 99').should('not.exist')
+  })
+
+  it('uses the surrounding scroller and reveals an item added at the virtual boundary', () => {
+    const items = Array.from({ length: 30 }, (_, idx) => ({ title: `Item ${idx}` }))
+
+    mountScrollable(items, { height: '320px', overflowY: 'auto' }).then(({ wrapper }) => {
+      const field = wrapper.findComponent(ItemsField)
+      const list = wrapper.findComponent(VirtualList)
+
+      expect(list.props('scroller')).to.equal(wrapper.find('.scroll').element)
+      expect(list.element.style.overflow).to.equal('')
+
+      cy.wrap(wrapper.find('.scroll').element)
+        .scrollTo('bottom')
+        .then(() => {
+          field.vm.add()
+          field.vm.items.at(-1).title = 'New item'
+        })
+    })
+
+    cy.contains('.element-title', 'New item').should('be.visible')
+  })
+
+  it('locks the horizontal axis when sorting items vertically', () => {
+    const items = [{ title: 'First' }, { title: 'Second' }]
+    const onUpdate = cy.spy().as('update')
+
+    mountItems({ modelValue: items, config: itemConfig, 'onUpdate:modelValue': onUpdate })
+      .then(({ wrapper }) => {
+        const list = wrapper.findComponent(VirtualList)
+
+        expect(list.props('lockAxis')).to.equal('x')
+        list.vm.$emit('update:modelValue', [items[1], items[0]])
+      })
+
+    cy.get('@update').should((spy) => {
+      expect(spy.lastCall.args[0].map((item) => item.title)).to.deep.equal(['Second', 'First'])
+    })
   })
 
   it('shows item title in panel header', () => {
@@ -111,6 +171,7 @@ describe('Items', () => {
       'onUpdate:modelValue': onUpdate
     })
     cy.get('button.btn-add').click()
+    cy.get('.v-expansion-panel--active').should('exist')
     cy.get('@update').should((spy) => {
       expect(spy.lastCall.args[0][0].id).to.match(/^[A-Za-z][A-Za-z0-9_-]{5}$/)
     })
