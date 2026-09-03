@@ -247,6 +247,11 @@ export default {
   color: rgb(var(--v-theme-on-primary));
 }
 
+.v-app-bar :deep(.v-time-picker-clock__hand),
+.v-app-bar :deep(.v-time-picker-clock__item) {
+  color: initial;
+}
+
 .publish-menu {
   width: min(736px, calc(100vw - 24px));
   padding: 0;
