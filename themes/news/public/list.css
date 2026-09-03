@@ -1,0 +1,156 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content .list .list-items,
+.cms-content .list .second,
+.cms-content .list .list-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.cms-content .list .first,
+.cms-content .list .second {
+    min-width: 0;
+    width: 100%;
+}
+
+.cms-content .list .list-default,
+.cms-content .list .list-cards {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+.cms-content .list .list-item {
+    background: transparent;
+    border-top: 1px solid var(--pico-muted-border-color);
+    color: var(--pico-color);
+    display: block;
+    height: 100%;
+    padding-block: 0.75rem;
+    text-decoration: none;
+}
+
+.cms-content .list .first .list-item:first-child,
+.cms-content .list .list-cards .list-item:first-child,
+.cms-content .list .list-list .list-item:first-child {
+    border-top: 0;
+}
+
+.cms-content .list .list-item:hover {
+    color: var(--pico-primary);
+}
+
+.cms-content .list picture {
+    display: block;
+    overflow: hidden;
+}
+
+.cms-content .list picture img {
+    aspect-ratio: 3 / 2;
+    display: block;
+    filter: saturate(0.86) contrast(1.03);
+    object-fit: cover;
+    width: 100%;
+}
+
+.cms-content .list .content {
+    padding: 0.625rem 0 0;
+}
+
+.cms-content .list .date {
+    color: var(--pico-primary);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.cms-content .list h3 {
+    font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+    line-height: 1.08;
+    margin: 0.5rem 0 0;
+}
+
+.cms-content .list .second .list-item,
+.cms-content .list .list-list .list-item {
+    align-items: start;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(7rem, 2fr) minmax(0, 3fr);
+}
+
+.cms-content .list .second .content,
+.cms-content .list .list-list .content {
+    padding: 0;
+}
+
+.cms-content .list .second h3,
+.cms-content .list .list-list h3 {
+    font-size: 1.1rem;
+}
+
+.cms-content .list .list-list .intro {
+    color: var(--pico-muted-color);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 0;
+}
+
+.cms-content .list nav .pagination {
+    margin: 2rem auto 0;
+}
+
+@media (min-width: 768px) {
+    .cms-content .list .list-default {
+        gap: 0;
+        grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+    }
+
+    .cms-content .list .list-default > .first {
+        border-inline-end: 1px solid var(--pico-muted-border-color);
+        padding-inline-end: 1rem;
+    }
+
+    .cms-content .list .list-default > .second {
+        padding-inline-start: 1rem;
+    }
+
+    .cms-content .list .first .list-item {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .cms-content .list .second .list-item:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .cms-content .list .first h3 {
+        font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+    }
+
+    .cms-content .list .list-cards {
+        gap: 0;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cms-content .list .list-cards .list-item {
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+        padding-inline: 1rem;
+    }
+
+    .cms-content .list .list-cards .list-item:nth-child(3n + 1) {
+        border-inline-start: 0;
+        padding-inline-start: 0;
+    }
+
+    .cms-content .list .list-cards .list-item:nth-child(3n) {
+        padding-inline-end: 0;
+    }
+
+    .cms-content .list .list-cards .list-item:nth-child(-n + 3) {
+        border-top: 0;
+    }
+}

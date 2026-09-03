@@ -1,0 +1,164 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    gap: 0;
+    grid-template-columns: 1fr;
+    margin-block: 0.625rem 0;
+}
+
+.cards .card-list.cols-1 {
+    grid-template-columns: 1fr;
+    max-width: 52rem;
+}
+
+.cards .card-item {
+    background: transparent;
+    border-top: 1px solid var(--pico-muted-border-color);
+    min-width: 0;
+    overflow: hidden;
+    padding: 0.875rem 0;
+    text-align: start;
+}
+
+.cards .card-item:first-child {
+    border-top: 0;
+}
+
+.cards .card-item > picture,
+.cards .card-item > .card-image {
+    display: block;
+    margin: 0 0 0.625rem;
+    overflow: hidden;
+}
+
+.cards .card-item img {
+    aspect-ratio: 3 / 2;
+    filter: saturate(0.86) contrast(1.03);
+    object-fit: cover;
+    width: 100%;
+}
+
+.cards .title {
+    font-size: clamp(1.075rem, 1.6vw, 1.35rem);
+    line-height: 1.08;
+    margin: 0 0 0.5rem;
+}
+
+.cards .title a,
+.cards .title a:visited {
+    color: var(--pico-contrast);
+    text-decoration: none;
+}
+
+.cards .title a:hover,
+.cards .title a:focus {
+    color: var(--pico-primary);
+}
+
+.cards .cms-text,
+.cards .text {
+    color: var(--pico-muted-color);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+.cards .cms-text p {
+    margin-bottom: 0.5rem;
+}
+
+.cards .cms-text a {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+#most-read .card-list {
+    counter-reset: most-read;
+}
+
+#most-read .card-item {
+    counter-increment: most-read;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: auto minmax(0, 1fr);
+}
+
+#most-read .card-item::before {
+    color: var(--pico-primary);
+    content: counter(most-read);
+    font-family: var(--pico-font-family-display);
+    font-size: 2rem;
+    line-height: 0.9;
+}
+
+#most-read .card-text {
+    min-width: 0;
+}
+
+@media screen and (min-width: 576px) {
+    .cards .card-list.cols-auto,
+    .cards .card-list.cols-2,
+    .cards .card-list.cols-3,
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cards .card-list:not(.cols-1) .card-item {
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+        padding-inline: 1rem;
+    }
+
+    .cards .card-list:not(.cols-1) .card-item:nth-child(2n + 1) {
+        border-inline-start: 0;
+        padding-inline-start: 0;
+    }
+
+    .cards .card-list:not(.cols-1) .card-item:nth-child(2n) {
+        padding-inline-end: 0;
+    }
+
+    .cards .card-list:not(.cols-1) .card-item:nth-child(-n + 2) {
+        border-top: 0;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .cards .card-list.cols-auto,
+    .cards .card-list.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cards .card-list.cols-auto .card-item:nth-child(n),
+    .cards .card-list.cols-3 .card-item:nth-child(n),
+    .cards .card-list.cols-4 .card-item:nth-child(n) {
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+        padding-inline: 1rem;
+    }
+
+    .cards .card-list.cols-auto .card-item:nth-child(3n + 1),
+    .cards .card-list.cols-3 .card-item:nth-child(3n + 1),
+    .cards .card-list.cols-4 .card-item:nth-child(4n + 1) {
+        border-inline-start: 0;
+        padding-inline-start: 0;
+    }
+
+    .cards .card-list.cols-auto .card-item:nth-child(3n),
+    .cards .card-list.cols-3 .card-item:nth-child(3n),
+    .cards .card-list.cols-4 .card-item:nth-child(4n) {
+        padding-inline-end: 0;
+    }
+
+    .cards .card-list.cols-auto .card-item:nth-child(-n + 3),
+    .cards .card-list.cols-3 .card-item:nth-child(-n + 3),
+    .cards .card-list.cols-4 .card-item:nth-child(-n + 4) {
+        border-top: 0;
+    }
+}

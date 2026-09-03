@@ -8,9 +8,10 @@
 
 <div class="card-list cols-{{ $data->columns ?? 'auto' }}">
 	@foreach($data->cards ?? [] as $card)
+		@php($url = cmslink($card->url ?? null))
 		<div class="card-item">
 			@if($file = cms($files, $card->file?->id ?? null))
-				@if($url = cmslink($card->url ?? null))
+				@if($url)
 					<a class="card-image" href="{{ $url }}">
 						@include('cms::pic', ['file' => $file, 'class' => 'image', 'sizes' => '(max-width: 576px) 100vw, (max-width: 768px) 66vw, 33vw'])
 					</a>
@@ -20,7 +21,7 @@
 			@endif
 			<div class="card-text">
 				@if($card->title ?? null)
-					<h3 class="title">{{ $card->title }}</h3>
+					<h3 class="title">@if($url)<a href="{{ $url }}">@endif{{ $card->title }}@if($url)</a>@endif</h3>
 				@endif
 				@if($card->text ?? null)
 					<div class="cms-text">@markdown($card->text)</div>

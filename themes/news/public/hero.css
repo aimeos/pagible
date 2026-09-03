@@ -1,0 +1,172 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    background: transparent;
+    border-top: 0.25rem solid var(--pico-contrast);
+    overflow: hidden;
+    position: relative;
+}
+
+.hero .background {
+    inset: 0;
+    position: absolute;
+    z-index: 0;
+}
+
+.hero .background::after {
+    background: linear-gradient(90deg, #172126E8 0%, #172126B8 55%, #17212652 100%);
+    content: "";
+    inset: 0;
+    position: absolute;
+}
+
+.hero .background img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.hero .container {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.hero .container:not(:has(.second)) .first {
+    max-width: 52rem;
+    padding: 2rem 1.25rem;
+}
+
+.hero .container:has(.second) {
+    align-items: start;
+}
+
+.hero .first {
+    align-self: start;
+    margin: 0;
+    min-width: 0;
+    padding: 1.25rem;
+    text-align: start;
+}
+
+.hero .background ~ .first {
+    color: var(--pico-contrast-inverse);
+    position: relative;
+    z-index: 2;
+}
+
+.hero .subtitle {
+    color: var(--pico-primary);
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.625rem;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-size: clamp(2.25rem, 4.1vw, 3.625rem);
+    line-height: 0.98;
+    margin: 0 0 0.875rem;
+    max-width: 15ch;
+}
+
+.hero .cms-text {
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-display);
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.45;
+    max-width: 32rem;
+}
+
+.hero .background ~ .first h1,
+.hero .background ~ .first .cms-text,
+.hero .background ~ .first .subtitle {
+    color: var(--pico-contrast-inverse);
+}
+
+.hero .second {
+    border: 0;
+    border-top: 1px solid var(--pico-muted-border-color);
+    box-shadow: none;
+    display: block;
+    margin: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 1.25rem 0;
+    position: relative;
+    width: 100%;
+}
+
+.hero .second,
+.hero .second picture,
+.hero .second .slider-container,
+.hero .second .hero-slide {
+    height: auto;
+}
+
+.hero .second picture {
+    display: block;
+    width: 100%;
+}
+
+.hero .second img,
+.hero .second video {
+    aspect-ratio: 4 / 3;
+    display: block;
+    height: auto;
+    object-fit: cover;
+    width: 100%;
+}
+
+.hero .second.multiple .slider-container > .hero-slide::after {
+    display: none;
+}
+
+.hero .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.hero .actions .btn {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    color: var(--pico-primary);
+    letter-spacing: 0;
+    margin: 0;
+    padding: 0.25rem 0;
+    text-transform: none;
+}
+
+.hero .actions .btn::after {
+    content: " →";
+}
+
+.hero .actions .btn:hover {
+    background: transparent;
+    border-color: var(--pico-primary-hover);
+    color: var(--pico-primary-hover);
+}
+
+@media screen and (min-width: 768px) {
+    .hero .container:has(.second) {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+
+    .hero .first {
+        padding: 1.5rem 1.5rem 1.5rem 1.25rem;
+    }
+
+    .hero .second {
+        border-top: 0;
+        padding-block: 1.5rem;
+    }
+}

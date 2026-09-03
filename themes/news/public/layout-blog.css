@@ -1,0 +1,26 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main .cms-content {
+    margin: 0 auto;
+    background: transparent;
+    max-width: var(--news-content-width);
+}
+
+main .cms-content > * {
+    background: transparent;
+}
+
+main .cms-content > .article .container,
+main .cms-content > .text .container,
+main .cms-content > .heading .container,
+main .cms-content > .table .container,
+main .cms-content > .questions .container,
+main .cms-content > .toc .container {
+    max-width: 68rem !important;
+}
+
+.cms-content .container {
+    padding-inline: 1.25rem;
+}

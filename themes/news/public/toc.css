@@ -1,0 +1,40 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+nav.toc {
+    background-color: var(--pico-contrast-inverse);
+    border-block: 1px solid var(--pico-muted-border-color);
+    display: block;
+    padding: 1.5rem 0;
+}
+
+nav.toc > p {
+    font-family: var(--pico-font-family-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+}
+
+nav.toc ol {
+    list-style: decimal;
+    margin: 0;
+    padding-inline-start: 1.5rem;
+}
+
+nav.toc li {
+    display: list-item;
+    padding: 0;
+}
+
+nav.toc li a {
+    color: var(--pico-muted-color);
+    display: inline-block;
+    font-size: 0.875rem;
+    margin: 0;
+    padding: 0.25rem 0;
+}
+
+nav.toc li a:hover {
+    color: var(--pico-primary);
+}
