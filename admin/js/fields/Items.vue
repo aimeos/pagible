@@ -9,7 +9,7 @@
  * - `required`: boolean, if true, the field is required
  */
 import gql from 'graphql-tag'
-import { markRaw, toRaw } from 'vue'
+import { markRaw } from 'vue'
 import {
   mdiDotsVertical,
   mdiClose,
@@ -25,16 +25,17 @@ import {
   mdiMicrophone,
   mdiViewGridPlus
 } from '@mdi/js'
-import { VueDraggable } from 'vue-draggable-plus'
+import VirtualList from 'vue-virtual-sortable'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
 import { fieldTypes, protectTypes } from '../fieldtypes'
-import { itemTitle, txlocales, uid } from '../utils'
+import { clone, itemTitle, txlocales, uid } from '../utils'
+import { key, reveal, scrollParent } from '../virtual'
 
 export default {
   inheritAttrs: false,
 
   components: {
-    VueDraggable
+    VirtualList
   },
 
   props: {
@@ -56,9 +57,11 @@ export default {
       composing: {},
       errors: [],
       items: [],
+      itemKey: (item) => item?.[this.config.identity] || key(item),
       lastError: null,
       menu: [],
       panel: [],
+      scroller: null,
       audio: {}
     }
   },
@@ -90,6 +93,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.scroller = scrollParent(this.$refs.panels.$el)
+  },
+
   beforeUnmount() {
     for (const key of Object.keys(this.audio)) {
       if (this.audio[key]) {
@@ -102,6 +109,7 @@ export default {
     this.composing = null
     this.menu = null
     this.panel = null
+    this.scroller = null
     this.items = null
     this.errors = null
   },
@@ -122,14 +130,13 @@ export default {
 
   methods: {
     add() {
-      this.items.push(this.identity({}, this.config))
-      this.panel.push(this.items.length - 1)
-      this.$emit('update:modelValue', this.items)
-      this.check()
+      this.insert(this.items.length, 'bottom')
     },
 
-    change() {
+    change(items = this.items) {
+      this.items = items
       this.$emit('update:modelValue', this.items)
+      this.check()
     },
 
     check() {
@@ -140,23 +147,14 @@ export default {
       }
     },
 
-    /**
-     * Creates a non-reactive structured copy for clipboard operations.
-     */
-    clone(item) {
-      return structuredClone(toRaw(item))
-    },
-
     copy(idx) {
-      const item = this.clone(this.items[idx])
+      const item = clone(this.items[idx])
       this.clipboard.set('items-content', this.identity(item, this.config, true))
     },
 
     cut(idx) {
-      this.clipboard.set('items-content', this.clone(this.items[idx]))
-      this.items.splice(idx, 1)
-      this.$emit('update:modelValue', this.items)
-      this.check()
+      this.clipboard.set('items-content', clone(this.items[idx]))
+      this.remove(idx)
     },
 
     /**
@@ -182,11 +180,14 @@ export default {
       return item
     },
 
-    insert(idx) {
-      this.items.splice(idx, 0, this.identity({}, this.config))
-      this.panel.push(idx)
-      this.$emit('update:modelValue', this.items)
-      this.check()
+    insert(idx, align = 'auto') {
+      const item = this.identity({}, this.config)
+      const key = this.itemKey(item)
+
+      this.items.splice(idx, 0, item)
+      this.panel.push(key)
+      this.change()
+      reveal(this.$refs.items, key, align)
     },
 
     paste(idx = null) {
@@ -200,10 +201,9 @@ export default {
         idx = this.items.length
       }
 
-      this.items.splice(idx, 0, this.clone(item))
+      this.items.splice(idx, 0, clone(item))
       this.clipboard.set('items-content', null)
-      this.$emit('update:modelValue', this.items)
-      this.check()
+      this.change()
     },
 
     record(idx, code) {
@@ -235,9 +235,11 @@ export default {
     },
 
     remove(idx) {
+      const key = this.itemKey(this.items[idx])
+
       this.items.splice(idx, 1)
-      this.$emit('update:modelValue', this.items)
-      this.check()
+      this.panel = this.panel.filter((value) => value !== key)
+      this.change()
     },
 
     title(el) {
@@ -307,7 +309,7 @@ export default {
     modelValue: {
       immediate: true,
       handler(val) {
-        this.items = Array.isArray(val) ? val : this.clone(this.config.default ?? [])
+        this.items = Array.isArray(val) ? val : clone(this.config.default ?? [])
         this.items.forEach((item) => this.identity(item, this.config))
         this.check()
       }
@@ -317,23 +319,29 @@ export default {
 </script>
 
 <template>
-  <v-expansion-panels v-bind="$attrs" class="items" v-model="panel" elevation="0" multiple>
-    <VueDraggable
-      v-model="items"
-      @update="change()"
+  <v-expansion-panels
+    ref="panels"
+    v-bind="$attrs"
+    class="items"
+    v-model="panel"
+    elevation="0"
+    multiple
+  >
+    <VirtualList
+      v-if="scroller"
+      ref="items"
+      :modelValue="items"
+      @update:modelValue="change"
+      :dataKey="itemKey"
+      :scroller="scroller"
       :disabled="readonly || $vuetify.display.smAndDown"
-      :forceFallback="true"
-      fallbackTolerance="10"
       handle=".item-handle"
-      draggable=".item"
       group="items"
-      animation="500"
+      :animation="500"
+      lockAxis="x"
     >
-      <v-expansion-panel
-        v-for="(item, idx) in items"
-        :key="item?.[config.identity] ?? idx"
-        class="item"
-      >
+      <template #item="{ item, index: idx, key }">
+        <v-expansion-panel :key="key" :value="key" class="item">
         <v-expansion-panel-title>
           <v-btn
             v-if="!readonly"
@@ -513,8 +521,9 @@ export default {
             ></component>
           </div>
         </v-expansion-panel-text>
-      </v-expansion-panel>
-    </VueDraggable>
+        </v-expansion-panel>
+      </template>
+    </VirtualList>
   </v-expansion-panels>
 
   <div v-if="errors.length" class="v-input--error">

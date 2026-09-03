@@ -4,7 +4,7 @@
 import gql from 'graphql-tag'
 import Fields from './Fields.vue'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { VueDraggable } from 'vue-draggable-plus'
+import VirtualList from 'vue-virtual-sortable'
 import {
   useUserStore,
   useClipboardStore,
@@ -15,7 +15,8 @@ import {
 import { changedState } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList } from '../graphql'
-import { debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
+import { clone, debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
+import { reveal, scrollParent } from '../virtual'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -70,7 +71,7 @@ export default {
   components: {
     Fields,
     SchemaDialog,
-    VueDraggable
+    VirtualList
   },
 
   props: {
@@ -95,6 +96,7 @@ export default {
     panel: [],
     menu: null,
     index: null,
+    scroller: null,
     checked: false,
     vchange: false,
     vschemas: false,
@@ -143,6 +145,12 @@ export default {
   computed: {
     checkedCount() {
       return this.content.filter((el) => el._checked).length
+    },
+
+    keeps() {
+      return this.content.some((el) => !this.shown(el))
+        ? Math.max(this.content.length, 30)
+        : 30
     }
   },
 
@@ -162,14 +170,14 @@ export default {
 
       if (idx !== null) {
         this.content.splice(idx, 0, entry)
-        this.panel.push(this.panel.includes(idx) ? idx + 1 : idx)
       } else {
         this.content.push(entry)
-        this.panel.push(this.content.length - 1)
       }
 
+      this.panel.push(entry.id)
       this.vschemas = false
       this.$emit('update:content', this.content)
+      reveal(this.$refs.list, entry.id, idx === null ? 'bottom' : 'auto')
     },
 
     change(idx) {
@@ -199,14 +207,14 @@ export default {
       if (idx === undefined) {
         for (let i = this.content.length - 1; i >= 0; i--) {
           if (this.content[i]._checked) {
-            const entry = structuredClone(this.content[i])
+            const entry = clone(this.content[i])
             entry._checked = false
             entry['id'] = null
             list.push(entry)
           }
         }
       } else {
-        const entry = structuredClone(this.content[idx])
+        const entry = clone(this.content[idx])
         entry._checked = false
         entry['id'] = null
         list.push(entry)
@@ -232,14 +240,14 @@ export default {
       if (idx === undefined) {
         for (let i = this.content.length - 1; i >= 0; i--) {
           if (this.content[i]._checked) {
-            const [entry] = this.content.splice(i, 1)
+            const entry = this.take(i)
             entry._checked = false
             entry.id = null
             list.push(entry)
           }
         }
       } else {
-        const [entry] = this.content.splice(idx, 1)
+        const entry = this.take(idx)
         entry._checked = false
         entry.id = null
         list.push(entry)
@@ -285,14 +293,8 @@ export default {
           this.content[i]._checked &&
           ['text', 'code', 'heading'].includes(this.content[i].type)
         ) {
-          entries.push(this.content[i])
-          this.content.splice(i, 1)
+          entries.push(this.take(i))
           idx = i
-
-          const pi = this.panel.indexOf(i)
-          if (pi !== -1) {
-            this.panel.splice(pi, 1)
-          }
         }
       }
 
@@ -333,7 +335,7 @@ export default {
     purge() {
       for (let i = this.content.length - 1; i >= 0; i--) {
         if (this.content[i]._checked) {
-          this.content.splice(i, 1)
+          this.take(i)
         }
       }
 
@@ -427,7 +429,7 @@ export default {
     },
 
     remove(idx) {
-      this.content.splice(idx, 1)
+      this.take(idx)
       this.error()
       this.$emit('update:content', this.content)
     },
@@ -442,25 +444,19 @@ export default {
     },
 
     search(term) {
-      if (term) {
-        term = term.toLocaleLowerCase().trim()
+      term = term?.toLocaleLowerCase().trim()
 
-        this.content.forEach((el) => {
-          const data = (el.type === 'reference' ? this.elements[el.refid] : el)?.data || {}
-          let found = false
+      this.content.forEach((el) => {
+        const data = (el.type === 'reference' ? this.elements[el.refid] : el)?.data || {}
+        const found = Object.values(data).some((value) =>
+          value &&
+          typeof value !== 'object' &&
+          typeof value !== 'boolean' &&
+          String(value).toLocaleLowerCase().includes(term)
+        )
 
-          for (const k in data) {
-            const v = data[k]
-
-            if (v && typeof v !== 'object' && typeof v !== 'boolean' && String(v).toLocaleLowerCase().includes(term)) {
-              found = true
-              break
-            }
-          }
-
-          el._hide = !found
-        })
-      }
+        el._hide = Boolean(term) && !found
+      })
     },
 
     share(idx) {
@@ -629,6 +625,12 @@ export default {
       return (this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) }))
     },
 
+    take(idx) {
+      const [entry] = this.content.splice(idx, 1)
+      this.panel = this.panel.filter((value) => value !== entry.id)
+      return entry
+    },
+
     title(el) {
       return itemTitle(el.data) || this.$pgettext('st', el.type) || ''
     },
@@ -689,6 +691,10 @@ export default {
     this.emitContent = debounce(() => this.$emit('update:content', this.content), 150)
   },
 
+  mounted() {
+    this.scroller = scrollParent(this.$refs.root)
+  },
+
   beforeUnmount() {
     if (this.audio) {
       this.audio.then((rec) => rec?.stop?.()).catch(() => {})
@@ -697,6 +703,7 @@ export default {
 
     this.panel = null
     this.menu = null
+    this.scroller = null
     this.response = ''
     this.chat = ''
   },
@@ -720,7 +727,7 @@ export default {
 </script>
 
 <template>
-  <div v-visible="store">
+  <div ref="root" v-visible="store">
     <v-textarea
       v-if="user.can('page:refine')"
       v-model="chat"
@@ -830,27 +837,34 @@ export default {
     </div>
 
     <v-expansion-panels class="list" v-model="panel" elevation="0" multiple>
-      <VueDraggable
-        @update:modelValue="$emit('update:content', $event)"
-        :disabled="$vuetify.display.smAndDown || !user.can('page:save')"
+      <VirtualList
+        v-if="scroller"
+        :key="keeps"
+        ref="list"
         :modelValue="content"
-        :forceFallback="true"
-        fallbackTolerance="10"
+        @update:modelValue="$emit('update:content', $event)"
+        dataKey="id"
+        :scroller="scroller"
+        :disabled="$vuetify.display.smAndDown || !user.can('page:save')"
         handle=".item-handle"
-        draggable=".content"
         group="content"
+        :animation="0"
+        :keeps="keeps"
+        :size="80"
+        lockAxis="x"
       >
-        <v-expansion-panel
-          v-for="(el, idx) in content"
-          :key="el.id"
-          v-show="shown(el)"
-          class="content"
-          :class="{
-            changed: el._changed,
-            error: el._error,
-            ...changedState(changed, el.id || el.refid)
-          }"
-        >
+        <template #item="{ item: el, index: idx, key }">
+          <v-expansion-panel
+            :key="key"
+            :value="key"
+            v-show="shown(el)"
+            class="content"
+            :class="{
+              changed: el._changed,
+              error: el._error,
+              ...changedState(changed, el.id || el.refid)
+            }"
+          >
           <v-expansion-panel-title>
             <v-btn variant="text" class="item-handle" :aria-label="$gettext('Move element')" icon>
               <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
@@ -1000,8 +1014,9 @@ export default {
               @change="update(el)"
             />
           </v-expansion-panel-text>
-        </v-expansion-panel>
-      </VueDraggable>
+          </v-expansion-panel>
+        </template>
+      </VirtualList>
     </v-expansion-panels>
 
     <div v-if="user.can('page:save')" class="btn-group">
