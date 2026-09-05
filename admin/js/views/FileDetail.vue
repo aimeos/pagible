@@ -237,16 +237,16 @@ export default {
       })
     },
 
-    publish(at = null) {
+    publish(at = null, close = false) {
       publishItem(this, 'file', {
         success: this.$gettext('File published successfully'),
         scheduled: (d) => this.$gettext('File scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
         error: this.$gettext('Error publishing file')
-      }, at)
+      }, at, close)
     },
 
-    published() {
-      this.publish(publishDate(this.publishAt, this.publishTime))
+    schedule(close = false) {
+      this.publish(publishDate(this.publishAt, this.publishTime), close)
     },
 
     reset() {
@@ -402,8 +402,8 @@ export default {
     v-model:publish-at="publishAt"
     v-model:publish-time="publishTime"
     @save="save()"
-    @publish="publish()"
-    @schedule="published"
+    @publish="publish(null, $event)"
+    @schedule="schedule"
     @history="vhistory = true"
     @changes="vchanged = true"
   />

@@ -32,8 +32,9 @@ export function publishDate(publishAt, publishTime) {
  * @param {String} type 'page', 'element', or 'file'
  * @param {Object} msgs { success, scheduled(date), error }
  * @param {Date|null} at Schedule date or null for immediate publish
+ * @param {Boolean} close Close the view after publishing
  */
-export function publishItem(vm, type, msgs, at = null) {
+export function publishItem(vm, type, msgs, at = null, close = false) {
   if (!vm.user.can(`${type}:publish`)) {
     vm.messages.add(vm.$gettext('Permission denied'), 'error')
     return
@@ -71,10 +72,12 @@ export function publishItem(vm, type, msgs, at = null) {
           vm.invalidate?.()
           useChangeStore().notify(type, vm.item)
 
-          if (vm.stacked) {
-            vm.viewStack.closeView()
-          } else {
-            vm.$router.push({ name: `${type}:view` })
+          if(close) {
+            if (vm.stacked) {
+              vm.viewStack.closeView()
+            } else {
+              vm.$router.push({ name: `${type}:view` })
+            }
           }
         })
         .catch((error) => {

@@ -81,14 +81,14 @@ export default {
       }
     },
 
-    publish() {
+    publish(close = false) {
       this.publishMenu = false
-      this.$emit('publish')
+      this.$emit('publish', close)
     },
 
-    schedule() {
+    schedule(close = false) {
       this.publishMenu = false
-      this.$emit('schedule')
+      this.$emit('schedule', close)
     }
   },
 
@@ -182,6 +182,9 @@ export default {
             <v-btn @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
               {{ $gettext('Publish') }}
             </v-btn>
+            <v-btn @click="publish(true)" variant="flat" class="menu-publish-close" color="primary" :disabled="error" block>
+              {{ $gettext('Publish & Close') }}
+            </v-btn>
           </v-card-actions>
           <v-divider />
           <v-card-text class="publish-menu-schedule">
@@ -209,9 +212,18 @@ export default {
               :disabled="!publishAt || error"
               :color="publishAt ? 'primary' : ''"
               variant="flat"
-              class="menu-publish-at"
+              class="menu-schedule-at"
               block
               >{{ $gettext('Schedule') }}</v-btn
+            >
+            <v-btn
+              @click="schedule(true)"
+              :disabled="!publishAt || error"
+              :color="publishAt ? 'primary' : ''"
+              variant="flat"
+              class="menu-schedule-close"
+              block
+              >{{ $gettext('Schedule & Close') }}</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -253,7 +265,6 @@ export default {
 }
 
 .publish-menu {
-  width: min(736px, calc(100vw - 24px));
   padding: 0;
 }
 
@@ -267,8 +278,8 @@ export default {
 
 .publish-menu-heading {
   margin-bottom: 12px;
-  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+  font-size: 1rem;
   font-weight: 500;
 }
 

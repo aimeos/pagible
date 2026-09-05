@@ -302,7 +302,7 @@ describe('PageDetail', () => {
       mountDetail({ 'page:publish': true })
       cy.get('.menu-publish').should('have.length', 1).click()
       cy.get('.menu-publish-now').should('contain', 'Publish')
-      cy.get('.menu-publish-at').should('contain', 'Schedule')
+      cy.get('.menu-schedule-at').should('contain', 'Schedule')
     })
 
     it('opens menu with date and time pickers', () => {
@@ -323,19 +323,19 @@ describe('PageDetail', () => {
       })
     })
 
-    it('disables publish-at action when no date selected', () => {
+    it('disables schedule action when no date selected', () => {
       mountDetail({ 'page:publish': true })
       cy.get('.menu-publish').click()
-      cy.get('.menu-publish-at').should('be.disabled')
+      cy.get('.menu-schedule-at').should('be.disabled')
     })
 
-    it('published() combines date and time', () => {
+    it('schedule() combines date and time', () => {
       mountDetail({ 'page:publish': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.publishAt = new Date(2026, 5, 15)
         vm.publishTime = '14:30'
         cy.spy(vm, 'publish').as('publishSpy')
-        vm.published()
+        vm.schedule()
         cy.get('@publishSpy').should('have.been.calledOnce').then(() => {
           const arg = vm.publish.args[0][0]
           expect(arg.getFullYear()).to.equal(2026)
@@ -347,13 +347,13 @@ describe('PageDetail', () => {
       })
     })
 
-    it('published() uses midnight when no time selected', () => {
+    it('schedule() uses midnight when no time selected', () => {
       mountDetail({ 'page:publish': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.publishAt = new Date(2026, 5, 15)
         vm.publishTime = null
         cy.spy(vm, 'publish').as('publishSpy')
-        vm.published()
+        vm.schedule()
         cy.get('@publishSpy').should('have.been.calledOnce').then(() => {
           const arg = vm.publish.args[0][0]
           expect(arg.getHours()).to.equal(0)

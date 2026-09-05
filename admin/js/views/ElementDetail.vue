@@ -252,16 +252,16 @@ export default {
       return this.versions(this.item.id)
     },
 
-    publish(at = null) {
+    publish(at = null, close = false) {
       publishItem(this, 'element', {
         success: this.$gettext('Element published successfully'),
         scheduled: (d) => this.$gettext('Element scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
         error: this.$gettext('Error publishing element')
-      }, at)
+      }, at, close)
     },
 
-    published() {
-      this.publish(publishDate(this.publishAt, this.publishTime))
+    schedule(close = false) {
+      this.publish(publishDate(this.publishAt, this.publishTime), close)
     },
 
     reset() {
@@ -442,8 +442,8 @@ export default {
     v-model:publish-at="publishAt"
     v-model:publish-time="publishTime"
     @save="save()"
-    @publish="publish()"
-    @schedule="published"
+    @publish="publish(null, $event)"
+    @schedule="schedule"
     @history="vhistory = true"
     @changes="vchanged = true"
   />
