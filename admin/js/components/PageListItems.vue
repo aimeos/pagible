@@ -1661,24 +1661,15 @@ export default {
     </div>
 
     <v-btn
-      v-if="outdated"
-      @click="reload()"
-      :prepend-icon="mdiRefresh"
-      :title="$gettext('Updated by another user')"
-      color="primary"
-      variant="tonal"
-      size="small"
-      rounded="lg"
-      class="btn-outdated"
-    >{{ $gettext('Refresh') }}</v-btn>
-
-    <v-btn
       @click="reload()"
       :title="$gettext('Reload page tree')"
-      :icon="mdiRefresh"
-      variant="text"
-      class="btn-reload no-rtl"
-    />
+      color="primary"
+      rounded="xl"
+      size="small"
+      class="btn-reload"
+      :class=" outdated ? 'btn-outdated' : ''"
+      :variant="outdated ? 'tonal' : 'text'"
+    >{{ outdated ? $gettext('Refresh') : '' }}<v-icon :icon="mdiRefresh" /></v-btn>
 
     <ListSort v-if="filter.view === 'list'" v-model="sort" :options="sortOptions" />
   </div>
