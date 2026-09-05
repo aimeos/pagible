@@ -47,14 +47,14 @@ export default {
       </v-card-text>
 
       <v-card-actions class="unsaved-actions">
-        <v-btn @click="dirtyStore.discard()" variant="tonal" color="error">
+        <v-btn @click="dirtyStore.discard()" variant="tonal" color="warning">
           {{ $gettext('Discard') }}
         </v-btn>
         <v-spacer />
-        <v-btn @click="dirtyStore.cancel()" variant="text">
+        <v-btn @click="dirtyStore.cancel()" variant="outlined">
           {{ $gettext('Cancel') }}
         </v-btn>
-        <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="flat" color="blue-darken-1">
+        <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="tonal" color="primary" active>
           {{ $gettext('Save & leave') }}
         </v-btn>
       </v-card-actions>
