@@ -16,6 +16,7 @@ export const urlproxy = dataset.urlproxy || '/cmsproxy?url=_url_'
 export const urlpage = dataset.urlpage || '/_path_'
 export const urlfile = dataset.urlfile || '/storage'
 export const urlgraphql = dataset.urlgraphql || '/graphql'
+export const urlcsrf = dataset.urlcsrf || '/cmsapi/csrf'
 // `??` not `||`: the layout emits an empty string when the cms.chat route is absent (feature off),
 // which must stay empty rather than fall back to a path that would 404; only a missing attribute defaults.
 export const urlchat = dataset.urlchat ?? '/cmsapi/chat'

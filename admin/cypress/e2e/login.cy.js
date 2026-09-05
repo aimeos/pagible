@@ -14,9 +14,15 @@ describe('Login', () => {
    * @param {object|null} options.meResponse   – value returned as `data.me` after login
    * @param {object|null} options.loginResponse – value returned as `data.cmsLogin`
    * @param {string|null} options.loginError    – error message for the cmsLogin mutation
+   * @param {string|null} options.csrfToken      – token returned by /cmsapi/csrf
    */
-  function setupIntercept({ meResponse = null, loginResponse = null, loginError = null } = {}) {
+  function setupIntercept({ meResponse = null, loginResponse = null, loginError = null, csrfToken = 'test-csrf-token' } = {}) {
     let authenticated = false
+
+    cy.intercept('GET', '**/cmsapi/csrf*', {
+      statusCode: 200,
+      body: { token: csrfToken }
+    }).as('csrf')
 
     cy.intercept('POST', '/graphql', (req) => {
       const isBatch = Array.isArray(req.body)
@@ -43,6 +49,10 @@ describe('Login', () => {
 
       req.reply(isBatch ? responses : responses[0])
     }).as('gql')
+  }
+
+  function assertSingleCsrfCall() {
+    cy.get('@csrf.all').should('have.length', 1)
   }
 
   /** Visit the root and wait until the login form becomes visible. */
@@ -82,6 +92,8 @@ describe('Login', () => {
     cy.get('input[autocomplete="username"]').type('test@example.com')
     cy.get('input[autocomplete="current-password"]').type('wrongpassword')
     cy.get('button[type="submit"]').should('not.be.disabled').click()
+    cy.wait('@csrf')
+    assertSingleCsrfCall()
     cy.wait('@gql')
 
     cy.get('.v-alert').should('be.visible').and('contain', 'Invalid credentials')
@@ -101,6 +113,8 @@ describe('Login', () => {
     cy.get('input[autocomplete="username"]').type('admin@example.com')
     cy.get('input[autocomplete="current-password"]').type('secret')
     cy.get('button[type="submit"]').should('not.be.disabled').click()
+    cy.wait('@csrf')
+    assertSingleCsrfCall()
     cy.wait('@gql')
     cy.wait('@gql')
 
@@ -121,6 +135,8 @@ describe('Login', () => {
     cy.get('input[autocomplete="username"]').type('editor@example.com')
     cy.get('input[autocomplete="current-password"]').type('secret')
     cy.get('button[type="submit"]').should('not.be.disabled').click()
+    cy.wait('@csrf')
+    assertSingleCsrfCall()
     cy.wait('@gql')
 
     cy.get('.v-alert').should('be.visible').and('contain', 'Not a CMS editor')

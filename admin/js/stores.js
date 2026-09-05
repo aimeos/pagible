@@ -13,6 +13,7 @@ import {
   urlasset,
   urlproxy,
   urlpage,
+  urlcsrf,
   urlfile,
   multidomain,
   locales as appLocales
@@ -139,17 +140,17 @@ export const useUserStore = defineStore('user', {
     refreshToken() {
       if (!this.me) return
 
-      apolloClient
-        .query({ query: FETCH_TOKEN, fetchPolicy: 'network-only' })
-        .then((response) => {
-          if (response.data?.me?.token) {
-            this.me.token = response.data.me.token
-            this.applyProxyToken()
-          }
-        })
-        .catch((error) => {
-          console.error('Failed to refresh proxy token', error)
-        })
+      apolloClient.query({
+        query: FETCH_TOKEN,
+        fetchPolicy: 'network-only'
+      }).then((response) => {
+        if (response.data?.me?.token) {
+          this.me.token = response.data.me.token
+          this.applyProxyToken()
+        }
+      }).catch((error) => {
+        console.error('Failed to refresh proxy token', error)
+      })
     },
 
     async isAuthenticated(force = false) {
@@ -157,40 +158,45 @@ export const useUserStore = defineStore('user', {
         return !!this.me
       }
 
-      await apolloClient
-        .query({
-          query: FETCH_ME,
-          fetchPolicy: force ? 'network-only' : 'cache-first'
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response
-          }
+      await apolloClient.query({
+        query: FETCH_ME,
+        fetchPolicy: force ? 'network-only' : 'cache-first'
+      }).then((response) => {
+        if (response.errors) {
+          throw response
+        }
 
-          this.me = response.data.me
-            ? { ...response.data.me, permission: safeParse(response.data.me.permission), settings: safeParse(response.data.me.settings) }
-            : false
+        this.me = response.data.me
+          ? { ...response.data.me, permission: safeParse(response.data.me.permission), settings: safeParse(response.data.me.settings) }
+          : false
 
-          this.applyProxyToken()
-        })
-        .catch((error) => {
-          console.error('Failed to fetch user data', error)
-          this.me = false
-        })
+        this.applyProxyToken()
+      }).catch((error) => {
+        console.error('Failed to fetch user data', error)
+        this.me = false
+      })
 
       return !!this.me
     },
 
     login(email, password) {
-      return apolloClient
-        .mutate({
+      return fetch(urlcsrf, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error(`CSRF endpoint returned ${response.status}`)
+        }
+        return response.json()
+      }).then(() => {
+        return apolloClient.mutate({
           mutation: LOGIN,
           variables: {
             email: email,
             password: password
           }
-        })
-        .then((response) => {
+        }).then((response) => {
           if (response.errors) {
             throw response.errors
           }
@@ -202,11 +208,11 @@ export const useUserStore = defineStore('user', {
 
           this.me = null
           return this.isAuthenticated(true).then(() => this.me)
-        })
-        .catch((error) => {
+        }).catch((error) => {
           this.me = false
           throw error
         })
+      })
     },
 
     logout() {
@@ -216,27 +222,24 @@ export const useUserStore = defineStore('user', {
       clearTimeout(this.tokenTimer)
       this.tokenTimer = null
 
-      return apolloClient
-        .mutate({
-          mutation: LOGOUT
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
+      return apolloClient.mutate({
+        mutation: LOGOUT
+      }).then((response) => {
+        if (response.errors) {
+          throw response.errors
+        }
 
-          return response.data.cmsLogout || false
-        })
-        .finally(() => {
-          this.me = null
+        return response.data.cmsLogout || false
+      }).finally(() => {
+        this.me = null
 
-          useClipboardStore().$reset()
-          useSideStore().$reset()
-          clearUploadLink()
-          disconnect()
+        useClipboardStore().$reset()
+        useSideStore().$reset()
+        clearUploadLink()
+        disconnect()
 
-          return apolloClient.clearStore()
-        })
+        return apolloClient.clearStore()
+      })
     },
 
     async user() {
@@ -276,22 +279,19 @@ export const useUserStore = defineStore('user', {
 
       const messages = useMessageStore()
 
-      apolloClient
-        .mutate({
-          mutation: SAVE_SETTINGS,
-          variables: {
-            settings: JSON.stringify(this.me.settings)
-          }
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-        })
-        .catch((error) => {
-          messages.add('Failed to save user settings:\n' + error, 'error')
-          console.error('Failed to save user data', error)
-        })
+      apolloClient.mutate({
+        mutation: SAVE_SETTINGS,
+        variables: {
+          settings: JSON.stringify(this.me.settings)
+        }
+      }).then((response) => {
+        if (response.errors) {
+          throw response.errors
+        }
+      }).catch((error) => {
+        messages.add('Failed to save user settings:\n' + error, 'error')
+        console.error('Failed to save user data', error)
+      })
     }
   }
 })
