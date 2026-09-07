@@ -285,6 +285,7 @@ input:-webkit-autofill:focus {
 }
 
 .v-time-picker-clock {
+  color: rgb(var(--v-theme-on-surface));
   margin: auto;
 }
 

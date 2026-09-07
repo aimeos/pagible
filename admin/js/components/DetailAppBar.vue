@@ -259,11 +259,6 @@ export default {
   color: rgb(var(--v-theme-on-primary));
 }
 
-.v-app-bar :deep(.v-time-picker-clock__hand),
-.v-app-bar :deep(.v-time-picker-clock__item) {
-  color: initial;
-}
-
 .publish-menu {
   padding: 0;
 }
