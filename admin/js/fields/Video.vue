@@ -12,6 +12,7 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { default as FileComp } from './File.vue'
+import { VIDEO_MIME_FILTER } from '../utils'
 
 export default {
   extends: FileComp,
@@ -20,6 +21,7 @@ export default {
   setup() {
     return {
       ...FileComp.setup(),
+      VIDEO_MIME_FILTER,
       mdiDotsVertical,
       mdiPencil,
       mdiTrashCan,
@@ -159,7 +161,7 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'video/' }" />
+    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="VIDEO_MIME_FILTER" />
   </Teleport>
 
   <Teleport to="body">

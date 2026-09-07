@@ -9,7 +9,11 @@ import { useAppStore, useLanguageStore } from './stores'
 
 export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
 
-export const MEDIA_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'] }
+export const AUDIO_MIME_FILTER = { mime: ['audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg', 'audio/webm', 'audio/wav', 'audio/wave', 'audio/x-wav', 'audio/vnd.wave', 'audio/flac', 'audio/x-flac'] }
+
+export const VIDEO_MIME_FILTER = { mime: ['video/mp4', 'video/webm', 'video/ogg'] }
+
+export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MIME_FILTER.mime] }
 
 export const PAGE_BULK_LIMIT = 1000
 

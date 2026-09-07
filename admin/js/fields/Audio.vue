@@ -12,6 +12,7 @@ import {
   mdiUpload
 } from '@mdi/js'
 import File from './File.vue'
+import { AUDIO_MIME_FILTER } from '../utils'
 
 export default {
   extends: File,
@@ -20,6 +21,7 @@ export default {
   setup() {
     return {
       ...File.setup(),
+      AUDIO_MIME_FILTER,
       mdiDotsVertical,
       mdiPencil,
       mdiTrashCan,
@@ -159,7 +161,7 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="{ mime: 'audio/' }" />
+    <FileDialog v-model="vfiles" @add="addFromDialog" :filter="AUDIO_MIME_FILTER" />
   </Teleport>
 
   <Teleport to="body">
