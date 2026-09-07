@@ -183,15 +183,16 @@ export default {
         if (ids.has(key)) files[key] = this.assets[key]
       }
 
-      return markRaw({
-        data: Object.freeze({
-          lang: item.lang,
-          type: item.type,
-          name: item.name,
-          data: item.data
-        }),
-        files: markRaw(files)
-      })
+    return markRaw({
+      data: Object.freeze({
+        ...(item.data || {}),
+        scheduled: item.publish_at ? 1 : 0,
+        lang: item.lang,
+        type: item.type,
+        name: item.name,
+      }),
+      files: markRaw(files)
+    })
     }
   },
 

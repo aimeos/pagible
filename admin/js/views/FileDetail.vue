@@ -137,6 +137,7 @@ export default {
       const item = this.item
       return markRaw({
         data: Object.freeze({
+          scheduled: item.publish_at ? 1 : 0,
           lang: item.lang,
           name: item.name,
           mime: item.mime,

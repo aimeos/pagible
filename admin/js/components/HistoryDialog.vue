@@ -7,7 +7,7 @@ import { mdiClose } from '@mdi/js'
 import { empty, fileurl, filesrcset, stringify } from '../utils'
 
 const SECTION_NAMES = ['meta', 'config', 'content']
-const SKIP_FIELDS = ['previews']
+const SKIP_FIELDS = ['previews', 'editor']
 const EMPTY_SPACE = { value: '\u00a0', highlight: false }
 
 export default {
