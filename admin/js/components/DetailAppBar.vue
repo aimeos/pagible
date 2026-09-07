@@ -97,10 +97,6 @@ export default {
       return (!this.published || this.dirty) && !this.error && this.user.can(`${this.type}:publish`)
     },
 
-    canSave() {
-      return this.dirty && !this.error && this.user.can(`${this.type}:save`)
-    },
-
     pubDisabled() {
       return (this.published && !this.dirty) || this.error || !this.user.can(`${this.type}:publish`)
     },
@@ -153,7 +149,7 @@ export default {
         :title="$gettext('Save')"
         :disabled="saveDisabled"
         :variant="saveDisabled ? 'plain' : 'flat'"
-        :class="{ active: canSave, error: error, warning: conflict }"
+        :color="error ? 'error' : conflict ? 'warning' : 'primary'"
         :icon="mdiDatabaseArrowDown"
         class="menu-save"
       />
@@ -242,16 +238,6 @@ export default {
 <style scoped>
 .v-toolbar-title {
   margin-inline-start: 0;
-}
-
-.v-app-bar .v-btn.menu-save.active {
-  background-color: rgba(var(--v-theme-primary), 0.75);
-  color: rgb(var(--v-theme-on-primary));
-}
-
-.v-app-bar .v-btn.menu-save.warning {
-  background-color: rgba(var(--v-theme-warning), 0.75);
-  color: rgb(var(--v-theme-on-warning));
 }
 
 .v-app-bar .v-btn.menu-publish.active {

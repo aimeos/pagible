@@ -58,7 +58,8 @@ export default {
         <v-btn
           v-if="!readonly && !error && element._changed"
           @click="$emit('update:element', element)"
-          variant="outlined"
+          variant="tonal"
+          color="primary"
         >{{ $gettext('Save') }}</v-btn>
         <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
       </v-toolbar>

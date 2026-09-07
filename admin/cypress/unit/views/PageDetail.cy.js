@@ -385,20 +385,20 @@ describe('PageDetail', () => {
       })
     })
 
-    it('adds warning class to save button when hasConflict is true', () => {
+    it('uses warning color on save button when hasConflict is true', () => {
       mountDetail({ 'page:save': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
         vm.dirty = { page: true }
-        cy.get('.menu-save').should('have.class', 'warning')
+        cy.get('.menu-save').should('have.class', 'text-warning')
       })
     })
 
-    it('does not add warning class when no conflicts', () => {
+    it('uses primary color on save button when no conflicts', () => {
       mountDetail({ 'page:save': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.dirty = { page: true }
-        cy.get('.menu-save').should('not.have.class', 'warning')
+        cy.get('.menu-save').should('have.class', 'text-primary')
       })
     })
 
