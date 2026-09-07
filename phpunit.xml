@@ -9,6 +9,9 @@
     <env name="SESSION_DRIVER" value="array"/>
   </php>
   <testsuites>
+    <testsuite name="Root">
+      <file>./tests/ServeTest.php</file>
+    </testsuite>
     <testsuite name="Core">
       <directory>./core/tests/</directory>
     </testsuite>
