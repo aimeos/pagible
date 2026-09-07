@@ -32,6 +32,9 @@ return [
                 'text-secondary' => '#64748B',
                 'border-light' => '#E2E8F0',
             ],
+            'variables' => [
+                'selected-opacity' => '0.25',
+            ],
         ],
         'dark' => [
             'colors' => [
@@ -51,6 +54,9 @@ return [
                 'text-primary' => '#F1F5F9',
                 'text-secondary' => '#94A3B8',
                 'border-light' => '#334155',
+            ],
+            'variables' => [
+                'selected-opacity' => '0.25',
             ],
         ],
     ],
