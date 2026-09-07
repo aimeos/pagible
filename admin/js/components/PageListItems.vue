@@ -2076,7 +2076,7 @@ export default {
   min-height: 3rem;
   min-width: 3rem;
   text-align: end;
-  width: 100%;
+  flex: auto;
 }
 
 @media (min-width: 360px) {
@@ -2086,10 +2086,6 @@ export default {
 
   .tree-node-inner .item-content {
     flex-direction: row;
-  }
-
-  .tree-node-inner .item-aux {
-    width: unset;
   }
 }
 
