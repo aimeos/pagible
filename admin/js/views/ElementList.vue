@@ -43,6 +43,7 @@ export default {
 
     return {
       aside: null,
+      scrollTop: 0,
       defaults: defaults,
       filter: { ...defaults, ...this.user?.getData('element', 'filter') }
     }
@@ -78,6 +79,16 @@ export default {
       mdiAccount,
       languageFilter
     }
+  },
+
+  activated() {
+    this.$nextTick(() => {
+      this.$refs.scroll.$el.scrollTop = this.scrollTop
+    })
+  },
+
+  beforeRouteLeave() {
+    this.scrollTop = this.$refs.scroll.$el.scrollTop
   },
 
   beforeUnmount() {
@@ -161,7 +172,7 @@ export default {
 
   <v-main class="element-list" :aria-label="$gettext('Elements')">
     <v-container>
-      <v-sheet class="box scroll">
+      <v-sheet ref="scroll" class="box scroll">
         <ElementListItems :filter="filter" @select="open($event)" />
       </v-sheet>
     </v-container>

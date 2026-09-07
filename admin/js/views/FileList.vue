@@ -42,6 +42,7 @@ export default {
     }
 
     return {
+      scrollTop: 0,
       defaults: defaults,
       filter: { ...defaults, ...this.user?.getData('file', 'filter') }
     }
@@ -77,6 +78,16 @@ export default {
       mdiAccount,
       languageFilter
     }
+  },
+
+  activated() {
+    this.$nextTick(() => {
+      this.$refs.scroll.$el.scrollTop = this.scrollTop
+    })
+  },
+
+  beforeRouteLeave() {
+    this.scrollTop = this.$refs.scroll.$el.scrollTop
   },
 
   beforeUnmount() {
@@ -160,7 +171,7 @@ export default {
 
   <v-main class="file-list" :aria-label="$gettext('Media')">
     <v-container>
-      <v-sheet class="box scroll">
+      <v-sheet ref="scroll" class="box scroll">
         <FileListItems @select="open($event)" :filter="filter" />
       </v-sheet>
     </v-container>

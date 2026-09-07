@@ -62,6 +62,7 @@ export default {
       chatPending: false,
       audio: null,
       help: false,
+      scrollTop: 0,
       dictating: false,
       defaults: defaults,
       filter: { ...defaults, ...this.user?.getData('page', 'filter') }
@@ -119,6 +120,16 @@ export default {
       mdiMicrophoneOutline,
       languageFilter
     }
+  },
+
+  activated() {
+    this.$nextTick(() => {
+      this.$refs.scroll.$el.scrollTop = this.scrollTop
+    })
+  },
+
+  beforeRouteLeave() {
+    this.scrollTop = this.$refs.scroll.$el.scrollTop
   },
 
   beforeUnmount() {
@@ -277,7 +288,7 @@ export default {
 
   <v-main class="page-list" :aria-label="$gettext('Pages')">
     <v-container>
-      <v-sheet class="box scroll">
+      <v-sheet ref="scroll" class="box scroll">
         <v-textarea
           v-if="user.can('page:chat')"
           v-model="chat"
