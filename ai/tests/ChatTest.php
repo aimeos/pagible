@@ -45,6 +45,26 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    #[\PHPUnit\Framework\Attributes\DataProvider('elementChatRoles')]
+    public function testElementChatRoles( string $role, bool $allowed )
+    {
+        $this->user->cmsperms = [$role];
+
+        $this->assertSame( $allowed, \Aimeos\Cms\Permission::can( 'element:chat', $this->user ) );
+    }
+
+
+    public static function elementChatRoles() : array
+    {
+        return [
+            'admin' => ['admin', true],
+            'publisher' => ['publisher', true],
+            'editor' => ['editor', true],
+            'viewer' => ['viewer', false],
+        ];
+    }
+
+
     #[\PHPUnit\Framework\Attributes\DataProvider('chatPermissions')]
     public function testStreamAllowsChatPermission( string $permission )
     {
@@ -65,6 +85,7 @@ class ChatTest extends AiTestAbstract
     {
         return [
             'page chat only' => ['page:chat'],
+            'element chat only' => ['element:chat'],
             'file chat only' => ['file:chat'],
         ];
     }
@@ -77,6 +98,17 @@ class ChatTest extends AiTestAbstract
         $this->actingAs( $this->user )
             ->withoutMiddleware( VerifyCsrfToken::class )
             ->post( route( 'cms.chat' ), ['prompt' => 'Find the banner'] )
+            ->assertForbidden();
+    }
+
+
+    public function testStreamDeniesElementPermissionsWithoutChat()
+    {
+        $this->user->cmsperms = ['element:view', 'element:save'];
+
+        $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Find shared elements'] )
             ->assertForbidden();
     }
 

@@ -1,7 +1,6 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
 import {
   mdiPlaylistCheck,
   mdiTranslate,
@@ -14,13 +13,19 @@ import {
   mdiPencil,
   mdiDeleteOff,
   mdiDelete,
-  mdiAccount
+  mdiAccount,
+  mdiHelpCircleOutline,
+  mdiArrowRightCircle,
+  mdiMicrophone,
+  mdiMicrophoneOutline
 } from '@mdi/js'
+import { markRaw } from 'vue'
 import User from '../components/User.vue'
 import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import ElementListItems from '../components/ElementListItems.vue'
-import { useUserStore, useDrawerStore } from '../stores'
+import ChatDialog from '../components/ChatDialog.vue'
+import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
 import { languageFilter } from '../utils'
 
 export default {
@@ -30,6 +35,7 @@ export default {
     ElementListItems,
     Navigation,
     AsideList,
+    ChatDialog,
     User
   },
 
@@ -42,6 +48,12 @@ export default {
     }
 
     return {
+      chat: '',
+      chatOpen: false,
+      chatPending: false,
+      audio: null,
+      dictating: false,
+      help: false,
       aside: null,
       scrollTop: 0,
       defaults: defaults,
@@ -55,16 +67,25 @@ export default {
       handler(val) {
         this.user.saveData('element', 'filter', val)
       }
+    },
+
+    chatOpen(val) {
+      if (!val && this.chatPending) {
+        this.chatPending = false
+        this.$refs.elementlist?.reload()
+      }
     }
   },
 
   setup() {
+    const messages = useMessageStore()
     const drawer = useDrawerStore()
     const user = useUserStore()
 
     return {
       user,
       drawer,
+      messages,
       mdiPlaylistCheck,
       mdiTranslate,
       mdiClose,
@@ -77,6 +98,10 @@ export default {
       mdiDeleteOff,
       mdiDelete,
       mdiAccount,
+      mdiHelpCircleOutline,
+      mdiArrowRightCircle,
+      mdiMicrophone,
+      mdiMicrophoneOutline,
       languageFilter
     }
   },
@@ -135,8 +160,62 @@ export default {
   },
 
   methods: {
+    chatDone() {
+      if (this.chatOpen) {
+        this.chatPending = true
+      } else {
+        // A stopped stream can finish after the dialog has already closed.
+        this.$refs.elementlist?.reload()
+      }
+    },
+
+    onEnter(e) {
+      if (e.isComposing || e.shiftKey) {
+        return
+      }
+      e.preventDefault()
+      this.openChat()
+    },
+
     open(item) {
       this.$router.push({ name: 'element:detail', params: { id: item.id } })
+    },
+
+    openChat() {
+      if (!this.user.can('element:chat')) {
+        this.messages.add(this.$gettext('Permission denied'), 'error')
+        return
+      }
+
+      const prompt = (this.chat || '').trim()
+      this.chatOpen = true
+
+      if (prompt) {
+        this.chat = ''
+        this.$nextTick(() => this.$refs.chat?.send(prompt))
+      }
+    },
+
+    record() {
+      if (!this.audio) {
+        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
+      }
+
+      this.audio.then((rec) => {
+        this.dictating = true
+        this.audio = null
+
+        rec.stop()?.then((buffer) => {
+          import('../ai')
+            .then((mod) => mod.transcribe(buffer))
+            .then((transcription) => {
+              this.chat = transcription.asText()
+            })
+            .finally(() => {
+              this.dictating = false
+            })
+        })
+      })
     }
   }
 }
@@ -173,7 +252,56 @@ export default {
   <v-main class="element-list" :aria-label="$gettext('Elements')">
     <v-container>
       <v-sheet ref="scroll" class="box scroll">
-        <ElementListItems :filter="filter" @select="open($event)" />
+        <v-textarea
+          v-if="user.can('element:chat')"
+          v-model="chat"
+          :placeholder="$gettext('What shall I do for you?') + ' ' + $gettext('Press Enter to open the chat')"
+          @keydown.enter="onEnter"
+          variant="outlined"
+          class="prompt"
+          rounded="lg"
+          hide-details
+          auto-grow
+          clearable
+          rows="1"
+        >
+          <template #prepend>
+            <v-btn
+              @click="help = !help"
+              :icon="mdiHelpCircleOutline"
+              :title="help ? $gettext('Hide help') : $gettext('Show help')"
+              :aria-expanded="help"
+              aria-controls="element-help"
+              variant="text"
+            />
+          </template>
+          <template #append>
+            <v-btn
+              v-if="chat"
+              @click="openChat()"
+              :icon="mdiArrowRightCircle"
+              :title="$gettext('Send')"
+              variant="text"
+            />
+            <v-btn
+              v-else-if="user.can('audio:transcribe')"
+              @click="record()"
+              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+              :title="$gettext('Dictate')"
+              :class="{ dictating: audio }"
+              :loading="dictating"
+              variant="text"
+            />
+          </template>
+        </v-textarea>
+        <div v-if="help && user.can('element:chat')" id="element-help" class="help">
+          <ul :aria-label="$gettext('Help')">
+            <li>{{ $gettext('AI can find and manage shared elements based on your input') }}</li>
+            <li>{{ $gettext('Press Enter or the arrow to open the AI assistant and refine in a chat') }}</li>
+          </ul>
+        </div>
+
+        <ElementListItems ref="elementlist" :filter="filter" @select="open($event)" />
       </v-sheet>
     </v-container>
   </v-main>
@@ -183,10 +311,35 @@ export default {
     :defaults="defaults"
     :content="asideContent"
   />
+
+  <ChatDialog
+    ref="chat"
+    v-model="chatOpen"
+    permission="element:chat"
+    context="The user is viewing the shared element list. Focus on finding and managing shared elements using the element tools unless the user explicitly asks for another task."
+    @done="chatDone"
+  />
 </template>
 
 <style scoped>
 .v-main {
   overflow-y: auto;
+}
+
+.prompt {
+  margin-bottom: 16px;
+}
+
+.v-input--horizontal :deep(.v-input__prepend),
+.v-input--horizontal :deep(.v-input__append) {
+  margin: 0;
+}
+
+.help {
+  color: rgb(var(--v-theme-on-surface));
+  background-color: rgb(var(--v-theme-surface-light));
+  padding: 16px 24px 16px 32px;
+  margin-bottom: 16px;
+  border-radius: 8px;
 }
 </style>
