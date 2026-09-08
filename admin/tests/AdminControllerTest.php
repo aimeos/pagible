@@ -62,7 +62,7 @@ class AdminControllerTest extends AdminTestAbstract
             $response = $this->actingAs( $this->user )->get( route( 'cms.admin' ) );
 
             $response->assertStatus( 200 );
-            $response->assertSee( 'data-urlcsrf="http://localhost/cmsapi/csrf"', false );
+            $response->assertSee( 'data-urlcsrf="http://localhost/cmsapi/csrf', false );
 
             $csp = $response->headers->get( 'Content-Security-Policy' );
             $this->assertNotNull( $csp );
