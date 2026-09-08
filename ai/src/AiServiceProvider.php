@@ -24,6 +24,7 @@ class AiServiceProvider extends Provider
         \Aimeos\Cms\Permission::register( [
             'page:chat',
             'page:refine',
+            'file:chat',
             'file:describe',
             'audio:transcribe',
             'image:imagine',

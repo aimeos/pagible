@@ -27,7 +27,8 @@ export default {
 
   props: {
     context: { type: String, default: '' },
-    modelValue: { type: Boolean, default: false }
+    modelValue: { type: Boolean, default: false },
+    permission: { type: String, default: 'page:chat' }
   },
 
   emits: ['done', 'update:modelValue'],
@@ -155,7 +156,7 @@ export default {
     send(text) {
       text = String(text ?? this.input).trim()
 
-      if (!text || this.busy || !this.user.can('page:chat')) {
+      if (!text || this.busy || !this.user.can(this.permission)) {
         return
       }
 

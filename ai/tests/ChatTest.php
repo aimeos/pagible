@@ -45,6 +45,42 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    #[\PHPUnit\Framework\Attributes\DataProvider('chatPermissions')]
+    public function testStreamAllowsChatPermission( string $permission )
+    {
+        $this->user->cmsperms = [$permission];
+        $this->assertTrue( \Aimeos\Cms\Permission::get( $this->user )[$permission] );
+        Prisma::fake( [TextResponse::fromText( 'Found the banner' )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Find the banner'] );
+
+        $response->assertOk();
+        $this->assertSame( 'Found the banner', $response->streamedContent() );
+    }
+
+
+    public static function chatPermissions() : array
+    {
+        return [
+            'page chat only' => ['page:chat'],
+            'file chat only' => ['file:chat'],
+        ];
+    }
+
+
+    public function testStreamDeniesFilePermissionsWithoutChat()
+    {
+        $this->user->cmsperms = ['file:view', 'file:save'];
+
+        $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Find the banner'] )
+            ->assertForbidden();
+    }
+
+
     public function testStreamReturnsChunkedText()
     {
         Prisma::fake( [TextResponse::fromText( 'Created the page' )] );
