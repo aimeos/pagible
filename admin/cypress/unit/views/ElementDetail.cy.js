@@ -238,7 +238,7 @@ describe('ElementDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
         vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c' } } }
         vm.dirty = true
-        cy.get('.menu-save').should('have.class', 'text-warning')
+        cy.get('.menu-save').should('have.class', 'bg-warning')
       })
     })
 
