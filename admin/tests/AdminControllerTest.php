@@ -45,6 +45,7 @@ class AdminControllerTest extends AdminTestAbstract
     {
         config( ['cms.multidomain' => true] );
         Route::domain( '{domain}' )->get( 'cmsapi/csrf', fn() => '' )->name( 'cms.api.csrf' );
+        Route::getRoutes()->refreshNameLookups();
 
         // Create the manifest file so the view can render
         $manifestDir = public_path( 'vendor/cms/admin/.vite' );
