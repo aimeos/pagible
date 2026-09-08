@@ -1664,7 +1664,7 @@ export default {
       @click="reload()"
       :color="outdated ? 'warning' : ''"
       :title="$gettext('Reload page tree')"
-      :variant="outdated ? 'tonal' : 'outlined'"
+      :variant="outdated ? 'tonal' : 'text'"
       class="btn-reload"
       size="small"
       rounded="xl"
