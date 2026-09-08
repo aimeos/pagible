@@ -116,7 +116,7 @@ final class Refine
         catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Refine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            throw new Error( $e->getMessage() );
         }
         finally
         {

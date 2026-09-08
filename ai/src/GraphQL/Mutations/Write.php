@@ -80,7 +80,7 @@ final class Write
         catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Write', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            throw new Error( $e->getMessage() );
         }
         finally
         {
