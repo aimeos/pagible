@@ -22,15 +22,12 @@
 	<script type="application/ld+json">{
 		"@@context": "https://schema.org",
 		"@@type": "VideoObject",
-		"name": {!! cmsjson(cms($file, 'description')?->{cms($page, 'lang')} ?? cms($page, 'title')) !!},
+		"name": {!! cmsjson((string) cms($file, 'name')) !!},
 		"contentUrl": {!! cmsjson(cmsasset($page, $file)) !!},
-		"uploadDate": "{{ $page->created_at->toIso8601String() }}"
-		@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-			, "thumbnailUrl": {!! cmsjson(cmsasset($page, $file, $preview)) !!}
-		@endif
-		@if(cms($file, 'transcription')?->{cms($page, 'lang')} ?? null)
-			, "transcript": {!! cmsjson(cms($file, 'transcription')->{cms($page, 'lang')}) !!}
-		@endif
+		"thumbnailUrl": {!! cmsjson(cmsasset($page, $file, $preview)) !!},
+		"uploadDate": {!! cmsjson($file->created_at?->toIso8601String()) !!},
+		"description": {!! cmsjson(trim((string) (cms($file, 'description')?->{cms($page, 'lang')} ?? ''))) !!},
+		"transcript": {!! cmsjson(trim((string) (cms($file, 'transcription')?->{cms($page, 'lang')} ?? ''))) !!}
 	}</script>
 @else
 	<!-- no video file -->

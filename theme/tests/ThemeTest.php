@@ -128,6 +128,72 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testVideoJsonLdContainsGoogleProperties() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
+			'lang' => 'en',
+			'meta' => ['meta-tags' => [
+				'type' => 'meta-tags',
+				'data' => ['description' => 'Page description'],
+				'files' => [],
+			]],
+			'title' => 'Page title',
+		] );
+		$file = ( new File() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-07-15T12:30:00+00:00' ),
+			'description' => ['en' => 'A concise description of the video'],
+			'disk' => 'public',
+			'id' => 'video',
+			'name' => 'Product tour',
+			'path' => 'https://example.com/product-tour.mp4',
+			'previews' => ['1280' => 'https://example.com/product-tour.webp'],
+			'transcription' => ['en' => 'Video transcript'],
+		] );
+		$data = (object) ['file' => (object) ['id' => 'video']];
+		$files = collect( ['video' => $file] );
+
+		$html = view( 'cms::video', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ) );
+		$json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'https://schema.org', $json['@context'] );
+		$this->assertSame( 'VideoObject', $json['@type'] );
+		$this->assertSame( 'Product tour', $json['name'] );
+		$this->assertSame( 'A concise description of the video', $json['description'] );
+		$this->assertSame( 'https://example.com/product-tour.mp4', $json['contentUrl'] );
+		$this->assertSame( '2026-07-15T12:30:00+00:00', $json['uploadDate'] );
+		$this->assertSame( 'https://example.com/product-tour.webp', $json['thumbnailUrl'] );
+		$this->assertSame( 'Video transcript', $json['transcript'] );
+	}
+
+
+	public function testVideoJsonLdRequiresThumbnail() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
+			'lang' => 'en',
+			'title' => 'Page title',
+		] );
+		$file = ( new File() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-07-15T12:30:00+00:00' ),
+			'disk' => 'public',
+			'id' => 'video',
+			'name' => 'Product tour',
+			'path' => 'https://example.com/product-tour.mp4',
+			'previews' => [],
+		] );
+		$data = (object) ['file' => (object) ['id' => 'video']];
+		$files = collect( ['video' => $file] );
+
+		$html = view( 'cms::video', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertStringContainsString( '<video ', $html );
+		$this->assertStringContainsString( 'application/ld+json', $html );
+	}
+
+
 	public function testMapRendersOpenStreetMap()
 	{
 		$page = ( new Page() )->forceFill( ['lang' => 'en'] );

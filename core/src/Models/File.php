@@ -47,7 +47,7 @@ class File extends Base
     /** @var list<string> Columns for eager-loading file relations */
     public const SELECT_COLUMNS = [
         'cms_files.id', 'cms_files.tenant_id', 'cms_files.latest_id', 'disk', 'name', 'mime', 'path',
-        'previews', 'description', 'transcription',
+        'previews', 'description', 'transcription', 'created_at',
     ];
 
 
