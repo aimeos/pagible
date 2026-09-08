@@ -8,9 +8,11 @@
 namespace Tests;
 
 use Aimeos\Prisma\Prisma;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
@@ -186,6 +188,34 @@ class GraphqlAiTest extends AiTestAbstract
                     'group' => 'main'
                 ] ] )
             ]
+        ] );
+    }
+
+
+    public function testRefineProviderError()
+    {
+        config( ['app.debug' => false, 'lighthouse.debug' => 0] );
+
+        $error = new PrismaException( 'Your prepayment credits are depleted.' );
+        Prisma::fake( [$error] );
+
+        Log::spy();
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($content: JSON!) {
+                refine(prompt: "Refine this content", content: $content)
+            }
+        ', [
+            'content' => json_encode( [] ),
+        ] )->assertGraphQLErrorMessage( $error->getMessage() )
+            ->assertJsonPath( 'data.refine', null )
+            ->assertJsonMissingPath( 'errors.0.extensions.debugMessage' )
+            ->assertJsonMissingPath( 'errors.0.extensions.trace' );
+
+        Log::shouldHaveReceived( 'error' )->once()->with( 'AI service error', [
+            'mutation' => 'Refine',
+            'message' => $error->getMessage(),
+            'trace' => $error->getTraceAsString(),
         ] );
     }
 

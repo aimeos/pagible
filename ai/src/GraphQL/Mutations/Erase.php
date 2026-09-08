@@ -49,7 +49,7 @@ final class Erase
         catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Erase', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            throw new Error( $e->getMessage() );
         }
     }
 }

@@ -55,7 +55,7 @@ final class Transcribe
         catch( PrismaException $e )
         {
             Log::error( 'AI service error', ['mutation' => 'Transcribe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage(), null, null, null, null, $e );
+            throw new Error( $e->getMessage() );
         }
     }
 }
