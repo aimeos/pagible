@@ -37,6 +37,7 @@
       data-urladmin="{{ route('cms.admin', [], false) }}"
       data-urlasset="{{ route('cms.admin.asset', ['file' => '_file_', 'variant' => '_variant_'], false) }}"
       data-urlproxy="{{ route('cms.proxy', ['url' => '_url_']) }}"
+      data-urlcsrf="{{ Route::has('cms.api.csrf') ? route('cms.api.csrf') : '/cmsapi/csrf' }}"
       data-urlpage="{{ Route::has('cms.page') ? route('cms.page', ['path' => '_path_'] + (config('cms.multidomain') ? ['domain' => '_domain_'] : [])) : '' }}"
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( '' ) }}"
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
