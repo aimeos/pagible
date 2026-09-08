@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\ProxyToken;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -42,6 +43,9 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testIndex()
     {
+        config( ['cms.multidomain' => true] );
+        Route::domain( '{domain}' )->get( 'cmsapi/csrf', fn() => '' )->name( 'cms.api.csrf' );
+
         // Create the manifest file so the view can render
         $manifestDir = public_path( 'vendor/cms/admin/.vite' );
         $manifestPath = $manifestDir . '/manifest.json';
@@ -56,6 +60,7 @@ class AdminControllerTest extends AdminTestAbstract
             $response = $this->actingAs( $this->user )->get( route( 'cms.admin' ) );
 
             $response->assertStatus( 200 );
+            $response->assertSee( 'data-urlcsrf="http://localhost/cmsapi/csrf"', false );
 
             $csp = $response->headers->get( 'Content-Security-Policy' );
             $this->assertNotNull( $csp );
