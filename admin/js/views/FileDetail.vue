@@ -12,7 +12,7 @@ import { invalidateList } from '../graphql'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { setupReload, cleanEcho } from '../echo'
-import { reloadVersion } from '../version'
+import { loadVersions, reloadVersion } from '../version'
 import { safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
@@ -341,40 +341,13 @@ export default {
     },
 
     versions(id) {
-      if (!this.user.can('file:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      if (!id) {
-        return Promise.resolve([])
-      }
-
-      return this.$apollo
-        .query({
-          query: FETCH_FILE_VERSIONS,
-          fetchPolicy: 'no-cache',
-          variables: {
-            id: id
-          }
-        })
-        .then((result) => {
-          if (result.errors || !result.data.file) {
-            throw result
-          }
-
-          return (result.data.file.versions || []).map((v) => {
-            const data = Object.assign(safeParse(v.data), safeParse(v.aux))
-            const item = { ...v, data: Object.freeze(data) }
-            delete item.aux
-            item.files = this.media(item.data)
-            return Object.freeze(item)
-          })
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching file versions') + ':\n' + error, 'error')
-          this.$log(`FileDetail::versions(): Error fetching file versions`, id, error)
-        })
+      return loadVersions(this, FETCH_FILE_VERSIONS, 'file', id, this.$gettext('Error fetching file versions'), v => {
+        const data = Object.assign(safeParse(v.data), safeParse(v.aux))
+        const item = { ...v, data: Object.freeze(data) }
+        delete item.aux
+        item.files = this.media(item.data)
+        return Object.freeze(item)
+      })
     }
   },
 

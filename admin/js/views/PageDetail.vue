@@ -11,13 +11,13 @@ import PageDetailContent from '../components/PageDetailContent.vue'
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { FILE_FIELDS, normalizeFile } from '../files'
+import { FILE_FIELDS, fileMap } from '../files'
 import { invalidateList } from '../graphql'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
 import { setupReload, cleanEcho } from '../echo'
-import { reloadVersion } from '../version'
+import { loadVersions, reloadVersion } from '../version'
 import {
   useAppStore,
   useDirtyStore,
@@ -285,7 +285,12 @@ export default {
       }, () => !this.hasChanged, { access: this.user.can('page:access') })
     },
 
-    apply(changes) {
+    apply(changes, version) {
+      if (version) {
+        this.elements = { ...this.elems(version.elements || []), ...this.elements }
+        this.assets = { ...version.files, ...this.assets }
+      }
+
       if (changes.content) {
         const strip = (el) => {
           const out = {}
@@ -394,11 +399,7 @@ export default {
     },
 
     files(entries, elements = {}) {
-      const map = {}
-
-      for (const entry of entries) {
-        map[entry.id] = normalizeFile(entry)
-      }
+      const map = fileMap(entries)
 
       for (const element of Object.values(elements)) {
         for (const file of element.files || []) map[file.id] = file
@@ -410,11 +411,7 @@ export default {
     historyCurrent() {
       const item = this.item
       const fileIds = new Set(this.fileIds())
-      const files = {}
-
-      for (const key in this.assets) {
-        if (fileIds.has(key)) files[key] = this.assets[key]
-      }
+      const files = Object.fromEntries(Object.entries(this.assets).filter(([id]) => fileIds.has(id)))
 
       return markRaw({
         data: Object.freeze({
@@ -435,7 +432,7 @@ export default {
           config: this.clean(item.config, 'config'),
           content: this.clean(item.content, 'content')
         }),
-        elements: this.latest?.elements || [],
+        elements: Object.values(this.elements).filter(element => item.content.some(block => block.refid === element.id)),
         files: markRaw(files)
       })
     },
@@ -559,7 +556,6 @@ export default {
             this.latest = { id: changed?.latest?.id ?? page.latest.id }
           }
 
-          this.$refs.history?.reset()
           applyResult(this, changed, this.$gettext('Page saved successfully'), quiet)
 
           if (changed) {
@@ -701,43 +697,16 @@ export default {
     },
 
     versions(id) {
-      if (!this.user.can('page:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      if (!id) {
-        return Promise.resolve([])
-      }
-
-      return this.$apollo
-        .query({
-          query: FETCH_PAGE_VERSIONS,
-          variables: {
-            id: id
-          },
-          fetchPolicy: 'no-cache'
-        })
-        .then((result) => {
-          if (result.errors || !result.data.page) {
-            throw result
-          }
-
-          return (result.data.page.versions || []).map((v) => {
-            const elements = this.elems(v.elements || [])
-            const item = {
-              ...v,
-              data: Object.freeze(Object.assign(safeParse(v.data), safeParse(v.aux)))
-            }
-            item.files = Object.freeze(this.files(v.files || [], elements))
-            delete item.aux
-            return Object.freeze(item)
-          })
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching page versions') + ':\n' + error, 'error')
-          this.$log(`PageDetail::versions(): Error fetching page versions`, id, error)
-        })
+      return loadVersions(this, FETCH_PAGE_VERSIONS, 'page', id, this.$gettext('Error fetching page versions'), v => {
+        const elements = this.elems(v.elements || [])
+        const item = {
+          ...v,
+          data: Object.freeze(Object.assign(safeParse(v.data), safeParse(v.aux)))
+        }
+        item.files = Object.freeze(this.files(v.files || [], elements))
+        delete item.aux
+        return Object.freeze(item)
+      })
     },
 
     writeText(prompt, context = [], files = []) {
@@ -904,7 +873,6 @@ export default {
   <Teleport to="body">
     <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" />
     <HistoryDialog
-      ref="history"
       v-model="vhistory"
       :readonly="!user.can('page:save')"
       :current="historyData"
