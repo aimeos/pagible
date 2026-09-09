@@ -1,5 +1,25 @@
 /** @license MIT, https://opensource.org/license/mit */
 
+// Fetching is shared; each detail view converts its own version snapshot.
+export function loadVersions(vm, query, key, id, message, convert) {
+  if (!vm.user.can(key + ':view')) {
+    vm.messages.add(vm.$gettext('Permission denied'), 'error')
+    return Promise.resolve([])
+  }
+  if (!id) return Promise.resolve([])
+
+  return vm.$apollo.query({ query, variables: { id }, fetchPolicy: 'no-cache' })
+    .then(result => {
+      if (result.errors || !result.data?.[key]) throw result
+      return (result.data[key].versions || []).map(convert)
+    })
+    .catch(error => {
+      vm.messages.add(message + ':\n' + error, 'error')
+      vm.$log('loadVersions(' + key + ')', id, error)
+    })
+}
+
+
 /**
  * Loads the latest version of a content item into a detail view and applies it.
  *

@@ -1,4 +1,5 @@
 import ElementDetail from '../../../js/views/ElementDetail.vue'
+import { sections } from '../../../js/history'
 import { useSchemaStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
@@ -51,6 +52,25 @@ function mountDetail(perms = {}, item = {}, apollo = {}) {
 }
 
 describe('ElementDetail', () => {
+  it('matches the saved element history shape and restores nested data with its media', () => {
+    const data = { title: 'A heading', text: 'Body' }
+    mountDetail({}, { data }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      const saved = { name: 'Test Element', type: 'heading', lang: 'en', data, scheduled: 0, editor: 'Another editor' }
+      expect(sections(saved, vm.historyCurrent.data)).to.deep.equal({})
+      expect(vm.historyCurrent.data.data).to.deep.equal(data)
+
+      const file = { id: 'old-file', path: 'old.jpg', previews: {} }
+      const image = { type: 'file', id: file.id }
+      vm.apply({ data: { ...data, image } }, { files: { [file.id]: file } })
+      expect(vm.item.data.image).to.deep.equal(image)
+      expect(vm.item.files).to.deep.equal([file.id])
+      expect(vm.assets[file.id]).to.deep.equal(file)
+      vm.apply({ data })
+      expect(vm.item.files).to.deep.equal([])
+    })
+  })
+
   it('loads the element schemas', () => {
     mountDetail().then(() => {
       expect(schemaLoad).to.have.been.calledOnce

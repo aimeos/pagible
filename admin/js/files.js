@@ -60,6 +60,12 @@ export const FETCH_FILE_DISKS = gql`
   }
 `
 
+export function fileMap(entries) {
+  const map = {}
+  for (const entry of entries) map[entry.id] = normalizeFile(entry)
+  return map
+}
+
 export function normalizeFile(data = {}) {
   const parse = (value) => typeof value === 'string' ? safeParse(value) : sanitize(value || {})
   const item = {

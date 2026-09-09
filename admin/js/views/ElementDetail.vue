@@ -8,11 +8,12 @@ import ElementDetailRefs from '../components/ElementDetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useSchemaStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
-import { FILE_FIELDS, normalizeFile } from '../files'
+import { FILE_FIELDS, fileMap } from '../files'
 import { invalidateList } from '../graphql'
+import { references } from '../history'
 import { publishDate, publishItem } from '../publish'
 import { setupReload, cleanEcho } from '../echo'
-import { reloadVersion } from '../version'
+import { loadVersions, reloadVersion } from '../version'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { frozenParse, itemTitle, safeParse } from '../utils'
 
@@ -177,22 +178,18 @@ export default {
     historyCurrent() {
       const item = this.item
       const ids = new Set(item.files || [])
-      const files = {}
+      const files = Object.fromEntries(Object.entries(this.assets).filter(([id]) => ids.has(id)))
 
-      for (const key in this.assets) {
-        if (ids.has(key)) files[key] = this.assets[key]
-      }
-
-    return markRaw({
-      data: Object.freeze({
-        ...(item.data || {}),
-        scheduled: item.publish_at ? 1 : 0,
-        lang: item.lang,
-        type: item.type,
-        name: item.name,
-      }),
-      files: markRaw(files)
-    })
+      return markRaw({
+        data: Object.freeze({
+          data: item.data || {},
+          scheduled: item.publish_at ? 1 : 0,
+          lang: item.lang,
+          type: item.type,
+          name: item.name,
+        }),
+        files: markRaw(files)
+      })
     }
   },
 
@@ -207,21 +204,16 @@ export default {
         this.item.updated_at = element.latest?.created_at
         this.latestId = element.latest?.id
 
-        const files = []
-        const assets = {}
-
-        for (const entry of element.latest?.files || element.files || []) {
-          assets[entry.id] = normalizeFile(entry)
-          files.push(entry.id)
-        }
-
-        this.assets = markRaw(assets)
-        this.item.files = files
+        const files = element.latest?.files || element.files || []
+        this.assets = markRaw(fileMap(files))
+        this.item.files = files.map(file => file.id)
       }, () => !this.dirty)
     },
 
-    apply(changes) {
+    apply(changes, version) {
+      if (version) this.assets = { ...version.files, ...this.assets }
       Object.assign(this.item, changes)
+      if ('data' in changes) this.item.files = references(this.item.data)
       this.dirty = true
       this.vhistory = false
     },
@@ -230,15 +222,7 @@ export default {
       this.error = event
     },
 
-    files(entries) {
-      const map = {}
-
-      for (const entry of entries) {
-        map[entry.id] = normalizeFile(entry)
-      }
-
-      return map
-    },
+    files: fileMap,
 
     invalidate() {
       invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
@@ -378,43 +362,13 @@ export default {
     },
 
     versions(id) {
-      if (!this.user.can('element:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      if (!id) {
-        return Promise.resolve([])
-      }
-
-      return this.$apollo
-        .query({
-          query: FETCH_ELEMENT_VERSIONS,
-          fetchPolicy: 'no-cache',
-          variables: {
-            id: id
-          }
+      return loadVersions(this, FETCH_ELEMENT_VERSIONS, 'element', id, this.$gettext('Error fetching element versions'), v => {
+        return Object.freeze({
+          ...v,
+          data: frozenParse(v.data),
+          files: Object.freeze(this.files(v.files || []))
         })
-        .then((result) => {
-          if (result.errors || !result.data.element) {
-            throw result
-          }
-
-          return (result.data.element.versions || []).map((v) => {
-            return Object.freeze({
-              ...v,
-              data: frozenParse(v.data),
-              files: Object.freeze(this.files(v.files || []))
-            })
-          })
-        })
-        .catch((error) => {
-          this.messages.add(
-            this.$gettext('Error fetching element versions') + ':\n' + error,
-            'error'
-          )
-          this.$log(`ElementDetail::versions(): Error fetching element versions`, id, error)
-        })
+      })
     }
   },
 

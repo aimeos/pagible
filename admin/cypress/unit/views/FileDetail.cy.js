@@ -1,4 +1,5 @@
 import FileDetail from '../../../js/views/FileDetail.vue'
+import { sections } from '../../../js/history'
 import { useUserStore, useMessageStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
@@ -48,6 +49,14 @@ function mountDetail(perms = {}, item = {}, apollo = {}) {
 }
 
 describe('FileDetail', () => {
+  it('matches the saved file history shape without attribution or preview noise', () => {
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+      const { id, published, ...data } = baseItem
+      expect(sections({ ...data, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent.data)).to.deep.equal({})
+    })
+  })
+
   it('renders the app bar', () => {
     mountDetail()
     cy.get('.v-app-bar').should('exist')

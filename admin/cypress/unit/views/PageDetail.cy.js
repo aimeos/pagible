@@ -1,4 +1,5 @@
 import PageDetail from '../../../js/views/PageDetail.vue'
+import { sections } from '../../../js/history'
 import { useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
@@ -6,11 +7,11 @@ const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
   AsideCount: { template: '<div class="aside-count-stub" />' },
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
-  PageDetailItem: { template: '<div class="page-detail-item-stub" />' },
+  PageDetailItem: { template: '<div class="page-detail-item-stub" />', methods: { reset() {} } },
   PageDetailEditor: { template: '<div class="page-detail-editor-stub" />' },
   PageDetailContent: {
     template: '<div class="page-detail-content-stub" />',
-    methods: { flush() {} },
+    methods: { flush() {}, reset() {} },
   },
   PageDetailMetrics: { template: '<div class="page-detail-metrics-stub" />' },
 }
@@ -61,8 +62,41 @@ function mountDetail(perms = {}, item = {}, apollo = {}) {
 }
 
 describe('PageDetail', () => {
-  beforeEach(() => {
-    cy.on('uncaught:exception', () => false)
+  it('matches saved page history and retains historical dependencies when applying selected content', () => {
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      const { id, published, ...data } = baseItem
+      expect(sections({ ...data, related_id: null, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent().data)).to.deep.equal({})
+
+      const file = { id: 'old-file', path: 'old.jpg', previews: {} }
+      const element = { id: 'old-element', type: 'text', name: 'Shared campaign', data: '{"text":"Saved element"}', files: [] }
+      vm.apply({ content: [{ type: 'reference', refid: element.id }] }, { files: { [file.id]: file }, elements: [element] })
+      expect(vm.elements[element.id].data.text).to.equal('Saved element')
+      expect(vm.assets[file.id]).to.deep.equal(file)
+      expect(vm.item.content[0].refid).to.equal(element.id)
+      expect(vm.historyCurrent().elements.map(element => element.name)).to.deep.equal(['Shared campaign'])
+    })
+  })
+
+  it('finishes saving with the history component mounted and no reset method', () => {
+    const latest = { id: 'saved-version', published: false, created_at: '2026-09-09T12:00:00Z' }
+    mountDetail({ 'page:save': true }, {}, { mutate: () => Promise.resolve({ data: { savePage: { latest } } }) })
+    cy.get('.history-dialog-stub').should('exist')
+    cy.then(async () => {
+      const wrapper = Cypress.vueWrapper.findComponent(PageDetail)
+      const vm = wrapper.vm
+      vm.item.title = 'Edited title'
+      await wrapper.setData({ dirty: { page: true } })
+      const mutate = cy.spy(vm.$apollo, 'mutate')
+      const messages = cy.spy(vm.messages, 'add')
+      expect(vm.hasChanged).to.equal(true)
+      expect(await vm.save()).to.equal(true)
+      expect(mutate).to.have.been.calledOnce
+      expect(vm.hasChanged).to.equal(false)
+      expect(vm.latest.id).to.equal(latest.id)
+      expect(vm.item.updated_at).to.equal(latest.created_at)
+      expect(messages).to.have.been.calledWith('Page saved successfully', 'success')
+    })
   })
 
   it('renders the app bar', () => {
@@ -258,6 +292,18 @@ describe('PageDetail', () => {
   })
 
   describe('files()', () => {
+    it('keeps shared-element files authoritative when an ID is also directly attached', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        const shared = Object.freeze({ id: 'f1', name: 'shared.jpg', previews: { 100: 'shared-thumb.jpg' } })
+        const result = vm.files([{ id: 'f1', name: 'direct.jpg' }, { id: 'f2', name: 'other.jpg' }], {
+          element: { files: [shared] }
+        })
+        expect(result.f1).to.equal(shared)
+        expect(result.f2.name).to.equal('other.jpg')
+      })
+    })
+
     it('uses latest file data with published fields as fallback', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
