@@ -17,6 +17,29 @@ parameters:
 		- search/src
 		- backup/src
 		- cashier/src
+		- pulse/src
 		- theme/src
 		- theme/database/seeders
+		- themes/bold/src
+		- themes/bold/database/seeders
+		- themes/estate/src
+		- themes/estate/database/seeders
+		- themes/glass/src
+		- themes/glass/database/seeders
+		- themes/journal/src
+		- themes/journal/database/seeders
+		- themes/luxury/src
+		- themes/luxury/database/seeders
+		- themes/news/src
+		- themes/news/database/seeders
+		- themes/pagible/src
+		- themes/pagible/database/seeders
+		- themes/paper/src
+		- themes/paper/database/seeders
+		- themes/premium/src
+		- themes/premium/database/seeders
+		- themes/style/src
+		- themes/style/database/seeders
+		- themes/taste/src
+		- themes/taste/database/seeders
 		- tests/User.php

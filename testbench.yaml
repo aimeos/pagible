@@ -1,5 +1,6 @@
 providers:
   - Aimeos\Cms\BoldServiceProvider
+  - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\JournalServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
@@ -7,3 +8,6 @@ providers:
   - Aimeos\Cms\PagibleServiceProvider
   - Aimeos\Cms\PaperServiceProvider
   - Aimeos\Cms\PremiumServiceProvider
+  - Aimeos\Cms\PulseServiceProvider
+  - Aimeos\Cms\StyleServiceProvider
+  - Aimeos\Cms\TasteServiceProvider

@@ -185,7 +185,7 @@ class CmsMetricCard extends Card
             ->groupBy( fn( object $row ) => (string) ( $row->{$group} ?? 'unknown' ) )
             ->map( fn( Collection $rows, string $label ) => (object) [
                 'label' => $label !== '' ? $label : 'unknown',
-                'count' => (int) $rows->sum( 'count' ),
+                'count' => max( 0, (int) $rows->sum( 'count' ) ),
                 'sum' => null,
                 'avg' => $this->avg( $rows ),
                 'max' => $rows->max( 'max' ),
