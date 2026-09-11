@@ -444,6 +444,11 @@ class EstateDemo extends AbstractDemo
     }
 
 
+    /**
+     * @param list<string> $fileIds
+     * @param array<string, mixed> $extra
+     * @return array<string, mixed>
+     */
     protected function property( string $text, array $fileIds, string $offerType, string $status, int|float $price, string $district, int|float $area, int $bedrooms, int $bathrooms, array $extra = [] ) : array
     {
         return ['id' => Utils::uid(), 'type' => 'estate::property', 'group' => 'main', 'files' => $fileIds, 'data' => [
@@ -478,6 +483,9 @@ class EstateDemo extends AbstractDemo
     }
 
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function article( string $title, string $text, string $fileId ) : array
     {
         return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
@@ -664,6 +672,9 @@ class EstateDemo extends AbstractDemo
     }
 
 
+    /**
+     * @return list<string>
+     */
     protected function ids( mixed $value ) : array
     {
         $ids = [];
@@ -731,6 +742,12 @@ SVG;
     }
 
 
+    /**
+     * @param array<string, mixed> $data
+     * @param list<array<string, mixed>> $content
+     * @param list<string> $fileIds
+     * @param array<string, mixed> $meta
+     */
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
     {
         $elementId = $this->element();

@@ -58,6 +58,21 @@ class JsonapiTest extends JsonapiTestAbstract
     }
 
 
+    public function testSchema()
+    {
+        $response = $this->get( '/cms/schema' );
+
+        $response->assertOk()
+            ->assertHeader( 'Content-Type', 'application/schema+json' )
+            ->assertJsonStructure( [
+                '$schema',
+                'type',
+                'properties' => ['content', 'meta', 'config'],
+                'additionalProperties',
+            ] );
+    }
+
+
     public function testPages()
     {
 
