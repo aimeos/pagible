@@ -149,7 +149,7 @@ export default {
         :title="$gettext('Save')"
         :disabled="saveDisabled"
         :variant="saveDisabled ? 'plain' : 'flat'"
-        :color="error ? 'error' : conflict ? 'warning' : 'primary'"
+        :color="error ? 'error' : conflict ? 'warning' : !saveDisabled ? 'primary' : ''"
         :icon="mdiDatabaseArrowDown"
         class="menu-save"
       />
