@@ -1,0 +1,55 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cta .container {
+    isolation: isolate;
+    position: relative;
+    overflow: hidden;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding: clamp(2.5rem, 6vw, 5rem) min(6vw, 4rem);
+    background: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-top: 2px solid var(--pico-contrast-hover-border);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: 0 1.5rem 4rem -1.5rem #00000066;
+    backdrop-filter: blur(20px);
+    text-align: center;
+}
+
+.cta .container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 20% 0, var(--pico-primary-background), transparent 55%);
+    pointer-events: none;
+}
+
+.cta .title {
+    margin-bottom: 1.25rem;
+}
+
+.cta .cms-text {
+    max-width: 44rem;
+    margin-inline: auto;
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.cta .btn {
+    margin: 0;
+}

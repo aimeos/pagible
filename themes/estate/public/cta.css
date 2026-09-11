@@ -1,0 +1,59 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cta .container {
+    max-width: 64rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.cta .title {
+    margin-bottom: 1.5rem;
+    font-family: var(--pico-font-family-display);
+    font-weight: 400;
+}
+
+.cta .title::after {
+    content: "";
+    display: block;
+    width: 3rem;
+    height: 1px;
+    margin: 1.5rem auto 0;
+    background-color: var(--pico-primary);
+}
+
+.cta .cms-text {
+    max-width: 44rem;
+    margin-inline: auto;
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.cta .btn {
+    margin: 0;
+}
+
+body.theme-estate .cta .btn:not(:first-child) {
+    background-color: transparent;
+    border-color: var(--pico-muted-border-color);
+    color: var(--pico-color);
+}
+
+body.theme-estate .cta .btn:not(:first-child):hover {
+    background-color: var(--pico-muted-background-color);
+    border-color: var(--pico-muted-border-color);
+    color: var(--pico-color);
+}
