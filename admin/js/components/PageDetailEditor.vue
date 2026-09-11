@@ -355,6 +355,7 @@ export default {
       :element="element.type === 'reference' ? elements[element.refid] : element"
       :readonly="!user.can('page:save') || !!element.refid"
       :attach="$refs.preview"
+      @change="$emit('change', 'content')"
       @update:element="update()"
     />
 

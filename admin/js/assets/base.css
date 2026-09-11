@@ -227,6 +227,8 @@ input:-webkit-autofill:focus {
   max-height: 48px;
   max-width: 5rem;
   text-align: end;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .list .v-expansion-panel-title__icon {
