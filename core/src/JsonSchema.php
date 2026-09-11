@@ -9,10 +9,11 @@ namespace Aimeos\Cms;
 
 
 /**
- * Generates JSON Schema definitions for the AI structured responses.
+ * Generates JSON Schema definitions for CMS structured data.
  *
- * Builds the schema consumed by the refine feature and advertised by the get-schemas
- * MCP tool from the registered content/meta/config element schemas (\Aimeos\Cms\Schema).
+ * Builds default to AI mode for backwards compatibility with structured-output
+ * providers. The public endpoint combines strict builds, which emit the additional
+ * Draft 2020-12 annotations and constraints.
  */
 class JsonSchema
 {
@@ -21,9 +22,14 @@ class JsonSchema
      */
     private const UUID = '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$';
 
+    /**
+     * Regular expression matching generated nested item identities.
+     */
+    private const UID = '^[A-Za-z][A-Za-z0-9_-]{5}$';
+
 
     /**
-     * Returns the AI structured response schema for a section as a JSON Schema array.
+     * Returns the structured response schema for a section as a JSON Schema array.
      *
      * The returned array can be passed 1:1 to \Aimeos\Prisma\Schema\Schema::fromArray()
      * and is also exposed by the get-schemas MCP tool, so the schema enforced for the
@@ -34,9 +40,10 @@ class JsonSchema
      *
      * @param string $section Schema section (content, meta, config)
      * @param string|null $type Page type whose sections constrain the element groups
-     * @return array<string, mixed> JSON Schema definition for the response
+     * @param bool $strict TRUE for standards-oriented Draft 2020-12 output, FALSE for AI mode
+     * @return array<string, mixed> JSON Schema definition for the section
      */
-    public static function build( string $section = 'content', ?string $type = null ) : array
+    public static function build( string $section = 'content', ?string $type = null, bool $strict = false ) : array
     {
         $schemas = Schema::schemas( section: $section );
 
@@ -45,7 +52,22 @@ class JsonSchema
             $props = [];
 
             foreach( $schemas as $key => $schema ) {
-                $props[$key] = self::nullable( self::data( $schema['fields'] ?? [] ) );
+                $data = self::data( $schema['fields'] ?? [], $strict );
+
+                $props[$key] = $strict ? [
+                    'type' => 'object',
+                    'properties' => [
+                        'type' => ['type' => 'string', 'const' => $key],
+                        'data' => $data,
+                        'files' => [
+                            'type' => 'array',
+                            'items' => ['type' => 'string', 'pattern' => self::UUID],
+                            'uniqueItems' => true,
+                        ],
+                    ],
+                    'required' => ['type', 'data', 'files'],
+                    'additionalProperties' => false,
+                ] : self::nullable( $data );
             }
 
             return ['type' => 'object', 'properties' => $props, 'additionalProperties' => false];
@@ -58,21 +80,29 @@ class JsonSchema
         {
             $variants[] = self::variant(
                 ['type' => 'string', 'enum' => [$key]],
-                ['data' => self::data( $schema['fields'] ?? [] )],
-                $groups
+                ['data' => self::data( $schema['fields'] ?? [], $strict )],
+                $groups,
+                $strict,
             );
         }
 
         $variants[] = self::variant(
             ['type' => 'string', 'enum' => ['reference']],
             ['refid' => ['type' => 'string', 'pattern' => self::UUID]],
-            $groups
+            $groups,
+            $strict,
         );
+
+        $contents = ['type' => 'array', 'items' => ['anyOf' => $variants]];
+
+        if( $strict ) {
+            return $contents;
+        }
 
         return [
             'type' => 'object',
             'properties' => [
-                'contents' => ['type' => 'array', 'items' => ['anyOf' => $variants]],
+                'contents' => $contents,
             ],
             'required' => ['contents'],
             'additionalProperties' => false,
@@ -118,13 +148,14 @@ class JsonSchema
      * Builds the JSON Schema object for an element's "data" from its field definitions.
      *
      * Hidden fields are emitted as required single-value enums carrying their fixed value.
-     * Only fields explicitly marked as required are required; optional fields are made
-     * nullable so providers that force all properties to be required still accept null.
+     * Only fields explicitly marked as required are required. In AI mode, optional fields
+     * are nullable so providers that force all properties to be required still accept null.
      *
      * @param array<string, mixed> $fields Raw field definitions
+     * @param bool $strict TRUE for strict mode, FALSE for AI mode
      * @return array<string, mixed> JSON Schema object definition
      */
-    private static function data( array $fields ) : array
+    private static function data( array $fields, bool $strict ) : array
     {
         $props = [];
         $required = [];
@@ -141,18 +172,16 @@ class JsonSchema
                 continue;
             }
 
-            $props[$name] = self::field( $field );
+            $prop = self::field( $field, $strict );
 
             if( $hidden || !empty( $field['required'] ) ) {
                 $required[] = $name;
             }
-        }
-
-        foreach( $props as $name => $prop )
-        {
-            if( !in_array( $name, $required, true ) ) {
-                $props[$name] = self::nullable( $prop );
+            elseif( !$strict ) {
+                $prop = self::nullable( $prop );
             }
+
+            $props[$name] = $prop;
         }
 
         $schema = ['type' => 'object', 'properties' => $props];
@@ -171,30 +200,42 @@ class JsonSchema
      * Maps a single raw field definition to its JSON Schema type.
      *
      * @param array<string, mixed> $field Raw field definition
+     * @param bool $strict TRUE for strict mode, FALSE for AI mode
      * @return array<string, mixed> JSON Schema type definition
      */
-    private static function field( array $field ) : array
+    private static function field( array $field, bool $strict ) : array
     {
-        switch( $field['type'] ?? 'string' )
+        $type = (string) ( $field['type'] ?? 'string' );
+
+        switch( $type )
         {
             case 'hidden':
-                return ['type' => 'string', 'enum' => [(string) ( $field['value'] ?? '' )]];
+                $schema = ['type' => 'string', 'enum' => [(string) ( $field['value'] ?? '' )]];
+                break;
 
+            case 'boolean':
             case 'switch':
-                return ['type' => 'boolean'];
+                $schema = ['type' => 'boolean'];
+                break;
 
             case 'image':
             case 'file':
             case 'audio':
             case 'video':
             case 'media':
-                return self::file();
+                $schema = self::file();
+                break;
 
             case 'number':
                 $schema = ['type' => 'number'];
 
                 if( isset( $field['step'] ) && is_numeric( $field['step'] ) && (float) $field['step'] > 0 ) {
                     $schema['multipleOf'] = (float) $field['step'];
+                }
+                elseif( $strict && isset( $field['precision'] ) && is_numeric( $field['precision'] )
+                    && (int) $field['precision'] >= 0 && (int) $field['precision'] <= 10
+                ) {
+                    $schema['multipleOf'] = 10 ** -(int) $field['precision'];
                 }
                 break;
 
@@ -203,7 +244,14 @@ class JsonSchema
                 break;
 
             case 'items':
-                $schema = ['type' => 'array', 'items' => self::data( (array) ( $field['item'] ?? [] ) )];
+                $items = self::data( (array) ( $field['item'] ?? [] ), $strict );
+                $identity = $field['identity'] ?? null;
+
+                if( $strict && is_string( $identity ) && $identity !== '' ) {
+                    $items['properties'][$identity] ??= ['type' => 'string', 'pattern' => self::UID];
+                }
+
+                $schema = ['type' => 'array', 'items' => $items];
                 break;
 
             case 'table':
@@ -221,14 +269,42 @@ class JsonSchema
                     'required' => ['latitude', 'longitude', 'zoom'],
                     'additionalProperties' => false,
                 ];
+
+                if( $strict && isset( $field['zoom'] ) && is_numeric( $field['zoom'] ) ) {
+                    $schema['properties']['zoom']['default'] = (int) $field['zoom'];
+                }
                 break;
 
             case 'url':
                 $schema = ['type' => 'string', 'description' => 'URL, either an absolute URL or a site-relative path'];
+
+                if( $strict )
+                {
+                    $absolute = !empty( $field['absolute'] );
+                    $schema['format'] = $absolute ? 'uri' : 'uri-reference';
+
+                    if( $absolute )
+                    {
+                        $allowed = array_values( array_filter(
+                            (array) ( $field['allowed'] ?? ['http', 'https'] ),
+                            fn( $value ) => is_string( $value ) && preg_match( '/^[a-z]+$/i', $value )
+                        ) );
+                        $allowed = $allowed ?: ['http', 'https'];
+                        $schema['pattern'] = '^(?:' . implode( '|', array_map( fn( $value ) => preg_quote( $value, '/' ), $allowed ) ) . ')://';
+                    }
+                }
                 break;
 
             case 'color':
                 $schema = ['type' => 'string', 'pattern' => '^#[0-9A-Fa-f]{3,8}$'];
+                break;
+
+            case 'date':
+                $schema = ['type' => 'string'];
+
+                if( $strict ) {
+                    $schema['format'] = 'date';
+                }
                 break;
 
             case 'autocomplete':
@@ -240,18 +316,38 @@ class JsonSchema
                 break;
 
             case 'combobox':
-                $schema = !empty( $field['multiple'] )
-                    ? ['type' => 'array', 'items' => ['type' => 'string']]
-                    : ['type' => 'string'];
+                if( !empty( $field['multiple'] ) )
+                {
+                    $items = ['type' => 'string'];
+
+                    if( $strict && !empty( $field['options'] ) ) {
+                        $items['enum'] = array_column( $field['options'], 'value' );
+                    }
+
+                    $schema = ['type' => 'array', 'items' => $items];
+                }
+                else
+                {
+                    $schema = ['type' => 'string'];
+
+                    if( $strict && !empty( $field['options'] ) ) {
+                        $schema['enum'] = array_column( $field['options'], 'value' );
+                    }
+                }
                 break;
 
-            default:
+            case 'html':
+            case 'markdown':
+            case 'plaintext':
+            case 'select':
+            case 'string':
+            case 'text':
                 $schema = ['type' => 'string'];
 
                 if( !empty( $field['options'] ) ) {
                     $schema['enum'] = array_column( $field['options'], 'value' );
                 }
-                elseif( $desc = match( $field['type'] ?? 'string' ) {
+                elseif( $desc = match( $type ) {
                     'markdown' => 'Markdown formatted text',
                     'html' => 'HTML markup',
                     'plaintext' => 'Plain multi-line text',
@@ -260,13 +356,36 @@ class JsonSchema
                 } ) {
                     $schema['description'] = $desc;
                 }
+                break;
+
+            default:
+                if( $strict ) {
+                    throw new Exception( sprintf( 'Unsupported schema field type "%s"', $type ) );
+                }
+
+                $schema = ['type' => 'string'];
         }
 
         if( $schema['type'] === 'string' && isset( $field['pattern'] ) ) {
             $schema['pattern'] = (string) $field['pattern'];
         }
 
-        return self::bounds( $schema, $field );
+        if( $strict )
+        {
+            if( array_key_exists( 'default', $field ) ) {
+                $schema['default'] = $field['default'];
+            }
+
+            if( is_string( $field['label'] ?? null ) && $field['label'] !== '' ) {
+                $schema['title'] = $field['label'];
+            }
+
+            if( !empty( $field['uppercase'] ) && $schema['type'] === 'string' && !isset( $schema['pattern'] ) ) {
+                $schema['pattern'] = '^[^a-z]*$';
+            }
+        }
+
+        return $type === 'date' ? $schema : self::bounds( $schema, $field );
     }
 
 
@@ -316,16 +435,25 @@ class JsonSchema
      * @param array<string, mixed> $type JSON Schema for the "type" property
      * @param array<string, mixed> $extra Additional required properties (data or refid)
      * @param array<int, string> $groups Allowed group values
+     * @param bool $strict TRUE for strict mode, FALSE for AI mode
      * @return array<string, mixed> JSON Schema object definition
      */
-    private static function variant( array $type, array $extra, array $groups ) : array
+    private static function variant( array $type, array $extra, array $groups, bool $strict ) : array
     {
         $props = [
-            'id' => ['type' => ['string', 'null']],
+            'id' => ['type' => $strict ? 'string' : ['string', 'null']],
             'type' => $type,
             'group' => ['type' => 'string', 'enum' => $groups],
         ];
         $required = ['id', 'type', 'group'];
+
+        if( $strict ) {
+            $props['files'] = [
+                'type' => 'array',
+                'items' => ['type' => 'string', 'pattern' => self::UUID],
+                'uniqueItems' => true,
+            ];
+        }
 
         foreach( $extra as $name => $schema )
         {

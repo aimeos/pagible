@@ -6,6 +6,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get( 'cms/schema', \Aimeos\Cms\Controllers\SchemaController::class )
+    ->middleware( 'throttle:cms-jsonapi' )
+    ->name( 'cms.schema' );
+
 Route::middleware([
     'throttle:cms-jsonapi',
     \Aimeos\Cms\Http\Middleware\ScopeJsonapi::class,

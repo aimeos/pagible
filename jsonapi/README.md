@@ -14,6 +14,16 @@ Laravel guard resolves an authenticated user, authentication-only pages and page
 matching any frontend value supplied through the configured `Access` catalog and granted
 by Laravel Gate are visible too.
 
+## Content schema
+
+`GET /cms/schema` returns the registered content, meta, and configuration definitions as
+a [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12) document. Composer
+extensions and tenant themes are included automatically. The response uses the
+`application/schema+json` media type. The endpoint uses strict mode, which preserves
+standard formats, defaults, annotations, and constraints. Internal AI consumers use the
+provider-compatible mode by default and can opt into strict mode with
+`JsonSchema::build(strict: true)`.
+
 ## Configuration
 
 After installation, the configuration is available in `config/cms/jsonapi.php`:
