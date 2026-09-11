@@ -78,9 +78,11 @@ describe('PageDetail', () => {
     })
   })
 
-  it('finishes saving with the history component mounted and no reset method', () => {
+  it('mounts history on demand and finishes saving without a reset method', () => {
     const latest = { id: 'saved-version', published: false, created_at: '2026-09-09T12:00:00Z' }
     mountDetail({ 'page:save': true }, {}, { mutate: () => Promise.resolve({ data: { savePage: { latest } } }) })
+    cy.get('.history-dialog-stub').should('not.exist')
+    cy.get('button.btn-history').click()
     cy.get('.history-dialog-stub').should('exist')
     cy.then(async () => {
       const wrapper = Cypress.vueWrapper.findComponent(PageDetail)
