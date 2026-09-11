@@ -217,10 +217,6 @@ export default {
       invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
     },
 
-    loadVersions() {
-      return this.versions(this.item.id)
-    },
-
     media(data) {
       if (!data?.path) {
         return {}
@@ -254,11 +250,6 @@ export default {
       this.dirty = false
       this.changed = null
       this.error = false
-    },
-
-    revertVersion(event) {
-      this.use(event)
-      this.reset()
     },
 
     save(quiet = false) {
@@ -334,14 +325,15 @@ export default {
         })
     },
 
-    use(version) {
+    use(version, clean = false) {
       Object.assign(this.item, version.data)
       this.vhistory = false
       this.dirty = true
+      if (clean) this.reset()
     },
 
     versions(id) {
-      return loadVersions(this, FETCH_FILE_VERSIONS, 'file', id, this.$gettext('Error fetching file versions'), v => {
+      return loadVersions(this, FETCH_FILE_VERSIONS, 'file', id, v => {
         const data = Object.assign(safeParse(v.data), safeParse(v.aux))
         const item = { ...v, data: Object.freeze(data) }
         delete item.aux
@@ -420,13 +412,13 @@ export default {
 
   <Teleport to="body">
     <HistoryDialog
+      v-if="vhistory"
       v-model="vhistory"
       :readonly="!user.can('file:save')"
       :current="historyCurrent"
-      :load="loadVersions"
-      @revert="revertVersion"
+      :load="() => versions(item.id)"
       @apply="apply"
-      @use="use($event)"
+      @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
       :targets="{ data: item, aux: item }"

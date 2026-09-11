@@ -441,10 +441,6 @@ export default {
       invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
     },
 
-    loadVersions() {
-      return this.versions(this.item.id)
-    },
-
     obsolete(content) {
       for (const entry of content) {
         if (entry.files && Array.isArray(entry.files)) {
@@ -481,11 +477,6 @@ export default {
       this.dirty = {}
       this.changed = null
       this.errors = {}
-    },
-
-    revertVersion(event) {
-      this.use(event)
-      this.reset()
     },
 
     review() {
@@ -674,7 +665,7 @@ export default {
       this.dirty[what] = true
     },
 
-    use(version) {
+    use(version, clean = false) {
       Object.assign(this.item, version.data)
 
       const elements = this.elems(version.elements || [])
@@ -686,6 +677,7 @@ export default {
       this.dirty['page'] = true
 
       this.vhistory = false
+      if (clean) this.reset()
     },
 
     validate() {
@@ -697,7 +689,7 @@ export default {
     },
 
     versions(id) {
-      return loadVersions(this, FETCH_PAGE_VERSIONS, 'page', id, this.$gettext('Error fetching page versions'), v => {
+      return loadVersions(this, FETCH_PAGE_VERSIONS, 'page', id, v => {
         const elements = this.elems(v.elements || [])
         const item = {
           ...v,
@@ -873,13 +865,13 @@ export default {
   <Teleport to="body">
     <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" />
     <HistoryDialog
+      v-if="vhistory"
       v-model="vhistory"
       :readonly="!user.can('page:save')"
       :current="historyData"
-      :load="loadVersions"
-      @revert="revertVersion"
+      :load="() => versions(item.id)"
       @apply="apply"
-      @use="use($event)"
+      @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
       :targets="changeTargets"

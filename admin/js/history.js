@@ -1,21 +1,24 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 import equal from 'fast-deep-equal'
+import { diffArrays } from 'diff'
 
 const SKIP = ['__proto__', 'constructor', 'prototype']
 const SECTIONS = ['meta', 'config', 'content']
 const METADATA = ['previews', 'editor']
+const graphemes = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+const segments = new Intl.Segmenter(undefined, { granularity: 'word' })
 const vacant = value => value == null || (typeof value === 'object' && !Object.keys(value).length)
 const same = (a, b) => equal(a, b) || (vacant(a) && vacant(b))
 const object = value => value != null && typeof value === 'object' && !Array.isArray(value)
 const filedata = file => file && { path: file.path, name: file.name, mime: file.mime, previews: file.previews || {} }
 
 // Occurrences keep repeated references distinct; legacy blocks without IDs use their position.
-function indexed(items = [], identity = 'id') {
+function indexed(items = []) {
   const counts = new Map()
 
   return items.map((item, index) => {
-    const id = item?.[identity] ? ['id', item[identity]] : item?.refid ? ['ref', item.refid] : ['index', index]
+    const id = item?.id ? ['id', item.id] : item?.refid ? ['ref', item.refid] : ['index', index]
     const base = JSON.stringify(id)
     const count = counts.get(base) || 0
     counts.set(base, count + 1)
@@ -70,8 +73,8 @@ export function fields(before = {}, after = {}, path = []) {
   return result
 }
 
-export function blocks(before = [], after = [], identity = 'id') {
-  const a = indexed(before, identity), b = indexed(after, identity)
+export function blocks(before = [], after = []) {
+  const a = indexed(before), b = indexed(after)
   const aMap = new Map(a.map(entry => [entry.key, entry]))
   const bMap = new Map(b.map(entry => [entry.key, entry]))
   const fixed = stationary(a, b)
@@ -80,30 +83,21 @@ export function blocks(before = [], after = [], identity = 'id') {
   for (const key of new Set([...aMap.keys(), ...bMap.keys()])) {
     const old = aMap.get(key), next = bMap.get(key)
     const moved = !!old && !!next && !fixed.has(key)
-    const changes = fields(old?.item, next?.item).filter(field => field.path[0] !== identity)
+    const changes = fields(old?.item, next?.item).filter(field => field.path[0] !== 'id')
       .map(field => ({ ...field, key: JSON.stringify(['content', key, ...field.path]) }))
     if (old && next && !moved && !changes.length) continue
 
-    result.push({
-      key: `content:${key}`, moveKey: `content:${key}:move`, id: key,
+    const entry = {
+      key: `content:${key}`, id: key,
       before: old?.item, after: next?.item,
       from: old?.index, to: next?.index, moved,
       kind: !old ? 'added' : !next ? 'removed' : 'changed',
-      fields: changes
-    })
+      fields: moved ? [{ key: `content:${key}:move`, before: old.index + 1, after: next.index + 1, position: true }, ...changes] : changes
+    }
+    entry.keys = entry.kind === 'changed' ? entry.fields.map(field => field.key) : [entry.key]
+    result.push(entry)
   }
   return result
-}
-
-export function choices(block) {
-  return block.kind === 'changed' ? [...block.fields.map(field => field.key), ...(block.moved ? [block.moveKey] : [])] : [block.key]
-}
-
-export function items(before = [], after = [], identity = 'id') {
-  const wrap = values => values.map(value => {
-    return object(value) ? value : { [identity]: JSON.stringify(value), value }
-  })
-  return blocks(wrap(before), wrap(after), identity)
 }
 
 export function sections(before = {}, after = {}) {
@@ -187,7 +181,7 @@ function content(current, target, selected, checked) {
   const desired = indexed(target)
   const targetMap = new Map(desired.map(entry => [entry.key, entry]))
   const selectedMap = new Map(selected.map(entry => [entry.id, entry]))
-  const position = new Set(selected.filter(entry => (entry.moved && checked(entry.moveKey)) || entry.kind !== 'changed').map(entry => entry.id))
+  const position = new Set(selected.filter(entry => entry.kind !== 'changed' || entry.fields.some(field => field.position && checked(field.key))).map(entry => entry.id))
   const replacements = new Map()
   const result = indexed(current).flatMap(entry => {
     const change = selectedMap.get(entry.key)
@@ -196,7 +190,7 @@ function content(current, target, selected, checked) {
     if (change.kind === 'changed') {
       const item = { ...entry.item }
       for (const field of change.fields) {
-        if (checked(field.key)) {
+        if (!field.position && checked(field.key)) {
           const value = field.path.reduce((value, key) => value?.[key], targetMap.get(entry.key)?.item)
           set(item, field.path, value)
         }
@@ -227,7 +221,7 @@ export function restore(current, target, diffs, checked) {
   const roots = new Set()
 
   for (const [section, entries] of Object.entries(diffs)) {
-    const selected = entries.filter(entry => section === 'content' ? choices(entry).some(checked) : checked(entry.key))
+    const selected = entries.filter(entry => section === 'content' ? entry.keys.some(checked) : checked(entry.key))
     if (section === 'content') {
       if (selected.length) {
         merged.content = content(current.content || [], target.content || [], selected, checked)
@@ -257,4 +251,69 @@ export function restore(current, target, diffs, checked) {
 
   // Root nulls survive JSON serialization; nested removed properties are deleted by set().
   return Object.fromEntries([...roots].map(key => [key, merged[key] ?? null]))
+}
+
+export function plaintext(value) {
+  const text = value == null ? '' : String(value)
+  if (!/<\/?[a-z][^>]*>/i.test(text)) return text
+
+  const template = document.createElement('template')
+  template.innerHTML = text
+  template.content.querySelectorAll('script, style').forEach(node => node.remove())
+  return Array.from(template.content.childNodes, node => node.textContent).join(' ')
+}
+
+export function words(before, after) {
+  const split = value => [...segments.segment(value)].map(item => item.segment)
+  const tokens = diffArrays(split(before), split(after), { timeout: 50 })
+  const parts = tokens?.map(part => ({ ...part, value: part.value.join('') })) || [{ value: before, removed: true }, { value: after, added: true }]
+  const result = []
+  for (let i = 0; i < parts.length; i++) {
+    if (!parts[i].added && !parts[i].removed) { result.push(parts[i]); continue }
+    const run = []
+    while (i < parts.length && (parts[i].added || parts[i].removed)) run.push(parts[i++])
+    i--
+    const a = run.filter(part => part.removed).map(part => part.value).join('')
+    const b = run.filter(part => part.added).map(part => part.value).join('')
+    if (a && b && a.length <= 120 && b.length <= 120) {
+      const split = value => [...graphemes.segment(value)].map(item => item.segment)
+      const old = split(a), next = split(b)
+      let start = 0, end = 0
+      while (start < Math.min(old.length, next.length) && old[start] === next[start]) start++
+      while (end < Math.min(old.length, next.length) - start && old[old.length - end - 1] === next[next.length - end - 1]) end++
+      const refined = [
+        ...(start ? [{ value: old.slice(0, start) }] : []),
+        ...diffArrays(old.slice(start, old.length - end), next.slice(start, next.length - end)),
+        ...(end ? [{ value: old.slice(old.length - end) }] : [])
+      ]
+      const shared = refined.filter(part => !part.added && !part.removed).reduce((sum, part) => sum + part.value.length, 0)
+      if (shared >= Math.min(old.length, next.length) / 2) {
+        result.push(...refined.map(part => ({ ...part, value: part.value.join('') })))
+        continue
+      }
+    }
+    result.push(...run)
+  }
+  return result
+}
+
+export function assets(value, files = {}) {
+  const found = new Map()
+  const visit = value => {
+    if (typeof value === 'string' && files[value]) found.set(files[value].id, files[value])
+    else if (Array.isArray(value)) value.forEach(visit)
+    else if (value && typeof value === 'object') {
+      if (value.type === 'file' && files[value.id]) found.set(files[value.id].id, files[value.id])
+      else Object.values(value).forEach(visit)
+    }
+  }
+  visit(value)
+  return [...found.values()]
+}
+
+export function fieldmedia(field, before = {}, after = {}) {
+  const reference = value => value == null || typeof value === 'string' || value?.type === 'file' || (Array.isArray(value) && value.every(reference))
+  if (!reference(field.before) || !reference(field.after)) return { before: [], after: [] }
+
+  return { before: assets(field.before, before.files), after: assets(field.after, after.files) }
 }

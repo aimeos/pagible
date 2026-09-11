@@ -233,10 +233,6 @@ export default {
       this.dirty = true
     },
 
-    loadVersions() {
-      return this.versions(this.item.id)
-    },
-
     publish(at = null, close = false) {
       publishItem(this, 'element', {
         success: this.$gettext('Element published successfully'),
@@ -253,11 +249,6 @@ export default {
       this.dirty = false
       this.changed = null
       this.error = false
-    },
-
-    revertVersion(event) {
-      this.use(event)
-      this.reset()
     },
 
     save(quiet = false) {
@@ -347,7 +338,7 @@ export default {
       return import('../ai').then(({ write }) => write(prompt, context, files))
     },
 
-    use(version) {
+    use(version, clean = false) {
       Object.assign(this.item, version.data)
 
       this.assets = version.files || {}
@@ -355,6 +346,7 @@ export default {
 
       this.vhistory = false
       this.dirty = true
+      if (clean) this.reset()
     },
 
     translateText(texts, to, from = null) {
@@ -362,7 +354,7 @@ export default {
     },
 
     versions(id) {
-      return loadVersions(this, FETCH_ELEMENT_VERSIONS, 'element', id, this.$gettext('Error fetching element versions'), v => {
+      return loadVersions(this, FETCH_ELEMENT_VERSIONS, 'element', id, v => {
         return Object.freeze({
           ...v,
           data: frozenParse(v.data),
@@ -441,13 +433,13 @@ export default {
 
   <Teleport to="body">
     <HistoryDialog
+      v-if="vhistory"
       v-model="vhistory"
       :readonly="!user.can('element:save')"
       :current="historyCurrent"
-      :load="loadVersions"
-      @revert="revertVersion"
+      :load="() => versions(item.id)"
       @apply="apply"
-      @use="use($event)"
+      @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
       :targets="changeTargets"
