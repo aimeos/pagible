@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
 import { useUserStore } from '../../../js/stores'
@@ -8,7 +9,12 @@ const stubs = {
   AsideCount: { template: '<div class="aside-count-stub" />' },
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
   PageDetailItem: { template: '<div class="page-detail-item-stub" />', methods: { reset() {} } },
-  PageDetailEditor: { template: '<div class="page-detail-editor-stub" />' },
+  PageDetailEditor: {
+    emits: ['change'],
+    render() {
+      return h('button', { class: 'page-detail-editor-stub', onClick: () => this.$emit('change', 'content') }, 'Close changed element')
+    },
+  },
   PageDetailContent: {
     template: '<div class="page-detail-content-stub" />',
     methods: { flush() {}, reset() {} },
@@ -149,6 +155,13 @@ describe('PageDetail', () => {
   it('disables save button when nothing has changed', () => {
     mountDetail({ 'page:save': true })
     cy.get('.menu-save').should('be.disabled')
+  })
+
+  it('enables the save button when the editor reports an unsaved content change', () => {
+    mountDetail({ 'page:save': true })
+    cy.get('.menu-save').should('be.disabled')
+    cy.get('.page-detail-editor-stub').click()
+    cy.get('.menu-save').should('not.be.disabled')
   })
 
   it('waits for pending content updates before flushing on save', () => {

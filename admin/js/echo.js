@@ -7,7 +7,6 @@ let echoPromise = null
 let echoInstance = null
 let idleTimer = null
 let activeChannels = 0
-let wasConnected = false
 let tenant = ''
 
 const IDLE_TIMEOUT = 5 * 60 * 1000
@@ -78,11 +77,12 @@ function getEcho() {
 // Re-sync subscribers after an automatic reconnect: pusher fires 'connected' again once the
 // dropped socket comes back; the first 'connected' is the initial connect, so only later ones
 // signal a reconnect during which events may have been missed.
-function bindReconnect(echo) {
+export function bindReconnect(echo, reconnect = resync) {
+  let connected = false
   const conn = echo.connector?.pusher?.connection
   conn?.bind?.('connected', () => {
-    if (wasConnected) { resync() }
-    wasConnected = true
+    if (connected) { reconnect() }
+    connected = true
   })
 }
 
@@ -90,7 +90,6 @@ export async function disconnect() {
   clearTimeout(idleTimer)
   idleTimer = null
   activeChannels = 0
-  wasConnected = false
   subscriptions.clear()
   const pending = echoPromise
   echoPromise = null

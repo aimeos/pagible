@@ -18,7 +18,7 @@ export default {
     type: { type: String, default: 'content' }
   },
 
-  emits: ['update:modelValue', 'update:element'],
+  emits: ['change', 'update:modelValue', 'update:element'],
 
   setup() {
     const schemas = useSchemaStore()
@@ -32,6 +32,14 @@ export default {
   },
 
   methods: {
+    close() {
+      if (this.element._changed) {
+        this.$emit('change', this.element)
+      }
+
+      this.$emit('update:modelValue', false)
+    },
+
     fields(type) {
       if (!this.schemas[this.type] || !this.schemas[this.type][type]?.fields) {
         console.warn(`No definition of fields for "${type}" (${this.type}) schemas`)
@@ -61,7 +69,7 @@ export default {
           variant="tonal"
           color="primary"
         >{{ $gettext('Save') }}</v-btn>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
+        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="close" />
       </v-toolbar>
       <v-card-text>
         <Fields

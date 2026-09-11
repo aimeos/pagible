@@ -1,5 +1,6 @@
 import {
   bulkPatch,
+  bindReconnect,
   channelName,
   cleanEcho,
   eventPatch,
@@ -10,6 +11,45 @@ import {
   LIST_ACTIONS,
   RECONNECT,
 } from '../../../js/echo'
+
+describe('bindReconnect()', () => {
+  function connection() {
+    let connected
+    const echo = {
+      connector: {
+        pusher: {
+          connection: {
+            bind(name, callback) {
+              expect(name).to.equal('connected')
+              connected = callback
+            }
+          }
+        }
+      }
+    }
+
+    return { echo, fire: () => connected() }
+  }
+
+  it('treats the first connection of each Echo instance as initial', () => {
+    const reconnect = cy.stub()
+    const first = connection()
+    const second = connection()
+
+    bindReconnect(first.echo, reconnect)
+    bindReconnect(second.echo, reconnect)
+
+    first.fire()
+    second.fire()
+    expect(reconnect).not.to.have.been.called
+
+    first.fire()
+    expect(reconnect).to.have.been.calledOnce
+
+    second.fire()
+    expect(reconnect).to.have.been.calledTwice
+  })
+})
 
 describe('channelName()', () => {
   it('targets the per-type channel scoped to the tenant', () => {

@@ -183,6 +183,75 @@ describe('PageListItems', () => {
     })
   })
 
+  it('reconciles an invalidation received during the initial load', () => {
+    const response = {
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    }
+    let finishInitial
+    const query = cy.stub()
+    query.onFirstCall().returns(new Promise((resolve) => { finishInitial = resolve }))
+    query.onSecondCall().resolves(response)
+    const evict = cy.stub()
+    const gc = cy.stub()
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, {
+      query,
+      provider: {
+        defaultClient: {
+          cache: { evict, gc },
+        },
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      vm.outdated = true
+      finishInitial(response)
+
+      cy.wrap(null).should(() => {
+        expect(query).to.have.been.calledTwice
+        expect(evict).to.have.been.calledOnceWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
+        expect(gc).to.have.been.calledOnce
+        expect(vm.outdated).to.equal(false)
+      })
+    })
+  })
+
+  it('keeps an invalidation received during the reconciliation visible', () => {
+    const response = {
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    }
+    let finishInitial
+    let finishReconciliation
+    const query = cy.stub()
+    query.onFirstCall().returns(new Promise((resolve) => { finishInitial = resolve }))
+    query.onSecondCall().returns(new Promise((resolve) => { finishReconciliation = resolve }))
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, {
+      query,
+      provider: {
+        defaultClient: {
+          cache: { evict() {}, gc() {} },
+        },
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      vm.outdated = true
+      finishInitial(response)
+
+      cy.wrap(null).should(() => {
+        expect(query).to.have.been.calledTwice
+        expect(vm.outdated).to.equal(false)
+      }).then(() => {
+        vm.outdated = true
+        finishReconciliation(response)
+      }).then(() => {
+        expect(query).to.have.been.calledTwice
+        expect(vm.outdated).to.equal(true)
+      })
+    })
+  })
+
   it('reloads from the network when reactivated without remote invalidation', () => {
     const query = cy.stub().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }

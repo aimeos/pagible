@@ -1,8 +1,14 @@
+import { h } from 'vue'
 import PageDetailEditor from '../../../js/components/PageDetailEditor.vue'
 import { useAppStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
-  FieldsDialog: { template: '<div class="fields-dialog-stub" />' },
+  FieldsDialog: {
+    emits: ['change'],
+    render() {
+      return h('button', { class: 'fields-dialog-stub', onClick: () => this.$emit('change') }, 'Close')
+    },
+  },
   SchemaDialog: { template: '<div class="schema-dialog-stub" />' },
 }
 
@@ -104,5 +110,21 @@ describe('PageDetailEditor', () => {
     mountEditor({}, { 'page:save': true })
     // The component adds a message on mount, we just verify it rendered
     cy.get('.page-preview').should('exist')
+  })
+
+  it('reports content changes when a changed element dialog is closed', () => {
+    const content = [{ id: 'element-1', type: 'heading', data: { title: 'Changed' }, _changed: true }]
+
+    mountEditor({ item: { ...item, content } }, { 'page:save': true }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      editor.vm.element = content[0]
+      editor.vm.vedit = true
+    })
+
+    cy.get('.fields-dialog-stub').click()
+    cy.then(() => {
+      const editor = Cypress.vueWrapper.findComponent(PageDetailEditor)
+      expect(editor.emitted('change')).to.deep.equal([['content']])
+    })
   })
 })

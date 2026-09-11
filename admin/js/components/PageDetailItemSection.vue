@@ -188,7 +188,7 @@ export default {
               variant="text"
             />
             <div class="element-title">{{ title(el) }}</div>
-            <div class="element-type">{{ $pgettext('st', el.type) }}</div>
+            <div class="element-type">{{ $pgettext('st', el.type).replace('::', ' ') }}</div>
           </v-expansion-panel-title>
           <v-expansion-panel-text eager>
             <Fields

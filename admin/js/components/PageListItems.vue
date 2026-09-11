@@ -338,7 +338,7 @@ export default {
     this.searchd = this.debounce(this.search, 500)
     this.reloadd = this.debounce(() => this.reload(false), 300)
 
-    this.refresh()
+    const initial = this.refresh()
 
     if (!this.embed) {
       // patch the matching node when a page changes elsewhere; subscribe for
@@ -347,6 +347,16 @@ export default {
       // up to date when they return. The tab that made the change is excluded
       // server-side via toOthers(), so no editor filter is needed here
       setupEcho(this, 'page', (event, name) => listEcho(this, event, name))
+
+      // Reconcile once when a reconnect or structural event invalidates the tree while its
+      // initial query is still in flight. Evict only the page lists so the follow-up cache-first
+      // query reaches the server without discarding unrelated detail data.
+      initial.finally(() => {
+        if (this.outdated && !this.destroyed) {
+          invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
+          return this.reload(false)
+        }
+      })
     }
   },
 

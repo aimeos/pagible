@@ -81,6 +81,14 @@ describe('FieldsDialog', () => {
     cy.get('@update').should('have.been.calledWith', false)
   })
 
+  it('reports a changed element when the dialog is closed', () => {
+    const onChange = cy.spy().as('change')
+
+    mountDialog({ element: { ...element, _changed: true }, onChange })
+    cy.get('button[aria-label="Close"]').last().click({ force: true })
+    cy.get('@change').should('have.been.calledOnceWith', Cypress.sinon.match({ _changed: true }))
+  })
+
   it('hides save button when element is not changed', () => {
     mountDialog({ element: { ...element, _changed: false } })
     cy.contains('.v-btn', 'Save').should('not.exist')
