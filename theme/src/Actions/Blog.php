@@ -57,7 +57,8 @@ class Blog
         // "files" list (populated for every writer in Validation), and only those files are loaded
         // in one query, so a blog page with many images doesn't pull its whole file set.
         $fileIds = function( $page ) use ( $editor ) {
-            $content = $editor ? ( $page->latest?->aux->content ?? $page->content ) : $page->content;
+            $latest = $editor ? $page->getRelation( 'latest' ) : null;
+            $content = $latest instanceof Version ? ( $latest->aux->content ?? $page->content ) : $page->content;
             $article = collect( (array) $content )->first( fn( $el ) => ( $el->type ?? null ) === $this->element );
             return $article ? (array) ( $article->files ?? [] ) : [];
         };
