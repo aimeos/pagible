@@ -42,6 +42,7 @@ if ($pgettext) {
   $pgettext('st', 'audio')
   $pgettext('st', 'file')
   $pgettext('st', 'hero')
+  $pgettext('st', 'CTA')
   $pgettext('st', 'cards')
   $pgettext('st', 'blog')
   $pgettext('st', 'article')
@@ -58,6 +59,7 @@ if ($pgettext) {
 
   // field names
   $pgettext('fn', 'button')
+  $pgettext('fn', 'buttons')
   $pgettext('fn', 'cards')
   $pgettext('fn', 'description')
   $pgettext('fn', 'file')
@@ -67,6 +69,7 @@ if ($pgettext) {
   $pgettext('fn', 'index')
   $pgettext('fn', 'keywords')
   $pgettext('fn', 'language')
+  $pgettext('fn', 'label')
   $pgettext('fn', 'level')
   $pgettext('fn', 'limit')
   $pgettext('fn', 'location')

@@ -94,6 +94,27 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterCtaFields()
+	{
+		$schema = Schema::get( 'cms' )['content']['cta'];
+		$fields = $schema['fields'];
+		$buttons = $fields['buttons'];
+
+		$this->assertSame( 'CTA', $schema['label'] );
+		$this->assertTrue( $fields['title']['required'] );
+		$this->assertSame( 1, $fields['title']['min'] );
+		$this->assertSame( 'markdown', $fields['text']['type'] );
+		$this->assertArrayNotHasKey( 'required', $fields['text'] );
+		$this->assertSame( 'items', $buttons['type'] );
+		$this->assertTrue( $buttons['required'] );
+		$this->assertSame( 1, $buttons['min'] );
+		$this->assertSame( 3, $buttons['max'] );
+		$this->assertTrue( $buttons['item']['label']['required'] );
+		$this->assertSame( 'url', $buttons['item']['url']['type'] );
+		$this->assertTrue( $buttons['item']['url']['required'] );
+	}
+
+
 	public function testRegisterContactFields()
 	{
 		$fields = Schema::get( 'cms' )['content']['contact']['fields'];
@@ -299,6 +320,77 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 3, substr_count( $html, '<picture class="image"' ) );
 		$this->assertSame( 1, substr_count( $html, '<a class="card-image"' ) );
 		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
+	}
+
+
+	public function testCtaRendersOptionalTextAndThreeButtons()
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$data = (object) [
+			'title' => 'Ready to start?',
+			'text' => 'Choose the path that **fits you**.',
+			'buttons' => [
+				(object) ['label' => 'Get started', 'url' => '/start'],
+				(object) ['label' => 'Contact us', 'url' => 'https://example.com/contact'],
+				(object) ['label' => 'Call us', 'url' => 'tel:+49123456789'],
+			],
+		];
+
+		$html = Blade::render(
+			"@include('cms::cta', ['data' => \$data, 'page' => \$page])\n@stack('foot')",
+			compact( 'data', 'page' ),
+			true,
+		);
+
+		$this->assertStringContainsString( '<h2 class="title">Ready to start?</h2>', $html );
+		$this->assertStringContainsString( '<p>Choose the path that <strong>fits you</strong>.</p>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="/start">Get started</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="https://example.com/contact">Contact us</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="tel:+49123456789">Call us</a>', $html );
+		$this->assertStringContainsString( 'vendor/cms/theme/cta.css', $html );
+		$this->assertSame( 3, substr_count( $html, '<a class="btn"' ) );
+	}
+
+
+	public function testCtaRendersOneButtonWithoutOptionalText()
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$data = (object) [
+			'title' => 'Continue',
+			'buttons' => [
+				(object) ['label' => 'Safe link', 'url' => '/safe'],
+				(object) ['label' => 'Unsafe link', 'url' => 'javascript:alert(1)'],
+			],
+		];
+
+		$html = view( 'cms::cta', compact( 'data', 'page' ) )->render();
+
+		$this->assertStringNotContainsString( 'class="cms-text"', $html );
+		$this->assertStringContainsString( '<a class="btn" href="/safe">Safe link</a>', $html );
+		$this->assertStringNotContainsString( 'Unsafe link', $html );
+		$this->assertSame( 1, substr_count( $html, '<a class="btn"' ) );
+	}
+
+
+	public function testCtaStylesAllThemes()
+	{
+		$paths = array_map(
+			fn( $path ) => dirname( $path ) . '/cta.css',
+			glob( dirname( __DIR__, 2 ) . '/themes/*/public/cms.css' ) ?: [],
+		);
+		$paths[] = dirname( __DIR__ ) . '/public/cta.css';
+
+		foreach( $paths as $path )
+		{
+			$this->assertFileExists( $path );
+
+			$css = file_get_contents( $path );
+
+			$this->assertIsString( $css );
+			$this->assertStringContainsString( '.cta .container', $css, $path );
+			$this->assertStringContainsString( '.cta .actions', $css, $path );
+			$this->assertStringContainsString( '.cta .btn', $css, $path );
+		}
 	}
 
 
