@@ -7,6 +7,7 @@
 namespace Aimeos\Cms;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Laravel\Paddle\Cashier;
 
@@ -208,7 +209,7 @@ class CashierPaddle extends CashierProvider
 
         Cashier::api( 'PATCH', 'transactions/' . $transaction, ['custom_data' => $metadata] );
 
-        return app( \Illuminate\Contracts\View\Factory::class )->make( 'cms-cashier::paddle', [
+        return app( Factory::class )->first( ['cms-cashier::paddle'], [
             'cancelUrl' => $this->previous(),
             'options' => [
                 'transactionId' => $transaction,

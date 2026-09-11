@@ -1,0 +1,5 @@
+env:
+  APP_KEY: AckfSECXIvnK5r28GVIWUAxmbBSjTsmF
+
+providers:
+  - Aimeos\Cms\CashierMollieServiceProvider
