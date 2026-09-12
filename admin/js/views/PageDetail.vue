@@ -8,6 +8,7 @@ import ChatDialog from '../components/ChatDialog.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
 
+const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
@@ -20,6 +21,7 @@ import { setupReload, cleanEcho } from '../echo'
 import { loadVersions, reloadVersion } from '../version'
 import {
   useAppStore,
+  useDrawerStore,
   useDirtyStore,
   useSideStore,
   useUserStore,
@@ -108,6 +110,7 @@ export default {
     ChatDialog,
     ChangesDialog,
     DetailAppBar,
+    FieldsAside,
     HistoryDialog,
     PageDetailItem,
     PageDetailEditor,
@@ -130,6 +133,7 @@ export default {
 
   setup() {
     const dirtyStore = useDirtyStore()
+    const drawer = useDrawerStore()
     const messages = useMessageStore()
     const schemas = useSchemaStore()
     const side = useSideStore()
@@ -140,6 +144,7 @@ export default {
 
     return {
       app,
+      drawer,
       dirtyStore,
       side,
       user,
@@ -164,6 +169,9 @@ export default {
       errors: {},
       assets: {},
       elements: {},
+      editorActions: false,
+      editorElement: null,
+      previewSize: 'computer',
       latest: null,
       publishAt: null,
       publishTime: null,
@@ -248,6 +256,8 @@ export default {
 
     this.assets = markRaw({})
     this.elements = markRaw({})
+    this.editorActions = false
+    this.editorElement = null
     this.destroyed = true
     this.changed = null
     this.latest = null
@@ -377,6 +387,21 @@ export default {
       }
 
       return map
+    },
+
+    editorAction(action) {
+      const editor = this.$refs.editor
+
+      if (typeof editor?.[action] === 'function') {
+        editor[action]()
+      }
+    },
+
+    editElement(element, actions = false) {
+      this.editorActions = !!element && actions
+      this.editorElement = element
+      this.aside = element ? 'editor' : ''
+      this.drawer.aside = !!element
     },
 
     fileIds() {
@@ -789,7 +814,7 @@ export default {
     <v-progress-linear v-if="loading" indeterminate color="primary" />
     <v-form v-else @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
-        <v-tab v-if="app.urlpage" value="editor" @click="aside = ''">
+        <v-tab v-if="app.urlpage" value="editor" @click="aside = editorElement ? 'editor' : ''">
           {{ $gettext('Editor') }}
         </v-tab>
         <v-tab
@@ -817,11 +842,15 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item v-if="app.urlpage" value="editor">
           <PageDetailEditor
+            ref="editor"
+            :aside-visible="aside === 'editor' && drawer.aside"
             :save="saveConfig"
             :item="item"
             :assets="assets"
             :elements="elements"
+            :preview-size="previewSize"
             @change="dirty.content = true"
+            @edit="editElement"
           />
         </v-window-item>
 
@@ -861,6 +890,20 @@ export default {
 
   <AsideMeta v-if="aside === 'meta'" :item="item" />
   <AsideCount v-if="aside === 'count'" />
+  <FieldsAside
+    v-if="aside === 'editor' && editorElement"
+    :actions="editorActions && user.can('page:save')"
+    :assets="assets"
+    :element="editorElement.type === 'reference' ? elements[editorElement.refid] : editorElement"
+    :preview-size="previewSize"
+    :readonly="!user.can('page:save') || !!editorElement.refid"
+    :save-count="savecnt"
+    @add-after="editorAction('addAfter')"
+    @add-before="editorAction('addBefore')"
+    @change="dirty.content = true"
+    @remove="editorAction('remove')"
+    @update:preview-size="previewSize = $event"
+  />
 
   <Teleport to="body">
     <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" />
