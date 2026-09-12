@@ -245,6 +245,41 @@ input:-webkit-autofill:focus {
   max-height: 90vh;
 }
 
+.v-dialog > .v-overlay__content > .v-card {
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
+  border-radius: 16px !important;
+  background-color: rgb(var(--v-theme-surface));
+}
+
+.v-dialog > .v-overlay__content > .v-card > .v-toolbar {
+  flex: 0 0 auto;
+  border-bottom: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
+}
+
+.v-dialog > .v-overlay__content > .v-card > .v-toolbar.bg-warning {
+  border-bottom-color: rgba(var(--v-theme-warning), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-warning), var(--v-activated-opacity)) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+}
+
+.v-dialog > .v-overlay__content > .v-card > .v-toolbar.bg-error {
+  border-bottom-color: rgba(var(--v-theme-error), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-error), var(--v-activated-opacity)) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+}
+
+.v-dialog > .v-overlay__content > .v-card > .v-card-actions {
+  border-top: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-primary), var(--v-idle-opacity));
+}
+
+.v-dialog.v-dialog--fullscreen > .v-overlay__content > .v-card {
+  border: 0;
+  border-radius: 0 !important;
+}
+
 @media (min-height: 440px) {
   .v-dialog.menu .v-card {
     min-height: 400px;

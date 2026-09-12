@@ -285,9 +285,11 @@ export default {
 
 <template>
   <v-dialog v-model="open" :max-width="720" class="chat-dialog">
-    <v-card class="chat" :elevation="8">
-      <v-toolbar density="comfortable" :elevation="0" color="surface">
-        <v-icon :icon="mdiCreation" class="ms-4 me-2" />
+    <v-card class="chat" :elevation="4">
+      <v-toolbar density="comfortable" :elevation="0" class="chat-toolbar">
+        <v-avatar color="primary" variant="tonal" size="36" class="ms-4 me-2">
+          <v-icon :icon="mdiCreation" size="18" />
+        </v-avatar>
         <v-toolbar-title>{{ $gettext('AI Assistant') }}</v-toolbar-title>
         <v-spacer />
         <v-btn
@@ -307,16 +309,21 @@ export default {
         />
       </v-toolbar>
 
-      <v-divider />
-
       <div ref="list" class="chat-messages scroll" role="log" aria-live="polite">
         <div v-if="!messages.length" class="chat-empty">
-          <v-icon :icon="mdiCreation" size="48" class="chat-empty-icon" />
+          <v-avatar color="primary" variant="tonal" size="72" class="chat-empty-icon">
+            <v-icon :icon="mdiCreation" size="36" />
+          </v-avatar>
           <p>{{ $gettext( 'What shall I do for you?' ) }}</p>
         </div>
 
         <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
-          <v-avatar :color="m.role === 'user' ? 'primary' : 'secondary'" size="32" class="chat-avatar">
+          <v-avatar
+            :color="m.role === 'user' ? 'primary' : 'secondary'"
+            variant="tonal"
+            size="40"
+            class="chat-avatar"
+          >
             <v-icon :icon="m.role === 'user' ? mdiAccount : mdiCreation" size="20" />
           </v-avatar>
           <div class="chat-bubble" :class="{ error: m.error }">
@@ -344,14 +351,13 @@ export default {
         </div>
       </div>
 
-      <v-divider />
-
       <div class="chat-input">
         <v-textarea
           v-model="input"
           :placeholder="$gettext('Send a message ...')"
           @keydown="keydown"
           variant="outlined"
+          color="primary"
           rounded="lg"
           rows="1"
           hide-details
@@ -367,7 +373,7 @@ export default {
               :aria-label="$gettext('Dictate')"
               :class="{ dictating: audio }"
               :loading="dictating"
-              variant="text"
+              variant="tonal"
               size="small"
             />
             <v-btn
@@ -377,7 +383,7 @@ export default {
               :title="$gettext('Stop')"
               :aria-label="$gettext('Stop')"
               color="error"
-              variant="text"
+              variant="tonal"
               size="small"
             />
             <v-btn
@@ -387,7 +393,8 @@ export default {
               :title="$gettext('Send')"
               :aria-label="$gettext('Send')"
               :disabled="!input.trim()"
-              variant="text"
+              color="primary"
+              variant="tonal"
               size="small"
             />
           </template>
@@ -405,10 +412,21 @@ export default {
   max-height: 80vh;
 }
 
+.chat-toolbar {
+  flex: 0 0 auto;
+}
+
+.chat-toolbar :deep(.v-toolbar-title) {
+  font-weight: 600;
+}
+
 .chat-messages {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 16px;
+  padding: 20px;
+  background:
+    linear-gradient(180deg, rgba(var(--v-theme-primary), var(--v-idle-opacity)), transparent 96px),
+    rgb(var(--v-theme-surface));
 }
 
 .chat-empty {
@@ -419,10 +437,11 @@ export default {
   height: 100%;
   text-align: center;
   gap: 12px;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .chat-empty-icon {
-  opacity: 0.5;
+  margin-bottom: 4px;
 }
 
 .chat-suggestions {
@@ -440,8 +459,8 @@ export default {
 .chat-row {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .chat-row.user {
@@ -455,20 +474,21 @@ export default {
 .chat-bubble {
   position: relative;
   max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface-light));
+  padding: 11px 15px;
+  border: 1px solid rgba(var(--v-theme-secondary), var(--v-border-opacity));
+  border-radius: 16px;
+  background-color: rgba(var(--v-theme-secondary), var(--v-activated-opacity));
   color: rgb(var(--v-theme-on-surface));
 }
 
 .chat-row.user .chat-bubble {
-  background-color: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
+  border-color: rgba(var(--v-theme-primary), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
 }
 
 .chat-bubble.error {
-  background-color: rgb(var(--v-theme-error));
-  color: rgb(var(--v-theme-on-error));
+  border-color: rgba(var(--v-theme-error), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-error), var(--v-activated-opacity));
 }
 
 /* User bubble: raw text, so honor its own newlines/spacing. */
@@ -581,16 +601,44 @@ export default {
   transition: opacity 0.2s;
 }
 
-.chat-bubble:hover .chat-copy {
-  opacity: 0.6;
+.chat-bubble:hover .chat-copy,
+.chat-copy:focus-visible {
+  opacity: 0.7;
 }
 
 .chat-input {
-  padding: 12px 16px;
+  flex: 0 0 auto;
+  padding: 14px 16px 16px;
+  border-top: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
 }
 
 .chat-input :deep(textarea) {
   max-height: 160px;
+}
+
+@media (hover: none) {
+  .chat-copy {
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 599px) {
+  .chat {
+    height: 88vh;
+    max-height: 88vh;
+  }
+
+  .chat-messages {
+    padding: 16px 12px;
+  }
+
+  .chat-bubble {
+    max-width: 86%;
+  }
+
+  .chat-input {
+    padding: 12px;
+  }
 }
 
 .dictating {

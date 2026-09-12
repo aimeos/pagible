@@ -161,6 +161,20 @@ describe('HistoryDialog', () => {
     cy.get('@update').should('have.been.calledWith', false)
   })
 
+  it('uses the shared rounded tonal dialog surface', () => {
+    mountDialog()
+    cy.get('.v-dialog > .v-overlay__content > .v-card')
+      .should('have.css', 'border-radius', '16px')
+      .and('have.css', 'overflow', 'hidden')
+    cy.get('.v-dialog > .v-overlay__content > .v-card > .v-toolbar')
+      .should(toolbar => {
+        const styles = getComputedStyle(toolbar[0])
+        const primary = styles.getPropertyValue('--v-theme-primary').split(',').map(value => value.trim()).join(', ')
+        const opacity = styles.getPropertyValue('--v-activated-opacity').trim()
+        expect(styles.backgroundColor).to.equal(`rgba(${primary}, ${opacity})`)
+      })
+  })
+
   it('shows "No changes" when load returns empty list', () => {
     mountDialog({
       versions: [],
