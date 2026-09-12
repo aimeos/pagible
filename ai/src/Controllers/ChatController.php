@@ -106,7 +106,7 @@ class ChatController extends Controller
                 Tools::provider( 'web_fetch' ),
             ] )
             ->withToolChoice( \Aimeos\Prisma\Providers\Base::AUTO )
-            ->withMaxSteps( 10 );
+            ->withMaxSteps( config( 'cms.ai.maxsteps', 10 ) );
 
         if( $history ) {
             $prisma->withMessages( $history );

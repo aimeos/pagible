@@ -11,8 +11,21 @@ return [
     | is sent to a provider, and the nesting depth of structured content.
     |
     */
-    'maxinput' => (int) env( 'CMS_AI_MAXINPUT', 1024 * 1024 ),
     'maxdepth' => (int) env( 'CMS_AI_MAXDEPTH', 20 ),
+    'maxinput' => (int) env( 'CMS_AI_MAXINPUT', 1024 * 1024 ),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum tool steps
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of steps an AI tool may take to generate content. Each step
+    | may involve multiple calls to the provider, so this caps the total number
+    | of calls and the cost of content generation.
+    */
+    'maxsteps' => (int) env( 'CMS_AI_MAXSTEPS', 25 ),
+
 
     /*
     |--------------------------------------------------------------------------
@@ -25,6 +38,21 @@ return [
     |
     */
     'maxtoken' => env( 'CMS_AI_MAXTOKEN' ),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chat route middleware
+    |--------------------------------------------------------------------------
+    |
+    | Middleware applied to the "cmsapi/chat" streaming route. Throttled by
+    | default; multi-tenant setups (e.g. stancl/tenancy) must also add their
+    | tenancy-init middleware here so Tenancy::value() resolves to the right
+    | tenant for the AI tool calls (page reads/creation) during the stream.
+    |
+    */
+    'middleware' => ['web', 'throttle:cms-ai'],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -39,18 +67,6 @@ return [
     */
     'timeout' => (int) env( 'CMS_AI_TIMEOUT', 300 ),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Chat route middleware
-    |--------------------------------------------------------------------------
-    |
-    | Middleware applied to the "cmsapi/chat" streaming route. Throttled by
-    | default; multi-tenant setups (e.g. stancl/tenancy) must also add their
-    | tenancy-init middleware here so Tenancy::value() resolves to the right
-    | tenant for the AI tool calls (page reads/creation) during the stream.
-    |
-    */
-    'middleware' => ['web', 'throttle:cms-ai'],
 
     /*
      |----------------------------------------------------------------------
