@@ -7,12 +7,33 @@ import '../../../js/assets/base.css'
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
   AsideCount: { template: '<div class="aside-count-stub" />' },
+  FieldsAside: {
+    props: { actions: Boolean, previewSize: String, saveCount: Number },
+    emits: ['add-after', 'add-before', 'remove', 'update:previewSize'],
+    render() {
+      return h('div', { class: 'fields-aside-stub' }, [
+        ...(this.actions ? [
+          h('button', { class: 'btn-add-before', onClick: () => this.$emit('add-before') }),
+          h('button', { class: 'btn-add-after', onClick: () => this.$emit('add-after') }),
+          h('button', { class: 'btn-remove', onClick: () => this.$emit('remove') }),
+        ] : []),
+        h('button', { class: 'btn-responsive', onClick: () => this.$emit('update:previewSize', 'tablet') }),
+      ])
+    },
+  },
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
   PageDetailItem: { template: '<div class="page-detail-item-stub" />', methods: { reset() {} } },
   PageDetailEditor: {
-    emits: ['change'],
+    props: { asideVisible: Boolean, previewSize: String },
+    emits: ['change', 'edit'],
+    methods: { addAfter() {}, addBefore() {}, remove() {} },
     render() {
-      return h('button', { class: 'page-detail-editor-stub', onClick: () => this.$emit('change', 'content') }, 'Close changed element')
+      return h('button', {
+        class: 'page-detail-editor-stub',
+        'data-aside-visible': this.asideVisible,
+        'data-preview-size': this.previewSize,
+        onClick: () => this.$emit('change', 'content'),
+      }, 'Close changed element')
     },
   },
   PageDetailContent: {
@@ -162,6 +183,62 @@ describe('PageDetail', () => {
     cy.get('.menu-save').should('be.disabled')
     cy.get('.page-detail-editor-stub').click()
     cy.get('.menu-save').should('not.be.disabled')
+  })
+
+  it('shows the selected content element in the editor sidebar', () => {
+    const element = { id: 'element-1', type: 'heading', data: { title: 'Selected' } }
+
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      vm.editElement(element)
+
+      expect(vm.editorElement).to.equal(element)
+      expect(vm.aside).to.equal('editor')
+      expect(vm.drawer.aside).to.equal(true)
+    })
+
+    cy.get('.fields-aside-stub').should('exist')
+    cy.get('.page-detail-editor-stub').should('have.attr', 'data-aside-visible', 'true')
+    cy.contains('.detail-tabs .v-tab', 'Content').click()
+    cy.get('.fields-aside-stub').should('not.exist')
+    cy.get('.page-detail-editor-stub').should('have.attr', 'data-aside-visible', 'false')
+    cy.get('.aside-count-stub').should('exist')
+    cy.contains('.detail-tabs .v-tab', 'Editor').click()
+    cy.get('.fields-aside-stub').should('exist')
+  })
+
+  it('routes content sidebar actions to the preview editor', () => {
+    const element = { id: 'element-1', type: 'heading', data: { title: 'Selected' } }
+
+    mountDetail({ 'page:save': true }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      cy.spy(vm.$refs.editor, 'addBefore').as('addBefore')
+      cy.spy(vm.$refs.editor, 'addAfter').as('addAfter')
+      cy.spy(vm.$refs.editor, 'remove').as('remove')
+      vm.editElement(element, true)
+      expect(vm.editorActions).to.equal(true)
+    })
+
+    cy.get('.fields-aside-stub .btn-add-before').click()
+    cy.get('.fields-aside-stub .btn-add-after').click()
+    cy.get('.fields-aside-stub .btn-remove').click()
+    cy.get('@addBefore').should('have.been.calledOnce')
+    cy.get('@addAfter').should('have.been.calledOnce')
+    cy.get('@remove').should('have.been.calledOnce')
+  })
+
+  it('routes responsive sizes from the sidebar to the preview editor', () => {
+    const element = { id: 'element-1', type: 'heading', data: { title: 'Selected' } }
+
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+      vm.editElement(element)
+      expect(vm.previewSize).to.equal('computer')
+    })
+
+    cy.get('.fields-aside-stub .btn-responsive').click()
+    cy.get('.page-detail-editor-stub').should('have.attr', 'data-preview-size', 'tablet')
+    cy.then(() => expect(Cypress.vueWrapper.findComponent(PageDetail).vm.previewSize).to.equal('tablet'))
   })
 
   it('waits for pending content updates before flushing on save', () => {
