@@ -2796,3 +2796,165 @@ msgstr "Hinnake seda lehte ja soovitage parandusi"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Kasutaja vaatab lehte ID-ga „%{id}“. Kui ta viitab „sellele lehele“, kasutage selle ID-ga käsku get-page."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Meedia"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Sisuplokk"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Rühm: %{group} · Asukoht %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Liigutatud positsioonilt %{from} asendisse %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "Valitud on %{selected}/%{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Tundmatu kuupäev"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Ploki asukoht"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Väärtus"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Viga versioonide toomisel"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Proovi uuesti"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Praegused muudatused"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Kavandatud %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Valige kõik"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Blokk lisatud"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Blokk eemaldatud"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Säilitage praegune asukoht"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Säilitage praegune väärtus"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Eelmine versioon: viimane salvestatud versioon"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Eelmine versioon: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "Ennistamiseks on valitud %{selected}/%{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Valitud muudatuste ennistamine"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Taasta eelmine versioon"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Eelmine väärtus"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Uus väärtus"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Suurendage %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Eelvaate laadimine"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Eelvaade pole saadaval"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Pildi eelvaade"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Sule eelvaade"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Tabeli eelvaade"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} väli muudetud"
+msgstr[1] "%{num} väljad muudetud"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} plokk on lisatud"
+msgstr[1] "Lisatud %{num} plokid"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} plokk eemaldatud"
+msgstr[1] "%{num} plokid eemaldatud"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} plokk muudetud"
+msgstr[1] "%{num} plokid muudetud"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} plokk teisaldati"
+msgstr[1] "%{num} plokki teisaldati"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num}-fail muudetud"
+msgstr[1] "%{num} failid on muudetud"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} rida on välja jäetud"
+msgstr[1] "%{num} rida on välja jäetud"

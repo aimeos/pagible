@@ -2820,3 +2820,193 @@ msgstr "قيّم هذه الصفحة واقترح تحسينات"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "يعرض المستخدم الصفحة ذات المعرّف \"%{id}\". عندما يشير إلى \"هذه الصفحة\"، استخدم get-page مع هذا المعرّف."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "وسائل الإعلام"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "كتلة المحتوى"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "المجموعة: %{group} · المركز %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "تم النقل من الموضع %{from} إلى %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "تم تحديد %{selected} من %{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "تاريخ غير معروف"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "موضع الكتلة"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "القيمة"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "حدث خطأ أثناء جلب الإصدارات"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "أعد المحاولة"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "التغييرات الحالية"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "من المقرر ل %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "حدد الكل"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "تمت إضافة الكتلة"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "تمت إزالة الكتلة"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "الحفاظ على الوضع الحالي"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "الحفاظ على القيمة الحالية"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "الإصدار السابق: أحدث إصدار محفوظ"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "الإصدار السابق: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "تم تحديد %{selected} من %{total} للعودة"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "التراجع عن التغييرات المحددة"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "استعادة الإصدار السابق"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "القيمة السابقة"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "القيمة الجديدة"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "تكبير %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "جارٍ تحميل المعاينة"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "المعاينة غير متاحة"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "معاينة الصورة"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "إغلاق المعاينة"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "معاينة الجدول"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "تم تغيير حقل %{num}"
+msgstr[1] "تم تغيير حقول %{num}"
+msgstr[2] "تم تغيير حقول %{num}"
+msgstr[3] "تم تغيير حقول %{num}"
+msgstr[4] "تم تغيير حقول %{num}"
+msgstr[5] "تم تغيير حقول %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "تمت إضافة كتلة %{num}"
+msgstr[1] "تمت إضافة كتل %{num}"
+msgstr[2] "تمت إضافة كتل %{num}"
+msgstr[3] "تمت إضافة كتل %{num}"
+msgstr[4] "تمت إضافة كتل %{num}"
+msgstr[5] "تمت إضافة كتل %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "تمت إزالة كتلة %{num}"
+msgstr[1] "تمت إزالة كتل %{num}"
+msgstr[2] "تمت إزالة كتل %{num}"
+msgstr[3] "تمت إزالة كتل %{num}"
+msgstr[4] "تمت إزالة كتل %{num}"
+msgstr[5] "تمت إزالة كتل %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "تم تغيير كتلة %{num}"
+msgstr[1] "تم تغيير كتل %{num}"
+msgstr[2] "تم تغيير كتل %{num}"
+msgstr[3] "تم تغيير كتل %{num}"
+msgstr[4] "تم تغيير كتل %{num}"
+msgstr[5] "تم تغيير كتل %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "تم نقل كتلة %{num}"
+msgstr[1] "تم نقل كتل %{num}"
+msgstr[2] "تم نقل كتل %{num}"
+msgstr[3] "تم نقل كتل %{num}"
+msgstr[4] "تم نقل كتل %{num}"
+msgstr[5] "تم نقل كتل %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "تم تغيير ملف %{num}"
+msgstr[1] "تم تغيير ملفات %{num}"
+msgstr[2] "تم تغيير ملفات %{num}"
+msgstr[3] "تم تغيير ملفات %{num}"
+msgstr[4] "تم تغيير ملفات %{num}"
+msgstr[5] "تم تغيير ملفات %{num}"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "تم حذف صف %{num}"
+msgstr[1] "تم حذف صفوف %{num}"
+msgstr[2] "تم حذف صفوف %{num}"
+msgstr[3] "تم حذف صفوف %{num}"
+msgstr[4] "تم حذف صفوف %{num}"
+msgstr[5] "تم حذف صفوف %{num}"

@@ -3,7 +3,7 @@
 <script>
 import { mdiClose } from '@mdi/js'
 import { useSchemaStore } from '../stores'
-import { fieldmedia, media, plaintext, restore, sections } from '../history'
+import { filechanges, plaintext, restore, sections } from '../history'
 import HistoryField from './HistoryField.vue'
 
 export default {
@@ -39,10 +39,6 @@ export default {
         data: this.$gettext('Fields'), meta: this.$gettext('Meta data'),
         config: this.$gettext('Configuration'), content: this.$gettext('Content')
       }
-    },
-
-    selectable() {
-      return !this.readonly
     }
   },
 
@@ -52,14 +48,15 @@ export default {
 
   methods: {
     apply(card) {
-      if (!this.selectable || !this.selected(card)) return
-      const changes = restore(card.after.data || {}, card.version.data || {}, card.diffs, key => card.selection[key])
-      this.$emit('apply', changes, card.version)
+      if (this.readonly || !this.selected(card)) return
+      const source = this.current || this.cards[0].after
+      const changes = restore(source.data || {}, card.before.data || {}, card.diffs, key => card.selection[key])
+      this.$emit('apply', changes, card.before)
     },
 
     blockLabel(card, block) {
       const item = block.after || block.before
-      const element = Object.values((block.after ? card.after : card.version).elements || {}).find(element => element.id === item?.refid)
+      const element = Object.values((block.after ? card.after : card.before).elements || {}).find(element => element.id === item?.refid)
       const title = plaintext(element?.name || item?.data?.title || item?.data?.text || '').replace(/\s+/g, ' ').slice(0, 60)
       const type = item?.type === 'reference' ? this.$gettext('Shared element')
         : this.$pgettext('st', this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block'))
@@ -77,7 +74,7 @@ export default {
       const fields = block.fields.filter(field => !field.position)
       if (block.moved) parts.push(this.$gettext('Moved from position %{from} to %{to}', { from: block.from + 1, to: block.to + 1 }))
       if (fields.length) parts.push(this.$ngettext('%{num} field changed', '%{num} fields changed', fields.length, { num: fields.length }))
-      if (this.selectable) parts.push(this.$gettext('%{selected} of %{total} selected', {
+      if (!this.readonly) parts.push(this.$gettext('%{selected} of %{total} selected', {
         selected: this.selected(card, block.keys), total: block.keys.length
       }))
       return parts.join(' · ')
@@ -97,29 +94,21 @@ export default {
         const versions = await this.load()
         if (!Array.isArray(versions)) throw new Error('Invalid version response')
 
-        const current = this.current || versions[0]
-        this.cards = versions.map((version, index) => {
-          const diffs = sections(version.data || {}, current.data || {})
-          const files = media(version.files || {}, current.files || {})
+        const snapshots = this.current && versions.length ? [this.current, ...versions] : versions
+        this.cards = snapshots.slice(0, -1).map((after, index) => {
+          const before = snapshots[index + 1]
+          const unsaved = index === 0 && !!this.current
+          const diffs = sections(before.data || {}, after.data || {})
+          const files = filechanges(before, after, diffs)
           const keys = Object.entries(diffs).flatMap(([section, entries]) => section === 'content' ? entries.flatMap(block => block.keys) : entries.map(entry => entry.key))
           const blocks = diffs.content || []
-          const used = new Set()
-          for (const [section, entries] of Object.entries(diffs)) {
-            const fields = section === 'content' ? entries.flatMap(block => block.fields) : entries
-            for (const field of fields) {
-              field.media = fieldmedia(field, version, current)
-              for (const side of ['before', 'after']) field.media[side].forEach(file => used.add(`${side}:${file.id}`))
-            }
-          }
-          const fileCount = new Set(files.map(entry => entry.file.id)).size
-          const remaining = files.filter(entry => !used.has(`${entry.side}:${entry.file.id}`))
           return {
-            key: `version:${version.id || index}`, version, after: current, diffs, fileCount, keys,
-            unsaved: index === 0 && !!(keys.length || fileCount), selection: Object.fromEntries(keys.map(key => [key, true])),
-            remaining: Object.fromEntries(['before', 'after'].map(side => [side, remaining.filter(entry => entry.side === side).map(entry => entry.file)])),
+            key: unsaved ? 'current' : 'version:' + (after.id || index), before, after, unsaved, diffs, fileCount: files.count, keys,
+            selection: Object.fromEntries(keys.map(key => [key, true])),
+            remaining: files.remaining,
             expanded: (blocks.length > 5 ? blocks.slice(0, 1) : blocks).map(block => block.key)
           }
-        })
+        }).filter(card => !card.unsaved || card.keys.length || card.fileCount)
         const first = this.cards.find(card => card.keys.length || card.fileCount) || this.cards[0]
         this.opened = first?.key ?? null
       } catch (error) {
@@ -140,21 +129,22 @@ export default {
     },
 
     inactive(card, key) {
-      return this.selectable && !card.selection[key]
+      return !this.readonly && !card.selection[key]
     },
 
     schema(card, field, block) {
+      if (!field.path) return {}
       let path = [...field.path], definitions
       if (block && path[0] === 'data') {
         definitions = this.schemas.content[(block.after || block.before).type]?.fields
         path.shift()
       } else if (['meta', 'config'].includes(path[0])) {
         const [section, key] = path.splice(0, 2)
-        const item = card.after.data?.[section]?.[key] || card.version.data?.[section]?.[key]
+        const item = card.after.data?.[section]?.[key] || card.before.data?.[section]?.[key]
         definitions = this.schemas[section][item?.type || key]?.fields
         if (path[0] === 'data') path.shift()
       } else if (path[0] === 'data') {
-        definitions = this.schemas.content[card.after.data?.type || card.version.data?.type]?.fields
+        definitions = this.schemas.content[card.after.data?.type || card.before.data?.type]?.fields
         path.shift()
       }
       let definition
@@ -216,7 +206,7 @@ export default {
             </v-timeline-item>
             <v-timeline-item v-else-if="failed" dot-color="error" size="small" width="100%">
               <div role="alert">{{ $gettext('Error fetching versions') }}</div>
-              <v-btn variant="text" @click="fetch">{{ $gettext('Retry') }}</v-btn>
+              <v-btn variant="outlined" @click="fetch">{{ $gettext('Retry') }}</v-btn>
             </v-timeline-item>
             <v-timeline-item v-else-if="!cards.length" dot-color="grey-lighten-1" size="small" width="100%">
               <span role="status">{{ $gettext('No changes') }}</span>
@@ -224,23 +214,23 @@ export default {
 
             <v-timeline-item
               v-for="card in cards" :key="card.key"
-              :dot-color="card.version.published ? 'success' : 'grey-lighten-1'"
+              :dot-color="card.after.published ? 'success' : 'grey-lighten-1'"
               width="100%" size="small"
             >
               <v-expansion-panel :value="card.key" class="version-panel">
                 <v-expansion-panel-title class="version-heading version-panel-title">
                   <span class="version-title" role="heading" aria-level="3">
-                    <span class="version-date">{{ date(card.version.created_at) }}</span>
+                    <span class="version-date">{{ card.unsaved ? $gettext('Current changes') : date(card.after.created_at) }}</span>
                     <span class="version-summary">{{ summary(card) }}</span>
                   </span>
-                  <span class="version-editor">
-                    {{ card.version.editor }}
-                    <template v-if="!card.version.published && card.version.publish_at">
-                      {{ card.version.editor ? ' · ' : '' }}{{ $gettext('Scheduled for %{date}', { date: date(card.version.publish_at) }) }}
+                  <span v-if="!card.unsaved" class="version-editor">
+                    {{ card.after.editor }}
+                    <template v-if="!card.after.published && card.after.publish_at">
+                      {{ card.after.editor ? ' · ' : '' }}{{ $gettext('Scheduled for %{date}', { date: date(card.after.publish_at) }) }}
                     </template>
                   </span>
                   <v-checkbox
-                    v-if="selectable && card.keys.length" class="select-all"
+                    v-if="!readonly && card.keys.length" class="select-all"
                     :model-value="selected(card) === card.keys.length"
                     :indeterminate="selected(card) > 0 && selected(card) < card.keys.length"
                     :disabled="opened !== card.key"
@@ -265,7 +255,7 @@ export default {
                             <span v-if="block.kind === 'changed'" class="block-summary">{{ blockSummary(card, block) }}</span>
                           </span>
                           <v-checkbox
-                            v-if="selectable" class="diff-check block-check" :model-value="selected(card, block.keys) === block.keys.length"
+                            v-if="!readonly" class="diff-check block-check" :model-value="selected(card, block.keys) === block.keys.length"
                             :indeterminate="selected(card, block.keys) > 0 && selected(card, block.keys) < block.keys.length"
                             :aria-label="blockLabel(card, block)" @click.stop @update:model-value="toggleAll(card, block.keys)" hide-details density="compact"
                           />
@@ -281,11 +271,11 @@ export default {
                                 <span v-if="block.kind === 'changed' && inactive(card, field.key)" class="keep-current">
                                   {{ field.position ? $gettext('Keep current position') : $gettext('Keep current value') }}
                                 </span>
-                                <v-checkbox v-if="selectable && block.kind === 'changed'" v-model="card.selection[field.key]" class="diff-check"
+                                <v-checkbox v-if="!readonly && block.kind === 'changed'" v-model="card.selection[field.key]" class="diff-check"
                                   :aria-label="fieldLabel(card, field, name, block)" hide-details density="compact"
                                 />
                               </div>
-                              <HistoryField :field="field" />
+                              <HistoryField :field="field" :type="schema(card, field, block).type" />
                             </div>
                             <HistoryField v-if="block.kind !== 'changed'" class="block-raw" :field="{ before: block.before, after: block.after }" />
                           </div>
@@ -301,11 +291,11 @@ export default {
                         <h4 class="diff-label">{{ fieldLabel(card, field, name) }}</h4>
                         <span v-if="inactive(card, field.key)" class="keep-current">{{ $gettext('Keep current value') }}</span>
                         <v-checkbox
-                          v-if="selectable" v-model="card.selection[field.key]" class="diff-check"
+                          v-if="!readonly" v-model="card.selection[field.key]" class="diff-check"
                           :aria-label="fieldLabel(card, field, name)" hide-details density="compact"
                         />
                       </div>
-                      <HistoryField :field="field" />
+                      <HistoryField :field="field" :type="schema(card, field).type" />
                     </div>
                   </template>
                 </section>
@@ -313,7 +303,7 @@ export default {
                 <section v-if="card.remaining.before.length || card.remaining.after.length" class="diff-section" :aria-label="$gettext('Media')"
                 >
                   <h3 class="section-header">{{ $gettext('Media') }}</h3>
-                  <HistoryField :field="{ media: card.remaining }" :raw-details="false" />
+                  <HistoryField :field="{ media: card.remaining }" />
                 </section>
                 <div v-if="!card.keys.length && !card.fileCount" role="status">{{ $gettext('No changes') }}</div>
                 </v-expansion-panel-text>
@@ -322,16 +312,16 @@ export default {
           </v-timeline>
         </v-expansion-panels>
       </v-card-text>
-      <div v-if="active && selectable" class="history-actions">
+      <div v-if="active && !readonly" class="history-actions">
         <div class="restore-source">
-          <span>{{ active.unsaved ? $gettext('Restore from: Latest saved version') : $gettext('Restore from: %{date}', { date: date(active.version.created_at) }) }}</span>
-          <span role="status">{{ $gettext('%{selected} of %{total} selected for restoration', { selected: selected(active), total: active.keys.length }) }}</span>
+          <span>{{ active.unsaved ? $gettext('Previous version: Latest saved version') : $gettext('Previous version: %{date}', { date: date(active.before.created_at) }) }}</span>
+          <span role="status">{{ $gettext('%{selected} of %{total} selected for reverting', { selected: selected(active), total: active.keys.length }) }}</span>
         </div>
         <v-btn class="restore-selected" variant="tonal" color="info" :disabled="!selected(active)" @click="apply(active)">
-          {{ $gettext('Restore selected changes') }}
+          {{ $gettext('Revert selected changes') }}
         </v-btn>
-        <v-btn class="restore-whole" variant="outlined" @click="$emit('use', active.version, active.unsaved)">
-          {{ active.unsaved ? $gettext('Discard all changes') : $gettext('Restore version') }}
+        <v-btn class="restore-whole" variant="outlined" @click="$emit('use', active.before, active.unsaved)">
+          {{ $gettext('Restore previous version') }}
         </v-btn>
       </div>
     </v-card>

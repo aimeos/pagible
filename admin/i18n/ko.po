@@ -2790,3 +2790,158 @@ msgstr "이 페이지를 평가하고 개선 사항을 제안하세요"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "사용자가 ID가 \"%{id}\"인 페이지를 보고 있습니다. 사용자가 \"이 페이지\"라고 언급하면 해당 ID로 get-page를 사용하세요."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "미디어"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "콘텐츠 블록"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "그룹: %{group} · 위치 %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "위치 %{from}에서 %{to}로 이동했습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{total} 중 %{selected}가 선택됨"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "날짜를 알 수 없음"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "블록 위치"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "값"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "버전을 가져오는 중에 오류가 발생했습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "재시도"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "현재 변경사항"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "%{date} 예정"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "모두 선택"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "블록이 추가됨"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "블록 삭제됨"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "현재 위치 유지"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "현재 값 유지"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "이전 버전: 최근 저장된 버전"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "이전 버전: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "되돌리기 위해 %{total} 중 %{selected}가 선택되었습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "선택한 변경사항 되돌리기"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "이전 버전 복원"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "이전 값"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "새 값"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "확대 %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "미리보기 로드 중"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "미리보기를 사용할 수 없습니다."
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "이미지 미리보기"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "미리보기 닫기"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "테이블 미리보기"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} 필드가 변경되었습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} 블록이 추가되었습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} 블록이 제거되었습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} 블록이 변경됨"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} 블록이 이동되었습니다."
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} 파일이 변경되었습니다."
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num}행 생략됨"

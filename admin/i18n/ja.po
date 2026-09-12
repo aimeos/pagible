@@ -2790,3 +2790,158 @@ msgstr "このページを評価し、改善案を提案してください"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "ユーザーは ID「%{id}」のページを表示しています。「このページ」と言及した場合は、その ID で get-page を使用してください。"
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "メディア"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "コンテンツブロック"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "グループ: %{group} · 位置 %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "%{from} から %{to} に移動"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{total} の %{selected} が選択されました"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "日付不明"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "ブロックの位置"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "値"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "バージョンの取得エラー"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "再試行"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "現在の変更点"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "%{date}予定"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "すべて選択"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "ブロックが追加されました"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "ブロックが削除されました"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "現在位置を維持する"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "現在の値を維持する"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "以前のバージョン: 最新の保存バージョン"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "前のバージョン: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{total} の %{selected} が元に戻すために選択されました"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "選択した変更を元に戻す"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "以前のバージョンを復元する"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "以前の値"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "新しい値"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "%{name}を拡大"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "プレビューを読み込んでいます"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "プレビューは利用できません"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "画像プレビュー"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "プレビューを閉じる"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "テーブルのプレビュー"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} フィールドが変更されました"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} ブロックが追加されました"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} ブロックが削除されました"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} ブロックが変更されました"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} ブロックが移動されました"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} ファイルが変更されました"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} 行が省略されました"

@@ -2796,3 +2796,165 @@ msgstr "Értékelje ezt az oldalt, és javasoljon fejlesztéseket"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "A felhasználó a(z) „%{id}” azonosítójú oldalt tekinti meg. Amikor „erre az oldalra” hivatkozik, használja a get-page eszközt ezzel az azonosítóval."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Média"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Tartalomblokk"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Csoport: %{group} · Pozíció %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "A %{from} pozícióból áthelyezve a %{to} pozícióba"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected}/%{total} kiválasztva"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Ismeretlen dátum"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Blokk helye"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Érték"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Hiba a verziók lekérésekor"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Próbálja újra"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Aktuális változások"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Ütemezett: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Válassza ki az összeset"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Blokk hozzáadva"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Blokk eltávolítva"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Tartsa meg a jelenlegi pozíciót"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Tartsa meg az aktuális értéket"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Előző verzió: Legutóbbi mentett verzió"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Előző verzió: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected}/%{total} kiválasztva a visszaállításhoz"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "A kiválasztott módosítások visszaállítása"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Az előző verzió visszaállítása"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Előző érték"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Új érték"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "%{name} nagyítása"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Előnézet betöltése"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Az előnézet nem érhető el"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Kép előnézete"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Előnézet bezárása"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Táblázat előnézete"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "A %{num} mező megváltozott"
+msgstr[1] "%{num} mezők megváltoztak"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} blokk hozzáadva"
+msgstr[1] "%{num} blokk hozzáadva"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} blokk eltávolítva"
+msgstr[1] "%{num} blokk eltávolítva"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "A %{num} blokk megváltozott"
+msgstr[1] "%{num} blokkok megváltoztak"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} blokk áthelyezve"
+msgstr[1] "%{num} blokk áthelyezve"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "A %{num} fájl megváltozott"
+msgstr[1] "%{num} fájl megváltozott"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} sor kimaradva"
+msgstr[1] "%{num} sor kimaradva"

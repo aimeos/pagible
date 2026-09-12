@@ -2790,3 +2790,158 @@ msgstr "ประเมินหน้านี้และเสนอแนะ
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "ผู้ใช้กำลังดูหน้าที่มี ID \"%{id}\" เมื่อกล่าวถึง \"หน้านี้\" ให้ใช้ get-page กับ ID ดังกล่าว"
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "สื่อ"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "บล็อกเนื้อหา"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "กลุ่ม: %{group} · ตำแหน่ง %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "ย้ายจากตำแหน่ง %{from} ไปที่ %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "เลือก %{selected} จาก %{total} แล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "ไม่ทราบวันที่"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "ตำแหน่งบล็อก"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "ค่า"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "เกิดข้อผิดพลาดในการดึงข้อมูลเวอร์ชัน"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "ลองอีกครั้ง"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "การเปลี่ยนแปลงในปัจจุบัน"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "กำหนดไว้สำหรับ %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "เลือกทั้งหมด"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "เพิ่มบล็อกแล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "นำบล็อกออกแล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "รักษาตำแหน่งปัจจุบันไว้"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "คงค่าปัจจุบัน"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "เวอร์ชันก่อนหน้า: เวอร์ชันที่บันทึกไว้ล่าสุด"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "เวอร์ชันก่อนหน้า: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "เลือก %{selected} จาก %{total} เพื่อเปลี่ยนกลับ"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "คืนค่าการเปลี่ยนแปลงที่เลือก"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "คืนค่าเวอร์ชันก่อนหน้า"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "ค่าก่อนหน้า"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "ค่าใหม่"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "ขยาย %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "กำลังโหลดตัวอย่าง"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "ดูตัวอย่างไม่พร้อมใช้งาน"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "การแสดงตัวอย่างรูปภาพ"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "ปิดการแสดงตัวอย่าง"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "การแสดงตัวอย่างตาราง"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "ฟิลด์ %{num} มีการเปลี่ยนแปลง"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "เพิ่มบล็อก %{num} แล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "นำบล็อก %{num} ออกแล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "เปลี่ยนบล็อก %{num} แล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "ย้ายบล็อก %{num} แล้ว"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "ไฟล์ %{num} มีการเปลี่ยนแปลง"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "ละเว้นแถว %{num}"

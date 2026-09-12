@@ -2790,3 +2790,158 @@ msgstr "评估此页面并提出改进建议"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "用户正在查看 ID 为“%{id}”的页面。当用户提到“此页面”时，请使用该 ID 调用 get-page。"
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "媒体"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "内容块"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "组：%{group} · 位置 %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "从位置 %{from} 移动到 %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "已选择 %{selected} 项，共 %{total} 项"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "日期未知"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "内容块位置"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "值"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "获取版本时出错"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "重试"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "当前更改"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "预定%{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "选择全部"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "已添加内容块"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "已移除内容块"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "保持当前位置"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "保留当前值"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "上一版本：最新保存的版本"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "上一版本：%{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{total} 项中已选择 %{selected} 项用于撤销"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "撤销所选更改"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "恢复上一个版本"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "先前值"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "新值"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "放大 %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "加载预览"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "预览不可用"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "图片预览"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "关闭预览"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "表格预览"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} 字段已更改"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "添加了 %{num} 块"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} 块已移除"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} 块已更改"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} 块已移动"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} 文件已更改"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} 行省略"

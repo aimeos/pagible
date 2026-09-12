@@ -2796,3 +2796,165 @@ msgstr "Arvioi tämä sivu ja ehdota parannuksia"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Käyttäjä tarkastelee sivua, jonka tunnus on \"%{id}\". Kun hän viittaa \"tähän sivuun\", käytä get-page-toimintoa kyseisellä tunnuksella."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Media"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Sisältölohko"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Ryhmä: %{group} · Sijainti %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Siirretty paikasta %{from} paikkaan %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected}/%{total} valittu"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Tuntematon päivämäärä"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Lohkon sijainti"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Arvo"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Virhe versioiden noutamisessa"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Yritä uudelleen"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Nykyiset muutokset"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Suunniteltu: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Valitse kaikki"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Lohko lisätty"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Lohko poistettu"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Säilytä nykyinen sijainti"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Säilytä nykyinen arvo"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Edellinen versio: Viimeisin tallennettu versio"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Edellinen versio: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected}/%{total} valittu palautettavaksi"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Palauta valitut muutokset"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Palauta edellinen versio"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Edellinen arvo"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Uusi arvo"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Suurenna %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Ladataan esikatselua"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Esikatselu ei ole käytettävissä"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Kuvan esikatselu"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Sulje esikatselu"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Taulukon esikatselu"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num}-kenttä muutettu"
+msgstr[1] "%{num} kentät muutettu"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num}-lohko lisätty"
+msgstr[1] "%{num} lohkoa lisätty"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num}-lohko poistettu"
+msgstr[1] "%{num} lohkoa poistettu"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num}-lohko vaihdettu"
+msgstr[1] "%{num} lohkoa muutettu"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num}-lohko siirretty"
+msgstr[1] "%{num} lohkoa siirretty"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num}-tiedosto muutettu"
+msgstr[1] "%{num} tiedostot muutettu"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num}-rivi jätetty pois"
+msgstr[1] "%{num} riviä jätetty pois"

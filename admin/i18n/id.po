@@ -2790,3 +2790,158 @@ msgstr "Nilai halaman ini dan sarankan perbaikan"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Pengguna sedang melihat halaman dengan ID \"%{id}\". Saat mereka merujuk pada \"halaman ini\", gunakan get-page dengan ID tersebut."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Media"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Blok konten"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Grup: %{group} · Posisi %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Pindah dari posisi %{from} ke %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected} dari %{total} dipilih"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Tanggal tidak diketahui"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Posisi blok"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Nilai"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Terjadi kesalahan saat mengambil versi"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Coba lagi"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Perubahan saat ini"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Dijadwalkan untuk %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Pilih semua"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Blok ditambahkan"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Blok dihapus"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Pertahankan posisi saat ini"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Pertahankan nilai saat ini"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Versi sebelumnya: Versi tersimpan terbaru"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Versi sebelumnya: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} dari %{total} dipilih untuk dikembalikan"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Kembalikan perubahan yang dipilih"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Pulihkan versi sebelumnya"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Nilai sebelumnya"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Nilai baru"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Perbesar %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Memuat pratinjau"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Pratinjau tidak tersedia"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Pratinjau gambar"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Tutup pratinjau"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Pratinjau tabel"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "Bidang %{num} diubah"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "Blok %{num} ditambahkan"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "Blok %{num} dihapus"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "Blok %{num} diubah"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "Blok %{num} dipindahkan"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "File %{num} diubah"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "Baris %{num} dihilangkan"

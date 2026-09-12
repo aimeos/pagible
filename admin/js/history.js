@@ -12,6 +12,19 @@ const vacant = value => value == null || (typeof value === 'object' && !Object.k
 const same = (a, b) => equal(a, b) || (vacant(a) && vacant(b))
 const object = value => value != null && typeof value === 'object' && !Array.isArray(value)
 const filedata = file => file && { path: file.path, name: file.name, mime: file.mime, previews: file.previews || {} }
+const reference = value => value == null || typeof value === 'string' || value?.type === 'file' || (Array.isArray(value) && value.every(reference))
+
+function fileids(value, files, ids = new Set()) {
+  if (typeof value === 'string') {
+    if (files?.[value]) ids.add(value)
+  } else if (Array.isArray(value)) {
+    value.forEach(value => fileids(value, files, ids))
+  } else if (value && typeof value === 'object') {
+    if (value.type === 'file' && typeof value.id === 'string' && value.id && (!files || files[value.id])) ids.add(value.id)
+    else Object.values(value).forEach(value => fileids(value, files, ids))
+  }
+  return ids
+}
 
 // Occurrences keep repeated references distinct; legacy blocks without IDs use their position.
 function indexed(items = []) {
@@ -116,13 +129,44 @@ export function sections(before = {}, after = {}) {
   return result
 }
 
-export function media(before = {}, after = {}) {
-  const result = []
-  for (const id of new Set([...Object.keys(before), ...Object.keys(after)])) {
-    if (equal(filedata(before[id]), filedata(after[id]))) continue
-    if (before[id]) result.push({ key: `before:${id}`, side: 'before', file: before[id] })
-    if (after[id]) result.push({ key: `after:${id}`, side: 'after', file: after[id] })
+export function tableRows(before = [], after = [], limit = 9) {
+  const parts = diffArrays(before, after, { comparator: equal, timeout: 50 })
+    || [{ value: before, removed: true }, { value: after, added: true }]
+  const rows = []
+
+  for (let i = 0; i < parts.length; i++) {
+    if (!parts[i].added && !parts[i].removed) {
+      parts[i].value.forEach(row => rows.push({ before: row, after: row }))
+      continue
+    }
+
+    const changed = []
+    while (i < parts.length && (parts[i].added || parts[i].removed)) changed.push(parts[i++])
+    i--
+    const removed = changed.filter(part => part.removed).flatMap(part => part.value)
+    const added = changed.filter(part => part.added).flatMap(part => part.value)
+    for (let index = 0; index < Math.max(removed.length, added.length); index++) {
+      rows.push({ before: removed[index], after: added[index] })
+    }
   }
+
+  const context = new Set()
+  if (rows.length) context.add(0)
+  rows.forEach((row, index) => {
+    if (equal(row.before, row.after)) return
+    for (let pos = Math.max(0, index - 1); pos <= Math.min(rows.length - 1, index + 1); pos++) context.add(pos)
+  })
+  let indices = [...context]
+  if (indices.length > limit) indices = [...indices.slice(0, Math.ceil(limit / 2)), ...indices.slice(-Math.floor(limit / 2))]
+
+  const result = []
+  let previous = -1
+  for (const index of indices) {
+    if (index > previous + 1) result.push({ skip: index - previous - 1 })
+    result.push(rows[index])
+    previous = index
+  }
+  if (previous < rows.length - 1) result.push({ skip: rows.length - previous - 1 })
   return result
 }
 
@@ -153,14 +197,7 @@ export function filepairs(before = [], after = []) {
 }
 
 export function references(data) {
-  const ids = new Set()
-  const visit = value => {
-    if (!value || typeof value !== 'object') return
-    if (value.type === 'file' && typeof value.id === 'string' && value.id) ids.add(value.id)
-    else Object.values(value).forEach(visit)
-  }
-  visit(data)
-  return [...ids]
+  return [...fileids(data)]
 }
 
 function set(target, path, value) {
@@ -297,23 +334,26 @@ export function words(before, after) {
   return result
 }
 
-export function assets(value, files = {}) {
-  const found = new Map()
-  const visit = value => {
-    if (typeof value === 'string' && files[value]) found.set(files[value].id, files[value])
-    else if (Array.isArray(value)) value.forEach(visit)
-    else if (value && typeof value === 'object') {
-      if (value.type === 'file' && files[value.id]) found.set(files[value.id].id, files[value.id])
-      else Object.values(value).forEach(visit)
+export function filechanges(before = {}, after = {}, diffs = {}) {
+  const files = { before: before.files || {}, after: after.files || {} }, changes = []
+  for (const id of new Set([...Object.keys(files.before), ...Object.keys(files.after)])) {
+    if (equal(filedata(files.before[id]), filedata(files.after[id]))) continue
+    for (const side of ['before', 'after']) if (files[side][id]) changes.push({ key: `${side}:${id}`, side, file: files[side][id] })
+  }
+
+  const used = new Set()
+  for (const [section, entries] of Object.entries(diffs)) {
+    const fields = section === 'content' ? entries.flatMap(block => block.fields) : entries
+    for (const field of fields) {
+      field.media = Object.fromEntries(['before', 'after'].map(side => [side, reference(field.before) && reference(field.after)
+        ? [...fileids(field[side], files[side])].map(id => files[side][id]) : []]))
+      for (const side of ['before', 'after']) field.media[side].forEach(file => used.add(`${side}:${file.id}`))
     }
   }
-  visit(value)
-  return [...found.values()]
-}
 
-export function fieldmedia(field, before = {}, after = {}) {
-  const reference = value => value == null || typeof value === 'string' || value?.type === 'file' || (Array.isArray(value) && value.every(reference))
-  if (!reference(field.before) || !reference(field.after)) return { before: [], after: [] }
-
-  return { before: assets(field.before, before.files), after: assets(field.after, after.files) }
+  const remaining = changes.filter(entry => !used.has(entry.key))
+  return {
+    count: new Set(changes.map(entry => entry.file.id)).size,
+    remaining: Object.fromEntries(['before', 'after'].map(side => [side, remaining.filter(entry => entry.side === side).map(entry => entry.file)]))
+  }
 }

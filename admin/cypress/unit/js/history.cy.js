@@ -1,4 +1,4 @@
-import { assets, blocks, fieldmedia, filepairs, media, plaintext, restore, sections, words } from '../../../js/history'
+import { blocks, filechanges, filepairs, plaintext, restore, sections, tableRows, words } from '../../../js/history'
 import { loadVersions } from '../../../js/version'
 
 const block = (id, text = id) => ({ id, type: 'text', group: 'main', data: { text } })
@@ -31,6 +31,21 @@ describe('History comparisons and restoration', () => {
   it('includes text, type and group changes together', () => {
     const diff = blocks([a], [{ ...a, type: 'heading', group: 'aside', data: { text: 'Changed' } }])
     expect(diff[0].fields.map(field => field.path.join('.'))).to.deep.equal(['type', 'group', 'data.text'])
+  })
+
+  it('keeps changed table rows with nearby context and shortens untouched spans', () => {
+    const before = Array.from({ length: 12 }, (_, index) => ['Row ' + (index + 1), 'Value ' + (index + 1)])
+    const after = before.map(row => [...row])
+    after[5][1] = 'Changed'
+
+    expect(tableRows(before, after)).to.deep.equal([
+      { before: before[0], after: before[0] },
+      { skip: 3 },
+      { before: before[4], after: before[4] },
+      { before: before[5], after: after[5] },
+      { before: before[6], after: before[6] },
+      { skip: 5 }
+    ])
   })
 
   it('keeps repeated shared references and legacy blocks alongside keyed blocks', () => {
@@ -94,10 +109,18 @@ describe('History comparisons and restoration', () => {
     expect(restore(current, target, diffs, key => key === diffs.data[0].key)).to.deep.equal({ path: 'old.jpg', previews: target.previews })
   })
 
-  it('shows both media versions when the path changes under the same file ID', () => {
-    const before = { f: { id: 'f', path: 'old.jpg', editor: 'a' } }
-    expect(media(before, { f: { ...before.f, editor: 'b' } })).to.deep.equal([])
-    expect(media(before, { f: { id: 'f', path: 'new.jpg' } }).map(entry => entry.side)).to.deep.equal(['before', 'after'])
+  it('groups changed media and attaches direct field references', () => {
+    const file = { id: 'image', path: 'old.jpg' }, files = { image: file }
+    const direct = { before: { type: 'file', id: 'image' }, after: 'image' }
+    const structured = { before: [{ image: { type: 'file', id: 'image' } }], after: [] }
+    const unchanged = filechanges({ files }, { files }, { data: [direct, structured] })
+    expect(unchanged.count).to.equal(0)
+    expect(direct.media).to.deep.equal({ before: [file], after: [file] })
+    expect(structured.media).to.deep.equal({ before: [], after: [] })
+
+    expect(filechanges({ files }, { files: { image: { ...file, editor: 'b' } } }).count).to.equal(0)
+    expect(filechanges({ files }, { files: { image: { ...file, path: 'new.jpg' } } }).remaining)
+      .to.deep.equal({ before: [file], after: [{ ...file, path: 'new.jpg' }] })
   })
 
   it('restores combinations of edits, moves, additions and removals in both directions', () => {
@@ -195,14 +218,6 @@ describe('History text presentation', () => {
     expect(window.historyTextInjected).to.equal(undefined)
   })
 
-  it('resolves direct media references without duplicating or expanding structured fields', () => {
-    const file = { id: 'image', path: 'image.jpg' }, files = { image: file }
-    expect(assets([{ image: { type: 'file', id: 'image' } }, 'image'], files)).to.deep.equal([file])
-    expect(fieldmedia({ before: { type: 'file', id: 'image' }, after: 'image' }, { files }, { files }))
-      .to.deep.equal({ before: [file], after: [file] })
-    expect(fieldmedia({ before: [{ image: { type: 'file', id: 'image' } }], after: [] }, { files }, { files }))
-      .to.deep.equal({ before: [], after: [] })
-  })
 })
 
 describe('History version loading', () => {

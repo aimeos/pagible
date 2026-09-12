@@ -2796,3 +2796,165 @@ msgstr "העריכו את הדף הזה והציעו שיפורים"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "המשתמש צופה בדף עם המזהה \"%{id}\". כשהוא מתייחס ל\"דף הזה\", השתמשו ב-get-page עם המזהה הזה."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "מדיה"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "בלוק תוכן"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "קבוצה: %{group} · עמדה %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "הועבר מעמדה %{from} ל-%{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "נבחרו %{selected} מתוך %{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "תאריך לא ידוע"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "מיקום הבלוק"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "ערך"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "שגיאה באחזור גרסאות"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "נסה שוב"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "שינויים נוכחיים"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "מתוכנן ל-%{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "בחר הכל"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "בלוק נוסף"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "בלוק הוסר"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "שמור על המיקום הנוכחי"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "שמור על הערך הנוכחי"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "גרסה קודמת: הגרסה האחרונה שנשמרה"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "גרסה קודמת: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} מתוך %{total} נבחר להחזרה"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "בטל שינויים שנבחרו"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "שחזר את הגרסה הקודמת"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "ערך קודם"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "ערך חדש"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "הגדל את %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "טוען תצוגה מקדימה"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "תצוגה מקדימה לא זמינה"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "תצוגה מקדימה של תמונה"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "סגור תצוגה מקדימה"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "תצוגה מקדימה של טבלה"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "שדה %{num} השתנה"
+msgstr[1] "%{num} שדות השתנו"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "בלוק %{num} נוסף"
+msgstr[1] "נוספו %{num} בלוקים"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "בלוק %{num} הוסר"
+msgstr[1] "%{num} בלוקים הוסרו"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "בלוק %{num} השתנה"
+msgstr[1] "%{num} בלוקים השתנו"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "בלוק %{num} הועבר"
+msgstr[1] "%{num} בלוקים הועברו"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "קובץ %{num} השתנה"
+msgstr[1] "%{num} קבצים השתנו"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "שורה %{num} הושמטה"
+msgstr[1] "%{num} שורות הושמטו"

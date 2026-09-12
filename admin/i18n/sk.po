@@ -2802,3 +2802,172 @@ msgstr "Ohodnoťte túto stránku a navrhnite vylepšenia"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Používateľ si prezerá stránku s ID „%{id}“. Keď odkazuje na „túto stránku“, použite get-page s týmto ID."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Médiá"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Blok obsahu"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Skupina: %{group} · Pozícia %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Presunuté z polohy %{from} do %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected} z %{total} vybratých"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Neznámy dátum"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Poloha bloku"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Hodnota"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Chyba pri načítavaní verzií"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Skúste to znova"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Aktuálne zmeny"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Naplánované na %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Vybrať všetko"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Blok bol pridaný"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Blok bol odstránený"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Udržujte aktuálnu polohu"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Udržujte aktuálnu hodnotu"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Predchádzajúca verzia: Posledná uložená verzia"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Predchádzajúca verzia: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} z %{total} vybratých na vrátenie späť"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Vrátiť späť vybraté zmeny"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Obnovte predchádzajúcu verziu"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Predchádzajúca hodnota"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Nová hodnota"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Zväčšiť %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Načítava sa ukážka"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Ukážka nie je k dispozícii"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Ukážka obrázka"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Zavrieť ukážku"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Ukážka tabuľky"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "Pole %{num} zmenené"
+msgstr[1] "Počet zmenených polí: %{num}"
+msgstr[2] "Počet zmenených polí: %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "Pridaný blok %{num}"
+msgstr[1] "Pridané bloky %{num}"
+msgstr[2] "Pridané bloky %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "Blok %{num} bol odstránený"
+msgstr[1] "%{num} blokov bolo odstránených"
+msgstr[2] "%{num} blokov bolo odstránených"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} blok zmenený"
+msgstr[1] "Počet zmenených blokov: %{num}"
+msgstr[2] "Počet zmenených blokov: %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "Blok %{num} bol presunutý"
+msgstr[1] "Presunuté bloky: %{num}"
+msgstr[2] "Presunuté bloky: %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "Súbor %{num} sa zmenil"
+msgstr[1] "Počet zmenených súborov: %{num}"
+msgstr[2] "Počet zmenených súborov: %{num}"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "Riadok %{num} je vynechaný"
+msgstr[1] "%{num} riadkov je vynechaných"
+msgstr[2] "%{num} riadkov je vynechaných"

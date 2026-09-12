@@ -2802,3 +2802,172 @@ msgstr "Novērtējiet šo lapu un iesakiet uzlabojumus"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Lietotājs skata lapu ar ID “%{id}”. Ja tiek minēta “šī lapa”, izmantojiet get-page ar šo ID."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Plašsaziņas līdzekļi"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Satura bloks"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Grupa: %{group} · Pozīcija %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Pārvietots no pozīcijas %{from} uz %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "Atlasīts %{selected} no %{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Nezināms datums"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Bloka pozīcija"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Vērtība"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Ienesot versijas, radās kļūda"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Mēģiniet vēlreiz"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Pašreizējās izmaiņas"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Paredzēts %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Atlasiet visu"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Bloks ir pievienots"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Bloks noņemts"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Saglabājiet pašreizējo pozīciju"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Saglabājiet pašreizējo vērtību"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Iepriekšējā versija: jaunākā saglabātā versija"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Iepriekšējā versija: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} no %{total} atlasīts atgriešanai"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Atsaukt atlasītās izmaiņas"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Atjaunot iepriekšējo versiju"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Iepriekšējā vērtība"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Jauna vērtība"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Palielināt %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Notiek priekšskatījuma ielāde"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Priekšskatījums nav pieejams"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Attēla priekšskatījums"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Aizvērt priekšskatījumu"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Tabulas priekšskatījums"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} lauks ir mainīts"
+msgstr[1] "%{num} lauki mainīti"
+msgstr[2] "%{num} lauki mainīti"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} bloks ir pievienots"
+msgstr[1] "Pievienoti %{num} bloki"
+msgstr[2] "Pievienoti %{num} bloki"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} bloks ir noņemts"
+msgstr[1] "%{num} bloki ir noņemti"
+msgstr[2] "%{num} bloki ir noņemti"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} bloks mainīts"
+msgstr[1] "Mainīti %{num} bloki"
+msgstr[2] "Mainīti %{num} bloki"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} bloks ir pārvietots"
+msgstr[1] "%{num} bloki ir pārvietoti"
+msgstr[2] "%{num} bloki ir pārvietoti"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} fails ir mainīts"
+msgstr[1] "%{num} faili ir mainīti"
+msgstr[2] "%{num} faili ir mainīti"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} rinda ir izlaista"
+msgstr[1] "%{num} rindas ir izlaistas"
+msgstr[2] "%{num} rindas ir izlaistas"

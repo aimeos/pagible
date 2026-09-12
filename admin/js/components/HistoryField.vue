@@ -2,13 +2,13 @@
 
 <script>
 import { mdiClose } from '@mdi/js'
-import { filepairs, words } from '../history'
+import { filepairs, tableRows, words } from '../history'
 import { fileurl, filesrcset } from '../utils'
 
 export default {
   props: {
     field: { type: Object, required: true },
-    rawDetails: { type: Boolean, default: true }
+    type: { type: String, default: '' }
   },
 
   setup() { return { fileurl, filesrcset, mdiClose } },
@@ -17,6 +17,15 @@ export default {
   computed: {
     rows() {
       return filepairs(this.field.media?.before || [], this.field.media?.after || [])
+    },
+
+    table() {
+      const valid = value => value == null || (Array.isArray(value) && value.every(Array.isArray))
+      if (this.type !== 'table' || !valid(this.field.before) || !valid(this.field.after)) return null
+
+      const before = this.field.before || [], after = this.field.after || []
+      const cols = Math.max(1, ...before.concat(after).map(row => row.length))
+      return { cols, rows: tableRows(before, after) }
     },
 
     values() {
@@ -29,6 +38,14 @@ export default {
   },
 
   methods: {
+    cell(row, position, column) {
+      return this.raw(row[position]?.[column])
+    },
+
+    changed(row, column) {
+      return JSON.stringify(row.before?.[column]) !== JSON.stringify(row.after?.[column])
+    },
+
     name(file) {
       return file.name || file.path?.split('/').pop() || '---'
     },
@@ -56,7 +73,7 @@ export default {
         <div class="media-pair" :class="{ 'single-media': positions(row).length === 1 }">
           <div v-for="position in positions(row)" :key="position" class="media-side">
             <div v-if="row.kind !== 'unchanged' || row.moved" class="media-label">
-              {{ position === 'before' ? $gettext('Previous value') : $gettext('Current value') }}
+              {{ position === 'before' ? $gettext('Previous value') : $gettext('New value') }}
             </div>
             <div v-if="!row[position]" class="empty-media">---</div>
             <figure v-else class="file" :class="row.kind === 'unchanged' ? '' : position === 'before' ? 'removed' : 'added'">
@@ -89,7 +106,7 @@ export default {
           </v-toolbar>
           <v-card-text>
             <p class="media-label">
-              {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('Current value') }} · {{ name(preview.file) }}
+              {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('New value') }} · {{ name(preview.file) }}
             </p>
             <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh">
               <template #placeholder><div class="media-loading" role="status"><v-progress-circular indeterminate size="24" aria-hidden="true" />{{ $gettext('Loading preview') }}</div></template>
@@ -100,24 +117,42 @@ export default {
         </v-card>
       </v-dialog>
     </div>
-    <details v-if="rawDetails" class="raw-details">
-      <summary>{{ $gettext('Show raw details') }}</summary>
+    <div v-if="table" class="table-preview diff-columns">
+      <div v-for="(position, index) in ['before', 'after']" :key="position" :class="index ? 'change-new' : 'change-old'">
+        <div class="side-label">{{ index ? $gettext('New value') : $gettext('Previous value') }}</div>
+        <div class="table-scroll">
+          <table :aria-label="$gettext('Table preview')" :style="{ '--columns': table.cols }">
+            <tbody>
+              <tr v-for="(row, rowIndex) in table.rows" :key="rowIndex">
+                <td v-if="row.skip" :colspan="table.cols" class="table-gap">
+                  … {{ $ngettext('%{num} row omitted', '%{num} rows omitted', row.skip, { num: row.skip }) }} …
+                </td>
+                <td v-for="column in row.skip ? 0 : table.cols" v-else :key="column" class="table-cell"
+                  :class="{ highlight: changed(row, column - 1) }" :title="cell(row, position, column - 1)"
+                >{{ cell(row, position, column - 1) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div v-if="!rows.length && !table" class="raw-value">
       <div class="diff-columns">
         <div v-for="(position, index) in ['before', 'after']" :key="position" :class="index ? 'change-new' : 'change-old'">
-          <div class="side-label">{{ index ? $gettext('Current value') : $gettext('Previous value') }}</div>
+          <div class="side-label">{{ index ? $gettext('New value') : $gettext('Previous value') }}</div>
           <pre><span v-for="(part, partIndex) in values[position]" :key="partIndex" :class="{ highlight: part[index ? 'added' : 'removed'], whitespace: space(part) }" :data-space="space(part)"><span>{{ part.value }}</span></span></pre>
         </div>
       </div>
-    </details>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.field-comparison {
+.field-comparison, .media-side, .change-old, .change-new {
   min-width: 0;
 }
 
-.media-pair {
+.media-pair, .diff-columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
@@ -131,8 +166,37 @@ export default {
   margin-top: 12px;
 }
 
-.media-side {
-  min-width: 0;
+.table-preview {
+  margin-bottom: 12px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.table-preview table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: max(100%, calc(var(--columns) * 8rem));
+}
+
+.table-preview td {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  padding: 6px 8px;
+}
+
+.table-cell {
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-gap {
+  font-size: 0.75rem;
+  font-style: italic;
+  text-align: center;
+  opacity: 0.7;
 }
 
 .media-loading, .media-error {
@@ -151,11 +215,18 @@ export default {
   min-height: 0;
 }
 
-.media-label {
+.media-label, .side-label {
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.media-label {
   overflow-wrap: anywhere;
   margin-bottom: 6px;
+}
+
+.side-label {
+  margin-bottom: 4px;
 }
 
 .empty-media {
@@ -203,24 +274,12 @@ export default {
   outline: 2px solid rgb(var(--v-theme-primary));
 }
 
-.raw-details {
+.raw-value {
   margin-top: 8px;
   font-size: 0.85rem;
 }
 
-.raw-details summary {
-  cursor: pointer;
-  padding: 6px 0;
-}
-
-.diff-columns {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 12px;
-}
-
 .change-old, .change-new {
-  min-width: 0;
   padding: 8px;
   border-radius: 4px;
 }
@@ -241,12 +300,6 @@ export default {
 .change-new .highlight {
   background: rgba(var(--v-theme-success), 0.25);
   text-decoration: underline;
-}
-
-.side-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-bottom: 4px;
 }
 
 pre {

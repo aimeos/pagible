@@ -2796,3 +2796,165 @@ msgstr "Αξιολογήστε αυτή τη σελίδα και προτείν�
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "Ο χρήστης βλέπει τη σελίδα με αναγνωριστικό «%{id}». Όταν αναφέρεται σε «αυτή τη σελίδα», χρησιμοποιήστε το get-page με αυτό το αναγνωριστικό."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "ΜΜΕ"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Μπλοκ περιεχομένου"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Ομάδα: %{group} · Θέση %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Μετακινήθηκε από τη θέση %{from} στο %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "Επιλέχθηκε το %{selected} από το %{total}"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Άγνωστη ημερομηνία"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Θέση μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Τιμή"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Σφάλμα κατά την ανάκτηση εκδόσεων"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Επανάληψη"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Τρέχουσες αλλαγές"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Προγραμματισμένο για %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Επιλέξτε όλα"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Προστέθηκε μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Αφαιρέθηκε μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Διατηρήστε την τρέχουσα θέση"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Διατηρήστε την τρέχουσα τιμή"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Προηγούμενη έκδοση: Τελευταία αποθηκευμένη έκδοση"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Προηγούμενη έκδοση: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "Επιλέχθηκε το %{selected} από το %{total} για επαναφορά"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Επαναφορά επιλεγμένων αλλαγών"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Επαναφορά της προηγούμενης έκδοσης"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Προηγούμενη τιμή"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Νέα τιμή"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Μεγέθυνση %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Φόρτωση προεπισκόπησης"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Η προεπισκόπηση δεν είναι διαθέσιμη"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Προεπισκόπηση εικόνας"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Κλείσιμο προεπισκόπησης"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Προεπισκόπηση πίνακα"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "Το πεδίο %{num} άλλαξε"
+msgstr[1] "%{num} πεδία άλλαξαν"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "Προστέθηκε %{num} μπλοκ"
+msgstr[1] "Προστέθηκαν %{num} μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} μπλοκ καταργήθηκε"
+msgstr[1] "Καταργήθηκαν %{num} μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} μπλοκ άλλαξε"
+msgstr[1] "%{num} μπλοκ άλλαξαν"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "Μετακινήθηκε %{num} μπλοκ"
+msgstr[1] "Μετακινήθηκαν %{num} μπλοκ"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} αρχείο άλλαξε"
+msgstr[1] "%{num} αρχεία άλλαξαν"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} σειρά παραλείφθηκε"
+msgstr[1] "%{num} σειρές παραλείφθηκαν"

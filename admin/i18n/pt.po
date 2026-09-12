@@ -2796,3 +2796,165 @@ msgstr "Avalie esta página e sugira melhorias"
 #: js/views/PageDetail.vue:188
 msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
 msgstr "O utilizador está a ver a página com o ID «%{id}». Quando se referir a «esta página», utilize get-page com esse ID."
+
+#: js/components/HistoryDialog.vue
+msgid "Media"
+msgstr "Mídia"
+
+#: js/components/HistoryDialog.vue
+msgid "Content block"
+msgstr "Bloco de conteúdo"
+
+#: js/components/HistoryDialog.vue
+msgid "Group: %{group} · Position %{num}"
+msgstr "Grupo: %{group} · Posição %{num}"
+
+#: js/components/HistoryDialog.vue
+msgid "Moved from position %{from} to %{to}"
+msgstr "Movido da posição %{from} para %{to}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected} de %{total} selecionado"
+
+#: js/components/HistoryDialog.vue
+msgid "Unknown date"
+msgstr "Data desconhecida"
+
+#: js/components/HistoryDialog.vue
+msgid "Block position"
+msgstr "Posição do bloco"
+
+#: js/components/HistoryDialog.vue
+msgid "Value"
+msgstr "Valor"
+
+#: js/components/HistoryDialog.vue
+msgid "Error fetching versions"
+msgstr "Erro ao buscar versões"
+
+#: js/components/HistoryDialog.vue
+msgid "Retry"
+msgstr "Tentar novamente"
+
+#: js/components/HistoryDialog.vue
+msgid "Current changes"
+msgstr "Mudanças atuais"
+
+#: js/components/HistoryDialog.vue
+msgid "Scheduled for %{date}"
+msgstr "Programado para %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "Select all"
+msgstr "Selecionar tudo"
+
+#: js/components/HistoryDialog.vue
+msgid "Block added"
+msgstr "Bloco adicionado"
+
+#: js/components/HistoryDialog.vue
+msgid "Block removed"
+msgstr "Bloco removido"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current position"
+msgstr "Manter a posição atual"
+
+#: js/components/HistoryDialog.vue
+msgid "Keep current value"
+msgstr "Manter o valor atual"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: Latest saved version"
+msgstr "Versão anterior: última versão salva"
+
+#: js/components/HistoryDialog.vue
+msgid "Previous version: %{date}"
+msgstr "Versão anterior: %{date}"
+
+#: js/components/HistoryDialog.vue
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} de %{total} selecionado para reversão"
+
+#: js/components/HistoryDialog.vue
+msgid "Revert selected changes"
+msgstr "Reverter alterações selecionadas"
+
+#: js/components/HistoryDialog.vue
+msgid "Restore previous version"
+msgstr "Restaurar versão anterior"
+
+#: js/components/HistoryField.vue
+msgid "Previous value"
+msgstr "Valor anterior"
+
+#: js/components/HistoryField.vue
+msgid "New value"
+msgstr "Novo valor"
+
+#: js/components/HistoryField.vue
+msgid "Enlarge %{name}"
+msgstr "Ampliar %{name}"
+
+#: js/components/HistoryField.vue
+msgid "Loading preview"
+msgstr "Carregando visualização"
+
+#: js/components/HistoryField.vue
+msgid "Preview unavailable"
+msgstr "Visualização indisponível"
+
+#: js/components/HistoryField.vue
+msgid "Image preview"
+msgstr "Visualização da imagem"
+
+#: js/components/HistoryField.vue
+msgid "Close preview"
+msgstr "Fechar visualização"
+
+#: js/components/HistoryField.vue
+msgid "Table preview"
+msgstr "Visualização da tabela"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "Campo %{num} alterado"
+msgstr[1] "Campos %{num} alterados"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "Bloco %{num} adicionado"
+msgstr[1] "Blocos %{num} adicionados"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "Bloco %{num} removido"
+msgstr[1] "Blocos %{num} removidos"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "Bloco %{num} alterado"
+msgstr[1] "Blocos %{num} alterados"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "Bloco %{num} movido"
+msgstr[1] "Blocos %{num} movidos"
+
+#: js/components/HistoryDialog.vue
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "Arquivo %{num} alterado"
+msgstr[1] "Arquivos %{num} alterados"
+
+#: js/components/HistoryField.vue
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "Linha %{num} omitida"
+msgstr[1] "Linhas %{num} omitidas"
