@@ -182,6 +182,15 @@ class JsonSchema
             }
 
             $props[$name] = $prop;
+
+            if( !empty( $field['rel'] ) ) {
+                $rel = [
+                    'type' => 'string',
+                    'enum' => ['', 'sponsored', 'nofollow'],
+                    'description' => 'Optional rel attribute for external links',
+                ];
+                $props[$name . '-rel'] = $strict ? $rel : self::nullable( $rel );
+            }
         }
 
         $schema = ['type' => 'object', 'properties' => $props];

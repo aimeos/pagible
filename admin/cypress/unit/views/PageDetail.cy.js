@@ -326,6 +326,39 @@ describe('PageDetail', () => {
     })
   })
 
+  describe('clean()', () => {
+    it('keeps the relationship belonging to a URL field', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.schemas.content = {
+          hero: { fields: { title: { type: 'string' }, url: { type: 'url', rel: true } } }
+        }
+
+        const result = vm.clean([{
+          type: 'hero',
+          data: {
+            title: 'Example',
+            url: 'https://example.com',
+            'url-rel': 'nofollow',
+            obsolete: true,
+          },
+        }], 'content')
+
+        expect(result[0].data).to.deep.equal({
+          title: 'Example',
+          url: 'https://example.com',
+          'url-rel': 'nofollow',
+        })
+
+        vm.schemas.content.hero.fields.url.rel = false
+        expect(vm.clean(result, 'content')[0].data).to.deep.equal({
+          title: 'Example',
+          url: 'https://example.com',
+        })
+      })
+    })
+  })
+
   describe('update()', () => {
     it('sets changed flag for the given key', () => {
       mountDetail().then(() => {

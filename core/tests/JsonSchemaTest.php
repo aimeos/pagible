@@ -164,7 +164,8 @@ class JsonSchemaTest extends CoreTestAbstract
                 'active' => ['type' => 'boolean', 'default' => true],
                 'country' => ['type' => 'string', 'uppercase' => true],
                 'date' => ['type' => 'date'],
-                'link' => ['type' => 'url', 'absolute' => true, 'allowed' => ['https']],
+                'link' => ['type' => 'url', 'absolute' => true, 'allowed' => ['https'], 'rel' => true],
+                'website' => ['type' => 'url'],
                 'location' => ['type' => 'map', 'zoom' => 16],
                 'price' => ['type' => 'number', 'precision' => 2],
                 'tags' => ['type' => 'combobox', 'multiple' => true, 'options' => [
@@ -191,6 +192,9 @@ class JsonSchemaTest extends CoreTestAbstract
             $this->assertArrayNotHasKey( 'format', $ai['date'] );
             $this->assertSame( 'uri', $strict['link']['format'] );
             $this->assertSame( '^(?:https)://', $strict['link']['pattern'] );
+            $this->assertSame( ['', 'sponsored', 'nofollow'], $strict['link-rel']['enum'] );
+            $this->assertSame( ['string', 'null'], $ai['link-rel']['type'] );
+            $this->assertArrayNotHasKey( 'website-rel', $strict );
             $this->assertSame( 16, $strict['location']['properties']['zoom']['default'] );
             $this->assertSame( 0.01, $strict['price']['multipleOf'] );
             $this->assertSame( ['one', 'two'], $strict['tags']['items']['enum'] );

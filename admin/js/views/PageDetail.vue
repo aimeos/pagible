@@ -356,7 +356,9 @@ export default {
             const cleanedData = {}
 
             for (const name in cleaned.data) {
-              if (fields[name]) {
+              const url = name.endsWith('-rel') ? name.slice(0, -4) : null
+
+              if (fields[name] || (url && fields[url]?.rel)) {
                 cleanedData[name] = cleaned.data[name]
               }
             }

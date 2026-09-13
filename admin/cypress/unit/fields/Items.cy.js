@@ -319,6 +319,32 @@ describe('Items', () => {
     cy.contains('.label', 'Text').should('exist')
   })
 
+  it('stores a selected relationship next to a nested URL', () => {
+    const onUpdate = cy.spy().as('update')
+    const Url = {
+      props: ['rel'],
+      emits: ['update:rel'],
+      render() {
+        return h('button', {
+          class: 'field-url',
+          onClick: () => this.$emit('update:rel', 'sponsored')
+        }, this.rel || 'none')
+      }
+    }
+
+    mountItems({
+      modelValue: [{ url: 'https://example.com', 'url-rel': '' }],
+      config: { item: { url: { type: 'url', label: 'Link', rel: true } } },
+      'onUpdate:modelValue': onUpdate,
+    }, {}, { Url })
+
+    cy.get('.v-expansion-panel-title').click()
+    cy.get('.field-url').click()
+    cy.get('@update').should((spy) => {
+      expect(spy.lastCall.args[0][0]['url-rel']).to.equal('sponsored')
+    })
+  })
+
   it('forwards batched file updates from nested fields', () => {
     const onAddFile = cy.spy()
     const Images = {

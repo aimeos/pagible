@@ -656,7 +656,9 @@ class PageControllerTest extends ThemeTestAbstract
         DB::flushQueryLog();
         DB::enableQueryLog();
 
-        $this->get( '/redirect' )->assertRedirect( '/target' );
+        $this->get( '/redirect' )
+            ->assertRedirect( '/target' )
+            ->assertStatus( Response::HTTP_MOVED_PERMANENTLY );
 
         $this->assertCount( 1, DB::getQueryLog() );
     }
