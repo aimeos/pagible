@@ -149,6 +149,24 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterArticleFields() : void
+	{
+		$fields = Schema::get( 'cms' )['content']['article']['fields'];
+		$type = $fields['article-type'];
+
+		$this->assertSame( 'select', $type['type'] );
+		$this->assertSame( 'Article', $type['default'] );
+		$this->assertSame( ['Article', 'BlogPosting', 'NewsArticle'], array_column( $type['options'], 'value' ) );
+		$this->assertArrayNotHasKey( 'required', $type );
+		$this->assertSame( 'string', $fields['author-name']['type'] );
+		$this->assertSame( 'name', $fields['author-name']['label'] );
+		$this->assertArrayNotHasKey( 'required', $fields['author-name'] );
+		$this->assertSame( 'url', $fields['author-url']['type'] );
+		$this->assertSame( 'url', $fields['author-url']['label'] );
+		$this->assertArrayNotHasKey( 'required', $fields['author-url'] );
+	}
+
+
 	public function testVideoJsonLdContainsGoogleProperties() : void
 	{
 		$page = ( new Page() )->forceFill( [
@@ -480,13 +498,101 @@ class ThemeTest extends ThemeTestAbstract
 
 		foreach( $fields as $name => $field )
 		{
-			$data = (object) ( $field + ['text' => 'Article introduction'] );
+			$data = (object) ( $field + [
+				'article-type' => 'BlogPosting',
+				'author-name' => 'Jane Doe',
+				'author-url' => 'https://example.com/authors/jane-doe',
+				'text' => 'Article introduction',
+			] );
 			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
 
 			$this->assertStringContainsString( '<picture class="cover"', $html, $name );
 			$this->assertStringContainsString( 'https://example.com/article.jpg', $html, $name );
+			$this->assertStringContainsString( '"datePublished": "2026-08-23T12:00:00+00:00"', $html, $name );
 			$this->assertStringContainsString( '"image":', $html, $name );
+			$this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ), $name );
+			$json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
+			$this->assertSame( 'BlogPosting', $json['@type'], $name );
+			$this->assertSame( [
+				'@type' => 'Person',
+				'name' => 'Jane Doe',
+				'url' => 'https://example.com/authors/jane-doe',
+			], $json['author'], $name );
 		}
+	}
+
+
+	public function testArticleRendersOptionalAuthorJsonLdFields() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-08-23 12:00:00' ),
+			'lang' => 'en',
+			'title' => 'Article',
+			'updated_at' => Carbon::parse( '2026-08-24 12:00:00' ),
+		] );
+		$files = collect();
+		$authors = [
+			'name' => [
+				['author-name' => 'Jane Doe'],
+				['@type' => 'Person', 'name' => 'Jane Doe'],
+			],
+			'url' => [
+				['author-url' => 'https://example.com/authors/jane-doe'],
+				['@type' => 'Person', 'url' => 'https://example.com/authors/jane-doe'],
+			],
+		];
+
+		foreach( $authors as $name => [$fields, $expected] )
+		{
+			$data = (object) ( $fields + ['text' => 'Article introduction'] );
+			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ), $name );
+			$json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
+			$this->assertSame( 'Article', $json['@type'], $name );
+			$this->assertSame( $expected, $json['author'], $name );
+		}
+
+		$data = (object) ['text' => 'Article introduction'];
+		$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ) );
+		$json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
+		$this->assertSame( 'Article', $json['@type'] );
+		$this->assertArrayNotHasKey( 'author', $json );
+	}
+
+
+	public function testSocialMediaUsesLocalizedImageDescriptionForAltText() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'domain' => '',
+			'id' => 'page',
+			'lang' => 'de',
+			'path' => 'artikel',
+		] );
+		$file = (object) [
+			'description' => (object) [
+				'de' => 'Großes Bild & Motiv',
+				'en' => 'Large image',
+			],
+			'id' => 'image',
+			'name' => 'article.jpg',
+			'path' => 'https://example.com/article.jpg',
+			'previews' => [],
+		];
+		$data = (object) [
+			'description' => 'Artikelbeschreibung',
+			'file' => (object) ['id' => 'image'],
+			'title' => 'Artikel',
+		];
+		$files = collect( ['image' => $file] );
+
+		$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertStringContainsString( '<meta name="twitter:image:alt" content="Großes Bild &amp; Motiv" />', $html );
+		$this->assertStringContainsString( '<meta property="og:image:alt" content="Großes Bild &amp; Motiv" />', $html );
+		$this->assertStringNotContainsString( 'Large image', $html );
 	}
 
 
