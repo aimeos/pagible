@@ -30,7 +30,7 @@ describe('Combobox', () => {
     cy.mount(Combobox, {
       props: { config: { options: staticOptions }, 'onUpdate:modelValue': onUpdate },
     })
-    cy.get('.v-combobox input').type('Hamster{enter}')
+    cy.get('.v-combobox input[role="combobox"]').type('Hamster{enter}')
     cy.get('@update').should('have.been.called')
   })
 

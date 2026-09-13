@@ -8,12 +8,12 @@ describe('Url', () => {
 
   it('displays the modelValue', () => {
     cy.mount(Url, { props: { modelValue: 'https://example.com', config: {} } })
-    cy.get('input').should('have.value', 'https://example.com')
+    cy.get('input[role="combobox"]').should('have.value', 'https://example.com')
   })
 
   it('uses config.default when no modelValue is supplied', () => {
     cy.mount(Url, { props: { config: { default: 'https://default.com' } } })
-    cy.get('input').should('have.value', 'https://default.com')
+    cy.get('input[role="combobox"]').should('have.value', 'https://default.com')
   })
 
   it('renders with a placeholder config without errors', () => {
@@ -116,12 +116,12 @@ describe('Url', () => {
     cy.mount(Url, {
       props: { config: {}, 'onUpdate:modelValue': onUpdate }
     })
-    cy.get('input').type('https://new.com')
+    cy.get('input[role="combobox"]').type('https://new.com')
     cy.get('@update').should('have.been.called')
   })
 
   it('is readonly when readonly prop is true', () => {
     cy.mount(Url, { props: { config: {}, readonly: true } })
-    cy.get('input').should('have.attr', 'readonly')
+    cy.get('input[role="combobox"]').should('have.attr', 'readonly')
   })
 })

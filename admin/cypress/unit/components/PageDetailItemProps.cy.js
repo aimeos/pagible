@@ -84,12 +84,12 @@ describe('PageDetailItemProps', () => {
 
   it('makes fields readonly without page:save permission', () => {
     mountProps()
-    cy.get('input').first().should('have.attr', 'readonly')
+    cy.get('input.v-field__input').first().should('have.attr', 'readonly')
   })
 
   it('makes fields editable with page:save permission', () => {
     mountProps({}, { 'page:save': true })
-    cy.get('input').first().should('not.have.attr', 'readonly')
+    cy.get('input.v-field__input').first().should('not.have.attr', 'readonly')
   })
 
   it('does not show domain field when multidomain is false', () => {
