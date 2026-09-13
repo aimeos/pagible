@@ -230,6 +230,7 @@ class Properties
 
 
     /**
+     * @param 'asc'|'desc' $direction
      * @return Builder<Page>
      */
     protected function query( object $item, bool $editor, string $sort, string $direction ) : Builder
