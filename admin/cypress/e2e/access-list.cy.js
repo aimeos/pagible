@@ -259,7 +259,7 @@ describe('Access list', () => {
     cy.get('.assigned-access').should('contain', 'member')
     cy.get('.assigned-permissions').should('contain', 'viewer')
 
-    cy.get('.assigned-access input').click()
+    cy.get('.assigned-access input[role="combobox"]').click()
     cy.contains('.v-overlay--active .v-list-item', 'alpha').click()
     cy.get('.btn-save').click()
     cy.wait('@setUserAccess').then(({ request }) => {
@@ -268,7 +268,7 @@ describe('Access list', () => {
       expect(operation.variables).not.to.have.property('email')
       expect(operation.variables.access).to.have.members(['member', 'alpha'])
     })
-    cy.get('.assigned-access input').type('{esc}')
+    cy.get('.assigned-access input[role="combobox"]').type('{esc}')
 
     cy.get('.assigned-permissions .assigned').click()
     cy.contains('.v-overlay--active .v-list-item', 'editor').click()
@@ -383,7 +383,7 @@ describe('Access list', () => {
     cy.get('.user-search input').type('member@example.com')
     cy.get('.btn-search').click()
     cy.wait('@cmsUser')
-    cy.get('.assigned-access input').click()
+    cy.get('.assigned-access input[role="combobox"]').click()
     cy.contains('.v-overlay--active .v-list-item', 'alpha').click()
     cy.get('.btn-save').click()
     cy.get('.user-search input').clear().type('other@example.com')
