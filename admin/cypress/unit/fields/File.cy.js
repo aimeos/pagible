@@ -169,6 +169,36 @@ describe('File', () => {
     cy.contains('admin').should('exist')
   })
 
+  it('keeps paired columns at least 360px wide and fills the row when wrapped', () => {
+    cy.viewport(1200, 800)
+    mountFile({
+      modelValue: { id: '1', type: 'file' },
+      assets: { '1': fileAsset },
+    })
+
+    cy.get('.field-columns').invoke('css', 'width', '800px')
+    cy.get('.field-columns > .v-col').then(($columns) => {
+      const first = $columns[0].getBoundingClientRect()
+      const second = $columns[1].getBoundingClientRect()
+
+      expect(first.top).to.equal(second.top)
+      expect(first.width).to.be.at.least(360)
+      expect(second.width).to.be.at.least(360)
+    })
+
+    cy.get('.field-columns').invoke('css', 'width', '700px')
+    cy.get('.field-columns').then(($row) => {
+      const row = $row[0].getBoundingClientRect()
+      const columns = $row[0].querySelectorAll(':scope > .v-col')
+      const first = columns[0].getBoundingClientRect()
+      const second = columns[1].getBoundingClientRect()
+
+      expect(second.top).to.be.greaterThan(first.top)
+      expect(first.width).to.equal(row.width)
+      expect(second.width).to.equal(row.width)
+    })
+  })
+
   it('shows file description from first locale', () => {
     mountFile({
       modelValue: { id: '1', type: 'file' },

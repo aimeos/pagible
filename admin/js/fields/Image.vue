@@ -88,7 +88,7 @@ export default {
     <slot name="label" />
   </FileProtect>
 
-  <v-row>
+  <v-row :class="{ 'field-columns': file.path }">
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
         <div
