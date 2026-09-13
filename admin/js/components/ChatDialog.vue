@@ -38,6 +38,8 @@ export default {
       audio: null,
       busy: false,
       dictating: false,
+      historyDraft: '',
+      historyIndex: null,
       input: '',
       messages: [],
       seq: 0 // monotonic id source for stable message keys (splice/concurrent turns must not reindex)
@@ -90,6 +92,8 @@ export default {
 
     clear() {
       if (!this.busy) {
+        this.historyDraft = ''
+        this.historyIndex = null
         this.messages = []
       }
     },
@@ -102,10 +106,37 @@ export default {
       if (e.isComposing) {
         return // don't submit while an IME candidate is being composed (CJK input)
       }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        this.recall(e, e.key === 'ArrowUp' ? -1 : 1)
+        return
+      }
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         this.send()
       }
+    },
+
+    recall(e, offset) {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+        return
+      }
+
+      const entries = this.messages.filter((m) => m.role === 'user').map((m) => m.content)
+
+      if (!entries.length || (this.historyIndex === null && offset > 0)) {
+        return
+      }
+
+      if (this.historyIndex === null) {
+        this.historyDraft = this.input
+        this.historyIndex = entries.length
+      }
+
+      e.preventDefault()
+      const index = Math.max(0, Math.min(entries.length, this.historyIndex + offset))
+
+      this.input = index < entries.length ? entries[index] : this.historyDraft
+      this.historyIndex = index < entries.length ? index : null
     },
 
     record() {
@@ -170,6 +201,8 @@ export default {
         .filter((m) => m.content)
 
       this.input = ''
+      this.historyDraft = ''
+      this.historyIndex = null
       this.busy = true
       const controller = (this.controller = new AbortController())
 
@@ -319,7 +352,7 @@ export default {
 
         <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
           <v-avatar
-            :color="m.role === 'user' ? 'primary' : 'secondary'"
+            :color="m.role === 'user' ? 'success' : 'primary'"
             variant="tonal"
             size="40"
             class="chat-avatar"
@@ -464,6 +497,8 @@ export default {
 }
 
 .chat-row.user {
+  --v-activated-opacity: 0.33;
+
   flex-direction: row-reverse;
 }
 
@@ -475,15 +510,15 @@ export default {
   position: relative;
   max-width: 80%;
   padding: 11px 15px;
-  border: 1px solid rgba(var(--v-theme-secondary), var(--v-border-opacity));
+  border: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
   border-radius: 16px;
-  background-color: rgba(var(--v-theme-secondary), var(--v-activated-opacity));
+  background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
   color: rgb(var(--v-theme-on-surface));
 }
 
 .chat-row.user .chat-bubble {
-  border-color: rgba(var(--v-theme-primary), var(--v-border-opacity));
-  background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
+  border-color: rgba(var(--v-theme-success), var(--v-border-opacity));
+  background-color: rgba(var(--v-theme-success), var(--v-activated-opacity));
 }
 
 .chat-bubble.error {
