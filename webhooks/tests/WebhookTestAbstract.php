@@ -76,6 +76,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     {
         return [
             \Aimeos\Cms\CoreServiceProvider::class,
+            \Aimeos\Nestedset\NestedSetServiceProvider::class,
             \Aimeos\Cms\GraphqlServiceProvider::class,
             \Aimeos\Cms\WebhookServiceProvider::class,
             \Nuwave\Lighthouse\LighthouseServiceProvider::class,
