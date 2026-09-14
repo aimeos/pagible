@@ -120,6 +120,7 @@ if ($pgettext) {
   // page config groups and elements
   $pgettext('sg', 'expert')
   $pgettext('sg', 'theme')
+  $pgettext('st', 'website')
   $pgettext('st', 'logo')
   $pgettext('st', 'logo-alternative')
   $pgettext('st', 'icon')

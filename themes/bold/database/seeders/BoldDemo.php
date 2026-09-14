@@ -914,6 +914,7 @@ class BoldDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'RALLY Training Club'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

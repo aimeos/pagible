@@ -519,6 +519,7 @@ class DefaultDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'Meridian Works'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

@@ -35,6 +35,31 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
+    public function testCmsconfig()
+    {
+        $root = new \Aimeos\Cms\Models\Page();
+        $root->setRawAttributes( ['config' => json_encode( [
+            'website' => ['data' => ['title' => 'Root website']],
+            'restaurant' => ['data' => ['name' => 'Root restaurant']],
+        ] )] );
+
+        $parent = new \Aimeos\Cms\Models\Page();
+        $parent->setRawAttributes( ['config' => json_encode( [
+            'website' => ['data' => ['title' => 'Parent website']],
+        ] )] );
+
+        $page = new \Aimeos\Cms\Models\Page();
+        $page->setRawAttributes( ['config' => json_encode( [
+            'website' => ['data' => ['title' => '   ']],
+        ] )] );
+        $page->setRelation( 'ancestors', collect( [$root, $parent] ) );
+
+        $this->assertSame( 'Parent website', cmsconfig( $page, 'website.data.title' ) );
+        $this->assertSame( 'Root restaurant', cmsconfig( $page, 'restaurant.data.name' ) );
+        $this->assertSame( 'fallback', cmsconfig( $page, 'missing.data.value', 'fallback' ) );
+    }
+
+
     public function testCmsAssetSignsPrivateFileForRestrictedRender()
     {
         config( ['cms.disks.private.ttl' => 120] );

@@ -67,6 +67,18 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterWebsiteConfig() : void
+	{
+		$website = Schema::schemas( section: 'config' )['website'];
+
+		$this->assertSame( 'basic', $website['group'] );
+		$this->assertSame( 'string', $website['fields']['title']['type'] );
+		$this->assertSame( 1, $website['fields']['title']['min'] );
+		$this->assertSame( 255, $website['fields']['title']['max'] );
+		$this->assertTrue( $website['fields']['title']['required'] );
+	}
+
+
 	public function testRegisterSecurityConfig() : void
 	{
 		$security = Schema::schemas( section: 'config' )['security'];
@@ -604,8 +616,10 @@ class ThemeTest extends ThemeTestAbstract
 			'domain' => '',
 			'id' => 'page',
 			'lang' => 'de',
+			'name' => 'Website',
 			'path' => 'artikel',
 		] );
+		$page->setRelation( 'ancestors', collect() );
 		$file = (object) [
 			'description' => (object) [
 				'de' => 'Großes Bild & Motiv',
@@ -625,6 +639,7 @@ class ThemeTest extends ThemeTestAbstract
 
 		$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
 
+		$this->assertStringContainsString( '<meta property="og:site_name" content="Website" />', $html );
 		$this->assertStringContainsString( '<meta name="twitter:image:alt" content="Großes Bild &amp; Motiv" />', $html );
 		$this->assertStringContainsString( '<meta property="og:image:alt" content="Großes Bild &amp; Motiv" />', $html );
 		$this->assertStringNotContainsString( 'Large image', $html );
@@ -771,17 +786,6 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testLayoutTypeDefaultsToPage(): void
 	{
-		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/views/layouts/main.blade.php' ) ?: [];
-		$paths[] = dirname( __DIR__ ) . '/views/layouts/main.blade.php';
-
-		foreach( $paths as $path ) {
-			$this->assertStringContainsString(
-				"type-{{ cms(\$page, 'type') ?: 'page' }}",
-				(string) file_get_contents( $path ),
-				$path
-			);
-		}
-
 		$html = Blade::render(
 			"<body class=\"type-{{ cms(\$page, 'type') ?: 'page' }}\"></body>",
 			['page' => (object) ['type' => '']],
@@ -792,7 +796,7 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testLoginLinkIsOptionalInAllLayouts(): void
+	public function testLayoutsUseSharedContracts(): void
 	{
 		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/views/layouts/main.blade.php' ) ?: [];
 		$paths[] = dirname( __DIR__ ) . '/views/layouts/main.blade.php';
@@ -816,6 +820,14 @@ class ThemeTest extends ThemeTestAbstract
 			$this->assertStringContainsString( '<svg', $block, $path );
 			$this->assertSame( 1, substr_count( $view, "Route::has('login')" ), $path );
 			$this->assertSame( 1, substr_count( $view, "route('login')" ), $path );
+			$this->assertStringContainsString( "type-{{ cms(\$page, 'type') ?: 'page' }}", $view, $path );
+			$this->assertStringNotContainsString( '$icon', $view, $path );
+			$this->assertStringNotContainsString( '$logo', $view, $path );
+			$this->assertStringNotContainsString( '$website', $view, $path );
+			$this->assertStringContainsString( "cmsconfig(\$page, 'website.data.title'", $view, $path );
+			$this->assertStringNotContainsString( 'cmswebsite(', $view, $path );
+			$this->assertStringNotContainsString( 'function_exists(', $view, $path );
+			$this->assertStringNotContainsString( "config('app.name')", $view, $path );
 		}
 	}
 

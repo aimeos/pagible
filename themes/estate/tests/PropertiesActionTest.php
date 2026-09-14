@@ -128,6 +128,8 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testDemoPropertyEntriesRenderMaps(): void
     {
+        config( ['app.name' => 'Laravel'] );
+
         require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
 
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
@@ -154,6 +156,13 @@ class PropertiesActionTest extends ThemeTestAbstract
         $response->assertSee( 'marker=52.547914%2C13.413557', false );
         $response->assertSee( '© OpenStreetMap contributors', false );
         $response->assertDontSee( 'GeoCoordinates', false );
+
+        preg_match_all( '/<script type="application\/ld\+json">(.*?)<\/script>/s', (string) $response->getContent(), $matches );
+        $listing = collect( $matches[1] )
+            ->map( fn( string $json ) => json_decode( $json, true, flags: JSON_THROW_ON_ERROR ) )
+            ->first( fn( array $json ) => ( $json['@type'] ?? null ) === 'RealEstateListing' );
+
+        $this->assertSame( 'Estate', data_get( $listing, 'offers.seller.name' ) );
     }
 
 

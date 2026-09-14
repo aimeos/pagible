@@ -49,7 +49,7 @@
             [{
                 "@@context": "https://schema.org",
                 "@@type": "WebSite",
-                "name": {!! cmsjson(config('app.name')) !!},
+                "name": {!! cmsjson(cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name'))) !!},
                 "url": {!! cmsjson(url('/')) !!}
             },
             {
@@ -121,18 +121,12 @@
                         </button>
                     </li>
                     <li class="brand">
-                        <a href="{{ cmsroute($nav->ancestors()->first() ?? $page) }}" class="contrast" title="{{ config('app.name') }}" aria-label="{{ config('app.name') }}">
-                            @php($logoFound = false)
-                            @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-                                @if($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id'))
-                                    <img src="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}" alt="{{ config('app.name') }}">
-                                    @php($logoFound = true)
-                                    @break
-                                @endif
-                            @endforeach
-                            @unless($logoFound)
-                                {{ config('app.name') }}
-                            @endunless
+                        <a href="{{ cmsroute($nav->ancestors()->first() ?? $page) }}" class="contrast" title="{{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}" aria-label="{{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}">
+                            @if(($navItem = $page->ancestorsAndSelf->reverse()->first(fn($item) => cms($item, 'config.logo-alternative.data.file.id') ?: cms($item, 'config.logo.data.file.id'))) && ($fileId = cms($navItem, 'config.logo-alternative.data.file.id') ?: cms($navItem, 'config.logo.data.file.id')))
+                                <img src="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}" alt="{{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}">
+                            @else
+                                {{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}
+                            @endif
                         </a>
                     </li>
                     <li class="menu-close">
@@ -216,7 +210,7 @@
 
         <footer class="bottom">
             <span class="copyright">
-                &copy; {{ date('Y') }} {{ config('app.name') }}
+                &copy; {{ date('Y') }} {{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}
             </span>
         </footer>
 

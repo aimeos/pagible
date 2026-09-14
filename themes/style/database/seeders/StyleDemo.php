@@ -690,6 +690,7 @@ class StyleDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'Veyra'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

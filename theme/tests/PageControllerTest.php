@@ -16,6 +16,7 @@ use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Validation;
 use Database\Seeders\TestSeeder;
 use Illuminate\Contracts\Cache\LockProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -57,6 +58,68 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertStatus( 200 );
         $response->assertDontSee( 'vendor/cms/admin/editor', false );
         $response->assertDontSee( 'stats.js', false );
+    }
+
+
+    public function testWebsiteTitleUsesPageTreeConfig()
+    {
+        config( ['app.name' => 'Application name'] );
+
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root->forceFill( ['config' => $this->websiteConfig( 'Tree website' )] )->saveQuietly();
+
+        $response = $this->get( '/blog?website=inherited' );
+
+        $response->assertOk();
+        $response->assertSee( 'title="Tree website"', false );
+        $response->assertSee( '"name": "Tree website"', false );
+        $response->assertSee( '&copy; ' . date( 'Y' ) . ' Tree website', false );
+        $response->assertDontSee( 'Application name' );
+        $this->assertMatchesRegularExpression(
+            '#<li class="brand">\s*<a[^>]*>\s*Tree website\s*</a>#',
+            (string) $response->getContent(),
+        );
+
+        $page = Page::where( 'tag', 'blog' )->firstOrFail();
+        $page->forceFill( ['config' => $this->websiteConfig( 'Section website' )] )->saveQuietly();
+
+        $response = $this->get( '/blog?website=nearest' );
+
+        $response->assertOk();
+        $response->assertSee( 'title="Section website"', false );
+        $response->assertDontSee( 'Tree website' );
+    }
+
+
+    public function testWebsiteTitleUsesRootPageNameAsFallback()
+    {
+        config( ['app.name' => 'Application name'] );
+
+        $response = $this->get( '/blog' );
+
+        $response->assertOk();
+        $response->assertSee( 'title="Home"', false );
+        $response->assertDontSee( 'Application name' );
+    }
+
+
+    public function testWebsiteTitleUsesPublishedAndLatestPageTreeVersions()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Published website' )], $this->user );
+        Publication::publish( Page::class, [$root->id], $this->user );
+        Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Draft website' )], $this->user );
+
+        $response = $this->get( '/blog?website=published' );
+        $response->assertOk();
+        $response->assertSee( 'title="Published website"', false );
+        $response->assertDontSee( 'Draft website' );
+
+        $response = $this->actingAs( $this->user )->get( '/blog?website=preview' );
+        $response->assertOk();
+        $response->assertSee( 'title="Draft website"', false );
+        $response->assertDontSee( 'Published website' );
     }
 
 
@@ -764,5 +827,14 @@ class PageControllerTest extends ThemeTestAbstract
     private function putCache( string $key, string $html, \DateTimeInterface $expires ): void
     {
         ( new \ReflectionMethod( PageCache::class, 'put' ) )->invoke( null, $key, $html, $expires );
+    }
+
+
+    /**
+     * @return array<string, object>
+     */
+    private function websiteConfig( string $title ): array
+    {
+        return ['website' => Validation::entry( 'website', ['title' => $title], 'config' )];
     }
 }
