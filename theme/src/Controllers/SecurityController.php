@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Nestedset\NestedSet;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -85,7 +84,7 @@ class SecurityController extends Controller
             ->select( 'config' )
             ->whereNull( 'parent_id' )
             ->whereIn( 'status', [1, 2] )
-            ->orderBy( NestedSet::LFT );
+            ->defaultOrder();
 
         if( $domain !== '' ) {
             $query->where( 'domain', $domain );

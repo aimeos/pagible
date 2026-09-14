@@ -22,6 +22,30 @@ After installation, the configuration is available in `config/cms/theme.php`:
 | `sitemap` | `CMS_SITEMAP` | `sitemap` | URL path prefix for XML and news sitemaps (`/{sitemap}.xml`, `/{sitemap}-news.xml`) |
 | `pageroute` | `CMS_PAGEROUTE` | `{}` | JSON object with catch-all page route options (Laravel route group) |
 
+### robots.txt
+
+The `/robots.txt` route always advertises the main and news sitemap using the
+configured `sitemap` prefix. Fresh Laravel applications also contain a static
+`public/robots.txt`, which the development and common production web servers serve
+before Laravel routing. If it contains custom rules, first copy them into the
+`robots.txt` configuration element on a root page and publish the change. Then
+remove the static file to make the dynamic route reachable:
+
+```bash
+rm public/robots.txt
+```
+
+Alternatively, configure the web server to pass `/robots.txt` to Laravel even when
+the static file exists.
+
+Pagible emits the published rules before the generated sitemap declarations and
+avoids duplicating either built-in sitemap URL when it is already present in the
+configured text. Invalid UTF-8, unsupported control characters and content exceeding
+the 500 KiB crawler interoperability limit are ignored while the generated sitemap
+declarations remain available. The schema limit provides early editor feedback in
+characters; the public controller separately enforces the response budget in encoded
+bytes. Responses include an ETag and support conditional requests.
+
 ### Authenticated page caching
 
 Anonymous public pages use complete-response caching owned entirely by the pre-session middleware. It reads cached responses, coordinates rendering, and stores only a final response marked public. Requests carrying the Laravel session cookie or an `Authorization` header bypass that cache and authenticated responses are rendered privately. Applications with other authentication indicators can extend the cheap pre-session check:

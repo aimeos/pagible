@@ -105,6 +105,19 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterRobotsTxtConfig() : void
+	{
+		$robots = Schema::schemas( section: 'config' )['robots-txt'];
+
+		$this->assertSame( 'robots.txt', $robots['label'] );
+		$this->assertSame( 'expert', $robots['group'] );
+		$this->assertSame( 'plaintext', $robots['fields']['text']['type'] );
+		$this->assertTrue( $robots['fields']['text']['required'] );
+		$this->assertSame( 1, $robots['fields']['text']['min'] );
+		$this->assertSame( 500000, $robots['fields']['text']['max'] );
+	}
+
+
 	public function testRegisterCardsUrl()
 	{
 		$url = Schema::get( 'cms' )['content']['cards']['fields']['cards']['item']['url'];
