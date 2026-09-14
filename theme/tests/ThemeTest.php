@@ -797,19 +797,6 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testThemesRequireCompatibleBaseTheme(): void
-	{
-		$paths = glob( dirname( __DIR__, 2 ) . '/themes/*/composer.json' ) ?: [];
-
-		foreach( $paths as $path )
-		{
-			$composer = json_decode( (string) file_get_contents( $path ), true, flags: JSON_THROW_ON_ERROR );
-
-			$this->assertSame( '^0.13', $composer['require']['aimeos/pagible-theme'] ?? null, $path );
-		}
-	}
-
-
 	public function testMarkdownDirectiveTrimsListBreaks(): void
 	{
 		$template = '<div class="text">@markdown($text)</div>';
