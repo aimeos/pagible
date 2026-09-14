@@ -27,6 +27,35 @@ class PropertiesActionTest extends ThemeTestAbstract
     protected $seeder = TestSeeder::class;
 
 
+    public function testArticleRendersAuthorJsonLd(): void
+    {
+        $page = ( new Page() )->forceFill( [
+            'created_at' => CarbonImmutable::parse( '2026-08-23 12:00:00' ),
+            'lang' => 'en',
+            'title' => 'Article',
+            'updated_at' => CarbonImmutable::parse( '2026-08-24 12:00:00' ),
+        ] );
+        $data = (object) [
+            'article-type' => 'NewsArticle',
+            'author-name' => 'Jane Doe',
+            'author-url' => 'https://example.com/authors/jane-doe',
+            'text' => 'Article introduction',
+        ];
+        $files = collect();
+
+        $html = view( 'estate::article', compact( 'data', 'files', 'page' ) )->render();
+
+        $this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ) );
+        $json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
+        $this->assertSame( 'NewsArticle', $json['@type'] );
+        $this->assertSame( [
+            '@type' => 'Person',
+            'name' => 'Jane Doe',
+            'url' => 'https://example.com/authors/jane-doe',
+        ], $json['author'] );
+    }
+
+
     public function testDemoGroupsHiddenPagesAndUsesNewsRedirect(): void
     {
         require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
