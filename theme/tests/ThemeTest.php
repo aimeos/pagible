@@ -496,6 +496,7 @@ class ThemeTest extends ThemeTestAbstract
 			'id' => 'page',
 			'lang' => 'en',
 			'title' => 'Article',
+			'type' => 'blog',
 		] );
 		$file = (object) [
 			'id' => 'image',
@@ -512,7 +513,6 @@ class ThemeTest extends ThemeTestAbstract
 		foreach( $fields as $name => $field )
 		{
 			$data = (object) ( $field + [
-				'article-type' => 'BlogPosting',
 				'author-name' => 'Jane Doe',
 				'author-url' => 'https://example.com/authors/jane-doe',
 				'text' => 'Article introduction',

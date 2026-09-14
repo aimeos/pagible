@@ -33,10 +33,10 @@ class PropertiesActionTest extends ThemeTestAbstract
             'created_at' => CarbonImmutable::parse( '2026-08-23 12:00:00' ),
             'lang' => 'en',
             'title' => 'Article',
+            'type' => 'news',
             'updated_at' => CarbonImmutable::parse( '2026-08-24 12:00:00' ),
         ] );
         $data = (object) [
-            'article-type' => 'NewsArticle',
             'author-name' => 'Jane Doe',
             'author-url' => 'https://example.com/authors/jane-doe',
             'text' => 'Article introduction',
