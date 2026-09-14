@@ -19,12 +19,21 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
 
+    private static bool $cmsPrepared = false;
+
     protected ?\App\Models\User $user = null;
     protected $enablesPackageDiscoveries = true;
 
 
     protected function defineDatabaseMigrations()
     {
+        // Persistent databases share Laravel's migration state between package suites.
+        // Reset it once so the webhook migrations are applied by the root test suite.
+        if( !self::$cmsPrepared ) {
+            \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = false;
+            self::$cmsPrepared = true;
+        }
+
         \Orchestra\Testbench\after_resolving($this->app, 'migrator', static function ($migrator) {
             $migrator->path(\Orchestra\Testbench\default_migration_path());
         });
