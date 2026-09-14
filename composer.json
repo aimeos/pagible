@@ -25,6 +25,9 @@
 		"om/potrans": "^1.0.1",
 		"kkomelin/laravel-translatable-string-exporter": "^1.26"
 	},
+	"suggest": {
+		"aimeos/pagible-webhooks": "For signed outbound notifications when CMS content changes"
+	},
 	"repositories": [
 		{"type": "path", "url": "core"},
 		{"type": "path", "url": "admin"},
@@ -33,7 +36,8 @@
 		{"type": "path", "url": "search"},
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
-		{"type": "path", "url": "theme"}
+		{"type": "path", "url": "theme"},
+		{"type": "path", "url": "webhooks"}
 	],
 	"autoload": {
 		"psr-4": {
@@ -57,7 +61,8 @@
 				"themes/premium/src/",
 				"themes/luxury/src/",
 				"themes/style/src/",
-				"themes/taste/src/"
+				"themes/taste/src/",
+				"webhooks/src/"
 			],
 			"Tests\\": [
 				"tests/",
@@ -73,7 +78,8 @@
 				"search/tests/",
 				"theme/tests/",
 				"themes/estate/tests/",
-				"backup/tests/"
+				"backup/tests/",
+				"webhooks/tests/"
 			]
 		},
 		"classmap": [
@@ -94,7 +100,8 @@
 			"npm run gettext:compile --prefix admin"
 		],
 		"build": [
-			"npm run build --prefix admin"
+			"npm run build --prefix admin",
+			"npm run build --prefix webhooks/admin"
 		],
 		"coverage": [
 			"npx playwright install chromium",

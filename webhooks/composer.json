@@ -1,0 +1,42 @@
+{
+    "name": "aimeos/pagible-webhooks",
+    "description": "Pagible CMS webhook delivery",
+    "keywords": ["laravel", "cms", "webhook", "queue"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "ext-curl": "*",
+        "aimeos/pagible-core": "*@dev",
+        "guzzlehttp/psr7": "^2.6||^3.0"
+    },
+    "require-dev": {
+        "aimeos/pagible-admin": "*@dev",
+        "aimeos/pagible-graphql": "*@dev",
+        "orchestra/testbench": "^9.0||^10.0||^11.0",
+        "larastan/larastan": "^3.9"
+    },
+    "suggest": {
+        "aimeos/pagible-admin": "For the webhook management panel",
+        "aimeos/pagible-graphql": "For the webhook management GraphQL API"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "classmap": ["tests/User.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\WebhookServiceProvider"
+            ]
+        }
+    }
+}

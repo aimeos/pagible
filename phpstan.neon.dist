@@ -20,6 +20,7 @@ parameters:
 		- pulse/src
 		- theme/src
 		- theme/database/seeders
+		- webhooks/src
 		- themes/bold/src
 		- themes/bold/database/seeders
 		- themes/estate/src

@@ -49,8 +49,9 @@ class Plugin
      * Registers an admin panel extension.
      *
      * A top-level key like "products" adds a navigation panel and requires a "permission".
-     * A sub-panel key like "page:settings" adds a tab to the page, element or file editor
-     * and inherits the host view's permission.
+     * Its component renders the panel body; the admin SPA provides the app bar, navigation
+     * and main content layout. A sub-panel key like "page:settings" adds a tab to the page,
+     * element or file editor and inherits the host view's permission.
      *
      * @param string $key Panel key, e.g. "products" or "page:settings"
      * @param array<string, string> $definition Definition with "label", "component" and optional "icon"/"permission"

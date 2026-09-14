@@ -3010,3 +3010,131 @@ msgstr[2] "تم حذف صفوف %{num}"
 msgstr[3] "تم حذف صفوف %{num}"
 msgstr[4] "تم حذف صفوف %{num}"
 msgstr[5] "تم حذف صفوف %{num}"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:124
+msgid "Error fetching webhooks"
+msgstr "خطأ في جلب خطافات الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:183
+msgid "Error saving webhook"
+msgstr "خطأ في حفظ خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:205
+msgid "Error replacing webhook destination"
+msgstr "خطأ في استبدال وجهة خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:226
+msgid "Error rotating webhook secret"
+msgstr "خطأ في تجديد سر خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:235
+msgid "Delete this webhook?"
+msgstr "هل تريد حذف خطاف الويب هذا؟"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:247
+msgid "Error deleting webhook"
+msgstr "خطأ في حذف خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:258
+msgid "Secret copied"
+msgstr "تم نسخ السر"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:260
+msgid "Unable to copy secret"
+msgstr "تعذر نسخ السر"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:270
+#: ../webhooks/admin/src/views/WebhookList.vue:272
+#: ../webhooks/admin/src/views/WebhookList.vue:275
+#: ../webhooks/admin/src/views/WebhookList.vue:276
+#: ../webhooks/admin/src/views/WebhookList.vue:277
+#: ../webhooks/admin/src/views/WebhookList.vue:278
+#: ../webhooks/admin/src/views/WebhookList.vue:279
+#: ../webhooks/admin/src/views/WebhookList.vue:281
+msgid "Delivery failed"
+msgstr "فشل التسليم"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:309
+msgid "Send signed notifications when published content changes."
+msgstr "أرسل إشعارات موقعة عند تغيير المحتوى المنشور."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:316
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Add webhook"
+msgstr "إضافة خطاف ويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:322
+msgid "No webhooks configured."
+msgstr "لم يتم إعداد أي خطافات ويب."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:327
+msgid "Endpoint"
+msgstr "نقطة النهاية"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:328
+#: ../webhooks/admin/src/views/WebhookList.vue:385
+msgid "Events"
+msgstr "الأحداث"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:330
+msgid "Failures"
+msgstr "حالات الفشل"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:331
+msgid "Last error"
+msgstr "الخطأ الأخير"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+#: ../webhooks/admin/src/views/WebhookList.vue:393
+msgid "Active"
+msgstr "نشط"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+msgid "Inactive"
+msgstr "غير نشط"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:351
+#: ../webhooks/admin/src/views/WebhookList.vue:437
+msgid "Replace"
+msgstr "استبدال"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:354
+msgid "Rotate"
+msgstr "تجديد"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Edit webhook"
+msgstr "تعديل خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:378
+#: ../webhooks/admin/src/views/WebhookList.vue:421
+msgid "HTTPS endpoint URL"
+msgstr "عنوان URL لنقطة نهاية HTTPS"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:397
+msgid "New webhooks are inactive until you save them as active."
+msgstr "تكون خطافات الويب الجديدة غير نشطة حتى تحفظها كخطافات نشطة."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:416
+msgid "Replace webhook destination"
+msgstr "استبدال وجهة خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:427
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "يؤدي استبدال الوجهة إلى تجديد السر وتعطيل خطاف الويب."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:445
+msgid "Webhook secret"
+msgstr "سر خطاف الويب"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:448
+msgid "Copy this secret now. It will not be shown again."
+msgstr "انسخ هذا السر الآن. لن يظهر مرة أخرى."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:454
+msgid "Copy secret"
+msgstr "نسخ السر"
+
+#: js/strings.js:9
+msgid "Webhooks"
+msgstr "خطافات الويب"

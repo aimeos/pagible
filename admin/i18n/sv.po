@@ -2958,3 +2958,132 @@ msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} rad utelämnad"
 msgstr[1] "%{num} rader har utelämnats"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:124
+msgid "Error fetching webhooks"
+msgstr "Fel vid hämtning av webhooks"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:183
+msgid "Error saving webhook"
+msgstr "Fel vid lagring av webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:205
+msgid "Error replacing webhook destination"
+msgstr "Fel vid byte av webhookdestination"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:226
+msgid "Error rotating webhook secret"
+msgstr "Fel vid förnyelse av webhookhemlighet"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:235
+msgid "Delete this webhook?"
+msgstr "Ta bort denna webhook?"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:247
+msgid "Error deleting webhook"
+msgstr "Fel vid borttagning av webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:258
+msgid "Secret copied"
+msgstr "Hemligheten har kopierats"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:260
+msgid "Unable to copy secret"
+msgstr "Det gick inte att kopiera hemligheten"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:270
+#: ../webhooks/admin/src/views/WebhookList.vue:272
+#: ../webhooks/admin/src/views/WebhookList.vue:275
+#: ../webhooks/admin/src/views/WebhookList.vue:276
+#: ../webhooks/admin/src/views/WebhookList.vue:277
+#: ../webhooks/admin/src/views/WebhookList.vue:278
+#: ../webhooks/admin/src/views/WebhookList.vue:279
+#: ../webhooks/admin/src/views/WebhookList.vue:281
+msgid "Delivery failed"
+msgstr "Leveransen misslyckades"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:309
+msgid "Send signed notifications when published content changes."
+msgstr "Skicka signerade aviseringar när publicerat innehåll ändras."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:316
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Add webhook"
+msgstr "Lägg till webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:322
+msgid "No webhooks configured."
+msgstr "Inga webhooks har konfigurerats."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:327
+msgid "Endpoint"
+msgstr "Slutpunkt"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:328
+#: ../webhooks/admin/src/views/WebhookList.vue:385
+msgid "Events"
+msgstr "Händelser"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:330
+msgid "Failures"
+msgstr "Misslyckanden"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:331
+msgid "Last error"
+msgstr "Senaste fel"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+#: ../webhooks/admin/src/views/WebhookList.vue:393
+msgid "Active"
+msgstr "Aktiv"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:351
+#: ../webhooks/admin/src/views/WebhookList.vue:437
+msgid "Replace"
+msgstr "Ersätt"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:354
+msgid "Rotate"
+msgstr "Förnya"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Edit webhook"
+msgstr "Redigera webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:378
+#: ../webhooks/admin/src/views/WebhookList.vue:421
+msgid "HTTPS endpoint URL"
+msgstr "URL till HTTPS-slutpunkt"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:397
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Nya webhooks är inaktiva tills du sparar dem som aktiva."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:416
+msgid "Replace webhook destination"
+msgstr "Ersätt webhookdestination"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:427
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr ""
+"När destinationen ersätts förnyas hemligheten och webhooken inaktiveras."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:445
+msgid "Webhook secret"
+msgstr "Webhookhemlighet"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:448
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Kopiera denna hemlighet nu. Den visas inte igen."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:454
+msgid "Copy secret"
+msgstr "Kopiera hemlighet"
+
+#: js/strings.js:9
+msgid "Webhooks"
+msgstr "Webhooks"

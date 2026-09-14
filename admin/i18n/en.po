@@ -2673,3 +2673,131 @@ msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} row omitted"
 msgstr[1] "%{num} rows omitted"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:124
+msgid "Error fetching webhooks"
+msgstr "Error fetching webhooks"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:183
+msgid "Error saving webhook"
+msgstr "Error saving webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:205
+msgid "Error replacing webhook destination"
+msgstr "Error replacing webhook destination"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:226
+msgid "Error rotating webhook secret"
+msgstr "Error rotating webhook secret"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:235
+msgid "Delete this webhook?"
+msgstr "Delete this webhook?"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:247
+msgid "Error deleting webhook"
+msgstr "Error deleting webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:258
+msgid "Secret copied"
+msgstr "Secret copied"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:260
+msgid "Unable to copy secret"
+msgstr "Unable to copy secret"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:270
+#: ../webhooks/admin/src/views/WebhookList.vue:272
+#: ../webhooks/admin/src/views/WebhookList.vue:275
+#: ../webhooks/admin/src/views/WebhookList.vue:276
+#: ../webhooks/admin/src/views/WebhookList.vue:277
+#: ../webhooks/admin/src/views/WebhookList.vue:278
+#: ../webhooks/admin/src/views/WebhookList.vue:279
+#: ../webhooks/admin/src/views/WebhookList.vue:281
+msgid "Delivery failed"
+msgstr "Delivery failed"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:309
+msgid "Send signed notifications when published content changes."
+msgstr "Send signed notifications when published content changes."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:316
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Add webhook"
+msgstr "Add webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:322
+msgid "No webhooks configured."
+msgstr "No webhooks configured."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:327
+msgid "Endpoint"
+msgstr "Endpoint"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:328
+#: ../webhooks/admin/src/views/WebhookList.vue:385
+msgid "Events"
+msgstr "Events"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:330
+msgid "Failures"
+msgstr "Failures"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:331
+msgid "Last error"
+msgstr "Last error"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+#: ../webhooks/admin/src/views/WebhookList.vue:393
+msgid "Active"
+msgstr "Active"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+msgid "Inactive"
+msgstr "Inactive"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:351
+#: ../webhooks/admin/src/views/WebhookList.vue:437
+msgid "Replace"
+msgstr "Replace"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:354
+msgid "Rotate"
+msgstr "Rotate"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Edit webhook"
+msgstr "Edit webhook"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:378
+#: ../webhooks/admin/src/views/WebhookList.vue:421
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS endpoint URL"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:397
+msgid "New webhooks are inactive until you save them as active."
+msgstr "New webhooks are inactive until you save them as active."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:416
+msgid "Replace webhook destination"
+msgstr "Replace webhook destination"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:427
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Replacing the destination rotates the secret and disables the webhook."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:445
+msgid "Webhook secret"
+msgstr "Webhook secret"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:448
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Copy this secret now. It will not be shown again."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:454
+msgid "Copy secret"
+msgstr "Copy secret"
+
+#: js/strings.js:9
+msgid "Webhooks"
+msgstr "Webhooks"

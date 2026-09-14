@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
+use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
@@ -37,9 +38,11 @@ trait Broadcasts
      *
      * @param string $action Past-tense action: added, saved, published, restored, dropped, moved, purged
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param Version|null $projection Version actually projected by a publication
      * @throws \InvalidArgumentException If $action has no matching event class
      */
-    public function announce( string $action, Authenticatable|string|null $editor = null ) : void
+    public function announce( string $action, Authenticatable|string|null $editor = null,
+        ?Version $projection = null ) : void
     {
         $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
 
@@ -56,11 +59,21 @@ trait Broadcasts
             return;
         }
 
+        if( $this->relationLoaded( 'latest' ) ) {
+            $loaded = $this->getRelation( 'latest' );
+
+            if( !$loaded instanceof Version || (string) $loaded->id !== (string) $this->latest_id ) {
+                $this->unsetRelation( 'latest' );
+            }
+        }
+
         if( !( $version = $this->latest ) ) {
             return;
         }
 
-        static::send( new $class( ...$this->eventFields( $version, $editor, $action ) ), $broadcast );
+        static::send( new $class(
+            ...$this->eventFields( $version, $editor, $action, $projection )
+        ), $broadcast );
     }
 
 
@@ -111,16 +124,42 @@ trait Broadcasts
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields
      * @param bool $bulk TRUE to use the bulk event for a single item too
+     * @param array<string, Version> $projected Item id => version actually projected by publication
      */
     public static function announceMany( Collection $items, string $action, string $editor,
-        array $data = [], bool $bulk = false ) : void
+        array $data = [], bool $bulk = false, array $projected = [] ) : void
     {
         if( !( $first = $items->first() ) ) {
             return;
         }
 
+        if( $action === 'published' && $projected )
+        {
+            $superseded = [];
+
+            foreach( $items as $item ) {
+                $id = $item->id;
+
+                if( is_string( $id ) && isset( $projected[$id] )
+                    && $projected[$id]->id !== $item->latest_id
+                ) {
+                    $superseded[$id] = true;
+                    $item->announce( $action, $editor, $projected[$id] );
+                }
+            }
+
+            $items = $items->reject( fn( Base $item ) =>
+                is_string( $item->id ) && isset( $superseded[$item->id] )
+            )->values();
+
+            if( !( $first = $items->first() ) ) {
+                return;
+            }
+        }
+
         if( $items->count() === 1 && !$bulk ) {
-            $first->announce( $action, $editor );
+            $id = $first->id;
+            $first->announce( $action, $editor, is_string( $id ) ? ( $projected[$id] ?? null ) : null );
             return;
         }
 
@@ -174,10 +213,11 @@ trait Broadcasts
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Past-tense action
-     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string}
+     * @param Version|null $projection Version actually projected by a publication
+     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string}}
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor,
-        string $action ) : array
+        string $action, ?Version $projection = null ) : array
     {
         $id = $this->id;
         $latestId = $version->id;
@@ -198,7 +238,36 @@ trait Broadcasts
             'updated_at' => $version->created_at ? (string) $version->created_at : null,
             'tenant' => Tenancy::value(),
             'source' => Utils::source(),
+            'projection' => $this->eventProjection( $projection ),
         ];
+    }
+
+
+    /**
+     * Keeps the projected version ID and its route in one immutable event value.
+     *
+     * @return array{}|array{version_id: string, path?: string, domain?: string}
+     */
+    protected function eventProjection( ?Version $version ) : array
+    {
+        if( !$version ) {
+            return [];
+        }
+
+        if( !( $id = $version->id ) ) {
+            throw new \LogicException( 'Cannot announce an unsaved CMS projection.' );
+        }
+
+        $projection = ['version_id' => $id];
+
+        if( $this instanceof Page ) {
+            $projection += [
+                'path' => (string) ( $version->data->path ?? $this->path ),
+                'domain' => (string) ( $version->data->domain ?? $this->domain ),
+            ];
+        }
+
+        return $projection;
     }
 
 

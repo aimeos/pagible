@@ -14,13 +14,16 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
+use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 
@@ -128,6 +131,32 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
+    public function testPublishBroadcastsRootAndDependenciesOnce() : void
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $file->latest()->update( ['published' => false] );
+        $element = Resource::addElement( [
+            'lang' => 'en', 'type' => 'image', 'name' => 'Dependency',
+            'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
+        ], $this->user );
+        $page = $this->page( [[
+            'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
+        ]] );
+
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Published::class, Bulk::class] );
+
+        Publication::publish( Page::class, [$page->id], $this->user );
+
+        Event::assertNotDispatched( Bulk::class );
+        Event::assertDispatchedTimes( Published::class, 3 );
+
+        foreach( [$page->id, $element->id, $file->id] as $id ) {
+            Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $id );
+        }
+    }
+
+
     public function testPublishBroadcastsOnlyUnpublishedItems() : void
     {
         $published = $this->page();
@@ -143,6 +172,49 @@ class BroadcastsTest extends CoreTestAbstract
         Event::assertNotDispatched( Bulk::class );
         Event::assertDispatchedTimes( Published::class, 1 );
         Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $draft->id );
+    }
+
+
+    public function testPublishBroadcastsSupersededVersionsIndividually() : void
+    {
+        $pages = collect( [$this->page(), $this->page()] );
+        $published = [];
+
+        foreach( $pages as $page ) {
+            $published[$page->id] = $page->versions()->forceCreate( [
+                'lang' => 'en',
+                'data' => [
+                    'lang' => 'en', 'name' => 'Published',
+                    'path' => 'published-route', 'domain' => 'published.example',
+                ],
+                'editor' => 'editor@testbench',
+                'published' => true,
+            ] );
+        }
+
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Published::class, Bulk::class] );
+
+        Base::announceMany( $pages, 'published', 'editor@testbench', [
+            'published' => true,
+            'publish_at' => null,
+        ], projected: $published );
+
+        Event::assertNotDispatched( Bulk::class );
+        Event::assertDispatchedTimes( Published::class, 2 );
+
+        foreach( $pages as $page ) {
+            Event::assertDispatched( Published::class, fn( Published $event ) =>
+                $event->id === $page->id
+                && $event->latest_id === $page->latest_id
+                && $event->projection === [
+                    'version_id' => $published[$page->id]->id,
+                    'path' => 'published-route',
+                    'domain' => 'published.example',
+                ]
+                && $event->published === false
+            );
+        }
     }
 
 
@@ -187,6 +259,27 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
+    public function testMoveBroadcastsAfterTreeLockIsReleased() : void
+    {
+        $page = $this->page();
+        $released = false;
+        config( ['cache.default' => 'array', 'cms.broadcast' => false] );
+
+        Event::listen( Moved::class, function() use ( &$released ) {
+            $lock = Cache::lock( 'cms_pages_test', 30 );
+            $released = $lock->get();
+
+            if( $released ) {
+                $lock->release();
+            }
+        } );
+
+        Resource::movePage( $page->id, parent: $this->root()->id, user: $this->user );
+
+        $this->assertTrue( $released );
+    }
+
+
     public function testPurgeBroadcastsPurged() : void
     {
         $page = $this->page();
@@ -196,6 +289,31 @@ class BroadcastsTest extends CoreTestAbstract
         Resource::purge( Page::class, [$page->id], $this->user );
 
         Event::assertDispatched( Purged::class );
+    }
+
+
+    public function testSingleFilePurgeBroadcastsPurged() : void
+    {
+        $file = File::forceCreate( [
+            'lang' => 'en', 'mime' => 'text/plain', 'name' => 'purged.txt',
+            'path' => '', 'editor' => 'editor@testbench',
+        ] );
+        $version = $file->versions()->forceCreate( [
+            'lang' => 'en', 'editor' => 'editor@testbench',
+            'data' => ['path' => '', 'previews' => []],
+        ] );
+        $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Purged::class, Bulk::class] );
+
+        Resource::purge( File::class, [$file->id], $this->user );
+
+        Event::assertNotDispatched( Bulk::class );
+        Event::assertDispatched( Purged::class, fn( Purged $event ) =>
+            $event->contentType === 'file'
+            && $event->id === $file->id
+            && $event->latest_id === $version->id
+        );
     }
 
 
@@ -259,11 +377,11 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
-    protected function page() : Page
+    protected function page( array $content = [] ) : Page
     {
         return Resource::addPage( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'bc-' . Utils::uid(),
-            'content' => [],
+            'content' => $content,
         ], $this->user, parent: $this->root()->id );
     }
 

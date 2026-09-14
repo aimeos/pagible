@@ -2958,3 +2958,131 @@ msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} sor kimaradva"
 msgstr[1] "%{num} sor kimaradva"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:124
+msgid "Error fetching webhooks"
+msgstr "Hiba a webhookok lekérésekor"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:183
+msgid "Error saving webhook"
+msgstr "Hiba a webhook mentésekor"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:205
+msgid "Error replacing webhook destination"
+msgstr "Hiba a webhook céljának cseréjekor"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:226
+msgid "Error rotating webhook secret"
+msgstr "Hiba a webhook titkos kulcsának cseréjekor"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:235
+msgid "Delete this webhook?"
+msgstr "Törli ezt a webhookot?"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:247
+msgid "Error deleting webhook"
+msgstr "Hiba a webhook törlésekor"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:258
+msgid "Secret copied"
+msgstr "Titkos kulcs másolva"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:260
+msgid "Unable to copy secret"
+msgstr "A titkos kulcs nem másolható"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:270
+#: ../webhooks/admin/src/views/WebhookList.vue:272
+#: ../webhooks/admin/src/views/WebhookList.vue:275
+#: ../webhooks/admin/src/views/WebhookList.vue:276
+#: ../webhooks/admin/src/views/WebhookList.vue:277
+#: ../webhooks/admin/src/views/WebhookList.vue:278
+#: ../webhooks/admin/src/views/WebhookList.vue:279
+#: ../webhooks/admin/src/views/WebhookList.vue:281
+msgid "Delivery failed"
+msgstr "A kézbesítés sikertelen"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:309
+msgid "Send signed notifications when published content changes."
+msgstr "Aláírt értesítések küldése a közzétett tartalom változásakor."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:316
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Add webhook"
+msgstr "Webhook hozzáadása"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:322
+msgid "No webhooks configured."
+msgstr "Nincsenek beállított webhookok."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:327
+msgid "Endpoint"
+msgstr "Végpont"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:328
+#: ../webhooks/admin/src/views/WebhookList.vue:385
+msgid "Events"
+msgstr "Események"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:330
+msgid "Failures"
+msgstr "Hibák"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:331
+msgid "Last error"
+msgstr "Legutóbbi hiba"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+#: ../webhooks/admin/src/views/WebhookList.vue:393
+msgid "Active"
+msgstr "Aktív"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:341
+msgid "Inactive"
+msgstr "Inaktív"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:351
+#: ../webhooks/admin/src/views/WebhookList.vue:437
+msgid "Replace"
+msgstr "Csere"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:354
+msgid "Rotate"
+msgstr "Kulcscsere"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:372
+msgid "Edit webhook"
+msgstr "Webhook szerkesztése"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:378
+#: ../webhooks/admin/src/views/WebhookList.vue:421
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS-végpont URL-címe"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:397
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Az új webhookok inaktívak, amíg aktívként nem menti őket."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:416
+msgid "Replace webhook destination"
+msgstr "Webhook céljának cseréje"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:427
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "A cél cseréje lecseréli a titkos kulcsot és letiltja a webhookot."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:445
+msgid "Webhook secret"
+msgstr "Webhook titkos kulcsa"
+
+#: ../webhooks/admin/src/views/WebhookList.vue:448
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Másolja ki most ezt a titkos kulcsot. Többé nem jelenik meg."
+
+#: ../webhooks/admin/src/views/WebhookList.vue:454
+msgid "Copy secret"
+msgstr "Titkos kulcs másolása"
+
+#: js/strings.js:9
+msgid "Webhooks"
+msgstr "Webhookok"

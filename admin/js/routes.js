@@ -159,12 +159,12 @@ export function addPluginRoutes() {
     router.addRoute({
       path: '/' + key,
       name: key,
-      component: panel.component,
+      component: () => import('./views/PluginPanel.vue'),
       props: { panel },
       meta: {
         auth: true,
         permission: panel.permission,
-        title: panel.label
+        title: gettext.$gettext(panel.label)
       }
     })
   }

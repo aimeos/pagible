@@ -31,6 +31,7 @@ jobs:
           - { package: pulse, repo: pagible-pulse }
           - { package: search, repo: pagible-search }
           - { package: theme, repo: pagible-theme }
+          - { package: webhooks, repo: pagible-webhooks }
           - { package: themes/bold, repo: pagible-themes-bold }
           - { package: themes/estate, repo: pagible-themes-estate }
           - { package: themes/glass, repo: pagible-themes-glass }
