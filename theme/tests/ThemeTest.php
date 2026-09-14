@@ -44,13 +44,26 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testEditorialThemesRegisterNewsType()
+	{
+		foreach( ['journal', 'news'] as $name )
+		{
+			Schema::register( dirname( __DIR__, 2 ) . '/themes/' . $name, $name );
+
+			$this->assertArrayHasKey( 'news', Schema::get( $name )['types'] );
+		}
+	}
+
+
 	public function testRegisterSchemas()
 	{
 		$schemas = Schema::schemas( section: 'content' );
 
 		$this->assertArrayHasKey( 'heading', $schemas );
 		$this->assertArrayHasKey( 'text', $schemas );
+		$this->assertArrayHasKey( 'news', $schemas );
 		$this->assertArrayHasKey( 'fields', $schemas['heading'] );
+		$this->assertSame( '\\' . \Aimeos\Cms\Actions\News::class, $schemas['news']['fields']['action']['value'] );
 	}
 
 
@@ -486,6 +499,14 @@ class ThemeTest extends ThemeTestAbstract
 			$this->assertStringContainsString( '<picture class="cover"', $html, $name );
 			$this->assertStringContainsString( 'https://example.com/article.jpg', $html, $name );
 			$this->assertStringContainsString( '"image":', $html, $name );
+		}
+
+		foreach( ['page' => 'Article', 'blog' => 'BlogPosting', 'news' => 'NewsArticle'] as $type => $schemaType )
+		{
+			$page->forceFill( ['type' => $type] );
+			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertStringContainsString( '"@type": "' . $schemaType . '"', $html, $type );
 		}
 	}
 

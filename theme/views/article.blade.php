@@ -12,7 +12,7 @@
 
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
-	"@@type": "Article",
+	"@@type": "{{ match(cms($page, 'type')) { 'news' => 'NewsArticle', 'blog' => 'BlogPosting', default => 'Article' } }}",
 	"headline": {!! cmsjson(cms($page, 'title')) !!},
 	"datePublished": "{{ $page->created_at->toIso8601String() }}",
 	"dateModified": "{{ $page->updated_at->toIso8601String() }}"

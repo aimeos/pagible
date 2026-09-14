@@ -37,16 +37,16 @@ class Blog
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
 
-        $builder = Page::where( 'type', $this->type )->with( $with )->orderBy( $order, $dir );
+        $builder = Page::where( 'status', 1 )->with( $with )->orderBy( $order, $dir );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
         }
 
         if( $editor ) {
-            $builder->whereLatest( ['status' => 1] );
+            $builder->whereLatest( ['type' => $this->type] );
         } else {
-            $builder->where( 'status', 1 );
+            $builder->where( 'type', $this->type );
         }
 
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];

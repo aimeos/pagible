@@ -24,6 +24,7 @@ Route::group($options, function() {
 
     $sitemap = config('cms.theme.sitemap', 'sitemap');
     Route::get("{$sitemap}.xml", [Controllers\SitemapController::class, 'index'])->middleware('throttle:cms-sitemap')->name('cms.sitemap');
+    Route::get("{$sitemap}-news.xml", [Controllers\SitemapController::class, 'news'])->middleware('throttle:cms-sitemap')->name('cms.sitemap.news');
     Route::get("{$sitemap}-{page}.xml", [Controllers\SitemapController::class, 'chunk'])->where('page', '[0-9]+')->middleware('throttle:cms-sitemap')->name('cms.sitemap.chunk');
 
     if(is_array($page = config('cms.theme.pageroute')))

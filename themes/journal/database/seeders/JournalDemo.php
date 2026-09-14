@@ -159,7 +159,7 @@ class JournalDemo extends AbstractDemo
                 'text' => $intro,
                 'files' => [['id' => $this->img( $photo ), 'type' => 'file']],
             ]],
-            ['id' => Utils::uid(), 'type' => 'blog', 'group' => 'main', 'data' => [
+            ['id' => Utils::uid(), 'type' => 'news', 'group' => 'main', 'data' => [
                 'title' => 'Latest analysis',
                 'layout' => 'default',
                 'limit' => 6,
@@ -181,8 +181,7 @@ class JournalDemo extends AbstractDemo
                 'name' => $story['name'],
                 'title' => $story['title'],
                 'path' => $story['path'],
-                'tag' => 'article',
-                'type' => 'blog',
+                'type' => 'news',
                 'status' => 1,
             ], [
                 $this->article( $story['title'], $story['intro'], $this->img( $story['photo'] ) ),
@@ -421,7 +420,7 @@ class JournalDemo extends AbstractDemo
                 'ratio' => '1-1',
                 'text' => "## The new industrial atlas\n\nWhere are batteries, chips, heat pumps, and data centres being built? Kontur tracks 180 investment projects to show which regions benefit—and where grids, land, or skilled workers are missing.\n\nThe interactive map connects announced billions with visible building progress. A groundbreaking ceremony is not a factory.\n\n[Explore the industrial atlas story](/industry-without-a-blueprint)",
             ]],
-            ['id' => Utils::uid(), 'type' => 'blog', 'group' => 'main', 'data' => [
+            ['id' => Utils::uid(), 'type' => 'news', 'group' => 'main', 'data' => [
                 'title' => 'The economy in context',
                 'layout' => 'default',
                 'limit' => 2,

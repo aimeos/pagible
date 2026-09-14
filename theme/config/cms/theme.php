@@ -98,7 +98,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | The URL path prefix for the XML sitemap. The sitemap index will be
-    | available at /{sitemap}.xml and chunks at /{sitemap}-{page}.xml.
+    | available at /{sitemap}.xml, news at /{sitemap}-news.xml and chunks at
+    | /{sitemap}-{page}.xml.
     |
     */
     'sitemap' => env( 'CMS_SITEMAP', 'sitemap' ),

@@ -19,7 +19,7 @@ After installation, the configuration is available in `config/cms/theme.php`:
 | `stale` | `CMS_THEME_STALE` | `10` | Seconds an expired complete page remains available during revalidation |
 | `ttl` | `CMS_THEME_TTL` | `86400` (or `0` in debug) | Time-to-live for cached pages in seconds; `0` disables caching |
 | `disk` | `CMS_THEME_DISK` | | Filesystem disk for tenant-uploaded themes; disabled if unconfigured |
-| `sitemap` | `CMS_SITEMAP` | `sitemap` | URL path prefix for XML sitemap (`/{sitemap}.xml`) |
+| `sitemap` | `CMS_SITEMAP` | `sitemap` | URL path prefix for XML and news sitemaps (`/{sitemap}.xml`, `/{sitemap}-news.xml`) |
 | `pageroute` | `CMS_PAGEROUTE` | `{}` | JSON object with catch-all page route options (Laravel route group) |
 
 ### Authenticated page caching
