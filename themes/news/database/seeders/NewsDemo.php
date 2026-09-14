@@ -382,6 +382,7 @@ class NewsDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'The Ledger'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

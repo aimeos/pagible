@@ -594,6 +594,7 @@ HTML,
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'PagibleAI'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

@@ -362,6 +362,7 @@ class TasteDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'Sumi Noodle Bar'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

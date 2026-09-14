@@ -628,6 +628,7 @@ class PaperDemo extends AbstractDemo
         $logoId = $this->logoFile();
 
         $config = [
+            'website' => Validation::entry( 'website', ['title' => 'Margin & Matter'], 'config' ),
             'logo' => [
                 'type' => 'logo',
                 'files' => [$logoId],

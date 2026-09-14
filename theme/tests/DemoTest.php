@@ -53,6 +53,7 @@ class DemoTest extends ThemeTestAbstract
         $this->assertSame( '', $home->theme );
         $this->assertSame( 'demo', $home->tenant_id );
         $this->assertNotNull( $home->latest_id );
+        $this->assertSame( 'Meridian Works', $home->config->website->data->title );
         $this->assertTrue( collect( (array) $home->content )->contains( fn( $item ) => ( $item->type ?? null ) === 'testimonial' ) );
         $logoId = $home->config->logo->data->file->id ?? null;
         $this->assertIsString( $logoId );
@@ -60,6 +61,7 @@ class DemoTest extends ThemeTestAbstract
         $this->assertNull( PageCache::response( '' ) );
         $response = $this->get( '/' );
         $response->assertSee( 'meridian-works-logo.svg', false );
+        $response->assertSee( '"name": "Meridian Works"', false );
         $response->assertSee( 'class="login"', false );
         $response->assertSee( 'href="' . route( 'login' ) . '"', false );
         $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
@@ -104,6 +106,21 @@ class DemoTest extends ThemeTestAbstract
 
         $this->assertSame( 'luxury', $home->theme );
         $this->assertSame( 'luxury', $home->tenant_id );
+    }
+
+
+    public function testThemeDemosConfigureWebsiteTitle(): void
+    {
+        $paths = glob( dirname( __DIR__, 2 ) . '/themes/*/database/seeders/*Demo.php' ) ?: [];
+        $paths[] = dirname( __DIR__ ) . '/database/seeders/DefaultDemo.php';
+
+        foreach( $paths as $path ) {
+            $this->assertStringContainsString(
+                "'website' => Validation::entry( 'website', ['title' => ",
+                (string) file_get_contents( $path ),
+                $path,
+            );
+        }
     }
 
 

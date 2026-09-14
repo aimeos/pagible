@@ -87,6 +87,32 @@ if( !function_exists( 'cmsasset' ) )
 }
 
 
+if( !function_exists( 'cmsconfig' ) )
+{
+    /**
+     * Returns the nearest configuration value from the page or its ancestors.
+     *
+     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param string $path Property path below "config", e.g. "website.data.title"
+     * @param mixed $default Value returned when no page contains the configuration
+     * @return mixed Inherited configuration value or the default
+     */
+    function cmsconfig( \Aimeos\Cms\Models\Page $page, string $path, mixed $default = null ) : mixed
+    {
+        foreach( $page->ancestorsAndSelf->reverse() as $item )
+        {
+            $value = cms( $item, 'config.' . $path );
+
+            if( $value !== null && ( !is_string( $value ) || trim( $value ) !== '' ) ) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
+}
+
+
 if( !function_exists( 'cmsattr' ) )
 {
     /**
