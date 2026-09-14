@@ -591,6 +591,64 @@
                 }
             }
         },
+        "news": {
+            "group": "content",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M2 14H8V20H2M16 8H10V10H16M2 10H8V4H2M10 4V6H22V4M10 20H16V18H10M10 16H22V14H10\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string"
+                },
+                "layout": {
+                    "type": "select",
+                    "default": "cards",
+                    "options": [
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "list",
+                            "label": "List"
+                        }
+                    ]
+                },
+                "parent-page": {
+                    "type": "autocomplete",
+                    "api-type": "GQL",
+                    "query": "query{pages(filter:{title: _term_}){\n  data {\n    id\n    title\n    latest {\n      data\n    }\n  }\n}}",
+                    "list-key": "pages/data",
+                    "item-title": "title",
+                    "item-value": "id"
+                },
+                "order": {
+                    "type": "select",
+                    "options": [
+                        {
+                            "value": "_lft",
+                            "label": "Position"
+                        },
+                        {
+                            "value": "-created_at",
+                            "label": "Latest"
+                        },
+                        {
+                            "value": "created_at",
+                            "label": "Oldest"
+                        }
+                    ]
+                },
+                "limit": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 100,
+                    "default": 10
+                },
+                "action": {
+                    "type": "hidden",
+                    "value": "\\Aimeos\\Cms\\Actions\\News"
+                }
+            }
+        },
         "heros": {
             "group": "content",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M2 14H8V20H2M16 8H10V10H16M2 10H8V4H2M10 4V6H22V4M10 20H16V18H10M10 16H22V14H10\" /></svg>",

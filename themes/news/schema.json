@@ -22,6 +22,12 @@
                 "main",
                 "footer"
             ]
+        },
+        "news": {
+            "sections": [
+                "main",
+                "footer"
+            ]
         }
     },
     "config": {

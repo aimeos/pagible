@@ -36,7 +36,8 @@ It creates Economy, Money, Property, and Work sections with original articles, a
 |------|-------------|
 | `page` | Home, publication, and subscription pages |
 | `docs` | Long-form dossiers with sidebar navigation |
-| `blog` | Section fronts and editorial articles |
+| `blog` | Section fronts |
+| `news` | Individual editorial news articles |
 
 ## Customization
 

@@ -67,6 +67,51 @@ class SitemapControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testNews()
+    {
+        config( ['app.name' => 'CMS & News', 'app.locale' => 'de_DE'] );
+
+        Page::where( 'tag', 'article' )->firstOrFail()->forceFill( [
+            'created_at' => now()->subHour(),
+            'lang' => '',
+            'path' => 'current & news',
+            'tag' => '',
+            'title' => 'Current & News',
+            'type' => 'news',
+        ] )->saveQuietly();
+        Page::where( 'path', 'hidden' )->firstOrFail()->forceFill( [
+            'created_at' => now()->subHours( 2 ),
+            'lang' => 'en_US',
+            'title' => 'Hidden News',
+            'type' => 'news',
+        ] )->saveQuietly();
+        Page::where( 'path', 'dev' )->firstOrFail()->forceFill( [
+            'created_at' => now()->subDays( 3 ),
+            'type' => 'news',
+        ] )->saveQuietly();
+        Page::where( 'path', 'disabled' )->firstOrFail()->forceFill( [
+            'created_at' => now()->subHour(),
+            'type' => 'news',
+        ] )->saveQuietly();
+
+        $response = $this->get( '/sitemap-news.xml' );
+        $content = $response->streamedContent();
+
+        $response->assertOk();
+        $response->assertHeader( 'Content-Type', 'application/xml' );
+        $this->assertStringContainsString( 'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"', $content );
+        $this->assertStringContainsString( '<loc><![CDATA[http://localhost/current%20%26%20news]]></loc>', $content );
+        $this->assertStringContainsString( '<news:name>CMS &amp; News</news:name>', $content );
+        $this->assertStringContainsString( '<news:language>de</news:language>', $content );
+        $this->assertStringContainsString( '<news:language>en</news:language>', $content );
+        $this->assertStringContainsString( '<news:title>Current &amp; News</news:title>', $content );
+        $this->assertStringContainsString( '<loc><![CDATA[http://localhost/hidden]]></loc>', $content );
+        $this->assertStringNotContainsString( 'http://localhost/dev]]>', $content );
+        $this->assertStringNotContainsString( 'http://localhost/disabled]]>', $content );
+        $this->assertLessThan( strpos( $content, 'http://localhost/hidden]]>' ), strpos( $content, 'http://localhost/current%20%26%20news]]>' ) );
+    }
+
+
     public function testNoncanonicalOriginIsNotSharedCacheable(): void
     {
         config( ['app.url' => 'https://shop.example', 'cms.multidomain' => false] );
@@ -87,7 +132,7 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testSitemapRoutesDoNotStartWebSessions(): void
     {
-        foreach( ['cms.sitemap', 'cms.sitemap.chunk'] as $name )
+        foreach( ['cms.sitemap', 'cms.sitemap.chunk', 'cms.sitemap.news'] as $name )
         {
             $route = app( 'router' )->getRoutes()->getByName( $name );
             $this->assertNotNull( $route );

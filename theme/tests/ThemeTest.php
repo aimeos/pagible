@@ -44,13 +44,26 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testEditorialThemesRegisterNewsType()
+	{
+		foreach( ['journal', 'news'] as $name )
+		{
+			Schema::register( dirname( __DIR__, 2 ) . '/themes/' . $name, $name );
+
+			$this->assertArrayHasKey( 'news', Schema::get( $name )['types'] );
+		}
+	}
+
+
 	public function testRegisterSchemas()
 	{
 		$schemas = Schema::schemas( section: 'content' );
 
 		$this->assertArrayHasKey( 'heading', $schemas );
 		$this->assertArrayHasKey( 'text', $schemas );
+		$this->assertArrayHasKey( 'news', $schemas );
 		$this->assertArrayHasKey( 'fields', $schemas['heading'] );
+		$this->assertSame( '\\' . \Aimeos\Cms\Actions\News::class, $schemas['news']['fields']['action']['value'] );
 	}
 
 
@@ -497,6 +510,7 @@ class ThemeTest extends ThemeTestAbstract
 			'id' => 'page',
 			'lang' => 'en',
 			'title' => 'Article',
+			'type' => 'blog',
 		] );
 		$file = (object) [
 			'id' => 'image',
@@ -513,7 +527,6 @@ class ThemeTest extends ThemeTestAbstract
 		foreach( $fields as $name => $field )
 		{
 			$data = (object) ( $field + [
-				'article-type' => 'BlogPosting',
 				'author-name' => 'Jane Doe',
 				'author-url' => 'https://example.com/authors/jane-doe',
 				'text' => 'Article introduction',
@@ -532,6 +545,14 @@ class ThemeTest extends ThemeTestAbstract
 				'name' => 'Jane Doe',
 				'url' => 'https://example.com/authors/jane-doe',
 			], $json['author'], $name );
+		}
+
+		foreach( ['page' => 'Article', 'blog' => 'BlogPosting', 'news' => 'NewsArticle'] as $type => $schemaType )
+		{
+			$page->forceFill( ['type' => $type] );
+			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertStringContainsString( '"@type": "' . $schemaType . '"', $html, $type );
 		}
 	}
 

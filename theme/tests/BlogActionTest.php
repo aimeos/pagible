@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Actions\Blog;
+use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
@@ -56,18 +57,12 @@ class BlogActionTest extends ThemeTestAbstract
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ]],
         ];
-        Resource::savePage( $article->id, ['content' => $content], $this->user );
+        Resource::savePage( $article->id, ['type' => 'blog', 'content' => $content], $this->user );
 
         $request = Request::create( '/blog' );
         $request->setUserResolver( fn() => $this->user );
 
-        $item = (object) ['data' => (object) [
-            'order' => '-id',
-            'limit' => 10,
-            'parent-page' => (object) ['value' => $blog->id],
-        ]];
-
-        $result = ( new Blog() )( $request, $blog, $item );
+        $result = ( new Blog() )( $request, $blog, $this->item( $blog ) );
         $page = $result->getCollection()->firstWhere( 'id', $article->id );
 
         // Without latest_id in the action's select the latest relation can't eager-load,
@@ -76,5 +71,40 @@ class BlogActionTest extends ThemeTestAbstract
         $this->assertNotNull( $page->latest );
         $this->assertTrue( $page->files->isNotEmpty() );
         $this->assertSame( 'private', $page->files->first()->disk );
+    }
+
+
+    public function testNewsLoadsDraftPagesByTypeWithoutArticleTag()
+    {
+        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
+        $article = Page::where( 'tag', 'article' )->firstOrFail();
+        $article->forceFill( ['tag' => '', 'type' => 'blog'] )->saveQuietly();
+
+        Resource::savePage( $article->id, ['type' => 'news'], $this->user );
+
+        $request = Request::create( '/news' );
+        $request->setUserResolver( fn() => $this->user );
+
+        $item = $this->item( $blog );
+        $result = ( new News() )( $request, $blog, $item );
+
+        $this->assertSame( 'blog', $article->fresh()->type );
+        $this->assertSame( [$article->id], $result->getCollection()->pluck( 'id' )->all() );
+        $this->assertArrayNotHasKey( 'type', $result->getCollection()->first()->getAttributes() );
+
+        $html = view( 'cms::news', ['action' => $result, 'data' => $item->data, 'page' => $blog] )->render();
+
+        $this->assertStringContainsString( $article->title, $html );
+        $this->assertStringNotContainsString( 'application/ld+json', $html );
+    }
+
+
+    protected function item( Page $page ) : object
+    {
+        return (object) ['data' => (object) [
+            'order' => '-id',
+            'limit' => 10,
+            'parent-page' => (object) ['value' => $page->id],
+        ]];
     }
 }

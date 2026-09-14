@@ -38,7 +38,8 @@ It creates Economy, Money, Property, and Work desks with original articles, an e
 |------|-------------|
 | `page` | Front page, publication, and subscription pages |
 | `docs` | Long-form dossiers with sidebar navigation |
-| `blog` | News desks and individual articles |
+| `blog` | News desks and section fronts |
+| `news` | Individual news articles |
 
 ## Customization
 

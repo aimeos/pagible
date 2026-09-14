@@ -27,22 +27,5 @@
             </div>
         @endif
         {{ $action?->appends(request()->query())?->links() }}
-
-        <script type="application/ld+json">{
-            "@@context": "https://schema.org",
-            "@@type": "Blog",
-            "name": {!! cmsjson($data->title ?? cms($page, 'title')) !!},
-            "blogPost": [
-            @foreach($action ?? [] as $item)
-                {
-                    "@@type": "BlogPosting",
-                    "headline": {!! cmsjson(cms($item, 'title')) !!},
-                    "url": {!! cmsjson(cmsroute('cms.page', ['path' => $item->path], $item->domain ?? null)) !!},
-                    "datePublished": "{{ $item->created_at->toIso8601String() }}"
-                }
-                @if(!$loop->last),@endif
-            @endforeach
-            ]
-        }</script>
     </div>
 @endif

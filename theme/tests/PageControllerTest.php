@@ -155,6 +155,18 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testNewsPageUsesBlogLayout()
+    {
+        $page = Page::where( 'tag', 'article' )->firstOrFail();
+        $page->forceFill( ['tag' => '', 'type' => 'news'] )->saveQuietly();
+
+        $response = $this->get( '/welcome-to-laravelcms' );
+
+        $response->assertOk();
+        $response->assertSee( 'layout-blog.css', false );
+    }
+
+
     public function testLatestFindsExistingVersionWithoutDomain()
     {
         // Create a page with a version that has no domain in data (legacy/importer case)
