@@ -131,6 +131,19 @@ php artisan cms:install
 php artisan migrate
 ```
 
+Fresh Laravel applications contain a static `public/robots.txt` file. Web servers
+serve that file before Laravel receives the request. If it contains custom rules,
+first copy them into the `robots.txt` configuration element on the root page and
+publish the change. Then remove the static file to enable Pagible's dynamic route:
+
+```bash
+rm public/robots.txt
+```
+
+The dynamic route serves the published rules together with the generated sitemap
+and news sitemap URLs. Alternatively, configure the web server to pass
+`/robots.txt` to Laravel even when the static file exists.
+
 Now, adapt the `.env` file of your application and change the `APP_URL` setting to your domain. If you are using `php artisan serve` for testing, add the port of the internal web server (`APP_URL=http://localhost:8000`). Otherwise, the uploading files will fail because they wouldn't be loaded!
 
 Add a line in the "post-update-cmd" section of your `composer.json` file to update the admin backend files after each update:

@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -26,6 +27,33 @@ class MultiDomainPageControllerTest extends ThemeTestAbstract
         $app['config']->set( 'app.url', 'https://mydomain.tld' );
         $app['config']->set( 'cms.multidomain', true );
         $app['config']->set( 'cms.theme.cache', 'array' );
+    }
+
+
+    public function testDottedDomainServesRobotsTxt() : void
+    {
+        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+            'robots-txt' => [
+                'type' => 'robots-txt',
+                'data' => ['text' => "User-agent: *\nDisallow: /private"],
+                'files' => [],
+            ],
+        ]] )->saveQuietly();
+
+        $this->get( 'https://mydomain.tld/robots.txt' )
+            ->assertOk()
+            ->assertContent(
+                "User-agent: *\nDisallow: /private\n\n"
+                    . "Sitemap: https://mydomain.tld/sitemap.xml\n"
+                    . "Sitemap: https://mydomain.tld/sitemap-news.xml\n"
+            );
+
+        $this->get( 'https://otherdomain.tld/robots.txt' )
+            ->assertOk()
+            ->assertContent(
+                "Sitemap: https://otherdomain.tld/sitemap.xml\n"
+                    . "Sitemap: https://otherdomain.tld/sitemap-news.xml\n"
+            );
     }
 
 
