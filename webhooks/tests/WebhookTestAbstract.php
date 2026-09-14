@@ -22,7 +22,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     private static bool $cmsPrepared = false;
 
     protected ?\App\Models\User $user = null;
-    protected $enablesPackageDiscoveries = true;
+    protected $enablesPackageDiscoveries = false;
 
 
     protected function defineDatabaseMigrations()
@@ -75,11 +75,17 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders( $app )
     {
         return [
-            \Aimeos\Cms\CoreServiceProvider::class,
             \Aimeos\Nestedset\NestedSetServiceProvider::class,
+            \Nuwave\Lighthouse\LighthouseServiceProvider::class,
+            \Nuwave\Lighthouse\Auth\AuthServiceProvider::class,
+            \Nuwave\Lighthouse\OrderBy\OrderByServiceProvider::class,
+            \Nuwave\Lighthouse\Pagination\PaginationServiceProvider::class,
+            \Nuwave\Lighthouse\SoftDeletes\SoftDeletesServiceProvider::class,
+            \Nuwave\Lighthouse\Testing\TestingServiceProvider::class,
+            \Nuwave\Lighthouse\Validation\ValidationServiceProvider::class,
+            \Aimeos\Cms\CoreServiceProvider::class,
             \Aimeos\Cms\GraphqlServiceProvider::class,
             \Aimeos\Cms\WebhookServiceProvider::class,
-            \Nuwave\Lighthouse\LighthouseServiceProvider::class,
         ];
     }
 
