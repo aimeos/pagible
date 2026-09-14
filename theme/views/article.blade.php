@@ -12,10 +12,16 @@
 
 <script type="application/ld+json">{
 	"@@context": "https://schema.org",
-	"@@type": "Article",
+	"@@type": {!! cmsjson(($data->{'article-type'} ?? null) ?: 'Article') !!},
 	"headline": {!! cmsjson(cms($page, 'title')) !!},
 	"datePublished": "{{ $page->created_at->toIso8601String() }}",
 	"dateModified": "{{ $page->updated_at->toIso8601String() }}"
+	@if($author = array_filter([
+		'name' => trim((string) ($data->{'author-name'} ?? '')),
+		'url' => trim((string) ($data->{'author-url'} ?? '')),
+	]))
+		, "author": {!! cmsjson(['@@type' => 'Person'] + $author) !!}
+	@endif
 	@if($file)
 		, "image": {!! cmsjson(cmsasset($page, $file)) !!}
 	@endif

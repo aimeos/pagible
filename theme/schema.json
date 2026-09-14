@@ -500,6 +500,32 @@
                     "type": "images",
                     "label": "Gallery",
                     "min": 1
+                },
+                "article-type": {
+                    "type": "select",
+                    "default": "Article",
+                    "options": [
+                        {
+                            "value": "Article",
+                            "label": "Article"
+                        },
+                        {
+                            "value": "BlogPosting",
+                            "label": "BlogPosting"
+                        },
+                        {
+                            "value": "NewsArticle",
+                            "label": "NewsArticle"
+                        }
+                    ]
+                },
+                "author-name": {
+                    "type": "string",
+                    "label": "name"
+                },
+                "author-url": {
+                    "type": "url",
+                    "label": "url"
                 }
             }
         },
