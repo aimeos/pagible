@@ -6,7 +6,11 @@
  * - `absolute`: boolean, if true, relative paths and fragment/query links are rejected
  * - `allowed`: array of strings, allowed URL schemas (e.g., ['http', 'https'])
  * - `placeholder`: string, placeholder text for the input field
+ * - `rel`: boolean, if true, show relationship options for external links
  * - `required`: boolean, if true, the field is required
+ *
+ * The `rel` prop carries the selected relationship. Its parent stores the value
+ * in a sibling `<field>-rel` data property, keeping the URL itself a string.
  */
 
 import gql from 'graphql-tag'
@@ -15,13 +19,14 @@ import { debounce } from '../utils'
 export default {
   props: {
     modelValue: { type: String },
+    rel: { type: String, default: '' },
     config: { type: Object, default: () => {} },
     assets: { type: Object, default: () => {} },
     readonly: { type: Boolean, default: false },
     context: { type: Object }
   },
 
-  emits: ['update:modelValue', 'error'],
+  emits: ['update:modelValue', 'update:rel', 'error'],
 
   setup() {
     return { debounce }
@@ -35,6 +40,7 @@ export default {
 
     return {
       lastError: null,
+      relItems: [],
       loading: false,
       pages: [],
       // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
@@ -47,9 +53,18 @@ export default {
 
   created() {
     this.searchd = this.debounce(this.search, 300)
+    this.relItems = [
+      { key: '', val: this.$gettext('None') },
+      { key: 'sponsored', val: this.$gettext('Sponsored') },
+      { key: 'nofollow', val: this.$gettext('Nofollow') }
+    ]
   },
 
   computed: {
+    external() {
+      return this.config.rel && /^(?:https?:)?\/\//i.test(this.modelValue ?? this.config.default ?? '')
+    },
+
     hasError() {
       const val = this.modelValue ?? this.config.default ?? ''
       return !this.rules.every((rule) => rule(val) === true)
@@ -137,21 +152,64 @@ export default {
 </script>
 
 <template>
-  <v-combobox
-    :error="hasError"
-    :rules="rules"
-    :items="pages"
-    :loading="loading"
-    :readonly="readonly"
-    :placeholder="config.placeholder || ''"
-    :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
-    :modelValue="modelValue ?? config.default ?? ''"
-    @update:modelValue="$emit('update:modelValue', $event)"
-    @update:search="searchd($event)"
-    density="comfortable"
-    hide-details="auto"
-    variant="outlined"
-    class="ltr"
-    clearable
-  ></v-combobox>
+  <div class="url-field" :class="{ external }">
+    <v-combobox
+      :error="hasError"
+      :rules="rules"
+      :items="pages"
+      :loading="loading"
+      :readonly="readonly"
+      :placeholder="config.placeholder || ''"
+      :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
+      :modelValue="modelValue ?? config.default ?? ''"
+      @update:modelValue="$emit('update:modelValue', $event)"
+      @update:search="searchd($event)"
+      density="comfortable"
+      hide-details="auto"
+      variant="outlined"
+      class="url-input ltr"
+      clearable
+    ></v-combobox>
+    <v-select
+      v-if="external"
+      :aria-label="$gettext('Link attribute')"
+      :items="relItems"
+      :readonly="readonly"
+      :modelValue="rel"
+      @update:modelValue="$emit('update:rel', $event)"
+      density="comfortable"
+      hide-details="auto"
+      variant="outlined"
+      item-title="val"
+      item-value="key"
+      class="link-rel"
+    ></v-select>
+  </div>
 </template>
+
+<style scoped>
+.url-field {
+  display: flex;
+  align-items: flex-start;
+}
+
+.url-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.link-rel {
+  flex: 0 0 10rem;
+  margin-inline-start: -1px;
+}
+
+.external :deep(.url-input .v-field) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+:deep(.link-rel .v-field) {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+</style>

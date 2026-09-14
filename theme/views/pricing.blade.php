@@ -61,7 +61,7 @@
 					<button type="submit" class="btn">{{ ($item->button ?? null) ?: __('Get Started') }}</button>
 				</form>
 			@elseif(!($item->access ?? null) && ($item->url ?? null))
-				<a class="btn" href="{{ cmslink($item->url) }}">{{ ($item->button ?? null) ?: __('Get Started') }}</a>
+				<a class="btn" href="{{ cmslink($item->url) }}" rel="{{ $item->{'url-rel'} ?? '' }}">{{ ($item->button ?? null) ?: __('Get Started') }}</a>
 			@endif
 		</div>
 	@endforeach

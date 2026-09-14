@@ -85,7 +85,7 @@ class PageController extends Controller
         }
 
         if( $route && !$route->access_exists && ( $to = $route->to ) ) {
-            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
+            return redirect( $to, Response::HTTP_MOVED_PERMANENTLY );
         }
 
         $page = $this->published( $path, $domain, $user, $route );
@@ -99,7 +99,7 @@ class PageController extends Controller
         }
 
         if( $to = $page->to ) {
-            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
+            return redirect( $to, Response::HTTP_MOVED_PERMANENTLY );
         }
 
         $request->attributes->set(
@@ -177,7 +177,7 @@ class PageController extends Controller
         }
 
         if( $to = $version?->data->to ?? $page->to ) {
-            return str_starts_with( $to, 'http' ) ? redirect()->away( $to ) : redirect()->to( $to );
+            return redirect( $to, Response::HTTP_MOVED_PERMANENTLY );
         }
 
         $page->cache = 0; // don't cache sub-parts in preview requests

@@ -510,6 +510,8 @@ export default {
             <component
               :is="toName(field.type)"
               :modelValue="items[idx]?.[code]"
+              v-bind="field.rel ? { rel: items[idx]?.[code + '-rel'] } : {}"
+              v-on="field.rel ? { 'update:rel': value => update(idx, code + '-rel', value) } : {}"
               @update:modelValue="update(idx, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"

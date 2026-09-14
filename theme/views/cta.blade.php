@@ -12,7 +12,7 @@
     <div class="actions">
         @foreach($data->buttons as $button)
             @if($url = cmslink($button->url ?? null))
-                <a class="btn" href="{{ $url }}">{{ $button->label ?? '' }}</a>
+                <a class="btn" href="{{ $url }}" rel="{{ $button->{'url-rel'} ?? '' }}">{{ $button->label ?? '' }}</a>
             @endif
         @endforeach
     </div>

@@ -195,18 +195,30 @@ export default {
     resetField(code) {
       if (code in this.original) {
         const value = this.original[code]
+        const rel = code + '-rel'
+        const data = { ...this.data, [code]: value }
+
+        if (rel in this.original) {
+          data[rel] = this.original[rel]
+          delete this.original[rel]
+        }
+
         this.dirty.delete(code)
         delete this.original[code]
-        this.$emit('update:data', { ...this.data, [code]: value })
+        this.$emit('update:data', data)
         this.$emit('change', value)
       }
     },
 
-    update(code, value) {
-      if (!this.dirty.has(code)) {
+    update(code, value, dirty = code) {
+      if (!(code in this.original)) {
         this.original[code] = this.data[code]
       }
-      this.dirty.add(code)
+      if (!(dirty in this.original)) {
+        this.original[dirty] = this.data[dirty]
+      }
+
+      this.dirty.add(dirty)
       this.$emit('update:data', { ...this.data, [code]: value })
       this.$emit('change', value)
     },
@@ -347,6 +359,8 @@ export default {
       :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
       :readonly="readonly"
       :modelValue="data[code]"
+      v-bind="field.rel ? { rel: data[code + '-rel'] } : {}"
+      v-on="field.rel ? { 'update:rel': value => update(code + '-rel', value, code) } : {}"
       @addFile="addFile($event)"
       @removeFile="removeFile($event)"
       @update:modelValue="update(code, $event)"

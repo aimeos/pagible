@@ -89,6 +89,7 @@ class ThemeTest extends ThemeTestAbstract
 		]]] )['content'];
 
 		$this->assertSame( 'url', $url['type'] );
+		$this->assertTrue( $url['rel'] );
 		$this->assertArrayNotHasKey( 'required', $url );
 		$this->assertSame( '/target', $content[0]->data->cards[0]->url );
 	}
@@ -111,7 +112,20 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 3, $buttons['max'] );
 		$this->assertTrue( $buttons['item']['label']['required'] );
 		$this->assertSame( 'url', $buttons['item']['url']['type'] );
+		$this->assertTrue( $buttons['item']['url']['rel'] );
 		$this->assertTrue( $buttons['item']['url']['required'] );
+	}
+
+
+	public function testRegisterUrlRelationships()
+	{
+		$schema = Schema::get( 'cms' );
+
+		$this->assertTrue( $schema['content']['hero']['fields']['url']['rel'] );
+		$this->assertTrue( $schema['content']['hero']['fields']['url-alternative']['rel'] );
+		$this->assertTrue( $schema['content']['pricing']['fields']['items']['item']['url']['rel'] );
+		$this->assertArrayNotHasKey( 'rel', $schema['meta']['canonical']['fields']['url'] );
+		$this->assertArrayNotHasKey( 'rel', $schema['config']['security']['fields']['contact'] );
 	}
 
 
@@ -337,7 +351,7 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertSame( 3, substr_count( $html, '<picture class="image"' ) );
 		$this->assertSame( 1, substr_count( $html, '<a class="card-image"' ) );
-		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
+		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target" rel="">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
 	}
 
 
@@ -348,9 +362,9 @@ class ThemeTest extends ThemeTestAbstract
 			'title' => 'Ready to start?',
 			'text' => 'Choose the path that **fits you**.',
 			'buttons' => [
-				(object) ['label' => 'Get started', 'url' => '/start'],
-				(object) ['label' => 'Contact us', 'url' => 'https://example.com/contact'],
-				(object) ['label' => 'Call us', 'url' => 'tel:+49123456789'],
+				(object) ['label' => 'Get started', 'url' => '/start', 'url-rel' => 'nofollow'],
+				(object) ['label' => 'Contact us', 'url' => 'https://example.com/contact', 'url-rel' => 'nofollow'],
+				(object) ['label' => 'Call us', 'url' => 'tel:+49123456789', 'url-rel' => 'sponsored'],
 			],
 		];
 
@@ -362,9 +376,9 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertStringContainsString( '<h2 class="title">Ready to start?</h2>', $html );
 		$this->assertStringContainsString( '<p>Choose the path that <strong>fits you</strong>.</p>', $html );
-		$this->assertStringContainsString( '<a class="btn" href="/start">Get started</a>', $html );
-		$this->assertStringContainsString( '<a class="btn" href="https://example.com/contact">Contact us</a>', $html );
-		$this->assertStringContainsString( '<a class="btn" href="tel:+49123456789">Call us</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="/start" rel="nofollow">Get started</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="https://example.com/contact" rel="nofollow">Contact us</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="tel:+49123456789" rel="sponsored">Call us</a>', $html );
 		$this->assertStringContainsString( 'vendor/cms/theme/cta.css', $html );
 		$this->assertSame( 3, substr_count( $html, '<a class="btn"' ) );
 	}
@@ -384,7 +398,7 @@ class ThemeTest extends ThemeTestAbstract
 		$html = view( 'cms::cta', compact( 'data', 'page' ) )->render();
 
 		$this->assertStringNotContainsString( 'class="cms-text"', $html );
-		$this->assertStringContainsString( '<a class="btn" href="/safe">Safe link</a>', $html );
+		$this->assertStringContainsString( '<a class="btn" href="/safe" rel="">Safe link</a>', $html );
 		$this->assertStringNotContainsString( 'Unsafe link', $html );
 		$this->assertSame( 1, substr_count( $html, '<a class="btn"' ) );
 	}

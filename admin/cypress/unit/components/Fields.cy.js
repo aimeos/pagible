@@ -9,6 +9,16 @@ const stubs = {
   Images: { props: ['label'], render() { return h('div', { class: 'field-images' }, this.label) } },
   Hidden: { render() { return h('div', { class: 'field-hidden' }) } },
   Number: { render() { return h('div', { class: 'field-number' }) } },
+  Url: {
+    props: ['rel'],
+    emits: ['update:rel'],
+    render() {
+      return h('button', {
+        class: 'field-url',
+        onClick: () => this.$emit('update:rel', 'nofollow')
+      }, this.rel || 'none')
+    }
+  },
 }
 
 const fields = {
@@ -206,6 +216,22 @@ describe('Fields', () => {
       })
       expect(onUpdate.firstCall.args[0]).not.to.equal(data)
       expect(data.cards).to.deep.equal([{ position: 'start' }])
+    })
+  })
+
+  it('stores the selected relationship next to its URL', () => {
+    const onUpdate = cy.spy().as('updateData')
+
+    mountFields({
+      fields: { link: { type: 'url', label: 'Link', rel: true } },
+      data: { link: 'https://example.com', 'link-rel': '' },
+      'onUpdate:data': onUpdate,
+    })
+
+    cy.get('.field-url').click()
+    cy.get('@updateData').should('have.been.calledOnceWith', {
+      link: 'https://example.com',
+      'link-rel': 'nofollow',
     })
   })
 })

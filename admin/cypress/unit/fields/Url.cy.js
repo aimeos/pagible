@@ -11,6 +11,41 @@ describe('Url', () => {
     cy.get('input[role="combobox"]').should('have.value', 'https://example.com')
   })
 
+  it('attaches link attribute options to external URLs', () => {
+    const onRel = cy.spy().as('rel')
+
+    cy.mount(Url, {
+      props: {
+        modelValue: 'https://example.com',
+        config: { rel: true },
+        'onUpdate:rel': onRel
+      }
+    })
+
+    cy.get('.url-field').should('exist')
+    cy.get('.link-rel').click()
+    cy.get('.v-list-item').contains('Sponsored').click()
+    cy.get('@rel').should('have.been.calledWith', 'sponsored')
+  })
+
+  it('does not offer link attributes for internal URLs', () => {
+    cy.mount(Url, { props: { modelValue: '/internal', config: { rel: true } } })
+    cy.get('.link-rel').should('not.exist')
+  })
+
+  it('does not offer link attributes unless enabled by the schema', () => {
+    cy.mount(Url, { props: { modelValue: 'https://example.com', config: {} } })
+    cy.get('.link-rel').should('not.exist')
+  })
+
+  it('displays the selected external link attribute', () => {
+    cy.mount(Url, {
+      props: { modelValue: 'https://example.com', rel: 'nofollow', config: { rel: true } }
+    })
+
+    cy.get('.link-rel').should('contain', 'Nofollow')
+  })
+
   it('uses config.default when no modelValue is supplied', () => {
     cy.mount(Url, { props: { config: { default: 'https://default.com' } } })
     cy.get('input[role="combobox"]').should('have.value', 'https://default.com')
