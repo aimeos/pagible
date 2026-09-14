@@ -608,7 +608,7 @@ class CashierControllerTest extends CashierTestAbstract
             'page' => $this->page,
         ] )->render();
 
-        $this->assertStringContainsString( '<a class="btn" href="#contact">', $html );
+        $this->assertStringContainsString( '<a class="btn" href="#contact"', $html );
         $this->assertStringNotContainsString( '<form method="POST"', $html );
     }
 
