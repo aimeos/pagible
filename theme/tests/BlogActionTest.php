@@ -99,6 +99,20 @@ class BlogActionTest extends ThemeTestAbstract
     }
 
 
+    public function testStoresCurrentPaginationPageOnRequest()
+    {
+        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
+        $request = Request::create( '/blog', 'GET', ['p' => 2] );
+        $request->setUserResolver( fn() => null );
+        $this->app->instance( 'request', $request );
+
+        $result = ( new Blog() )( $request, $blog, $this->item( $blog ) );
+
+        $this->assertSame( 2, $result->currentPage() );
+        $this->assertSame( 2, $request->attributes->get( 'cms.pagination' ) );
+    }
+
+
     protected function item( Page $page ) : object
     {
         return (object) ['data' => (object) [

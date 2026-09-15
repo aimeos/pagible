@@ -103,6 +103,47 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testPaginatorPageUsesSelfCanonicalUrl()
+    {
+        $this->blogList();
+        $response = $this->get( '/blog?p=2&utm_source=campaign' );
+
+        $response->assertOk();
+        $response->assertSee( '<link rel="canonical" href="http://localhost/blog?p=2"', false );
+        $response->assertDontSee( 'utm_source=campaign', false );
+    }
+
+
+    public function testManualCanonicalUsesCurrentPaginatorPage()
+    {
+        $page = $this->blogList();
+        $page->forceFill( ['meta' => [
+            'canonical' => [
+                'type' => 'canonical',
+                'data' => ['url' => 'https://example.com/journal?lang=en'],
+                'files' => [],
+            ],
+        ]] )->saveQuietly();
+
+        $response = $this->get( '/blog?p=2' );
+
+        $response->assertOk();
+        $response->assertSee( '<link rel="canonical" href="https://example.com/journal?lang=en&amp;p=2"', false );
+        $response->assertDontSee( '<link rel="canonical" href="http://localhost/blog', false );
+    }
+
+
+    public function testDetailPageIgnoresPaginatorParameterInCanonicalUrl()
+    {
+        $page = Page::where( 'tag', 'article' )->firstOrFail();
+        $response = $this->get( '/' . $page->path . '?p=2' );
+
+        $response->assertOk();
+        $response->assertSee( '<link rel="canonical" href="http://localhost/' . $page->path . '"', false );
+        $response->assertDontSee( '<link rel="canonical" href="http://localhost/' . $page->path . '?p=2"', false );
+    }
+
+
     public function testWebsiteTitleUsesPublishedAndLatestPageTreeVersions()
     {
         $root = Page::where( 'tag', 'root' )->firstOrFail();
@@ -798,6 +839,19 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertStatus( 200 );
         $response->assertJsonStructure( ['token'] );
         $response->assertCookie( config( 'session.cookie' ) );
+    }
+
+
+    private function blogList(): Page
+    {
+        $page = Page::where( 'tag', 'blog' )->firstOrFail();
+        $content = collect( (array) $page->content )
+            ->map( fn( $item ) => (object) ( (array) $item + ['group' => 'main'] ) )
+            ->all();
+
+        $page->forceFill( ['content' => $content, 'type' => 'blog'] )->saveQuietly();
+
+        return $page;
     }
 
 

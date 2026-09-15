@@ -51,6 +51,7 @@ class Blog
 
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
         $pages = $builder->paginate( $item->data->limit ?? 10, $attr, 'p' );
+        $request->attributes->set( 'cms.pagination', $pages->currentPage() );
 
         // The list shows the first element's image per page, taken from the draft content
         // for editors and the published content otherwise. The file IDs come from that element's

@@ -28,7 +28,7 @@
         <title>{{ cms($page, 'title') }}</title>
 
         @unless(collect(cms($page, 'meta', []))->contains('type', 'canonical'))
-            <link rel="canonical" href="{{ cmsroute($page) }}" />
+            @include('cms::canonical', ['data' => (object) ['url' => cmsroute($page)]])
         @endunless
 
         @foreach(cms($page, 'meta', []) as $item)

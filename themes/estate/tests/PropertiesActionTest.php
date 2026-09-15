@@ -27,7 +27,7 @@ class PropertiesActionTest extends ThemeTestAbstract
     protected $seeder = TestSeeder::class;
 
 
-    public function testArticleRendersAuthorJsonLd(): void
+    public function testArticleRendersJsonLd(): void
     {
         $page = ( new Page() )->forceFill( [
             'created_at' => CarbonImmutable::parse( '2026-08-23 12:00:00' ),
@@ -39,9 +39,30 @@ class PropertiesActionTest extends ThemeTestAbstract
         $data = (object) [
             'author-name' => 'Jane Doe',
             'author-url' => 'https://example.com/authors/jane-doe',
+            'files' => [
+                (object) ['id' => 'image-1x1', 'type' => 'file'],
+                (object) ['id' => 'image-4x3', 'type' => 'file'],
+                (object) ['id' => 'image-16x9', 'type' => 'file'],
+            ],
             'text' => 'Article introduction',
         ];
-        $files = collect();
+        $files = collect( [
+            'image-1x1' => (object) [
+                'id' => 'image-1x1',
+                'path' => 'https://example.com/article-1x1.jpg',
+                'previews' => [],
+            ],
+            'image-4x3' => (object) [
+                'id' => 'image-4x3',
+                'path' => 'https://example.com/article-4x3.jpg',
+                'previews' => [],
+            ],
+            'image-16x9' => (object) [
+                'id' => 'image-16x9',
+                'path' => 'https://example.com/article-16x9.jpg',
+                'previews' => [],
+            ],
+        ] );
 
         $html = view( 'estate::article', compact( 'data', 'files', 'page' ) )->render();
 
@@ -53,6 +74,11 @@ class PropertiesActionTest extends ThemeTestAbstract
             'name' => 'Jane Doe',
             'url' => 'https://example.com/authors/jane-doe',
         ], $json['author'] );
+        $this->assertSame( [
+            'https://example.com/article-1x1.jpg',
+            'https://example.com/article-4x3.jpg',
+            'https://example.com/article-16x9.jpg',
+        ], $json['image'] );
     }
 
 
@@ -466,6 +492,34 @@ class PropertiesActionTest extends ThemeTestAbstract
         $this->assertSame( 7, $result->items->total() );
         $this->assertSame( 6, $result->items->count() );
         $this->assertSame( 6, $result->items->perPage() );
+    }
+
+
+    public function testStoresCurrentPaginationPageOnRequest()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $list = $this->addListPage( $root );
+        $this->addProperty( $list, [
+            'path' => 'first-property',
+            'title' => 'First Property',
+        ] );
+        $this->addProperty( $list, [
+            'path' => 'second-property',
+            'title' => 'Second Property',
+        ] );
+
+        $request = Request::create( '/properties', 'GET', ['p' => 2] );
+        $request->setUserResolver( fn() => null );
+        $result = ( new Properties() )( $request, $list, (object) [
+            'data' => (object) [
+                'limit' => 1,
+                'order' => '-created_at',
+                'parent-page' => (object) ['value' => $list->id],
+            ],
+        ] );
+
+        $this->assertSame( 2, $result->items->currentPage() );
+        $this->assertSame( 2, $request->attributes->get( 'cms.pagination' ) );
     }
 
 

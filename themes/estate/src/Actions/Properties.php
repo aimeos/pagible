@@ -107,6 +107,7 @@ class Properties
             );
         }
 
+        $request->attributes->set( 'cms.pagination', $result->currentPage() );
         $enabled ? $result->appends( array_filter( $filters, fn( $value ) => $value !== null && $value !== '' ) ) : null;
         $this->attachFiles( $result, $editor );
 
