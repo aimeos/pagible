@@ -128,6 +128,25 @@ class Watch
 
 
     /**
+     * Writes a security-relevant warning to the configured or default log channel.
+     *
+     * @param array<string, mixed> $fields Structured entry fields
+     */
+    public static function warn( string $message, array $fields ) : void
+    {
+        try {
+            $fields = self::fields( $fields );
+
+            ( $channel = self::channel() )
+                ? Log::channel( $channel )->warning( $message, $fields )
+                : Log::warning( $message, $fields );
+        } catch( \Throwable ) {
+            error_log( 'CMS watch warning error' );
+        }
+    }
+
+
+    /**
      * Adds standard watch fields and removes null/empty-string values.
      *
      * @param array<string, mixed> $fields Log fields

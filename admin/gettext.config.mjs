@@ -1,7 +1,7 @@
 export default {
   input: {
     path: "./js",
-    include: ["**/*.js", "**/*.ts", "**/*.vue"],
+    include: ["**/*.js", "**/*.ts", "**/*.vue", "../../webhooks/admin/src/**/*.vue"],
   },
   output: {
     locales: [

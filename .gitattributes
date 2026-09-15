@@ -12,6 +12,7 @@
 /jsonapi/       export-ignore
 /mcp/           export-ignore
 /theme/         export-ignore
+/webhooks/      export-ignore
 /tests/         export-ignore
 phpunit.xml     export-ignore
 phpstan.neon.dist export-ignore

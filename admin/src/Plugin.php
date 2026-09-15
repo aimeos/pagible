@@ -49,8 +49,9 @@ class Plugin
      * Registers an admin panel extension.
      *
      * A top-level key like "products" adds a navigation panel and requires a "permission".
-     * A sub-panel key like "page:settings" adds a tab to the page, element or file editor
-     * and inherits the host view's permission.
+     * Its component renders the panel body; the admin SPA provides the app bar, navigation
+     * and main content layout. A sub-panel key like "page:settings" adds a tab to the page,
+     * element or file editor and inherits the host view's permission.
      *
      * @param string $key Panel key, e.g. "products" or "page:settings"
      * @param array<string, string> $definition Definition with "label", "component" and optional "icon"/"permission"
@@ -91,10 +92,6 @@ class Plugin
             throw new \InvalidArgumentException( "Plugin '$key' requires a 'permission'" );
         }
 
-        if( isset( self::$panels[$key] ) ) {
-            throw new \LogicException( "Plugin '$key' is already registered" );
-        }
-
         $panel = [
             'label' => $definition['label'],
             'permission' => $definition['permission'],
@@ -103,6 +100,14 @@ class Plugin
 
         if( !empty( $definition['icon'] ) ) {
             $panel['icon'] = $definition['icon'];
+        }
+
+        if( isset( self::$panels[$key] ) ) {
+            if( self::$panels[$key] === $panel ) {
+                return;
+            }
+
+            throw new \LogicException( "Plugin '$key' is already registered" );
         }
 
         self::$panels[$key] = $panel;
@@ -125,14 +130,20 @@ class Plugin
 
         [$host, $name] = explode( ':', $key, 2 );
 
-        if( isset( self::$subpanels[$host][$name] ) ) {
-            throw new \LogicException( "Plugin '$key' is already registered" );
-        }
-
-        self::$subpanels[$host][$name] = [
+        $panel = [
             'label' => $definition['label'],
             'component' => $definition['component'],
         ];
+
+        if( isset( self::$subpanels[$host][$name] ) ) {
+            if( self::$subpanels[$host][$name] === $panel ) {
+                return;
+            }
+
+            throw new \LogicException( "Plugin '$key' is already registered" );
+        }
+
+        self::$subpanels[$host][$name] = $panel;
     }
 
 

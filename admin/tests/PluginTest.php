@@ -111,6 +111,21 @@ class PluginTest extends AdminTestAbstract
     }
 
 
+    public function testRegisterIdenticalDefinitionsAgain()
+    {
+        $panel = ['label' => 'Products', 'permission' => 'product:view', 'component' => '/a.js'];
+        $subpanel = ['label' => 'Settings', 'component' => '/b.js'];
+
+        Plugin::register( 'products', $panel );
+        Plugin::register( 'products', $panel );
+        Plugin::register( 'page:settings', $subpanel );
+        Plugin::register( 'page:settings', $subpanel );
+
+        $this->assertSame( $panel, Plugin::all()['panels']['products'] );
+        $this->assertSame( $subpanel, Plugin::all()['subpanels']['page']['settings'] );
+    }
+
+
     public function testRegisterDuplicateSubpanel()
     {
         Plugin::register( 'page:settings', [

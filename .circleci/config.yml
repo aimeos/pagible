@@ -254,6 +254,33 @@ jobs:
           paths: [./vendor]
       - run: ./vendor/bin/phpstan --no-progress
 
+  "webhook-test":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: sqlite
+    working_directory: ~/project/webhooks
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - webhooks-php85-{{ checksum "composer.json" }}
+      - run:
+          name: Install isolated webhook package
+          command: |
+            composer config repositories.admin '{"type":"path","url":"../admin","options":{"symlink":false}}'
+            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false}}'
+            composer config repositories.graphql '{"type":"path","url":"../graphql","options":{"symlink":false}}'
+            composer config minimum-stability dev
+            composer config prefer-stable true
+            composer update -n --prefer-dist
+      - save_cache:
+          key: webhooks-php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpstan analyze --no-progress
+
   "cashier-provider":
     parameters:
       package:
@@ -293,6 +320,24 @@ jobs:
           paths:
             - ./.npm
       - run: npx eslint
+
+  "webhook-admin":
+    docker:
+      - image: cimg/node:lts
+    working_directory: ~/project/webhooks/admin
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - webhook-admin-{{ checksum "package-lock.json" }}
+      - run: npm ci --cache ~/.npm
+      - save_cache:
+          key: webhook-admin-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run: npm run lint
+      - run: npm run build
 
   "admin-unit":
     docker:
@@ -482,6 +527,8 @@ workflows:
     when: << pipeline.parameters.run_php >>
     jobs:
       - "php85-phpstan"
+      - "webhook-test":
+          requires: ["php85-phpstan"]
       - "cashier-provider":
           matrix:
             parameters:
@@ -520,6 +567,8 @@ workflows:
     when: << pipeline.parameters.run_admin >>
     jobs:
       - "admin-lint"
+      - "webhook-admin":
+          requires: ["admin-lint"]
       - "admin-unit":
           requires: ["admin-lint"]
       - "admin-e2e":

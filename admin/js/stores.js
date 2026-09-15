@@ -357,7 +357,10 @@ function pluginComponent(def) {
   return {
     ...def,
     component: markRaw(defineAsyncComponent({
-      loader: () => import(/* @vite-ignore */ def.component).then((mod) => mod.default),
+      loader: () => Promise.all([
+        import(/* @vite-ignore */ def.component),
+        import('./plugin')
+      ]).then(([mod, host]) => host.pluginUi(mod.default)),
       errorComponent: PluginError
     }))
   }

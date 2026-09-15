@@ -1,0 +1,22 @@
+"A datetime string"
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"JSON data"
+scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
+
+type Query {
+  user: User
+}
+
+type Mutation {
+  health: String
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  email_verified_at: DateTime
+  created_at: DateTime
+  updated_at: DateTime
+}

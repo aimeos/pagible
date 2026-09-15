@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\PermissionChanged;
 use Aimeos\Cms\Watch;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -25,26 +24,15 @@ class PermissionLogListener
 {
     public function handle( PermissionChanged $event ) : void
     {
-        try
-        {
-            $fields = Watch::fields( [
-                'action' => 'permission',
-                'actor' => $event->actorEmail,
-                'target' => $event->targetEmail,
-                'target_id' => $event->targetId,
-                'assignments' => $event->assignments,
-                'ip' => Watch::mask( $event->ip ),
-                'user_agent' => Watch::mask( $event->userAgent ),
-                'tenant_id' => $event->tenant,
-            ] );
-
-            ( $channel = Watch::channel() )
-                ? Log::channel( $channel )->warning( 'cms.user', $fields )
-                : Log::warning( 'cms.user', $fields );
-        }
-        catch( \Throwable $e )
-        {
-            error_log( 'CMS watch listener error: ' . $e->getMessage() );
-        }
+        Watch::warn( 'cms.user', [
+            'action' => 'permission',
+            'actor' => $event->actorEmail,
+            'target' => $event->targetEmail,
+            'target_id' => $event->targetId,
+            'assignments' => $event->assignments,
+            'ip' => Watch::mask( $event->ip ),
+            'user_agent' => Watch::mask( $event->userAgent ),
+            'tenant_id' => $event->tenant,
+        ] );
     }
 }

@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
+use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Listeners\ContentListener;
 use Illuminate\Support\Facades\Log;
@@ -73,6 +74,39 @@ class ContentListenerTest extends TestCase
         ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
         $this->addToAssertionCount( 1 );
+    }
+
+
+    public function testPublishedEntryUsesProjectedState() : void
+    {
+        $logger = new class extends AbstractLogger {
+            /** @var array<string, mixed> */
+            public array $context = [];
+
+
+            public function log( $level, string|\Stringable $message, array $context = [] ) : void
+            {
+                if( $level === 'info' ) {
+                    $this->context = $context;
+                }
+            }
+        };
+
+        Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
+
+        ( new ContentListener )->handle( new Published(
+            'page', 'id1', 'future', 'scheduler', [
+                'path' => 'future-route', 'domain' => 'future.example',
+            ], false, tenant: 'test', source: 'cli', projection: [
+                'version_id' => 'published',
+                'path' => 'published-route',
+                'domain' => 'published.example',
+            ],
+        ) );
+
+        $this->assertTrue( $logger->context['published'] );
+        $this->assertSame( 'published-route', $logger->context['path'] );
+        $this->assertSame( 'published.example', $logger->context['domain'] );
     }
 
 
