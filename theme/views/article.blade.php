@@ -22,7 +22,12 @@
 	]))
 		, "author": {!! cmsjson(['@@type' => 'Person'] + $author) !!}
 	@endif
-	@if($file)
-		, "image": {!! cmsjson(cmsasset($page, $file)) !!}
+	@if($images = collect(data_get($data, 'files') ?: [data_get($data, 'file')])
+		->map(fn($item) => cmsasset($page, cms($files, data_get($item, 'id'))))
+		->filter()
+		->unique()
+		->values()
+		->all())
+		, "image": {!! cmsjson($images) !!}
 	@endif
 }</script>

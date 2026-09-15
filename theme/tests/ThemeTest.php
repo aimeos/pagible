@@ -532,16 +532,33 @@ class ThemeTest extends ThemeTestAbstract
 			'title' => 'Article',
 			'type' => 'blog',
 		] );
-		$file = (object) [
-			'id' => 'image',
-			'name' => 'Article image',
-			'path' => 'https://example.com/article.jpg',
-			'previews' => [],
-		];
-		$files = collect( ['image' => $file] );
+		$files = collect( [
+			'image-1x1' => (object) [
+				'id' => 'image-1x1',
+				'name' => 'Article image 1:1',
+				'path' => 'https://example.com/article-1x1.jpg',
+				'previews' => [],
+			],
+			'image-4x3' => (object) [
+				'id' => 'image-4x3',
+				'name' => 'Article image 4:3',
+				'path' => 'https://example.com/article-4x3.jpg',
+				'previews' => [],
+			],
+			'image-16x9' => (object) [
+				'id' => 'image-16x9',
+				'name' => 'Article image 16:9',
+				'path' => 'https://example.com/article-16x9.jpg',
+				'previews' => [],
+			],
+		] );
 		$fields = [
-			'gallery' => ['files' => [(object) ['id' => 'image', 'type' => 'file']]],
-			'legacy' => ['file' => (object) ['id' => 'image', 'type' => 'file']],
+			'gallery' => ['files' => [
+				(object) ['id' => 'image-1x1', 'type' => 'file'],
+				(object) ['id' => 'image-4x3', 'type' => 'file'],
+				(object) ['id' => 'image-16x9', 'type' => 'file'],
+			]],
+			'legacy' => ['file' => (object) ['id' => 'image-16x9', 'type' => 'file']],
 		];
 
 		foreach( $fields as $name => $field )
@@ -554,12 +571,19 @@ class ThemeTest extends ThemeTestAbstract
 			$html = view( 'cms::article', compact( 'data', 'files', 'page' ) )->render();
 
 			$this->assertStringContainsString( '<picture class="cover"', $html, $name );
-			$this->assertStringContainsString( 'https://example.com/article.jpg', $html, $name );
+			$this->assertStringContainsString( 'https://example.com/article-', $html, $name );
 			$this->assertStringContainsString( '"datePublished": "2026-08-23T12:00:00+00:00"', $html, $name );
 			$this->assertStringContainsString( '"image":', $html, $name );
 			$this->assertSame( 1, preg_match( '/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches ), $name );
 			$json = json_decode( $matches[1], true, flags: JSON_THROW_ON_ERROR );
 			$this->assertSame( 'BlogPosting', $json['@type'], $name );
+			$this->assertSame( $name === 'gallery' ? [
+				'https://example.com/article-1x1.jpg',
+				'https://example.com/article-4x3.jpg',
+				'https://example.com/article-16x9.jpg',
+			] : [
+				'https://example.com/article-16x9.jpg',
+			], $json['image'], $name );
 			$this->assertSame( [
 				'@type' => 'Person',
 				'name' => 'Jane Doe',
