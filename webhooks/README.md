@@ -48,26 +48,40 @@ Each request contains a bounded event reference and these headers:
 - `X-Cms-Tenant`
 - `X-Cms-Delivery`
 - `X-Cms-Timestamp`
-- `X-Cms-Signature: v1=<hex hmac>`
+- `X-Cms-Signature: v2=<hex hmac>`
 
 Verify every request before parsing or processing its body:
 
-1. Read `X-Cms-Timestamp`, `X-Cms-Delivery` and `X-Cms-Signature`, rejecting missing
-   or malformed values. The timestamp is a Unix timestamp in seconds and the signature has the
-   form `v1=<64 lowercase hexadecimal characters>`.
+1. Read `X-Cms-Event`, `X-Cms-Tenant`, `X-Cms-Timestamp`, `X-Cms-Delivery` and
+   `X-Cms-Signature`, rejecting missing or malformed values. The timestamp is a Unix timestamp in
+   seconds and the signature has the form `v2=<64 lowercase hexadecimal characters>`.
 2. Reject `X-Cms-Timestamp` when it is outside the receiver's allowed clock-skew window. A five
    minute window is a reasonable default. Use the signed header value, not the informational
    timestamp in the JSON payload.
-3. Compute `v1=` followed by the hexadecimal HMAC-SHA256 of
-   `X-Cms-Timestamp + "." + X-Cms-Delivery + "." + raw-request-body` using the subscription secret.
-   The body must be the exact bytes received, before JSON decoding or re-encoding.
-4. Compare the complete expected and received signatures using a constant-time comparison such as
+3. Build the canonical signature payload below. Header names are lowercase, values are used exactly
+   as received after normal HTTP whitespace handling, and the empty line separates the headers from
+   the body. The body must be the exact bytes received, before JSON decoding or re-encoding.
+
+   ```text
+   v2
+   x-cms-event:<X-Cms-Event>
+   x-cms-tenant:<X-Cms-Tenant>
+   x-cms-delivery:<X-Cms-Delivery>
+   x-cms-timestamp:<X-Cms-Timestamp>
+
+   <raw-request-body>
+   ```
+
+4. Compute `v2=` followed by the hexadecimal HMAC-SHA256 of that canonical payload using the
+   subscription secret.
+5. Compare the complete expected and received signatures using a constant-time comparison such as
    PHP's `hash_equals()`.
-5. Atomically claim `X-Cms-Delivery` before applying side effects. Treat an already claimed value as
+6. Atomically claim `X-Cms-Delivery` before applying side effects. Treat an already claimed value as
    a successful duplicate and return a 2xx response. Retain claims for at least the sender's maximum
    delivery age plus the accepted clock skew: at least 24 hours and five minutes with the defaults.
 
 Retries retain the same delivery ID but receive a fresh signed timestamp.
+Signature version `v2` replaces `v1`; update receivers before deploying a sender with this version.
 
 Subscription health is updated after terminal delivery outcomes. `failures` counts consecutive
 failed deliveries and is reset to zero by the next successful 2xx response. `last_success_at`

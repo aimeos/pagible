@@ -14,6 +14,7 @@ describe('PluginPanel', () => {
   function mountPanel(perms = { 'config:webhook': true }, translate = (value) => value) {
     const panel = {
       label: 'Webhooks',
+      icon: '<svg width="1em" height="1em" viewBox="0 0 24 24"><path d="M1 1h22v22H1z" /></svg>',
       permission: 'config:webhook',
       component: Body
     }
@@ -43,6 +44,7 @@ describe('PluginPanel', () => {
 
     cy.get('.v-app-bar').contains('Webhooks').should('exist')
     cy.get('.v-navigation-drawer').contains('Webhooks').should('exist')
+    cy.get('.v-navigation-drawer .icon svg').should('exist')
     cy.get('.plugin-body').should('contain', 'Webhooks body')
     cy.get('.plugin-body').should('have.attr', 'data-messages', 'yes')
     cy.get('.user-stub').should('exist')

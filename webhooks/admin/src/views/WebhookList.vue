@@ -2,6 +2,17 @@
 
 <script>
 import gql from "graphql-tag";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiKeyVariant,
+  mdiLinkVariant,
+  mdiMagnify,
+  mdiPencil,
+  mdiPlus,
+  mdiRefresh,
+} from "@mdi/js";
 
 const FIELDS = gql`
   fragment CmsWebhookFields on CmsWebhook {
@@ -82,6 +93,7 @@ export default {
   inject: ["apollo", "messages"],
 
   data: () => ({
+    actions: false,
     dialog: false,
     replaceDialog: false,
     secretDialog: false,
@@ -89,13 +101,55 @@ export default {
     saving: false,
     items: [],
     checked: new Set(),
+    menu: [],
     names: [],
     selected: null,
+    term: "",
+    statusFilter: null,
     url: "",
     events: [],
     status: false,
     secret: "",
   }),
+
+  setup() {
+    return {
+      mdiClose,
+      mdiDelete,
+      mdiDotsVertical,
+      mdiKeyVariant,
+      mdiLinkVariant,
+      mdiMagnify,
+      mdiPencil,
+      mdiPlus,
+      mdiRefresh,
+    };
+  },
+
+  computed: {
+    filtered() {
+      const term = (this.term ?? "").trim().toLocaleLowerCase();
+
+      return this.items.filter((item) => {
+        if (this.statusFilter !== null && item.status !== this.statusFilter)
+          return false;
+
+        return (
+          !term ||
+          item.endpoint.toLocaleLowerCase().includes(term) ||
+          item.events.some((event) => event.toLocaleLowerCase().includes(term))
+        );
+      });
+    },
+
+    statusItems() {
+      return [
+        { title: this.$gettext("All"), value: null },
+        { title: this.$gettext("Active"), value: true },
+        { title: this.$gettext("Inactive"), value: false },
+      ];
+    },
+  },
 
   mounted() {
     this.load();
@@ -169,14 +223,13 @@ export default {
               input: { events: this.events, status: this.status },
             },
           });
-          this.replaceItem(data.saveWebhook);
+          this.put(data.saveWebhook);
         } else {
           const { data } = await this.apollo.mutate({
             mutation: ADD,
             variables: { input: { url: this.url.trim(), events: this.events } },
           });
-          this.items.unshift(data.addWebhook.webhook);
-          this.showSecret(data.addWebhook.secret);
+          this.provision(data.addWebhook);
         }
         this.dialog = false;
       }, this.$gettext("Error saving webhook"));
@@ -190,9 +243,8 @@ export default {
           mutation: REPLACE,
           variables: { id: this.selected.id, url: this.url.trim() },
         });
-        this.replaceItem(data.replaceWebhook.webhook);
         this.replaceDialog = false;
-        this.showSecret(data.replaceWebhook.secret);
+        this.provision(data.replaceWebhook);
       }, this.$gettext("Error replacing webhook destination"));
     },
 
@@ -202,8 +254,7 @@ export default {
           mutation: ROTATE,
           variables: { id: item.id },
         });
-        this.replaceItem(data.rotateWebhook.webhook);
-        this.showSecret(data.rotateWebhook.secret);
+        this.provision(data.rotateWebhook);
       }, this.$gettext("Error rotating webhook secret"));
     },
 
@@ -262,7 +313,7 @@ export default {
     toggle() {
       this.checked = this.checked.size
         ? new Set()
-        : new Set(this.items.map((item) => item.id));
+        : new Set(this.filtered.map((item) => item.id));
     },
 
     toggleCheck(item) {
@@ -274,208 +325,399 @@ export default {
       this.checked = checked;
     },
 
-    replaceItem(item) {
-      const index = this.items.findIndex((entry) => entry.id === item.id);
-      if (index >= 0) this.items.splice(index, 1, item);
+    provision(result) {
+      this.put(result.webhook);
+      this.secret = result.secret;
+      this.secretDialog = true;
     },
 
-    showSecret(secret) {
-      this.secret = secret;
-      this.secretDialog = true;
+    put(item) {
+      const checked = new Set(this.checked);
+      checked.delete(item.id);
+
+      this.items = [
+        item,
+        ...this.items.filter((entry) => entry.id !== item.id),
+      ];
+      this.checked = checked;
+    },
+  },
+
+  watch: {
+    statusFilter() {
+      this.checked = new Set();
+    },
+
+    term() {
+      this.checked = new Set();
     },
   },
 };
 </script>
 
 <template>
-  <div class="webhook-list">
-    <v-container fluid class="pa-4 pa-md-6">
-      <div class="d-flex align-center ga-3 mb-5">
-        <p class="text-medium-emphasis mb-0">
-          {{
-            $gettext(
-              "Send signed notifications when published content changes.",
-            )
-          }}
-        </p>
-        <v-spacer />
-        <v-btn
-          v-if="checked.size"
-          color="error"
-          variant="text"
-          :disabled="saving"
-          @click="remove()"
-        >
-          {{ $gettext("Delete") }} ({{ checked.size }})
-        </v-btn>
-        <v-btn color="primary" @click="openAdd">{{
-          $gettext("Add webhook")
-        }}</v-btn>
+  <v-container class="webhook-list">
+    <div class="v-sheet box scroll">
+      <p class="text-medium-emphasis mb-4">
+        {{
+          $gettext(
+            "Send signed notifications when published content changes.",
+          )
+        }}
+      </p>
+
+      <div class="header">
+        <div class="bulk">
+          <v-checkbox-btn
+            :model-value="checked.size > 0"
+            @click.stop="toggle"
+            :aria-label="$gettext('Toggle selection')"
+          />
+
+          <component
+            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+            v-model="actions"
+            :aria-label="$gettext('Actions')"
+            transition="scale-transition"
+            location="end center"
+            max-width="300"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :disabled="!checked.size"
+                :title="$gettext('Actions')"
+                :icon="mdiDotsVertical"
+                variant="text"
+              />
+            </template>
+            <v-card>
+              <v-card-title class="d-flex align-center">
+                <span>{{ $gettext("Actions") }}</span>
+                <v-spacer />
+                <v-btn
+                  :icon="mdiClose"
+                  :aria-label="$gettext('Close')"
+                  @click="actions = false"
+                />
+              </v-card-title>
+              <div class="v-list" @click="actions = false">
+                <div class="v-list-item">
+                  <v-btn
+                    :prepend-icon="mdiDelete"
+                    :disabled="saving"
+                    variant="text"
+                    @click="remove()"
+                  >{{ $gettext("Delete") }} ({{ checked.size }})</v-btn>
+                </div>
+              </div>
+            </v-card>
+          </component>
+
+          <v-btn
+            :title="$gettext('Add webhook')"
+            :disabled="loading"
+            :icon="mdiPlus"
+            class="btn-add"
+            color="primary"
+            variant="tonal"
+            @click="openAdd"
+          />
+        </div>
+
+        <div class="search">
+          <v-text-field
+            v-model="term"
+            :prepend-inner-icon="mdiMagnify"
+            :label="$gettext('Search for')"
+            variant="underlined"
+            hide-details
+            clearable
+          />
+          <v-select
+            v-model="statusFilter"
+            :items="statusItems"
+            :label="$gettext('Status')"
+            variant="underlined"
+            hide-details
+          />
+        </div>
+
+        <div class="layout">
+          <v-btn
+            :title="$gettext('Refresh')"
+            :icon="mdiRefresh"
+            :loading="loading"
+            class="btn-reload"
+            variant="text"
+            @click="load"
+          />
+        </div>
       </div>
 
-      <v-progress-linear v-if="loading" indeterminate />
-      <v-alert v-else-if="!items.length" type="info" variant="tonal">
-        {{ $gettext("No webhooks configured.") }}
-      </v-alert>
-      <v-table v-else>
-        <thead>
-          <tr>
-            <th>
-              <v-checkbox-btn
-                :model-value="checked.size > 0"
-                @click.stop="toggle"
-                :aria-label="$gettext('Toggle selection')"
-              />
-            </th>
-            <th>{{ $gettext("Endpoint") }}</th>
-            <th>{{ $gettext("Events") }}</th>
-            <th>{{ $gettext("Status") }}</th>
-            <th>{{ $gettext("Failures") }}</th>
-            <th>{{ $gettext("Last success") }}</th>
-            <th>{{ $gettext("Last error") }}</th>
-            <th class="text-end">{{ $gettext("Actions") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>
+      <div class="v-list items" role="list">
+        <div
+          v-for="(item, idx) in filtered"
+          :key="item.id"
+          class="v-list-item border-b rounded-0 pa-1"
+          role="listitem"
+        >
+          <div class="d-flex align-center w-100">
+            <div class="d-flex flex-column flex-sm-row flex-shrink-0 align-center me-2">
               <v-checkbox-btn
                 :model-value="checked.has(item.id)"
                 @update:model-value="toggleCheck(item)"
                 :aria-label="$gettext('Toggle selection')"
               />
-            </td>
-            <td>{{ item.endpoint }}</td>
-            <td>{{ item.events.join(", ") }}</td>
-            <td>
-              <v-chip :color="item.status ? 'success' : undefined" size="small">
-                {{ item.status ? $gettext("Active") : $gettext("Inactive") }}
-              </v-chip>
-            </td>
-            <td>{{ item.failures }}</td>
-            <td>{{ successText(item) }}</td>
-            <td>{{ errorText(item) }}</td>
-            <td class="text-end text-no-wrap">
-              <v-btn variant="text" size="small" @click="openEdit(item)">{{
-                $gettext("Edit")
-              }}</v-btn>
-              <v-btn variant="text" size="small" @click="openReplace(item)">{{
-                $gettext("Replace")
-              }}</v-btn>
-              <v-btn variant="text" size="small" @click="rotate(item)">{{
-                $gettext("Rotate")
-              }}</v-btn>
-              <v-btn
-                variant="text"
-                size="small"
-                color="error"
-                @click="remove(item)"
-                >{{ $gettext("Delete") }}</v-btn
+
+              <component
+                :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
+                v-model="menu[idx]"
+                :aria-label="$gettext('Actions')"
+                transition="scale-transition"
+                location="end center"
+                max-width="300"
               >
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-    </v-container>
+                <template #activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    :title="$gettext('Actions')"
+                    :icon="mdiDotsVertical"
+                    variant="text"
+                  />
+                </template>
+                <v-card>
+                  <v-card-title class="d-flex align-center">
+                    <span>{{ $gettext("Actions") }}</span>
+                    <v-spacer />
+                    <v-btn
+                      :icon="mdiClose"
+                      :aria-label="$gettext('Close')"
+                      @click="menu[idx] = false"
+                    />
+                  </v-card-title>
+                  <div class="v-list" @click="menu[idx] = false">
+                    <div class="v-list-item">
+                      <v-btn
+                        :prepend-icon="mdiPencil"
+                        variant="text"
+                        @click="openEdit(item)"
+                      >{{ $gettext("Edit") }}</v-btn>
+                    </div>
+                    <div class="v-list-item">
+                      <v-btn
+                        :prepend-icon="mdiLinkVariant"
+                        variant="text"
+                        @click="openReplace(item)"
+                      >{{ $gettext("Replace") }}</v-btn>
+                    </div>
+                    <div class="v-list-item">
+                      <v-btn
+                        :prepend-icon="mdiKeyVariant"
+                        variant="text"
+                        @click="rotate(item)"
+                      >{{ $gettext("Rotate") }}</v-btn>
+                    </div>
+                    <div class="border-t" />
+                    <div class="v-list-item">
+                      <v-btn
+                        :prepend-icon="mdiDelete"
+                        :disabled="saving"
+                        variant="text"
+                        @click="remove(item)"
+                      >{{ $gettext("Delete") }}</v-btn>
+                    </div>
+                  </div>
+                </v-card>
+              </component>
+            </div>
 
-    <v-dialog v-model="dialog" max-width="640">
-      <v-card>
-        <v-card-title>{{
+            <a href="#" class="item-content" @click.prevent="openEdit(item)">
+              <div class="item-text">
+                <div class="item-head">
+                  <span class="item-title">{{ item.endpoint }}</span>
+                </div>
+                <div class="item-subtitle">{{ item.events.join(", ") }}</div>
+              </div>
+
+              <div class="item-aux text-end">
+                <div>
+                  <v-chip
+                    :color="item.status ? 'success' : undefined"
+                    size="small"
+                  >
+                    {{
+                      item.status ? $gettext("Active") : $gettext("Inactive")
+                    }}
+                  </v-chip>
+                </div>
+                <div class="item-subtitle">
+                  {{ $gettext("Last success") }}: {{ successText(item) }}
+                </div>
+                <div class="item-subtitle">
+                  {{ $gettext("Failures") }}: {{ item.failures }} ·
+                  {{ $gettext("Last error") }}: {{ errorText(item) }}
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <p v-if="loading" class="loading">
+        {{ $gettext("Loading") }}
+        <svg
+          class="spinner"
+          width="32"
+          height="32"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle class="spin1" cx="4" cy="12" r="3" />
+          <circle class="spin1 spin2" cx="12" cy="12" r="3" />
+          <circle class="spin1 spin3" cx="20" cy="12" r="3" />
+        </svg>
+      </p>
+      <p v-else-if="!filtered.length" class="notfound">
+        {{
+          items.length
+            ? $gettext("No entries found")
+            : $gettext("No webhooks configured.")
+        }}
+      </p>
+
+      <div class="btn-group">
+        <v-btn
+          :title="$gettext('Add webhook')"
+          :disabled="loading"
+          :icon="mdiPlus"
+          class="btn-add"
+          color="primary"
+          variant="tonal"
+          @click="openAdd"
+        />
+      </div>
+    </div>
+  </v-container>
+
+  <v-dialog v-model="dialog" max-width="640">
+    <v-card>
+      <v-card-title class="d-flex align-center">
+        <span>{{
           selected ? $gettext("Edit webhook") : $gettext("Add webhook")
-        }}</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-if="!selected"
-            v-model="url"
-            :label="$gettext('HTTPS endpoint URL')"
-            maxlength="500"
-            autofocus
-          />
-          <v-select
-            v-model="events"
-            :items="names"
-            :label="$gettext('Events')"
-            multiple
-            chips
-          />
-          <v-switch
-            v-if="selected"
-            v-model="status"
-            color="success"
-            :label="$gettext('Active')"
-          />
-          <v-alert v-else type="info" variant="tonal">
-            {{
-              $gettext(
-                "New webhooks are inactive until you save them as active.",
-              )
-            }}
-          </v-alert>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="dialog = false">{{ $gettext("Cancel") }}</v-btn>
-          <v-btn color="primary" :loading="saving" @click="save">{{
-            $gettext("Save")
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        }}</span>
+        <v-spacer />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="dialog = false"
+        />
+      </v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-if="!selected"
+          v-model="url"
+          :label="$gettext('HTTPS endpoint URL')"
+          variant="underlined"
+          maxlength="500"
+          autofocus
+        />
+        <v-select
+          v-model="events"
+          :items="names"
+          :label="$gettext('Events')"
+          variant="underlined"
+          multiple
+          chips
+        />
+        <v-switch
+          v-if="selected"
+          v-model="status"
+          color="success"
+          :label="$gettext('Active')"
+        />
+        <v-alert v-else type="info" variant="tonal">
+          {{
+            $gettext(
+              "New webhooks are inactive until you save them as active.",
+            )
+          }}
+        </v-alert>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn variant="outlined" :loading="saving" @click="save">{{
+          $gettext("Save")
+        }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-    <v-dialog v-model="replaceDialog" max-width="640">
-      <v-card>
-        <v-card-title>{{
+  <v-dialog v-model="replaceDialog" max-width="640">
+    <v-card>
+      <v-card-title class="d-flex align-center">
+        <span>{{
           $gettext("Replace webhook destination")
-        }}</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="url"
-            :label="$gettext('HTTPS endpoint URL')"
-            maxlength="500"
-            autofocus
-          />
-          <v-alert type="warning" variant="tonal">
-            {{
-              $gettext(
-                "Replacing the destination rotates the secret and disables the webhook.",
-              )
-            }}
-          </v-alert>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="replaceDialog = false">{{ $gettext("Cancel") }}</v-btn>
-          <v-btn color="primary" :loading="saving" @click="replace">{{
-            $gettext("Replace")
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        }}</span>
+        <v-spacer />
+        <v-btn
+          :icon="mdiClose"
+          :aria-label="$gettext('Close')"
+          @click="replaceDialog = false"
+        />
+      </v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="url"
+          :label="$gettext('HTTPS endpoint URL')"
+          variant="underlined"
+          maxlength="500"
+          autofocus
+        />
+        <v-alert type="warning" variant="tonal">
+          {{
+            $gettext(
+              "Replacing the destination rotates the secret and disables the webhook.",
+            )
+          }}
+        </v-alert>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn variant="outlined" :loading="saving" @click="replace">{{
+          $gettext("Replace")
+        }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-    <v-dialog v-model="secretDialog" max-width="640" persistent>
-      <v-card>
-        <v-card-title>{{ $gettext("Webhook secret") }}</v-card-title>
-        <v-card-text>
-          <v-alert type="warning" variant="tonal" class="mb-4">
-            {{ $gettext("Copy this secret now. It will not be shown again.") }}
-          </v-alert>
-          <v-text-field :model-value="secret" readonly />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="copySecret">{{
-            $gettext("Copy secret")
-          }}</v-btn>
-          <v-spacer />
-          <v-btn
-            @click="
-              secretDialog = false;
-              secret = '';
-            "
-            >{{ $gettext("Done") }}</v-btn
-          >
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-  </div>
+  <v-dialog v-model="secretDialog" max-width="640" persistent>
+    <v-card>
+      <v-card-title>{{ $gettext("Webhook secret") }}</v-card-title>
+      <v-card-text>
+        <v-alert type="warning" variant="tonal" class="mb-4">
+          {{ $gettext("Copy this secret now. It will not be shown again.") }}
+        </v-alert>
+        <v-text-field
+          :model-value="secret"
+          variant="underlined"
+          readonly
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-btn variant="outlined" @click="copySecret">{{
+          $gettext("Copy secret")
+        }}</v-btn>
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="
+            secretDialog = false;
+            secret = '';
+          "
+        >{{ $gettext("Done") }}</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>

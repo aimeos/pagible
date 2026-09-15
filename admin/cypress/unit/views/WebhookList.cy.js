@@ -31,12 +31,99 @@ describe('WebhookList', () => {
     expect(successText({ last_success_at: '2026-09-15T12:00:00Z' })).not.to.equal('None')
   })
 
+  it('updates immutable query result snapshots without mutating them', async () => {
+    const original = Object.freeze({ id: 'first', status: false })
+    const updated = Object.freeze({ id: 'first', status: true })
+    const webhooks = Object.freeze([original])
+    const names = Object.freeze(['page.published'])
+    const state = {
+      apollo: { query: cy.stub().resolves({ data: { cmsWebhooks: webhooks, cmsWebhookEvents: names } }) },
+      checked: new Set(['old']),
+      items: [],
+      loading: false,
+      messages: { add: cy.stub() },
+      names: [],
+      $gettext: (value) => value
+    }
+
+    await WebhookList.methods.load.call(state)
+
+    expect(state.items).to.equal(webhooks)
+    expect(state.names).to.equal(names)
+
+    WebhookList.methods.put.call(state, updated)
+
+    expect(state.items).to.deep.equal([updated])
+    expect(state.items).not.to.equal(webhooks)
+    expect(state.checked.size).to.equal(0)
+    expect(webhooks).to.deep.equal([original])
+  })
+
+  it('adds a webhook to an immutable query result snapshot', async () => {
+    const webhooks = Object.freeze([])
+    const webhook = Object.freeze({ id: 'new' })
+    const mutate = cy.stub().resolves({ data: { addWebhook: { secret: 'secret', webhook } } })
+    const state = {
+      apollo: { mutate },
+      checked: new Set(),
+      dialog: true,
+      events: ['page.published'],
+      items: webhooks,
+      messages: { add: cy.stub() },
+      saving: false,
+      secret: '',
+      secretDialog: false,
+      selected: null,
+      url: 'https://example.com/hook',
+      $gettext: (value) => value
+    }
+    state.change = WebhookList.methods.change.bind(state)
+    state.provision = WebhookList.methods.provision.bind(state)
+    state.put = WebhookList.methods.put.bind(state)
+
+    await WebhookList.methods.save.call(state)
+
+    expect(state.items).to.deep.equal([webhook])
+    expect(state.items).not.to.equal(webhooks)
+    expect(state.secret).to.equal('secret')
+    expect(state.secretDialog).to.equal(true)
+  })
+
+  it('restores all results when the search field is cleared', () => {
+    const items = [{
+      id: 'first',
+      endpoint: 'https://example.com/first',
+      events: ['page.published'],
+      status: true
+    }]
+
+    const filtered = WebhookList.computed.filtered.call({
+      items,
+      statusFilter: null,
+      term: null
+    })
+
+    expect(filtered).to.deep.equal(items)
+  })
+
+  it('removes an updated webhook from the bulk selection', () => {
+    const state = {
+      checked: new Set(['first', 'second']),
+      items: [{ id: 'first' }, { id: 'second' }]
+    }
+
+    WebhookList.methods.put.call(state, { id: 'first' })
+
+    expect([...state.checked]).to.deep.equal(['second'])
+  })
+
   it('selects and deletes several webhooks in one mutation', async () => {
     const mutate = cy.stub().resolves({ data: { dropWebhook: 2 } })
     const state = {
       apollo: { mutate },
       checked: new Set(),
       items: [{ id: 'first' }, { id: 'second' }],
+      filtered: [{ id: 'first' }, { id: 'second' }],
       saving: false,
       $gettext: (value) => value,
       messages: { add: cy.stub() }
@@ -55,13 +142,75 @@ describe('WebhookList', () => {
     expect(state.checked.size).to.equal(0)
   })
 
+  it('uses the CMS list surface and filters webhooks', () => {
+    const component = pluginUi(WebhookList)
+    const query = cy.stub().resolves({
+      data: {
+        cmsWebhooks: [
+          {
+            id: 'first',
+            endpoint: 'https://example.com/orders',
+            events: ['page.published'],
+            status: true,
+            failures: 0,
+            last_error: null,
+            last_success_at: '2026-09-15T12:00:00Z'
+          },
+          {
+            id: 'second',
+            endpoint: 'https://example.com/archive',
+            events: ['page.dropped'],
+            status: false,
+            failures: 2,
+            last_error: { reason: 'invalid_url' },
+            last_success_at: null
+          }
+        ],
+        cmsWebhookEvents: ['page.published', 'page.dropped']
+      }
+    })
+
+    cy.mount(component, {
+      global: {
+        provide: {
+          apollo: { query },
+          messages: { add: cy.stub() }
+        }
+      }
+    })
+
+    cy.get('.v-sheet.box.scroll').should('exist')
+    cy.get('.header .search .v-text-field').should('exist')
+    cy.get('.header .search .v-select').should('exist')
+    cy.get('.btn-add').should('exist')
+    cy.get('.btn-reload').should('exist')
+    cy.get('.v-list.items > .v-list-item').should('have.length', 2)
+
+    cy.get('.header .search .v-select').click()
+    cy.get('.v-overlay-container .v-list-item').contains('Active').click()
+    cy.get('.v-list.items > .v-list-item').should('have.length', 1)
+    cy.contains('https://example.com/orders').should('exist')
+
+    cy.get('.header .search .v-select').click()
+    cy.get('.v-overlay-container .v-list-item').contains('All').click()
+    cy.get('[role="listitem"] button[title="Actions"]').first().click()
+    cy.get('.v-overlay-container').contains('.v-btn', 'Replace').should('exist')
+    cy.get('.v-overlay-container').contains('.v-btn', 'Rotate').should('exist')
+    cy.get('.v-overlay-container button[aria-label="Close"]').click({ force: true })
+
+    cy.get('.search input').first().type('orders')
+    cy.get('.v-list.items > .v-list-item').should('have.length', 1)
+    cy.contains('https://example.com/orders').should('exist')
+    cy.contains('https://example.com/archive').should('not.exist')
+  })
+
   it('mounts the production bundle with host UI components', () => {
     const component = pluginUi(BuiltWebhookList)
     const query = cy.stub().resolves({
       data: { cmsWebhooks: [], cmsWebhookEvents: ['page.published'] }
     })
 
-    expect(component.components).to.include.keys('VAlert', 'VBtn', 'VDialog', 'VTable')
+    expect(component.components).to.include.keys('VAlert', 'VBtn', 'VCard', 'VDialog', 'VSelect', 'VTextField')
 
     cy.mount(component, {
       global: {

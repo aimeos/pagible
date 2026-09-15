@@ -22,6 +22,10 @@ class WebhookProviderTest extends WebhookTestAbstract
             '/vendor/cms/webhooks/WebhookList.js',
             Plugin::all()['panels']['webhooks']['component'] ?? null,
         );
+        $this->assertStringContainsString(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1em"',
+            Plugin::all()['panels']['webhooks']['icon'] ?? '',
+        );
     }
 
 

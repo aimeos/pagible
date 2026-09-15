@@ -146,9 +146,16 @@ class WebhookClient
         $port = $uri->getPort() ?? ( $uri->getScheme() === 'https' ? 443 : 80 );
         $ip = $this->resolve( $host );
         $timestamp = (string) now()->timestamp;
-        $signature = 'v1=' . hash_hmac(
-            'sha256', $timestamp . '.' . $deliveryId . '.' . $body, $webhook->secret,
-        );
+        $signed = implode( "\n", [
+            'v2',
+            'x-cms-event:' . $event,
+            'x-cms-tenant:' . $webhook->tenant_id,
+            'x-cms-delivery:' . $deliveryId,
+            'x-cms-timestamp:' . $timestamp,
+            '',
+            $body,
+        ] );
+        $signature = 'v2=' . hash_hmac( 'sha256', $signed, $webhook->secret );
         $headers = [
             'Accept: application/json',
             'Accept-Encoding: identity',

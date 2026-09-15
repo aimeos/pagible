@@ -158,9 +158,16 @@ class WebhookClientTest extends WebhookTestAbstract
         }
 
         $timestamp = '1789387200';
-        $signature = hash_hmac(
-            'sha256', $timestamp . '.delivery-id.' . $body, 'test-secret',
-        );
+        $signed = implode( "\n", [
+            'v2',
+            'x-cms-event:page.published',
+            'x-cms-tenant:test',
+            'x-cms-delivery:delivery-id',
+            'x-cms-timestamp:' . $timestamp,
+            '',
+            $body,
+        ] );
+        $signature = hash_hmac( 'sha256', $signed, 'test-secret' );
         $headers = $client->options[CURLOPT_HTTPHEADER];
 
         $this->assertSame( 'https://example.com/hooks/cms', $client->options[CURLOPT_URL] );
@@ -173,7 +180,7 @@ class WebhookClientTest extends WebhookTestAbstract
         $this->assertContains( 'X-Cms-Tenant: test', $headers );
         $this->assertContains( 'X-Cms-Delivery: delivery-id', $headers );
         $this->assertContains( 'X-Cms-Timestamp: ' . $timestamp, $headers );
-        $this->assertContains( 'X-Cms-Signature: v1=' . $signature, $headers );
+        $this->assertContains( 'X-Cms-Signature: v2=' . $signature, $headers );
         $this->assertSame( ['example.com:443:93.184.216.34'], $client->options[CURLOPT_RESOLVE] );
         $this->assertSame( '', $client->options[CURLOPT_PROXY] );
         $this->assertSame( '*', $client->options[CURLOPT_NOPROXY] );
