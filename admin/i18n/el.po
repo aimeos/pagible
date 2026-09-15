@@ -3030,6 +3030,10 @@ msgstr "Συμβάντα"
 msgid "Failures"
 msgstr "Αποτυχίες"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Τελευταία επιτυχία"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Τελευταίο σφάλμα"

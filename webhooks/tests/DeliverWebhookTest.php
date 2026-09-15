@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\WebhookClient;
 use Aimeos\Cms\WebhookException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 
@@ -22,7 +23,10 @@ class DeliverWebhookTest extends WebhookTestAbstract
 
     public function testJobLoadsCurrentCredentialsAndSucceeds() : void
     {
-        $webhook = $this->webhook();
+        $webhook = $this->webhook( [
+            'failures' => 2,
+            'last_error' => ['reason' => 'http_error', 'status' => 503],
+        ] );
         $client = new class extends WebhookClient {
             public ?Webhook $webhook = null;
             public function send( Webhook $webhook, string $event, string $deliveryId, string $body ) : int
@@ -31,12 +35,20 @@ class DeliverWebhookTest extends WebhookTestAbstract
                 return 204;
             }
         };
-        $job = $this->job( $webhook );
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
-        $job->handle( $client );
+        try {
+            $this->job( $webhook )->handle( $client );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $webhook->refresh();
 
         $this->assertSame( 'test-secret', $client->webhook?->secret );
-        $this->assertSame( 0, $webhook->fresh()->failures );
+        $this->assertSame( 0, $webhook->failures );
+        $this->assertNull( $webhook->last_error );
+        $this->assertSame( '2026-09-15T12:00:00+00:00', $webhook->last_success_at?->toIso8601String() );
     }
 
 
@@ -83,7 +95,8 @@ class DeliverWebhookTest extends WebhookTestAbstract
 
     public function testPermanentFailureIsRecordedWithoutRetry() : void
     {
-        $webhook = $this->webhook();
+        $success = Carbon::parse( '2026-09-14 12:00:00 UTC' );
+        $webhook = $this->webhook( ['last_success_at' => $success] );
         Log::spy();
         $client = new class extends WebhookClient {
             public function send( Webhook $webhook, string $event, string $deliveryId, string $body ) : int
@@ -98,6 +111,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
         $this->assertSame( 1, $webhook->failures );
         $this->assertSame( 'http_error', $webhook->last_error['reason'] );
         $this->assertSame( 410, $webhook->last_error['status'] );
+        $this->assertTrue( $success->equalTo( $webhook->last_success_at ) );
         Log::shouldHaveReceived( 'warning' )->once()->with(
             'cms.webhook.delivery_failed', \Mockery::on( fn( array $data ) =>
                 $data['webhook_id'] === $webhook->id && $data['status'] === 410

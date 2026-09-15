@@ -9,7 +9,8 @@
         "php": "^8.2",
         "ext-curl": "*",
         "aimeos/pagible-core": "*@dev",
-        "guzzlehttp/psr7": "^2.6||^3.0"
+        "guzzlehttp/psr7": "^2.6||^3.0",
+        "symfony/http-foundation": "^7.0||^8.0"
     },
     "require-dev": {
         "aimeos/pagible-admin": "*@dev",

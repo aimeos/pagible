@@ -3041,6 +3041,10 @@ msgstr "Notikumi"
 msgid "Failures"
 msgstr "Kļūmes"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Pēdējā veiksmīgā izpilde"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Pēdējā kļūda"

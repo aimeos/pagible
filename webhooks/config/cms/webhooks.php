@@ -29,10 +29,6 @@ return [
         'active' => 25,
     ],
 
-    'payload' => [
-        'editor' => false,
-    ],
-
     // Exact canonical hosts only. A host rule may explicitly relax schemes,
     // ports, internal CIDRs or the CA bundle used for that host.
     'hosts' => [],

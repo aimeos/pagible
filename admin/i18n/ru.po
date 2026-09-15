@@ -3042,6 +3042,10 @@ msgstr "События"
 msgid "Failures"
 msgstr "Сбои"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Последний успех"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Последняя ошибка"

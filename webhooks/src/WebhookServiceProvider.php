@@ -16,10 +16,8 @@ use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Restored;
-use Aimeos\Cms\Events\WebhookChanged;
 use Aimeos\Cms\GraphQL\Directives\CmsPermissionDirective;
 use Aimeos\Cms\Listeners\WebhookListener;
-use Aimeos\Cms\Listeners\WebhookLogListener;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -47,28 +45,21 @@ class WebhookServiceProvider extends Provider
                 fn() => file_get_contents( $basedir . '/graphql/cms-webhook.graphql' ) ?: '',
             );
         }
-        Event::listen( WebhookChanged::class, [WebhookLogListener::class, 'handle'] );
-
         if( (bool) config( 'cms.webhooks.enabled', false ) ) {
             $this->app->make( WebhookClient::class )->validatePolicy();
             $this->validateQueue();
-            $this->events();
+            Event::listen(
+                [Published::class, Moved::class, Dropped::class, Restored::class, Purged::class, Bulk::class],
+                [WebhookListener::class, 'handle'],
+            );
         }
 
         if( class_exists( Plugin::class ) ) {
-            $panel = Plugin::all()['panels']['webhooks'] ?? null;
-
-            if( $panel !== null && ( $panel['component'] ?? null ) !== '/vendor/cms/webhooks/WebhookList.js' ) {
-                throw new \LogicException( 'The webhooks admin panel key is already registered.' );
-            }
-
-            if( $panel === null ) {
-                Plugin::register( 'webhooks', [
-                    'label' => 'Webhooks',
-                    'permission' => 'config:webhook',
-                    'component' => '/vendor/cms/webhooks/WebhookList.js',
-                ] );
-            }
+            Plugin::register( 'webhooks', [
+                'label' => 'Webhooks',
+                'permission' => 'config:webhook',
+                'component' => '/vendor/cms/webhooks/WebhookList.js',
+            ] );
         }
 
         if( $this->app->runningInConsole() ) {
@@ -83,15 +74,6 @@ class WebhookServiceProvider extends Provider
         $this->app->singleton( WebhookClient::class );
         $this->app->singleton( WebhookManager::class );
     }
-
-
-    protected function events() : void
-    {
-        foreach( [Published::class, Moved::class, Dropped::class, Restored::class, Purged::class, Bulk::class] as $event ) {
-            Event::listen( $event, [WebhookListener::class, 'handle'] );
-        }
-    }
-
 
     protected function validateQueue() : void
     {

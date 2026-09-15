@@ -11,6 +11,7 @@ const FIELDS = gql`
     endpoint
     events
     last_error
+    last_success_at
   }
 `;
 
@@ -78,14 +79,7 @@ const DROP = gql`
 export default {
   name: "WebhookList",
 
-  inject: ["apollo"],
-
-  props: {
-    panel: {
-      type: Object,
-      required: true,
-    },
-  },
+  inject: ["apollo", "messages"],
 
   data: () => ({
     dialog: false,
@@ -94,15 +88,13 @@ export default {
     loading: true,
     saving: false,
     items: [],
+    checked: new Set(),
     names: [],
     selected: null,
     url: "",
     events: [],
     status: false,
     secret: "",
-    message: "",
-    messageColor: "info",
-    messageOpen: false,
   }),
 
   mounted() {
@@ -110,6 +102,19 @@ export default {
   },
 
   methods: {
+    async change(callback, failure) {
+      if (this.saving) return;
+      this.saving = true;
+
+      try {
+        await callback();
+      } catch (error) {
+        this.messages.add(failure + ":\n" + error, "error");
+      } finally {
+        this.saving = false;
+      }
+    },
+
     async load() {
       this.loading = true;
       try {
@@ -118,9 +123,10 @@ export default {
           fetchPolicy: "network-only",
         });
         this.items = data.cmsWebhooks;
+        this.checked = new Set();
         this.names = data.cmsWebhookEvents;
       } catch (error) {
-        this.notify(
+        this.messages.add(
           this.$gettext("Error fetching webhooks") + ":\n" + error,
           "error",
         );
@@ -151,15 +157,10 @@ export default {
     },
 
     async save() {
-      if (
-        this.saving ||
-        !this.events.length ||
-        (!this.selected && !this.url.trim())
-      )
+      if (!this.events.length || (!this.selected && !this.url.trim()))
         return;
-      this.saving = true;
 
-      try {
+      await this.change(async () => {
         if (this.selected) {
           const { data } = await this.apollo.mutate({
             mutation: SAVE,
@@ -178,21 +179,13 @@ export default {
           this.showSecret(data.addWebhook.secret);
         }
         this.dialog = false;
-      } catch (error) {
-        this.notify(
-          this.$gettext("Error saving webhook") + ":\n" + error,
-          "error",
-        );
-      } finally {
-        this.saving = false;
-      }
+      }, this.$gettext("Error saving webhook"));
     },
 
     async replace() {
-      if (this.saving || !this.selected || !this.url.trim()) return;
-      this.saving = true;
+      if (!this.selected || !this.url.trim()) return;
 
-      try {
+      await this.change(async () => {
         const { data } = await this.apollo.mutate({
           mutation: REPLACE,
           variables: { id: this.selected.id, url: this.url.trim() },
@@ -200,64 +193,48 @@ export default {
         this.replaceItem(data.replaceWebhook.webhook);
         this.replaceDialog = false;
         this.showSecret(data.replaceWebhook.secret);
-      } catch (error) {
-        this.notify(
-          this.$gettext("Error replacing webhook destination") + ":\n" + error,
-          "error",
-        );
-      } finally {
-        this.saving = false;
-      }
+      }, this.$gettext("Error replacing webhook destination"));
     },
 
     async rotate(item) {
-      if (this.saving) return;
-      this.saving = true;
-
-      try {
+      await this.change(async () => {
         const { data } = await this.apollo.mutate({
           mutation: ROTATE,
           variables: { id: item.id },
         });
         this.replaceItem(data.rotateWebhook.webhook);
         this.showSecret(data.rotateWebhook.secret);
-      } catch (error) {
-        this.notify(
-          this.$gettext("Error rotating webhook secret") + ":\n" + error,
-          "error",
-        );
-      } finally {
-        this.saving = false;
-      }
+      }, this.$gettext("Error rotating webhook secret"));
     },
 
-    async remove(item) {
-      if (this.saving || !window.confirm(this.$gettext("Delete this webhook?")))
-        return;
-      this.saving = true;
+    async remove(item = null) {
+      const ids = item ? [item.id] : [...this.checked];
+      const question = item
+        ? this.$gettext("Delete this webhook?")
+        : `${this.$gettext("Delete")} (${ids.length})?`;
 
-      try {
+      if (this.saving || !ids.length || !window.confirm(question))
+        return;
+
+      await this.change(async () => {
         await this.apollo.mutate({
           mutation: DROP,
-          variables: { id: [item.id] },
+          variables: { id: ids },
         });
-        this.items = this.items.filter((entry) => entry.id !== item.id);
-      } catch (error) {
-        this.notify(
-          this.$gettext("Error deleting webhook") + ":\n" + error,
-          "error",
+        const removed = new Set(ids);
+        this.items = this.items.filter((entry) => !removed.has(entry.id));
+        this.checked = new Set(
+          [...this.checked].filter((id) => !removed.has(id)),
         );
-      } finally {
-        this.saving = false;
-      }
+      }, this.$gettext("Error deleting webhook"));
     },
 
     async copySecret() {
       try {
         await navigator.clipboard.writeText(this.secret);
-        this.notify(this.$gettext("Secret copied"), "success");
+        this.messages.add(this.$gettext("Secret copied"), "success");
       } catch (_error) {
-        this.notify(this.$gettext("Unable to copy secret"), "error");
+        this.messages.add(this.$gettext("Unable to copy secret"), "error");
       }
     },
 
@@ -267,18 +244,34 @@ export default {
         ? ` (${item.last_error.status})`
         : "";
       const reasons = {
-        delivery_failed: this.$gettext("Delivery failed"),
         destination_not_allowed: this.$gettext("Access denied"),
-        http_error: this.$gettext("Delivery failed"),
         invalid_header: this.$gettext("Value has invalid format"),
         invalid_url: this.$gettext("Not a valid URL"),
-        resolution_failed: this.$gettext("Delivery failed"),
-        response_body_too_large: this.$gettext("Delivery failed"),
-        response_headers_too_large: this.$gettext("Delivery failed"),
-        transport_error: this.$gettext("Delivery failed"),
-        transport_unavailable: this.$gettext("Delivery failed"),
       };
       return `${reasons[item.last_error.reason] || this.$gettext("Delivery failed")}${status}`;
+    },
+
+    successText(item) {
+      return item.last_success_at
+        ? new Date(item.last_success_at).toLocaleString(
+            this.$vuetify.locale.current,
+          )
+        : this.$gettext("None");
+    },
+
+    toggle() {
+      this.checked = this.checked.size
+        ? new Set()
+        : new Set(this.items.map((item) => item.id));
+    },
+
+    toggleCheck(item) {
+      const checked = new Set(this.checked);
+
+      if (checked.has(item.id)) checked.delete(item.id);
+      else checked.add(item.id);
+
+      this.checked = checked;
     },
 
     replaceItem(item) {
@@ -289,12 +282,6 @@ export default {
     showSecret(secret) {
       this.secret = secret;
       this.secretDialog = true;
-    },
-
-    notify(text, color) {
-      this.message = text;
-      this.messageColor = color;
-      this.messageOpen = true;
     },
   },
 };
@@ -312,6 +299,15 @@ export default {
           }}
         </p>
         <v-spacer />
+        <v-btn
+          v-if="checked.size"
+          color="error"
+          variant="text"
+          :disabled="saving"
+          @click="remove()"
+        >
+          {{ $gettext("Delete") }} ({{ checked.size }})
+        </v-btn>
         <v-btn color="primary" @click="openAdd">{{
           $gettext("Add webhook")
         }}</v-btn>
@@ -324,16 +320,31 @@ export default {
       <v-table v-else>
         <thead>
           <tr>
+            <th>
+              <v-checkbox-btn
+                :model-value="checked.size > 0"
+                @click.stop="toggle"
+                :aria-label="$gettext('Toggle selection')"
+              />
+            </th>
             <th>{{ $gettext("Endpoint") }}</th>
             <th>{{ $gettext("Events") }}</th>
             <th>{{ $gettext("Status") }}</th>
             <th>{{ $gettext("Failures") }}</th>
+            <th>{{ $gettext("Last success") }}</th>
             <th>{{ $gettext("Last error") }}</th>
             <th class="text-end">{{ $gettext("Actions") }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
+            <td>
+              <v-checkbox-btn
+                :model-value="checked.has(item.id)"
+                @update:model-value="toggleCheck(item)"
+                :aria-label="$gettext('Toggle selection')"
+              />
+            </td>
             <td>{{ item.endpoint }}</td>
             <td>{{ item.events.join(", ") }}</td>
             <td>
@@ -342,6 +353,7 @@ export default {
               </v-chip>
             </td>
             <td>{{ item.failures }}</td>
+            <td>{{ successText(item) }}</td>
             <td>{{ errorText(item) }}</td>
             <td class="text-end text-no-wrap">
               <v-btn variant="text" size="small" @click="openEdit(item)">{{
@@ -465,8 +477,5 @@ export default {
       </v-card>
     </v-dialog>
 
-    <v-snackbar v-model="messageOpen" :color="messageColor">{{
-      message
-    }}</v-snackbar>
   </div>
 </template>

@@ -3015,6 +3015,10 @@ msgstr "Sự kiện"
 msgid "Failures"
 msgstr "Lần thất bại"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Lần thành công gần nhất"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Lỗi gần nhất"

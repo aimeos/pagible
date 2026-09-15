@@ -30,6 +30,7 @@ return new class extends Migration
             $table->text( 'secret' );
             $table->json( 'events' );
             $table->text( 'last_error' )->nullable();
+            $table->timestamp( 'last_success_at' )->nullable();
             $table->string( 'editor' );
             $table->timestamps();
 

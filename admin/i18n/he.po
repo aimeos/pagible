@@ -3028,6 +3028,10 @@ msgstr "אירועים"
 msgid "Failures"
 msgstr "כשלונות"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "הצלחה אחרונה"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "השגיאה האחרונה"

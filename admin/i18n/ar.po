@@ -3080,6 +3080,10 @@ msgstr "الأحداث"
 msgid "Failures"
 msgstr "حالات الفشل"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "آخر نجاح"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "الخطأ الأخير"

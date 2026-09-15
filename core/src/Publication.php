@@ -29,7 +29,7 @@ final class Publication
     /** @var array<class-string<Base>, array<string, Base>> */
     private array $models = [];
 
-    /** @var array<class-string<Base>, array<string, Version>> */
+    /** @var array<class-string<Base>, array<string, array{version_id: string, path?: string, domain?: string}>> */
     private array $projected = [];
 
     /**
@@ -78,22 +78,19 @@ final class Publication
 
 
     /**
-     * Dispatches accumulated search updates and optional publication events.
+     * Dispatches accumulated search updates and publication events.
      */
-    public function flush( bool $announce = false, ?string $editor = null ) : void
+    public function flush( ?string $editor = null ) : void
     {
         foreach( $this->models as $model => $items ) {
             Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
         }
 
-        if( $announce )
-        {
-            foreach( $this->models as $model => $items ) {
-                Base::announceMany( collect( array_values( $items ) ), 'published', $editor ?? '', [
-                    'published' => true,
-                    'publish_at' => null,
-                ], projected: $this->projected[$model] ?? [] );
-            }
+        foreach( $this->models as $model => $items ) {
+            Base::announceMany( collect( array_values( $items ) ), 'published', $editor ?? '', [
+                'published' => true,
+                'publish_at' => null,
+            ], projected: $this->projected[$model] ?? [] );
         }
 
         $this->elements = [];
@@ -140,7 +137,7 @@ final class Publication
             } ),
         );
 
-        $this->flush( true, (string) $version->editor );
+        $this->flush( (string) $version->editor );
     }
 
 
@@ -249,7 +246,7 @@ final class Publication
         );
 
         if( !$at ) {
-            $publication->flush( true, $editor );
+            $publication->flush( $editor );
         } else {
             Base::announceMany( $pending, 'published', $editor, [
                 'published' => false,
@@ -898,8 +895,15 @@ final class Publication
             throw new \LogicException( 'Published CMS version has no ID.' );
         }
 
+        $projection = ['version_id' => $versionId];
+
         if( $model instanceof Page )
         {
+            $projection += [
+                'path' => (string) ( $version->data->path ?? $model->path ),
+                'domain' => (string) ( $version->data->domain ?? $model->domain ),
+            ];
+
             $elements = [];
 
             foreach( $this->refs[$versionId]['elements'] ?? [] as $elementId ) {
@@ -914,7 +918,7 @@ final class Publication
         }
 
         $this->models[$model::class][$id] = $model;
-        $this->projected[$model::class][$id] = $version;
+        $this->projected[$model::class][$id] = $projection;
     }
 
 

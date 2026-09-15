@@ -6,6 +6,7 @@ type CmsWebhook {
   endpoint: String!
   events: [String!]!
   last_error: JSON
+  last_success_at: DateTime
   editor: String!
   created_at: DateTime
   updated_at: DateTime
@@ -28,10 +29,6 @@ input CmsWebhookSaveInput {
 }
 
 extend type Query {
-  cmsWebhook(id: ID!): CmsWebhook
-    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@find")
-
   cmsWebhooks: [CmsWebhook!]!
     @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@search")

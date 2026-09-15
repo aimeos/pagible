@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $secret
  * @property list<string> $events
  * @property array<string, mixed>|null $last_error
+ * @property \Illuminate\Support\Carbon|null $last_success_at
  * @property string $editor
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
@@ -33,7 +34,6 @@ class Webhook extends Model
     use Tenancy;
 
     protected $table = 'cms_webhooks';
-    protected $guarded = ['id', 'tenant_id', 'secret', 'failures', 'revision', 'last_error'];
     protected $hidden = ['url', 'secret', 'revision'];
     protected $appends = ['endpoint'];
 
@@ -51,6 +51,7 @@ class Webhook extends Model
             'secret' => 'encrypted',
             'events' => 'array',
             'last_error' => 'encrypted:array',
+            'last_success_at' => 'datetime',
         ];
     }
 

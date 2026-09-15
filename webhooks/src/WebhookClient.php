@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Webhook;
 use GuzzleHttp\Psr7\Uri;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 
 /**
@@ -17,12 +18,8 @@ use GuzzleHttp\Psr7\Uri;
 class WebhookClient
 {
     /** @var list<string> */
-    private const HARD_DENY_V4 = [
+    private const HARD_DENY = [
         '0.0.0.0/8', '127.0.0.0/8', '169.254.0.0/16', '224.0.0.0/4', '240.0.0.0/4',
-    ];
-
-    /** @var list<string> */
-    private const HARD_DENY_V6 = [
         '::/128', '::1/128', '::ffff:0:0/96', '64:ff9b::/96', '64:ff9b:1::/48',
         '2001::/32', '2002::/16', 'fe80::/10', 'ff00::/8',
     ];
@@ -68,13 +65,14 @@ class WebhookClient
             throw new WebhookException( 'invalid_url' );
         }
 
-        $canonical = (string) $uri->withScheme( $scheme )->withHost( $uriHost );
+        $uri = $uri->withScheme( $scheme )->withHost( $uriHost );
+        $canonical = (string) $uri;
 
         if( strlen( $canonical ) > 500 ) {
             throw new WebhookException( 'invalid_url' );
         }
 
-        $this->assertConfigured( $canonical );
+        $this->assertConfigured( $uri, $host );
 
         if( filter_var( $host, FILTER_VALIDATE_IP ) && !$this->allowedIp( $host, $host ) ) {
             throw new WebhookException( 'destination_not_allowed' );
@@ -312,10 +310,8 @@ class WebhookClient
     /**
      * Enforces scheme and port relaxations before an endpoint is stored or sent.
      */
-    private function assertConfigured( string $url ) : void
+    private function assertConfigured( Uri $uri, string $host ) : void
     {
-        $uri = new Uri( $url );
-        $host = $this->normalizeHost( $uri->getHost() );
         $scheme = $uri->getScheme();
         $port = $uri->getPort() ?? ( $scheme === 'https' ? 443 : 80 );
         $rule = $this->rule( $host );
@@ -336,56 +332,23 @@ class WebhookClient
             return false;
         }
 
-        foreach( (array) config( 'cms.webhooks.deny_cidrs', [] ) as $cidr ) {
-            if( is_string( $cidr ) && $this->inCidr( $ip, $cidr ) ) {
-                return false;
-            }
-        }
+        $denied = array_values( array_filter(
+            (array) config( 'cms.webhooks.deny_cidrs', [] ), 'is_string'
+        ) );
 
-        foreach( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? self::HARD_DENY_V6 : self::HARD_DENY_V4 as $cidr ) {
-            if( $this->inCidr( $ip, $cidr ) ) {
-                return false;
-            }
+        if( IpUtils::checkIp( $ip, [...$denied, ...self::HARD_DENY] ) ) {
+            return false;
         }
 
         if( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE ) ) {
             return true;
         }
 
-        foreach( (array) ( $this->rule( $host )['cidrs'] ?? [] ) as $cidr ) {
-            if( is_string( $cidr ) && $this->inCidr( $ip, $cidr ) ) {
-                return true;
-            }
-        }
+        $allowed = array_values( array_filter(
+            (array) ( $this->rule( $host )['cidrs'] ?? [] ), 'is_string'
+        ) );
 
-        return false;
-    }
-
-
-    private function inCidr( string $ip, string $cidr ) : bool
-    {
-        [$network, $bits] = array_pad( explode( '/', $cidr, 2 ), 2, null );
-        $address = inet_pton( $ip );
-        $base = is_string( $network ) ? inet_pton( $network ) : false;
-
-        if( $address === false || $base === false || strlen( $address ) !== strlen( $base ) ) {
-            return false;
-        }
-
-        $prefix = $bits === null ? strlen( $address ) * 8 : (int) $bits;
-        $bytes = intdiv( $prefix, 8 );
-        $remaining = $prefix % 8;
-
-        if( substr( $address, 0, $bytes ) !== substr( $base, 0, $bytes ) ) {
-            return false;
-        }
-
-        if( $remaining === 0 ) {
-            return true;
-        }
-
-        $mask = 0xff << ( 8 - $remaining ) & 0xff;
-        return ( ord( $address[$bytes] ) & $mask ) === ( ord( $base[$bytes] ) & $mask );
+        return IpUtils::checkIp( $ip, $allowed );
     }
 
 

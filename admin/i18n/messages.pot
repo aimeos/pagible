@@ -3021,6 +3021,10 @@ msgstr ""
 msgid "Failures"
 msgstr ""
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr ""
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr ""

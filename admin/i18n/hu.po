@@ -3028,6 +3028,10 @@ msgstr "Események"
 msgid "Failures"
 msgstr "Hibák"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Legutóbbi siker"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Legutóbbi hiba"

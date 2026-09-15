@@ -3015,6 +3015,10 @@ msgstr "イベント"
 msgid "Failures"
 msgstr "失敗回数"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "最終成功"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "直近のエラー"

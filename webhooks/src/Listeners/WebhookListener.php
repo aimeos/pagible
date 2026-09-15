@@ -8,14 +8,11 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Published;
-use Aimeos\Cms\Events\Purged;
-use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\Webhook;
+use Aimeos\Cms\WebhookManager;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
@@ -37,17 +34,10 @@ class WebhookListener
         try
         {
             $webhooks = Webhook::withoutTenancy()
-                ->select( 'id', 'tenant_id', 'status', 'revision', 'events' )
                 ->where( 'tenant_id', $tenant )
                 ->where( 'status', 1 )
-                ->get()
-                ->filter( function( Webhook $webhook ) use ( $name ) {
-                    try {
-                        return in_array( $name, (array) $webhook->events, true );
-                    } catch( \Throwable ) {
-                        return false;
-                    }
-                } );
+                ->whereJsonContains( 'events', $name )
+                ->pluck( 'revision', 'id' );
 
             if( $webhooks->isEmpty() ) {
                 return;
@@ -60,20 +50,16 @@ class WebhookListener
                 'data' => $this->data( $event ),
             ];
 
-            if( (bool) config( 'cms.webhooks.payload.editor', false ) ) {
-                $payload['editor'] = $event->editor;
-            }
-
             $body = json_encode( $payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES );
             $expires = now()->addSeconds(
                 max( 60, (int) config( 'cms.webhooks.queue.max_age', 86400 ) )
             )->getTimestamp();
 
-            $jobs = $webhooks->map( fn( Webhook $webhook ) =>
+            $jobs = $webhooks->map( fn( mixed $revision, string $id ) =>
                 new DeliverWebhook(
-                    (string) $webhook->id,
+                    $id,
                     $tenant,
-                    (int) $webhook->revision,
+                    (int) $revision,
                     $name,
                     (string) Str::uuid(),
                     $body,
@@ -103,7 +89,7 @@ class WebhookListener
         if( $event instanceof Bulk ) {
             return array_map( fn( string $id ) => [
                 'id' => $id,
-                'version_id' => $event->latest[$id] ?? '',
+                'version_id' => $event->projected[$id] ?? $event->latest[$id] ?? '',
             ], $event->ids );
         }
 
@@ -125,43 +111,16 @@ class WebhookListener
 
     private function name( Event|Bulk $event ) : ?string
     {
-        if( !in_array( $event->contentType, ['page', 'element', 'file'], true ) ) {
+        $action = $event instanceof Bulk ? $event->action : strtolower( class_basename( $event ) );
+
+        if( $action === 'published' && ( $event instanceof Bulk
+            ? ( $event->data['published'] ?? false ) !== true
+            : !( $event instanceof Published && ( $event->published || $event->projection !== [] ) )
+        ) ) {
             return null;
         }
 
-        if( $event instanceof Published ) {
-            return $event->published || $event->projection !== []
-                ? $event->contentType . '.published'
-                : null;
-        }
-
-        if( $event instanceof Moved ) {
-            return $event->contentType === 'page' ? 'page.moved' : null;
-        }
-
-        if( $event instanceof Dropped ) {
-            return $event->contentType . '.deleted';
-        }
-
-        if( $event instanceof Restored ) {
-            return $event->contentType . '.restored';
-        }
-
-        if( $event instanceof Purged ) {
-            return $event->contentType . '.purged';
-        }
-
-        if( $event instanceof Bulk ) {
-            return match( $event->action ) {
-                'published' => ( $event->data['published'] ?? false ) === true
-                    ? $event->contentType . '.published' : null,
-                'dropped' => $event->contentType . '.deleted',
-                'restored' => $event->contentType . '.restored',
-                'purged' => $event->contentType . '.purged',
-                default => null,
-            };
-        }
-
-        return null;
+        $name = $event->contentType . '.' . ( $action === 'dropped' ? 'deleted' : $action );
+        return in_array( $name, WebhookManager::EVENTS, true ) ? $name : null;
     }
 }

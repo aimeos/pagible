@@ -8,15 +8,11 @@
 namespace Aimeos\Cms\Jobs;
 
 use Aimeos\Cms\Models\Webhook;
+use Aimeos\Cms\Watch;
 use Aimeos\Cms\WebhookClient;
 use Aimeos\Cms\WebhookException;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -24,11 +20,6 @@ use Illuminate\Support\Facades\Log;
  */
 class DeliverWebhook implements ShouldBeEncrypted, ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
     public int $timeout;
     public int $tries;
 
@@ -44,12 +35,6 @@ class DeliverWebhook implements ShouldBeEncrypted, ShouldQueue
     ) {
         $this->timeout = max( 1, (int) config( 'cms.webhooks.queue.timeout', 25 ) );
         $this->tries = max( 1, (int) config( 'cms.webhooks.queue.tries', 4 ) );
-
-        if( $connection = config( 'cms.webhooks.queue.connection' ) ) {
-            $this->onConnection( (string) $connection );
-        }
-
-        $this->onQueue( (string) config( 'cms.webhooks.queue.name', 'cms-webhooks' ) );
     }
 
 
@@ -84,7 +69,7 @@ class DeliverWebhook implements ShouldBeEncrypted, ShouldQueue
 
         $webhook = $this->webhook();
 
-        if( !$webhook || !in_array( $this->event, (array) $webhook->events, true ) ) {
+        if( !$webhook ) {
             return;
         }
 
@@ -100,6 +85,7 @@ class DeliverWebhook implements ShouldBeEncrypted, ShouldQueue
         }
 
         if( $status >= 200 && $status < 300 ) {
+            $this->succeed();
             return;
         }
 
@@ -135,21 +121,41 @@ class DeliverWebhook implements ShouldBeEncrypted, ShouldQueue
             ] );
 
         if( $updated ) {
-            Log::warning( 'cms.webhook.delivery_failed', array_filter( [
+            Watch::warn( 'cms.webhook.delivery_failed', [
                 'webhook_id' => $this->webhookId,
                 'tenant_id' => $this->tenant,
                 'event' => $this->event,
                 'delivery_id' => $this->deliveryId,
                 'reason' => $reason,
                 'status' => $status,
-            ], fn( mixed $value ) => $value !== null ) );
+            ] );
         }
+    }
+
+
+    private function succeed() : void
+    {
+        if( now()->timestamp > $this->expiresAt ) {
+            return;
+        }
+
+        Webhook::withoutTenancy()
+            ->where( 'tenant_id', $this->tenant )
+            ->where( 'id', $this->webhookId )
+            ->where( 'revision', $this->revision )
+            ->update( [
+                'failures' => 0,
+                'last_error' => null,
+                'last_success_at' => now(),
+                'updated_at' => now(),
+            ] );
     }
 
 
     private function webhook() : ?Webhook
     {
         return Webhook::withoutTenancy()
+            ->select( 'tenant_id', 'url', 'secret' )
             ->where( 'tenant_id', $this->tenant )
             ->where( 'id', $this->webhookId )
             ->where( 'revision', $this->revision )

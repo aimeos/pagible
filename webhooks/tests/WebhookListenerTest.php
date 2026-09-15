@@ -9,7 +9,10 @@ namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
+use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\Base;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -108,13 +111,14 @@ class WebhookListenerTest extends WebhookTestAbstract
         event( new Bulk(
             'page', ['page-2', 'page-1'], ['page-1' => 'version-1', 'page-2' => 'version-2'],
             ['published' => true], tenant: 'test', action: 'published',
+            projected: ['page-2' => 'published-version-2'],
         ) );
 
         Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) {
             $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
 
             return $payload['data'] === [
-                ['id' => 'page-2', 'version_id' => 'version-2'],
+                ['id' => 'page-2', 'version_id' => 'published-version-2'],
                 ['id' => 'page-1', 'version_id' => 'version-1'],
             ];
         } );
@@ -168,5 +172,25 @@ class WebhookListenerTest extends WebhookTestAbstract
                     'domain' => 'example.com',
                 ];
         } );
+    }
+
+
+    public function testLifecycleNamesAreDerivedAndAllowlisted() : void
+    {
+        $this->webhook( ['events' => [
+            'page.moved', 'element.restored', 'file.purged', 'file.deleted',
+        ]] );
+        Queue::fake();
+
+        event( new Moved( 'page', 'page-id', 'version-id', '', [], tenant: 'test' ) );
+        event( new Restored( 'element', 'element-id', 'version-id', '', [], tenant: 'test' ) );
+        event( new Purged( 'file', 'file-id', 'version-id', '', [], tenant: 'test' ) );
+        event( new Bulk(
+            'file', ['file-id'], ['file-id' => 'version-id'], [], tenant: 'test', action: 'dropped',
+        ) );
+
+        foreach( ['page.moved', 'element.restored', 'file.purged', 'file.deleted'] as $name ) {
+            Queue::assertPushed( DeliverWebhook::class, fn( DeliverWebhook $job ) => $job->event === $name );
+        }
     }
 }

@@ -42,6 +42,7 @@ class Bulk implements ShouldBroadcastNow
      * @param string $tenant Tenant id; scopes the channel, not the payload
      * @param string $source Originating interface: 'graphql', 'mcp' or 'cli'; not in the payload
      * @param string $action Audit action name; not in the broadcast payload
+     * @param array<string, string> $projected Actually projected version ids; not in the broadcast payload
      */
     public function __construct(
         public readonly string $contentType,
@@ -52,6 +53,7 @@ class Bulk implements ShouldBroadcastNow
         public readonly string $tenant = '',
         public readonly string $source = '',
         public readonly string $action = 'bulk',
+        public readonly array $projected = [],
     ) {}
 
 

@@ -4,8 +4,9 @@ import { useDrawerStore, usePluginStore, useUserStore } from '../../../js/stores
 
 const Body = {
   props: ['panel'],
+  inject: ['messages'],
   render() {
-    return h('div', { class: 'plugin-body' }, `${this.panel.label} body`)
+    return h('div', { class: 'plugin-body', 'data-messages': this.messages ? 'yes' : 'no' }, `${this.panel.label} body`)
   }
 }
 
@@ -20,6 +21,9 @@ describe('PluginPanel', () => {
     return cy.mount(PluginPanel, {
       props: { panel },
       global: {
+        provide: {
+          messages: { add() {} }
+        },
         plugins: [{
           install(app) {
             app.config.globalProperties.$gettext = translate
@@ -40,6 +44,7 @@ describe('PluginPanel', () => {
     cy.get('.v-app-bar').contains('Webhooks').should('exist')
     cy.get('.v-navigation-drawer').contains('Webhooks').should('exist')
     cy.get('.plugin-body').should('contain', 'Webhooks body')
+    cy.get('.plugin-body').should('have.attr', 'data-messages', 'yes')
     cy.get('.user-stub').should('exist')
   })
 

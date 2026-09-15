@@ -69,6 +69,12 @@ Verify every request before parsing or processing its body:
 
 Retries retain the same delivery ID but receive a fresh signed timestamp.
 
+Subscription health is updated after terminal delivery outcomes. `failures` counts consecutive
+failed deliveries and is reset to zero by the next successful 2xx response. `last_success_at`
+records that response, while `last_error` is cleared. Concurrent deliveries update this state in
+database completion order. Expired, disabled and revision-stale jobs never change health state.
+Destination replacement and secret rotation clear the health state for the new subscription revision.
+
 Single-item notifications contain the content and version IDs. Page notifications also include the route context carried by the committed CMS event when available:
 
 ```json

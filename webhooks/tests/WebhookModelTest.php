@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 
 
 class WebhookModelTest extends WebhookTestAbstract
@@ -22,6 +23,7 @@ class WebhookModelTest extends WebhookTestAbstract
         $webhook = $this->webhook( [
             'events' => ['page.published', 'page.deleted'],
             'last_error' => ['reason' => 'http_error', 'status' => 503],
+            'last_success_at' => '2026-09-15 12:00:00',
         ] );
         $raw = Webhook::withoutTenancy()->whereKey( $webhook->id )->firstOrFail()->getAttributes();
 
@@ -29,6 +31,7 @@ class WebhookModelTest extends WebhookTestAbstract
         $this->assertNotSame( 'test-secret', $raw['secret'] );
         $this->assertSame( ['page.published', 'page.deleted'], $webhook->events );
         $this->assertSame( 503, $webhook->last_error['status'] );
+        $this->assertInstanceOf( Carbon::class, $webhook->last_success_at );
         $this->assertSame( 'https://example.com/…', $webhook->endpoint );
         $this->assertNotEmpty( $webhook->id );
         $this->assertArrayNotHasKey( 'url', $webhook->toArray() );

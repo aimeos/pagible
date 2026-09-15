@@ -128,6 +128,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
             'secret' => 'test-secret',
             'events' => ['page.published'],
             'last_error' => null,
+            'last_success_at' => null,
             'editor' => 'editor@testbench',
         ] );
         $webhook->save();

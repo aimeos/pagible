@@ -3028,6 +3028,10 @@ msgstr "Sündmused"
 msgid "Failures"
 msgstr "Tõrked"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Viimane õnnestumine"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Viimane viga"

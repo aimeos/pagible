@@ -3041,6 +3041,10 @@ msgstr "Įvykiai"
 msgid "Failures"
 msgstr "Triktys"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Paskutinis sėkmingas bandymas"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Paskutinė klaida"

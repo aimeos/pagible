@@ -45,12 +45,11 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $this->assertTrue( $response->json( 'data.saveWebhook.status' ) );
 
         $query = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            query ($id: ID!) {
-              cmsWebhook(id: $id) { id endpoint status events last_error }
-              cmsWebhooks { id endpoint }
+            query {
+              cmsWebhooks { id endpoint status events last_error last_success_at }
               cmsWebhookEvents
             }
-        ', ['id' => $id] );
+        ' );
         $query->assertGraphQLErrorFree();
         $this->assertCount( 1, $query->json( 'data.cmsWebhooks' ) );
         $this->assertContains( 'file.purged', $query->json( 'data.cmsWebhookEvents' ) );
@@ -74,12 +73,17 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $rotated->assertGraphQLErrorFree();
         $this->assertFalse( $rotated->json( 'data.rotateWebhook.webhook.status' ) );
 
+        $second = $this->webhook( ['url' => 'https://second.example/hook'] );
+        $foreign = \Aimeos\Cms\Tenancy::run( 'other', fn() =>
+            $this->webhook( ['url' => 'https://other.example/hook'] )
+        );
         $dropped = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation ($id: [ID!]!) { dropWebhook(id: $id) }
-        ', ['id' => [$id]] );
+        ', ['id' => [$id, $second->id, $foreign->id]] );
         $dropped->assertGraphQLErrorFree();
-        $this->assertSame( 1, $dropped->json( 'data.dropWebhook' ) );
-        $this->assertSame( 0, Webhook::withoutTenancy()->count() );
+        $this->assertSame( 2, $dropped->json( 'data.dropWebhook' ) );
+        $this->assertSame( 1, Webhook::withoutTenancy()->count() );
+        $this->assertTrue( Webhook::withoutTenancy()->whereKey( $foreign->id )->exists() );
     }
 
 

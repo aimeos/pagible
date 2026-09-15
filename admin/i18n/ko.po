@@ -3015,6 +3015,10 @@ msgstr "이벤트"
 msgid "Failures"
 msgstr "실패 횟수"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "마지막 성공"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "최근 오류"

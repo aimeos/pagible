@@ -90,12 +90,13 @@ class CoreCommandTest extends CoreTestAbstract
         $this->assertFalse( (bool) $future->fresh()->published );
         $this->assertSame( $future->id, $element->fresh()->latest_id );
         $this->assertSame( 'After 51', $element->fresh()->name );
-        Event::assertNotDispatched( Bulk::class );
-        Event::assertDispatched( Published::class, fn( Published $event ) =>
+        Event::assertNotDispatched( Published::class, fn( Published $event ) =>
             $event->id === $element->id
-            && $event->latest_id === $future->id
-            && $event->projection === ['version_id' => $versions[50]]
-            && $event->published === false
+        );
+        Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
+            $event->contentType === 'element'
+            && ( $event->latest[$element->id] ?? null ) === $future->id
+            && ( $event->projected[$element->id] ?? null ) === $versions[50]
         );
     }
 

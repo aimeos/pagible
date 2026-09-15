@@ -1,11 +1,11 @@
 import e from "graphql-tag";
-import { Fragment as t, createBlock as n, createCommentVNode as r, createElementBlock as i, createElementVNode as a, createTextVNode as o, createVNode as s, openBlock as c, renderList as l, resolveComponent as u, toDisplayString as d, withCtx as f } from "vue";
+import { Fragment as t, createBlock as n, createCommentVNode as r, createElementBlock as i, createElementVNode as a, createTextVNode as o, createVNode as s, openBlock as c, renderList as l, resolveComponent as u, toDisplayString as d, withCtx as f, withModifiers as p } from "vue";
 //#region \0plugin-vue:export-helper
-var p = (e, t) => {
+var m = (e, t) => {
 	let n = e.__vccOpts || e;
 	for (let [e, r] of t) n[e] = r;
 	return n;
-}, m = e`
+}, h = e`
   fragment CmsWebhookFields on CmsWebhook {
     id
     status
@@ -13,16 +13,17 @@ var p = (e, t) => {
     endpoint
     events
     last_error
+    last_success_at
   }
-`, h = e`
+`, g = e`
   query CmsWebhooks {
     cmsWebhooks {
       ...CmsWebhookFields
     }
     cmsWebhookEvents
   }
-  ${m}
-`, g = e`
+  ${h}
+`, _ = e`
   mutation AddWebhook($input: CmsWebhookAddInput!) {
     addWebhook(input: $input) {
       secret
@@ -31,15 +32,15 @@ var p = (e, t) => {
       }
     }
   }
-  ${m}
-`, _ = e`
+  ${h}
+`, v = e`
   mutation SaveWebhook($id: ID!, $input: CmsWebhookSaveInput!) {
     saveWebhook(id: $id, input: $input) {
       ...CmsWebhookFields
     }
   }
-  ${m}
-`, v = e`
+  ${h}
+`, y = e`
   mutation ReplaceWebhook($id: ID!, $url: String!) {
     replaceWebhook(id: $id, url: $url) {
       secret
@@ -48,8 +49,8 @@ var p = (e, t) => {
       }
     }
   }
-  ${m}
-`, y = e`
+  ${h}
+`, b = e`
   mutation RotateWebhook($id: ID!) {
     rotateWebhook(id: $id) {
       secret
@@ -58,18 +59,14 @@ var p = (e, t) => {
       }
     }
   }
-  ${m}
-`, b = e`
+  ${h}
+`, x = e`
   mutation DropWebhook($id: [ID!]!) {
     dropWebhook(id: $id)
   }
-`, x = {
+`, S = {
 	name: "WebhookList",
-	inject: ["apollo"],
-	props: { panel: {
-		type: Object,
-		required: !0
-	} },
+	inject: ["apollo", "messages"],
 	data: () => ({
 		dialog: !1,
 		replaceDialog: !1,
@@ -77,30 +74,40 @@ var p = (e, t) => {
 		loading: !0,
 		saving: !1,
 		items: [],
+		checked: /* @__PURE__ */ new Set(),
 		names: [],
 		selected: null,
 		url: "",
 		events: [],
 		status: !1,
-		secret: "",
-		message: "",
-		messageColor: "info",
-		messageOpen: !1
+		secret: ""
 	}),
 	mounted() {
 		this.load();
 	},
 	methods: {
+		async change(e, t) {
+			if (!this.saving) {
+				this.saving = !0;
+				try {
+					await e();
+				} catch (e) {
+					this.messages.add(t + ":\n" + e, "error");
+				} finally {
+					this.saving = !1;
+				}
+			}
+		},
 		async load() {
 			this.loading = !0;
 			try {
 				let { data: e } = await this.apollo.query({
-					query: h,
+					query: g,
 					fetchPolicy: "network-only"
 				});
-				this.items = e.cmsWebhooks, this.names = e.cmsWebhookEvents;
+				this.items = e.cmsWebhooks, this.checked = /* @__PURE__ */ new Set(), this.names = e.cmsWebhookEvents;
 			} catch (e) {
-				this.notify(this.$gettext("Error fetching webhooks") + ":\n" + e, "error");
+				this.messages.add(this.$gettext("Error fetching webhooks") + ":\n" + e, "error");
 			} finally {
 				this.loading = !1;
 			}
@@ -115,111 +122,89 @@ var p = (e, t) => {
 			this.selected = e, this.url = "", this.replaceDialog = !0;
 		},
 		async save() {
-			if (!this.saving && this.events.length && (this.selected || this.url.trim())) {
-				this.saving = !0;
-				try {
-					if (this.selected) {
-						let { data: e } = await this.apollo.mutate({
-							mutation: _,
-							variables: {
-								id: this.selected.id,
-								input: {
-									events: this.events,
-									status: this.status
-								}
-							}
-						});
-						this.replaceItem(e.saveWebhook);
-					} else {
-						let { data: e } = await this.apollo.mutate({
-							mutation: g,
-							variables: { input: {
-								url: this.url.trim(),
-								events: this.events
-							} }
-						});
-						this.items.unshift(e.addWebhook.webhook), this.showSecret(e.addWebhook.secret);
-					}
-					this.dialog = !1;
-				} catch (e) {
-					this.notify(this.$gettext("Error saving webhook") + ":\n" + e, "error");
-				} finally {
-					this.saving = !1;
-				}
-			}
-		},
-		async replace() {
-			if (!this.saving && this.selected && this.url.trim()) {
-				this.saving = !0;
-				try {
+			this.events.length && (this.selected || this.url.trim()) && await this.change(async () => {
+				if (this.selected) {
 					let { data: e } = await this.apollo.mutate({
 						mutation: v,
 						variables: {
 							id: this.selected.id,
-							url: this.url.trim()
+							input: {
+								events: this.events,
+								status: this.status
+							}
 						}
 					});
-					this.replaceItem(e.replaceWebhook.webhook), this.replaceDialog = !1, this.showSecret(e.replaceWebhook.secret);
-				} catch (e) {
-					this.notify(this.$gettext("Error replacing webhook destination") + ":\n" + e, "error");
-				} finally {
-					this.saving = !1;
+					this.replaceItem(e.saveWebhook);
+				} else {
+					let { data: e } = await this.apollo.mutate({
+						mutation: _,
+						variables: { input: {
+							url: this.url.trim(),
+							events: this.events
+						} }
+					});
+					this.items.unshift(e.addWebhook.webhook), this.showSecret(e.addWebhook.secret);
 				}
-			}
+				this.dialog = !1;
+			}, this.$gettext("Error saving webhook"));
+		},
+		async replace() {
+			this.selected && this.url.trim() && await this.change(async () => {
+				let { data: e } = await this.apollo.mutate({
+					mutation: y,
+					variables: {
+						id: this.selected.id,
+						url: this.url.trim()
+					}
+				});
+				this.replaceItem(e.replaceWebhook.webhook), this.replaceDialog = !1, this.showSecret(e.replaceWebhook.secret);
+			}, this.$gettext("Error replacing webhook destination"));
 		},
 		async rotate(e) {
-			if (!this.saving) {
-				this.saving = !0;
-				try {
-					let { data: t } = await this.apollo.mutate({
-						mutation: y,
-						variables: { id: e.id }
-					});
-					this.replaceItem(t.rotateWebhook.webhook), this.showSecret(t.rotateWebhook.secret);
-				} catch (e) {
-					this.notify(this.$gettext("Error rotating webhook secret") + ":\n" + e, "error");
-				} finally {
-					this.saving = !1;
-				}
-			}
+			await this.change(async () => {
+				let { data: t } = await this.apollo.mutate({
+					mutation: b,
+					variables: { id: e.id }
+				});
+				this.replaceItem(t.rotateWebhook.webhook), this.showSecret(t.rotateWebhook.secret);
+			}, this.$gettext("Error rotating webhook secret"));
 		},
-		async remove(e) {
-			if (!this.saving && window.confirm(this.$gettext("Delete this webhook?"))) {
-				this.saving = !0;
-				try {
-					await this.apollo.mutate({
-						mutation: b,
-						variables: { id: [e.id] }
-					}), this.items = this.items.filter((t) => t.id !== e.id);
-				} catch (e) {
-					this.notify(this.$gettext("Error deleting webhook") + ":\n" + e, "error");
-				} finally {
-					this.saving = !1;
-				}
-			}
+		async remove(e = null) {
+			let t = e ? [e.id] : [...this.checked], n = e ? this.$gettext("Delete this webhook?") : `${this.$gettext("Delete")} (${t.length})?`;
+			!this.saving && t.length && window.confirm(n) && await this.change(async () => {
+				await this.apollo.mutate({
+					mutation: x,
+					variables: { id: t }
+				});
+				let e = new Set(t);
+				this.items = this.items.filter((t) => !e.has(t.id)), this.checked = new Set([...this.checked].filter((t) => !e.has(t)));
+			}, this.$gettext("Error deleting webhook"));
 		},
 		async copySecret() {
 			try {
-				await navigator.clipboard.writeText(this.secret), this.notify(this.$gettext("Secret copied"), "success");
+				await navigator.clipboard.writeText(this.secret), this.messages.add(this.$gettext("Secret copied"), "success");
 			} catch {
-				this.notify(this.$gettext("Unable to copy secret"), "error");
+				this.messages.add(this.$gettext("Unable to copy secret"), "error");
 			}
 		},
 		errorText(e) {
 			if (!e.last_error) return this.$gettext("None");
 			let t = e.last_error.status ? ` (${e.last_error.status})` : "";
 			return `${{
-				delivery_failed: this.$gettext("Delivery failed"),
 				destination_not_allowed: this.$gettext("Access denied"),
-				http_error: this.$gettext("Delivery failed"),
 				invalid_header: this.$gettext("Value has invalid format"),
-				invalid_url: this.$gettext("Not a valid URL"),
-				resolution_failed: this.$gettext("Delivery failed"),
-				response_body_too_large: this.$gettext("Delivery failed"),
-				response_headers_too_large: this.$gettext("Delivery failed"),
-				transport_error: this.$gettext("Delivery failed"),
-				transport_unavailable: this.$gettext("Delivery failed")
+				invalid_url: this.$gettext("Not a valid URL")
 			}[e.last_error.reason] || this.$gettext("Delivery failed")}${t}`;
+		},
+		successText(e) {
+			return e.last_success_at ? new Date(e.last_success_at).toLocaleString(this.$vuetify.locale.current) : this.$gettext("None");
+		},
+		toggle() {
+			this.checked = this.checked.size ? /* @__PURE__ */ new Set() : new Set(this.items.map((e) => e.id));
+		},
+		toggleCheck(e) {
+			let t = new Set(this.checked);
+			t.has(e.id) ? t.delete(e.id) : t.add(e.id), this.checked = t;
 		},
 		replaceItem(e) {
 			let t = this.items.findIndex((t) => t.id === e.id);
@@ -227,44 +212,70 @@ var p = (e, t) => {
 		},
 		showSecret(e) {
 			this.secret = e, this.secretDialog = !0;
-		},
-		notify(e, t) {
-			this.message = e, this.messageColor = t, this.messageOpen = !0;
 		}
 	}
-}, S = { class: "webhook-list" }, C = { class: "d-flex align-center ga-3 mb-5" }, w = { class: "text-medium-emphasis mb-0" }, T = { class: "text-end" }, E = { class: "text-end text-no-wrap" };
-function D(e, p, m, h, g, _) {
-	let v = u("v-spacer"), y = u("v-btn"), b = u("v-progress-linear"), x = u("v-alert"), D = u("v-chip"), O = u("v-table"), k = u("v-container"), A = u("v-card-title"), j = u("v-text-field"), M = u("v-select"), N = u("v-switch"), P = u("v-card-text"), F = u("v-card-actions"), I = u("v-card"), L = u("v-dialog"), R = u("v-snackbar");
-	return c(), i("div", S, [
-		s(k, {
+}, C = { class: "webhook-list" }, w = { class: "d-flex align-center ga-3 mb-5" }, T = { class: "text-medium-emphasis mb-0" }, E = { class: "text-end" }, D = { class: "text-end text-no-wrap" };
+function O(e, m, h, g, _, v) {
+	let y = u("v-spacer"), b = u("v-btn"), x = u("v-progress-linear"), S = u("v-alert"), O = u("v-checkbox-btn"), k = u("v-chip"), A = u("v-table"), j = u("v-container"), M = u("v-card-title"), N = u("v-text-field"), P = u("v-select"), F = u("v-switch"), I = u("v-card-text"), L = u("v-card-actions"), R = u("v-card"), z = u("v-dialog");
+	return c(), i("div", C, [
+		s(j, {
 			fluid: "",
 			class: "pa-4 pa-md-6"
 		}, {
-			default: f(() => [a("div", C, [
-				a("p", w, d(e.$gettext("Send signed notifications when published content changes.")), 1),
-				s(v),
-				s(y, {
+			default: f(() => [a("div", w, [
+				a("p", T, d(e.$gettext("Send signed notifications when published content changes.")), 1),
+				s(y),
+				e.checked.size ? (c(), n(b, {
+					key: 0,
+					color: "error",
+					variant: "text",
+					disabled: e.saving,
+					onClick: m[0] ||= (e) => v.remove()
+				}, {
+					default: f(() => [o(d(e.$gettext("Delete")) + " (" + d(e.checked.size) + ") ", 1)]),
+					_: 1
+				}, 8, ["disabled"])) : r("", !0),
+				s(b, {
 					color: "primary",
-					onClick: _.openAdd
+					onClick: v.openAdd
 				}, {
 					default: f(() => [o(d(e.$gettext("Add webhook")), 1)]),
 					_: 1
 				}, 8, ["onClick"])
-			]), e.loading ? (c(), n(b, {
+			]), e.loading ? (c(), n(x, {
 				key: 0,
 				indeterminate: ""
-			})) : e.items.length ? (c(), n(O, { key: 2 }, {
+			})) : e.items.length ? (c(), n(A, { key: 2 }, {
 				default: f(() => [a("thead", null, [a("tr", null, [
+					a("th", null, [s(O, {
+						"model-value": e.checked.size > 0,
+						onClick: p(v.toggle, ["stop"]),
+						"aria-label": e.$gettext("Toggle selection")
+					}, null, 8, [
+						"model-value",
+						"onClick",
+						"aria-label"
+					])]),
 					a("th", null, d(e.$gettext("Endpoint")), 1),
 					a("th", null, d(e.$gettext("Events")), 1),
 					a("th", null, d(e.$gettext("Status")), 1),
 					a("th", null, d(e.$gettext("Failures")), 1),
+					a("th", null, d(e.$gettext("Last success")), 1),
 					a("th", null, d(e.$gettext("Last error")), 1),
-					a("th", T, d(e.$gettext("Actions")), 1)
+					a("th", E, d(e.$gettext("Actions")), 1)
 				])]), a("tbody", null, [(c(!0), i(t, null, l(e.items, (t) => (c(), i("tr", { key: t.id }, [
+					a("td", null, [s(O, {
+						"model-value": e.checked.has(t.id),
+						"onUpdate:modelValue": (e) => v.toggleCheck(t),
+						"aria-label": e.$gettext("Toggle selection")
+					}, null, 8, [
+						"model-value",
+						"onUpdate:modelValue",
+						"aria-label"
+					])]),
 					a("td", null, d(t.endpoint), 1),
 					a("td", null, d(t.events.join(", ")), 1),
-					a("td", null, [s(D, {
+					a("td", null, [s(k, {
 						color: t.status ? "success" : void 0,
 						size: "small"
 					}, {
@@ -272,37 +283,38 @@ function D(e, p, m, h, g, _) {
 						_: 2
 					}, 1032, ["color"])]),
 					a("td", null, d(t.failures), 1),
-					a("td", null, d(_.errorText(t)), 1),
-					a("td", E, [
-						s(y, {
+					a("td", null, d(v.successText(t)), 1),
+					a("td", null, d(v.errorText(t)), 1),
+					a("td", D, [
+						s(b, {
 							variant: "text",
 							size: "small",
-							onClick: (e) => _.openEdit(t)
+							onClick: (e) => v.openEdit(t)
 						}, {
 							default: f(() => [o(d(e.$gettext("Edit")), 1)]),
 							_: 1
 						}, 8, ["onClick"]),
-						s(y, {
+						s(b, {
 							variant: "text",
 							size: "small",
-							onClick: (e) => _.openReplace(t)
+							onClick: (e) => v.openReplace(t)
 						}, {
 							default: f(() => [o(d(e.$gettext("Replace")), 1)]),
 							_: 1
 						}, 8, ["onClick"]),
-						s(y, {
+						s(b, {
 							variant: "text",
 							size: "small",
-							onClick: (e) => _.rotate(t)
+							onClick: (e) => v.rotate(t)
 						}, {
 							default: f(() => [o(d(e.$gettext("Rotate")), 1)]),
 							_: 1
 						}, 8, ["onClick"]),
-						s(y, {
+						s(b, {
 							variant: "text",
 							size: "small",
 							color: "error",
-							onClick: (e) => _.remove(t)
+							onClick: (e) => v.remove(t)
 						}, {
 							default: f(() => [o(d(e.$gettext("Delete")), 1)]),
 							_: 1
@@ -310,7 +322,7 @@ function D(e, p, m, h, g, _) {
 					])
 				]))), 128))])]),
 				_: 1
-			})) : (c(), n(x, {
+			})) : (c(), n(S, {
 				key: 1,
 				type: "info",
 				variant: "tonal"
@@ -320,30 +332,30 @@ function D(e, p, m, h, g, _) {
 			}))]),
 			_: 1
 		}),
-		s(L, {
+		s(z, {
 			modelValue: e.dialog,
-			"onUpdate:modelValue": p[4] ||= (t) => e.dialog = t,
+			"onUpdate:modelValue": m[5] ||= (t) => e.dialog = t,
 			"max-width": "640"
 		}, {
-			default: f(() => [s(I, null, {
+			default: f(() => [s(R, null, {
 				default: f(() => [
-					s(A, null, {
+					s(M, null, {
 						default: f(() => [o(d(e.selected ? e.$gettext("Edit webhook") : e.$gettext("Add webhook")), 1)]),
 						_: 1
 					}),
-					s(P, null, {
+					s(I, null, {
 						default: f(() => [
-							e.selected ? r("", !0) : (c(), n(j, {
+							e.selected ? r("", !0) : (c(), n(N, {
 								key: 0,
 								modelValue: e.url,
-								"onUpdate:modelValue": p[0] ||= (t) => e.url = t,
+								"onUpdate:modelValue": m[1] ||= (t) => e.url = t,
 								label: e.$gettext("HTTPS endpoint URL"),
 								maxlength: "500",
 								autofocus: ""
 							}, null, 8, ["modelValue", "label"])),
-							s(M, {
+							s(P, {
 								modelValue: e.events,
-								"onUpdate:modelValue": p[1] ||= (t) => e.events = t,
+								"onUpdate:modelValue": m[2] ||= (t) => e.events = t,
 								items: e.names,
 								label: e.$gettext("Events"),
 								multiple: "",
@@ -353,13 +365,13 @@ function D(e, p, m, h, g, _) {
 								"items",
 								"label"
 							]),
-							e.selected ? (c(), n(N, {
+							e.selected ? (c(), n(F, {
 								key: 1,
 								modelValue: e.status,
-								"onUpdate:modelValue": p[2] ||= (t) => e.status = t,
+								"onUpdate:modelValue": m[3] ||= (t) => e.status = t,
 								color: "success",
 								label: e.$gettext("Active")
-							}, null, 8, ["modelValue", "label"])) : (c(), n(x, {
+							}, null, 8, ["modelValue", "label"])) : (c(), n(S, {
 								key: 2,
 								type: "info",
 								variant: "tonal"
@@ -370,17 +382,17 @@ function D(e, p, m, h, g, _) {
 						]),
 						_: 1
 					}),
-					s(F, null, {
+					s(L, null, {
 						default: f(() => [
-							s(v),
-							s(y, { onClick: p[3] ||= (t) => e.dialog = !1 }, {
+							s(y),
+							s(b, { onClick: m[4] ||= (t) => e.dialog = !1 }, {
 								default: f(() => [o(d(e.$gettext("Cancel")), 1)]),
 								_: 1
 							}),
-							s(y, {
+							s(b, {
 								color: "primary",
 								loading: e.saving,
-								onClick: _.save
+								onClick: v.save
 							}, {
 								default: f(() => [o(d(e.$gettext("Save")), 1)]),
 								_: 1
@@ -393,25 +405,25 @@ function D(e, p, m, h, g, _) {
 			})]),
 			_: 1
 		}, 8, ["modelValue"]),
-		s(L, {
+		s(z, {
 			modelValue: e.replaceDialog,
-			"onUpdate:modelValue": p[7] ||= (t) => e.replaceDialog = t,
+			"onUpdate:modelValue": m[8] ||= (t) => e.replaceDialog = t,
 			"max-width": "640"
 		}, {
-			default: f(() => [s(I, null, {
+			default: f(() => [s(R, null, {
 				default: f(() => [
-					s(A, null, {
+					s(M, null, {
 						default: f(() => [o(d(e.$gettext("Replace webhook destination")), 1)]),
 						_: 1
 					}),
-					s(P, null, {
-						default: f(() => [s(j, {
+					s(I, null, {
+						default: f(() => [s(N, {
 							modelValue: e.url,
-							"onUpdate:modelValue": p[5] ||= (t) => e.url = t,
+							"onUpdate:modelValue": m[6] ||= (t) => e.url = t,
 							label: e.$gettext("HTTPS endpoint URL"),
 							maxlength: "500",
 							autofocus: ""
-						}, null, 8, ["modelValue", "label"]), s(x, {
+						}, null, 8, ["modelValue", "label"]), s(S, {
 							type: "warning",
 							variant: "tonal"
 						}, {
@@ -420,17 +432,17 @@ function D(e, p, m, h, g, _) {
 						})]),
 						_: 1
 					}),
-					s(F, null, {
+					s(L, null, {
 						default: f(() => [
-							s(v),
-							s(y, { onClick: p[6] ||= (t) => e.replaceDialog = !1 }, {
+							s(y),
+							s(b, { onClick: m[7] ||= (t) => e.replaceDialog = !1 }, {
 								default: f(() => [o(d(e.$gettext("Cancel")), 1)]),
 								_: 1
 							}),
-							s(y, {
+							s(b, {
 								color: "primary",
 								loading: e.saving,
-								onClick: _.replace
+								onClick: v.replace
 							}, {
 								default: f(() => [o(d(e.$gettext("Replace")), 1)]),
 								_: 1
@@ -443,43 +455,43 @@ function D(e, p, m, h, g, _) {
 			})]),
 			_: 1
 		}, 8, ["modelValue"]),
-		s(L, {
+		s(z, {
 			modelValue: e.secretDialog,
-			"onUpdate:modelValue": p[9] ||= (t) => e.secretDialog = t,
+			"onUpdate:modelValue": m[10] ||= (t) => e.secretDialog = t,
 			"max-width": "640",
 			persistent: ""
 		}, {
-			default: f(() => [s(I, null, {
+			default: f(() => [s(R, null, {
 				default: f(() => [
-					s(A, null, {
+					s(M, null, {
 						default: f(() => [o(d(e.$gettext("Webhook secret")), 1)]),
 						_: 1
 					}),
-					s(P, null, {
-						default: f(() => [s(x, {
+					s(I, null, {
+						default: f(() => [s(S, {
 							type: "warning",
 							variant: "tonal",
 							class: "mb-4"
 						}, {
 							default: f(() => [o(d(e.$gettext("Copy this secret now. It will not be shown again.")), 1)]),
 							_: 1
-						}), s(j, {
+						}), s(N, {
 							"model-value": e.secret,
 							readonly: ""
 						}, null, 8, ["model-value"])]),
 						_: 1
 					}),
-					s(F, null, {
+					s(L, null, {
 						default: f(() => [
-							s(y, {
+							s(b, {
 								color: "primary",
-								onClick: _.copySecret
+								onClick: v.copySecret
 							}, {
 								default: f(() => [o(d(e.$gettext("Copy secret")), 1)]),
 								_: 1
 							}, 8, ["onClick"]),
-							s(v),
-							s(y, { onClick: p[8] ||= (t) => {
+							s(y),
+							s(b, { onClick: m[9] ||= (t) => {
 								e.secretDialog = !1, e.secret = "";
 							} }, {
 								default: f(() => [o(d(e.$gettext("Done")), 1)]),
@@ -492,17 +504,9 @@ function D(e, p, m, h, g, _) {
 				_: 1
 			})]),
 			_: 1
-		}, 8, ["modelValue"]),
-		s(R, {
-			modelValue: e.messageOpen,
-			"onUpdate:modelValue": p[10] ||= (t) => e.messageOpen = t,
-			color: e.messageColor
-		}, {
-			default: f(() => [o(d(e.message), 1)]),
-			_: 1
-		}, 8, ["modelValue", "color"])
+		}, 8, ["modelValue"])
 	]);
 }
-var O = /*#__PURE__*/ p(x, [["render", D]]);
+var k = /*#__PURE__*/ m(S, [["render", O]]);
 //#endregion
-export { O as default };
+export { k as default };

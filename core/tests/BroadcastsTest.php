@@ -175,13 +175,13 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
-    public function testPublishBroadcastsSupersededVersionsIndividually() : void
+    public function testPublishCarriesSupersededVersionsInBulkEvent() : void
     {
         $pages = collect( [$this->page(), $this->page()] );
         $published = [];
 
         foreach( $pages as $page ) {
-            $published[$page->id] = $page->versions()->forceCreate( [
+            $version = $page->versions()->forceCreate( [
                 'lang' => 'en',
                 'data' => [
                     'lang' => 'en', 'name' => 'Published',
@@ -190,6 +190,7 @@ class BroadcastsTest extends CoreTestAbstract
                 'editor' => 'editor@testbench',
                 'published' => true,
             ] );
+            $published[$page->id] = ['version_id' => (string) $version->id];
         }
 
         config( ['cms.broadcast' => true] );
@@ -200,21 +201,14 @@ class BroadcastsTest extends CoreTestAbstract
             'publish_at' => null,
         ], projected: $published );
 
-        Event::assertNotDispatched( Bulk::class );
-        Event::assertDispatchedTimes( Published::class, 2 );
-
-        foreach( $pages as $page ) {
-            Event::assertDispatched( Published::class, fn( Published $event ) =>
-                $event->id === $page->id
-                && $event->latest_id === $page->latest_id
-                && $event->projection === [
-                    'version_id' => $published[$page->id]->id,
-                    'path' => 'published-route',
-                    'domain' => 'published.example',
-                ]
-                && $event->published === false
-            );
-        }
+        Event::assertNotDispatched( Published::class );
+        Event::assertDispatchedTimes( Bulk::class, 1 );
+        Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
+            $event->projected === $pages->mapWithKeys( fn( Page $page ) => [
+                $page->id => $published[$page->id]['version_id'],
+            ] )->all()
+            && !array_key_exists( 'projected', $event->broadcastWith() )
+        );
     }
 
 

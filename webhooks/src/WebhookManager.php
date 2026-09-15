@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\WebhookChanged;
 use Aimeos\Cms\Models\Webhook;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -44,27 +44,25 @@ class WebhookManager
     /**
      * Creates an inactive subscription and returns its one-time secret.
      *
-     * @param array<string, mixed> $input
+     * @param list<string> $events
      * @return array{webhook: Webhook, secret: string}
      */
-    public function add( array $input, ?Authenticatable $user ) : array
+    public function add( string $url, array $events, ?Authenticatable $user ) : array
     {
         $tenant = $this->authorize( $user );
-        $url = $this->canonical( $this->string( $input['url'] ?? null, 'URL' ) );
-        $events = $this->events( $input['events'] ?? null );
+        $url = $this->canonical( trim( $url ) );
+        $events = $this->events( $events );
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = $this->locked( $tenant, function() use ( $actor, $events, $secret, $tenant, $url ) {
-            $count = Webhook::withoutTenancy()->where( 'tenant_id', $tenant )->count();
+        $webhook = $this->locked( $tenant, function() use ( $actor, $events, $secret, $url ) {
+            $count = Webhook::query()->count();
 
             if( $count >= max( 1, (int) config( 'cms.webhooks.limits.total', 100 ) ) ) {
                 throw new Exception( 'The webhook limit has been reached.' );
             }
 
-            $webhook = new Webhook();
-            $webhook->forceFill( [
-                'tenant_id' => $tenant,
+            return Webhook::forceCreate( [
                 'status' => false,
                 'revision' => 1,
                 'failures' => 0,
@@ -72,11 +70,9 @@ class WebhookManager
                 'secret' => $secret,
                 'events' => $events,
                 'last_error' => null,
+                'last_success_at' => null,
                 'editor' => $actor,
             ] );
-            $webhook->save();
-
-            return $webhook;
         } );
 
         $this->changed( 'created', $actor, $webhook, '', $this->host( $url ) );
@@ -99,14 +95,10 @@ class WebhookManager
         }
 
         $actor = Utils::editor( $user );
-        $webhooks = $this->locked( $tenant, function() use ( $ids, $tenant ) {
-            $webhooks = Webhook::withoutTenancy()
-                ->where( 'tenant_id', $tenant )
-                ->whereIn( 'id', $ids )
-                ->get();
+        $webhooks = $this->locked( $tenant, function() use ( $ids ) {
+            $webhooks = Webhook::query()->whereIn( 'id', $ids )->get();
 
-            Webhook::withoutTenancy()
-                ->where( 'tenant_id', $tenant )
+            Webhook::query()
                 ->whereIn( 'id', $webhooks->modelKeys() )
                 ->delete();
 
@@ -136,23 +128,20 @@ class WebhookManager
                 return false;
             }
 
-            $encrypted = new Webhook();
-            $encrypted->setAttribute( 'url', $webhook->url );
-            $encrypted->setAttribute( 'secret', $webhook->secret );
-            $encrypted->setAttribute( 'last_error', $webhook->last_error );
-            $raw = $encrypted->getAttributes();
+            $raw = ( new Webhook() )->forceFill( [
+                'url' => $webhook->url,
+                'secret' => $webhook->secret,
+                'last_error' => $webhook->last_error,
+            ] )->getAttributes();
 
-            Webhook::withoutTenancy()
-                ->where( 'tenant_id', $tenant )
-                ->where( 'id', $id )
+            return (bool) Webhook::withoutTenancy()
+                ->where( ['tenant_id' => $tenant, 'id' => $id] )
                 ->update( [
                     'url' => $raw['url'],
                     'secret' => $raw['secret'],
                     'last_error' => $raw['last_error'] ?? null,
                     'updated_at' => now(),
                 ] );
-
-            return true;
         } );
     }
 
@@ -182,29 +171,18 @@ class WebhookManager
     /**
      * Changes only subscriptions and active state; URL and secret have dedicated operations.
      *
-     * @param array<string, mixed> $input
+     * @param list<string> $events
      */
-    public function save( string $id, array $input, ?Authenticatable $user ) : Webhook
+    public function save( string $id, array $events, bool $status, ?Authenticatable $user ) : Webhook
     {
         $tenant = $this->authorize( $user );
-        $events = $this->events( $input['events'] ?? null );
-        $status = array_key_exists( 'status', $input )
-            ? filter_var( $input['status'], FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE )
-            : null;
-
-        if( $status === null ) {
-            throw new Exception( 'Invalid webhook status.' );
-        }
-
+        $events = $this->events( $events );
         $actor = Utils::editor( $user );
-        $webhook = $this->locked( $tenant, function() use ( $actor, $events, $id, $status, $tenant ) {
-            $webhook = $this->find( $id, $tenant );
+        $webhook = $this->locked( $tenant, function() use ( $actor, $events, $id, $status ) {
+            $webhook = $this->find( $id );
 
             if( $status && !$webhook->status ) {
-                $active = Webhook::withoutTenancy()
-                    ->where( 'tenant_id', $tenant )
-                    ->where( 'status', 1 )
-                    ->count();
+                $active = Webhook::query()->where( 'status', 1 )->count();
 
                 if( $active >= max( 1, (int) config( 'cms.webhooks.limits.active', 25 ) ) ) {
                     throw new Exception( 'The active webhook limit has been reached.' );
@@ -221,8 +199,7 @@ class WebhookManager
             return $webhook;
         } );
 
-        $host = $this->host( $webhook->url );
-        $this->changed( 'updated', $actor, $webhook, $host, $host );
+        $this->changed( 'updated', $actor, $webhook );
         return $webhook;
     }
 
@@ -233,13 +210,7 @@ class WebhookManager
             throw new Exception( 'Permission denied.' );
         }
 
-        $tenant = Tenancy::value();
-
-        if( $tenant === '' && Tenancy::$callback !== null ) {
-            throw new Exception( 'No tenant is active.' );
-        }
-
-        return $tenant;
+        return Tenancy::value();
     }
 
 
@@ -256,32 +227,31 @@ class WebhookManager
     private function changed( string $action, string $actor, Webhook $webhook,
         string $oldHost = '', string $newHost = '' ) : void
     {
-        Watch::dispatch( WebhookChanged::class, fn() => new WebhookChanged(
-            action: $action,
-            actor: $actor,
-            webhookId: (string) $webhook->id,
-            eventCount: count( (array) $webhook->events ),
-            tenant: (string) $webhook->tenant_id,
-            oldHost: $oldHost,
-            newHost: $newHost,
-        ) );
+        $fields = [
+            'action' => $action,
+            'actor' => $actor,
+            'webhook_id' => (string) $webhook->id,
+            'event_count' => count( (array) $webhook->events ),
+            'tenant_id' => (string) $webhook->tenant_id,
+            'old_host' => $oldHost,
+            'new_host' => $newHost,
+        ];
+
+        DB::connection( config( 'cms.db', 'sqlite' ) )->afterCommit(
+            fn() => Watch::warn( 'cms.webhook', $fields )
+        );
     }
 
 
     /**
+     * @param list<string> $events
      * @return list<string>
      */
-    private function events( mixed $events ) : array
+    private function events( array $events ) : array
     {
-        if( !is_array( $events ) ) {
-            throw new Exception( 'Invalid webhook events.' );
-        }
-
         $events = array_values( array_unique( array_filter( $events, 'is_string' ) ) );
 
-        if( $events === [] || count( $events ) > count( self::EVENTS )
-            || array_diff( $events, self::EVENTS ) !== []
-        ) {
+        if( $events === [] || array_diff( $events, self::EVENTS ) !== [] ) {
             throw new Exception( 'Invalid webhook events.' );
         }
 
@@ -290,18 +260,9 @@ class WebhookManager
     }
 
 
-    private function find( string $id, string $tenant ) : Webhook
+    private function find( string $id ) : Webhook
     {
-        $webhook = Webhook::withoutTenancy()
-            ->where( 'tenant_id', $tenant )
-            ->where( 'id', $id )
-            ->first();
-
-        if( !$webhook ) {
-            throw new Exception( 'Webhook not found.' );
-        }
-
-        return $webhook;
+        return Webhook::query()->find( $id ) ?? throw new Exception( 'Webhook not found.' );
     }
 
 
@@ -340,17 +301,17 @@ class WebhookManager
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        [$webhook, $oldHost, $newHost] = $this->locked( $tenant,
-            function() use ( $actor, $id, $secret, $tenant, $url ) {
-                $webhook = $this->find( $id, $tenant );
-                $current = $webhook->url;
-                $replacement = $url ?? $current;
+        [$webhook, $oldHost] = $this->locked( $tenant,
+            function() use ( $actor, $id, $secret, $url ) {
+                $webhook = $this->find( $id );
+                $oldHost = $url !== null ? $this->host( $webhook->url ) : '';
                 $attributes = [
                     'secret' => $secret,
                     'status' => false,
                     'revision' => $webhook->revision + 1,
                     'failures' => 0,
                     'last_error' => null,
+                    'last_success_at' => null,
                     'editor' => $actor,
                 ];
 
@@ -360,12 +321,12 @@ class WebhookManager
 
                 $webhook->forceFill( $attributes )->save();
 
-                return [$webhook, $this->host( $current ), $this->host( $replacement )];
+                return [$webhook, $oldHost];
             },
         );
 
         $this->changed( $url === null ? 'secret_rotated' : 'destination_replaced',
-            $actor, $webhook, $oldHost, $newHost );
+            $actor, $webhook, $oldHost, $url !== null ? $this->host( $url ) : '' );
 
         return ['webhook' => $webhook, 'secret' => $secret];
     }
@@ -374,15 +335,5 @@ class WebhookManager
     private function secret() : string
     {
         return rtrim( strtr( base64_encode( random_bytes( 32 ) ), '+/', '-_' ), '=' );
-    }
-
-
-    private function string( mixed $value, string $name ) : string
-    {
-        if( !is_string( $value ) || trim( $value ) === '' ) {
-            throw new Exception( "Invalid webhook {$name}." );
-        }
-
-        return trim( $value );
     }
 }

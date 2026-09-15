@@ -3041,6 +3041,10 @@ msgstr "Udalosti"
 msgid "Failures"
 msgstr "Zlyhania"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Posledný úspech"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Posledná chyba"

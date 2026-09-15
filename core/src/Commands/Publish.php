@@ -97,7 +97,7 @@ class Publish extends Command
             } );
         } );
 
-        $changed->flush( true );
+        $changed->flush();
     }
 
 

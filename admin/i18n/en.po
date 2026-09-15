@@ -2743,6 +2743,10 @@ msgstr "Events"
 msgid "Failures"
 msgstr "Failures"
 
+#: ../webhooks/admin/src/views/WebhookList.vue:333
+msgid "Last success"
+msgstr "Last success"
+
 #: ../webhooks/admin/src/views/WebhookList.vue:331
 msgid "Last error"
 msgstr "Last error"
