@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -750,7 +751,7 @@ class Resource
             if( $action === 'purged' )
             {
                 if( $model === File::class ) {
-                    if( $announce ) {
+                    if( $announce && Base::announces( Purged::class ) ) {
                         $items->load( ['latest' => fn( $query ) => $query->select(
                             'id', 'published', 'publish_at', 'created_at',
                         )] );

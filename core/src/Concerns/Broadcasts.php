@@ -50,14 +50,14 @@ trait Broadcasts
             throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
         }
 
-        $broadcast = (bool) config( 'cms.broadcast' );
-
         // In-process listeners (audit logging) subscribe to the per-action events;
         // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
-        if( !$broadcast && !Events::hasListeners( $class ) ) {
+        if( !static::announces( $class ) ) {
             return;
         }
+
+        $broadcast = (bool) config( 'cms.broadcast' );
 
         if( $this->relationLoaded( 'latest' ) ) {
             $loaded = $this->getRelation( 'latest' );
@@ -96,11 +96,11 @@ trait Broadcasts
             return;
         }
 
-        $broadcast = (bool) config( 'cms.broadcast' );
-
-        if( !$broadcast && !Events::hasListeners( Bulk::class ) ) {
+        if( !static::announces( Bulk::class ) ) {
             return;
         }
+
+        $broadcast = (bool) config( 'cms.broadcast' );
 
         static::send( new Bulk(
             contentType: $type,
@@ -178,6 +178,17 @@ trait Broadcasts
                 $action,
             );
         }
+    }
+
+
+    /**
+     * Returns whether an event needs to be built for broadcasting or an in-process listener.
+     *
+     * @param class-string<Event|Bulk> $event
+     */
+    public static function announces( string $event ) : bool
+    {
+        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $event );
     }
 
 
