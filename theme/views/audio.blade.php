@@ -3,7 +3,7 @@
 @endPushOnce
 
 @if($file = cms($files, $data->file?->id ?? null))
-	<audio preload="metadata" controls
+	<audio preload="none" controls
 		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
 		src="{{ cmsasset($page, $file) }}">
 		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cms($file, 'transcription')?->{cms($page, 'lang')} ?? '' }}</div>
