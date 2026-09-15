@@ -23,6 +23,33 @@ use Illuminate\Support\Facades\Storage;
 
 class ThemeTest extends ThemeTestAbstract
 {
+	public function testAudioAndVideoUseLazyLoading() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
+			'lang' => 'en',
+			'title' => 'Page title',
+		] );
+		$file = ( new File() )->forceFill( [
+			'created_at' => Carbon::parse( '2026-07-15T12:30:00+00:00' ),
+			'disk' => 'public',
+			'id' => 'media',
+			'name' => 'Media file',
+			'path' => 'https://example.com/media.mp4',
+			'previews' => ['1280' => 'https://example.com/media.webp'],
+		] );
+		$data = (object) ['file' => (object) ['id' => 'media']];
+		$files = collect( ['media' => $file] );
+
+		foreach( ['audio', 'video'] as $type )
+		{
+			$html = view( 'cms::' . $type, compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertStringContainsString( '<' . $type . ' preload="none"', $html );
+		}
+	}
+
+
 	public function testRegister()
 	{
 		$theme = Schema::get( 'cms' );

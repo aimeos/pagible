@@ -7,7 +7,7 @@
 @endPushOnce
 
 @if($file = cms($files, $data->file?->id ?? null))
-	<video preload="metadata" controls playsinline
+	<video preload="none" controls playsinline
 		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
 		src="{{ cmsasset($page, $file) }}"
 		@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
