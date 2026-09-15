@@ -37,9 +37,11 @@ trait Broadcasts
      *
      * @param string $action Past-tense action: added, saved, published, restored, dropped, moved, purged
      * @param Authenticatable|string|null $editor Authenticated user or editor name
+     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
      * @throws \InvalidArgumentException If $action has no matching event class
      */
-    public function announce( string $action, Authenticatable|string|null $editor = null ) : void
+    public function announce( string $action, Authenticatable|string|null $editor = null,
+        array $projection = [] ) : void
     {
         $class = 'Aimeos\\Cms\\Events\\' . ucfirst( $action );
 
@@ -47,20 +49,30 @@ trait Broadcasts
             throw new \InvalidArgumentException( "Unknown broadcast action: {$action}" );
         }
 
-        $broadcast = (bool) config( 'cms.broadcast' );
-
         // In-process listeners (audit logging) subscribe to the per-action events;
         // only do work when broadcasting is on or something listens. This
         // also avoids the per-item latest lazy load (e.g. on purge) when nothing is enabled.
-        if( !$broadcast && !Events::hasListeners( $class ) ) {
+        if( !static::announces( $class ) ) {
             return;
+        }
+
+        $broadcast = (bool) config( 'cms.broadcast' );
+
+        if( $this->relationLoaded( 'latest' ) ) {
+            $loaded = $this->getRelation( 'latest' );
+
+            if( !$loaded instanceof Version || (string) $loaded->id !== (string) $this->latest_id ) {
+                $this->unsetRelation( 'latest' );
+            }
         }
 
         if( !( $version = $this->latest ) ) {
             return;
         }
 
-        static::send( new $class( ...$this->eventFields( $version, $editor, $action ) ), $broadcast );
+        static::send( new $class(
+            ...$this->eventFields( $version, $editor, $action, $projection )
+        ), $broadcast );
     }
 
 
@@ -75,19 +87,20 @@ trait Broadcasts
      * @param array<string, mixed> $data Shared fields applied to every saved item
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Audit action name
+     * @param array<string, string> $projected Item id => actually projected version id
      */
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
-        Authenticatable|string|null $editor = null, string $action = 'bulk' ) : void
+        Authenticatable|string|null $editor = null, string $action = 'bulk', array $projected = [] ) : void
     {
         if( empty( $ids ) ) {
             return;
         }
 
-        $broadcast = (bool) config( 'cms.broadcast' );
-
-        if( !$broadcast && !Events::hasListeners( Bulk::class ) ) {
+        if( !static::announces( Bulk::class ) ) {
             return;
         }
+
+        $broadcast = (bool) config( 'cms.broadcast' );
 
         static::send( new Bulk(
             contentType: $type,
@@ -98,6 +111,7 @@ trait Broadcasts
             tenant: Tenancy::value(),
             source: Utils::source(),
             action: $action,
+            projected: $projected,
         ), $broadcast );
     }
 
@@ -111,16 +125,18 @@ trait Broadcasts
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields
      * @param bool $bulk TRUE to use the bulk event for a single item too
+     * @param array<string, array{version_id: string, path?: string, domain?: string}> $projected Published projections by item id
      */
     public static function announceMany( Collection $items, string $action, string $editor,
-        array $data = [], bool $bulk = false ) : void
+        array $data = [], bool $bulk = false, array $projected = [] ) : void
     {
         if( !( $first = $items->first() ) ) {
             return;
         }
 
         if( $items->count() === 1 && !$bulk ) {
-            $first->announce( $action, $editor );
+            $id = $first->id;
+            $first->announce( $action, $editor, is_string( $id ) ? ( $projected[$id] ?? [] ) : [] );
             return;
         }
 
@@ -129,6 +145,10 @@ trait Broadcasts
             $ids = array_values( $chunk->pluck( 'id' )->all() );
             /** @var array<string, string> $latest */
             $latest = $chunk->pluck( 'latest_id', 'id' )->all();
+            $versions = array_map(
+                fn( array $projection ) => $projection['version_id'],
+                array_intersect_key( $projected, array_flip( $ids ) ),
+            );
 
             static::announceBulk(
                 strtolower( class_basename( $first ) ),
@@ -137,8 +157,20 @@ trait Broadcasts
                 $data,
                 $editor,
                 $action,
+                $versions,
             );
         }
+    }
+
+
+    /**
+     * Returns whether an event needs to be built for broadcasting or an in-process listener.
+     *
+     * @param class-string<Event|Bulk> $event
+     */
+    public static function announces( string $event ) : bool
+    {
+        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $event );
     }
 
 
@@ -174,10 +206,11 @@ trait Broadcasts
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Past-tense action
-     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string}
+     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
+     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string}}
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor,
-        string $action ) : array
+        string $action, array $projection = [] ) : array
     {
         $id = $this->id;
         $latestId = $version->id;
@@ -198,6 +231,7 @@ trait Broadcasts
             'updated_at' => $version->created_at ? (string) $version->created_at : null,
             'tenant' => Tenancy::value(),
             'source' => Utils::source(),
+            'projection' => $projection,
         ];
     }
 

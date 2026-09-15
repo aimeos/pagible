@@ -7,6 +7,8 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
@@ -17,6 +19,7 @@ use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
 use Aimeos\Cms\Jobs\IndexModels;
@@ -78,12 +81,23 @@ class CoreCommandTest extends CoreTestAbstract
             $element->forceFill( ['latest_id' => $future->id] )->saveQuietly();
         } );
 
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Published::class, Bulk::class] );
+
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
 
         $this->assertSame( 51, Version::whereIn( 'id', $versions )->where( 'published', true )->count() );
         $this->assertFalse( (bool) $future->fresh()->published );
         $this->assertSame( $future->id, $element->fresh()->latest_id );
         $this->assertSame( 'After 51', $element->fresh()->name );
+        Event::assertNotDispatched( Published::class, fn( Published $event ) =>
+            $event->id === $element->id
+        );
+        Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
+            $event->contentType === 'element'
+            && ( $event->latest[$element->id] ?? null ) === $future->id
+            && ( $event->projected[$element->id] ?? null ) === $versions[50]
+        );
     }
 
 

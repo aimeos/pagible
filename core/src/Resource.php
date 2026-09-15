@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -241,7 +242,7 @@ class Resource
     {
         $editor = Utils::editor( $user );
 
-        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor ) {
+        $page = Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor ) {
 
             /** @var Page $page */
             $page = Page::withTrashed()->findOrFail( $id );
@@ -251,10 +252,11 @@ class Resource
 
             Page::withoutSyncingToSearch( fn() => $page->save() );
 
-            $page->announce( 'moved', $editor );
-
             return $page;
         } );
+
+        $page->announce( 'moved', $editor );
+        return $page;
     }
 
 
@@ -702,7 +704,7 @@ class Resource
             sort( $ids, SORT_STRING );
         }
 
-        $apply = function( array $ids ) use ( $action, $editor, $fields, $isPage, $model, &$pages ) {
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
             if( $isPage ) {
@@ -749,6 +751,12 @@ class Resource
             if( $action === 'purged' )
             {
                 if( $model === File::class ) {
+                    if( $announce && Base::announces( Purged::class ) ) {
+                        $items->load( ['latest' => fn( $query ) => $query->select(
+                            'id', 'published', 'publish_at', 'created_at',
+                        )] );
+                    }
+
                     File::purgeMany( Tenancy::value(), $items );
                 }
 

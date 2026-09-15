@@ -1716,6 +1716,7 @@ class ResourceTest extends CoreTestAbstract
                     return true;
                 }
             };
+            $version->id = Utils::uid();
             $model->id = $id;
             $publication->apply( $model, $version );
         }

@@ -52,6 +52,9 @@
     <testsuite name="Backup">
       <directory>./backup/tests/</directory>
     </testsuite>
+    <testsuite name="Webhooks">
+      <directory>./webhooks/tests/</directory>
+    </testsuite>
     <testsuite name="Benchmark">
       <file>./tests/BenchmarkTest.php</file>
     </testsuite>
@@ -75,6 +78,7 @@
       <directory suffix=".php">./search/src/</directory>
       <directory suffix=".php">./backup/src/</directory>
       <directory suffix=".php">./cashier/src/</directory>
+      <directory suffix=".php">./webhooks/src/</directory>
       <directory suffix=".php">./theme/src/</directory>
       <directory suffix=".php">./themes/estate/src/</directory>
     </include>

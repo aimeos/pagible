@@ -51,7 +51,7 @@ export default {
         <v-list-item v-if="user.can(panel.permission)" rounded="lg">
           <router-link :to="'/' + key" class="router-link" @click="toggle()">
             <span v-if="panel.icon" class="icon" v-safe-svg="panel.icon"></span>
-            {{ panel.label }}
+            {{ $gettext(panel.label) }}
           </router-link>
         </v-list-item>
       </template>

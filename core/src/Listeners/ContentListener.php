@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Event;
+use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Watch;
 
 
@@ -22,13 +23,15 @@ class ContentListener
 {
     public function handle( Event $event ) : void
     {
+        $projected = $event instanceof Published && $event->projection !== [];
+
         Watch::emit( 'cms.' . $event->contentType, [
             'type' => $event->contentType,
             'source' => $event->source,
             'action' => strtolower( class_basename( $event ) ),
             'ids' => [$event->id],
             'editor' => $event->editor,
-            'published' => $event->published,
+            'published' => $projected || $event->published,
             'tenant_id' => $event->tenant,
         ] + $this->extra( $event ) );
     }
@@ -45,9 +48,13 @@ class ContentListener
             return [];
         }
 
+        $data = $event instanceof Published && $event->projection !== []
+            ? $event->projection
+            : $event->data;
+
         return [
-            'path' => $event->data['path'] ?? null,
-            'domain' => $event->data['domain'] ?? null,
+            'path' => $data['path'] ?? null,
+            'domain' => $data['domain'] ?? null,
         ];
     }
 

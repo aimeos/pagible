@@ -1,0 +1,61 @@
+"A tenant-scoped outbound webhook subscription"
+type CmsWebhook {
+  id: ID!
+  status: Boolean!
+  failures: Int!
+  endpoint: String!
+  events: [String!]!
+  last_error: JSON
+  last_success_at: DateTime
+  editor: String!
+  created_at: DateTime
+  updated_at: DateTime
+}
+
+"A newly generated secret; it is returned by this mutation response only"
+type CmsWebhookProvisioning {
+  webhook: CmsWebhook!
+  secret: String!
+}
+
+input CmsWebhookAddInput {
+  url: String! @rules(apply: ["max:500"])
+  events: [String!]! @rulesForArray(apply: ["min:1", "max:13"])
+}
+
+input CmsWebhookSaveInput {
+  events: [String!]! @rulesForArray(apply: ["min:1", "max:13"])
+  status: Boolean!
+}
+
+extend type Query {
+  cmsWebhooks: [CmsWebhook!]!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@search")
+
+  cmsWebhookEvents: [String!]!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@names")
+}
+
+extend type Mutation {
+  addWebhook(input: CmsWebhookAddInput!): CmsWebhookProvisioning!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@add")
+
+  saveWebhook(id: ID!, input: CmsWebhookSaveInput!): CmsWebhook!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@save")
+
+  replaceWebhook(id: ID!, url: String! @rules(apply: ["max:500"])): CmsWebhookProvisioning!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@replace")
+
+  rotateWebhook(id: ID!): CmsWebhookProvisioning!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@rotate")
+
+  dropWebhook(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"])): Int!
+    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@drop")
+}

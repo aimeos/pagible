@@ -10,6 +10,7 @@ import apollo, { apolloClient } from './graphql'
 import i18n from './i18n'
 import logger from './log'
 import router, { addPluginRoutes } from './routes'
+import { useMessageStore } from './stores'
 import vuetify from './vuetify'
 import App from './App.vue'
 
@@ -54,9 +55,9 @@ app
   .use(vuetify)
   .use(apollo)
 
-// Expose the Apollo client to plugin sub-panels via inject('apollo'); the default
-// export above is the Vue Apollo plugin, not the client itself.
+// Expose host services to plugin panels and sub-panels.
 app.provide('apollo', apolloClient)
+app.provide('messages', useMessageStore(pinia))
 
 // Pinia is active now, so usePluginStore() is safe; register a route per plugin panel.
 addPluginRoutes()
