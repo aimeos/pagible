@@ -5,6 +5,14 @@ includes:
 parameters:
 	level: 8
 	treatPhpDocTypesAsCertain: false
+	ignoreErrors:
+		# Scope is generic in Laravel 13 but not in Laravel 11/12.
+		-
+			identifier: generics.notGeneric
+			paths:
+				- core/src/Scopes/Status.php
+				- core/src/Scopes/Tenancy.php
+			reportUnmatched: false
 	paths:
 		- src
 		- core/src
