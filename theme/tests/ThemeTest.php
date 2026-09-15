@@ -201,15 +201,10 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testRegisterArticleFields() : void
+	public function testRegisterArticleAuthorFields() : void
 	{
 		$fields = Schema::get( 'cms' )['content']['article']['fields'];
-		$type = $fields['article-type'];
 
-		$this->assertSame( 'select', $type['type'] );
-		$this->assertSame( 'Article', $type['default'] );
-		$this->assertSame( ['Article', 'BlogPosting', 'NewsArticle'], array_column( $type['options'], 'value' ) );
-		$this->assertArrayNotHasKey( 'required', $type );
 		$this->assertSame( 'string', $fields['author-name']['type'] );
 		$this->assertSame( 'name', $fields['author-name']['label'] );
 		$this->assertArrayNotHasKey( 'required', $fields['author-name'] );

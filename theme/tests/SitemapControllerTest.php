@@ -69,7 +69,15 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testNews()
     {
-        config( ['app.name' => 'CMS & News', 'app.locale' => 'de_DE'] );
+        config( ['app.name' => 'Application name', 'app.locale' => 'de_DE'] );
+
+        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+            'website' => [
+                'type' => 'website',
+                'data' => ['title' => 'CMS & News'],
+                'files' => [],
+            ],
+        ]] )->saveQuietly();
 
         Page::where( 'tag', 'article' )->firstOrFail()->forceFill( [
             'created_at' => now()->subHour(),

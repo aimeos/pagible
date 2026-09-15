@@ -53,9 +53,9 @@ class SitemapController extends Controller
      *
      * @return StreamedResponse News `<urlset>` XML response
      */
-    public function news() : StreamedResponse
+    public function news( string $domain = '' ) : StreamedResponse
     {
-        $name = $this->xml( config( 'app.name', 'Pagible' ) );
+        $name = $this->xml( $this->name( $domain ) );
         $template = $this->template();
         $tz = new \DateTimeZone( config('app.timezone') ?: 'UTC' );
 
@@ -127,6 +127,34 @@ class SitemapController extends Controller
         }
 
         return $this->urlset( $offset, static::URLS_PER_SITEMAP );
+    }
+
+
+    /**
+     * Returns the published website title from the root page configuration.
+     */
+    protected function name( string $domain ) : string
+    {
+        $query = Nav::query()
+            ->select( 'config' )
+            ->whereNull( 'parent_id' )
+            ->whereIn( 'status', [1, 2] )
+            ->defaultOrder();
+
+        if( $domain !== '' ) {
+            $query->where( 'domain', $domain );
+        }
+
+        foreach( $query->cursor() as $page )
+        {
+            $name = trim( (string) ( $page->config->website->data->title ?? '' ) );
+
+            if( $name !== '' ) {
+                return $name;
+            }
+        }
+
+        return '';
     }
 
 
