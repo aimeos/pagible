@@ -197,6 +197,37 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testSocialMediaUsesImageNameWhenLocalizedDescriptionIsMissing() : void
+	{
+		$page = ( new Page() )->forceFill( [
+			'domain' => '',
+			'id' => 'page',
+			'lang' => 'en',
+			'name' => 'Website',
+			'path' => 'article',
+		] );
+		$page->setRelation( 'ancestors', collect() );
+		$file = (object) [
+			'description' => (object) [],
+			'id' => 'image',
+			'name' => 'article.jpg',
+			'path' => 'https://example.com/article.jpg',
+			'previews' => [],
+		];
+		$data = (object) [
+			'description' => 'Article description',
+			'file' => (object) ['id' => 'image'],
+			'title' => 'Article',
+		];
+		$files = collect( ['image' => $file] );
+
+		$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertStringContainsString( '<meta name="twitter:image:alt" content="article.jpg" />', $html );
+		$this->assertStringContainsString( '<meta property="og:image:alt" content="article.jpg" />', $html );
+	}
+
+
 	public function testRegisterPricingIdentities()
 	{
 		$fields = Schema::get( 'cms' )['content']['pricing']['fields'];

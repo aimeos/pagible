@@ -11,5 +11,11 @@
     <meta name="twitter:image" content="{{ cmsasset($page, $file, $preview) }}" />
     <meta property="og:image" content="{{ cmsasset($page, $file, $preview) }}" />
     <meta property="og:image:url" content="{{ cmsasset($page, $file, $preview) }}" />
-    <meta property="og:image:width" content="{{ current(array_reverse(array_keys((array) cms($file, 'previews', []))) ?: cms($file, 'path')) }}" />
+    @if($width = current(array_reverse(array_keys((array) cms($file, 'previews', [])))))
+        <meta property="og:image:width" content="{{ $width }}" />
+    @endif
+    @if($imageAlt = cms($file, 'description.'.cms($page, 'lang')) ?: cms($file, 'name'))
+        <meta name="twitter:image:alt" content="{{ $imageAlt }}" />
+        <meta property="og:image:alt" content="{{ $imageAlt }}" />
+    @endif
 @endif
