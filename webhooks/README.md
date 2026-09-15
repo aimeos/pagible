@@ -10,7 +10,7 @@ php artisan cms:install:webhooks
 php artisan migrate
 ```
 
-Configure a real asynchronous queue connection and run a dedicated worker for the `cms-webhooks` queue. The package refuses to start delivery with the `sync` or `null` queue drivers.
+For production, configure an asynchronous queue connection and run a dedicated worker for the `cms-webhooks` queue. The `sync` driver is supported for immediate delivery without a worker; the package refuses to start delivery with the `null` queue driver.
 
 ```dotenv
 CMS_WEBHOOKS_ENABLED=true

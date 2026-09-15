@@ -86,8 +86,8 @@ class WebhookServiceProvider extends Provider
         $connection = config( 'cms.webhooks.queue.connection' ) ?: config( 'queue.default' );
         $driver = is_string( $connection ) ? config( "queue.connections.{$connection}.driver" ) : null;
 
-        if( !is_string( $connection ) || !is_string( $driver ) || in_array( $driver, ['null', 'sync'], true ) ) {
-            throw new \LogicException( 'CMS webhooks require an asynchronous queue connection.' );
+        if( !is_string( $connection ) || !is_string( $driver ) || $driver === 'null' ) {
+            throw new \LogicException( 'CMS webhooks require a delivery queue connection.' );
         }
     }
 }

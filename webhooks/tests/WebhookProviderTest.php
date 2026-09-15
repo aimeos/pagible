@@ -25,9 +25,12 @@ class WebhookProviderTest extends WebhookTestAbstract
     }
 
 
-    public function testRejectsSynchronousDeliveryQueue() : void
+    public function testRejectsNullDeliveryQueue() : void
     {
-        config( ['queue.default' => 'sync'] );
+        config( [
+            'queue.default' => 'null',
+            'queue.connections.null' => ['driver' => 'null'],
+        ] );
         $provider = new class( app() ) extends WebhookServiceProvider {
             public function verifyQueue() : void
             {
@@ -36,6 +39,7 @@ class WebhookProviderTest extends WebhookTestAbstract
         };
 
         $this->expectException( \LogicException::class );
+        $this->expectExceptionMessage( 'CMS webhooks require a delivery queue connection.' );
         $provider->verifyQueue();
     }
 
@@ -52,6 +56,21 @@ class WebhookProviderTest extends WebhookTestAbstract
 
         $this->expectException( \LogicException::class );
         $this->expectExceptionMessage( 'CMS webhooks require Laravel queue encryption support.' );
+        $provider->verifyQueue();
+    }
+
+
+    public function testSupportsSynchronousDeliveryQueue() : void
+    {
+        config( ['queue.default' => 'sync'] );
+        $provider = new class( app() ) extends WebhookServiceProvider {
+            public function verifyQueue() : void
+            {
+                $this->validateQueue();
+            }
+        };
+
+        $this->expectNotToPerformAssertions();
         $provider->verifyQueue();
     }
 }
