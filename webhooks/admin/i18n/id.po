@@ -1,0 +1,249 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhook"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "Semua"
+
+#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Aktif"
+
+#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Tidak aktif"
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Kesalahan saat mengambil webhook"
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Kesalahan saat menyimpan webhook"
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr "Kesalahan saat mengganti tujuan webhook"
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Kesalahan saat mengganti rahasia webhook"
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr "Hapus webhook ini?"
+
+#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr "Hapus"
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr "Kesalahan saat menghapus webhook"
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "Rahasia disalin"
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "Rahasia tidak dapat disalin"
+
+#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr "Tidak ada"
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "Akses ditolak"
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr "Nilai memiliki format yang tidak valid"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Bukan URL yang valid"
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Pengiriman gagal"
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Kirim notifikasi bertanda tangan saat konten yang diterbitkan berubah."
+
+#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Aktifkan/nonaktifkan pilihan"
+
+#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Tambah webhook"
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Cari"
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Status"
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Segarkan"
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Sunting"
+
+#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr "Ganti"
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Ganti rahasia"
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "Keberhasilan terakhir"
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr "Kegagalan"
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "Kesalahan terakhir"
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Memuat"
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Tidak ada entri yang ditemukan"
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Belum ada webhook yang dikonfigurasi."
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "Edit webhook"
+
+#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL titik akhir HTTPS"
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Peristiwa"
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Webhook baru tidak aktif hingga Anda menyimpannya sebagai aktif."
+
+#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Batal"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Simpan"
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Ganti tujuan webhook"
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Mengganti tujuan akan mengganti rahasia dan menonaktifkan webhook."
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Rahasia webhook"
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Salin rahasia ini sekarang. Rahasia ini tidak akan ditampilkan lagi."
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Selesai"
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Salin rahasia"
+
+#~ msgctxt "webhooks"
+#~ msgid "Actions"
+#~ msgstr "Tindakan"
+
+#~ msgctxt "webhooks"
+#~ msgid "Close"
+#~ msgstr "Tutup"

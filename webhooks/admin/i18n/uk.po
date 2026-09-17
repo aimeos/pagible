@@ -1,0 +1,250 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Вебхуки"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "Усе."
+
+#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Активний"
+
+#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Неактивний"
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Помилка під час отримання вебхуків"
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Помилка під час збереження вебхука"
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr "Помилка під час заміни адреси призначення вебхука"
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Помилка під час оновлення секрету вебхука"
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr "Видалити цей вебхук?"
+
+#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr "Видалити"
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr "Помилка під час видалення вебхука"
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "Секрет скопійовано"
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "Не вдалося скопіювати секрет"
+
+#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr "Ні."
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "У доступі відмовлено"
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr "Значення має недійсний формат"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Невірна URL-адреса"
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Помилка доставки"
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Надсилати підписані сповіщення, коли опублікований вміст змінюється."
+
+#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Увімкнути/вимкнути вибір"
+
+#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Додати вебхук"
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Шукайте"
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Статус"
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Оновити"
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Редагувати"
+
+#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr "Замінити"
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Оновити"
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "Останній успіх"
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr "Збої"
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "Остання помилка"
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Завантаження"
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Не знайдено жодного запису"
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Вебхуки не налаштовані."
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "Редагувати вебхук"
+
+#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL кінцевої точки HTTPS"
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Події"
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Нові вебхуки неактивні, доки ви не збережете їх як активні."
+
+#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Замінити адресу призначення вебхука"
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Заміна адреси призначення оновлює секрет і вимикає вебхук."
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Секрет вебхука"
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Скопіюйте цей секрет зараз. Він більше не відображатиметься."
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Готово"
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Копіювати секрет"
+
+#~ msgctxt "webhooks"
+#~ msgid "Actions"
+#~ msgstr "Дії"
+
+#~ msgctxt "webhooks"
+#~ msgid "Close"
+#~ msgstr "Закрити"

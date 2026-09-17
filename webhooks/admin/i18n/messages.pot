@@ -1,0 +1,241 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr ""
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr ""
+
+#: src/views/WebhookList.vue:144
+#: src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609
+#: src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr ""
+
+#: src/views/WebhookList.vue:145
+#: src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr ""
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr ""
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr ""
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr ""
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr ""
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr ""
+
+#: src/views/WebhookList.vue:276
+#: src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr ""
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr ""
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr ""
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr ""
+
+#: src/views/WebhookList.vue:312
+#: src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr ""
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr ""
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr ""
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr ""
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr ""
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr ""
+
+#: src/views/WebhookList.vue:394
+#: src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr ""
+
+#: src/views/WebhookList.vue:421
+#: src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr ""
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr ""
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr ""
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr ""
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr ""
+
+#: src/views/WebhookList.vue:500
+#: src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr ""
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr ""
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr ""
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr ""
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr ""
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr ""
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr ""
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr ""
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr ""
+
+#: src/views/WebhookList.vue:622
+#: src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr ""
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr ""
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr ""
+
+#: src/views/WebhookList.vue:646
+#: src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr ""
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr ""
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr ""
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr ""
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr ""
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr ""
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr ""
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr ""

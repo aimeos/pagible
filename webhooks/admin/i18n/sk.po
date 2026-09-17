@@ -1,0 +1,249 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhooky"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "Všetky"
+
+#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Aktívny"
+
+#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Neaktívny"
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Chyba pri načítaní webhookov"
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Chyba pri ukladaní webhooku"
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr "Chyba pri nahrádzaní cieľa webhooku"
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Chyba pri zmene tajného kľúča webhooku"
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr "Odstrániť tento webhook?"
+
+#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr "Odstrániť"
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr "Chyba pri odstraňovaní webhooku"
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "Tajný kľúč skopírovaný"
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "Tajný kľúč sa nepodarilo skopírovať"
+
+#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr "Žiadne"
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "Prístup zamietnutý"
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr "Hodnota má neplatný formát"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Neplatná adresa URL"
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Doručenie zlyhalo"
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Odosielať podpísané oznámenia pri zmene publikovaného obsahu."
+
+#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Prepnúť výber"
+
+#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Pridať webhook"
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Vyhľadávanie"
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Stav"
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Obnoviť"
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Upraviť"
+
+#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr "Nahradiť"
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Zmeniť kľúč"
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "Posledný úspech"
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr "Zlyhania"
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "Posledná chyba"
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Načítanie"
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Nenašli sa žiadne záznamy"
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Nie sú nakonfigurované žiadne webhooky."
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "Upraviť webhook"
+
+#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL koncového bodu HTTPS"
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Udalosti"
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Nové webhooky sú neaktívne, kým ich neuložíte ako aktívne."
+
+#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Zrušiť"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Uložiť"
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Nahradiť cieľ webhooku"
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Nahradením cieľa sa zmení tajný kľúč a webhook sa deaktivuje."
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Tajný kľúč webhooku"
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Skopírujte tento tajný kľúč teraz. Už sa znova nezobrazí."
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Hotovo"
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Kopírovať tajný kľúč"
+
+#~ msgctxt "webhooks"
+#~ msgid "Actions"
+#~ msgstr "Činnosti"
+
+#~ msgctxt "webhooks"
+#~ msgid "Close"
+#~ msgstr "Zatvoriť"

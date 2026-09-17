@@ -1,0 +1,249 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "웹후크"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "모두"
+
+#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr "활성"
+
+#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "비활성"
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "웹후크를 가져오는 중 오류가 발생했습니다"
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "웹후크를 저장하는 중 오류가 발생했습니다"
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr "웹후크 대상을 교체하는 중 오류가 발생했습니다"
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "웹후크 비밀 키를 갱신하는 중 오류가 발생했습니다"
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr "이 웹후크를 삭제하시겠습니까?"
+
+#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr "삭제"
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr "웹후크를 삭제하는 중 오류가 발생했습니다"
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "비밀 키를 복사했습니다"
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "비밀 키를 복사할 수 없습니다"
+
+#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr "없음"
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "액세스 거부됨"
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr "값의 형식이 잘못되었습니다."
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "유효한 URL이 아닙니다."
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "전송에 실패했습니다"
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "게시된 콘텐츠가 변경되면 서명된 알림을 보냅니다."
+
+#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "선택 상태 전환"
+
+#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "웹후크 추가"
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "검색"
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr "상태"
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "새로고침"
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "편집"
+
+#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr "교체"
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "갱신"
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "마지막 성공"
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr "실패 횟수"
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "최근 오류"
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "로드 중"
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "항목을 찾을 수 없습니다."
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "설정된 웹후크가 없습니다."
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "웹후크 편집"
+
+#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS 엔드포인트 URL"
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr "이벤트"
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr "새 웹후크는 활성 상태로 저장할 때까지 비활성 상태입니다."
+
+#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "취소"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr "저장"
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "웹후크 대상 교체"
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "대상을 교체하면 비밀 키가 갱신되고 웹후크가 비활성화됩니다."
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "웹후크 비밀 키"
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "이 비밀 키를 지금 복사하세요. 다시 표시되지 않습니다."
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr "완료"
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "비밀 키 복사"
+
+#~ msgctxt "webhooks"
+#~ msgid "Actions"
+#~ msgstr "작업"
+
+#~ msgctxt "webhooks"
+#~ msgid "Close"
+#~ msgstr "닫기"

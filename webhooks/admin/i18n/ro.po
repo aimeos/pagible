@@ -1,0 +1,250 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhook-uri"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "Toate"
+
+#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Activ"
+
+#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Inactiv"
+
+#: src/views/WebhookList.vue:185
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Eroare la preluarea webhookurilor"
+
+#: src/views/WebhookList.vue:239
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Eroare la salvarea webhookului"
+
+#: src/views/WebhookList.vue:255
+msgctxt "webhooks"
+msgid "Error replacing webhook destination"
+msgstr "Eroare la înlocuirea destinației webhookului"
+
+#: src/views/WebhookList.vue:268
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Eroare la reînnoirea secretului webhookului"
+
+#: src/views/WebhookList.vue:275
+msgctxt "webhooks"
+msgid "Delete this webhook?"
+msgstr "Ștergeți acest webhook?"
+
+#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
+#: src/views/WebhookList.vue:518
+msgctxt "webhooks"
+msgid "Delete"
+msgstr "Șterge"
+
+#: src/views/WebhookList.vue:292
+msgctxt "webhooks"
+msgid "Error deleting webhook"
+msgstr "Eroare la ștergerea webhookului"
+
+#: src/views/WebhookList.vue:300
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "Secret copiat"
+
+#: src/views/WebhookList.vue:305
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "Secretul nu a putut fi copiat"
+
+#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+msgctxt "webhooks"
+msgid "None"
+msgstr "Niciuna"
+
+#: src/views/WebhookList.vue:317
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "Acces refuzat"
+
+#: src/views/WebhookList.vue:318
+msgctxt "webhooks"
+msgid "Value has invalid format"
+msgstr "Valoarea are un format nevalid"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Nu este o adresă URL validă"
+
+#: src/views/WebhookList.vue:321
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Livrare eșuată"
+
+#: src/views/WebhookList.vue:382
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Trimite notificări semnate când se modifică conținutul publicat."
+
+#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Comută selecția"
+
+#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
+#: src/views/WebhookList.vue:602
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Adaugă webhook"
+
+#: src/views/WebhookList.vue:435
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Căutare pentru"
+
+#: src/views/WebhookList.vue:443
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Statut"
+
+#: src/views/WebhookList.vue:451
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Reîmprospătați"
+
+#: src/views/WebhookList.vue:492
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Editare"
+
+#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "Replace"
+msgstr "Înlocuiește"
+
+#: src/views/WebhookList.vue:508
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Reînnoiește"
+
+#: src/views/WebhookList.vue:546
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "Ultima reușită"
+
+#: src/views/WebhookList.vue:550
+msgctxt "webhooks"
+msgid "Failures"
+msgstr "Eșecuri"
+
+#: src/views/WebhookList.vue:551
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "Ultima eroare"
+
+#: src/views/WebhookList.vue:561
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Încărcare"
+
+#: src/views/WebhookList.vue:578
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Nu s-au găsit intrări"
+
+#: src/views/WebhookList.vue:579
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Nu există webhookuri configurate."
+
+#: src/views/WebhookList.vue:601
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "Editează webhookul"
+
+#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL punct final HTTPS"
+
+#: src/views/WebhookList.vue:630
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Evenimente"
+
+#: src/views/WebhookList.vue:637
+msgctxt "webhooks"
+msgid "New webhooks are inactive until you save them as active."
+msgstr "Webhookurile noi sunt inactive până când le salvați ca active."
+
+#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Anulează"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Salvați"
+
+#: src/views/WebhookList.vue:661
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Înlocuiește destinația webhookului"
+
+#: src/views/WebhookList.vue:673
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Înlocuirea destinației reînnoiește secretul și dezactivează webhookul."
+
+#: src/views/WebhookList.vue:697
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Secret webhook"
+
+#: src/views/WebhookList.vue:704
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Copiați acest secret acum. Nu va mai fi afișat."
+
+#: src/views/WebhookList.vue:714
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Gata"
+
+#: src/views/WebhookList.vue:717
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Copiază secretul"
+
+#~ msgctxt "webhooks"
+#~ msgid "Actions"
+#~ msgstr "Acțiuni"
+
+#~ msgctxt "webhooks"
+#~ msgid "Close"
+#~ msgstr "Închidere"

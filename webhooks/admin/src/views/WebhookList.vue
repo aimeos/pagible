@@ -3,7 +3,6 @@
 <script>
 import gql from "graphql-tag";
 import {
-  mdiClose,
   mdiDelete,
   mdiDotsVertical,
   mdiKeyVariant,
@@ -93,7 +92,6 @@ export default {
   inject: ["apollo", "messages"],
 
   data: () => ({
-    actions: false,
     dialog: false,
     replaceDialog: false,
     secretDialog: false,
@@ -101,7 +99,6 @@ export default {
     saving: false,
     items: [],
     checked: new Set(),
-    menu: [],
     names: [],
     selected: null,
     term: "",
@@ -114,7 +111,6 @@ export default {
 
   setup() {
     return {
-      mdiClose,
       mdiDelete,
       mdiDotsVertical,
       mdiKeyVariant,
@@ -144,9 +140,9 @@ export default {
 
     statusItems() {
       return [
-        { title: this.$gettext("All"), value: null },
-        { title: this.$gettext("Active"), value: true },
-        { title: this.$gettext("Inactive"), value: false },
+        { title: this.$pgettext("webhooks", "All"), value: null },
+        { title: this.$pgettext("webhooks", "Active"), value: true },
+        { title: this.$pgettext("webhooks", "Inactive"), value: false },
       ];
     },
   },
@@ -169,6 +165,11 @@ export default {
       }
     },
 
+    closeSecret() {
+      this.secretDialog = false;
+      this.secret = "";
+    },
+
     async load() {
       this.loading = true;
       try {
@@ -181,7 +182,7 @@ export default {
         this.names = data.cmsWebhookEvents;
       } catch (error) {
         this.messages.add(
-          this.$gettext("Error fetching webhooks") + ":\n" + error,
+          this.$pgettext("webhooks", "Error fetching webhooks") + ":\n" + error,
           "error",
         );
       } finally {
@@ -211,95 +212,113 @@ export default {
     },
 
     async save() {
-      if (!this.events.length || (!this.selected && !this.url.trim()))
-        return;
+      if (!this.events.length || (!this.selected && !this.url.trim())) return;
 
-      await this.change(async () => {
-        if (this.selected) {
-          const { data } = await this.apollo.mutate({
-            mutation: SAVE,
-            variables: {
-              id: this.selected.id,
-              input: { events: this.events, status: this.status },
-            },
-          });
-          this.put(data.saveWebhook);
-        } else {
-          const { data } = await this.apollo.mutate({
-            mutation: ADD,
-            variables: { input: { url: this.url.trim(), events: this.events } },
-          });
-          this.provision(data.addWebhook);
-        }
-        this.dialog = false;
-      }, this.$gettext("Error saving webhook"));
+      await this.change(
+        async () => {
+          if (this.selected) {
+            const { data } = await this.apollo.mutate({
+              mutation: SAVE,
+              variables: {
+                id: this.selected.id,
+                input: { events: this.events, status: this.status },
+              },
+            });
+            this.put(data.saveWebhook);
+          } else {
+            const { data } = await this.apollo.mutate({
+              mutation: ADD,
+              variables: {
+                input: { url: this.url.trim(), events: this.events },
+              },
+            });
+            this.provision(data.addWebhook);
+          }
+          this.dialog = false;
+        },
+        this.$pgettext("webhooks", "Error saving webhook"),
+      );
     },
 
     async replace() {
       if (!this.selected || !this.url.trim()) return;
 
-      await this.change(async () => {
-        const { data } = await this.apollo.mutate({
-          mutation: REPLACE,
-          variables: { id: this.selected.id, url: this.url.trim() },
-        });
-        this.replaceDialog = false;
-        this.provision(data.replaceWebhook);
-      }, this.$gettext("Error replacing webhook destination"));
+      await this.change(
+        async () => {
+          const { data } = await this.apollo.mutate({
+            mutation: REPLACE,
+            variables: { id: this.selected.id, url: this.url.trim() },
+          });
+          this.replaceDialog = false;
+          this.provision(data.replaceWebhook);
+        },
+        this.$pgettext("webhooks", "Error replacing webhook destination"),
+      );
     },
 
     async rotate(item) {
-      await this.change(async () => {
-        const { data } = await this.apollo.mutate({
-          mutation: ROTATE,
-          variables: { id: item.id },
-        });
-        this.provision(data.rotateWebhook);
-      }, this.$gettext("Error rotating webhook secret"));
+      await this.change(
+        async () => {
+          const { data } = await this.apollo.mutate({
+            mutation: ROTATE,
+            variables: { id: item.id },
+          });
+          this.provision(data.rotateWebhook);
+        },
+        this.$pgettext("webhooks", "Error rotating webhook secret"),
+      );
     },
 
     async remove(item = null) {
       const ids = item ? [item.id] : [...this.checked];
       const question = item
-        ? this.$gettext("Delete this webhook?")
-        : `${this.$gettext("Delete")} (${ids.length})?`;
+        ? this.$pgettext("webhooks", "Delete this webhook?")
+        : `${this.$pgettext("webhooks", "Delete")} (${ids.length})?`;
 
-      if (this.saving || !ids.length || !window.confirm(question))
-        return;
+      if (this.saving || !ids.length || !window.confirm(question)) return;
 
-      await this.change(async () => {
-        await this.apollo.mutate({
-          mutation: DROP,
-          variables: { id: ids },
-        });
-        const removed = new Set(ids);
-        this.items = this.items.filter((entry) => !removed.has(entry.id));
-        this.checked = new Set(
-          [...this.checked].filter((id) => !removed.has(id)),
-        );
-      }, this.$gettext("Error deleting webhook"));
+      await this.change(
+        async () => {
+          await this.apollo.mutate({
+            mutation: DROP,
+            variables: { id: ids },
+          });
+          const removed = new Set(ids);
+          this.items = this.items.filter((entry) => !removed.has(entry.id));
+          this.checked = new Set(
+            [...this.checked].filter((id) => !removed.has(id)),
+          );
+        },
+        this.$pgettext("webhooks", "Error deleting webhook"),
+      );
     },
 
     async copySecret() {
       try {
         await navigator.clipboard.writeText(this.secret);
-        this.messages.add(this.$gettext("Secret copied"), "success");
+        this.messages.add(
+          this.$pgettext("webhooks", "Secret copied"),
+          "success",
+        );
       } catch (_error) {
-        this.messages.add(this.$gettext("Unable to copy secret"), "error");
+        this.messages.add(
+          this.$pgettext("webhooks", "Unable to copy secret"),
+          "error",
+        );
       }
     },
 
     errorText(item) {
-      if (!item.last_error) return this.$gettext("None");
+      if (!item.last_error) return this.$pgettext("webhooks", "None");
       const status = item.last_error.status
         ? ` (${item.last_error.status})`
         : "";
       const reasons = {
-        destination_not_allowed: this.$gettext("Access denied"),
-        invalid_header: this.$gettext("Value has invalid format"),
-        invalid_url: this.$gettext("Not a valid URL"),
+        destination_not_allowed: this.$pgettext("webhooks", "Access denied"),
+        invalid_header: this.$pgettext("webhooks", "Value has invalid format"),
+        invalid_url: this.$pgettext("webhooks", "Not a valid URL"),
       };
-      return `${reasons[item.last_error.reason] || this.$gettext("Delivery failed")}${status}`;
+      return `${reasons[item.last_error.reason] || this.$pgettext("webhooks", "Delivery failed")}${status}`;
     },
 
     successText(item) {
@@ -307,7 +326,7 @@ export default {
         ? new Date(item.last_success_at).toLocaleString(
             this.$vuetify.locale.current,
           )
-        : this.$gettext("None");
+        : this.$pgettext("webhooks", "None");
     },
 
     toggle() {
@@ -357,10 +376,11 @@ export default {
 
 <template>
   <v-container class="webhook-list">
-    <div class="v-sheet box scroll">
+    <v-sheet class="box scroll">
       <p class="text-medium-emphasis mb-4">
         {{
-          $gettext(
+          $pgettext(
+            "webhooks",
             "Send signed notifications when published content changes.",
           )
         }}
@@ -371,51 +391,34 @@ export default {
           <v-checkbox-btn
             :model-value="checked.size > 0"
             @click.stop="toggle"
-            :aria-label="$gettext('Toggle selection')"
+            :aria-label="$pgettext('webhooks', 'Toggle selection')"
           />
 
-          <component
-            :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-            v-model="actions"
-            :aria-label="$gettext('Actions')"
-            transition="scale-transition"
-            location="end center"
-            max-width="300"
-          >
-            <template #activator="{ props }">
+          <CmsActionMenu>
+            <template #activator="{ props, label }">
               <v-btn
                 v-bind="props"
                 :disabled="!checked.size"
-                :title="$gettext('Actions')"
+                :title="label"
                 :icon="mdiDotsVertical"
                 variant="text"
               />
             </template>
-            <v-card>
-              <v-card-title class="d-flex align-center">
-                <span>{{ $gettext("Actions") }}</span>
-                <v-spacer />
-                <v-btn
-                  :icon="mdiClose"
-                  :aria-label="$gettext('Close')"
-                  @click="actions = false"
-                />
-              </v-card-title>
-              <div class="v-list" @click="actions = false">
-                <div class="v-list-item">
-                  <v-btn
-                    :prepend-icon="mdiDelete"
-                    :disabled="saving"
-                    variant="text"
-                    @click="remove()"
-                  >{{ $gettext("Delete") }} ({{ checked.size }})</v-btn>
-                </div>
-              </div>
-            </v-card>
-          </component>
+            <v-list-item>
+              <v-btn
+                :prepend-icon="mdiDelete"
+                :disabled="saving"
+                variant="text"
+                @click="remove()"
+                >{{ $pgettext("webhooks", "Delete") }} ({{
+                  checked.size
+                }})</v-btn
+              >
+            </v-list-item>
+          </CmsActionMenu>
 
           <v-btn
-            :title="$gettext('Add webhook')"
+            :title="$pgettext('webhooks', 'Add webhook')"
             :disabled="loading"
             :icon="mdiPlus"
             class="btn-add"
@@ -429,7 +432,7 @@ export default {
           <v-text-field
             v-model="term"
             :prepend-inner-icon="mdiMagnify"
-            :label="$gettext('Search for')"
+            :label="$pgettext('webhooks', 'Search for')"
             variant="underlined"
             hide-details
             clearable
@@ -437,7 +440,7 @@ export default {
           <v-select
             v-model="statusFilter"
             :items="statusItems"
-            :label="$gettext('Status')"
+            :label="$pgettext('webhooks', 'Status')"
             variant="underlined"
             hide-details
           />
@@ -445,7 +448,7 @@ export default {
 
         <div class="layout">
           <v-btn
-            :title="$gettext('Refresh')"
+            :title="$pgettext('webhooks', 'Refresh')"
             :icon="mdiRefresh"
             :loading="loading"
             class="btn-reload"
@@ -455,81 +458,67 @@ export default {
         </div>
       </div>
 
-      <div class="v-list items" role="list">
-        <div
-          v-for="(item, idx) in filtered"
+      <v-list class="items" role="list">
+        <v-list-item
+          v-for="item in filtered"
           :key="item.id"
-          class="v-list-item border-b rounded-0 pa-1"
+          class="border-b rounded-0 pa-1"
           role="listitem"
         >
           <div class="d-flex align-center w-100">
-            <div class="d-flex flex-column flex-sm-row flex-shrink-0 align-center me-2">
+            <div
+              class="d-flex flex-column flex-sm-row flex-shrink-0 align-center me-2"
+            >
               <v-checkbox-btn
                 :model-value="checked.has(item.id)"
                 @update:model-value="toggleCheck(item)"
-                :aria-label="$gettext('Toggle selection')"
+                :aria-label="$pgettext('webhooks', 'Toggle selection')"
               />
 
-              <component
-                :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-                v-model="menu[idx]"
-                :aria-label="$gettext('Actions')"
-                transition="scale-transition"
-                location="end center"
-                max-width="300"
-              >
-                <template #activator="{ props }">
+              <CmsActionMenu>
+                <template #activator="{ props, label }">
                   <v-btn
                     v-bind="props"
-                    :title="$gettext('Actions')"
+                    :title="label"
                     :icon="mdiDotsVertical"
                     variant="text"
                   />
                 </template>
-                <v-card>
-                  <v-card-title class="d-flex align-center">
-                    <span>{{ $gettext("Actions") }}</span>
-                    <v-spacer />
-                    <v-btn
-                      :icon="mdiClose"
-                      :aria-label="$gettext('Close')"
-                      @click="menu[idx] = false"
-                    />
-                  </v-card-title>
-                  <div class="v-list" @click="menu[idx] = false">
-                    <div class="v-list-item">
-                      <v-btn
-                        :prepend-icon="mdiPencil"
-                        variant="text"
-                        @click="openEdit(item)"
-                      >{{ $gettext("Edit") }}</v-btn>
-                    </div>
-                    <div class="v-list-item">
-                      <v-btn
-                        :prepend-icon="mdiLinkVariant"
-                        variant="text"
-                        @click="openReplace(item)"
-                      >{{ $gettext("Replace") }}</v-btn>
-                    </div>
-                    <div class="v-list-item">
-                      <v-btn
-                        :prepend-icon="mdiKeyVariant"
-                        variant="text"
-                        @click="rotate(item)"
-                      >{{ $gettext("Rotate") }}</v-btn>
-                    </div>
-                    <div class="border-t" />
-                    <div class="v-list-item">
-                      <v-btn
-                        :prepend-icon="mdiDelete"
-                        :disabled="saving"
-                        variant="text"
-                        @click="remove(item)"
-                      >{{ $gettext("Delete") }}</v-btn>
-                    </div>
-                  </div>
-                </v-card>
-              </component>
+                <v-list-item>
+                  <v-btn
+                    :prepend-icon="mdiPencil"
+                    variant="text"
+                    @click="openEdit(item)"
+                    >{{ $pgettext("webhooks", "Edit") }}</v-btn
+                  >
+                </v-list-item>
+                <v-list-item>
+                  <v-btn
+                    :prepend-icon="mdiLinkVariant"
+                    variant="text"
+                    @click="openReplace(item)"
+                    >{{ $pgettext("webhooks", "Replace") }}</v-btn
+                  >
+                </v-list-item>
+                <v-list-item>
+                  <v-btn
+                    :prepend-icon="mdiKeyVariant"
+                    variant="text"
+                    @click="rotate(item)"
+                    >{{ $pgettext("webhooks", "Rotate") }}</v-btn
+                  >
+                </v-list-item>
+                <v-divider />
+                <v-list-item>
+                  <v-btn
+                    :prepend-icon="mdiDelete"
+                    :disabled="saving"
+                    variant="text"
+                    @click="remove(item)"
+                    >{{ $pgettext("webhooks", "Delete") }}</v-btn
+                  >
+                </v-list-item>
+              </CmsActionMenu>
             </div>
 
             <a href="#" class="item-content" @click.prevent="openEdit(item)">
@@ -547,49 +536,42 @@ export default {
                     size="small"
                   >
                     {{
-                      item.status ? $gettext("Active") : $gettext("Inactive")
+                      item.status
+                        ? $pgettext("webhooks", "Active")
+                        : $pgettext("webhooks", "Inactive")
                     }}
                   </v-chip>
                 </div>
                 <div class="item-subtitle">
-                  {{ $gettext("Last success") }}: {{ successText(item) }}
+                  {{ $pgettext("webhooks", "Last success") }}:
+                  {{ successText(item) }}
                 </div>
                 <div class="item-subtitle">
-                  {{ $gettext("Failures") }}: {{ item.failures }} ·
-                  {{ $gettext("Last error") }}: {{ errorText(item) }}
+                  {{ $pgettext("webhooks", "Failures") }}: {{ item.failures }} ·
+                  {{ $pgettext("webhooks", "Last error") }}:
+                  {{ errorText(item) }}
                 </div>
               </div>
             </a>
           </div>
-        </div>
-      </div>
+        </v-list-item>
+      </v-list>
 
       <p v-if="loading" class="loading">
-        {{ $gettext("Loading") }}
-        <svg
-          class="spinner"
-          width="32"
-          height="32"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle class="spin1" cx="4" cy="12" r="3" />
-          <circle class="spin1 spin2" cx="12" cy="12" r="3" />
-          <circle class="spin1 spin3" cx="20" cy="12" r="3" />
-        </svg>
+        {{ $pgettext("webhooks", "Loading") }}
+        <CmsLoadingSpinner width="32" height="32" />
       </p>
       <p v-else-if="!filtered.length" class="notfound">
         {{
           items.length
-            ? $gettext("No entries found")
-            : $gettext("No webhooks configured.")
+            ? $pgettext("webhooks", "No entries found")
+            : $pgettext("webhooks", "No webhooks configured.")
         }}
       </p>
 
       <div class="btn-group">
         <v-btn
-          :title="$gettext('Add webhook')"
+          :title="$pgettext('webhooks', 'Add webhook')"
           :disabled="loading"
           :icon="mdiPlus"
           class="btn-add"
@@ -598,126 +580,131 @@ export default {
           @click="openAdd"
         />
       </div>
-    </div>
+    </v-sheet>
   </v-container>
 
-  <v-dialog v-model="dialog" max-width="640">
-    <v-card>
-      <v-card-title class="d-flex align-center">
-        <span>{{
-          selected ? $gettext("Edit webhook") : $gettext("Add webhook")
-        }}</span>
-        <v-spacer />
-        <v-btn
-          :icon="mdiClose"
-          :aria-label="$gettext('Close')"
-          @click="dialog = false"
-        />
-      </v-card-title>
-      <v-card-text>
-        <v-text-field
-          v-if="!selected"
-          v-model="url"
-          :label="$gettext('HTTPS endpoint URL')"
-          variant="underlined"
-          maxlength="500"
-          autofocus
-        />
-        <v-select
-          v-model="events"
-          :items="names"
-          :label="$gettext('Events')"
-          variant="underlined"
-          multiple
-          chips
-        />
-        <v-switch
-          v-if="selected"
-          v-model="status"
-          color="success"
-          :label="$gettext('Active')"
-        />
-        <v-alert v-else type="info" variant="tonal">
-          {{
-            $gettext(
-              "New webhooks are inactive until you save them as active.",
-            )
-          }}
-        </v-alert>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="outlined" :loading="saving" @click="save">{{
-          $gettext("Save")
-        }}</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <CmsDialog
+    v-model="dialog"
+    :title="
+      selected
+        ? $pgettext('webhooks', 'Edit webhook')
+        : $pgettext('webhooks', 'Add webhook')
+    "
+    max-width="640"
+  >
+    <div v-if="selected" class="webhook-status d-flex align-center ga-2">
+      <v-switch
+        v-model="status"
+        :aria-label="$pgettext('webhooks', 'Active')"
+        color="success"
+        density="compact"
+        hide-details
+        class="flex-grow-0 flex-shrink-0"
+      />
+      <span class="webhook-status-label text-no-wrap">{{
+        $pgettext("webhooks", "Active")
+      }}</span>
+    </div>
+    <v-text-field
+      v-if="!selected"
+      v-model="url"
+      :label="$pgettext('webhooks', 'HTTPS endpoint URL')"
+      variant="underlined"
+      maxlength="500"
+      autofocus
+    />
+    <v-select
+      v-model="events"
+      :items="names"
+      :label="$pgettext('webhooks', 'Events')"
+      variant="underlined"
+      multiple
+      chips
+    />
+    <v-alert v-if="!selected" type="info" variant="tonal">
+      {{
+        $pgettext(
+          "webhooks",
+          "New webhooks are inactive until you save them as active.",
+        )
+      }}
+    </v-alert>
 
-  <v-dialog v-model="replaceDialog" max-width="640">
-    <v-card>
-      <v-card-title class="d-flex align-center">
-        <span>{{
-          $gettext("Replace webhook destination")
-        }}</span>
-        <v-spacer />
-        <v-btn
-          :icon="mdiClose"
-          :aria-label="$gettext('Close')"
-          @click="replaceDialog = false"
-        />
-      </v-card-title>
-      <v-card-text>
-        <v-text-field
-          v-model="url"
-          :label="$gettext('HTTPS endpoint URL')"
-          variant="underlined"
-          maxlength="500"
-          autofocus
-        />
-        <v-alert type="warning" variant="tonal">
-          {{
-            $gettext(
-              "Replacing the destination rotates the secret and disables the webhook.",
-            )
-          }}
-        </v-alert>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="outlined" :loading="saving" @click="replace">{{
-          $gettext("Replace")
-        }}</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <template #actions="{ close }">
+      <v-btn variant="text" @click="close">{{
+        $pgettext("webhooks", "Cancel")
+      }}</v-btn>
+      <v-btn
+        color="primary"
+        variant="flat"
+        :disabled="!events.length || (!selected && !url.trim())"
+        :loading="saving"
+        @click="save"
+        >{{ $pgettext("webhooks", "Save") }}</v-btn
+      >
+    </template>
+  </CmsDialog>
 
-  <v-dialog v-model="secretDialog" max-width="640" persistent>
-    <v-card>
-      <v-card-title>{{ $gettext("Webhook secret") }}</v-card-title>
-      <v-card-text>
-        <v-alert type="warning" variant="tonal" class="mb-4">
-          {{ $gettext("Copy this secret now. It will not be shown again.") }}
-        </v-alert>
-        <v-text-field
-          :model-value="secret"
-          variant="underlined"
-          readonly
-        />
-      </v-card-text>
-      <v-card-actions>
-        <v-btn variant="outlined" @click="copySecret">{{
-          $gettext("Copy secret")
-        }}</v-btn>
-        <v-spacer />
-        <v-btn
-          variant="text"
-          @click="
-            secretDialog = false;
-            secret = '';
-          "
-        >{{ $gettext("Done") }}</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <CmsDialog
+    v-model="replaceDialog"
+    :title="$pgettext('webhooks', 'Replace webhook destination')"
+    max-width="640"
+  >
+    <v-text-field
+      v-model="url"
+      :label="$pgettext('webhooks', 'HTTPS endpoint URL')"
+      variant="underlined"
+      maxlength="500"
+      autofocus
+    />
+    <v-alert type="warning" variant="tonal">
+      {{
+        $pgettext(
+          "webhooks",
+          "Replacing the destination rotates the secret and disables the webhook.",
+        )
+      }}
+    </v-alert>
+
+    <template #actions="{ close }">
+      <v-btn variant="text" @click="close">{{
+        $pgettext("webhooks", "Cancel")
+      }}</v-btn>
+      <v-btn
+        color="primary"
+        variant="flat"
+        :disabled="!url.trim()"
+        :loading="saving"
+        @click="replace"
+        >{{ $pgettext("webhooks", "Replace") }}</v-btn
+      >
+    </template>
+  </CmsDialog>
+
+  <CmsDialog
+    v-model="secretDialog"
+    :title="$pgettext('webhooks', 'Webhook secret')"
+    max-width="640"
+    persistent
+    @update:model-value="!$event && closeSecret()"
+  >
+    <v-alert type="warning" variant="tonal" class="mb-4">
+      {{
+        $pgettext(
+          "webhooks",
+          "Copy this secret now. It will not be shown again.",
+        )
+      }}
+    </v-alert>
+    <v-text-field :model-value="secret" variant="underlined" readonly />
+
+    <template #actions>
+      <v-btn variant="text" @click="closeSecret">{{
+        $pgettext("webhooks", "Done")
+      }}</v-btn>
+      <v-btn color="primary" variant="flat" @click="copySecret">{{
+        $pgettext("webhooks", "Copy secret")
+      }}</v-btn>
+    </template>
+  </CmsDialog>
 </template>

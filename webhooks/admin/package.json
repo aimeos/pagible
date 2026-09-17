@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "vue-gettext-compile && vite build",
+    "gettext:compile": "vue-gettext-compile",
+    "gettext:extract": "vue-gettext-extract",
     "lint": "eslint src vite.config.js"
   },
   "peerDependencies": {
@@ -17,6 +19,7 @@
     "eslint": "^10.0",
     "eslint-plugin-vue": "^10.8",
     "vite": "^8.0",
-    "vue": "^3.5"
+    "vue": "^3.5",
+    "vue3-gettext": "^4.0.0-beta.1"
   }
 }

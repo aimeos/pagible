@@ -124,3 +124,19 @@ Tenant offboarding can remove all subscriptions with an exact tenant ID:
 ```bash
 php artisan cms:webhooks:purge tenant-id
 ```
+
+## Admin translations
+
+The webhook panel owns its gettext sources in `admin/i18n`. Keep UI strings in the `webhooks`
+context with `$pgettext('webhooks', ...)`, then update and build them from this package:
+
+```bash
+cd admin
+npm run gettext:extract
+npm run build
+```
+
+The PO sources live in `admin/i18n`. Compilation writes the runtime JSON catalogs to
+the ignored staging directory `admin/public/i18n`, and Vite publishes them below
+`admin/dist/i18n` together with the panel bundle. Commit the PO sources and distributable catalogs,
+not the staging copies.
