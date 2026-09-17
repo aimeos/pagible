@@ -142,6 +142,26 @@ describe('HistoryDialog', () => {
     cy.get('.change-old pre').should('have.text', after).find('.highlight').should('contain', '5')
     cy.get('.change-old .whitespace').should('exist')
   })
+
+  it('shows only changed lines with context for large text diffs', () => {
+    const saved = Array.from({ length: 40 }, (_, index) => `Line ${index + 1}`)
+    const current = [...saved]
+    current[19] = 'Changed line 20'
+    mountDialog({ current: { data: { text: current.join('\n') } }, versions: [{ data: { text: saved.join('\n') } }] })
+
+    cy.get('.diff-group[aria-label="text"]').within(() => {
+      cy.get('.change-old .diff-line').should('have.length', 7).then(lines => {
+        expect([...lines].map(line => line.textContent)).to.deep.equal([
+          'Line 17', 'Line 18', 'Line 19', 'Line 20', 'Line 21', 'Line 22', 'Line 23'
+        ])
+      })
+      cy.get('.change-new .diff-line').eq(3).should('have.text', 'Changed line 20')
+        .find('.highlight').should('have.length.at.least', 1)
+      cy.get('.change-old .line-gap').should('have.length', 2).then(gaps => {
+        expect([...gaps].map(gap => gap.dataset.skipped)).to.deep.equal(['16', '17'])
+      })
+    })
+  })
   it('loads and renders the history dialog and closes it through v-model', () => {
     const load = cy.stub().returns(Promise.resolve([])).as('load')
     const onUpdate = cy.spy().as('update')

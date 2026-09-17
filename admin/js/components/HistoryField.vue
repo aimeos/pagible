@@ -1,7 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { filepairs, tableRows, words } from '../history'
+import { filepairs, lineRows, tableRows, words } from '../history'
 import { fileurl, filesrcset } from '../utils'
 import CmsDialog from './Dialog.vue'
 
@@ -34,6 +34,12 @@ export default {
       const raw = value => typeof this.field.before !== typeof this.field.after && typeof value === 'string'
         ? JSON.stringify(value) : this.raw(value)
       const before = raw(this.field.before), after = raw(this.field.after)
+      const rows = lineRows(before, after)
+      if (rows) return { rows: rows.map(row => {
+        if (row.skip) return row
+        const parts = words(row.before ?? '', row.after ?? '')
+        return { ...row, before: parts.filter(part => !part.added), after: parts.filter(part => !part.removed) }
+      }) }
       const parts = words(before, after)
       return { before: parts.filter(part => !part.added), after: parts.filter(part => !part.removed) }
     }
@@ -144,7 +150,12 @@ export default {
       <div class="diff-columns">
         <div v-for="(position, index) in ['before', 'after']" :key="position" :class="index ? 'change-new' : 'change-old'">
           <div class="side-label">{{ index ? $gettext('New value') : $gettext('Previous value') }}</div>
-          <pre><span v-for="(part, partIndex) in values[position]" :key="partIndex" :class="{ highlight: part[index ? 'added' : 'removed'], whitespace: space(part) }" :data-space="space(part)"><span>{{ part.value }}</span></span></pre>
+          <pre v-if="values.rows" class="focused-diff"><span v-for="(row, rowIndex) in values.rows" :key="rowIndex"
+            :class="row.skip ? 'line-gap' : 'diff-line'" :data-skipped="row.skip || undefined"
+          ><template v-if="row.skip">⋯</template><template v-else><span v-for="(part, partIndex) in row[position]" :key="partIndex"
+            :class="{ highlight: part[index ? 'added' : 'removed'], whitespace: space(part) }" :data-space="space(part)"
+          ><span>{{ part.value }}</span></span></template></span></pre>
+          <pre v-else><span v-for="(part, partIndex) in values[position]" :key="partIndex" :class="{ highlight: part[index ? 'added' : 'removed'], whitespace: space(part) }" :data-space="space(part)"><span>{{ part.value }}</span></span></pre>
         </div>
       </div>
     </div>
@@ -311,6 +322,16 @@ pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.6;
+}
+
+.diff-line, .line-gap {
+  display: block;
+  min-height: 1.6em;
+}
+
+.line-gap {
+  text-align: center;
+  opacity: 0.6;
 }
 
 .whitespace::before {

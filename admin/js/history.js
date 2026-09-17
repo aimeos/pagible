@@ -170,6 +170,46 @@ export function tableRows(before = [], after = [], limit = 9) {
   return result
 }
 
+export function lineRows(before, after, limit = 20, context = 3) {
+  const parts = diffArrays(before.split('\n'), after.split('\n'), { timeout: 50 })
+    || [{ value: before.split('\n'), removed: true }, { value: after.split('\n'), added: true }]
+  const rows = []
+
+  for (let i = 0; i < parts.length; i++) {
+    if (!parts[i].added && !parts[i].removed) {
+      parts[i].value.forEach(line => rows.push({ before: line, after: line }))
+      continue
+    }
+
+    const changed = []
+    while (i < parts.length && (parts[i].added || parts[i].removed)) changed.push(parts[i++])
+    i--
+    const removed = changed.filter(part => part.removed).flatMap(part => part.value)
+    const added = changed.filter(part => part.added).flatMap(part => part.value)
+    for (let index = 0; index < Math.max(removed.length, added.length); index++) {
+      rows.push({ before: removed[index], after: added[index], changed: true })
+    }
+  }
+
+  if (rows.length <= limit) return null
+
+  const visible = new Set()
+  rows.forEach((row, index) => {
+    if (!row.changed) return
+    for (let pos = Math.max(0, index - context); pos <= Math.min(rows.length - 1, index + context); pos++) visible.add(pos)
+  })
+
+  const result = []
+  let previous = -1
+  for (const index of visible) {
+    if (index > previous + 1) result.push({ skip: index - previous - 1 })
+    result.push(rows[index])
+    previous = index
+  }
+  if (previous < rows.length - 1) result.push({ skip: rows.length - previous - 1 })
+  return result
+}
+
 export function filepairs(before = [], after = []) {
   // A single media field can replace one file with another ID.
   if (before.length === 1 && after.length === 1 && before[0].id !== after[0].id) {

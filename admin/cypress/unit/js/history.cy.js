@@ -1,4 +1,4 @@
-import { blocks, filechanges, filepairs, plaintext, restore, sections, tableRows, words } from '../../../js/history'
+import { blocks, filechanges, filepairs, lineRows, plaintext, restore, sections, tableRows, words } from '../../../js/history'
 import { loadVersions } from '../../../js/version'
 
 const block = (id, text = id) => ({ id, type: 'text', group: 'main', data: { text } })
@@ -46,6 +46,21 @@ describe('History comparisons and restoration', () => {
       { before: before[6], after: before[6] },
       { skip: 5 }
     ])
+  })
+
+  it('keeps changed lines with three lines of context in large text values', () => {
+    const before = Array.from({ length: 40 }, (_, index) => `Line ${index + 1}`)
+    const after = [...before]
+    after[19] = 'Changed line 20'
+
+    expect(lineRows(before.join('\n'), after.join('\n'))).to.deep.equal([
+      { skip: 16 },
+      ...before.slice(16, 19).map(line => ({ before: line, after: line })),
+      { before: 'Line 20', after: 'Changed line 20', changed: true },
+      ...before.slice(20, 23).map(line => ({ before: line, after: line })),
+      { skip: 17 }
+    ])
+    expect(lineRows(before.slice(0, 20).join('\n'), after.slice(0, 20).join('\n'))).to.equal(null)
   })
 
   it('keeps repeated shared references and legacy blocks alongside keyed blocks', () => {
