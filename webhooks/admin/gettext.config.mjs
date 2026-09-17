@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
+
+mkdirSync(new URL("./public/i18n", import.meta.url), { recursive: true });
 
 const locales = readFileSync(new URL("./i18n/LINGUAS", import.meta.url), "utf8")
   .trim()
