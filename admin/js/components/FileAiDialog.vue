@@ -265,9 +265,7 @@ export default {
     </v-btn>
 
     <div v-if="items.length">
-      <v-tabs>
-        <v-tab>{{ $gettext('Current images') }}</v-tab>
-      </v-tabs>
+      <h3 class="section-title text-button">{{ $gettext('Current images') }}</h3>
       <v-list class="items grid">
         <v-list-item v-for="(item, idx) in items" :key="idx">
           <v-btn
@@ -292,9 +290,7 @@ export default {
     </div>
 
     <div v-if="used.length">
-      <v-tabs>
-        <v-tab>{{ $gettext('Images used') }}</v-tab>
-      </v-tabs>
+      <h3 class="section-title text-button">{{ $gettext('Images used') }}</h3>
       <v-list class="items grid">
         <v-list-item v-for="(item, idx) in used" :key="idx">
           <v-btn
@@ -311,21 +307,19 @@ export default {
       </v-list>
     </div>
 
-    <v-tabs>
-      <v-tab>{{ $gettext('Select images') }}</v-tab>
-    </v-tabs>
+    <h3 class="section-title text-button">{{ $gettext('Select images') }}</h3>
     <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" />
   </CmsDialog>
 </template>
 
 <style scoped>
-.v-tabs {
-  margin-top: 40px;
-}
-
-.v-btn.v-tab {
+.section-title {
+  align-items: center;
   background-color: rgb(var(--v-theme-background));
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 0;
+  min-height: 48px;
 }
 
 .v-btn.create {

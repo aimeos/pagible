@@ -492,17 +492,18 @@ function Z(e, h, g, _, v, y) {
 			"max-width": "640"
 		}, {
 			actions: p(({ close: t }) => [s(x, {
-				variant: "text",
+				variant: "outlined",
 				onClick: t
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Cancel")), 1)]),
 				_: 1
 			}, 8, ["onClick"]), s(x, {
 				color: "primary",
-				variant: "flat",
+				variant: "tonal",
 				disabled: !e.events.length || !e.selected && !e.url.trim(),
 				loading: e.saving,
-				onClick: y.save
+				onClick: y.save,
+				active: ""
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Save")), 1)]),
 				_: 1
@@ -561,17 +562,18 @@ function Z(e, h, g, _, v, y) {
 			"max-width": "640"
 		}, {
 			actions: p(({ close: t }) => [s(x, {
-				variant: "text",
+				variant: "outlined",
 				onClick: t
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Cancel")), 1)]),
 				_: 1
 			}, 8, ["onClick"]), s(x, {
 				color: "primary",
-				variant: "flat",
+				variant: "tonal",
 				disabled: !e.url.trim(),
 				loading: e.saving,
-				onClick: y.replace
+				onClick: y.replace,
+				active: ""
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Replace")), 1)]),
 				_: 1
@@ -604,15 +606,16 @@ function Z(e, h, g, _, v, y) {
 			persistent: ""
 		}, {
 			actions: p(() => [s(x, {
-				variant: "text",
+				variant: "outlined",
 				onClick: y.closeSecret
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Done")), 1)]),
 				_: 1
 			}, 8, ["onClick"]), s(x, {
 				color: "primary",
-				variant: "flat",
-				onClick: y.copySecret
+				variant: "tonal",
+				onClick: y.copySecret,
+				active: ""
 			}, {
 				default: p(() => [o(f(e.$pgettext("webhooks", "Copy secret")), 1)]),
 				_: 1

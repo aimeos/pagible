@@ -76,7 +76,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 20px 24px 12px;
+  padding: 24px 16px;
 }
 
 .unsaved-text {
@@ -85,6 +85,6 @@ export default {
 }
 
 .unsaved-actions {
-  padding: 8px 16px 16px;
+  padding: 16px;
 }
 </style>

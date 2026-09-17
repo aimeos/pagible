@@ -631,15 +631,16 @@ export default {
     </v-alert>
 
     <template #actions="{ close }">
-      <v-btn variant="text" @click="close">{{
+      <v-btn variant="outlined" @click="close">{{
         $pgettext("webhooks", "Cancel")
       }}</v-btn>
       <v-btn
         color="primary"
-        variant="flat"
+        variant="tonal"
         :disabled="!events.length || (!selected && !url.trim())"
         :loading="saving"
         @click="save"
+        active
         >{{ $pgettext("webhooks", "Save") }}</v-btn
       >
     </template>
@@ -667,15 +668,16 @@ export default {
     </v-alert>
 
     <template #actions="{ close }">
-      <v-btn variant="text" @click="close">{{
+      <v-btn variant="outlined" @click="close">{{
         $pgettext("webhooks", "Cancel")
       }}</v-btn>
       <v-btn
         color="primary"
-        variant="flat"
+        variant="tonal"
         :disabled="!url.trim()"
         :loading="saving"
         @click="replace"
+        active
         >{{ $pgettext("webhooks", "Replace") }}</v-btn
       >
     </template>
@@ -699,10 +701,10 @@ export default {
     <v-text-field :model-value="secret" variant="underlined" readonly />
 
     <template #actions>
-      <v-btn variant="text" @click="closeSecret">{{
+      <v-btn variant="outlined" @click="closeSecret">{{
         $pgettext("webhooks", "Done")
       }}</v-btn>
-      <v-btn color="primary" variant="flat" @click="copySecret">{{
+      <v-btn color="primary" variant="tonal" @click="copySecret" active>{{
         $pgettext("webhooks", "Copy secret")
       }}</v-btn>
     </template>

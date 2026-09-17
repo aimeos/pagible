@@ -89,9 +89,10 @@ describe('FileAiDialog', () => {
     cy.get('.file-list-stub').should('exist')
   })
 
-  it('shows "Select images" tab', () => {
+  it('shows "Select images" heading without tab semantics', () => {
     mountDialog()
-    cy.contains('Select images').should('exist')
+    cy.contains('h3', 'Select images').should('exist')
+    cy.get('[role="tablist"]').should('not.exist')
   })
 
   it('stores generated images directly on the selected disk', () => {

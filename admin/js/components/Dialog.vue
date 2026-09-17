@@ -45,11 +45,11 @@ export default {
         <v-btn :icon="mdiClose" :aria-label="closeLabel || $gettext('Close')" @click="close" />
       </v-toolbar>
 
-      <v-card-text :class="contentClass">
+      <v-card-text class="dialog-body" :class="contentClass">
         <slot />
       </v-card-text>
 
-      <v-card-actions v-if="$slots.actions">
+      <v-card-actions v-if="$slots.actions" class="dialog-actions">
         <v-spacer />
         <slot name="actions" :close="close" />
       </v-card-actions>
@@ -58,3 +58,13 @@ export default {
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.dialog-body {
+  padding: 24px 16px;
+}
+
+.dialog-actions {
+  padding: 16px;
+}
+</style>
