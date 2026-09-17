@@ -1,11 +1,17 @@
 import { createPinia, setActivePinia } from 'pinia'
 import {
+  useAppStore,
+  useChangeStore,
   useUserStore,
   useClipboardStore,
+  useDirtyStore,
   useDrawerStore,
   useMessageStore,
+  useSchemaStore,
   useSideStore,
+  useViewStack,
 } from '../../../js/stores'
+import { apolloClient } from '../../../js/graphql'
 
 describe('useUserStore', () => {
   beforeEach(() => {
@@ -49,6 +55,48 @@ describe('useUserStore', () => {
     })
   })
 
+  describe('clear()', () => {
+    it('clears all session caches', () => {
+      const clearStore = cy.stub(apolloClient, 'clearStore').resolves()
+      const user = useUserStore()
+      const app = useAppStore()
+      const clip = useClipboardStore()
+      const changes = useChangeStore()
+      const dirty = useDirtyStore()
+      const drawer = useDrawerStore()
+      const schema = useSchemaStore()
+      const side = useSideStore()
+      const views = useViewStack()
+      app.urlproxy = '/cmsproxy?token=old'
+      clip.set('page', { id: 'page-1' })
+      changes.changed = { page: [{ id: 'page-1' }] }
+      dirty.dirty = true
+      dirty.saveFn = () => {}
+      drawer.nav = true
+      schema.content = { text: {} }
+      side.store = { text: 1 }
+      views.stack = [{ component: {} }]
+      user.saveTimer = setTimeout(() => {}, 10000)
+      user.tokenTimer = setTimeout(() => {}, 10000)
+
+      return user.clear().then(() => {
+        expect(user.saveTimer).to.be.null
+        expect(user.tokenTimer).to.be.null
+        expect(app.urlproxy).to.include('url=')
+        expect(app.urlproxy).not.to.include('token=old')
+        expect(clip.$state).to.deep.equal({})
+        expect(changes.changed).to.deep.equal({})
+        expect(dirty.dirty).to.be.false
+        expect(dirty.saveFn).to.be.null
+        expect(drawer.nav).to.be.null
+        expect(schema.content).to.deep.equal({})
+        expect(side.store).to.deep.equal({})
+        expect(views.stack).to.deep.equal([])
+        expect(clearStore).to.have.been.calledOnce
+      })
+    })
+  })
+
   describe('getData()', () => {
     it('returns defval when me is null', () => {
       const user = useUserStore()
@@ -72,6 +120,29 @@ describe('useUserStore', () => {
       const user = useUserStore()
       user.me = { settings: { page: { filter: { view: 'list' } } } }
       expect(user.getData('page', 'filter')).to.deep.equal({ view: 'list' })
+    })
+  })
+
+  describe('login()', () => {
+    it('clears the previous session before loading the authenticated user', () => {
+      cy.stub(window, 'fetch').resolves({ ok: true, json: () => Promise.resolve({}) })
+      cy.stub(apolloClient, 'mutate').resolves({ data: { cmsLogin: { id: 'user-1' } } })
+
+      const user = useUserStore()
+      const session = user.session
+      const clear = cy.stub(user, 'clear').resolves()
+      const authenticated = cy.stub(user, 'isAuthenticated').callsFake(() => {
+        user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+        return Promise.resolve(true)
+      })
+
+      return user.login('editor@example.com', 'secret').then((result) => {
+        expect(user.session).to.equal(session + 1)
+        expect(clear).to.have.been.calledOnce
+        expect(authenticated).to.have.been.calledOnceWith(true)
+        expect(clear).to.have.been.calledBefore(authenticated)
+        expect(result.email).to.equal('editor@example.com')
+      })
     })
   })
 
@@ -166,6 +237,34 @@ describe('useClipboardStore', () => {
     clip.set('key', 'first')
     clip.set('key', 'second')
     expect(clip.get('key')).to.equal('second')
+  })
+})
+
+
+describe('useSchemaStore', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    useSchemaStore().clear()
+  })
+
+  it('ignores a previous session load that finishes after clearing', () => {
+    let resolve
+    cy.stub(apolloClient, 'query').returns(new Promise((done) => { resolve = done }))
+
+    const schema = useSchemaStore()
+    const pending = schema.load()
+
+    schema.clear()
+    resolve({
+      data: {
+        schemas: [{ name: 'old', types: {}, content: { text: {} }, meta: {}, config: {} }]
+      }
+    })
+
+    return pending.then(() => {
+      expect(schema.themes).to.deep.equal({})
+      expect(schema.content).to.deep.equal({})
+    })
   })
 })
 

@@ -93,6 +93,7 @@ export const useAppStore = defineStore('app', {
 export const useUserStore = defineStore('user', {
   state: () => ({
     me: null,
+    session: 0,
     urlintended: null,
     saveTimer: null,
     tokenTimer: null
@@ -110,6 +111,29 @@ export const useUserStore = defineStore('user', {
         }
       }
       return false
+    },
+
+    async clear() {
+      clearTimeout(this.saveTimer)
+      this.saveTimer = null
+
+      clearTimeout(this.tokenTimer)
+      this.tokenTimer = null
+
+      useAppStore().urlproxy = urlproxy
+      useClipboardStore().$reset()
+      useChangeStore().$reset()
+      const dirty = useDirtyStore()
+      dirty.unregister()
+      dirty.$reset()
+      useDrawerStore().$reset()
+      useSchemaStore().clear()
+      useSideStore().$reset()
+      useViewStack().$reset()
+      clearUploadLink()
+
+      await disconnect()
+      await apolloClient.clearStore()
     },
 
     intended(url) {
@@ -208,7 +232,10 @@ export const useUserStore = defineStore('user', {
           }
 
           this.me = null
-          return this.isAuthenticated(true).then(() => this.me)
+          // Invalidate kept-alive views while the login route is still active, before the next
+          // authenticated route is rendered.
+          this.session++
+          return this.clear().then(() => this.isAuthenticated(true)).then(() => this.me)
         }).catch((error) => {
           this.me = false
           throw error
@@ -217,12 +244,6 @@ export const useUserStore = defineStore('user', {
     },
 
     logout() {
-      clearTimeout(this.saveTimer)
-      this.saveTimer = null
-
-      clearTimeout(this.tokenTimer)
-      this.tokenTimer = null
-
       return apolloClient.mutate({
         mutation: LOGOUT
       }).then((response) => {
@@ -233,13 +254,7 @@ export const useUserStore = defineStore('user', {
         return response.data.cmsLogout || false
       }).finally(() => {
         this.me = null
-
-        useClipboardStore().$reset()
-        useSideStore().$reset()
-        clearUploadLink()
-        disconnect()
-
-        return apolloClient.clearStore()
+        return this.clear()
       })
     },
 
@@ -433,17 +448,28 @@ export const useMessageStore = defineStore('message', {
 /**
  * Available element schemas fetched from GraphQL
  */
+let _generation = 0
 let _loading = null
 
 export const useSchemaStore = defineStore('schema', {
   state: () => ({ themes: {}, content: {}, meta: {}, config: {} }),
   actions: {
+    clear() {
+      _generation++
+      _loading = null
+      this.$reset()
+    },
+
     load() {
       if (_loading) return _loading instanceof Promise ? _loading : Promise.resolve()
+
+      const generation = _generation
 
       _loading = apolloClient.query({
         query: FETCH_SCHEMAS
       }).then((result) => {
+        if (generation !== _generation) return
+
         const content = {}, meta = {}, config = {}
         const parse = (v) => typeof v === 'string' ? safeParse(v) : sanitize(v || {})
         const list = (result.data?.schemas || []).map(t => markRaw({
@@ -467,9 +493,9 @@ export const useSchemaStore = defineStore('schema', {
 
         _loading = true
       }).catch((err) => {
-        _loading = null
+        if (generation === _generation) _loading = null
         throw err
-      }).then(() => _loading)
+      }).then(() => generation === _generation ? _loading : null)
 
       return _loading
     }
