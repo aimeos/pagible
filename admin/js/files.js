@@ -27,7 +27,7 @@ export const FILE_FIELDS = gql`
   }
 `
 
-export const ADD_FILE = gql`
+const ADD_FILE = gql`
   ${FILE_FIELDS}
   mutation ($input: FileInput, $file: Upload, $disk: FileDisk) {
     addFile(input: $input, file: $file, disk: $disk) {
@@ -35,6 +35,22 @@ export const ADD_FILE = gql`
     }
   }
 `
+
+export async function createFile(apollo, variables) {
+  const options = { mutation: ADD_FILE, variables }
+
+  if (variables.file) {
+    options.context = { hasUpload: true }
+  }
+
+  const response = await apollo.mutate(options)
+
+  if (response.errors) {
+    throw response.errors
+  }
+
+  return normalizeFile(response.data?.addFile)
+}
 
 export const RELOCATE_FILE = gql`
   mutation ($id: [ID!]!, $disk: FileDisk!) {

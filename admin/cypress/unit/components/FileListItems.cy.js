@@ -72,7 +72,7 @@ describe('FileListItems', () => {
   it('shows title-case sort options', () => {
     mountList({}, { 'file:view': true })
     cy.get('.btn-sort button').click()
-    cy.get('.v-overlay .v-btn').then(($buttons) => {
+    cy.get('.v-overlay .v-list .v-btn').then(($buttons) => {
       expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
         'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'MIME', 'Language', 'Editor', 'Usage'
       ])
@@ -87,7 +87,7 @@ describe('FileListItems', () => {
     mountList({}, { 'file:view': true }, { query })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Latest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Latest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([
@@ -96,7 +96,7 @@ describe('FileListItems', () => {
     })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Oldest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Oldest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([
@@ -162,6 +162,7 @@ describe('FileListItems', () => {
           disk: 'private',
           file,
         })
+        expect(mutate.firstCall.args[0].context).to.deep.equal({ hasUpload: true })
       })
     })
   })

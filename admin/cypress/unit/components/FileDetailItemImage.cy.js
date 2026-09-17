@@ -118,6 +118,24 @@ describe('FileDetailItemImage', () => {
     cy.get('.toolbar .v-btn.btn-expand').should('not.exist')
   })
 
+  it('keeps mobile action menu and dialog close buttons aligned with the toolbar', () => {
+    cy.viewport(375, 667)
+    mountImage({}, { 'file:save': true, 'image:repaint': true })
+
+    const aligned = ($button) => {
+      const button = $button[0].getBoundingClientRect()
+      const toolbar = $button[0].closest('.v-toolbar__content').getBoundingClientRect()
+
+      expect(toolbar.right - button.right).to.be.lessThan(12)
+    }
+
+    cy.get('.toolbar button[title="Select area"]').click()
+    cy.get('.v-dialog .v-toolbar button[aria-label="Close"]').should(aligned).click({ force: true })
+
+    cy.get('.toolbar button[title="Edit image"]').click()
+    cy.get('.v-dialog .v-toolbar button[aria-label="Close"]').should(aligned)
+  })
+
   it('hides toolbar for SVG images', () => {
     mountImage({ item: { ...item, mime: 'image/svg+xml' } }, { 'file:save': true })
     cy.get('.toolbar').should('not.exist')

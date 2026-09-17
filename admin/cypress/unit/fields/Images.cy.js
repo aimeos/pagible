@@ -193,6 +193,33 @@ describe('Images', () => {
     cy.get('.image .v-img').should('have.length', 1)
   })
 
+  it('uses a native button for each editable image preview', () => {
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }],
+      assets: imageAssets,
+    })
+
+    cy.get('.image').should('not.have.attr', 'role')
+    cy.get('.image > button.image-preview').should('have.attr', 'aria-label', 'Edit')
+    cy.get('.image .btn-overlay').parents('button.image-preview').should('not.exist')
+  })
+
+  it('removes a failed upload placeholder and releases its preview', () => {
+    cy.stub(URL, 'createObjectURL').returns('blob:upload')
+    const revokeObjectURL = cy.stub(URL, 'revokeObjectURL')
+    const mutate = cy.stub().rejects(new Error('Upload failed'))
+
+    mountImages({}, { 'file:add': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ImagesField).vm
+      const file = new File(['image'], 'image.jpg', { type: 'image/jpeg' })
+
+      return vm.add([file]).then(() => {
+        expect(revokeObjectURL).to.have.been.calledOnceWith('blob:upload')
+        expect(vm.images).to.deep.equal([])
+      })
+    })
+  })
+
   it('hides add area in readonly mode', () => {
     mountImages({ readonly: true })
     cy.get('.add').should('not.exist')

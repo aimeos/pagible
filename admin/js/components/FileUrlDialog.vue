@@ -1,12 +1,15 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { ADD_FILE, normalizeFile } from '../files'
+import { createFile } from '../files'
 import { invalidateList } from '../graphql'
 import { useAppStore, useMessageStore } from '../stores'
-import { mdiClose, mdiCheck, mdiDelete } from '@mdi/js'
+import { mdiCheck, mdiDelete } from '@mdi/js'
+import CmsDialog from './Dialog.vue'
 
 export default {
+  components: { CmsDialog },
+
   props: {
     modelValue: { type: Boolean, required: true },
     disk: { type: String, default: 'public' },
@@ -20,7 +23,7 @@ export default {
     const messages = useMessageStore()
     const app = useAppStore()
 
-    return { app, messages, mdiClose, mdiCheck, mdiDelete }
+    return { app, messages, mdiCheck, mdiDelete }
   },
 
   data() {
@@ -35,7 +38,6 @@ export default {
 
   methods: {
     add() {
-      const promises = []
       const items = Object.values(this.items)
 
       if (!items.length) {
@@ -44,26 +46,15 @@ export default {
 
       this.loading = true
 
-      items.forEach((item) => {
-        promises.push(
-          this.$apollo
-            .mutate({
-              mutation: ADD_FILE,
-              variables: {
-                disk: this.disk,
-                input: {
-                  path: item.path,
-                  name: item.name
-                }
-              }
-            })
-            .then((response) => {
-              if (response.errors) {
-                throw response.errors
-              }
-
-              Object.assign(item, normalizeFile(response.data.addFile))
-            })
+      return Promise.all(
+        items.map((item) =>
+          createFile(this.$apollo, {
+            disk: this.disk,
+            input: {
+              path: item.path,
+              name: item.name
+            }
+          })
             .catch((error) => {
               this.messages.add(
                 this.$gettext(`Error adding file %{path}`, { path: item.path }) + ':\n' + error,
@@ -71,19 +62,21 @@ export default {
               )
               this.$log('FileUrlDialog::add(): Error adding file', item, error)
             })
-            .finally(() => {
-              this.loading = false
-            })
         )
-      })
-
-      return Promise.all(promises).then(() => {
-        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-        this.$emit('update:modelValue', false)
-        this.$emit('add', items)
-        this.input = ''
-        this.items = {}
-      })
+      )
+        .then((items) => items.filter((item) => item?.id))
+        .then((items) => {
+          if (items.length) {
+            invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+            this.$emit('update:modelValue', false)
+            this.$emit('add', items)
+            this.input = ''
+            this.items = {}
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     remove(url) {
@@ -190,110 +183,107 @@ export default {
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Add files from URLs')"
-    :modelValue="modelValue"
-    @afterLeave="cleanup(); $emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Add files from URLs')"
+    :card-loading="loading ? 'primary' : false"
+    @update:model-value="$emit('update:modelValue', $event)"
+    @after-leave="cleanup()"
     max-width="1200"
     scrollable
   >
-    <v-card :loading="loading ? 'primary' : false">
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Add files from URLs') }}</v-toolbar-title>
-        <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
-          {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
-        </v-btn>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
-      <v-card-text>
-        <v-textarea
-          v-if="multiple"
-          ref="input"
-          v-model="input"
-          @keyup.enter="update()"
-          @click:appendInner="update()"
-          @click:clear="errors = []"
-          :error-messages="errors"
-          :append-inner-icon="input ? mdiCheck : ''"
-          :placeholder="$gettext('Enter one URL per line')"
-          variant="outlined"
-          autofocus
-          auto-grow
-          clearable
-          rows="3"
-        ></v-textarea>
-        <v-text-field
-          v-else
-          ref="input"
-          v-model="input"
-          @keyup.enter="update()"
-          @click:appendInner="update()"
-          @click:clear="errors = []"
-          :error-messages="errors"
-          :append-inner-icon="input ? mdiCheck : ''"
-          :placeholder="$gettext('Enter URL')"
-          variant="outlined"
-          maxlength="255"
-          counter="255"
-          autofocus
-          clearable
-        ></v-text-field>
+    <template #toolbar-actions>
+      <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
+        {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
+      </v-btn>
+    </template>
 
-        <v-list class="items grid">
-          <v-list-item v-for="(item, url) in items" :key="url">
-            <v-btn
-              @click="remove(url)"
-              :title="$gettext('Remove')"
-              class="btn-overlay"
-              :icon="mdiDelete"
-            />
+    <v-textarea
+      v-if="multiple"
+      ref="input"
+      v-model="input"
+      @keyup.enter="update()"
+      @click:appendInner="update()"
+      @click:clear="errors = []"
+      :error-messages="errors"
+      :append-inner-icon="input ? mdiCheck : ''"
+      :placeholder="$gettext('Enter one URL per line')"
+      variant="outlined"
+      autofocus
+      auto-grow
+      clearable
+      rows="3"
+    ></v-textarea>
+    <v-text-field
+      v-else
+      ref="input"
+      v-model="input"
+      @keyup.enter="update()"
+      @click:appendInner="update()"
+      @click:clear="errors = []"
+      :error-messages="errors"
+      :append-inner-icon="input ? mdiCheck : ''"
+      :placeholder="$gettext('Enter URL')"
+      variant="outlined"
+      maxlength="255"
+      counter="255"
+      autofocus
+      clearable
+    ></v-text-field>
 
-            <div
-              class="item-preview"
-              @click="$emit('select', item)"
-              @keydown.enter="$emit('select', item)"
-              @keydown.space.prevent="$emit('select', item)"
-              role="button"
-              tabindex="0"
-            >
-              <img v-if="item.mime?.startsWith('image/')" :src="item.path" :alt="item.name" />
-              <video
-                v-else-if="item.mime?.startsWith('video/')"
-                preload="metadata"
-                controls
-                :src="item.path"
-              ></video>
-              <audio
-                v-else-if="item.mime?.startsWith('audio/')"
-                preload="metadata"
-                controls
-                :src="item.path"
-              ></audio>
-              <a v-else :href="item.path" target="_blank" rel="noopener noreferrer">{{ item.path }}</a>
-            </div>
+    <v-list class="items grid">
+      <v-list-item v-for="(item, url) in items" :key="url">
+        <v-btn
+          @click="remove(url)"
+          :title="$gettext('Remove')"
+          class="btn-overlay"
+          :icon="mdiDelete"
+        />
 
-            <div
-              class="item-content"
-              @click="$emit('select', item)"
-              @keydown.enter="$emit('select', item)"
-              @keydown.space.prevent="$emit('select', item)"
-              role="button"
-              tabindex="0"
-            >
-              <div class="item-text">
-                <span class="item-title">{{ item.name }}</span>
-                <div class="item-mime item-subtitle">{{ item.mime }}</div>
-              </div>
+        <div
+          class="item-preview"
+          @click="$emit('select', item)"
+          @keydown.enter="$emit('select', item)"
+          @keydown.space.prevent="$emit('select', item)"
+          role="button"
+          tabindex="0"
+        >
+          <img v-if="item.mime?.startsWith('image/')" :src="item.path" :alt="item.name" />
+          <video
+            v-else-if="item.mime?.startsWith('video/')"
+            preload="metadata"
+            controls
+            :src="item.path"
+          ></video>
+          <audio
+            v-else-if="item.mime?.startsWith('audio/')"
+            preload="metadata"
+            controls
+            :src="item.path"
+          ></audio>
+          <a v-else :href="item.path" target="_blank" rel="noopener noreferrer">{{ item.path }}</a>
+        </div>
 
-              <div class="item-aux">
-                <div class="item-size">Size: {{ size(item.size) }}</div>
-              </div>
-            </div>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+        <div
+          class="item-content"
+          @click="$emit('select', item)"
+          @keydown.enter="$emit('select', item)"
+          @keydown.space.prevent="$emit('select', item)"
+          role="button"
+          tabindex="0"
+        >
+          <div class="item-text">
+            <span class="item-title">{{ item.name }}</span>
+            <div class="item-mime item-subtitle">{{ item.mime }}</div>
+          </div>
+
+          <div class="item-aux">
+            <div class="item-size">Size: {{ size(item.size) }}</div>
+          </div>
+        </div>
+      </v-list-item>
+    </v-list>
+  </CmsDialog>
 </template>
 
 <style scoped>

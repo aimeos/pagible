@@ -1,11 +1,12 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import CmsDialog from './Dialog.vue'
 import FileListItems from './FileListItems.vue'
-import { mdiClose } from '@mdi/js'
 
 export default {
   components: {
+    CmsDialog,
     FileListItems
   },
 
@@ -14,33 +15,20 @@ export default {
     filter: { type: Object, default: () => ({}) },
     grid: { type: Boolean, default: false }
   },
-
-  emits: ['update:modelValue', 'add'],
-
-  setup() {
-    return { mdiClose }
-  }
+  emits: ['update:modelValue', 'add']
 }
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Media')"
-    :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Media')"
+    @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
     scrollable
   >
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Media') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
-      <v-card-text>
-        <FileListItems :filter="filter" :grid="grid" @select="$emit('add', $event)" embed />
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+    <FileListItems :filter="filter" :grid="grid" @select="$emit('add', $event)" embed />
+  </CmsDialog>
 </template>
 
 <style scoped></style>

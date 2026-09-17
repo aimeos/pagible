@@ -9,24 +9,26 @@ const audioAsset = {
   editor: 'admin',
   updated_at: '2024-01-01T00:00:00Z',
   description: { en: 'Test recording' },
-  previews: {},
+  previews: {}
 }
 
 const stubs = {
   FileDialog: { template: '<div />' },
   FileUrlDialog: { template: '<div />' },
   FileListItems: { template: '<div />' },
-  FileDetail: { template: '<div />' },
+  FileDetail: { template: '<div />' }
 }
 
 function mountAudio(props = {}, perms = {}) {
-  return cy.mount(AudioField, {
-    props: { config: {}, assets: {}, ...props },
-    global: { stubs },
-  }).then(() => {
-    const user = useUserStore()
-    user.me = { permission: perms }
-  })
+  return cy
+    .mount(AudioField, {
+      props: { config: {}, assets: {}, ...props },
+      global: { stubs }
+    })
+    .then(() => {
+      const user = useUserStore()
+      user.me = { permission: perms }
+    })
 }
 
 describe('Audio', () => {
@@ -49,16 +51,26 @@ describe('Audio', () => {
   it('renders audio element when file is loaded', () => {
     mountAudio({
       modelValue: { id: '1', type: 'file' },
-      assets: { '1': audioAsset },
+      assets: { 1: audioAsset }
     })
     cy.get('audio').should('exist')
     cy.get('audio').should('have.attr', 'controls')
   })
 
+  it('keeps media controls outside button-like containers', () => {
+    mountAudio({
+      modelValue: { id: '1', type: 'file' },
+      assets: { 1: audioAsset }
+    })
+
+    cy.get('.file').should('not.have.attr', 'role')
+    cy.get('audio').parents('button').should('not.exist')
+  })
+
   it('sets audio src via url() inject', () => {
     mountAudio({
       modelValue: { id: '1', type: 'file' },
-      assets: { '1': audioAsset },
+      assets: { 1: audioAsset }
     })
     cy.get('audio').should('have.attr', 'src', '/storage/files/recording.mp3')
   })
@@ -66,7 +78,7 @@ describe('Audio', () => {
   it('shows metadata when file is present', () => {
     mountAudio({
       modelValue: { id: '1', type: 'file' },
-      assets: { '1': audioAsset },
+      assets: { 1: audioAsset }
     })
     cy.get('.meta').should('exist')
     cy.contains('recording.mp3').should('exist')
@@ -82,8 +94,8 @@ describe('Audio', () => {
   it('hides overlay menu in readonly mode with file present', () => {
     mountAudio({
       modelValue: { id: '1', type: 'file' },
-      assets: { '1': audioAsset },
-      readonly: true,
+      assets: { 1: audioAsset },
+      readonly: true
     })
     cy.get('.btn-overlay').should('not.exist')
   })
@@ -99,8 +111,8 @@ describe('Audio', () => {
     mountAudio({
       config: { required: true },
       modelValue: { id: '1', type: 'file' },
-      assets: { '1': audioAsset },
-      onError,
+      assets: { 1: audioAsset },
+      onError
     })
     cy.get('@error').should('have.been.calledWith', false)
   })

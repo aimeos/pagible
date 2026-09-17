@@ -2,28 +2,68 @@
 
 <script>
 import {
-  mdiDotsVertical,
-  mdiPencil,
-  mdiTrashCan,
   mdiButtonCursor,
+  mdiCreation,
   mdiLinkVariantPlus,
   mdiTrayArrowDown,
   mdiUpload
 } from '@mdi/js'
-import { ADD_FILE, RELOCATE_FILE, normalizeFile } from '../files'
+import { createFile, RELOCATE_FILE } from '../files'
 import { invalidateList } from '../graphql'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
-import { fileurl, filesrcset } from '../utils'
+import {
+  AUDIO_MIME_FILTER,
+  IMAGE_MIME_FILTER,
+  MEDIA_MIME_FILTER,
+  VIDEO_MIME_FILTER,
+  fileurl,
+  filesrcset
+} from '../utils'
 import { defineAsyncComponent } from 'vue'
+import FileActionMenu from '../components/FileActionMenu.vue'
 import FileProtect from '../components/FileProtect.vue'
 
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
 const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
+const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
+
+const profiles = {
+  audio: {
+    accept: 'audio/*',
+    filter: AUDIO_MIME_FILTER,
+    mime: 'audio/'
+  },
+  file: {
+    accept: '*',
+    filter: {}
+  },
+  image: {
+    accept: 'image/*',
+    filter: IMAGE_MIME_FILTER,
+    grid: true,
+    imagine: true,
+    mime: 'image/'
+  },
+  media: {
+    accept: 'image/*,video/*',
+    dropzone: false,
+    filter: MEDIA_MIME_FILTER,
+    grid: true,
+    imagine: true
+  },
+  video: {
+    accept: 'video/*',
+    filter: VIDEO_MIME_FILTER,
+    mime: 'video/'
+  }
+}
 
 export default {
   inheritAttrs: false,
 
   components: {
+    FileAiDialog,
+    FileActionMenu,
     FileProtect,
     FileUrlDialog,
     FileDialog
@@ -48,11 +88,11 @@ export default {
     return {
       dragging: false,
       file: {},
-      index: Math.floor(Math.random() * 100000),
       protect: false,
       protectSet: false,
       protecting: false,
       selected: null,
+      vcreate: false,
       vfiles: false,
       vurls: false
     }
@@ -69,10 +109,8 @@ export default {
       viewStack,
       fileurl,
       filesrcset,
-      mdiDotsVertical,
-      mdiPencil,
-      mdiTrashCan,
       mdiButtonCursor,
+      mdiCreation,
       mdiLinkVariantPlus,
       mdiTrayArrowDown,
       mdiUpload
@@ -90,8 +128,12 @@ export default {
       return Object.values(this.file.description || {}).shift() || ''
     },
 
-    isPrivate() {
-      return this.file.disk === 'private'
+    kind() {
+      return 'file'
+    },
+
+    profile() {
+      return profiles[this.kind] || profiles.file
     },
 
     rules() {
@@ -114,24 +156,10 @@ export default {
       const disk = this.protect ? 'private' : 'public'
       this.file = { disk, path: path, uploading: true }
 
-      return this.$apollo
-        .mutate({
-          mutation: ADD_FILE,
-          variables: {
-            disk,
-            file: file
-          },
-          context: {
-            hasUpload: true
-          }
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
+      return createFile(this.$apollo, { disk, file })
+        .then((item) => {
           invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-          return this.handle(normalizeFile(response.data?.addFile), path)
+          return this.select([item])
         })
         .catch((error) => {
           this.messages.add(
@@ -141,6 +169,10 @@ export default {
           this.$log(`File::addFile(): Error adding file`, file, error)
         })
         .finally(() => {
+          if (this.file.path === path) {
+            this.file = {}
+          }
+          URL.revokeObjectURL(path)
           this.selected = null
         })
     },
@@ -148,6 +180,11 @@ export default {
     addFromDialog(event) {
       this.select([event])
       this.vfiles = false
+    },
+
+    addFromAi(event) {
+      this.select(event)
+      this.vcreate = false
     },
 
     addFromUrl(event) {
@@ -167,25 +204,6 @@ export default {
 
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString()
-    },
-
-    handle(item, path) {
-      if (!item?.id) {
-        this.$log(`File::handle(): Invalid item without ID`, item)
-        return
-      }
-
-      this.file = { ...item }
-      this.protect = item.disk === 'private'
-      this.protectSet = false
-      this.$emit('addFile', item)
-      this.$emit('update:modelValue', { id: item.id, type: 'file' })
-
-      if (path?.startsWith('blob:')) {
-        URL.revokeObjectURL(path)
-      }
-
-      return item
     },
 
     async open(item) {
@@ -223,11 +241,24 @@ export default {
       }
 
       const protect = this.protectSet ? this.protect : null
-      const item = items.shift()
+      const item = items[0]
 
-      if (this.handle(item) && protect !== null && protect !== this.protect) {
-        this.setProtect(protect)
+      if (!item?.id) {
+        this.$log(`File::select(): Invalid item without ID`, item)
+        return
       }
+
+      this.file = { ...item }
+      this.protect = item.disk === 'private'
+      this.protectSet = false
+      this.$emit('addFile', item)
+      this.$emit('update:modelValue', { id: item.id, type: 'file' })
+
+      if (protect !== null && protect !== this.protect) {
+        return this.setProtect(protect)
+      }
+
+      return item
     },
 
     setProtect(value) {
@@ -320,7 +351,7 @@ export default {
     :loading="protecting"
     :model-value="protect"
     :name="label"
-    :locked="isPrivate"
+    :locked="file.disk === 'private'"
     :readonly="readonly"
     @update:model-value="setProtect($event)"
   >
@@ -330,16 +361,7 @@ export default {
   <v-row :class="{ 'field-columns': file.path }">
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
-        <div
-          v-if="file.id"
-          class="file"
-          @click="open(file)"
-          @keydown.enter="open(file)"
-          @keydown.space.prevent="open(file)"
-          role="button"
-          tabindex="0"
-          :title="$gettext('Edit')"
-        >
+        <div v-if="file.id" class="file">
           <v-progress-linear
             v-if="file.uploading"
             color="primary"
@@ -347,47 +369,68 @@ export default {
             indeterminate
             rounded
           />
-          <svg
-            draggable="false"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-file-earmark-binary"
-            viewBox="0 0 16 16"
+          <button
+            v-if="kind === 'file'"
+            type="button"
+            class="file-preview"
+            :aria-label="$gettext('Edit')"
+            :title="$gettext('Edit')"
+            @click="open(file)"
           >
-            <path
-              d="M7.05 11.885c0 1.415-.548 2.206-1.524 2.206C4.548 14.09 4 13.3 4 11.885c0-1.412.548-2.203 1.526-2.203.976 0 1.524.79 1.524 2.203m-1.524-1.612c-.542 0-.832.563-.832 1.612q0 .133.006.252l1.559-1.143c-.126-.474-.375-.72-.733-.72zm-.732 2.508c.126.472.372.718.732.718.54 0 .83-.563.83-1.614q0-.129-.006-.25zm6.061.624V14h-3v-.595h1.181V10.5h-.05l-1.136.747v-.688l1.19-.786h.69v3.633z"
-            />
-            <path
-              d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"
-            />
-          </svg>
-          {{ file.name }}
-
-          <v-menu v-if="file.id && !readonly" location="start">
-            <template v-slot:activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :title="$gettext('Open menu')"
-                :icon="mdiDotsVertical"
-                class="btn-overlay"
-                variant="text"
+            <svg
+              draggable="false"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-file-earmark-binary"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M7.05 11.885c0 1.415-.548 2.206-1.524 2.206C4.548 14.09 4 13.3 4 11.885c0-1.412.548-2.203 1.526-2.203.976 0 1.524.79 1.524 2.203m-1.524-1.612c-.542 0-.832.563-.832 1.612q0 .133.006.252l1.559-1.143c-.126-.474-.375-.72-.733-.72zm-.732 2.508c.126.472.372.718.732.718.54 0 .83-.563.83-1.614q0-.129-.006-.25zm6.061.624V14h-3v-.595h1.181V10.5h-.05l-1.136.747v-.688l1.19-.786h.69v3.633z"
               />
-            </template>
-            <v-list>
-              <v-list-item v-if="user.can('file:view')">
-                <v-btn @click="open(file)" :prepend-icon="mdiPencil" variant="text">
-                  {{ $gettext('Edit') }}
-                </v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn @click="remove()" :prepend-icon="mdiTrashCan" variant="text">
-                  {{ $gettext('Remove') }}
-                </v-btn>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+              <path
+                d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"
+              />
+            </svg>
+            {{ file.name }}
+          </button>
+          <audio
+            v-else-if="kind === 'audio' && file.path"
+            :src="fileurl(file)"
+            :draggable="false"
+            controls
+          />
+          <video
+            v-else-if="
+              (kind === 'video' || file.mime?.startsWith('video/')) && file.path
+            "
+            :src="fileurl(file)"
+            :draggable="false"
+            controls
+          />
+          <button
+            v-else-if="file.path"
+            type="button"
+            class="file-preview"
+            :aria-label="$gettext('Edit')"
+            :title="$gettext('Edit')"
+            @click="open(file)"
+          >
+            <v-img
+              :srcset="filesrcset(file)"
+              :src="fileurl(file, Object.values(file.previews || {})[0] ?? file.path)"
+              :alt="file.name"
+              :draggable="false"
+            />
+          </button>
+
+          <FileActionMenu
+            v-if="file.id && !readonly"
+            :editable="user.can('file:view')"
+            @edit="open(file)"
+            @remove="remove()"
+          />
         </div>
 
         <div v-else-if="!readonly" class="file file-empty">
@@ -407,11 +450,24 @@ export default {
               class="btn-add-url"
               variant="text"
             />
-            <v-btn :title="$gettext('Upload file')" :icon="mdiUpload" class="btn-upload" variant="text">
+            <v-btn
+              v-if="profile.imagine && user.can('image:imagine')"
+              @click="vcreate = true"
+              :title="$gettext('Create file')"
+              :icon="mdiCreation"
+              class="btn-create"
+              variant="text"
+            />
+            <v-btn
+              :title="$gettext('Upload file')"
+              :icon="mdiUpload"
+              class="btn-upload"
+              variant="text"
+            >
               <v-file-input
                 v-model="selected"
                 @update:modelValue="add($event)"
-                :accept="config.accept || '*'"
+                :accept="config.accept || profile.accept"
                 :hide-input="true"
                 :prepend-icon="mdiUpload"
               />
@@ -419,6 +475,7 @@ export default {
           </div>
 
           <div
+            v-if="profile.dropzone !== false"
             class="dropzone"
             :class="{ dragover: dragging }"
             @dragenter.prevent="dragging = true"
@@ -457,13 +514,29 @@ export default {
   </v-row>
 
   <Teleport to="body">
-    <FileDialog v-model="vfiles" @add="addFromDialog" />
+    <FileDialog
+      v-model="vfiles"
+      :filter="profile.filter"
+      :grid="profile.grid"
+      @add="addFromDialog"
+    />
+  </Teleport>
+
+  <Teleport to="body">
+    <FileAiDialog
+      v-if="profile.imagine"
+      v-model="vcreate"
+      :context="context"
+      :disk="protect ? 'private' : 'public'"
+      @add="addFromAi"
+    />
   </Teleport>
 
   <Teleport to="body">
     <FileUrlDialog
       v-model="vurls"
       :disk="protect ? 'private' : 'public'"
+      :mime="profile.mime"
       @add="addFromUrl"
     />
   </Teleport>
@@ -479,12 +552,42 @@ export default {
   justify-content: center;
   align-items: center;
   position: relative;
-  cursor: pointer;
   display: flex;
   min-height: 48px;
   max-height: 200px;
   max-width: 100%;
   width: 100%;
+}
+
+.files .file-preview {
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  max-height: 200px;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 0;
+  width: 100%;
+}
+
+.files .file-preview .v-responsive.v-img {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC);
+  background-repeat: repeat;
+  max-width: 100%;
+  height: 180px;
+  width: 270px;
+}
+
+.files audio,
+.files video {
+  max-height: 200px;
+  max-width: 100%;
 }
 
 .files .file.file-empty {
@@ -514,7 +617,10 @@ export default {
   border: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
   color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   cursor: copy;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .files .file-empty .dropzone.dragover {
@@ -529,6 +635,11 @@ export default {
 
 .files .v-input__prepend > .v-icon {
   opacity: 1;
+}
+
+.files .v-file-input {
+  height: 48px;
+  width: 48px;
 }
 
 .files .file .v-progress-linear {

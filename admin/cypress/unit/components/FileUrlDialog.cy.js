@@ -79,6 +79,7 @@ describe('FileUrlDialog', () => {
   })
 
   it('creates URL files directly on the selected disk', () => {
+    const onAdd = cy.spy()
     const mutate = cy.stub().resolves({
       data: {
         addFile: {
@@ -91,7 +92,7 @@ describe('FileUrlDialog', () => {
       },
     })
 
-    mountDialog({ disk: 'private' }, { mutate }).then(({ wrapper }) => {
+    mountDialog({ disk: 'private', onAdd }, { mutate }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(FileUrlDialog).vm
       vm.items = {
         file: {
@@ -99,7 +100,14 @@ describe('FileUrlDialog', () => {
           path: 'https://example.com/document.pdf',
         },
       }
-      vm.add()
+
+      return vm.add().then(() => {
+        expect(onAdd).to.have.been.calledOnce
+        expect(onAdd.firstCall.args[0][0]).to.include({
+          id: '1',
+          path: 'cms/test/file/document.pdf',
+        })
+      })
     })
 
     cy.wrap(mutate).should('have.been.calledOnce')
@@ -110,6 +118,44 @@ describe('FileUrlDialog', () => {
           name: 'document.pdf',
           path: 'https://example.com/document.pdf',
         },
+      })
+    })
+  })
+
+  it('keeps loading until all requests settle and excludes failed imports', () => {
+    const onAdd = cy.spy()
+    const mutate = cy.stub()
+    let resolve
+
+    mutate.onFirstCall().returns(new Promise((done) => (resolve = done)))
+    mutate.onSecondCall().rejects(new Error('Import failed'))
+
+    mountDialog({ multiple: true, onAdd }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+      vm.items = {
+        first: { name: 'first.jpg', path: 'https://example.com/first.jpg' },
+        second: { name: 'second.jpg', path: 'https://example.com/second.jpg' },
+      }
+
+      const promise = vm.add()
+      expect(vm.loading).to.equal(true)
+
+      resolve({
+        data: {
+          addFile: {
+            id: '1',
+            disk: 'public',
+            name: 'first.jpg',
+            path: 'cms/test/file/first.jpg',
+            previews: '{}',
+          },
+        },
+      })
+
+      return promise.then(() => {
+        expect(vm.loading).to.equal(false)
+        expect(onAdd).to.have.been.calledOnce
+        expect(onAdd.firstCall.args[0].map((item) => item.id)).to.deep.equal(['1'])
       })
     })
   })

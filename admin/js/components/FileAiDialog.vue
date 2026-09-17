@@ -3,11 +3,12 @@
 <script>
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
+import CmsDialog from './Dialog.vue'
 import FileListItems from './FileListItems.vue'
-import { ADD_FILE, normalizeFile } from '../files'
+import { createFile } from '../files'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { fileurl, IMAGE_MIME_FILTER, toBlob, url } from '../utils'
-import { mdiMicrophoneOutline, mdiMicrophone, mdiClose, mdiDelete } from '@mdi/js'
+import { mdiMicrophoneOutline, mdiMicrophone, mdiDelete } from '@mdi/js'
 
 const IMAGINE = gql`
   mutation ($prompt: String!, $context: String, $files: [String!]) {
@@ -17,6 +18,7 @@ const IMAGINE = gql`
 
 export default {
   components: {
+    CmsDialog,
     FileListItems
   },
 
@@ -44,7 +46,6 @@ export default {
       IMAGE_MIME_FILTER,
       mdiMicrophoneOutline,
       mdiMicrophone,
-      mdiClose,
       mdiDelete
     }
   },
@@ -113,26 +114,13 @@ export default {
 
       const filename = 'ai-image_' + new Date().toISOString().replace(/[^0-9]/g, '') + '.png'
 
-      this.$apollo
-        .mutate({
-          mutation: ADD_FILE,
-          variables: {
-            disk: this.disk,
-            input: {
-              name: item.name
-            },
-            file: new File([item.blob], filename, { type: item.mime })
-          },
-          context: {
-            hasUpload: true
-          }
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
-          Object.assign(item, normalizeFile(response.data.addFile))
+      createFile(this.$apollo, {
+        disk: this.disk,
+        input: { name: item.name },
+        file: new File([item.blob], filename, { type: item.mime })
+      })
+        .then((data) => {
+          Object.assign(item, data)
 
           this.$refs.filelist.invalidate()
           this.$emit('add', [item])
@@ -182,7 +170,10 @@ export default {
             this.items.unshift({
               path: URL.createObjectURL(blob),
               blob: markRaw(blob),
-              name: this.chat.slice(0, this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250),
+              name: this.chat.slice(
+                0,
+                this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250
+              ),
               mime: 'image/png'
             })
           }
@@ -242,99 +233,89 @@ export default {
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Create image')"
-    :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Create image')"
+    :card-loading="loading ? 'primary' : false"
+    @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
     scrollable
   >
-    <v-card :loading="loading ? 'primary' : false">
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Create image') }}</v-toolbar-title>
-        <v-btn
-          v-if="user.can('audio:transcribe')"
-          @click="record()"
-          :class="{ dictating: audio }"
-          :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
-          :aria-label="$gettext('Dictate')"
-          :loading="dictating"
-        />
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
-      <v-card-text>
-        <v-textarea
-          v-model="chat"
-          :label="$gettext('Describe the image content')"
-          variant="underlined"
-          autofocus
-          clearable
-        ></v-textarea>
+    <template #toolbar-actions>
+      <v-btn
+        v-if="user.can('audio:transcribe')"
+        @click="record()"
+        :class="{ dictating: audio }"
+        :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+        :aria-label="$gettext('Dictate')"
+        :loading="dictating"
+      />
+    </template>
 
-        <v-btn
-          :loading="loading"
-          :disabled="!chat"
-          @click="create()"
-          variant="outlined"
-          class="create"
-        >
-          {{ $gettext('New image') }}
-        </v-btn>
+    <v-textarea
+      v-model="chat"
+      :label="$gettext('Describe the image content')"
+      variant="underlined"
+      autofocus
+      clearable
+    ></v-textarea>
 
-        <div v-if="items.length">
-          <v-tabs>
-            <v-tab>{{ $gettext('Current images') }}</v-tab>
-          </v-tabs>
-          <v-list class="items grid">
-            <v-list-item v-for="(item, idx) in items" :key="idx">
-              <v-btn
-                @click="remove(idx)"
-                :title="$gettext('Remove')"
-                class="btn-overlay"
-                :icon="mdiDelete"
-              />
+    <v-btn :loading="loading" :disabled="!chat" @click="create()" variant="outlined" class="create">
+      {{ $gettext('New image') }}
+    </v-btn>
 
-              <div
-                class="item-preview"
-                @click="add(item)"
-                @keydown.enter="add(item)"
-                @keydown.space.prevent="add(item)"
-                role="button"
-                tabindex="0"
-              >
-                <img :src="fileurl(item)" :alt="item.name" />
-              </div>
-            </v-list-item>
-          </v-list>
-        </div>
+    <div v-if="items.length">
+      <v-tabs>
+        <v-tab>{{ $gettext('Current images') }}</v-tab>
+      </v-tabs>
+      <v-list class="items grid">
+        <v-list-item v-for="(item, idx) in items" :key="idx">
+          <v-btn
+            @click="remove(idx)"
+            :title="$gettext('Remove')"
+            class="btn-overlay"
+            :icon="mdiDelete"
+          />
 
-        <div v-if="used.length">
-          <v-tabs>
-            <v-tab>{{ $gettext('Images used') }}</v-tab>
-          </v-tabs>
-          <v-list class="items grid">
-            <v-list-item v-for="(item, idx) in used" :key="idx">
-              <v-btn
-                :icon="mdiDelete"
-                @click="removeUsed(idx)"
-                class="btn-overlay"
-                :title="$gettext('Remove')"
-              ></v-btn>
+          <div
+            class="item-preview"
+            @click="add(item)"
+            @keydown.enter="add(item)"
+            @keydown.space.prevent="add(item)"
+            role="button"
+            tabindex="0"
+          >
+            <img :src="fileurl(item)" :alt="item.name" />
+          </div>
+        </v-list-item>
+      </v-list>
+    </div>
 
-              <div class="item-preview">
-                <img :src="fileurl(item)" :alt="item.name" />
-              </div>
-            </v-list-item>
-          </v-list>
-        </div>
+    <div v-if="used.length">
+      <v-tabs>
+        <v-tab>{{ $gettext('Images used') }}</v-tab>
+      </v-tabs>
+      <v-list class="items grid">
+        <v-list-item v-for="(item, idx) in used" :key="idx">
+          <v-btn
+            :icon="mdiDelete"
+            @click="removeUsed(idx)"
+            class="btn-overlay"
+            :title="$gettext('Remove')"
+          ></v-btn>
 
-        <v-tabs>
-          <v-tab>{{ $gettext('Select images') }}</v-tab>
-        </v-tabs>
-        <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" />
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+          <div class="item-preview">
+            <img :src="fileurl(item)" :alt="item.name" />
+          </div>
+        </v-list-item>
+      </v-list>
+    </div>
+
+    <v-tabs>
+      <v-tab>{{ $gettext('Select images') }}</v-tab>
+    </v-tabs>
+    <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" />
+  </CmsDialog>
 </template>
 
 <style scoped>

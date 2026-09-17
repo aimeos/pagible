@@ -2,9 +2,6 @@
 
 <script>
 import {
-  mdiDotsVertical,
-  mdiPencil,
-  mdiTrashCan,
   mdiButtonCursor,
   mdiLinkVariantPlus,
   mdiCreation,
@@ -12,11 +9,12 @@ import {
   mdiUpload
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
-import { ADD_FILE, FETCH_FILE_DISKS, RELOCATE_FILE, normalizeFile } from '../files'
+import { createFile, FETCH_FILE_DISKS, RELOCATE_FILE } from '../files'
 import { invalidateList } from '../graphql'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
 import { defineAsyncComponent } from 'vue'
+import FileActionMenu from '../components/FileActionMenu.vue'
 import FileProtect from '../components/FileProtect.vue'
 
 const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
@@ -27,6 +25,7 @@ export default {
   inheritAttrs: false,
 
   components: {
+    FileActionMenu,
     FileProtect,
     FileDialog,
     FileAiDialog,
@@ -61,9 +60,6 @@ export default {
       fileurl,
       filesrcset,
       IMAGE_MIME_FILTER,
-      mdiDotsVertical,
-      mdiPencil,
-      mdiTrashCan,
       mdiButtonCursor,
       mdiLinkVariantPlus,
       mdiCreation,
@@ -76,7 +72,6 @@ export default {
     return {
       dragging: false,
       images: [],
-      index: Math.floor(Math.random() * 100000),
       protect: false,
       protecting: false,
       vcreate: false,
@@ -128,46 +123,33 @@ export default {
 
       for (const file of files) {
         const path = URL.createObjectURL(file)
-        const idx = this.images.length
-
         const disk = this.protect ? 'private' : 'public'
-        this.images[idx] = { disk, path: path, uploading: true }
+        const pending = { disk, path, uploading: true }
+        this.images.push(pending)
 
-        const promise = this.$apollo
-          .mutate({
-            mutation: ADD_FILE,
-            variables: {
-              disk,
-              file: file
-            },
-            context: {
-              hasUpload: true
+        const promise = createFile(this.$apollo, { disk, file })
+          .then((item) => {
+            const idx = this.images.indexOf(pending)
+
+            if (idx !== -1) {
+              this.images[idx] = item
+              this.$emit('addFile', item)
             }
-          })
-          .then((response) => {
-            if (response.errors) {
-              throw response.errors
-            }
-
-            const data = normalizeFile(response.data?.addFile)
-
-            return new Promise((resolve, reject) => {
-              const image = new Image()
-              image.onload = resolve
-              image.onerror = reject
-              image.src = this.fileurl(data, Object.values(data.previews)[0])
-            }).then(() => {
-              this.images[idx] = data
-              this.$emit('addFile', data)
-              URL.revokeObjectURL(path)
-            })
           })
           .catch((error) => {
+            const idx = this.images.indexOf(pending)
+
+            if (idx !== -1) {
+              this.images.splice(idx, 1)
+            }
             this.messages.add(
               this.$gettext(`Error adding file %{path}`, { path: file.name }) + ':\n' + error,
               'error'
             )
             this.$log(`Images::addFile(): Error adding file`, file, error)
+          })
+          .finally(() => {
+            URL.revokeObjectURL(path)
           })
 
         promises.push(promise)
@@ -222,8 +204,14 @@ export default {
     },
 
     remove(idx) {
-      if (this.images[idx]?.id) {
-        this.$emit('removeFile', this.images[idx].id)
+      const item = this.images[idx]
+
+      if (item?.path?.startsWith('blob:')) {
+        URL.revokeObjectURL(item.path)
+      }
+
+      if (item?.id) {
+        this.$emit('removeFile', item.id)
       }
 
       this.images.splice(idx, 1)
@@ -385,41 +373,31 @@ export default {
       :key="idx"
       :class="{ readonly: readonly }"
       class="image"
-      @click="open(item)"
       :title="description(item)"
     >
       <v-progress-linear v-if="item.uploading" color="primary" height="5" indeterminate rounded />
-      <v-img
+      <button
         v-if="item.path"
-        :srcset="filesrcset(item)"
-        :src="fileurl(item, Object.values(item.previews || {})[0] ?? item.path)"
-        :alt="description(item)"
-        draggable="false"
-      />
+        type="button"
+        class="image-preview"
+        :aria-label="$gettext('Edit')"
+        :disabled="!item.id"
+        @click="open(item)"
+      >
+        <v-img
+          :srcset="filesrcset(item)"
+          :src="fileurl(item, Object.values(item.previews || {})[0] ?? item.path)"
+          :alt="description(item)"
+          draggable="false"
+        />
+      </button>
 
-      <v-menu v-if="item.id && !readonly" location="start">
-        <template v-slot:activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :title="$gettext('Open menu')"
-            :icon="mdiDotsVertical"
-            class="btn-overlay"
-            variant="text"
-          />
-        </template>
-        <v-list>
-          <v-list-item v-if="user.can('file:view')">
-            <v-btn @click="open(item)" :prepend-icon="mdiPencil" variant="text">
-              {{ $gettext('Edit') }}
-            </v-btn>
-          </v-list-item>
-          <v-list-item>
-            <v-btn @click="remove(idx)" :prepend-icon="mdiTrashCan" variant="text">
-              {{ $gettext('Remove') }}
-            </v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <FileActionMenu
+        v-if="item.id && !readonly"
+        :editable="user.can('file:view')"
+        @edit="open(item)"
+        @remove="remove(idx)"
+      />
     </div>
 
     <div v-if="!readonly" class="add">
@@ -533,7 +511,24 @@ export default {
 .images .image {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC);
   background-repeat: repeat;
+}
+
+.images .image-preview {
+  background: transparent;
+  border: 0;
   cursor: pointer;
+  height: 100%;
+  padding: 0;
+  width: 100%;
+}
+
+.images .image-preview:disabled {
+  cursor: default;
+}
+
+.images .image-preview .v-img {
+  height: 100%;
+  width: 100%;
 }
 
 .images .add {
