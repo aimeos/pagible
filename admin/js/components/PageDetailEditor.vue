@@ -2,6 +2,7 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
 import { uid } from '../utils'
 
@@ -9,6 +10,7 @@ const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
   components: {
+    LoadingSpinner,
     SchemaDialog
   },
 
@@ -251,16 +253,7 @@ export default {
   <div :class="['page-preview-stage', { 'aside-visible': asideVisible }]" v-visible="load">
     <div :class="['page-preview', `preview-${previewSize}`]" ref="preview">
       <div v-if="loading" class="loading">
-        <svg
-          class="spinner"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle class="spin1" cx="4" cy="12" r="3" />
-          <circle class="spin1 spin2" cx="12" cy="12" r="3" />
-          <circle class="spin1 spin3" cx="20" cy="12" r="3" />
-        </svg>
+        <LoadingSpinner />
       </div>
 
       <div v-if="vpreview" class="preview-hint">

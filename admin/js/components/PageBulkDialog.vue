@@ -1,13 +1,17 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiClose } from '@mdi/js'
+import CmsDialog from './Dialog.vue'
 import { useAppStore, useSchemaStore } from '../stores'
 import { locales, PAGE_BULK_LIMIT } from '../utils'
 
 const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
 
 export default {
+  components: {
+    CmsDialog
+  },
+
   props: {
     modelValue: { type: Boolean, required: true },
     count: { type: Number, default: 0 },
@@ -19,7 +23,15 @@ export default {
   data() {
     return {
       valid: true,
-      enabled: { status: false, cache: false, theme: false, type: false, tag: false, lang: false, domain: false },
+      enabled: {
+        status: false,
+        cache: false,
+        theme: false,
+        type: false,
+        tag: false,
+        lang: false,
+        domain: false
+      },
       values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' },
       cacheItems: [],
       statusItems: []
@@ -30,7 +42,7 @@ export default {
     const schemas = useSchemaStore()
     const app = useAppStore()
 
-    return { app, schemas, locales, mdiClose }
+    return { app, schemas, locales }
   },
 
   created() {
@@ -102,7 +114,15 @@ export default {
     },
 
     reset() {
-      this.enabled = { status: false, cache: false, theme: false, type: false, tag: false, lang: false, domain: false }
+      this.enabled = {
+        status: false,
+        cache: false,
+        theme: false,
+        type: false,
+        tag: false,
+        lang: false,
+        domain: false
+      }
       this.values = { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
     },
 
@@ -130,138 +150,139 @@ export default {
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Edit properties')"
-    :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Edit properties')"
+    @update:model-value="$emit('update:modelValue', $event)"
     max-width="600"
   >
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Edit properties') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
+    <p class="hint">
+      {{
+        $ngettext(
+          'Apply the selected properties to %{num} page.',
+          'Apply the selected properties to %{num} pages.',
+          count,
+          { num: count }
+        )
+      }}
+    </p>
 
-      <v-card-text>
-        <p class="hint">
-          {{ $ngettext('Apply the selected properties to %{num} page.', 'Apply the selected properties to %{num} pages.', count, { num: count }) }}
-        </p>
+    <v-form v-model="valid">
+      <div class="prop" :class="{ on: enabled.status }">
+        <v-checkbox-btn v-model="enabled.status" :aria-label="$gettext('Change status')" />
+        <v-select
+          :items="statusItems"
+          :modelValue="values.status"
+          @update:modelValue="set('status', $event)"
+          :label="$gettext('Status')"
+          variant="underlined"
+          item-title="val"
+          item-value="key"
+          hide-details
+        />
+      </div>
 
-        <v-form v-model="valid">
-          <div class="prop" :class="{ on: enabled.status }">
-            <v-checkbox-btn v-model="enabled.status" :aria-label="$gettext('Change status')" />
-            <v-select
-              :items="statusItems"
-              :modelValue="values.status"
-              @update:modelValue="set('status', $event)"
-              :label="$gettext('Status')"
-              variant="underlined"
-              item-title="val"
-              item-value="key"
-              hide-details
-            />
-          </div>
+      <div class="prop" :class="{ on: enabled.cache }">
+        <v-checkbox-btn v-model="enabled.cache" :aria-label="$gettext('Change cache time')" />
+        <v-select
+          :items="cacheItems"
+          :modelValue="values.cache"
+          @update:modelValue="set('cache', $event)"
+          :label="$gettext('Cache time')"
+          variant="underlined"
+          item-title="val"
+          item-value="key"
+          hide-details
+        />
+      </div>
 
-          <div class="prop" :class="{ on: enabled.cache }">
-            <v-checkbox-btn v-model="enabled.cache" :aria-label="$gettext('Change cache time')" />
-            <v-select
-              :items="cacheItems"
-              :modelValue="values.cache"
-              @update:modelValue="set('cache', $event)"
-              :label="$gettext('Cache time')"
-              variant="underlined"
-              item-title="val"
-              item-value="key"
-              hide-details
-            />
-          </div>
+      <div class="prop" :class="{ on: enabled.lang }">
+        <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change language')" />
+        <v-select
+          :items="locales()"
+          :modelValue="values.lang"
+          @update:modelValue="set('lang', $event)"
+          :label="$gettext('Language')"
+          variant="underlined"
+          hide-details
+        />
+      </div>
 
-          <div class="prop" :class="{ on: enabled.lang }">
-            <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change language')" />
-            <v-select
-              :items="locales()"
-              :modelValue="values.lang"
-              @update:modelValue="set('lang', $event)"
-              :label="$gettext('Language')"
-              variant="underlined"
-              hide-details
-            />
-          </div>
+      <div class="prop" :class="{ on: enabled.theme }">
+        <v-checkbox-btn v-model="enabled.theme" :aria-label="$gettext('Change theme')" />
+        <v-select
+          :items="Object.keys(schemas.themes)"
+          :modelValue="values.theme"
+          @update:modelValue="set('theme', $event)"
+          :label="$gettext('Theme')"
+          variant="underlined"
+          hide-details
+        />
+      </div>
 
-          <div class="prop" :class="{ on: enabled.theme }">
-            <v-checkbox-btn v-model="enabled.theme" :aria-label="$gettext('Change theme')" />
-            <v-select
-              :items="Object.keys(schemas.themes)"
-              :modelValue="values.theme"
-              @update:modelValue="set('theme', $event)"
-              :label="$gettext('Theme')"
-              variant="underlined"
-              hide-details
-            />
-          </div>
+      <div class="prop" :class="{ on: enabled.type }">
+        <v-checkbox-btn v-model="enabled.type" :aria-label="$gettext('Change page type')" />
+        <v-select
+          :items="typeItems"
+          :modelValue="values.type"
+          @update:modelValue="set('type', $event)"
+          :label="$gettext('Page type')"
+          variant="underlined"
+          hide-details
+        />
+      </div>
 
-          <div class="prop" :class="{ on: enabled.type }">
-            <v-checkbox-btn v-model="enabled.type" :aria-label="$gettext('Change page type')" />
-            <v-select
-              :items="typeItems"
-              :modelValue="values.type"
-              @update:modelValue="set('type', $event)"
-              :label="$gettext('Page type')"
-              variant="underlined"
-              hide-details
-            />
-          </div>
+      <div class="prop" :class="{ on: enabled.tag }">
+        <v-checkbox-btn v-model="enabled.tag" :aria-label="$gettext('Change tag')" />
+        <v-text-field
+          :modelValue="values.tag"
+          @update:modelValue="set('tag', $event)"
+          :label="$gettext('Page tag')"
+          variant="underlined"
+          maxlength="30"
+          counter="30"
+          hide-details
+        />
+      </div>
 
-          <div class="prop" :class="{ on: enabled.tag }">
-            <v-checkbox-btn v-model="enabled.tag" :aria-label="$gettext('Change tag')" />
-            <v-text-field
-              :modelValue="values.tag"
-              @update:modelValue="set('tag', $event)"
-              :label="$gettext('Page tag')"
-              variant="underlined"
-              maxlength="30"
-              counter="30"
-              hide-details
-            />
-          </div>
+      <div v-if="app.multidomain" class="prop" :class="{ on: enabled.domain }">
+        <v-checkbox-btn v-model="enabled.domain" :aria-label="$gettext('Change domain')" />
+        <v-text-field
+          :rules="domainRules"
+          :modelValue="values.domain"
+          @update:modelValue="set('domain', $event)"
+          :label="$gettext('Domain')"
+          variant="underlined"
+          maxlength="255"
+          counter="255"
+        />
+      </div>
+    </v-form>
 
-          <div v-if="app.multidomain" class="prop" :class="{ on: enabled.domain }">
-            <v-checkbox-btn v-model="enabled.domain" :aria-label="$gettext('Change domain')" />
-            <v-text-field
-              :rules="domainRules"
-              :modelValue="values.domain"
-              @update:modelValue="set('domain', $event)"
-              :label="$gettext('Domain')"
-              variant="underlined"
-              maxlength="255"
-              counter="255"
-            />
-          </div>
-        </v-form>
-      </v-card-text>
+    <template #actions>
+      <v-btn
+        @click="apply(false)"
+        :disabled="!hasInput || !valid || limited"
+        class="btn-apply"
+        variant="outlined"
+        >{{ $gettext('Apply') }}</v-btn
+      >
+      <v-btn
+        v-if="descendants > 0"
+        @click="apply(true)"
+        :disabled="!hasInput || !valid || recurseLimited"
+        class="btn-apply-recursive"
+        variant="outlined"
+        >{{ $gettext('Apply recursively') }} ({{ count + descendants }})</v-btn
+      >
+    </template>
 
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          @click="apply(false)"
-          :disabled="!hasInput || !valid || limited"
-          class="btn-apply"
-          variant="outlined"
-        >{{ $gettext('Apply') }}</v-btn>
-        <v-btn
-          v-if="descendants > 0"
-          @click="apply(true)"
-          :disabled="!hasInput || !valid || recurseLimited"
-          class="btn-apply-recursive"
-          variant="outlined"
-        >{{ $gettext('Apply recursively') }} ({{ count + descendants }})</v-btn>
-      </v-card-actions>
-
+    <template #footer>
       <p v-if="limited || recurseLimited" class="hint limit">
         {{ $gettext('Page bulk changes are limited to 1,000 pages') }}
       </p>
-    </v-card>
-  </v-dialog>
+    </template>
+  </CmsDialog>
 </template>
 
 <style scoped>

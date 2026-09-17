@@ -1,13 +1,13 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiClose } from '@mdi/js'
 import { useSchemaStore } from '../stores'
 import { filechanges, plaintext, restore, sections } from '../history'
+import CmsDialog from './Dialog.vue'
 import HistoryField from './HistoryField.vue'
 
 export default {
-  components: { HistoryField },
+  components: { CmsDialog, HistoryField },
 
   props: {
     modelValue: { type: Boolean, required: true },
@@ -19,7 +19,7 @@ export default {
   emits: ['update:modelValue', 'apply', 'use'],
 
   setup() {
-    return { schemas: useSchemaStore(), mdiClose }
+    return { schemas: useSchemaStore() }
   },
 
   data: () => ({
@@ -186,20 +186,15 @@ export default {
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('History')"
+  <CmsDialog
     :model-value="modelValue"
+    :title="$gettext('History')"
     @update:model-value="$emit('update:modelValue', $event)"
+    content-class="history-body"
     max-width="1200"
     scrollable
   >
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('History') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
-      <v-card-text class="history-body">
-        <v-expansion-panels v-model="opened" class="version-panels" elevation="2">
+    <v-expansion-panels v-model="opened" class="version-panels" elevation="2">
           <v-timeline side="end" align="start">
             <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
               <div class="loading" role="status">{{ $gettext('Loading') }}<v-progress-circular indeterminate size="24" /></div>
@@ -310,8 +305,9 @@ export default {
               </v-expansion-panel>
             </v-timeline-item>
           </v-timeline>
-        </v-expansion-panels>
-      </v-card-text>
+    </v-expansion-panels>
+
+    <template #footer>
       <div v-if="active && !readonly" class="history-actions">
         <div class="restore-source">
           <span>{{ active.unsaved ? $gettext('Previous version: Latest saved version') : $gettext('Previous version: %{date}', { date: date(active.before.created_at) }) }}</span>
@@ -324,8 +320,8 @@ export default {
           {{ $gettext('Restore previous version') }}
         </v-btn>
       </div>
-    </v-card>
-  </v-dialog>
+    </template>
+  </CmsDialog>
 </template>
 
 <style scoped>

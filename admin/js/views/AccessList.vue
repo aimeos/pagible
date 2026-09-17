@@ -2,17 +2,11 @@
 
 <script>
 import gql from 'graphql-tag'
-import {
-  mdiAlertCircleOutline,
-  mdiClose,
-  mdiDelete,
-  mdiKeyPlus,
-  mdiMagnify,
-  mdiMenu
-} from '@mdi/js'
+import { mdiAlertCircleOutline, mdiDelete, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
 import AccessUsers from '../components/AccessUsers.vue'
+import CmsDialog from '../components/Dialog.vue'
 import { apolloClient } from '../graphql'
 import { useDrawerStore, useMessageStore, useUserStore } from '../stores'
 
@@ -39,6 +33,7 @@ export default {
 
   components: {
     AccessUsers,
+    CmsDialog,
     Navigation,
     User
   },
@@ -53,7 +48,6 @@ export default {
       messages,
       user,
       mdiAlertCircleOutline,
-      mdiClose,
       mdiDelete,
       mdiKeyPlus,
       mdiMagnify,
@@ -325,63 +319,56 @@ export default {
   </v-main>
 
   <Teleport to="body">
-    <v-dialog v-model="addDialog" max-width="480" :aria-label="$gettext('Add access value')">
-      <v-card>
-        <v-toolbar density="compact">
-          <v-toolbar-title>{{ $gettext('Add access value') }}</v-toolbar-title>
-          <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="addDialog = false" />
-        </v-toolbar>
-        <v-card-text>
-          <v-text-field
-            ref="value"
-            v-model="value"
-            :label="$gettext('Access value')"
-            maxlength="100"
-            counter
-            autofocus
-            @keyup.enter="add()"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="addDialog = false" variant="text">{{ $gettext('Cancel') }}</v-btn>
-          <v-btn @click="add()" :disabled="addDisabled" :loading="saving" color="primary" variant="flat">
-            {{ $gettext('Add') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <CmsDialog v-model="addDialog" :title="$gettext('Add access value')" max-width="480">
+      <v-text-field
+        ref="value"
+        v-model="value"
+        :label="$gettext('Access value')"
+        maxlength="100"
+        counter
+        autofocus
+        @keyup.enter="add()"
+      />
 
-    <v-dialog
+      <template #actions="{ close }">
+        <v-btn @click="close" variant="text">{{ $gettext('Cancel') }}</v-btn>
+        <v-btn
+          @click="add()"
+          :disabled="addDisabled"
+          :loading="saving"
+          color="primary"
+          variant="flat"
+        >
+          {{ $gettext('Add') }}
+        </v-btn>
+      </template>
+    </CmsDialog>
+
+    <CmsDialog
       v-model="deleteDialog"
+      :title="$gettext('Delete access values')"
+      toolbar-color="warning"
       max-width="520"
       role="alertdialog"
-      :aria-label="$gettext('Delete access values')"
     >
-      <v-card>
-        <v-toolbar density="compact" color="warning">
-          <v-toolbar-title>{{ $gettext('Delete access values') }}</v-toolbar-title>
-          <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="deleteDialog = false" />
-        </v-toolbar>
-        <v-card-text class="warning">
-          <v-icon :icon="mdiAlertCircleOutline" color="warning" size="40" />
-          <p>
-            {{
-              $gettext(
-                'Existing restrictions are not changed and will continue to reference the deleted access values.'
-              )
-            }}
-          </p>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="deleteDialog = false" variant="text">{{ $gettext('Cancel') }}</v-btn>
-          <v-btn @click="remove()" :loading="saving" color="error" variant="flat">
-            {{ $gettext('Delete') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      <div class="warning">
+        <v-icon :icon="mdiAlertCircleOutline" color="warning" size="40" />
+        <p>
+          {{
+            $gettext(
+              'Existing restrictions are not changed and will continue to reference the deleted access values.'
+            )
+          }}
+        </p>
+      </div>
+
+      <template #actions="{ close }">
+        <v-btn @click="close" variant="text">{{ $gettext('Cancel') }}</v-btn>
+        <v-btn @click="remove()" :loading="saving" color="error" variant="flat">
+          {{ $gettext('Delete') }}
+        </v-btn>
+      </template>
+    </CmsDialog>
   </Teleport>
 </template>
 

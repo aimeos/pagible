@@ -3,13 +3,13 @@
 <script>
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
+import ActionMenu from './ActionMenu.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
 import { fieldTypes, protectTypes } from '../fieldtypes'
 import { hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
-  mdiClose,
   mdiArrowRightThin,
   mdiCreation,
   mdiMicrophoneOutline,
@@ -18,6 +18,8 @@ import {
 } from '@mdi/js'
 
 export default {
+  components: { ActionMenu },
+
   props: {
     data: { type: Object, default: () => {} },
     files: { type: Array, default: () => [] },
@@ -41,8 +43,7 @@ export default {
       composing: {},
       errors: {},
       lastError: false,
-      audio: {},
-      menu: {}
+      audio: {}
     }
   },
 
@@ -55,7 +56,6 @@ export default {
       messages,
       changedState,
       mdiTranslate,
-      mdiClose,
       mdiArrowRightThin,
       mdiCreation,
       mdiMicrophoneOutline,
@@ -80,7 +80,6 @@ export default {
     this.dictating = null
     this.composing = null
     this.errors = null
-    this.menu = null
   },
 
   methods: {
@@ -278,13 +277,10 @@ export default {
       >
         <template v-if="['markdown', 'plaintext', 'string', 'text'].includes(field.type)">
           <span class="btn-translate">
-            <component
-              :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-              :aria-label="$gettext('Translate')"
-              v-model="menu[code]"
-              transition="scale-transition"
+            <ActionMenu
+              v-if="user.can('text:translate')"
+              :title="$gettext('Translate')"
               location="end center"
-              max-width="300"
             >
               <template #activator="{ props }">
                 <v-btn
@@ -296,24 +292,15 @@ export default {
                 />
               </template>
 
-              <v-card v-if="user.can('text:translate')">
-                <v-toolbar density="compact">
-                  <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                  <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu[code] = false" />
-                </v-toolbar>
-
-                <v-list @click="menu[code] = false">
-                  <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                    <v-btn
-                      @click="translateText(code, lang.code)"
-                      :prepend-icon="mdiArrowRightThin"
-                      variant="text"
-                      >{{ lang.name }}</v-btn
-                    >
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </component>
+              <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                <v-btn
+                  @click="translateText(code, lang.code)"
+                  :prepend-icon="mdiArrowRightThin"
+                  variant="text"
+                  >{{ lang.name }}</v-btn
+                >
+              </v-list-item>
+            </ActionMenu>
           </span>
           <v-btn
             v-if="user.can('text:write')"

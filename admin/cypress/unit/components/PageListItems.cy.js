@@ -124,7 +124,7 @@ describe('PageListItems', () => {
   it('shows title-case sort options in list view', () => {
     mountList({ filter: { view: 'list' } }, { 'page:view': true })
     cy.get('.btn-sort button').click()
-    cy.get('.v-overlay .v-btn').then(($buttons) => {
+    cy.get('.v-overlay .v-list .v-btn').then(($buttons) => {
       expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
         'Tree', 'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'Editor'
       ])
@@ -139,7 +139,7 @@ describe('PageListItems', () => {
     mountList({ filter: { view: 'list' } }, { 'page:view': true }, { query })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Latest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Latest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([
@@ -148,7 +148,7 @@ describe('PageListItems', () => {
     })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Oldest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Oldest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([

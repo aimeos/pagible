@@ -66,14 +66,14 @@ describe('ElementListItems', () => {
   it('shows the translated active sort option', () => {
     mountList({}, { 'element:view': true })
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Name').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Name').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Name').and('not.contain', 'NAME')
   })
 
   it('shows title-case sort options', () => {
     mountList({}, { 'element:view': true })
     cy.get('.btn-sort button').click()
-    cy.get('.v-overlay .v-btn').then(($buttons) => {
+    cy.get('.v-overlay .v-list .v-btn').then(($buttons) => {
       expect([...$buttons].map((button) => button.textContent.trim())).to.deep.equal([
         'Latest', 'Oldest', 'Latest edit', 'Oldest edit', 'Name', 'Type', 'Editor'
       ])
@@ -88,7 +88,7 @@ describe('ElementListItems', () => {
     mountList({}, { 'element:view': true }, { query })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Latest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Latest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Latest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([
@@ -97,7 +97,7 @@ describe('ElementListItems', () => {
     })
 
     cy.get('.btn-sort button').click()
-    cy.contains('.v-overlay .v-btn', 'Oldest edit').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Oldest edit').scrollIntoView().click()
     cy.get('.btn-sort button').should('contain', 'Oldest edit')
     cy.then(() => {
       expect(query.lastCall.args[0].variables.sort).to.deep.equal([

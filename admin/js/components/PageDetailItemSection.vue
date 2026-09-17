@@ -2,7 +2,7 @@
 
 <script>
 import Fields from './Fields.vue'
-import SchemaItems from './SchemaItems.vue'
+import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { hasProp, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
@@ -10,7 +10,7 @@ import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 export default {
   components: {
     Fields,
-    SchemaItems
+    SchemaDialog
   },
 
   props: {
@@ -219,15 +219,7 @@ export default {
     </v-sheet>
   </v-container>
 
-  <Teleport to="body">
-    <v-dialog v-model="vschemas" @afterLeave="vschemas = false" scrollable width="auto">
-      <v-card>
-        <v-card-text>
-          <SchemaItems :type="section" @add="add($event)" />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </Teleport>
+  <SchemaDialog v-model="vschemas" :elements="false" :type="section" @add="add($event)" />
 </template>
 
 <style scoped>

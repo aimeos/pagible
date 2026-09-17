@@ -3,21 +3,21 @@
 <script>
 import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
+import ActionMenu from './ActionMenu.vue'
+import { load as loadTranslations, ready } from '../i18n'
 import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
 import {
   mdiWhiteBalanceSunny,
   mdiWeatherNight,
   mdiWeb,
-  mdiClose,
   mdiAccountCircleOutline,
   mdiLogout
 } from '@mdi/js'
 
 export default {
-  data: () => ({
-    me: null,
-    menu: {}
-  }),
+  components: { ActionMenu },
+
+  data: () => ({ me: null }),
 
   setup() {
     const languages = useLanguageStore()
@@ -35,7 +35,6 @@ export default {
       mdiWhiteBalanceSunny,
       mdiWeatherNight,
       mdiWeb,
-      mdiClose,
       mdiAccountCircleOutline,
       mdiLogout
     }
@@ -68,13 +67,13 @@ export default {
         return
       }
 
-      Promise.all([
-        import(`../../i18n/${code}.json`),
+      return ready.then(() => Promise.all([
+        loadTranslations(code),
         import('../vuetify').then((v) => v.switchLocale(code))
-      ]).then(([translations]) => {
-        this.i18n.translations = translations.default || translations
+      ])).then(([applied]) => {
+        if (!applied) return
+
         this.$vuetify.locale.current = code
-        this.i18n.current = code
         this.user.saveData('app', 'language', code)
       })
     },
@@ -103,53 +102,39 @@ export default {
   />
 
   <span class="btn-language">
-    <component
-      :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-      :aria-label="$gettext('Language')"
-      v-model="menu['lang']"
-      transition="scale-transition"
+    <ActionMenu
+      :title="$gettext('Switch language')"
+      :list-props="{ role: 'listbox' }"
       location="bottom"
-      max-width="300"
     >
       <template #activator="{ props }">
         <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
       </template>
 
-      <v-card>
-        <v-toolbar density="compact">
-          <v-toolbar-title>{{ $gettext('Switch language') }}</v-toolbar-title>
-          <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="menu['lang'] = false" />
-        </v-toolbar>
-
-        <v-list @click="menu['lang'] = false" role="listbox">
-          <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
-            {{ languages.translate(code) }} ({{ code }})
-          </v-list-item>
-        </v-list>
-      </v-card>
-    </component>
+      <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
+        {{ languages.translate(code) }} ({{ code }})
+      </v-list-item>
+    </ActionMenu>
   </span>
 
-  <v-menu v-if="me">
-    <template #activator="{ props }">
+  <ActionMenu v-if="me" :title="$gettext('User menu')" location="bottom">
+    <template #activator="{ props, label }">
       <v-btn
         v-bind="props"
-        :title="$gettext('User menu')"
+        :title="label"
         :icon="mdiAccountCircleOutline"
         class="icon"
       />
     </template>
-    <v-list>
-      <v-list-item v-if="me?.name">
-        {{ me.name }}
-      </v-list-item>
-      <v-list-item>
-        <v-btn :prepend-icon="mdiLogout" @click="logout()" variant="text" class="menu-item">{{
-          $gettext('Logout')
-        }}</v-btn>
-      </v-list-item>
-    </v-list>
-  </v-menu>
+    <v-list-item v-if="me?.name">
+      {{ me.name }}
+    </v-list-item>
+    <v-list-item>
+      <v-btn :prepend-icon="mdiLogout" @click="logout()" variant="text" class="menu-item">{{
+        $gettext('Logout')
+      }}</v-btn>
+    </v-list-item>
+  </ActionMenu>
 </template>
 
 <style scoped>

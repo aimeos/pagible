@@ -1,10 +1,14 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiClose } from '@mdi/js'
+import CmsDialog from './Dialog.vue'
 import { locales } from '../utils'
 
 export default {
+  components: {
+    CmsDialog
+  },
+
   props: {
     modelValue: { type: Boolean, required: true },
     count: { type: Number, default: 0 }
@@ -19,7 +23,7 @@ export default {
   },
 
   setup() {
-    return { locales, mdiClose }
+    return { locales }
   },
 
   methods: {
@@ -48,44 +52,38 @@ export default {
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Edit properties')"
-    :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Edit properties')"
+    @update:model-value="$emit('update:modelValue', $event)"
     max-width="600"
   >
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Edit properties') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
+    <p class="hint">
+      {{
+        $ngettext(
+          'Apply the selected properties to %{num} entry.',
+          'Apply the selected properties to %{num} entries.',
+          count,
+          { num: count }
+        )
+      }}
+    </p>
 
-      <v-card-text>
-        <p class="hint">
-          {{ $ngettext('Apply the selected properties to %{num} entry.', 'Apply the selected properties to %{num} entries.', count, { num: count }) }}
-        </p>
+    <v-select
+      :items="locales()"
+      :modelValue="lang"
+      @update:modelValue="lang = $event"
+      :label="$gettext('Language')"
+      variant="underlined"
+      hide-details
+    />
 
-        <v-select
-          :items="locales()"
-          :modelValue="lang"
-          @update:modelValue="lang = $event"
-          :label="$gettext('Language')"
-          variant="underlined"
-          hide-details
-        />
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          @click="apply()"
-          :disabled="lang === null"
-          class="btn-apply"
-          variant="text"
-        >{{ $gettext('Apply') }}</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <template #actions>
+      <v-btn @click="apply()" :disabled="lang === null" class="btn-apply" variant="text">{{
+        $gettext('Apply')
+      }}</v-btn>
+    </template>
+  </CmsDialog>
 </template>
 
 <style scoped>

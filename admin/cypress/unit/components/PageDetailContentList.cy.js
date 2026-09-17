@@ -218,10 +218,10 @@ describe('PageDetailContentList', () => {
       expect(vm.clipboard.get('page-content')).to.deep.equal([
         { ...content[0], id: null, _checked: false },
       ])
-      vm.menu = vm.content[1].id
     })
 
     cy.get('.bulk > .v-btn').should('not.be.disabled')
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
     cy.contains('.v-overlay .v-btn', 'Paste before').should('exist')
     cy.contains('.v-overlay .v-btn', 'Paste after').should('exist')
   })

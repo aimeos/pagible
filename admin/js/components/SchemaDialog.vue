@@ -1,54 +1,45 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import ElementListItems from './ElementListItems.vue'
+import { defineAsyncComponent } from 'vue'
+import CmsDialog from './Dialog.vue'
 import SchemaItems from './SchemaItems.vue'
-import { mdiClose } from '@mdi/js'
+
+const ElementListItems = defineAsyncComponent(() => import('./ElementListItems.vue'))
 
 export default {
   components: {
+    CmsDialog,
     ElementListItems,
     SchemaItems
   },
 
   props: {
     modelValue: { type: Boolean, required: true },
-    elements: { type: Boolean, default: true }
+    elements: { type: Boolean, default: true },
+    type: { type: String, default: 'content' }
   },
-
-  emits: ['update:modelValue', 'add'],
-
-  setup() {
-    return { mdiClose }
-  }
+  emits: ['update:modelValue', 'add']
 }
 </script>
 
 <template>
-  <v-dialog
-    :aria-label="$gettext('Content elements')"
-    :modelValue="modelValue"
-    @afterLeave="$emit('update:modelValue', false)"
+  <CmsDialog
+    :model-value="modelValue"
+    :title="$gettext('Content elements')"
+    @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
     scrollable
   >
-    <v-card>
-      <v-toolbar density="compact">
-        <v-toolbar-title>{{ $gettext('Content elements') }}</v-toolbar-title>
-        <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="$emit('update:modelValue', false)" />
-      </v-toolbar>
-      <v-card-text>
-        <SchemaItems type="content" @add="$emit('add', $event)" />
+    <SchemaItems :type="type" @add="$emit('add', $event)" />
 
-        <div v-if="elements">
-          <v-tabs>
-            <v-tab>{{ $gettext('Shared elements') }}</v-tab>
-          </v-tabs>
-          <ElementListItems @select="$emit('add', $event)" embed />
-        </div>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+    <div v-if="elements">
+      <v-tabs>
+        <v-tab>{{ $gettext('Shared elements') }}</v-tab>
+      </v-tabs>
+      <ElementListItems @select="$emit('add', $event)" embed />
+    </div>
+  </CmsDialog>
 </template>
 
 <style scoped>

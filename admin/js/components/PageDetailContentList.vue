@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import Fields from './Fields.vue'
+import ActionMenu from './ActionMenu.vue'
 import { defineAsyncComponent, markRaw } from 'vue'
 import VirtualList from 'vue-virtual-sortable'
 import {
@@ -26,7 +27,6 @@ import {
   mdiDelete,
   mdiMagnify,
   mdiDotsVertical,
-  mdiClose,
   mdiArrowUp,
   mdiArrowDown,
   mdiLink,
@@ -69,6 +69,7 @@ const ADD_ELEMENT = gql`
 
 export default {
   components: {
+    ActionMenu,
     Fields,
     SchemaDialog,
     VirtualList
@@ -94,7 +95,6 @@ export default {
     lastError: false,
     refining: false,
     panel: [],
-    menu: null,
     index: null,
     scroller: null,
     checked: false,
@@ -126,7 +126,6 @@ export default {
       mdiDelete,
       mdiMagnify,
       mdiDotsVertical,
-      mdiClose,
       mdiArrowUp,
       mdiArrowDown,
       mdiLink,
@@ -702,7 +701,6 @@ export default {
     }
 
     this.panel = null
-    this.menu = null
     this.scroller = null
     this.response = ''
     this.chat = ''
@@ -784,44 +782,43 @@ export default {
     <div class="header">
       <div v-if="user.can('page:save')" class="bulk">
         <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
-        <v-menu>
-          <template v-slot:activator="{ props }">
+        <ActionMenu>
+          <template #activator="{ props, label }">
             <v-btn
               v-bind="props"
               :disabled="!checkedCount && !clipboard.get('page-content')"
+              :title="label"
               :append-icon="mdiMenuDown"
               variant="text"
-              >{{ $gettext('Actions') }}</v-btn
+              >{{ label }}</v-btn
             >
           </template>
-          <v-list>
-            <v-list-item v-if="checkedCount">
-              <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()">{{
-                $gettext('Copy')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="checkedCount">
-              <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()">{{
-                $gettext('Cut')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="clipboard.get('page-content')">
-              <v-btn :prepend-icon="mdiContentPaste" variant="text" @click="paste()">{{
-                $gettext('Paste')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="checkedCount > 1">
-              <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
-                $gettext('Merge')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="checkedCount">
-              <v-btn :prepend-icon="mdiDelete" variant="text" @click="purge()">{{
-                $gettext('Delete')
-              }}</v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <v-list-item v-if="checkedCount">
+            <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()">{{
+              $gettext('Copy')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item v-if="checkedCount">
+            <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()">{{
+              $gettext('Cut')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item v-if="clipboard.get('page-content')">
+            <v-btn :prepend-icon="mdiContentPaste" variant="text" @click="paste()">{{
+              $gettext('Paste')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item v-if="checkedCount > 1">
+            <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
+              $gettext('Merge')
+            }}</v-btn>
+          </v-list-item>
+          <v-list-item v-if="checkedCount">
+            <v-btn :prepend-icon="mdiDelete" variant="text" @click="purge()">{{
+              $gettext('Delete')
+            }}</v-btn>
+          </v-list-item>
+        </ActionMenu>
       </div>
 
       <v-text-field
@@ -879,106 +876,80 @@ export default {
             />
 
             <span class="btn-actions">
-              <component
-                :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-                :aria-label="$gettext('Actions')"
-                :model-value="menu === el.id"
-                @update:model-value="(val) => (menu = val ? el.id : null)"
-                transition="scale-transition"
-                location="end center"
-                max-width="300"
-              >
-                <template #activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    :title="$gettext('Actions')"
-                    :icon="mdiDotsVertical"
-                    variant="text"
-                  />
+              <ActionMenu>
+                <template #activator="{ props, label }">
+                  <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-card>
-                  <v-toolbar density="compact">
-                    <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                    <v-btn
-                      :icon="mdiClose"
-                      :aria-label="$gettext('Close')"
-                      @click="menu = null"
-                    />
-                  </v-toolbar>
+                <v-list-item v-if="!el._error">
+                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
+                    $gettext('Copy')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="!el._error">
+                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
+                    $gettext('Cut')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
+                    $gettext('Delete')
+                  }}</v-btn>
+                </v-list-item>
 
-                  <v-list @click="menu = null">
-                    <v-list-item v-if="!el._error">
-                      <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                        $gettext('Copy')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="!el._error">
-                      <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                        $gettext('Cut')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                        $gettext('Delete')
-                      }}</v-btn>
-                    </v-list-item>
+                <v-divider></v-divider>
 
-                    <v-divider></v-divider>
+                <v-list-item v-if="clipboard.get('page-content')">
+                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
+                    $gettext('Paste before')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="clipboard.get('page-content')">
+                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
+                    $gettext('Paste after')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
+                    $gettext('Insert before')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
+                    $gettext('Insert after')
+                  }}</v-btn>
+                </v-list-item>
 
-                    <v-list-item v-if="clipboard.get('page-content')">
-                      <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
-                        $gettext('Paste before')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="clipboard.get('page-content')">
-                      <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
-                        $gettext('Paste after')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
-                        $gettext('Insert before')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
-                        $gettext('Insert after')
-                      }}</v-btn>
-                    </v-list-item>
+                <v-divider></v-divider>
 
-                    <v-divider></v-divider>
-
-                    <v-list-item
-                      v-if="!el._error && el.type !== 'reference' && user.can('element:add')"
-                    >
-                      <v-btn :prepend-icon="mdiLink" variant="text" @click="share(idx)">{{
-                        $gettext('Make shared')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="el.type === 'reference'">
-                      <v-btn :prepend-icon="mdiLinkOff" variant="text" @click="unshare(idx)">{{
-                        $gettext('Merge copy')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="el.type !== 'reference'">
-                      <v-btn :prepend-icon="mdiSwapHorizontal" variant="text" @click="change(idx)">{{
-                        $gettext('Change to')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="el.type === 'text'">
-                      <v-btn :prepend-icon="mdiSetSplit" variant="text" @click="split(idx)">{{
-                        $gettext('Split')
-                      }}</v-btn>
-                    </v-list-item>
-                    <v-list-item v-if="el._checked && checkedCount > 1">
-                      <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
-                        $gettext('Merge')
-                      }}</v-btn>
-                    </v-list-item>
-                  </v-list>
-                </v-card>
-              </component>
+                <v-list-item
+                  v-if="!el._error && el.type !== 'reference' && user.can('element:add')"
+                >
+                  <v-btn :prepend-icon="mdiLink" variant="text" @click="share(idx)">{{
+                    $gettext('Make shared')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="el.type === 'reference'">
+                  <v-btn :prepend-icon="mdiLinkOff" variant="text" @click="unshare(idx)">{{
+                    $gettext('Merge copy')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="el.type !== 'reference'">
+                  <v-btn :prepend-icon="mdiSwapHorizontal" variant="text" @click="change(idx)">{{
+                    $gettext('Change to')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="el.type === 'text'">
+                  <v-btn :prepend-icon="mdiSetSplit" variant="text" @click="split(idx)">{{
+                    $gettext('Split')
+                  }}</v-btn>
+                </v-list-item>
+                <v-list-item v-if="el._checked && checkedCount > 1">
+                  <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
+                    $gettext('Merge')
+                  }}</v-btn>
+                </v-list-item>
+              </ActionMenu>
             </span>
 
             <v-icon

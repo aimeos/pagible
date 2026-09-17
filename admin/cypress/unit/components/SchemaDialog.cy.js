@@ -1,7 +1,11 @@
+import { h } from 'vue'
 import SchemaDialog from '../../../js/components/SchemaDialog.vue'
 
 const stubs = {
-  SchemaItems: { template: '<div class="schema-items-stub" />' },
+  SchemaItems: {
+    props: ['type'],
+    render() { return h('div', { class: 'schema-items-stub', 'data-type': this.type }) }
+  },
   ElementListItems: { template: '<div class="element-list-stub" />' },
 }
 
@@ -47,7 +51,12 @@ describe('SchemaDialog', () => {
 
   it('renders the SchemaItems stub', () => {
     mountDialog()
-    cy.get('.schema-items-stub').should('exist')
+    cy.get('.schema-items-stub').should('have.attr', 'data-type', 'content')
+  })
+
+  it('forwards a custom schema type', () => {
+    mountDialog({ type: 'sidebar', elements: false })
+    cy.get('.schema-items-stub').should('have.attr', 'data-type', 'sidebar')
   })
 
   it('renders the ElementListItems stub by default', () => {

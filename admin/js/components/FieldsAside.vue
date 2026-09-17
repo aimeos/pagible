@@ -2,6 +2,7 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
+import ActionMenu from './ActionMenu.vue'
 import Fields from './Fields.vue'
 import { useDrawerStore, useSchemaStore } from '../stores'
 import { clone } from '../utils'
@@ -21,6 +22,7 @@ const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
   components: {
+    ActionMenu,
     Fields,
     SchemaDialog
   },
@@ -210,30 +212,32 @@ export default {
         />
       </div>
       <v-spacer />
-      <v-menu location="bottom end">
-        <template #activator="{ props }">
+      <ActionMenu
+        :title="$gettext('Responsive preview')"
+        :list-props="{ density: 'compact' }"
+        location="bottom end"
+      >
+        <template #activator="{ props, label }">
           <v-btn
             v-bind="props"
-            :aria-label="$gettext('Responsive preview')"
-            :title="$gettext('Responsive preview')"
+            :aria-label="label"
+            :title="label"
             :icon="responsiveIcon"
             class="btn-responsive"
             variant="text"
           />
         </template>
-        <v-list density="compact">
-          <v-list-item
-            v-for="view in responsiveViews"
-            :key="view.value"
-            :active="previewSize === view.value"
-            :prepend-icon="view.icon"
-            :subtitle="view.width"
-            :title="view.label"
-            @click="$emit('update:previewSize', view.value)"
-            class="preview-size-option"
-          />
-        </v-list>
-      </v-menu>
+        <v-list-item
+          v-for="view in responsiveViews"
+          :key="view.value"
+          :active="previewSize === view.value"
+          :prepend-icon="view.icon"
+          :subtitle="view.width"
+          :title="view.label"
+          @click="$emit('update:previewSize', view.value)"
+          class="preview-size-option"
+        />
+      </ActionMenu>
     </v-toolbar>
     <div class="element-info">
       <span class="element-type">{{ $pgettext('st', element.type) }}</span>

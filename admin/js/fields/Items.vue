@@ -12,7 +12,6 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import {
   mdiDotsVertical,
-  mdiClose,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -26,6 +25,7 @@ import {
   mdiViewGridPlus
 } from '@mdi/js'
 import VirtualList from 'vue-virtual-sortable'
+import ActionMenu from '../components/ActionMenu.vue'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
 import { fieldTypes, protectTypes } from '../fieldtypes'
 import { clone, itemTitle, txlocales, uid } from '../utils'
@@ -35,6 +35,7 @@ export default {
   inheritAttrs: false,
 
   components: {
+    ActionMenu,
     VirtualList
   },
 
@@ -59,7 +60,6 @@ export default {
       items: [],
       itemKey: (item) => item?.[this.config.identity] || key(item),
       lastError: null,
-      menu: [],
       panel: [],
       scroller: null,
       audio: {}
@@ -76,7 +76,6 @@ export default {
       clipboard,
       messages,
       mdiDotsVertical,
-      mdiClose,
       mdiContentCopy,
       mdiContentCut,
       mdiDelete,
@@ -107,7 +106,6 @@ export default {
     this.translating = null
     this.dictating = null
     this.composing = null
-    this.menu = null
     this.panel = null
     this.scroller = null
     this.items = null
@@ -365,75 +363,50 @@ export default {
           </v-btn>
 
           <span class="btn-actions" v-if="!readonly">
-            <component
-              :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-              :aria-label="$gettext('Actions')"
-              v-model="menu[idx]"
-              transition="scale-transition"
-              location="end center"
-              max-width="300"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  :title="$gettext('Actions')"
-                  :icon="mdiDotsVertical"
-                  variant="text"
-                />
+            <ActionMenu>
+              <template #activator="{ props, label }">
+                <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
               </template>
 
-              <v-card>
-                <v-toolbar density="compact">
-                  <v-toolbar-title>{{ $gettext('Actions') }}</v-toolbar-title>
-                  <v-btn
-                    :icon="mdiClose"
-                    :aria-label="$gettext('Close')"
-                    @click="menu[idx] = false"
-                  />
-                </v-toolbar>
+              <v-list-item>
+                <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
+                  $gettext('Copy')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
+                  $gettext('Cut')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
+                  $gettext('Delete')
+                }}</v-btn>
+              </v-list-item>
 
-                <v-list @click="menu[idx] = false">
-                  <v-list-item>
-                    <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                      $gettext('Copy')
-                    }}</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                      $gettext('Cut')
-                    }}</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                      $gettext('Delete')
-                    }}</v-btn>
-                  </v-list-item>
+              <v-divider></v-divider>
 
-                  <v-divider></v-divider>
-
-                  <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
-                    <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
-                      $gettext('Paste before')
-                    }}</v-btn>
-                  </v-list-item>
-                  <v-list-item v-if="menu[idx] && clipboard.get('items-content')">
-                    <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
-                      $gettext('Paste after')
-                    }}</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
-                      $gettext('Insert before')
-                    }}</v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
-                      $gettext('Insert after')
-                    }}</v-btn>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </component>
+              <v-list-item v-if="clipboard.get('items-content')">
+                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
+                  $gettext('Paste before')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item v-if="clipboard.get('items-content')">
+                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
+                  $gettext('Paste after')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
+                  $gettext('Insert before')
+                }}</v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
+                  $gettext('Insert after')
+                }}</v-btn>
+              </v-list-item>
+            </ActionMenu>
           </span>
 
           <div class="element-title">{{ title(item) }}</div>
@@ -447,14 +420,10 @@ export default {
                 v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)"
                 class="actions"
               >
-                <component
+                <ActionMenu
                   v-if="user.can('text:translate')"
-                  :is="$vuetify.display.xs ? 'v-dialog' : 'v-menu'"
-                  :aria-label="$gettext('Translate')"
-                  v-model="menu[idx + code]"
-                  transition="scale-transition"
+                  :title="$gettext('Translate')"
                   location="end center"
-                  max-width="300"
                 >
                   <template #activator="{ props }">
                     <v-btn
@@ -466,28 +435,15 @@ export default {
                     />
                   </template>
 
-                  <v-card>
-                    <v-toolbar density="compact">
-                      <v-toolbar-title>{{ $gettext('Translate') }}</v-toolbar-title>
-                      <v-btn
-                        :icon="mdiClose"
-                        :aria-label="$gettext('Close')"
-                        @click="menu[idx + code] = false"
-                      />
-                    </v-toolbar>
-
-                    <v-list @click="menu[idx + code] = false">
-                      <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                        <v-btn
-                          @click="translateText(idx, code, lang.code)"
-                          :prepend-icon="mdiArrowRightThin"
-                          variant="text"
-                          >{{ lang.name }}</v-btn
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-card>
-                </component>
+                  <v-list-item v-for="lang in txlocales()" :key="lang.code">
+                    <v-btn
+                      @click="translateText(idx, code, lang.code)"
+                      :prepend-icon="mdiArrowRightThin"
+                      variant="text"
+                      >{{ lang.name }}</v-btn
+                    >
+                  </v-list-item>
+                </ActionMenu>
                 <v-btn
                   v-if="user.can('text:write')"
                   :title="$gettext('Generate text')"

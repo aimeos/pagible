@@ -2,8 +2,11 @@
 
 <script>
 import { mdiMenuDown, mdiSort } from '@mdi/js'
+import ActionMenu from './ActionMenu.vue'
 
 export default {
+  components: { ActionMenu },
+
   props: {
     modelValue: { type: Object, default: () => ({}) },
     options: { type: Array, default: () => [] }
@@ -54,12 +57,12 @@ export default {
 
 <template>
   <span class="btn-sort">
-    <v-menu>
-      <template #activator="{ props }">
+    <ActionMenu :title="$gettext('Sort by')">
+      <template #activator="{ props, label }">
         <v-btn
           v-bind="props"
-          :title="$gettext('Sort by')"
-          :aria-label="$gettext('Sort by')"
+          :title="label"
+          :aria-label="label"
           :append-icon="mdiMenuDown"
           :prepend-icon="mdiSort"
           variant="text"
@@ -67,16 +70,14 @@ export default {
           {{ order }}
         </v-btn>
       </template>
-      <v-list>
-        <v-list-item
-          v-for="option in options"
-          :key="`${option.column}-${option.order}`"
-        >
-          <v-btn variant="text" @click="select(option)">
-            {{ labels[option.label] || option.label }}
-          </v-btn>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      <v-list-item
+        v-for="option in options"
+        :key="`${option.column}-${option.order}`"
+      >
+        <v-btn variant="text" @click="select(option)">
+          {{ labels[option.label] || option.label }}
+        </v-btn>
+      </v-list-item>
+    </ActionMenu>
   </span>
 </template>

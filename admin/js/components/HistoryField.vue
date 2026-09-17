@@ -1,17 +1,19 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiClose } from '@mdi/js'
 import { filepairs, tableRows, words } from '../history'
 import { fileurl, filesrcset } from '../utils'
+import CmsDialog from './Dialog.vue'
 
 export default {
+  components: { CmsDialog },
+
   props: {
     field: { type: Object, required: true },
     type: { type: String, default: '' }
   },
 
-  setup() { return { fileurl, filesrcset, mdiClose } },
+  setup() { return { fileurl, filesrcset } },
   data: () => ({ preview: null, activator: null, failed: {} }),
 
   computed: {
@@ -98,24 +100,26 @@ export default {
           </div>
         </div>
       </div>
-      <v-dialog :activator="activator" :open-on-click="false" :model-value="!!preview" @update:model-value="!$event && (preview = null)" max-width="1000" :aria-label="$gettext('Image preview')">
-        <v-card v-if="preview">
-          <v-toolbar density="compact">
-            <v-toolbar-title>{{ $gettext('Image preview') }}</v-toolbar-title>
-            <v-btn :icon="mdiClose" :aria-label="$gettext('Close preview')" @click="preview = null" />
-          </v-toolbar>
-          <v-card-text>
-            <p class="media-label">
-              {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('New value') }} · {{ name(preview.file) }}
-            </p>
-            <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh">
-              <template #placeholder><div class="media-loading" role="status"><v-progress-circular indeterminate size="24" aria-hidden="true" />{{ $gettext('Loading preview') }}</div></template>
-              <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
-            </v-img>
-            <div v-else class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+      <CmsDialog
+        :activator="activator"
+        :open-on-click="false"
+        :model-value="!!preview"
+        :title="$gettext('Image preview')"
+        :close-label="$gettext('Close preview')"
+        @update:model-value="!$event && (preview = null)"
+        max-width="1000"
+      >
+        <template v-if="preview">
+          <p class="media-label">
+            {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('New value') }} · {{ name(preview.file) }}
+          </p>
+          <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh">
+            <template #placeholder><div class="media-loading" role="status"><v-progress-circular indeterminate size="24" aria-hidden="true" />{{ $gettext('Loading preview') }}</div></template>
+            <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
+          </v-img>
+          <div v-else class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div>
+        </template>
+      </CmsDialog>
     </div>
     <div v-if="table" class="table-preview diff-columns">
       <div v-for="(position, index) in ['before', 'after']" :key="position" :class="index ? 'change-new' : 'change-old'">
