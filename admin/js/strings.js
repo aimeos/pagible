@@ -5,9 +5,6 @@
 // only for translation extraction
 
 if ($pgettext) {
-  // plugin labels
-  $gettext('Webhooks')
-
   // content sections
   $pgettext('cs', 'main')
   $pgettext('cs', 'header')

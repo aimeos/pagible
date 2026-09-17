@@ -11,6 +11,7 @@ import { applyResult, hasUnresolved } from '../merge'
 import { FILE_FIELDS, fileMap } from '../files'
 import { invalidateList } from '../graphql'
 import { references } from '../history'
+import { pluginLabel } from '../i18n'
 import { publishDate, publishItem } from '../publish'
 import { setupReload, cleanEcho } from '../echo'
 import { loadVersions, reloadVersion } from '../version'
@@ -194,6 +195,10 @@ export default {
   },
 
   methods: {
+    label(panel) {
+      return pluginLabel(panel, this)
+    },
+
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
@@ -404,7 +409,7 @@ export default {
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
         <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
-          {{ sp.label }}
+          {{ label(sp) }}
         </v-tab>
       </v-tabs>
 

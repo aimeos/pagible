@@ -8,6 +8,7 @@ import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect } from './echo'
 import gettext from './i18n'
+import { safeParse, sanitize } from './json'
 import {
   urladmin,
   urlasset,
@@ -16,9 +17,9 @@ import {
   urlcsrf,
   urlfile,
   multidomain,
-  locales as appLocales
+  locales as appLocales,
+  plugins
 } from './config'
-import { safeParse, sanitize } from './utils'
 
 const FETCH_ME = gql`
   query {
@@ -368,15 +369,14 @@ function pluginComponent(def) {
 
 export const usePluginStore = defineStore('plugin', {
   state: () => {
-    const data = safeParse(document.getElementById('app')?.dataset.plugins)
     const panels = {}
     const subpanels = {}
 
-    for (const [key, def] of Object.entries(data.panels || {})) {
+    for (const [key, def] of Object.entries(plugins.panels || {})) {
       panels[key] = pluginComponent(def)
     }
 
-    for (const [host, group] of Object.entries(data.subpanels || {})) {
+    for (const [host, group] of Object.entries(plugins.subpanels || {})) {
       subpanels[host] = {}
       for (const [key, def] of Object.entries(group)) {
         subpanels[host][key] = pluginComponent(def)

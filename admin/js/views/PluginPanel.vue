@@ -4,6 +4,7 @@
 import { mdiClose, mdiMenu } from '@mdi/js'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
+import { pluginLabel } from '../i18n'
 import { useDrawerStore } from '../stores'
 
 export default {
@@ -25,6 +26,12 @@ export default {
     const drawer = useDrawerStore()
 
     return { drawer, mdiClose, mdiMenu }
+  },
+
+  methods: {
+    label(panel) {
+      return pluginLabel(panel, this)
+    }
   }
 }
 </script>
@@ -39,7 +46,7 @@ export default {
       />
     </template>
 
-    <v-app-bar-title><h1>{{ $gettext(panel.label) }}</h1></v-app-bar-title>
+    <v-app-bar-title><h1>{{ label(panel) }}</h1></v-app-bar-title>
 
     <template #append>
       <User />
@@ -48,7 +55,7 @@ export default {
 
   <Navigation />
 
-  <v-main class="plugin-panel" :aria-label="$gettext(panel.label)">
+  <v-main class="plugin-panel" :aria-label="label(panel)">
     <component :is="panel.component" :panel="panel" />
   </v-main>
 </template>

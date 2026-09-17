@@ -2,6 +2,7 @@
 
 <script>
 import { useDisplay } from 'vuetify'
+import { pluginLabel } from '../i18n'
 import { useUserStore, useDrawerStore, usePluginStore } from '../stores'
 import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage, mdiKeyVariant } from '@mdi/js'
 
@@ -27,6 +28,10 @@ export default {
   },
 
   methods: {
+    label(panel) {
+      return pluginLabel(panel, this)
+    },
+
     toggle() {
       if (this.mobile) {
         this.drawer.nav = !this.drawer.nav
@@ -51,7 +56,7 @@ export default {
         <v-list-item v-if="user.can(panel.permission)" rounded="lg">
           <router-link :to="'/' + key" class="router-link" @click="toggle()">
             <span v-if="panel.icon" class="icon" v-safe-svg="panel.icon"></span>
-            {{ $gettext(panel.label) }}
+            {{ label(panel) }}
           </router-link>
         </v-list-item>
       </template>

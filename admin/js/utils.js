@@ -6,6 +6,8 @@ import gettext from './i18n'
 import { toRaw } from 'vue'
 import { useAppStore, useLanguageStore } from './stores'
 
+export { frozenParse, safeParse, sanitize } from './json'
+
 
 export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
 
@@ -20,11 +22,6 @@ export const PAGE_BULK_LIMIT = 1000
 export function clone(value) {
   return structuredClone(toRaw(value))
 }
-
-/**
- * Keys that can pollute object prototypes when merged into existing objects
- */
-const UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype']
 
 /**
  * Creates a debounced version of a function that returns a Promise. The returned function
@@ -65,77 +62,6 @@ export function debounce(func, delay) {
  */
 export function empty(val) {
   return val == null || (typeof val === 'object' && Object.keys(val).length === 0)
-}
-
-/**
- * Parses a JSON string, strips prototype-polluting keys and freezes the result
- *
- * @param {string} str JSON string to parse
- * @returns {Object} Frozen parsed object with unsafe keys removed
- */
-export function frozenParse(str) {
-  try {
-    return Object.freeze(
-      JSON.parse(str || '{}', (key, value) =>
-        UNSAFE_KEYS.includes(key) ? undefined : value
-      ) || {}
-    )
-  } catch {
-    return Object.freeze({})
-  }
-}
-
-/**
- * Parses a JSON string, stripping keys that can pollute object prototypes
- *
- * Removes `__proto__`, `constructor` and `prototype` keys at every nesting
- * level so the result can be safely merged onto existing objects (e.g. via
- * Object.assign) without altering their prototype chain.
- *
- * @param {string} str JSON string to parse
- * @param {*} fallback Value returned when the string is empty or parsing fails (default: {})
- * @returns {*} Parsed value with unsafe keys removed
- */
-export function safeParse(str, fallback = {}) {
-  try {
-    // Empty input parses to null so it yields the caller's fallback (e.g. ['en']) rather
-    // than {}; for the default {} fallback this is identical (null ?? {} === {}).
-    return (
-      JSON.parse(str || 'null', (key, value) =>
-        UNSAFE_KEYS.includes(key) ? undefined : value
-      ) ?? fallback
-    )
-  } catch {
-    return fallback
-  }
-}
-
-/**
- * Recursively removes prototype-polluting keys from an already-parsed value
- *
- * Mirror of safeParse() for data that arrives as an object (e.g. realtime
- * broadcast payloads) rather than a JSON string, so it can be safely merged
- * onto existing objects via Object.assign without altering their prototype.
- *
- * @param {*} value Parsed value (object, array or primitive)
- * @returns {*} Clean copy with __proto__, constructor and prototype keys removed
- */
-export function sanitize(value) {
-  if (Array.isArray(value)) {
-    return value.map(sanitize)
-  }
-
-  if (value && typeof value === 'object') {
-    const out = {}
-    for (const key in value) {
-      if (!UNSAFE_KEYS.includes(key) && Object.prototype.hasOwnProperty.call(value, key)) {
-        out[key] = sanitize(value[key])
-      }
-    }
-    return out
-  }
-
-  return value
 }
 
 /**

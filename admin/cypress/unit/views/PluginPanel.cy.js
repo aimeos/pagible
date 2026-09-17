@@ -11,9 +11,10 @@ const Body = {
 }
 
 describe('PluginPanel', () => {
-  function mountPanel(perms = { 'config:webhook': true }, translate = (value) => value) {
+  function mountPanel(perms = { 'config:webhook': true }, translate = (context, value) => value) {
     const panel = {
       label: 'Webhooks',
+      i18n: 'webhooks',
       icon: '<svg width="1em" height="1em" viewBox="0 0 24 24"><path d="M1 1h22v22H1z" /></svg>',
       permission: 'config:webhook',
       component: Body
@@ -27,7 +28,8 @@ describe('PluginPanel', () => {
         },
         plugins: [{
           install(app) {
-            app.config.globalProperties.$gettext = translate
+            app.config.globalProperties.$gettext = (value) => translate('', value)
+            app.config.globalProperties.$pgettext = translate
             useUserStore().me = { permission: perms }
             usePluginStore().panels = { webhooks: panel }
           }
@@ -58,7 +60,10 @@ describe('PluginPanel', () => {
   })
 
   it('translates the registered panel label', () => {
-    mountPanel({ 'config:webhook': true }, (value) => value === 'Webhooks' ? 'Web-Haken' : value)
+    mountPanel(
+      { 'config:webhook': true },
+      (context, value) => context === 'webhooks' && value === 'Webhooks' ? 'Web-Haken' : value
+    )
 
     cy.get('.v-app-bar').contains('Web-Haken').should('exist')
     cy.get('.v-navigation-drawer').contains('Web-Haken').should('exist')

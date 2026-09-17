@@ -1,10 +1,31 @@
 import { createPinia, setActivePinia } from 'pinia'
-import { guard } from '../../../js/routes'
+import { nextTick } from 'vue'
+import router, { guard } from '../../../js/routes'
+import gettext, { ready } from '../../../js/i18n'
 import { useUserStore } from '../../../js/stores'
 
 describe('guard()', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+  })
+
+  afterEach(() => {
+    gettext.translations = {}
+    gettext.current = 'en'
+  })
+
+  it('translates raw route titles when catalogs change', async () => {
+    await ready
+    gettext.translations = { de: { Login: 'Anmeldung' } }
+    gettext.current = 'de'
+
+    await router.push({ path: '/', query: { test: 'translated-title' } })
+    expect(document.title).to.equal('Anmeldung — PagibleAI CMS')
+
+    gettext.translations = { de: { Login: 'Neue Anmeldung' } }
+    await nextTick()
+
+    expect(document.title).to.equal('Neue Anmeldung — PagibleAI CMS')
   })
 
   it('allows public routes without authentication or permission checks', async () => {

@@ -9,6 +9,7 @@ import FileDetailItem from '../components/FileDetailItem.vue'
 import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
 import { invalidateList } from '../graphql'
+import { pluginLabel } from '../i18n'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { setupReload, cleanEcho } from '../echo'
@@ -178,6 +179,10 @@ export default {
   },
 
   methods: {
+    label(panel) {
+      return pluginLabel(panel, this)
+    },
+
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
@@ -383,7 +388,7 @@ export default {
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
         <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">
-          {{ sp.label }}
+          {{ label(sp) }}
         </v-tab>
       </v-tabs>
 

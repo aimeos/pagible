@@ -1,17 +1,19 @@
+import { readFileSync } from 'node:fs'
+
+const locales = readFileSync(new URL('./i18n/LINGUAS', import.meta.url), 'utf8')
+  .trim()
+  .split(/\s+/)
+
 export default {
   input: {
-    path: "./js",
-    include: ["**/*.js", "**/*.ts", "**/*.vue", "../../webhooks/admin/src/**/*.vue"],
+    path: './js',
+    include: ['**/*.js', '**/*.ts', '**/*.vue']
   },
   output: {
-    locales: [
-      'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'fr',
-      'he', 'hu', 'id', 'it', 'ja', 'ko', 'lt', 'lv', 'no', 'nl', 'pl',
-      'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh'
-    ],
-    path: "./i18n",
-    jsonPath: "./",
+    locales,
+    path: './i18n',
+    jsonPath: './',
     splitJson: true,
-    fuzzyMatching: false,
-  },
-};
+    fuzzyMatching: false
+  }
+}

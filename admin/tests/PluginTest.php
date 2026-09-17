@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Plugin;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 
 class PluginTest extends AdminTestAbstract
@@ -30,7 +31,56 @@ class PluginTest extends AdminTestAbstract
 
     public function testAllEmpty()
     {
-        $this->assertSame( ['panels' => [], 'subpanels' => []], Plugin::all() );
+        $this->assertSame( ['i18n' => [], 'panels' => [], 'subpanels' => []], Plugin::all() );
+    }
+
+
+    public function testI18n()
+    {
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+
+        $this->assertSame(
+            ['commerce' => '/vendor/cms/commerce/i18n/{locale}.json'],
+            Plugin::all()['i18n'],
+        );
+    }
+
+
+    public function testI18nConflictingDefinition()
+    {
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+
+        $this->expectException( \LogicException::class );
+
+        Plugin::i18n( 'commerce', '/vendor/cms/other/i18n/{locale}.json' );
+    }
+
+
+    public function testI18nDuplicateDefinition()
+    {
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+
+        $this->assertCount( 1, Plugin::all()['i18n'] );
+    }
+
+
+    #[DataProvider( 'invalidI18nDefinitions' )]
+    public function testI18nInvalidDefinition( string $key, string $url )
+    {
+        $this->expectException( \InvalidArgumentException::class );
+
+        Plugin::i18n( $key, $url );
+    }
+
+
+    public static function invalidI18nDefinitions() : iterable
+    {
+        yield 'invalid key' => ['Commerce!', '/vendor/cms/commerce/i18n/{locale}.json'];
+        yield 'missing locale' => ['commerce', '/vendor/cms/commerce/i18n/de.json'];
+        yield 'multiple locales' => ['commerce', '/vendor/{locale}/commerce/{locale}.json'];
+        yield 'protocol relative' => ['commerce', '//evil.example/i18n/{locale}.json'];
+        yield 'traversal' => ['commerce', '/vendor/%2e%2e/i18n/{locale}.json'];
     }
 
 
@@ -67,6 +117,33 @@ class PluginTest extends AdminTestAbstract
     }
 
 
+    public function testRegisterPanelWithI18n()
+    {
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+        Plugin::register( 'products', [
+            'label' => 'Products',
+            'i18n' => 'commerce',
+            'permission' => 'product:view',
+            'component' => '/vendor/cms/extensions/commerce/product.js',
+        ] );
+
+        $this->assertSame( 'commerce', Plugin::all()['panels']['products']['i18n'] );
+    }
+
+
+    public function testRegisterPanelWithUnknownI18n()
+    {
+        $this->expectException( \InvalidArgumentException::class );
+
+        Plugin::register( 'products', [
+            'label' => 'Products',
+            'i18n' => 'commerce',
+            'permission' => 'product:view',
+            'component' => '/vendor/cms/extensions/commerce/product.js',
+        ] );
+    }
+
+
     public function testRegisterSubpanel()
     {
         Plugin::register( 'page:settings', [
@@ -81,6 +158,19 @@ class PluginTest extends AdminTestAbstract
             'component' => '/vendor/cms/extensions/commerce/pageSettings.js',
         ], $all['subpanels']['page']['settings'] );
         $this->assertSame( [], $all['panels'] );
+    }
+
+
+    public function testRegisterSubpanelWithI18n()
+    {
+        Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
+        Plugin::register( 'page:settings', [
+            'label' => 'Settings',
+            'i18n' => 'commerce',
+            'component' => '/vendor/cms/extensions/commerce/pageSettings.js',
+        ] );
+
+        $this->assertSame( 'commerce', Plugin::all()['subpanels']['page']['settings']['i18n'] );
     }
 
 
@@ -227,7 +317,7 @@ class PluginTest extends AdminTestAbstract
     {
         $class = new \ReflectionClass( Plugin::class );
 
-        foreach( ['panels', 'subpanels'] as $name ) {
+        foreach( ['i18n', 'panels', 'subpanels'] as $name ) {
             $prop = $class->getProperty( $name );
             $prop->setAccessible( true );
             $prop->setValue( null, [] );

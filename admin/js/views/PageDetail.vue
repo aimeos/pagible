@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import AsideMeta from '../components/AsideMeta.vue'
 import AsideCount from '../components/AsideCount.vue'
+import ActionMenu from '../components/ActionMenu.vue'
 import ChatDialog from '../components/ChatDialog.vue'
 import DetailAppBar from '../components/DetailAppBar.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
@@ -14,6 +15,7 @@ const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDe
 import { applyResult, hasUnresolved } from '../merge'
 import { FILE_FIELDS, fileMap } from '../files'
 import { invalidateList } from '../graphql'
+import { pluginLabel } from '../i18n'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
@@ -105,6 +107,7 @@ const SAVE_PAGE = gql`
 
 export default {
   components: {
+    ActionMenu,
     AsideMeta,
     AsideCount,
     ChatDialog,
@@ -268,6 +271,10 @@ export default {
   },
 
   methods: {
+    label(panel) {
+      return pluginLabel(panel, this)
+    },
+
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
@@ -787,27 +794,25 @@ export default {
         class="btn-review-page"
       />
       <span class="btn-translate-page" v-if="user.can('text:translate')">
-        <v-menu>
-          <template #activator="{ props }">
+        <ActionMenu :title="$gettext('Translate page')">
+          <template #activator="{ props, label }">
             <v-btn
               v-bind="props"
-              :title="$gettext('Translate page')"
+              :title="label"
               :loading="translating"
               :icon="mdiTranslate"
             />
           </template>
-          <v-list>
-            <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
-              <v-btn
-                @click="translatePage(lang.code)"
-                :prepend-icon="mdiArrowRightThin"
-                variant="text"
-              >
-                {{ lang.name }}
-              </v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <v-list-item v-for="lang in txlocales(item.lang)" :key="lang.code">
+            <v-btn
+              @click="translatePage(lang.code)"
+              :prepend-icon="mdiArrowRightThin"
+              variant="text"
+            >
+              {{ lang.name }}
+            </v-btn>
+          </v-list-item>
+        </ActionMenu>
       </span>
     </template>
   </DetailAppBar>
@@ -837,7 +842,7 @@ export default {
           {{ $gettext('Metrics') }}
         </v-tab>
         <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key" @click="aside = ''">
-          {{ sp.label }}
+          {{ label(sp) }}
         </v-tab>
       </v-tabs>
 

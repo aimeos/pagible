@@ -2,11 +2,11 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { urladmin } from './config'
-import gettext from './i18n'
+import gettext, { pluginLabel } from './i18n'
 
 function itemProps() {
   let item
@@ -26,7 +26,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('./views/Login.vue'),
       meta: {
-        title: gettext.$gettext('Login')
+        title: 'Login'
       }
     },
     {
@@ -35,7 +35,7 @@ const router = createRouter({
       component: () => import('./views/PageList.vue'),
       meta: {
         auth: true,
-        title: gettext.$gettext('Pages')
+        title: 'Pages'
       }
     },
     {
@@ -46,7 +46,7 @@ const router = createRouter({
       meta: {
         auth: true,
         permission: 'page:view',
-        title: gettext.$gettext('Page')
+        title: 'Page'
       }
     },
     {
@@ -55,7 +55,7 @@ const router = createRouter({
       component: () => import('./views/FileList.vue'),
       meta: {
         auth: true,
-        title: gettext.$gettext('Media')
+        title: 'Media'
       }
     },
     {
@@ -66,7 +66,7 @@ const router = createRouter({
       meta: {
         auth: true,
         permission: 'file:view',
-        title: gettext.$gettext('File')
+        title: 'File'
       }
     },
     {
@@ -75,7 +75,7 @@ const router = createRouter({
       component: () => import('./views/ElementList.vue'),
       meta: {
         auth: true,
-        title: gettext.$gettext('Shared elements')
+        title: 'Shared elements'
       }
     },
     {
@@ -86,7 +86,7 @@ const router = createRouter({
       meta: {
         auth: true,
         permission: 'element:view',
-        title: gettext.$gettext('Element')
+        title: 'Element'
       }
     },
     {
@@ -96,7 +96,7 @@ const router = createRouter({
       meta: {
         auth: true,
         permission: ['access:view', 'user:access', 'user:permission', 'user:create'],
-        title: gettext.$gettext('Users')
+        title: 'Users'
       }
     }
   ]
@@ -132,8 +132,15 @@ export async function guard(to) {
 
 router.beforeEach(guard)
 
+function title(route) {
+  const value = route.meta.title
+    ? pluginLabel({ label: route.meta.title, i18n: route.meta.i18n })
+    : route.path
+  document.title = value + ' — PagibleAI CMS'
+}
+
 router.afterEach((to, from) => {
-  document.title = (to.meta.title || to.path) + ' — PagibleAI CMS'
+  title(to)
 
   useViewStack().stack = []
 
@@ -164,10 +171,16 @@ export function addPluginRoutes() {
       meta: {
         auth: true,
         permission: panel.permission,
-        title: gettext.$gettext(panel.label)
+        title: panel.label,
+        i18n: panel.i18n
       }
     })
   }
 }
+
+watch(
+  () => gettext.translations,
+  () => title(router.currentRoute.value)
+)
 
 export default router

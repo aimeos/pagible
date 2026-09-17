@@ -17,6 +17,13 @@ namespace Aimeos\Cms;
 class Plugin
 {
     /**
+     * Registered translation catalogs indexed by context.
+     *
+     * @var array<string, string>
+     */
+    private static array $i18n = [];
+
+    /**
      * Registered top-level navigation panels indexed by key.
      *
      * @var array<string, array<string, string>>
@@ -34,14 +41,54 @@ class Plugin
     /**
      * Returns all registered panels and sub-panels in registration order.
      *
-     * @return array<string, array<string, mixed>> Map with "panels" and "subpanels" keys
+     * @return array{
+     *   i18n: array<string, string>,
+     *   panels: array<string, array<string, string>>,
+     *   subpanels: array<string, array<string, array<string, string>>>
+     * }
      */
     public static function all() : array
     {
         return [
+            'i18n' => self::$i18n,
             'panels' => self::$panels,
             'subpanels' => self::$subpanels,
         ];
+    }
+
+
+    /**
+     * Registers a package-owned admin translation catalog.
+     *
+     * The URL must be a same-origin absolute path containing one "{locale}"
+     * placeholder, which the admin replaces with its active language.
+     *
+     * @param string $key Translation context matching "[a-z0-9_-]+"
+     * @param string $url Catalog URL, e.g. "/vendor/cms/example/i18n/{locale}.json"
+     * @throws \InvalidArgumentException If the key or catalog URL is invalid
+     * @throws \LogicException If the key is already registered differently
+     */
+    public static function i18n( string $key, string $url ) : void
+    {
+        if( !preg_match( '/^[a-z0-9_-]+$/', $key ) ) {
+            throw new \InvalidArgumentException( "Invalid translation key '$key'" );
+        }
+
+        self::url( $key, $url, 'translation catalog' );
+
+        if( substr_count( $url, '{locale}' ) !== 1 ) {
+            throw new \InvalidArgumentException( "Translation catalog URL '$url' for plugin '$key' requires one '{locale}' placeholder" );
+        }
+
+        if( isset( self::$i18n[$key] ) ) {
+            if( self::$i18n[$key] === $url ) {
+                return;
+            }
+
+            throw new \LogicException( "Translation catalog '$key' is already registered" );
+        }
+
+        self::$i18n[$key] = $url;
     }
 
 
@@ -54,7 +101,7 @@ class Plugin
      * element or file editor and inherits the host view's permission.
      *
      * @param string $key Panel key, e.g. "products" or "page:settings"
-     * @param array<string, string> $definition Definition with "label", "component" and optional "icon"/"permission"
+     * @param array<string, string> $definition Definition with "label", "component" and optional "icon"/"i18n"/"permission"
      * @throws \InvalidArgumentException If the key, definition or component URL is invalid
      * @throws \LogicException If the key is already registered
      */
@@ -64,7 +111,11 @@ class Plugin
             throw new \InvalidArgumentException( "Plugin '$key' requires a 'label'" );
         }
 
-        self::url( $key, $definition['component'] ?? null );
+        self::url( $key, $definition['component'] ?? null, 'component' );
+
+        if( isset( $definition['i18n'] ) && !isset( self::$i18n[$definition['i18n']] ) ) {
+            throw new \InvalidArgumentException( "Unknown translation catalog '{$definition['i18n']}' for plugin '$key'" );
+        }
 
         if( strpos( $key, ':' ) === false ) {
             self::panel( $key, $definition );
@@ -102,6 +153,10 @@ class Plugin
             $panel['icon'] = $definition['icon'];
         }
 
+        if( isset( $definition['i18n'] ) ) {
+            $panel['i18n'] = $definition['i18n'];
+        }
+
         if( isset( self::$panels[$key] ) ) {
             if( self::$panels[$key] === $panel ) {
                 return;
@@ -135,6 +190,10 @@ class Plugin
             'component' => $definition['component'],
         ];
 
+        if( isset( $definition['i18n'] ) ) {
+            $panel['i18n'] = $definition['i18n'];
+        }
+
         if( isset( self::$subpanels[$host][$name] ) ) {
             if( self::$subpanels[$host][$name] === $panel ) {
                 return;
@@ -148,20 +207,26 @@ class Plugin
 
 
     /**
-     * Validates the component URL of a panel.
+     * Validates a same-origin URL of a plugin resource.
      *
      * @param string $key Panel key for error messages
-     * @param string|null $url Component URL to validate
+     * @param string|null $url Resource URL to validate
+     * @param string $field Resource name for error messages
      * @throws \InvalidArgumentException If the URL is missing or unsafe
      */
-    private static function url( string $key, ?string $url ) : void
+    private static function url( string $key, ?string $url, string $field ) : void
     {
         if( empty( $url ) ) {
-            throw new \InvalidArgumentException( "Plugin '$key' requires a 'component'" );
+            throw new \InvalidArgumentException( "Plugin '$key' requires a '$field'" );
         }
 
-        if( $url[0] !== '/' || str_starts_with( $url, '//' ) || str_contains( $url, '..' ) ) {
-            throw new \InvalidArgumentException( "Invalid component URL '$url' for plugin '$key'" );
+        $decoded = rawurldecode( $url );
+
+        if( $decoded[0] !== '/' || str_starts_with( $decoded, '//' )
+            || str_contains( $decoded, '..' ) || str_contains( $decoded, '\\' )
+            || preg_match( '/[\x00-\x20\x7f]/', $decoded )
+        ) {
+            throw new \InvalidArgumentException( "Invalid $field URL '$url' for plugin '$key'" );
         }
     }
 }

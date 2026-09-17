@@ -17,7 +17,7 @@ composer require aimeos/pagible
 - **Apollo Client** - GraphQL (batch + file upload support)
 - **CKEditor 5** - Rich text editing
 - **Chart.js** - Metrics visualization
-- **vue3-gettext** - Internationalization (32 languages)
+- **vue3-gettext** - Internationalization (33 languages)
 - **Cypress** - Component and E2E testing
 
 ## Configuration
@@ -122,11 +122,23 @@ admin/
 │   └── assets/              # Stylesheets
 ├── tests/components/        # Cypress component tests
 ├── cypress/e2e/             # Cypress E2E tests
-├── i18n/                    # Translation JSON files (32 languages)
+├── i18n/                    # Translation JSON files (33 languages)
 └── index.html               # HTML template with data-attribute config
 ```
 
 ## Architecture Notes
+
+### Admin Extensions
+
+Composer packages register top-level panels and page, element or file editor sub-panels with `Aimeos\Cms\Plugin::register()`. The component URL must point to a Vite-built ES module whose default export is a Vue component. Components are loaded lazily; the admin host supplies the application shell for top-level panels and injects the shared `apollo` client and `messages` store.
+
+External panels should use the host-owned Vuetify and CMS components exported as `pluginComponents` from `js/plugin.js`. This keeps one Vuetify runtime and gives extensions the same common form, layout, list, feedback and navigation primitives as the core admin. Components declared by the extension itself are preserved when the host wraps it.
+
+CMS components are loaded only when rendered. `CmsActionMenu` provides the responsive action menu/dialog shell, while `CmsDialog` provides the standard dialog header, content and action layout. `CmsFilePicker` provides the standard media dialog; it accepts `v-model`, optional `filter` and `grid` properties, and emits `add` with the selected file. `CmsLoadingSpinner` provides the shared loading indicator.
+
+Extensions keep their translations in their own package by registering a locale URL with `Plugin::i18n()`, then assigning its key as the panel's `i18n` value. Catalog URLs contain one `{locale}` placeholder and point to split JSON files published with the extension. Use the same key as the gettext context for all extension strings, for example `$pgettext('commerce', 'Products')`. The host loads the active package catalog into its shared gettext instance without allowing it to overwrite core or other package contexts.
+
+Application-shell components, Vuetify Labs components and heavy specialized widgets are intentionally outside this public surface. Add reusable components to `pluginComponents` together with their contract tests; otherwise, an extension must register and maintain the component itself. All extension-facing labels and messages must be translated.
 
 ### Dynamic Field System
 
@@ -176,7 +188,7 @@ Nine focused Pinia stores in `src/stores.js`:
 
 ### Internationalization
 
-All user-facing strings must use `$gettext('message')` or `$pgettext('context', 'message')`. Translations are in `i18n/*.json` for 32 languages. Run `npm run gettext:extract` after adding new strings and `npm run gettext:compile` after updating translations.
+All user-facing strings must use `$gettext('message')` or `$pgettext('context', 'message')`. Translations are in `i18n/*.json` for 33 languages. Run `npm run gettext:extract` after adding new strings and `npm run gettext:compile` after updating translations.
 
 ### App Configuration
 

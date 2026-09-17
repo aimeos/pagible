@@ -2,7 +2,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { safeParse } from './utils'
+import { safeParse } from './json'
 
 const el = document.querySelector('#app')
 const dataset = el?.dataset || {}
@@ -21,9 +21,7 @@ export const urlcsrf = dataset.urlcsrf || '/cmsapi/csrf'
 // which must stay empty rather than fall back to a path that would 404; only a missing attribute defaults.
 export const urlchat = dataset.urlchat ?? '/cmsapi/chat'
 
-// Strip prototype-polluting keys from the server-rendered bootstrap data via the shared
-// safeParse(). The import creates a config<->utils cycle (utils -> stores -> config), but it's
-// harmless: safeParse is a hoisted function declaration, so its binding is initialized before any
-// module body runs and these load-time calls resolve it even mid-cycle.
+// Strip prototype-polluting keys from the server-rendered bootstrap data.
 export const locales = safeParse(dataset.locales, ['en'])
+export const plugins = safeParse(dataset.plugins, {})
 export const theme = safeParse(dataset.theme, {})
