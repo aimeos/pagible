@@ -1,0 +1,1 @@
+import e from"./File-CwYYQQLn.js";var t={extends:e,setup:e.setup,computed:{kind(){return`image`}}};export{t as default};
