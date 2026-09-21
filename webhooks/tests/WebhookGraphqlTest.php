@@ -430,7 +430,8 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     public function testSavingUnchangedValuesIsSkipped() : void
     {
         $webhook = $this->webhook( ['editor' => 'other@testbench', 'events' => ['page.deleted', 'page.published']] );
-        $updated = $webhook->updated_at;
+        // Compare with the stored value, SQL Server rounds fractional seconds
+        $updated = $webhook->refresh()->updated_at;
         $mutation = /** @lang GraphQL */ '
             mutation ($id: ID!, $events: [String!]!, $status: Boolean!) {
               saveWebhook(id: $id, input: {events: $events, status: $status}) { editor }
