@@ -17,228 +17,340 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhookok"
 
-#: src/views/WebhookList.vue:143
+#: src/views/WebhookList.vue:152
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr ""
+"A webhookokat a szerverkonfiguráció letiltotta, nem küldünk eseményeket"
+
+#: src/views/WebhookList.vue:159
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "A szerverkonfiguráció minden kézbesítést blokkol"
+
+#: src/views/WebhookList.vue:166
+msgctxt "webhooks"
+msgid "No queued delivery was processed since %{date}, check the queue worker"
+msgstr ""
+"%{date} óta egyetlen sorban álló kézbesítés sem lett feldolgozva, "
+"ellenőrizze a sorfeldolgozót"
+
+#: src/views/WebhookList.vue:194
 msgctxt "webhooks"
 msgid "All"
 msgstr "Minden"
 
-#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
-#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktív"
 
-#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Inaktív"
 
-#: src/views/WebhookList.vue:185
+#: src/views/WebhookList.vue:245
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Hiba a webhookok lekérésekor"
 
-#: src/views/WebhookList.vue:239
+#: src/views/WebhookList.vue:315
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Hiba a webhook mentésekor"
 
-#: src/views/WebhookList.vue:255
+#: src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Error replacing webhook destination"
 msgstr "Hiba a webhook céljának cseréjekor"
 
-#: src/views/WebhookList.vue:268
+#: src/views/WebhookList.vue:336
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"Lecseréli a webhook titkos kulcsát? A fogadókat frissíteni kell az új titkos "
+"kulccsal."
+
+#: src/views/WebhookList.vue:352
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Hiba a webhook titkos kulcsának cseréjekor"
 
-#: src/views/WebhookList.vue:275
+#: src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "Tesztesemény kézbesítve"
+
+#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "A tesztesemény sikertelen"
+
+#: src/views/WebhookList.vue:391
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "Törli ezt a webhookot?"
 
-#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
-#: src/views/WebhookList.vue:518
+#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "Törlés"
 
-#: src/views/WebhookList.vue:292
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "Hiba a webhook törlésekor"
 
-#: src/views/WebhookList.vue:300
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Titkos kulcs másolva"
 
-#: src/views/WebhookList.vue:305
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "A titkos kulcs nem másolható"
 
-#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
 msgctxt "webhooks"
 msgid "None"
 msgstr "Nincs"
 
-#: src/views/WebhookList.vue:317
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "A kapcsolódás sikertelen"
+
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Hozzáférés megtagadva"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
-msgid "Value has invalid format"
-msgstr "Az érték formátuma érvénytelen"
+msgid "Can't be decrypted, replace the URL"
+msgstr "Nem fejthető vissza, cserélje le az URL-t"
 
-#: src/views/WebhookList.vue:319
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "A szerver konfigurációja letiltotta"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
+#: src/views/WebhookList.vue:902
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Nem érvényes URL"
 
-#: src/views/WebhookList.vue:321
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "A várólista nem érhető el"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "A gazdagép nem található"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "A válasz túl nagy"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "A kérés túllépte az időkorlátot"
+
+#: src/views/WebhookList.vue:456
+msgctxt "webhooks"
+msgid "Secure connection failed"
+msgstr "A biztonságos kapcsolat sikertelen"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "Az átirányításokat nem követjük"
+
+#: src/views/WebhookList.vue:462
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "A kézbesítés sikertelen"
 
-#: src/views/WebhookList.vue:382
+#: src/views/WebhookList.vue:540
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Aláírt értesítések küldése a közzétett tartalom változásakor."
 
-#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Kiválasztás váltása"
 
-#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
+#: src/views/WebhookList.vue:782
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Webhook hozzáadása"
 
-#: src/views/WebhookList.vue:435
+#: src/views/WebhookList.vue:602
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Keresés a"
 
-#: src/views/WebhookList.vue:443
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Állapot"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Frissítés"
 
-#: src/views/WebhookList.vue:492
+#: src/views/WebhookList.vue:659
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Szerkesztés"
 
-#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
 msgctxt "webhooks"
 msgid "Replace"
 msgstr "Csere"
 
-#: src/views/WebhookList.vue:508
+#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Kulcscsere"
 
-#: src/views/WebhookList.vue:546
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Send test event"
+msgstr "Tesztesemény küldése"
+
+#: src/views/WebhookList.vue:731
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Legutóbbi siker"
 
-#: src/views/WebhookList.vue:550
-msgctxt "webhooks"
-msgid "Failures"
-msgstr "Hibák"
-
-#: src/views/WebhookList.vue:551
+#: src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Legutóbbi hiba"
 
-#: src/views/WebhookList.vue:561
+#: src/views/WebhookList.vue:742
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "Szüneteltetve eddig"
+
+#: src/views/WebhookList.vue:752
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Betöltés"
 
-#: src/views/WebhookList.vue:578
+#: src/views/WebhookList.vue:758
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Nem találtunk bejegyzést"
 
-#: src/views/WebhookList.vue:579
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Nincsenek beállított webhookok."
 
-#: src/views/WebhookList.vue:601
+#: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Webhook szerkesztése"
 
-#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
-msgctxt "webhooks"
-msgid "HTTPS endpoint URL"
-msgstr "HTTPS-végpont URL-címe"
-
-#: src/views/WebhookList.vue:630
-msgctxt "webhooks"
-msgid "Events"
-msgstr "Események"
-
-#: src/views/WebhookList.vue:637
-msgctxt "webhooks"
-msgid "New webhooks are inactive until you save them as active."
-msgstr "Az új webhookok inaktívak, amíg aktívként nem menti őket."
-
-#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
-msgctxt "webhooks"
-msgid "Cancel"
-msgstr "Törölje"
-
-#: src/views/WebhookList.vue:654
-msgctxt "webhooks"
-msgid "Save"
-msgstr "Mentés"
-
-#: src/views/WebhookList.vue:661
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "Webhook céljának cseréje"
-
-#: src/views/WebhookList.vue:673
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "A cél cseréje lecseréli a titkos kulcsot és letiltja a webhookot."
-
-#: src/views/WebhookList.vue:697
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "Webhook titkos kulcsa"
-
-#: src/views/WebhookList.vue:704
+#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Másolja ki most ezt a titkos kulcsot. Többé nem jelenik meg."
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS-végpont URL-címe"
+
+#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
+msgctxt "webhooks"
+msgid "Current destination"
+msgstr "Jelenlegi cél"
+
+#: src/views/WebhookList.vue:849
+msgctxt "webhooks"
+msgid "Name"
+msgstr "Név"
+
+#: src/views/WebhookList.vue:857
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Események"
+
+#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Kész"
 
-#: src/views/WebhookList.vue:717
+#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Titkos kulcs másolása"
+
+#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Törölje"
+
+#: src/views/WebhookList.vue:884
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Mentés"
+
+#: src/views/WebhookList.vue:892
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Webhook céljának cseréje"
+
+#: src/views/WebhookList.vue:911
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "A cél cseréje lecseréli a titkos kulcsot és letiltja a webhookot."
+
+#: src/views/WebhookList.vue:936
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Webhook titkos kulcsa"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Receivers still using the previous secret will reject deliveries "
+#~ "immediately. Rotate the secret again?"
+#~ msgstr ""
+#~ "Az előző titkos kulcsot még használó fogadók azonnal elutasítják a "
+#~ "kézbesítéseket. Újra lecseréli a titkos kulcsot?"
+
+#~ msgctxt "webhooks"
+#~ msgid "Previous secret valid until"
+#~ msgstr "Az előző titkos kulcs érvényes eddig"
+
+#~ msgctxt "webhooks"
+#~ msgid "Value has invalid format"
+#~ msgstr "Az érték formátuma érvénytelen"
+
+#~ msgctxt "webhooks"
+#~ msgid "Failures"
+#~ msgstr "Hibák"
+
+#~ msgctxt "webhooks"
+#~ msgid "New webhooks are inactive until you save them as active."
+#~ msgstr "Az új webhookok inaktívak, amíg aktívként nem menti őket."
 
 #~ msgctxt "webhooks"
 #~ msgid "Actions"

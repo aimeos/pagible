@@ -114,6 +114,51 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
 
 
     /**
+     * Returns a valid secret in the Standard Webhooks format whose key starts with the name.
+     */
+    protected static function secret( string $name = 'test' ) : string
+    {
+        return 'whsec_' . base64_encode( str_pad( $name, 32, '-' ) );
+    }
+
+
+    /**
+     * Returns the stored secrets, the current one first and the rotated ones valid until their time.
+     *
+     * @param array<string, \DateTimeInterface> $previous Names of the rotated secrets and their expiry
+     * @return list<array{secret: string, until: int|null}>
+     */
+    protected static function secrets( string $name = 'test', array $previous = [] ) : array
+    {
+        $secrets = [['secret' => self::secret( $name ), 'until' => null]];
+
+        foreach( $previous as $key => $until ) {
+            $secrets[] = ['secret' => self::secret( $key ), 'until' => $until->getTimestamp()];
+        }
+
+        return $secrets;
+    }
+
+
+    /**
+     * Encrypts the stored values with another key, like after changing APP_KEY without APP_PREVIOUS_KEYS.
+     */
+    protected function undecryptable( Webhook $webhook ) : Webhook
+    {
+        $cipher = (string) config( 'app.cipher' );
+        $encrypter = new \Illuminate\Encryption\Encrypter( \Illuminate\Encryption\Encrypter::generateKey( $cipher ), $cipher );
+
+        $values = ['url' => $webhook->url, 'secrets' => json_encode( $webhook->secrets, JSON_THROW_ON_ERROR )];
+
+        Webhook::withoutTenancy()->whereKey( $webhook->id )->toBase()->update(
+            array_map( fn( string $value ) => $encrypter->encryptString( $value ), $values )
+        );
+
+        return $webhook;
+    }
+
+
+    /**
      * @param array<string, mixed> $attributes
      */
     protected function webhook( array $attributes = [] ) : Webhook
@@ -123,9 +168,8 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
             'tenant_id' => 'test',
             'status' => true,
             'revision' => 1,
-            'failures' => 0,
             'url' => 'https://example.com/hooks/cms',
-            'secret' => 'test-secret',
+            'secrets' => self::secrets(),
             'events' => ['page.published'],
             'last_error' => null,
             'last_success_at' => null,

@@ -25,11 +25,11 @@ return new class extends Migration
             $table->string( 'tenant_id', 250 );
             $table->smallInteger( 'status' )->default( 0 );
             $table->unsignedBigInteger( 'revision' )->default( 1 );
-            $table->unsignedInteger( 'failures' )->default( 0 );
+            $table->string( 'name', 100 )->default( '' );
             $table->text( 'url' );
-            $table->text( 'secret' );
+            $table->text( 'secrets' );
             $table->json( 'events' );
-            $table->text( 'last_error' )->nullable();
+            $table->json( 'last_error' )->nullable();
             $table->timestamp( 'last_success_at' )->nullable();
             $table->string( 'editor' );
             $table->timestamps();

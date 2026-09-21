@@ -17,229 +17,342 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Уебхукове"
 
-#: src/views/WebhookList.vue:143
+#: src/views/WebhookList.vue:152
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr ""
+"Уебхуковете са деактивирани от конфигурацията на сървъра, не се изпращат "
+"събития"
+
+#: src/views/WebhookList.vue:159
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "Всички доставки са блокирани от конфигурацията на сървъра"
+
+#: src/views/WebhookList.vue:166
+msgctxt "webhooks"
+msgid "No queued delivery was processed since %{date}, check the queue worker"
+msgstr ""
+"Нито една доставка от опашката не е обработена от %{date}, проверете "
+"работния процес на опашката"
+
+#: src/views/WebhookList.vue:194
 msgctxt "webhooks"
 msgid "All"
 msgstr "Всички"
 
-#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
-#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Активен"
 
-#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Неактивен"
 
-#: src/views/WebhookList.vue:185
+#: src/views/WebhookList.vue:245
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Грешка при зареждането на уебхукове"
 
-#: src/views/WebhookList.vue:239
+#: src/views/WebhookList.vue:315
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Грешка при запазването на уебхук"
 
-#: src/views/WebhookList.vue:255
+#: src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Error replacing webhook destination"
 msgstr "Грешка при замяната на дестинацията на уебхука"
 
-#: src/views/WebhookList.vue:268
+#: src/views/WebhookList.vue:336
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"Да се поднови ли тайната на този уебхук? Получателите трябва да бъдат "
+"обновени с новата тайна."
+
+#: src/views/WebhookList.vue:352
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Грешка при подновяването на тайната на уебхука"
 
-#: src/views/WebhookList.vue:275
+#: src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "Тестовото събитие е доставено"
+
+#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "Тестовото събитие е неуспешно"
+
+#: src/views/WebhookList.vue:391
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "Да се изтрие ли този уебхук?"
 
-#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
-#: src/views/WebhookList.vue:518
+#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "Изтриване"
 
-#: src/views/WebhookList.vue:292
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "Грешка при изтриването на уебхук"
 
-#: src/views/WebhookList.vue:300
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Тайната е копирана"
 
-#: src/views/WebhookList.vue:305
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Тайната не може да бъде копирана"
 
-#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
 msgctxt "webhooks"
 msgid "None"
 msgstr "Няма"
 
-#: src/views/WebhookList.vue:317
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "Връзката е неуспешна"
+
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Отказан достъп"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
-msgid "Value has invalid format"
-msgstr "Стойността има невалиден формат"
+msgid "Can't be decrypted, replace the URL"
+msgstr "Не може да се дешифрира, заменете URL адреса"
 
-#: src/views/WebhookList.vue:319
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "Блокирано от конфигурацията на сървъра"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
+#: src/views/WebhookList.vue:902
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Не е валиден URL адрес"
 
-#: src/views/WebhookList.vue:321
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "Опашката не е достъпна"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "Хостът не е намерен"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "Отговорът е твърде голям"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "Времето за заявката изтече"
+
+#: src/views/WebhookList.vue:456
+msgctxt "webhooks"
+msgid "Secure connection failed"
+msgstr "Защитената връзка е неуспешна"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "Пренасочванията не се следват"
+
+#: src/views/WebhookList.vue:462
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Доставянето е неуспешно"
 
-#: src/views/WebhookList.vue:382
+#: src/views/WebhookList.vue:540
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr ""
 "Изпращане на подписани известия при промяна на публикуваното съдържание."
 
-#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Превключване на избора"
 
-#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
+#: src/views/WebhookList.vue:782
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Добавяне на уебхук"
 
-#: src/views/WebhookList.vue:435
+#: src/views/WebhookList.vue:602
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Търсене за"
 
-#: src/views/WebhookList.vue:443
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Статус"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Опресняване"
 
-#: src/views/WebhookList.vue:492
+#: src/views/WebhookList.vue:659
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Редактиране на"
 
-#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
 msgctxt "webhooks"
 msgid "Replace"
 msgstr "Замяна"
 
-#: src/views/WebhookList.vue:508
+#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Подновяване"
 
-#: src/views/WebhookList.vue:546
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Send test event"
+msgstr "Изпращане на тестово събитие"
+
+#: src/views/WebhookList.vue:731
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Последен успех"
 
-#: src/views/WebhookList.vue:550
-msgctxt "webhooks"
-msgid "Failures"
-msgstr "Неуспехи"
-
-#: src/views/WebhookList.vue:551
+#: src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Последна грешка"
 
-#: src/views/WebhookList.vue:561
+#: src/views/WebhookList.vue:742
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "Спряно до"
+
+#: src/views/WebhookList.vue:752
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Зареждане на"
 
-#: src/views/WebhookList.vue:578
+#: src/views/WebhookList.vue:758
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Не са намерени записи"
 
-#: src/views/WebhookList.vue:579
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Няма конфигурирани уебхукове."
 
-#: src/views/WebhookList.vue:601
+#: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Редактиране на уебхук"
 
-#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
-msgctxt "webhooks"
-msgid "HTTPS endpoint URL"
-msgstr "URL на HTTPS крайна точка"
-
-#: src/views/WebhookList.vue:630
-msgctxt "webhooks"
-msgid "Events"
-msgstr "Събития"
-
-#: src/views/WebhookList.vue:637
-msgctxt "webhooks"
-msgid "New webhooks are inactive until you save them as active."
-msgstr "Новите уебхукове са неактивни, докато не ги запазите като активни."
-
-#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
-msgctxt "webhooks"
-msgid "Cancel"
-msgstr "Отмяна на"
-
-#: src/views/WebhookList.vue:654
-msgctxt "webhooks"
-msgid "Save"
-msgstr "Запазете"
-
-#: src/views/WebhookList.vue:661
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "Замяна на дестинацията на уебхука"
-
-#: src/views/WebhookList.vue:673
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "Замяната на дестинацията подновява тайната и деактивира уебхука."
-
-#: src/views/WebhookList.vue:697
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "Тайна на уебхука"
-
-#: src/views/WebhookList.vue:704
+#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Копирайте тази тайна сега. Тя няма да бъде показана отново."
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL на HTTPS крайна точка"
+
+#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
+msgctxt "webhooks"
+msgid "Current destination"
+msgstr "Текуща дестинация"
+
+#: src/views/WebhookList.vue:849
+msgctxt "webhooks"
+msgid "Name"
+msgstr "Име"
+
+#: src/views/WebhookList.vue:857
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Събития"
+
+#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Готово"
 
-#: src/views/WebhookList.vue:717
+#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Копиране на тайната"
+
+#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Отмяна на"
+
+#: src/views/WebhookList.vue:884
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Запазете"
+
+#: src/views/WebhookList.vue:892
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Замяна на дестинацията на уебхука"
+
+#: src/views/WebhookList.vue:911
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Замяната на дестинацията подновява тайната и деактивира уебхука."
+
+#: src/views/WebhookList.vue:936
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Тайна на уебхука"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Receivers still using the previous secret will reject deliveries "
+#~ "immediately. Rotate the secret again?"
+#~ msgstr ""
+#~ "Получателите, които все още използват предишната тайна, веднага ще "
+#~ "отхвърлят доставките. Да се поднови ли тайната отново?"
+
+#~ msgctxt "webhooks"
+#~ msgid "Previous secret valid until"
+#~ msgstr "Предишната тайна е валидна до"
+
+#~ msgctxt "webhooks"
+#~ msgid "Value has invalid format"
+#~ msgstr "Стойността има невалиден формат"
+
+#~ msgctxt "webhooks"
+#~ msgid "Failures"
+#~ msgstr "Неуспехи"
+
+#~ msgctxt "webhooks"
+#~ msgid "New webhooks are inactive until you save them as active."
+#~ msgstr "Новите уебхукове са неактивни, докато не ги запазите като активни."
 
 #~ msgctxt "webhooks"
 #~ msgid "Actions"
