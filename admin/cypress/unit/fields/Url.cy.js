@@ -38,6 +38,33 @@ describe('Url', () => {
     cy.get('.link-rel').should('not.exist')
   })
 
+  it('places link attributes beside the URL if the field is wide enough', () => {
+    cy.mount(Url, { props: { modelValue: 'https://example.com', config: { rel: true } } })
+    cy.get('.url-field').invoke('css', 'width', '800px')
+
+    cy.get('.url-input').should(($input) => {
+      const input = $input[0].getBoundingClientRect()
+      const rel = Cypress.$('.link-rel')[0].getBoundingClientRect()
+
+      expect(rel.top).to.be.closeTo(input.top, 1)
+      expect(rel.left).to.be.closeTo(input.right, 1)
+    })
+  })
+
+  it('places link attributes below the URL if the field is narrow', () => {
+    cy.mount(Url, { props: { modelValue: 'https://example.com', config: { rel: true } } })
+    cy.get('.url-field').invoke('css', 'width', '400px')
+
+    cy.get('.url-input').should(($input) => {
+      const input = $input[0].getBoundingClientRect()
+      const rel = Cypress.$('.link-rel')[0].getBoundingClientRect()
+
+      expect(rel.top).to.be.closeTo(input.bottom, 1)
+      expect(rel.left).to.be.closeTo(input.left, 1)
+      expect(rel.width).to.be.closeTo(input.width, 1)
+    })
+  })
+
   it('displays the selected external link attribute', () => {
     cy.mount(Url, {
       props: { modelValue: 'https://example.com', rel: 'nofollow', config: { rel: true } }

@@ -153,44 +153,51 @@ export default {
 
 <template>
   <div class="url-field" :class="{ external }">
-    <v-combobox
-      :error="hasError"
-      :rules="rules"
-      :items="pages"
-      :loading="loading"
-      :readonly="readonly"
-      :placeholder="config.placeholder || ''"
-      :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
-      :modelValue="modelValue ?? config.default ?? ''"
-      @update:modelValue="$emit('update:modelValue', $event)"
-      @update:search="searchd($event)"
-      density="comfortable"
-      hide-details="auto"
-      variant="outlined"
-      class="url-input ltr"
-      clearable
-    ></v-combobox>
-    <v-select
-      v-if="external"
-      :aria-label="$gettext('Link attribute')"
-      :items="relItems"
-      :readonly="readonly"
-      :modelValue="rel"
-      @update:modelValue="$emit('update:rel', $event)"
-      density="comfortable"
-      hide-details="auto"
-      variant="outlined"
-      item-title="val"
-      item-value="key"
-      class="link-rel"
-    ></v-select>
+    <div class="url-row">
+      <v-combobox
+        :error="hasError"
+        :rules="rules"
+        :items="pages"
+        :loading="loading"
+        :readonly="readonly"
+        :placeholder="config.placeholder || ''"
+        :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
+        :modelValue="modelValue ?? config.default ?? ''"
+        @update:modelValue="$emit('update:modelValue', $event)"
+        @update:search="searchd($event)"
+        density="comfortable"
+        hide-details="auto"
+        variant="outlined"
+        class="url-input ltr"
+        clearable
+      ></v-combobox>
+      <v-select
+        v-if="external"
+        :aria-label="$gettext('Link attribute')"
+        :items="relItems"
+        :readonly="readonly"
+        :modelValue="rel"
+        @update:modelValue="$emit('update:rel', $event)"
+        density="comfortable"
+        hide-details="auto"
+        variant="outlined"
+        item-title="val"
+        item-value="key"
+        class="link-rel"
+      ></v-select>
+    </div>
   </div>
 </template>
 
 <style scoped>
+/* Layout depends on the width available to the field, not on the viewport */
 .url-field {
+  container-type: inline-size;
+}
+
+.url-row {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
 }
 
 .url-input {
@@ -199,17 +206,41 @@ export default {
 }
 
 .link-rel {
-  flex: 0 0 10rem;
-  margin-inline-start: -1px;
+  margin-top: -1px;
 }
 
-.external :deep(.url-input .v-field) {
-  border-start-end-radius: 0;
-  border-end-end-radius: 0;
+@container (width < 576px) {
+  .external :deep(.url-input .v-field) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  :deep(.link-rel .v-field) {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
 }
 
-:deep(.link-rel .v-field) {
-  border-start-start-radius: 0;
-  border-end-start-radius: 0;
+@container (width >= 576px) {
+  .url-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .link-rel {
+    flex: 0 0 10rem;
+    margin-top: 0;
+    margin-inline-start: -1px;
+  }
+
+  .external :deep(.url-input .v-field) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  :deep(.link-rel .v-field) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
 }
 </style>
