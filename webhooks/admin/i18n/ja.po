@@ -17,228 +17,340 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhook"
 
-#: src/views/WebhookList.vue:143
+#: src/views/WebhookList.vue:152
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr ""
+"サーバー設定により Webhook は無効になっているため、イベントは送信されません"
+
+#: src/views/WebhookList.vue:159
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "サーバー設定によりすべての配信がブロックされています"
+
+#: src/views/WebhookList.vue:166
+msgctxt "webhooks"
+msgid "No queued delivery was processed since %{date}, check the queue worker"
+msgstr ""
+"%{date} 以降、キュー内の配信が処理されていません。キューワーカーを確認してく"
+"ださい"
+
+#: src/views/WebhookList.vue:194
 msgctxt "webhooks"
 msgid "All"
 msgstr "すべて"
 
-#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
-#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
 msgctxt "webhooks"
 msgid "Active"
 msgstr "有効"
 
-#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "無効"
 
-#: src/views/WebhookList.vue:185
+#: src/views/WebhookList.vue:245
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Webhook の取得中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:239
+#: src/views/WebhookList.vue:315
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Webhook の保存中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:255
+#: src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Error replacing webhook destination"
 msgstr "Webhook の送信先の置換中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:268
+#: src/views/WebhookList.vue:336
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"この Webhook のシークレットを更新しますか？受信側を新しいシークレットに更新す"
+"る必要があります。"
+
+#: src/views/WebhookList.vue:352
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Webhook シークレットの更新中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:275
+#: src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "テストイベントを配信しました"
+
+#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "テストイベントに失敗しました"
+
+#: src/views/WebhookList.vue:391
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "この Webhook を削除しますか？"
 
-#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
-#: src/views/WebhookList.vue:518
+#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "削除"
 
-#: src/views/WebhookList.vue:292
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "Webhook の削除中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:300
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "シークレットをコピーしました"
 
-#: src/views/WebhookList.vue:305
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "シークレットをコピーできませんでした"
 
-#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
 msgctxt "webhooks"
 msgid "None"
 msgstr "なし"
 
-#: src/views/WebhookList.vue:317
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "接続に失敗しました"
+
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "アクセス拒否"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
-msgid "Value has invalid format"
-msgstr "値の形式が無効です"
+msgid "Can't be decrypted, replace the URL"
+msgstr "復号できません。URL を置き換えてください"
 
-#: src/views/WebhookList.vue:319
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "サーバー設定によりブロックされました"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
+#: src/views/WebhookList.vue:902
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "有効なURLではない"
 
-#: src/views/WebhookList.vue:321
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "キューを利用できません"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "ホストが見つかりません"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "レスポンスが大きすぎます"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "リクエストがタイムアウトしました"
+
+#: src/views/WebhookList.vue:456
+msgctxt "webhooks"
+msgid "Secure connection failed"
+msgstr "安全な接続に失敗しました"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "リダイレクトはたどりません"
+
+#: src/views/WebhookList.vue:462
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "配信に失敗しました"
 
-#: src/views/WebhookList.vue:382
+#: src/views/WebhookList.vue:540
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "公開済みコンテンツが変更されたときに署名付き通知を送信します。"
 
-#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "選択を切り替える"
 
-#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
+#: src/views/WebhookList.vue:782
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Webhook を追加"
 
-#: src/views/WebhookList.vue:435
+#: src/views/WebhookList.vue:602
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "検索"
 
-#: src/views/WebhookList.vue:443
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Status"
 msgstr "ステータス"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "リフレッシュ"
 
-#: src/views/WebhookList.vue:492
+#: src/views/WebhookList.vue:659
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "編集"
 
-#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
 msgctxt "webhooks"
 msgid "Replace"
 msgstr "置換"
 
-#: src/views/WebhookList.vue:508
+#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "更新"
 
-#: src/views/WebhookList.vue:546
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Send test event"
+msgstr "テストイベントを送信"
+
+#: src/views/WebhookList.vue:731
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "最終成功"
 
-#: src/views/WebhookList.vue:550
-msgctxt "webhooks"
-msgid "Failures"
-msgstr "失敗回数"
-
-#: src/views/WebhookList.vue:551
+#: src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "直近のエラー"
 
-#: src/views/WebhookList.vue:561
+#: src/views/WebhookList.vue:742
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "一時停止の期限"
+
+#: src/views/WebhookList.vue:752
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "ローディング"
 
-#: src/views/WebhookList.vue:578
+#: src/views/WebhookList.vue:758
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "エントリーが見つかりません"
 
-#: src/views/WebhookList.vue:579
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Webhook は設定されていません。"
 
-#: src/views/WebhookList.vue:601
+#: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Webhook を編集"
 
-#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
-msgctxt "webhooks"
-msgid "HTTPS endpoint URL"
-msgstr "HTTPS エンドポイント URL"
-
-#: src/views/WebhookList.vue:630
-msgctxt "webhooks"
-msgid "Events"
-msgstr "イベント"
-
-#: src/views/WebhookList.vue:637
-msgctxt "webhooks"
-msgid "New webhooks are inactive until you save them as active."
-msgstr "新しい Webhook は、有効として保存するまで無効です。"
-
-#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
-msgctxt "webhooks"
-msgid "Cancel"
-msgstr "キャンセル"
-
-#: src/views/WebhookList.vue:654
-msgctxt "webhooks"
-msgid "Save"
-msgstr "セーブ"
-
-#: src/views/WebhookList.vue:661
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "Webhook の送信先を置換"
-
-#: src/views/WebhookList.vue:673
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "送信先を置換するとシークレットが更新され、Webhook は無効になります。"
-
-#: src/views/WebhookList.vue:697
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "Webhook シークレット"
-
-#: src/views/WebhookList.vue:704
+#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "このシークレットを今すぐコピーしてください。再表示されません。"
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS エンドポイント URL"
+
+#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
+msgctxt "webhooks"
+msgid "Current destination"
+msgstr "現在の送信先"
+
+#: src/views/WebhookList.vue:849
+msgctxt "webhooks"
+msgid "Name"
+msgstr "名前"
+
+#: src/views/WebhookList.vue:857
+msgctxt "webhooks"
+msgid "Events"
+msgstr "イベント"
+
+#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
 msgctxt "webhooks"
 msgid "Done"
 msgstr "完了"
 
-#: src/views/WebhookList.vue:717
+#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "シークレットをコピー"
+
+#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: src/views/WebhookList.vue:884
+msgctxt "webhooks"
+msgid "Save"
+msgstr "セーブ"
+
+#: src/views/WebhookList.vue:892
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Webhook の送信先を置換"
+
+#: src/views/WebhookList.vue:911
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "送信先を置換するとシークレットが更新され、Webhook は無効になります。"
+
+#: src/views/WebhookList.vue:936
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Webhook シークレット"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Receivers still using the previous secret will reject deliveries "
+#~ "immediately. Rotate the secret again?"
+#~ msgstr ""
+#~ "以前のシークレットをまだ使用している受信側は、配信を直ちに拒否します。シー"
+#~ "クレットを再度更新しますか？"
+
+#~ msgctxt "webhooks"
+#~ msgid "Previous secret valid until"
+#~ msgstr "以前のシークレットの有効期限"
+
+#~ msgctxt "webhooks"
+#~ msgid "Value has invalid format"
+#~ msgstr "値の形式が無効です"
+
+#~ msgctxt "webhooks"
+#~ msgid "Failures"
+#~ msgstr "失敗回数"
+
+#~ msgctxt "webhooks"
+#~ msgid "New webhooks are inactive until you save them as active."
+#~ msgstr "新しい Webhook は、有効として保存するまで無効です。"
 
 #~ msgctxt "webhooks"
 #~ msgid "Actions"

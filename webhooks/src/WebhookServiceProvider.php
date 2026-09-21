@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Commands\CheckWebhooks;
 use Aimeos\Cms\Commands\InstallWebhooks;
 use Aimeos\Cms\Commands\PurgeWebhooks;
 use Aimeos\Cms\Commands\ReencryptWebhooks;
@@ -18,7 +19,6 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\GraphQL\Directives\CmsPermissionDirective;
 use Aimeos\Cms\Listeners\WebhookListener;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as Provider;
 use Nuwave\Lighthouse\Events\BuildSchemaString;
@@ -46,8 +46,6 @@ class WebhookServiceProvider extends Provider
             );
         }
         if( (bool) config( 'cms.webhooks.enabled', false ) ) {
-            $this->app->make( WebhookClient::class )->validatePolicy();
-            $this->validateQueue();
             Event::listen(
                 [Published::class, Moved::class, Dropped::class, Restored::class, Purged::class, Bulk::class],
                 [WebhookListener::class, 'handle'],
@@ -66,7 +64,7 @@ class WebhookServiceProvider extends Provider
         }
 
         if( $this->app->runningInConsole() ) {
-            $this->commands( [InstallWebhooks::class, PurgeWebhooks::class, ReencryptWebhooks::class] );
+            $this->commands( [CheckWebhooks::class, InstallWebhooks::class, PurgeWebhooks::class, ReencryptWebhooks::class] );
         }
     }
 
@@ -75,22 +73,7 @@ class WebhookServiceProvider extends Provider
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/webhooks.php', 'cms.webhooks' );
         $this->app->singleton( WebhookClient::class );
+        $this->app->singleton( WebhookConfig::class );
         $this->app->singleton( WebhookManager::class );
-    }
-
-    protected function validateQueue() : void
-    {
-        if( !$this->app->bound( Encrypter::class )
-            || !( $this->app->make( Encrypter::class ) instanceof Encrypter )
-        ) {
-            throw new \LogicException( 'CMS webhooks require Laravel queue encryption support.' );
-        }
-
-        $connection = config( 'cms.webhooks.queue.connection' ) ?: config( 'queue.default' );
-        $driver = is_string( $connection ) ? config( "queue.connections.{$connection}.driver" ) : null;
-
-        if( !is_string( $connection ) || !is_string( $driver ) || $driver === 'null' ) {
-            throw new \LogicException( 'CMS webhooks require a delivery queue connection.' );
-        }
     }
 }

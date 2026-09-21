@@ -17,228 +17,339 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Veebikonksud"
 
-#: src/views/WebhookList.vue:143
+#: src/views/WebhookList.vue:152
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr "Vebikonksud on serveri seadistusega keelatud, sündmusi ei saadeta"
+
+#: src/views/WebhookList.vue:159
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "Kõik edastused on serveri seadistusega blokeeritud"
+
+#: src/views/WebhookList.vue:166
+msgctxt "webhooks"
+msgid "No queued delivery was processed since %{date}, check the queue worker"
+msgstr ""
+"Alates %{date} pole ühtegi järjekorras olevat edastust töödeldud, "
+"kontrollige järjekorra töötlejat"
+
+#: src/views/WebhookList.vue:194
 msgctxt "webhooks"
 msgid "All"
 msgstr "Kõik"
 
-#: src/views/WebhookList.vue:144 src/views/WebhookList.vue:540
-#: src/views/WebhookList.vue:609 src/views/WebhookList.vue:616
+#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktiivne"
 
-#: src/views/WebhookList.vue:145 src/views/WebhookList.vue:541
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Mitteaktiivne"
 
-#: src/views/WebhookList.vue:185
+#: src/views/WebhookList.vue:245
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Vebikonksude laadimisel tekkis viga"
 
-#: src/views/WebhookList.vue:239
+#: src/views/WebhookList.vue:315
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Vebikonksu salvestamisel tekkis viga"
 
-#: src/views/WebhookList.vue:255
+#: src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Error replacing webhook destination"
 msgstr "Vebikonksu sihtkoha asendamisel tekkis viga"
 
-#: src/views/WebhookList.vue:268
+#: src/views/WebhookList.vue:336
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"Kas uuendada selle vebikonksu saladust? Vastuvõtjad tuleb uue saladusega "
+"uuendada."
+
+#: src/views/WebhookList.vue:352
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Vebikonksu saladuse uuendamisel tekkis viga"
 
-#: src/views/WebhookList.vue:275
+#: src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "Testsündmus edastatud"
+
+#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "Testsündmus nurjus"
+
+#: src/views/WebhookList.vue:391
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "Kas kustutada see vebikonks?"
 
-#: src/views/WebhookList.vue:276 src/views/WebhookList.vue:413
-#: src/views/WebhookList.vue:518
+#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "Kustuta"
 
-#: src/views/WebhookList.vue:292
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "Vebikonksu kustutamisel tekkis viga"
 
-#: src/views/WebhookList.vue:300
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Saladus kopeeritud"
 
-#: src/views/WebhookList.vue:305
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Saladust ei saanud kopeerida"
 
-#: src/views/WebhookList.vue:312 src/views/WebhookList.vue:329
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
 msgctxt "webhooks"
 msgid "None"
 msgstr "Puudub"
 
-#: src/views/WebhookList.vue:317
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "Ühendus nurjus"
+
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Juurdepääs keelatud"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
-msgid "Value has invalid format"
-msgstr "Väärtuse vorming on vale"
+msgid "Can't be decrypted, replace the URL"
+msgstr "Ei saa dekrüpteerida, asenda URL"
 
-#: src/views/WebhookList.vue:319
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "Serveri seadistus blokeeris"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
+#: src/views/WebhookList.vue:902
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Ei ole kehtiv URL"
 
-#: src/views/WebhookList.vue:321
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "Järjekord pole saadaval"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "Hosti ei leitud"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "Vastus on liiga suur"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "Päringu ajalõpp"
+
+#: src/views/WebhookList.vue:456
+msgctxt "webhooks"
+msgid "Secure connection failed"
+msgstr "Turvaline ühendus nurjus"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "Ümbersuunamisi ei järgita"
+
+#: src/views/WebhookList.vue:462
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Edastamine nurjus"
 
-#: src/views/WebhookList.vue:382
+#: src/views/WebhookList.vue:540
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Saada allkirjastatud teavitusi, kui avaldatud sisu muutub."
 
-#: src/views/WebhookList.vue:394 src/views/WebhookList.vue:475
+#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Valiku lülitamine"
 
-#: src/views/WebhookList.vue:421 src/views/WebhookList.vue:585
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
+#: src/views/WebhookList.vue:782
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Lisa vebikonks"
 
-#: src/views/WebhookList.vue:435
+#: src/views/WebhookList.vue:602
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Otsi"
 
-#: src/views/WebhookList.vue:443
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Staatus"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Värskenda"
 
-#: src/views/WebhookList.vue:492
+#: src/views/WebhookList.vue:659
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Muuda"
 
-#: src/views/WebhookList.vue:500 src/views/WebhookList.vue:690
+#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
 msgctxt "webhooks"
 msgid "Replace"
 msgstr "Asenda"
 
-#: src/views/WebhookList.vue:508
+#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Uuenda"
 
-#: src/views/WebhookList.vue:546
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Send test event"
+msgstr "Saada testsündmus"
+
+#: src/views/WebhookList.vue:731
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Viimane õnnestumine"
 
-#: src/views/WebhookList.vue:550
-msgctxt "webhooks"
-msgid "Failures"
-msgstr "Tõrked"
-
-#: src/views/WebhookList.vue:551
+#: src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Viimane viga"
 
-#: src/views/WebhookList.vue:561
+#: src/views/WebhookList.vue:742
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "Peatatud kuni"
+
+#: src/views/WebhookList.vue:752
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Laadimine"
 
-#: src/views/WebhookList.vue:578
+#: src/views/WebhookList.vue:758
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Kirjeid ei leitud"
 
-#: src/views/WebhookList.vue:579
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Ühtegi vebikonksu pole seadistatud."
 
-#: src/views/WebhookList.vue:601
+#: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Muuda vebikonksu"
 
-#: src/views/WebhookList.vue:622 src/views/WebhookList.vue:666
-msgctxt "webhooks"
-msgid "HTTPS endpoint URL"
-msgstr "HTTPS-lõpp-punkti URL"
-
-#: src/views/WebhookList.vue:630
-msgctxt "webhooks"
-msgid "Events"
-msgstr "Sündmused"
-
-#: src/views/WebhookList.vue:637
-msgctxt "webhooks"
-msgid "New webhooks are inactive until you save them as active."
-msgstr "Uued vebikonksud on mitteaktiivsed, kuni salvestad need aktiivsena."
-
-#: src/views/WebhookList.vue:646 src/views/WebhookList.vue:682
-msgctxt "webhooks"
-msgid "Cancel"
-msgstr "Tühista"
-
-#: src/views/WebhookList.vue:654
-msgctxt "webhooks"
-msgid "Save"
-msgstr "Salvesta"
-
-#: src/views/WebhookList.vue:661
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "Asenda vebikonksu sihtkoht"
-
-#: src/views/WebhookList.vue:673
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "Sihtkoha asendamine uuendab saladuse ja deaktiveerib vebikonksu."
-
-#: src/views/WebhookList.vue:697
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "Vebikonksu saladus"
-
-#: src/views/WebhookList.vue:704
+#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Kopeeri see saladus kohe. Seda ei kuvata enam."
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS-lõpp-punkti URL"
+
+#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
+msgctxt "webhooks"
+msgid "Current destination"
+msgstr "Praegune sihtkoht"
+
+#: src/views/WebhookList.vue:849
+msgctxt "webhooks"
+msgid "Name"
+msgstr "Nimi"
+
+#: src/views/WebhookList.vue:857
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Sündmused"
+
+#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Valmis"
 
-#: src/views/WebhookList.vue:717
+#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopeeri saladus"
+
+#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Tühista"
+
+#: src/views/WebhookList.vue:884
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Salvesta"
+
+#: src/views/WebhookList.vue:892
+msgctxt "webhooks"
+msgid "Replace webhook destination"
+msgstr "Asenda vebikonksu sihtkoht"
+
+#: src/views/WebhookList.vue:911
+msgctxt "webhooks"
+msgid "Replacing the destination rotates the secret and disables the webhook."
+msgstr "Sihtkoha asendamine uuendab saladuse ja deaktiveerib vebikonksu."
+
+#: src/views/WebhookList.vue:936
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Vebikonksu saladus"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Receivers still using the previous secret will reject deliveries "
+#~ "immediately. Rotate the secret again?"
+#~ msgstr ""
+#~ "Vastuvõtjad, kes kasutavad veel eelmist saladust, lükkavad saadetised "
+#~ "kohe tagasi. Kas uuendada saladust uuesti?"
+
+#~ msgctxt "webhooks"
+#~ msgid "Previous secret valid until"
+#~ msgstr "Eelmine saladus kehtib kuni"
+
+#~ msgctxt "webhooks"
+#~ msgid "Value has invalid format"
+#~ msgstr "Väärtuse vorming on vale"
+
+#~ msgctxt "webhooks"
+#~ msgid "Failures"
+#~ msgstr "Tõrked"
+
+#~ msgctxt "webhooks"
+#~ msgid "New webhooks are inactive until you save them as active."
+#~ msgstr "Uued vebikonksud on mitteaktiivsed, kuni salvestad need aktiivsena."
 
 #~ msgctxt "webhooks"
 #~ msgid "Actions"

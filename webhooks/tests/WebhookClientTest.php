@@ -14,42 +14,6 @@ use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 
-final class StubWebhookClient extends WebhookClient
-{
-    /** @var array<int, mixed> */
-    public array $options = [];
-    public ?string $overflow = null;
-
-
-    /**
-     * @param array<int, mixed> $options
-     * @return array{bool, int}
-     */
-    protected function execute( array $options ) : array
-    {
-        $this->options = $options;
-
-        if( $this->overflow === 'body' ) {
-            call_user_func( $options[CURLOPT_WRITEFUNCTION], null, '12345' );
-            return [false, 0];
-        }
-
-        if( $this->overflow === 'headers' ) {
-            call_user_func( $options[CURLOPT_HEADERFUNCTION], null, '12345' );
-            return [false, 0];
-        }
-
-        return [true, 204];
-    }
-
-
-    protected function resolve( string $host ) : string
-    {
-        return '93.184.216.34';
-    }
-}
-
-
 class WebhookClientTest extends WebhookTestAbstract
 {
     public function testCanonicalUrl() : void
@@ -58,6 +22,19 @@ class WebhookClientTest extends WebhookTestAbstract
 
         $this->assertSame( 'https://example.com/hook?source=cms',
             $client->canonical( 'HTTPS://EXAMPLE.COM/hook?source=cms' ) );
+    }
+
+
+    public function testCanonicalUrlNormalizesEquivalentForms() : void
+    {
+        $client = app( WebhookClient::class );
+
+        $this->assertSame( 'https://example.com/', $client->canonical( 'https://example.com' ) );
+        $this->assertSame( 'https://example.com/~hook%2F?a=~', $client->canonical( 'https://example.com/%7ehook%2f?a=%7E' ) );
+        $this->assertSame( 'https://example.com/hook', $client->canonical( 'https://example.com/a/./../hook?' ) );
+
+        // Servers may handle paths with and without trailing slash differently
+        $this->assertSame( 'https://example.com/hook/', $client->canonical( 'https://example.com/hook/' ) );
     }
 
 
@@ -86,6 +63,7 @@ class WebhookClientTest extends WebhookTestAbstract
         yield 'credentials' => ['https://user:pass@example.com/hook'];
         yield 'fragment' => ['https://example.com/hook#token'];
         yield 'loopback' => ['https://127.0.0.1/hook'];
+        yield 'private' => ['https://10.0.0.1/hook'];
         yield 'link local' => ['https://169.254.169.254/latest/meta-data'];
         yield 'shared address space' => ['https://100.100.100.200/hook'];
         yield 'benchmark address space' => ['https://198.18.0.1/hook'];
@@ -98,49 +76,279 @@ class WebhookClientTest extends WebhookTestAbstract
     }
 
 
-    public function testExactHostPolicyCanAllowInternalDestination() : void
+    #[DataProvider( 'internalUrls' )]
+    public function testEndpointAllowsInternalDestination( string $url, string $expected ) : void
     {
-        config( ['cms.webhooks.hosts' => ['internal.example' => [
-            'schemes' => ['http'],
-            'ports' => [8080],
-            'cidrs' => ['10.0.0.0/8'],
-        ]]] );
-
-        $this->assertSame(
-            'http://internal.example:8080/hook',
-            app( WebhookClient::class )->canonical( 'http://internal.example:8080/hook' ),
-        );
+        $this->assertSame( $expected, app( WebhookClient::class )->canonical( $url, true ) );
     }
 
 
-    public function testExactHostPolicyCanAllowNonGlobalDestination() : void
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function internalUrls() : iterable
     {
-        config( ['cms.webhooks.hosts' => ['100.100.100.200' => [
-            'cidrs' => ['100.64.0.0/10'],
-        ]]] );
+        yield 'http with port' => ['HTTP://Indexer:8080/hook', 'http://indexer:8080/hook'];
+        yield 'localhost' => ['http://localhost/hook', 'http://localhost/hook'];
+        yield 'loopback' => ['http://127.0.0.1:9000/hook', 'http://127.0.0.1:9000/hook'];
+        yield 'loopback IPv6' => ['http://[::1]:9000/hook', 'http://[::1]:9000/hook'];
+        yield 'private' => ['https://10.0.0.5/hook', 'https://10.0.0.5/hook'];
+        yield 'public' => ['https://example.com/hook', 'https://example.com/hook'];
+    }
 
-        $this->assertSame(
-            'https://100.100.100.200/hook',
-            app( WebhookClient::class )->canonical( 'https://100.100.100.200/hook' ),
-        );
+
+    #[DataProvider( 'deniedInternalUrls' )]
+    public function testEndpointRejectsDeniedDestination( string $url ) : void
+    {
+        $this->expectException( WebhookException::class );
+        app( WebhookClient::class )->canonical( $url, true );
+    }
+
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function deniedInternalUrls() : iterable
+    {
+        yield 'metadata' => ['http://169.254.169.254/latest/meta-data'];
+        yield 'link local IPv6' => ['http://[fe80::1]/hook'];
+        yield 'unspecified' => ['http://0.0.0.0/hook'];
+        yield 'mapped IPv4' => ['http://[::ffff:127.0.0.1]/hook'];
+        yield 'multicast' => ['http://224.0.0.1/hook'];
+        yield 'other scheme' => ['ftp://indexer/hook'];
+        yield 'credentials' => ['http://user:pass@indexer/hook'];
+    }
+
+
+    public function testDenyCidrsApplyToEndpoints() : void
+    {
+        config( ['cms.webhooks.deny_cidrs' => ['10.0.0.0/8', '127.0.0.0/8']] );
+
+        try {
+            foreach( ['http://10.1.2.3/hook', 'http://127.0.0.1/hook'] as $url ) {
+                try {
+                    app( WebhookClient::class )->canonical( $url, true );
+                    $this->fail( 'Expected a denied destination for ' . $url );
+                } catch( WebhookException $e ) {
+                    $this->assertSame( 'destination_not_allowed', $e->reason );
+                }
+            }
+        } finally {
+            config( ['cms.webhooks.deny_cidrs' => []] );
+        }
+    }
+
+
+    public function testDenyListAcceptsSingleAddresses() : void
+    {
+        $client = app( WebhookClient::class );
+        config( ['cms.webhooks.deny_cidrs' => ['10.0.0.5', 'fd00::5']] );
+
+        try {
+            $this->assertNull( $client->policyError() );
+            $this->assertSame( 'http://10.0.0.6/hook', $client->canonical( 'http://10.0.0.6/hook', true ) );
+
+            foreach( ['http://10.0.0.5/hook', 'http://[fd00::5]/hook'] as $url ) {
+                try {
+                    $client->canonical( $url, true );
+                    $this->fail( 'Expected a denied destination for ' . $url );
+                } catch( WebhookException $e ) {
+                    $this->assertSame( 'destination_not_allowed', $e->reason );
+                }
+            }
+        } finally {
+            config( ['cms.webhooks.deny_cidrs' => []] );
+        }
     }
 
 
     public function testInvalidOperatorPolicyFailsValidation() : void
     {
-        config( ['cms.webhooks.deny_cidrs' => ['not-a-cidr']] );
-        $this->expectException( \LogicException::class );
+        $client = app( WebhookClient::class );
+        $this->assertNull( $client->policyError() );
 
-        app( WebhookClient::class )->validatePolicy();
+        foreach( [['not-a-cidr'], ['10.0.0.0/33'], ['10.0.0.0/'], ['10.0.0.0/-1'], ['10.0.0'], [42]] as $cidrs )
+        {
+            config( ['cms.webhooks.deny_cidrs' => $cidrs] );
+
+            try {
+                $this->assertSame( 'invalid_policy', $client->policyError() );
+            } finally {
+                config( ['cms.webhooks.deny_cidrs' => []] );
+            }
+        }
     }
 
 
-    public function testUnknownHostPolicyKeyFailsValidation() : void
+    public function testInvalidOperatorPolicyBlocksAllDeliveries() : void
     {
-        config( ['cms.webhooks.hosts' => ['example.com' => ['redirects' => true]]] );
-        $this->expectException( \LogicException::class );
+        $client = new StubWebhookClient();
+        $client->addresses = ['93.184.216.34'];
+        config( ['cms.webhooks.deny_cidrs' => ['not-a-cidr']] );
 
-        app( WebhookClient::class )->validatePolicy();
+        try {
+            $calls = [
+                'subscription' => fn() => $client->send( $this->model()->target(), 'delivery-id', '{}' ),
+                'endpoint' => fn() => $client->send(
+                    ['url' => 'http://indexer:8080/hook', 'secrets' => ['secret'], 'ca' => null, 'internal' => true],
+                    'delivery-id', '{}',
+                ),
+                'address' => fn() => $client->canonical( 'http://10.0.0.1/hook', true ),
+            ];
+
+            foreach( $calls as $name => $call )
+            {
+                try {
+                    $call();
+                    $this->fail( 'Expected blocked delivery for ' . $name );
+                } catch( WebhookException $e ) {
+                    $this->assertSame( 'invalid_policy', $e->reason );
+                }
+            }
+        } finally {
+            config( ['cms.webhooks.deny_cidrs' => []] );
+        }
+
+        $this->assertSame( [], $client->options );
+    }
+
+
+    public function testAddressReturnsFirstAllowedResolvedAddress() : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = ['169.254.169.254', '10.0.0.5'];
+
+        $this->assertSame( '10.0.0.5', $client->address( 'http://indexer:8080/hook', true ) );
+
+        foreach( ['resolution_failed' => [], 'destination_not_allowed' => ['169.254.169.254']] as $reason => $addresses )
+        {
+            $client->addresses = $addresses;
+
+            try {
+                $client->address( 'http://indexer:8080/hook', true );
+                $this->fail( 'Expected ' . $reason );
+            } catch( WebhookException $e ) {
+                $this->assertSame( $reason, $e->reason );
+            }
+        }
+    }
+
+
+    public function testQueriesEachRecordTypeSeparately() : void
+    {
+        $client = $this->resolver();
+        $ipv6 = '2606:2800:220:1:248:1893:25c8:1946';
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
+
+        try {
+            // A failed query for one record type doesn't hide the addresses of the other one
+            $client->records = [DNS_A => [['ip' => '93.184.216.34']]];
+            $this->assertSame( '93.184.216.34', $client->address( 'https://example.com/hook' ) );
+
+            $client->records = [DNS_A => [], DNS_AAAA => [['ipv6' => $ipv6]]];
+            $this->assertSame( $ipv6, $client->address( 'https://example.com/hook' ) );
+
+            $client->records = [DNS_A => [['ip' => '93.184.216.34']], DNS_AAAA => [['ipv6' => $ipv6]]];
+            $client->address( 'https://example.com/hook' );
+            $this->assertSame( ['93.184.216.34', $ipv6], $client->addresses );
+
+            $client->records = [];
+
+            try {
+                $client->address( 'https://example.com/hook' );
+                $this->fail( 'Expected resolution_failed' );
+            } catch( WebhookException $e ) {
+                $this->assertSame( 'resolution_failed', $e->reason );
+            }
+
+            $this->assertSame( array_merge( ...array_fill( 0, 4, [DNS_A, DNS_AAAA] ) ), $client->types );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+
+    public function testUnansweredQueryIsntRepeatedForTheOtherRecordType() : void
+    {
+        $client = $this->resolver( 2 );
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
+
+        try {
+            $client->address( 'https://example.com/hook' );
+            $this->fail( 'Expected resolution_failed' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'resolution_failed', $e->reason );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $this->assertSame( [DNS_A], $client->types );
+    }
+
+
+    public function testSlowAnswerIsntFollowedByTheOtherRecordType() : void
+    {
+        $client = $this->resolver( 2 );
+        $ipv6 = '2606:2800:220:1:248:1893:25c8:1946';
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
+
+        try {
+            $client->records = [DNS_A => [['ip' => '93.184.216.34']], DNS_AAAA => [['ipv6' => $ipv6]]];
+            $this->assertSame( '93.184.216.34', $client->address( 'https://example.com/hook' ) );
+            $this->assertSame( [DNS_A], $client->types );
+
+            // Without usable addresses, the other record type is still asked
+            $client->types = [];
+            $client->records = [DNS_A => [], DNS_AAAA => [['ipv6' => $ipv6]]];
+            $this->assertSame( $ipv6, $client->address( 'https://example.com/hook' ) );
+            $this->assertSame( [DNS_A, DNS_AAAA], $client->types );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+
+    public function testSlowResolutionShortensTheRequest() : void
+    {
+        $client = new StubWebhookClient();
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
+
+        try {
+            // The default budget is the connect timeout, the timeout and the time reserved for resolving
+            $client->send( $this->model()->target(), 'delivery-id', '{}' );
+            $this->assertSame( 3, $client->options[CURLOPT_CONNECTTIMEOUT] );
+            $this->assertSame( 10000, $client->options[CURLOPT_TIMEOUT_MS] );
+
+            $client->resolveTime = 9500;
+            $client->send( $this->model()->target(), 'delivery-id', '{}' );
+            $this->assertSame( 8500, $client->options[CURLOPT_TIMEOUT_MS] );
+
+            $client->resolveTime = 4000;
+            $client->send( $this->model()->target(), 'delivery-id', '{}', now()->getTimestampMs() + 8000 );
+            $this->assertSame( 4000, $client->options[CURLOPT_TIMEOUT_MS] );
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+
+    public function testTooLittleTimeLeftFailsWithTimeout() : void
+    {
+        $client = new StubWebhookClient();
+        $client->resolveTime = 5001;
+        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
+
+        try {
+            // Less than the connect timeout is left
+            $client->send( $this->model()->target(), 'delivery-id', '{}', now()->getTimestampMs() + 8000 );
+            $this->fail( 'Expected timeout' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'timeout', $e->reason );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $this->assertSame( [], $client->options );
     }
 
 
@@ -152,22 +360,11 @@ class WebhookClientTest extends WebhookTestAbstract
         Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
 
         try {
-            $this->assertSame( 204, $client->send( $webhook, 'page.published', 'delivery-id', $body ) );
+            $this->assertSame( 204, $client->send( $webhook->target(), 'delivery-id', $body )->status );
         } finally {
             Carbon::setTestNow();
         }
 
-        $timestamp = '1789387200';
-        $signed = implode( "\n", [
-            'v2',
-            'x-cms-event:page.published',
-            'x-cms-tenant:test',
-            'x-cms-delivery:delivery-id',
-            'x-cms-timestamp:' . $timestamp,
-            '',
-            $body,
-        ] );
-        $signature = hash_hmac( 'sha256', $signed, 'test-secret' );
         $headers = $client->options[CURLOPT_HTTPHEADER];
 
         $this->assertSame( 'https://example.com/hooks/cms', $client->options[CURLOPT_URL] );
@@ -176,11 +373,12 @@ class WebhookClientTest extends WebhookTestAbstract
         $this->assertContains( 'Content-Type: application/json', $headers );
         $this->assertContains( 'Expect:', $headers );
         $this->assertContains( 'User-Agent: Pagible-Webhook/1.0', $headers );
-        $this->assertContains( 'X-Cms-Event: page.published', $headers );
-        $this->assertContains( 'X-Cms-Tenant: test', $headers );
-        $this->assertContains( 'X-Cms-Delivery: delivery-id', $headers );
-        $this->assertContains( 'X-Cms-Timestamp: ' . $timestamp, $headers );
-        $this->assertContains( 'X-Cms-Signature: v2=' . $signature, $headers );
+        // The event and tenant are only sent in the signed body
+        $this->assertSame( [
+            'webhook-id: delivery-id',
+            'webhook-timestamp: 1789387200',
+            'webhook-signature: ' . $this->signature( 'test', 'delivery-id.1789387200.' . $body ),
+        ], array_values( preg_grep( '/^(webhook|x-cms)-/i', $headers ) ?: [] ) );
         $this->assertSame( ['example.com:443:93.184.216.34'], $client->options[CURLOPT_RESOLVE] );
         $this->assertSame( '', $client->options[CURLOPT_PROXY] );
         $this->assertSame( '*', $client->options[CURLOPT_NOPROXY] );
@@ -198,26 +396,251 @@ class WebhookClientTest extends WebhookTestAbstract
     }
 
 
-    public function testSendsExplicitEmptyTenantHeader() : void
+    public function testSignsWithCurrentAndPreviousSecretDuringGracePeriod() : void
     {
         $client = new StubWebhookClient();
+        $webhook = $this->model()->forceFill( [
+            'secrets' => self::secrets( 'new', ['old' => Carbon::parse( '2026-09-14 12:00:01 UTC' )] ),
+        ] );
+        Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
 
-        $client->send( $this->model( '' ), 'page.published', 'delivery-id', '{}' );
+        try {
+            $client->send( $webhook->target(), 'delivery-id', '{}' );
+            $current = $client->options[CURLOPT_HTTPHEADER];
 
-        $this->assertContains( 'X-Cms-Tenant;', $client->options[CURLOPT_HTTPHEADER] );
+            Carbon::setTestNow( '2026-09-14 12:00:01 UTC' );
+            $client->send( $webhook->target(), 'delivery-id', '{}' );
+            $expired = $client->options[CURLOPT_HTTPHEADER];
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $this->assertContains( 'webhook-signature: ' . $this->signature( 'new', 'delivery-id.1789387200.{}' )
+            . ' ' . $this->signature( 'old', 'delivery-id.1789387200.{}' ), $current );
+        $this->assertContains( 'webhook-signature: ' . $this->signature( 'new', 'delivery-id.1789387201.{}' ), $expired );
     }
 
 
-    #[DataProvider( 'responseLimits' )]
-    public function testRejectsOversizedResponse( string $overflow, string $config, string $reason ) : void
+    public function testSignsLikeStandardWebhooks() : void
     {
-        config( [$config => 4] );
         $client = new StubWebhookClient();
-        $client->overflow = $overflow;
+        $webhook = $this->model()->forceFill( ['secrets' => [['secret' => 'whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw', 'until' => null]]] );
+        Carbon::setTestNow( Carbon::createFromTimestamp( 1614265330 ) );
 
         try {
-            $client->send( $this->model(), 'page.published', 'delivery-id', '{}' );
+            $client->send( $webhook->target(), 'msg_p5jXN8AQM9LWM0D4loKWxJek', '{"test": 2432232314}' );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        // Example from the Standard Webhooks specification, which the receiver libraries verify
+        $this->assertContains( 'webhook-signature: v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=', $client->options[CURLOPT_HTTPHEADER] );
+    }
+
+
+    #[DataProvider( 'invalidSecrets' )]
+    public function testInvalidSecretIsntSent( string $secret ) : void
+    {
+        $client = new StubWebhookClient();
+
+        try {
+            $client->send( $this->model()->forceFill( ['secrets' => [['secret' => $secret, 'until' => null]]] )->target(), 'delivery-id', '{}' );
+            $this->fail( 'Invalid secret was used' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'invalid_secret', $e->reason );
+        }
+
+        $this->assertSame( [], $client->options );
+    }
+
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function invalidSecrets() : iterable
+    {
+        yield 'no prefix' => [base64_encode( str_repeat( 's', 32 ) )];
+        yield 'short key' => ['whsec_' . base64_encode( str_repeat( 's', 23 ) )];
+        yield 'url-safe base64' => ['whsec_' . str_repeat( '-_', 16 )];
+        yield 'whitespace' => ['whsec_' . base64_encode( str_repeat( 's', 32 ) ) . "\n"];
+    }
+
+
+    #[DataProvider( 'invalidDeliveryIds' )]
+    public function testInvalidDeliveryIdIsntSent( string $id ) : void
+    {
+        $client = new StubWebhookClient();
+
+        try {
+            $client->send( $this->model()->target(), $id, '{}' );
+            $this->fail( 'Invalid delivery ID was used' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'invalid_header', $e->reason );
+        }
+
+        $this->assertSame( [], $client->options );
+    }
+
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function invalidDeliveryIds() : iterable
+    {
+        yield 'line break' => ["delivery\nid"];
+        // Dots separate the signed values
+        yield 'dot' => ['delivery.id'];
+    }
+
+
+    public function testPinsAllAllowedAddresses() : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = ['93.184.216.34', '10.0.0.7', '2606:2800:220:1:248:1893:25c8:1946', '93.184.216.34'];
+        $expected = ( curl_version()['version_number'] ?? 0 ) >= 0x073b00
+            ? 'example.com:443:93.184.216.34,[2606:2800:220:1:248:1893:25c8:1946]'
+            : 'example.com:443:93.184.216.34';
+
+        $client->send( $this->model()->target(), 'delivery-id', '{}' );
+
+        $this->assertSame( [$expected], $client->options[CURLOPT_RESOLVE] );
+    }
+
+
+    public function testOnlyEndpointsAskTheSystemResolver() : void
+    {
+        $client = new StubWebhookClient();
+        $endpoint = ['url' => 'https://indexer.example/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => null, 'internal' => true];
+
+        $client->send( $this->model()->target(), 'delivery-id', '{}' );
+        $client->send( $endpoint, 'delivery-id', '{}' );
+        $client->address( 'https://example.com/hook' );
+        $client->address( 'https://indexer.example/hook', true );
+
+        $this->assertSame( [
+            ['example.com', false],
+            ['indexer.example', true],
+            ['example.com', false],
+            ['indexer.example', true],
+        ], $client->lookups );
+    }
+
+
+    public function testBuildsEndpointRequestWithCustomCa() : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = ['169.254.169.254', '10.0.0.7'];
+        $endpoint = ['url' => 'https://indexer:8443/hook', 'secrets' => [self::secret( 'endpoint' ), self::secret( 'previous' )], 'ca' => '/etc/ca.pem', 'internal' => true];
+        Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
+
+        try {
+            $this->assertSame( 204, $client->send( $endpoint, 'delivery-id', '{}' )->status );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $headers = $client->options[CURLOPT_HTTPHEADER];
+
+        $this->assertSame( 'https://indexer:8443/hook', $client->options[CURLOPT_URL] );
+        $this->assertSame( ['indexer:8443:10.0.0.7'], $client->options[CURLOPT_RESOLVE] );
+        $this->assertSame( '/etc/ca.pem', $client->options[CURLOPT_CAINFO] );
+        $this->assertFalse( $client->options[CURLOPT_FOLLOWLOCATION] );
+        $this->assertContains( 'webhook-signature: ' . $this->signature( 'endpoint', 'delivery-id.1789387200.{}' )
+            . ' ' . $this->signature( 'previous', 'delivery-id.1789387200.{}' ), $headers );
+    }
+
+
+    public function testEndpointMayResolveToLoopbackOverHttp() : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = ['127.0.0.1'];
+        $endpoint = ['url' => 'http://indexer:8080/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => '/etc/ca.pem', 'internal' => true];
+
+        $this->assertSame( 204, $client->send( $endpoint, 'delivery-id', '{}' )->status );
+        $this->assertSame( ['indexer:8080:127.0.0.1'], $client->options[CURLOPT_RESOLVE] );
+        $this->assertArrayNotHasKey( CURLOPT_CAINFO, $client->options );
+
+        if( defined( 'CURLOPT_PROTOCOLS_STR' ) ) {
+            $this->assertSame( 'http', $client->options[(int) constant( 'CURLOPT_PROTOCOLS_STR' )] );
+        } else {
+            $this->assertSame( CURLPROTO_HTTP, $client->options[CURLOPT_PROTOCOLS] );
+        }
+    }
+
+
+    #[DataProvider( 'deniedAddresses' )]
+    public function testSubscriptionRejectsNonPublicResolvedAddress( string $address ) : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = [$address];
+
+        try {
+            $client->send( $this->model()->target(), 'delivery-id', '{}' );
+            $this->fail( 'Expected a denied destination.' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'destination_not_allowed', $e->reason );
+            $this->assertSame( [], $client->options );
+        }
+    }
+
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function deniedAddresses() : iterable
+    {
+        yield 'loopback' => ['127.0.0.1'];
+        yield 'private' => ['10.0.0.7'];
+        yield 'metadata' => ['169.254.169.254'];
+    }
+
+
+    public function testEndpointRejectsLinkLocalResolvedAddress() : void
+    {
+        $client = new StubWebhookClient();
+        $client->addresses = ['169.254.169.254'];
+        $endpoint = ['url' => 'http://indexer/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => null, 'internal' => true];
+
+        $this->expectException( WebhookException::class );
+        $client->send( $endpoint, 'delivery-id', '{}' );
+    }
+
+
+    public function testLargeResponseBodyIsNotRead() : void
+    {
+        $client = new StubWebhookClient();
+        $client->overflow = 'body';
+
+        $this->assertSame( 204, $client->send( $this->model()->target(), 'delivery-id', '{}' )->status );
+
+        $client->status = 503;
+        $this->assertTrue( $client->send( $this->model()->target(), 'delivery-id', '{}' )->retryable() );
+    }
+
+
+    public function testRejectsOversizedResponseHeaders() : void
+    {
+        $client = new StubWebhookClient();
+        $client->overflow = 'headers';
+
+        try {
+            $client->send( $this->model()->target(), 'delivery-id', '{}' );
             $this->fail( 'Expected an oversized response exception.' );
+        } catch( WebhookException $e ) {
+            $this->assertSame( 'response_headers_too_large', $e->reason );
+        }
+    }
+
+
+    #[DataProvider( 'transportErrors' )]
+    public function testReportsSpecificTransportFailure( int $errno, string $reason ) : void
+    {
+        $client = new StubWebhookClient();
+        $client->errno = $errno;
+
+        try {
+            $client->send( $this->model()->target(), 'delivery-id', '{}' );
+            $this->fail( 'Expected a transport exception.' );
         } catch( WebhookException $e ) {
             $this->assertSame( $reason, $e->reason );
         }
@@ -225,12 +648,54 @@ class WebhookClientTest extends WebhookTestAbstract
 
 
     /**
-     * @return iterable<string, array{string, string, string}>
+     * @return iterable<string, array{int, string}>
      */
-    public static function responseLimits() : iterable
+    public static function transportErrors() : iterable
     {
-        yield 'body' => ['body', 'cms.webhooks.http.max_body', 'response_body_too_large'];
-        yield 'headers' => ['headers', 'cms.webhooks.http.max_headers', 'response_headers_too_large'];
+        yield 'connection refused' => [7, 'connection_failed'];
+        yield 'timeout' => [28, 'timeout'];
+        yield 'certificate' => [60, 'tls_error'];
+        yield 'handshake' => [35, 'tls_error'];
+        yield 'other' => [56, 'transport_error'];
+    }
+
+
+    /**
+     * @param list<string> $headers
+     */
+    #[DataProvider( 'retryAfterHeaders' )]
+    public function testReturnsRetryAfter( array $headers, int $expected ) : void
+    {
+        $client = new StubWebhookClient();
+        $client->headers = $headers;
+        $client->status = 503;
+        Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
+
+        try {
+            $response = $client->send( $this->model()->target(), 'delivery-id', '{}' );
+        } finally {
+            Carbon::setTestNow();
+        }
+
+        $this->assertSame( 503, $response->status );
+        $this->assertSame( $expected, $response->retryAfter );
+        $this->assertTrue( $response->retryable() );
+    }
+
+
+    /**
+     * @return iterable<string, array{list<string>, int}>
+     */
+    public static function retryAfterHeaders() : iterable
+    {
+        yield 'none' => [['HTTP/1.1 503 Service Unavailable'], 0];
+        yield 'seconds' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: 120'], 120];
+        yield 'lower case' => [['HTTP/1.1 503 Service Unavailable', 'retry-after:  90 '], 90];
+        yield 'http date' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: Mon, 14 Sep 2026 12:10:00 GMT'], 600];
+        yield 'past date' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: Mon, 14 Sep 2026 11:00:00 GMT'], 0];
+        yield 'invalid' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: soon'], 0];
+        yield 'huge' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: 99999999999999999999'], 999999999];
+        yield 'interim response' => [['HTTP/1.1 100 Continue', 'Retry-After: 120', '', 'HTTP/1.1 503 Service Unavailable'], 0];
     }
 
 
@@ -239,20 +704,61 @@ class WebhookClientTest extends WebhookTestAbstract
         $client = new StubWebhookClient();
         $body = str_repeat( 'x', 256 * 1024 );
 
-        $this->assertSame( 204, $client->send( $this->model(), 'page.published', 'delivery-id', $body ) );
+        $this->assertSame( 204, $client->send( $this->model()->target(), 'delivery-id', $body )->status );
         $this->assertSame( $body, $client->options[CURLOPT_POSTFIELDS] );
     }
 
 
-    private function model( string $tenant = 'test' ) : Webhook
+    private function model() : Webhook
     {
         $webhook = new Webhook();
         $webhook->forceFill( [
-            'tenant_id' => $tenant,
+            'tenant_id' => 'test',
             'url' => 'https://example.com/hooks/cms',
-            'secret' => 'test-secret',
+            'secrets' => self::secrets(),
         ] );
 
         return $webhook;
+    }
+
+
+    /**
+     * Returns the signature a receiver expects for the secret with the given name, see secret().
+     */
+    private function signature( string $name, string $content ) : string
+    {
+        $key = base64_decode( substr( self::secret( $name ), 6 ) );
+
+        return 'v1,' . base64_encode( hash_hmac( 'sha256', $content, $key, true ) );
+    }
+
+
+    /**
+     * Returns a client which answers DNS queries from its records, other queries fail. Each query takes the given seconds.
+     */
+    private function resolver( int $seconds = 0 ) : WebhookClient
+    {
+        return new class( $seconds ) extends WebhookClient {
+            /** @var list<string> */
+            public array $addresses = [];
+            /** @var array<int, list<array<string, mixed>>> */
+            public array $records = [];
+            /** @var list<int> */
+            public array $types = [];
+            public function __construct( private int $seconds )
+            {
+            }
+            protected function lookup( string $host, bool $system = false ) : array
+            {
+                return $this->addresses = parent::lookup( $host, $system );
+            }
+            protected function records( string $host, int $type ) : ?array
+            {
+                $this->types[] = $type;
+                Carbon::setTestNow( now()->addSeconds( $this->seconds ) );
+
+                return $this->records[$type] ?? null;
+            }
+        };
     }
 }
