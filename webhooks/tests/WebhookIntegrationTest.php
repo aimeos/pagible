@@ -298,7 +298,8 @@ class WebhookIntegrationTest extends WebhookTestAbstract
             ->expectsOutput( 'Re-encrypted 1 webhook subscription(s).' )
             ->assertSuccessful();
 
-        $this->assertSame( $error, $webhook->refresh()->last_error );
+        // MySQL JSON columns reorder object keys, so compare ignoring key order
+        $this->assertEquals( $error, $webhook->refresh()->last_error );
     }
 
 
