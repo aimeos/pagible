@@ -5,6 +5,7 @@ import { mdiClose } from '@mdi/js'
 
 export default {
   props: {
+    header: { type: Boolean, default: true },
     listClass: { type: [String, Array, Object], default: '' },
     listProps: { type: Object, default: () => ({}) },
     location: { type: String, default: 'end center' },
@@ -55,7 +56,7 @@ export default {
     </template>
 
     <v-card class="action-menu-card d-flex flex-column">
-      <v-toolbar density="compact">
+      <v-toolbar v-if="header" density="compact">
         <v-toolbar-title>{{ label }}</v-toolbar-title>
         <v-btn :icon="mdiClose" :aria-label="$gettext('Close')" @click="open = false" />
       </v-toolbar>

@@ -25,6 +25,18 @@ const LocatedHarness = {
   }
 }
 
+const HeaderlessHarness = {
+  render() {
+    return h(ActionMenu, {
+      title: 'Choose action',
+      header: false
+    }, {
+      activator: ({ props, label }) => h('button', { ...props, class: 'activator' }, label),
+      default: () => h('button', { class: 'entry' }, 'Entry')
+    })
+  }
+}
+
 describe('ActionMenu', () => {
   it('forwards the title and list attributes and closes after an action', () => {
     cy.mount(Harness)
@@ -41,6 +53,16 @@ describe('ActionMenu', () => {
     cy.get('.v-dialog .v-card').should('be.visible')
     cy.get('.v-dialog .v-toolbar-title').should('have.text', 'Choose action')
     cy.get('.v-dialog button[aria-label="Close"]').click({ force: true })
+    cy.get('.v-overlay--active').should('not.exist')
+  })
+
+  it('hides the header and close button when disabled', () => {
+    cy.mount(HeaderlessHarness)
+    cy.get('.activator').should('have.text', 'Choose action').click()
+    cy.get('.v-overlay--active .action-menu-card').should('be.visible')
+    cy.get('.v-overlay--active .v-toolbar').should('not.exist')
+    cy.get('.v-overlay--active button[aria-label="Close"]').should('not.exist')
+    cy.get('.entry').click({ force: true })
     cy.get('.v-overlay--active').should('not.exist')
   })
 })

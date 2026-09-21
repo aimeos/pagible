@@ -117,7 +117,7 @@ export default {
     </ActionMenu>
   </span>
 
-  <ActionMenu v-if="me" :title="$gettext('User menu')" location="bottom">
+  <ActionMenu v-if="me" :title="$gettext('User menu')" :header="false" location="bottom">
     <template #activator="{ props, label }">
       <v-btn
         v-bind="props"
