@@ -19,8 +19,37 @@ export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MI
 
 export const PAGE_BULK_LIMIT = 1000
 
+/**
+ * Deep clones a value, unwrapping reactive proxies at every level. structuredClone()
+ * alone fails on nested proxies (e.g. from spreading reactive objects).
+ *
+ * @param {*} value Value to clone
+ * @returns {*} Plain deep copy of the value
+ */
 export function clone(value) {
-  return structuredClone(toRaw(value))
+  value = toRaw(value)
+
+  if (Array.isArray(value)) {
+    return value.map(clone)
+  }
+
+  if (value === null || typeof value !== 'object') {
+    return value
+  }
+
+  const proto = Object.getPrototypeOf(value)
+
+  if (proto !== Object.prototype && proto !== null) {
+    return structuredClone(value)
+  }
+
+  const copy = {}
+
+  for (const key of Object.keys(value)) {
+    copy[key] = clone(value[key])
+  }
+
+  return copy
 }
 
 /**

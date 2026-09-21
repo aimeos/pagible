@@ -1,4 +1,5 @@
-import { debounce, uid } from '../../../js/utils'
+import { isProxy, reactive } from 'vue'
+import { clone, debounce, uid } from '../../../js/utils'
 
 describe('uid()', () => {
   it('returns a string of length 6', () => {
@@ -53,5 +54,30 @@ describe('debounce()', () => {
       clock.tick(300)
       expect(calls).to.equal(0)
     })
+  })
+})
+
+describe('clone()', () => {
+  it('deep copies plain values', () => {
+    const date = new Date(0)
+    const value = { a: 1, b: [{ c: 'x' }], d: null, date }
+    const copy = clone(value)
+
+    expect(copy).to.deep.equal(value)
+    expect(copy).to.not.equal(value)
+    expect(copy.b[0]).to.not.equal(value.b[0])
+    expect(copy.date).to.not.equal(date)
+  })
+
+  it('unwraps nested reactive proxies', () => {
+    const element = reactive({ data: { items: [{ title: 'a' }] } })
+    element.data = { ...element.data, text: 'b' } // spread keeps "items" as a proxy
+
+    const copy = clone(element)
+
+    expect(copy).to.deep.equal({ data: { items: [{ title: 'a' }], text: 'b' } })
+    expect(isProxy(copy.data.items)).to.equal(false)
+    expect(isProxy(copy.data.items[0])).to.equal(false)
+    expect(() => structuredClone(copy)).to.not.throw()
   })
 })
