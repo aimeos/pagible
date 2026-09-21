@@ -1,6 +1,10 @@
-# Pagible CMS webhooks
+# Pagible Webhooks
 
-This optional package sends signed, tenant-scoped notifications for committed Pagible CMS lifecycle events. It uses the Laravel queue and does not add an event bus, outbox or webhook dependency to the core package.
+Signed, tenant-scoped webhook notifications for [Pagible CMS](https://pagible.com) lifecycle events,
+delivered through the Laravel queue. The core package doesn't need an event bus, an outbox or any
+webhook dependency.
+
+This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible).
 
 ## Installation
 
@@ -10,7 +14,7 @@ php artisan cms:install:webhooks
 php artisan migrate
 ```
 
-For production, configure an asynchronous queue connection and run a dedicated worker for the `cms-webhooks` queue. The `sync` driver is supported for immediate delivery without a worker: every destination is still called even if another one fails, but failed deliveries aren't retried. With the `null` queue driver, no deliveries are queued and a `cms.webhook.delivery_blocked` warning with the reason `invalid_queue` is logged.
+Enable webhooks and run a dedicated worker on an asynchronous queue connection:
 
 ```dotenv
 CMS_WEBHOOKS_ENABLED=true
@@ -22,185 +26,197 @@ CMS_WEBHOOKS_QUEUE=cms-webhooks
 php artisan queue:work redis --queue=cms-webhooks
 ```
 
+The `sync` driver delivers immediately without a worker, but failed deliveries aren't retried. The
+`null` driver queues nothing and logs `cms.webhook.delivery_blocked` with the reason `invalid_queue`.
+
+## Configuration
+
+Settings are in `config/cms/webhooks.php`:
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `enabled` | `false` | Turn webhooks on (`CMS_WEBHOOKS_ENABLED`) |
+| `queue.connection` | app default | Queue connection (`CMS_WEBHOOKS_QUEUE_CONNECTION`) |
+| `queue.name` | `cms-webhooks` | Queue name (`CMS_WEBHOOKS_QUEUE`) |
+| `queue.backoff` | `[30, 120, 600, 1800]` | Seconds to pause a destination after consecutive temporary failures, the last value repeats |
+| `queue.max_age` | `86400` | Seconds until queued deliveries expire |
+| `rotation_grace` | `86400` | Seconds the previous secret still signs requests after a rotation, `0` disables it |
+| `http.connect_timeout` | `3` | Seconds to connect |
+| `http.timeout` | `10` | Seconds to wait for the response |
+| `limits.total` | `100` | Subscriptions per tenant |
+| `limits.active` | `25` | Active subscriptions per tenant |
+| `endpoints` | `[]` | [Operator endpoints](#operator-endpoints) for internal services |
+| `deny_cidrs` | `[]` | IP addresses and CIDR ranges denied for all destinations, e.g. `['10.1.0.0/16', '10.2.0.5']` |
+
+Lowering the limits doesn't delete or deactivate existing subscriptions, but none can be added or
+activated until the tenant is below the limit again. An invalid `deny_cidrs` entry blocks all
+deliveries until it's fixed.
+
+## Operations
+
 A broken webhook configuration never stops the application, it only stops the affected deliveries.
-The same problem is logged at most once every 10 minutes instead of once per event. Check the deny
-list, the operator endpoints and the delivery queue as part of every deploy. The command lists each
-problem with the setting to fix and exits with an error if there are any:
+Run the check on every deploy. It lists each problem with the setting to fix and fails if there are any:
 
 ```bash
-php artisan cms:webhooks:check
+php artisan cms:webhooks:check [--resolve]
 ```
 
+`--resolve` also resolves the endpoint host names and checks the addresses against `deny_cidrs`. Run
+it on a host with the same DNS as the queue workers. The command also reports:
+
+* a queue `retry_after` (or broker visibility timeout) too low for the delivery timeout
+* an `array` or `null` cache store, which can't pause destinations or throttle the log entries
+  across servers
+* a stalled queue, i.e. no delivery was processed for 10 minutes while new ones were queued. This
+  is only a warning, so the deploy which starts the workers again isn't blocked.
+* subscriptions encrypted with a key that isn't available any more, also only a warning
+
+### Workers and timeouts
+
+Each destination is a separate job and a slow endpoint occupies a worker for up to the HTTP
+timeouts. Monitor queue depth, oldest job age and failed jobs, and add workers if scheduled
+publications create bursts.
+
+Workers abort a delivery after `connect_timeout` + `timeout` + 10 seconds for resolving the host name
+and recording the result (23 seconds by default). Set the queue's `retry_after` higher, otherwise
+running deliveries are released twice.
+
+Resolving the host name uses up the response time, and a single DNS query can't be interrupted.
+Configure short resolver timeouts on the worker hosts, e.g. `options timeout:1 attempts:2` in
+`/etc/resolv.conf`. Otherwise unresponsive name servers keep deliveries running until the worker
+aborts them without recording the failure.
+
+### Retries
+
+Temporary failures pause **all** deliveries to that destination for the next `queue.backoff` delay:
+
+* timeouts, connection, TLS and DNS errors
+* HTTP 408, 425, 429 and 5xx responses
+
+A `Retry-After` header (seconds or HTTP date) extends the pause, up to the longest backoff delay.
+After the pause, one delivery probes the destination while the others wait. Any other response,
+including 4xx, resets the backoff and resumes all deliveries. Responses like 400, 404 or 410 are
+terminal and never retried. Unexpected errors, e.g. database errors, go to the exception handler and
+are retried with the same delays.
+
+Deliveries still queued after `queue.max_age` are dropped. A delivery that would only resume after
+it expires comes back one minute before instead, and is sent if the pause was lifted in the
+meantime (e.g. by a successful test event), otherwise it's recorded as failed.
+
+The pause state lives in the application cache, which must be shared by all servers and workers.
+Without it, deliveries are retried one by one.
+
+Deliveries that can't be pushed to the queue, e.g. because the queue server is down, are lost. The
+error is reported to the exception handler and the subscriptions show "Queue unavailable".
+
+Pagible doesn't limit the payload size, so the queue backend and the receivers must accept the
+encrypted queue messages and HTTP requests.
+
+### Log entries
+
+Warnings are throttled to one every 10 minutes for the same problem and destination:
+
+| Entry | Logged when |
+|-------|-------------|
+| `cms.webhook` | A subscription was `created`, `updated`, `destination_replaced`, `secret_rotated`, `deleted` or `purged`, with the editor, ID, status, events, endpoint and changed fields |
+| `cms.webhook.delivered` | An operator endpoint received a delivery (only if `CMS_LOG_CHANNEL` is set) |
+| `cms.webhook.delivery_retried` | A delivery failed temporarily, with the reason and HTTP status |
+| `cms.webhook.delivery_failed` | A delivery failed for good |
+| `cms.webhook.delivery_expired` | A delivery exceeded `queue.max_age`, i.e. workers can't keep up or were stopped too long |
+| `cms.webhook.delivery_blocked` | Nothing was queued because of `invalid_queue`, `queue_failed` or `invalid_policy` |
+| `cms.webhook.endpoint_invalid` | An operator endpoint is misconfigured and was skipped |
+
+## Subscriptions
+
+Tenants manage their subscriptions in the admin panel or through GraphQL.
+
+* New subscriptions are inactive unless created with `status: true`, replaced ones are always inactive.
+* The secret is only returned by the create, replace and rotate operations, store it then.
+* The optional `name` (up to 100 characters, e.g. "Shop sync") tells subscriptions to the same host
+  apart, because only the scheme and host of the `endpoint` are shown. Control characters are
+  replaced and names are visible to all webhook editors, so don't put secrets in them. In GraphQL,
+  an omitted `name` keeps the current one and an empty one removes it.
+* Changing the events cancels queued deliveries of the removed events. Deactivating or replacing the
+  destination cancels all queued deliveries.
+* Rotating the secret keeps the status and queued deliveries. During `rotation_grace`, requests are
+  signed with the new and the previous secret, and rotating again drops the older one. Replacing the
+  destination discards the previous secret immediately.
+* "Send test event" in the admin panel (`pingWebhook` mutation) immediately sends a signed
+  `webhook.ping` event, even to inactive subscriptions, and returns the HTTP status or the error.
+  Test events aren't retried and don't change the health, but a successful one resumes a paused
+  destination. Each subscription can be tested once every 10 seconds.
+* GraphQL returns dates in UTC, e.g. `2026-09-15T12:00:00.000000Z`.
+
+### Health
+
+After each attempt, `last_success_at` (updated at most once a minute) or `last_error` (reason, HTTP
+status and time) is updated. The admin panel shows the last error, paused subscriptions with the end
+of the pause (`paused_until`), and a warning above the list if webhooks are disabled, blocked or the
+queue stalled (`cmsWebhookServer` in GraphQL). Response bodies over 16 KB aren't read, only the
+HTTP status counts. Health updates don't change `updated_at`.
+
+| Reason | Meaning |
+|--------|---------|
+| `http_error` | HTTP error status, 3xx is shown as "Redirects aren't followed" |
+| `timeout`, `connection_failed`, `resolution_failed`, `tls_error`, `transport_error` | Network errors |
+| `response_headers_too_large` | The response headers are too large |
+| `destination_not_allowed` | The URL points to a denied address |
+| `invalid_policy` | Blocked because of an invalid `deny_cidrs` entry |
+| `queue_failed` | The delivery couldn't be pushed to the queue |
+| `invalid_encryption` | The destination can't be decrypted with the current keys |
+| `delivery_failed` | The queue worker failed |
+
+## Receiving webhooks
+
+These events are sent:
+
+* `page.published`, `page.moved`, `page.deleted`, `page.restored`, `page.purged`
+* `element.published`, `element.deleted`, `element.restored`, `element.purged`
+* `file.published`, `file.deleted`, `file.restored`, `file.purged`
+
+The payload contains the event name, the tenant, the UTC event time (the same for all attempts) and
+the content and version IDs. Page events also contain the route if available:
+
+```json
+{
+  "event": "page.published",
+  "tenant_id": "tenant",
+  "timestamp": "2026-09-14T12:00:00.000+00:00",
+  "data": {
+    "id": "01995d6a-cb84-7218-9bb9-79063c4bf681",
+    "version_id": "01995d6a-cb84-7218-9bb9-79063c4bf682",
+    "path": "products/example",
+    "domain": "example.com"
+  }
+}
 ```
-cms.webhooks.endpoints.indexer: The secret must be a string or a list of strings, each "whsec_" followed by at least 24 base64 encoded bytes like from "openssl rand -base64 32", empty entries are ignored
-```
 
-Add `--resolve` to also resolve the endpoint host names and check the addresses against the deny
-list. Run it on a host with the same DNS as the queue workers, because the results depend on it.
+Bulk events contain an ordered array of `{id, version_id}` references in `data`. Fetch the details
+through the CMS API if needed.
 
-Run enough workers for the expected delivery rate: each destination is an independent job and a
-slow endpoint can occupy a worker for up to the configured webhook timeout (default: 3 seconds to
-connect and 10 seconds for the response). Monitor queue depth, oldest-job age and failed-job rate,
-and scale the dedicated workers when scheduled publications create bursts. Workers abort a delivery
-after the sum of `cms.webhooks.http.connect_timeout` and `cms.webhooks.http.timeout` plus 5 seconds
-for resolving the host name and 5 seconds for recording the result (default: 23 seconds), so
-configure the queue connection's `retry_after` or broker visibility timeout above it, otherwise a
-running delivery is released twice. `cms:webhooks:check` reports a lower value, as well as an
-`array` or `null` cache store which can't pause failing destinations or throttle the log entries
-across servers and workers.
+With a `Tenancy` callback registered, events without a tenant are dropped, so don't use the default
+(empty) tenant ID for a site in multi-tenant installations.
 
-The connect timeout doesn't limit resolving the host name, so the time it took is subtracted from
-the time left for the response. If less than the connect timeout is left after resolving, the
-delivery fails with `timeout` and is retried like any other temporary failure. A single DNS query can't be interrupted, so configure short resolver
-timeouts on the queue worker hosts, e.g. `options timeout:1 attempts:2` in `/etc/resolv.conf`.
-Otherwise, unresponsive name servers can keep a delivery running until the queue worker aborts it,
-which neither records the failure nor pauses the destination.
+### Verifying requests
 
-If no queue worker processed any delivery for more than 10 minutes while new deliveries were
-queued, e.g. because no worker runs for the `cms-webhooks` queue, `cms:webhooks:check` warns about
-it for `cms.webhooks.queue.name` and the admin panel shows a warning above the list (`stalled_since`
-of `cmsWebhookServer` in GraphQL) until a worker processes the next delivery. Deliveries which wait
-for their next retry don't count. The warning doesn't make the command fail, so it doesn't stop
-the deploy which starts the workers again.
+Requests are signed like [Standard Webhooks](https://www.standardwebhooks.com), so their
+[libraries](https://github.com/standard-webhooks/standard-webhooks) can verify them:
 
-If the deliveries can't be pushed to the queue, e.g. because the queue server is down, they are
-lost, because nothing retries them. The error is reported to the exception handler, a
-`cms.webhook.delivery_blocked` warning with the reason `queue_failed` is logged and the admin panel
-shows "Queue unavailable" for the affected subscriptions until their next successful delivery.
+* `webhook-id`: delivery ID, the same for all attempts
+* `webhook-timestamp`: Unix time of the attempt
+* `webhook-signature`: `v1,<base64 hmac>`, space separated if signed with two secrets during a rotation
 
-Deliveries still queued after `cms.webhooks.queue.max_age` seconds (default: one day) are dropped
-and logged as a `cms.webhook.delivery_expired` warning with the subscription ID or endpoint name,
-at most once every 10 minutes per destination. These warnings mean that the workers can't keep up
-with the events or were stopped for too long.
+Without a library, verify each request before processing it:
 
-Temporary failures (timeouts, connection, TLS and DNS errors, HTTP 408, 425, 429 and 5xx
-responses) pause all deliveries to the same destination instead of sending each queued delivery to
-an unavailable receiver, and the deliveries are retried after the pause until they expire. The
-pauses are configured in `cms.webhooks.queue.backoff` (default: 30 seconds, 2, 10 and 30 minutes):
-each consecutive failure uses the next value and the last one repeats until `max_age` is reached.
-A `Retry-After` response header (seconds or HTTP date) extends the pause accordingly, limited to
-the longest backoff delay. Paused deliveries go back to the queue without calling the receiver.
-If the pause ends after the delivery expires, the delivery comes back one minute before it expires
-instead: it's sent if the pause was lifted in the meantime, e.g. by a successful test event, and
-recorded as failed otherwise. After the pause, only one delivery probes the destination while the others wait for its
-result, and failures of parallel deliveries during a pause don't advance the schedule. Any
-response that isn't a temporary failure, including 4xx responses, shows that the receiver is
-available again: it resets the schedule and resumes all deliveries. Each retry is logged as a
-`cms.webhook.delivery_retried` warning with the reason and HTTP status, at most once every 10
-minutes per destination, reason and status. A delivery which can't be retried before it expires is
-recorded as failed. Other HTTP responses like 400, 404 or 410 are terminal and never retried.
-Unexpected errors while processing a delivery, e.g. database errors, are reported to the exception
-handler and the queue worker retries the delivery after the backoff delays until it expires.
+1. Reject missing or malformed headers.
+2. Reject a `webhook-timestamp` outside your allowed clock skew, e.g. five minutes.
+3. Compute `v1,` + base64 of the HMAC-SHA256 over `<webhook-id>.<webhook-timestamp>.<raw body>`,
+   keyed with the base64 decoded part of the secret after `whsec_`.
+4. Accept the request if any received signature matches in a constant-time comparison.
+5. Claim the `webhook-id` atomically and return 2xx for duplicates. Keep the claims for at least
+   `queue.max_age` plus the clock skew.
 
-The admin panel shows paused subscriptions with the end of the pause (`paused_until` in GraphQL).
-The state is stored in the application cache, which must be shared by all servers and webhook
-workers. Without a usable cache, destinations aren't paused and each delivery is retried on its own
-after the backoff delays.
-
-Pagible does not impose a separate outbound webhook payload-size limit. Core lifecycle events carry
-bounded references, but the selected queue backend and receiver must accept the resulting encrypted
-queue message and HTTP request sizes.
-
-Provision subscriptions through the CMS admin panel or GraphQL. New subscriptions are inactive unless created with `status: true` and replaced subscriptions are always inactive. Store the secret returned by the create, replace or rotate operation; it is never returned by ordinary queries.
-
-Subscriptions can have an optional `name` of up to 100 characters, e.g. "Shop sync", because the
-admin panel and GraphQL only show the scheme and host of their destination (`endpoint`), which can
-be the same for several subscriptions. The admin panel shows the name above the endpoint
-and finds subscriptions by their name. Line breaks and other control characters are replaced by
-spaces and bidirectional text controls, which can display a name reversed, are removed. Names are
-visible to all editors allowed to manage webhooks, so don't put secrets in them.
-When saving a subscription through GraphQL, an omitted `name` keeps the current one and an empty
-name removes it.
-
-Each tenant can have up to `cms.webhooks.limits.total` subscriptions (default: 100), of which
-`cms.webhooks.limits.active` can be active (default: 25). Lowering the limits doesn't delete or
-deactivate existing subscriptions: they are still listed, receive events and can be deleted, but
-no subscription can be added or activated until the tenant is below the respective limit again.
-
-Adding, changing, replacing, rotating and deleting subscriptions is logged as a `cms.webhook`
-warning with the action (`created`, `updated`, `destination_replaced`, `secret_rotated` or
-`deleted`), the editor, the subscription ID, its status, number of events and destination
-(`endpoint`, like in GraphQL), and the previous destination (`old_endpoint`) if it was replaced.
-Destinations which can't be decrypted any more are logged as `[invalid endpoint]`. Changes also
-contain the names of the changed fields (`changes`, e.g. `["status", "events"]`), while saving a
-subscription without changes isn't logged and keeps its editor.
-
-Dates of subscriptions and the server status are returned by GraphQL in UTC as ISO 8601 strings
-like `2026-09-15T12:00:00.000000Z`, independent of the application's timezone.
-
-Changing the events of a subscription keeps its queued deliveries and the pause of its destination,
-only queued deliveries of removed events are cancelled. Deactivating a subscription or replacing
-its destination cancels all queued deliveries, so they aren't sent after activating it again.
-Cancelled deliveries are dropped when a worker picks them up next, without waiting for a paused
-destination.
-
-Rotating the secret keeps the subscription's status and health and doesn't cancel queued deliveries. During the
-grace period, each request is signed with the new and the previous secret, so receivers can switch
-to the new secret without losing deliveries. The grace period is
-configured in `cms.webhooks.rotation_grace` (default: one day, `0` disables it). Rotating again
-during the grace period replaces the previous secret, so the older one isn't accepted any more.
-Replacing the destination discards the previous secret immediately. After the grace period, the
-previous secret isn't used any more and `cms:webhooks:reencrypt` deletes it.
-
-Use "Send test event" in the admin panel or the `pingWebhook` GraphQL mutation to check a
-subscription after setting up its receiver. It sends a signed `webhook.ping` event immediately,
-also to inactive subscriptions as long as webhooks are enabled, and returns the HTTP status or the
-failure reason. Test events are not retried and don't change the subscription health, but a
-successful test event resumes the deliveries of a paused subscription immediately. Each
-subscription can be tested once every 10 seconds, after replacing its destination it can be tested
-again immediately.
-
-Internal services such as search indexers or cache purgers are configured by the operator as
-[endpoints](#operator-endpoints) instead.
-
-## Delivery contract
-
-The package emits exact event names only:
-
-- `page.published`, `page.moved`, `page.deleted`, `page.restored`, `page.purged`
-- `element.published`, `element.deleted`, `element.restored`, `element.purged`
-- `file.published`, `file.deleted`, `file.restored`, `file.purged`
-
-In multi-tenant installations, i.e. if a `Tenancy` callback is registered, events without a tenant
-are dropped instead of being sent to the subscriptions of the default tenant. Don't use the default
-tenant (the empty tenant ID) for a site there, its events would look like a lost tenant context.
-
-Each request contains a bounded event reference with the event name (`event`), the tenant
-(`tenant_id`) and the time of the event (`timestamp`) in the JSON body. The timestamp is in UTC with
-millisecond precision, e.g. `2026-09-14T12:00:00.000+00:00`, and the same for all attempts. Requests
-are signed like [Standard Webhooks](https://www.standardwebhooks.com) with these headers:
-
-- `webhook-id`: ID of the delivery, the same for all attempts
-- `webhook-timestamp`: Unix timestamp in seconds when the attempt was sent
-- `webhook-signature: v1,<base64 hmac>` or, during a secret rotation, `v1,<base64 hmac> v1,<base64 hmac>`
-
-Secrets have the Standard Webhooks format `whsec_<base64 key>`, so the
-[Standard Webhooks libraries](https://github.com/standard-webhooks/standard-webhooks) for many
-languages can verify the requests (steps 1 to 5). Without a library, verify every request before
-parsing or processing its body:
-
-1. Read `webhook-id`, `webhook-timestamp` and `webhook-signature`, rejecting missing or malformed
-   values. The signature header contains one or more signatures separated by spaces, each `v1,`
-   followed by a base64 encoded HMAC.
-2. Reject `webhook-timestamp` when it is outside the receiver's allowed clock-skew window. Five
-   minutes is a reasonable default. Use the signed header value, not the event `timestamp` in the
-   JSON payload which doesn't change between retries.
-3. Build the signed content `<webhook-id>.<webhook-timestamp>.<raw-request-body>`. The body must be
-   the exact bytes received, before JSON decoding or re-encoding.
-4. Compute `v1,` followed by the base64 encoded HMAC-SHA256 of the signed content. The key is the
-   base64 decoded part of the secret after `whsec_`, not the secret itself.
-5. Compare the complete expected signature with each received signature using a constant-time
-   comparison such as PHP's `hash_equals()` and accept the request if any of them matches.
-   Receivers which store both secrets during a rotation compute the expected signature for each.
-6. Atomically claim `webhook-id` before applying side effects. Treat an already claimed value as
-   a successful duplicate and return a 2xx response. Retain claims for at least the sender's maximum
-   delivery age plus the accepted clock skew: at least 24 hours and five minutes with the defaults.
-7. Decode the verified body and use its `event` and `tenant_id` values.
-
-Retries retain the same `webhook-id` but receive a fresh signed `webhook-timestamp` value.
-
-A Laravel receiver which follows these steps could look like this. Register the route in
-`routes/api.php` or exclude it from CSRF verification:
+A Laravel receiver (in `routes/api.php` or excluded from CSRF verification):
 
 ```php
 use Illuminate\Http\Request;
@@ -208,6 +224,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 Route::post( '/hooks/cms', function( Request $request ) {
+
     $id = (string) $request->header( 'webhook-id' );
     $time = (string) $request->header( 'webhook-timestamp' );
     $signatures = explode( ' ', (string) $request->header( 'webhook-signature' ) );
@@ -243,72 +260,28 @@ Route::post( '/hooks/cms', function( Request $request ) {
 } );
 ```
 
-Deliveries may arrive out of order. Retries, paused destinations and parallel workers can deliver
-an older event after a newer one for the same item. Treat each notification as a hint that the item
-changed and fetch its current state through the CMS API, or ignore events whose payload `timestamp`
-is older than the last one processed for the same item. Return a 2xx response for event names the
-receiver doesn't handle, e.g. `webhook.ping`, so new events aren't recorded as failed.
-
-Subscription health is updated after each delivery attempt. `last_error` stores the reason, HTTP
-status and time (`at`, a UTC date like the others) of the last failure, including temporary
-failures which are still retried, and the admin panel shows it with its time. `last_success_at`
-records the last successful response, while `last_error` is cleared. While deliveries keep
-succeeding, `last_success_at` is updated at most once a minute. Concurrent deliveries update this
-state in database completion order. Expired, cancelled and disabled jobs never change health
-state. Destination replacement clears the health state for the new subscription revision,
-while secret rotation keeps it. Health updates don't change `updated_at`, which only records the
-last change of the subscription's configuration.
-While the server configuration blocks all deliveries (invalid `deny_cidrs` setting or unusable
-queue connection), no deliveries are queued. Deliveries which were already queued when the
-`deny_cidrs` setting became invalid are stored in `last_error` with the reason `invalid_policy`,
-which the admin panel shows as "Blocked by server configuration" until the next successful
-delivery. The same applies to deliveries which couldn't be pushed to the queue, stored with the
-reason `queue_failed` and shown as "Queue unavailable". Other reasons are
-`http_error` with the HTTP status (3xx responses are shown as "Redirects aren't followed"),
-`timeout`, `connection_failed`, `resolution_failed`, `tls_error`, `transport_error`,
-`response_headers_too_large`, `destination_not_allowed` and `delivery_failed` if the queue worker
-failed. Response bodies larger than 16 KB aren't read, only the HTTP status counts. If webhooks are disabled or all deliveries are blocked, the admin panel also shows a warning
-above the list (`cmsWebhookServer` in GraphQL).
-Operator endpoints have no stored health state and report through the log instead.
-
-Single-item notifications contain the content and version IDs. Page notifications also include the route context carried by the committed CMS event when available:
-
-```json
-{
-  "event": "page.published",
-  "tenant_id": "tenant",
-  "timestamp": "2026-09-14T12:00:00.000+00:00",
-  "data": {
-    "id": "01995d6a-cb84-7218-9bb9-79063c4bf681",
-    "version_id": "01995d6a-cb84-7218-9bb9-79063c4bf682",
-    "path": "products/example",
-    "domain": "example.com"
-  }
-}
-```
-
-Bulk notifications contain an ordered array of `{id, version_id}` references. Fetch current content through the CMS API when more detail is required; webhook delivery does not reload mutable content models.
+Deliveries can arrive out of order, so treat each one as a hint and fetch the current state through
+the CMS API, or ignore events older than the last one processed for the same item. Return 2xx for
+events you don't handle, e.g. `webhook.ping`, so they aren't recorded as failed.
 
 ## Destination security
 
-Subscriptions created in the admin panel or through GraphQL must use HTTPS on port 443 and a
-public host. Redirects and environment proxies are disabled, DNS is resolved immediately before
-every call, and the allowed public addresses are pinned into cURL, which tries the next one if a
-server can't be reached (libcurl 7.59 or later, older versions use only the first address). IPv4
-and IPv6 addresses are looked up separately, so a DNS server failing for one of them doesn't stop
-deliveries to the other. If the IPv4 query takes longer than a second and fails or returns
-addresses, IPv6 addresses aren't queried so a slow DNS server isn't waited for twice. Loopback, private, link-local, transition and reserved addresses are
-skipped and the delivery is rejected if no allowed address remains. The IP addresses and CIDR ranges listed in
-`deny_cidrs` (e.g. `['10.1.0.0/16', '10.2.0.5']`) are rejected for all destinations, including
-operator endpoints. If `deny_cidrs` contains an invalid entry, all deliveries are blocked and logged
-as `cms.webhook.delivery_blocked` or `cms.webhook.delivery_failed` with the reason `invalid_policy`
-until the list is fixed. The admin panel shows a warning above the list and adding or changing
-subscriptions fails with "Webhooks are blocked by the server configuration."
+|  | Subscriptions | Operator endpoints |
+|--|---------------|--------------------|
+| Scheme and port | HTTPS on port 443 | HTTP or HTTPS on any port |
+| Private and loopback addresses | Blocked | Allowed |
+| Link-local (e.g. `169.254.169.254`), multicast, transition and reserved addresses | Blocked | Blocked |
+| `deny_cidrs` | Blocked | Blocked |
+| Host names from `/etc/hosts` | No | Yes |
+
+For both, redirects and environment proxies are disabled. DNS is resolved right before each call and
+the allowed addresses are pinned in cURL, which falls back to the next one if a server is unreachable
+(libcurl 7.59+). The delivery is rejected if no allowed address remains.
 
 ## Operator endpoints
 
-Webhooks for internal services are defined in `config/cms/webhooks.php` instead of the admin panel.
-Only people who can change the application configuration can add them:
+Internal services such as search indexers or cache purgers are configured in
+`config/cms/webhooks.php` instead of the admin panel:
 
 ```php
 'endpoints' => [
@@ -322,79 +295,48 @@ Only people who can change the application configuration can add them:
 ],
 ```
 
-Endpoints use the same payload, headers and signature as subscriptions, so receivers verify them
-the same way. Use the `tenant_id` of the payload to tell tenants apart when an endpoint receives
-events for all tenants. Create the secret from at least 24 random bytes in the Standard Webhooks
-format, e.g. with `echo "whsec_$(openssl rand -base64 32)"`. Optional values which aren't set are
-ignored, so `'ca' => env( 'CMS_WEBHOOK_INDEXER_CA' )` doesn't invalidate the endpoint if the
-environment variable is missing. The exception is an empty `tenants` value, which invalidates the
-endpoint instead of sending it the events of all tenants.
+* Names may contain letters, digits, `_` and `-`.
+* Create secrets with `echo "whsec_$(openssl rand -base64 32)"`. To rotate one, use a list of the new
+  and the previous secret, empty entries are ignored:
+  `'secret' => [env( 'CMS_WEBHOOK_INDEXER_SECRET' ), env( 'CMS_WEBHOOK_INDEXER_PREVIOUS_SECRET' )]`
+* Unset optional values are ignored, but an empty `tenants` list invalidates the endpoint.
+* Prefer HTTPS with `ca` if the traffic leaves the host.
+* Endpoints are validated for each event. Invalid ones are skipped and logged while all others still
+  receive the event.
+* Changing the URL cancels queued deliveries for the old one, removing an event or tenant cancels
+  its queued deliveries. Changed secrets apply to queued deliveries too.
+* Endpoints aren't shown in the admin panel and report through the log only.
 
-To rotate an endpoint secret, configure a list with the new and the previous secret. Each request
-is then signed with both, as for subscriptions during a secret rotation, so the receiver can switch
-to the new secret without rejecting deliveries. Empty entries are ignored, so the previous secret
-can be removed from the environment after the receiver switched:
+## Maintenance
 
-```php
-'secret' => [env( 'CMS_WEBHOOK_INDEXER_SECRET' ), env( 'CMS_WEBHOOK_INDEXER_PREVIOUS_SECRET' )],
-```
+### Re-encrypting after an `APP_KEY` rotation
 
-Endpoints may use HTTP or HTTPS on any port and may resolve to private or loopback addresses.
-Link-local addresses (including cloud metadata services like `169.254.169.254`), multicast,
-transition and reserved ranges and `deny_cidrs` stay blocked. Redirects and proxies are disabled
-and the resolved addresses are pinned as for subscriptions. Host names unknown to DNS are also
-looked up by the system resolver, e.g. from `/etc/hosts`. Prefer HTTPS with `ca` whenever the
-traffic leaves the host, because HTTP sends the payload unencrypted.
-
-Endpoint names may contain letters, digits, `_` and `-`. Endpoints are checked whenever an event
-is delivered. An endpoint with an invalid name, URL, secret, event name, tenant list, CA file or
-unknown key is skipped and logged as a `cms.webhook.endpoint_invalid` warning while all other
-endpoints and subscriptions still receive the event. Queued deliveries are checked again before
-sending, so an endpoint that became invalid in the meantime logs `cms.webhook.delivery_failed`.
-Use `php artisan cms:webhooks:check` to find these problems before deploying.
-
-Endpoints are not shown in the admin panel. Terminal delivery failures are logged as
-`cms.webhook.delivery_failed` warnings with the endpoint name. Successful deliveries are logged as
-`cms.webhook.delivered` when the CMS log channel (`CMS_LOG_CHANNEL`) is set. Changing an endpoint's
-URL cancels deliveries queued for the previous destination, and removing an event or tenant cancels
-its pending deliveries. Rewriting the URL to an equivalent one (upper case host, default port,
-`.` and `..` segments) changes nothing because URLs are normalized first. Changed secrets don't cancel queued deliveries, they are signed with the
-secrets configured when they are sent.
-
-Destinations, secrets and queued jobs use application encryption. During `APP_KEY` rotation, retain old keys in Laravel's `APP_PREVIOUS_KEYS`, stop or drain the webhook worker, and run:
+Destinations, secrets and queued jobs are encrypted with the application key. Keep the old keys in
+`APP_PREVIOUS_KEYS`, stop or drain the webhook workers and run:
 
 ```bash
-php artisan cms:webhooks:reencrypt
+php artisan cms:webhooks:reencrypt [--tenant=<id>]
 ```
 
-Subscriptions encrypted with a key that is no longer available are still listed in the admin panel,
-with the last error `invalid_encryption`. Their deliveries fail without retrying and they can't be
-rotated or activated, but tenants can replace their URL or delete them. `cms:webhooks:reencrypt` skips them and
-exits with an error, and `cms:webhooks:check` warns about them without failing the deploy. Both list
-the affected tenants with the most subscriptions first, e.g. `Affected tenants: shop-a (2), shop-b (1)`,
-so you know whom to notify. Add the old key to `APP_PREVIOUS_KEYS` again and rerun
-`cms:webhooks:reencrypt` to recover them.
+This also deletes previous secrets whose rotation grace period has ended. Subscriptions whose key is
+no longer available are skipped and listed with their tenants, e.g. `Affected tenants: shop-a (2)`,
+and the command fails. Their deliveries fail without retries until you add the key to
+`APP_PREVIOUS_KEYS` again and rerun the command, or the tenant replaces the URL or deletes them.
+Subscriptions changed while the command runs are reported too, so rerun it afterwards.
 
-Subscriptions which are changed in the admin panel while the command runs are skipped and
-reported with their tenants too, so rerun it afterwards.
-
-Add `--tenant=<id>` to re-encrypt the subscriptions of a single tenant. An empty value is rejected
-instead of re-encrypting all tenants, so an unset variable in a deploy script doesn't widen the run.
-
-Tenant offboarding can remove all subscriptions with an exact tenant ID:
+### Removing a tenant
 
 ```bash
 php artisan cms:webhooks:purge tenant-id
 ```
 
-Like the changes in the admin panel, purging is logged as a `cms.webhook` warning, here with the
-action `purged` and the number of deleted subscriptions. If the tenant's subscriptions are being
-changed at the same time, the command fails without deleting anything and can be run again.
+Deletes all subscriptions of the tenant. If they're changed at the same time, nothing is deleted and
+the command can be run again.
 
 ## Admin translations
 
-The webhook panel owns its gettext sources in `admin/i18n`. Keep UI strings in the `webhooks`
-context with `$pgettext('webhooks', ...)`, then update and build them from this package:
+The webhook panel keeps its gettext sources in `admin/i18n`. Use `$pgettext('webhooks', ...)` for UI
+strings, then update and build the catalogs:
 
 ```bash
 cd admin
@@ -402,7 +344,5 @@ npm run gettext:extract
 npm run build
 ```
 
-The PO sources live in `admin/i18n`. Compilation writes the runtime JSON catalogs to
-the ignored staging directory `admin/public/i18n`, and Vite publishes them below
-`admin/dist/i18n` together with the panel bundle. Commit the PO sources and distributable catalogs,
-not the staging copies.
+The compiled JSON catalogs are staged in the ignored `admin/public/i18n` directory and published to
+`admin/dist/i18n` with the panel bundle. Commit the PO sources and `admin/dist`, not the staging copies.
