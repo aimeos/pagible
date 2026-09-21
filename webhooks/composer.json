@@ -15,7 +15,7 @@
     "require-dev": {
         "aimeos/pagible-admin": "*@dev",
         "aimeos/pagible-graphql": "*@dev",
-        "orchestra/testbench": "^9.0||^10.0||^11.0",
+        "orchestra/testbench": "^10.0||^11.0",
         "larastan/larastan": "^3.9"
     },
     "suggest": {

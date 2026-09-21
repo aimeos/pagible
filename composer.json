@@ -18,7 +18,7 @@
 		"aimeos/pagible-theme": "dev-master"
 	},
 	"require-dev": {
-		"orchestra/testbench": "^9.0||^10.0||^11.0",
+		"orchestra/testbench": "^10.0||^11.0",
 		"laravel/pulse": "^1.7",
 		"laravel-json-api/testing": "^3.1",
 		"larastan/larastan": "^3.9",

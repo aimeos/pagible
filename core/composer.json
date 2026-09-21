@@ -16,7 +16,7 @@
         "enshrined/svg-sanitize": "^0.22.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0||^10.0||^11.0"
+        "orchestra/testbench": "^10.0||^11.0"
     },
     "suggest": {
         "stancl/tenancy": "Optional Stancl lifecycle and tenant-aware queue integration",

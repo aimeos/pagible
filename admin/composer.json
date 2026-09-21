@@ -11,7 +11,7 @@
         "aimeos/pagible-graphql": "*@dev"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0||^10.0||^11.0"
+        "orchestra/testbench": "^10.0||^11.0"
     },
     "suggest": {
         "aimeos/pagible-theme": "For page preview links in the admin panel"

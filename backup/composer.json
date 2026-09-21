@@ -10,7 +10,7 @@
         "aimeos/pagible-core": "*@dev"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0||^10.0||^11.0"
+        "orchestra/testbench": "^10.0||^11.0"
     },
     "autoload": {
         "psr-4": {
