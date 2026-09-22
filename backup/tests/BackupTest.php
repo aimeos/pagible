@@ -642,7 +642,59 @@ class BackupTest extends BackupTestAbstract
             '--disk' => 'backup',
             '--verify' => true,
         ] )
-            ->expectsOutput( 'Restore failed: Backup manifest signature is invalid' )
+            ->expectsOutput( 'Restore failed: Backup manifest signature is invalid, use --force for backups of other installations' )
+            ->assertExitCode( 1 );
+    }
+
+
+    public function testBackupForceAcceptsForeignSignature(): void
+    {
+        $conn = config( 'cms.db', 'sqlite' );
+        $t = $this->tenant;
+
+        $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
+        $this->assertGreaterThan( 0, $pageCount );
+
+        $backupFile = $this->backup( $t );
+        $this->cleanup( $conn, $t );
+
+        // backup created by another installation with a different APP_KEY
+        config( ['app.key' => 'base64:' . base64_encode( random_bytes( 32 ) )] );
+
+        $this->artisan( 'cms:restore', [
+            'file' => $backupFile,
+            '--tenant' => $t,
+            '--disk' => 'backup',
+            '--no-media' => true,
+            '--force' => true,
+        ] )
+            ->expectsOutput( 'Backup manifest signature is invalid or from another installation, restoring unauthenticated backup' )
+            ->assertSuccessful();
+
+        $this->assertEquals( $pageCount, DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count() );
+    }
+
+
+    public function testBackupForceRejectsInvalidChecksum(): void
+    {
+        $backupFile = $this->backup( $this->tenant );
+        $zip = new \ZipArchive();
+
+        $this->assertTrue( $zip->open( Storage::disk( 'backup' )->path( $backupFile ) ) );
+        $this->assertTrue( $zip->deleteName( 'cms_pages.ndjson' ) );
+        $this->assertTrue( $zip->addFromString( 'cms_pages.ndjson', "{\"id\":null}\n" ) );
+        $this->assertTrue( $zip->close() );
+
+        config( ['app.key' => 'base64:' . base64_encode( random_bytes( 32 ) )] );
+
+        $this->artisan( 'cms:restore', [
+            'file' => $backupFile,
+            '--disk' => 'backup',
+            '--verify' => true,
+            '--force' => true,
+        ] )
+            ->expectsOutput( '  FAILED: cms_pages.ndjson' )
+            ->expectsOutput( 'Backup integrity check failed.' )
             ->assertExitCode( 1 );
     }
 

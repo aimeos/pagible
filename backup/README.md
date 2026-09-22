@@ -44,7 +44,7 @@ php artisan cms:backup [options]
 
 Creates a ZIP archive named `pagible-{tenant}-{timestamp}.zip` containing NDJSON exports of all `cms_*` tables and the public and protected media owned by the exported File records and their historical versions. Soft-deleted Files remain recoverable. Remote hot-links, orphaned storage objects, and objects belonging to other tenants are not copied.
 
-The signed manifest contains SHA-256 checksums for every database and media entry. Its HMAC signature uses the application's `APP_KEY`, so restoring the archive in another installation requires the same key. Backup ZIPs are not encrypted and can contain protected media; keep the backup disk private or encrypt the archives at rest.
+The signed manifest contains SHA-256 checksums for every database and media entry. Its HMAC signature uses the application's `APP_KEY`, so restoring the archive in another installation requires the same key or `cms:restore --force`, which accepts unauthenticated manifests but still verifies all checksums. Backup ZIPs are not encrypted and can contain protected media; keep the backup disk private or encrypt the archives at rest.
 
 Backup, restore, File catalog commits, relocation, and cleanup share one per-tenant media gate.
 Slow upload preparation remains outside the gate because prepared objects use new immutable paths.
@@ -68,7 +68,7 @@ php artisan cms:restore [file] [options]
 | `--media-only` | | Only restore media files; require live files to use the archived disks |
 | `--list` | | List available backups |
 | `--verify` | | Verify backup integrity without restoring |
-| `--force` | | Skip confirmation prompts |
+| `--force` | | Skip confirmation prompts and accept backups from other installations |
 
 Every restore verifies the signed manifest and all database and media checksums before writing anything. `--verify` performs the same verification without restoring. Media from the backup overwrites existing objects on its archived logical disk. Before each overwrite or opposite-disk deletion, restore journals the previous object in a private local temporary directory. Database import and disk reconciliation then commit together; on failure, the previous media is restored and newly created objects are removed. Ensure the application storage directory has enough free space for the media that may be overwritten. A normal restore leaves each local File path on at most its catalog disk.
 

@@ -36,7 +36,7 @@ class Restore extends Command
         {--media-only : Only restore media files}
         {--list : List available backups}
         {--verify : Verify backup integrity without restoring}
-        {--force : Skip confirmation prompts}';
+        {--force : Skip confirmation prompts and accept backups from other installations}';
 
     protected $description = 'Restore CMS data from a backup';
 
@@ -674,8 +674,14 @@ class Restore extends Command
 
         $signature = $manifest['signature'] ?? null;
 
-        if( !is_string( $signature ) || !hash_equals( $this->sign( $manifest ), $signature ) ) {
-            throw new \RuntimeException( 'Backup manifest signature is invalid' );
+        // backups of other installations are signed with a different APP_KEY
+        if( !is_string( $signature ) || !hash_equals( $this->sign( $manifest ), $signature ) )
+        {
+            if( !$this->option( 'force' ) ) {
+                throw new \RuntimeException( 'Backup manifest signature is invalid, use --force for backups of other installations' );
+            }
+
+            $this->warn( 'Backup manifest signature is invalid or from another installation, restoring unauthenticated backup' );
         }
 
         Tenancy::check( (string) $manifest['tenant_id'] );
