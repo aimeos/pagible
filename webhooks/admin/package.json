@@ -6,7 +6,8 @@
     "build": "vue-gettext-compile && vite build",
     "gettext:compile": "vue-gettext-compile",
     "gettext:extract": "vue-gettext-extract",
-    "lint": "eslint src vite.config.js"
+    "lint": "eslint src cypress vite.config.js",
+    "test:unit": "cd ../../admin && ./node_modules/.bin/cypress run --component --spec '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}'"
   },
   "peerDependencies": {
     "graphql-tag": "^2.12",

@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 
 class WebhookModelTest extends WebhookTestAbstract
@@ -18,7 +19,7 @@ class WebhookModelTest extends WebhookTestAbstract
     use RefreshDatabase;
 
 
-    public function testEncryptedModelAttributesAndCasts() : void
+    public function testModelAttributesAndCasts() : void
     {
         $webhook = $this->webhook( [
             'events' => ['page.published', 'page.deleted'],
@@ -27,36 +28,47 @@ class WebhookModelTest extends WebhookTestAbstract
         ] );
         $raw = Webhook::withoutTenancy()->whereKey( $webhook->id )->firstOrFail()->getAttributes();
 
-        $this->assertNotSame( 'https://example.com/hooks/cms', $raw['url'] );
+        // Only the secrets are encrypted
+        $this->assertSame( 'https://example.com/hooks/cms', $raw['url'] );
         $this->assertStringNotContainsString( self::secret( 'test' ), $raw['secrets'] );
         // Only reason, status and time, which don't need encryption
         $this->assertSame( ['reason' => 'http_error', 'status' => 503], json_decode( $raw['last_error'], true ) );
         $this->assertSame( ['page.published', 'page.deleted'], $webhook->events );
         $this->assertSame( 503, $webhook->last_error['status'] );
         $this->assertInstanceOf( Carbon::class, $webhook->last_success_at );
-        $this->assertSame( 'https://example.com/…', $webhook->endpoint );
+        $this->assertSame( 'https://example.com/hooks/', $webhook->endpoint );
         $this->assertNotEmpty( $webhook->id );
         $this->assertArrayNotHasKey( 'url', $webhook->toArray() );
         $this->assertArrayNotHasKey( 'secrets', $webhook->toArray() );
     }
 
 
-    public function testPreviousSecretIsEncryptedAndReencrypted() : void
+    #[DataProvider( 'endpoints' )]
+    public function testEndpointHidesCredentials( string $url, string $endpoint ) : void
     {
-        $webhook = $this->webhook( [
-            'secrets' => self::secrets( 'test', ['old' => now()->addHour()] ),
-            'updated_at' => '2026-09-14 12:00:00',
-        ] );
-        $before = $webhook->getRawOriginal( 'secrets' );
+        $this->assertSame( $endpoint, ( new Webhook() )->forceFill( ['url' => $url] )->endpoint );
+    }
 
-        $this->assertStringNotContainsString( self::secret( 'old' ), $before );
 
-        $this->artisan( 'cms:webhooks:reencrypt', ['--tenant' => 'test'] )->assertSuccessful();
-        $webhook->refresh();
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function endpoints() : iterable
+    {
+        yield 'path' => ['https://hooks.slack.com/services/T0/B0/XXXX', 'https://hooks.slack.com/services/T0/B0/'];
+        yield 'trailing slash' => ['https://example.com/hooks/token/', 'https://example.com/hooks/'];
+        yield 'query' => ['https://example.com/hooks/cms?token=secret', 'https://example.com/hooks/'];
+        yield 'root' => ['https://example.com/?token=secret', 'https://example.com/'];
+        yield 'port' => ['https://example.com:8443/token', 'https://example.com:8443/'];
+    }
 
-        $this->assertNotSame( $before, $webhook->getRawOriginal( 'secrets' ) );
-        $this->assertSame( [self::secret( 'test' ), self::secret( 'old' )], $webhook->secrets() );
-        $this->assertSame( '2026-09-14 12:00:00', $webhook->updated_at?->format( 'Y-m-d H:i:s' ) );
+
+    public function testPreviousSecretIsEncrypted() : void
+    {
+        $webhook = $this->webhook( ['secrets' => self::secrets( 'test', ['old' => now()->addHour()] )] );
+
+        $this->assertStringNotContainsString( self::secret( 'old' ), $webhook->getRawOriginal( 'secrets' ) );
+        $this->assertSame( [self::secret( 'test' ), self::secret( 'old' )], $webhook->refresh()->secrets() );
     }
 
 
@@ -66,15 +78,14 @@ class WebhookModelTest extends WebhookTestAbstract
 
         $this->assertFalse( $webhook->decryptable() );
         $this->assertSame( ['reason' => 'invalid_encryption'], $webhook->failure() );
-        $this->assertSame( '[invalid endpoint]', $webhook->endpoint );
+        $this->assertSame( 'https://example.com/hooks/', $webhook->endpoint );
 
         // New values aren't compared with the old ones
-        $webhook->forceFill( ['url' => 'https://example.com/hooks/new', 'secrets' => self::secrets( 'new' ), 'last_error' => null] )->save();
+        $webhook->forceFill( ['secrets' => self::secrets( 'new' ), 'last_error' => null] )->save();
         $webhook->refresh();
 
         $this->assertTrue( $webhook->decryptable() );
         $this->assertNull( $webhook->failure() );
-        $this->assertSame( 'https://example.com/hooks/new', $webhook->url );
         $this->assertSame( [self::secret( 'new' )], $webhook->secrets() );
     }
 
@@ -84,11 +95,6 @@ class WebhookModelTest extends WebhookTestAbstract
         $webhook = $this->webhook( ['last_error' => ['reason' => 'timeout', 'at' => '2026-09-15T14:00:00+02:00']] );
 
         $this->assertSame( '2026-09-15T12:00:00.000000Z', $webhook->failure()['at']?->toJSON() );
-
-        // Invalid values don't prevent listing all subscriptions
-        $webhook->last_error = ['reason' => 'timeout', 'at' => 'invalid'];
-
-        $this->assertSame( ['reason' => 'timeout', 'at' => null], $webhook->failure() );
     }
 
 

@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\GraphQL\Resolvers;
 
 use Aimeos\Cms\Models\Webhook;
-use Aimeos\Cms\WebhookCircuit;
 use Aimeos\Cms\WebhookConfig;
 use Aimeos\Cms\WebhookManager;
 use Illuminate\Support\Collection;
@@ -69,20 +68,6 @@ final class WebhookResolver
 
 
     /**
-     * @param array{id: string, url: string} $args
-     * @return array<string, mixed>
-     */
-    public function replace( mixed $root, array $args ) : array
-    {
-        return $this->manager->replace(
-            $args['id'],
-            $args['url'],
-            Auth::user(),
-        );
-    }
-
-
-    /**
      * @param array{id: string} $args
      * @return array<string, mixed>
      */
@@ -115,30 +100,22 @@ final class WebhookResolver
     {
         // Not limited by the current total limit because subscriptions added before it was lowered
         // still receive events, their number is bounded by the limit when they were added
-        $webhooks = Webhook::query()
+        return Webhook::query()
             ->orderByDesc( 'updated_at' )
             ->get();
-
-        // One cache request for the pauses of all subscriptions instead of one for each
-        WebhookCircuit::load( $webhooks->map( fn( Webhook $webhook ) => $webhook->circuit() )->filter()->all() );
-
-        return $webhooks;
     }
 
 
     /**
      * Returns if events are sent at all, so editors know why subscriptions don't receive any.
      *
-     * @return array{enabled: bool, blocked: string|null, stalled_since: \Illuminate\Support\Carbon|null}
+     * @return array{enabled: bool, blocked: string|null}
      */
     public function server() : array
     {
-        $stalled = $this->config->stalled();
-
         return [
             'enabled' => (bool) config( 'cms.webhooks.enabled', false ),
             'blocked' => $this->config->blocked(),
-            'stalled_since' => $stalled !== null ? now()->setTimestamp( $stalled ) : null,
         ];
     }
 }

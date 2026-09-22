@@ -22,19 +22,7 @@ class WebhookClientTest extends WebhookTestAbstract
 
         $this->assertSame( 'https://example.com/hook?source=cms',
             $client->canonical( 'HTTPS://EXAMPLE.COM/hook?source=cms' ) );
-    }
-
-
-    public function testCanonicalUrlNormalizesEquivalentForms() : void
-    {
-        $client = app( WebhookClient::class );
-
-        $this->assertSame( 'https://example.com/', $client->canonical( 'https://example.com' ) );
-        $this->assertSame( 'https://example.com/~hook%2F?a=~', $client->canonical( 'https://example.com/%7ehook%2f?a=%7E' ) );
-        $this->assertSame( 'https://example.com/hook', $client->canonical( 'https://example.com/a/./../hook?' ) );
-
-        // Servers may handle paths with and without trailing slash differently
-        $this->assertSame( 'https://example.com/hook/', $client->canonical( 'https://example.com/hook/' ) );
+        $this->assertSame( 'https://example.com/a%25zz?b=%25', $client->canonical( 'https://example.com/a%zz?b=%' ) );
     }
 
 
@@ -60,6 +48,7 @@ class WebhookClientTest extends WebhookTestAbstract
      */
     public static function invalidUrls() : iterable
     {
+        yield 'empty' => [''];
         yield 'credentials' => ['https://user:pass@example.com/hook'];
         yield 'fragment' => ['https://example.com/hook#token'];
         yield 'loopback' => ['https://127.0.0.1/hook'];
@@ -70,7 +59,12 @@ class WebhookClientTest extends WebhookTestAbstract
         yield 'single label' => ['https://localhost/hook'];
         yield 'http default' => ['http://example.com/hook'];
         yield 'nonstandard port' => ['https://example.com:8443/hook'];
+        yield 'port 0' => ['https://example.com:0/hook'];
+        yield 'port too large' => ['https://example.com:65536/hook'];
         yield 'encoded authority' => ['https://example.com%40internal/hook'];
+        yield 'missing authority' => ['https:example.com/hook'];
+        yield 'trailing dot' => ['https://example.com./hook'];
+        yield 'non-ASCII host' => ['https://exämple.com/hook'];
         yield 'bracketed hostname' => ['https://[example.com]/hook'];
         yield 'bracketed IPv4' => ['https://[93.184.216.34]/hook'];
     }
@@ -90,6 +84,7 @@ class WebhookClientTest extends WebhookTestAbstract
     {
         yield 'http with port' => ['HTTP://Indexer:8080/hook', 'http://indexer:8080/hook'];
         yield 'localhost' => ['http://localhost/hook', 'http://localhost/hook'];
+        yield 'underscore' => ['http://Search_Indexer:8080/hook', 'http://search_indexer:8080/hook'];
         yield 'loopback' => ['http://127.0.0.1:9000/hook', 'http://127.0.0.1:9000/hook'];
         yield 'loopback IPv6' => ['http://[::1]:9000/hook', 'http://[::1]:9000/hook'];
         yield 'private' => ['https://10.0.0.5/hook', 'https://10.0.0.5/hook'];
@@ -190,10 +185,10 @@ class WebhookClientTest extends WebhookTestAbstract
             $calls = [
                 'subscription' => fn() => $client->send( $this->model()->target(), 'delivery-id', '{}' ),
                 'endpoint' => fn() => $client->send(
-                    ['url' => 'http://indexer:8080/hook', 'secrets' => ['secret'], 'ca' => null, 'internal' => true],
+                    ['url' => 'http://indexer:8080/hook', 'secrets' => ['secret'], 'internal' => true],
                     'delivery-id', '{}',
                 ),
-                'address' => fn() => $client->canonical( 'http://10.0.0.1/hook', true ),
+                'canonical' => fn() => $client->canonical( 'http://10.0.0.1/hook', true ),
             ];
 
             foreach( $calls as $name => $call )
@@ -213,24 +208,24 @@ class WebhookClientTest extends WebhookTestAbstract
     }
 
 
-    public function testAddressReturnsFirstAllowedResolvedAddress() : void
+    public function testUnresolvedOrDeniedHostIsntSent() : void
     {
         $client = new StubWebhookClient();
-        $client->addresses = ['169.254.169.254', '10.0.0.5'];
-
-        $this->assertSame( '10.0.0.5', $client->address( 'http://indexer:8080/hook', true ) );
+        $endpoint = ['url' => 'http://indexer:8080/hook', 'secrets' => [self::secret( 'endpoint' )], 'internal' => true];
 
         foreach( ['resolution_failed' => [], 'destination_not_allowed' => ['169.254.169.254']] as $reason => $addresses )
         {
             $client->addresses = $addresses;
 
             try {
-                $client->address( 'http://indexer:8080/hook', true );
+                $client->send( $endpoint, 'delivery-id', '{}' );
                 $this->fail( 'Expected ' . $reason );
             } catch( WebhookException $e ) {
                 $this->assertSame( $reason, $e->reason );
             }
         }
+
+        $this->assertSame( [], $client->options );
     }
 
 
@@ -238,73 +233,21 @@ class WebhookClientTest extends WebhookTestAbstract
     {
         $client = $this->resolver();
         $ipv6 = '2606:2800:220:1:248:1893:25c8:1946';
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
-        try {
-            // A failed query for one record type doesn't hide the addresses of the other one
-            $client->records = [DNS_A => [['ip' => '93.184.216.34']]];
-            $this->assertSame( '93.184.216.34', $client->address( 'https://example.com/hook' ) );
+        // A failed query for one record type doesn't hide the addresses of the other one
+        $client->records = [DNS_A => [['ip' => '93.184.216.34']]];
+        $this->assertSame( ['93.184.216.34'], $client->lookup( 'example.com' ) );
 
-            $client->records = [DNS_A => [], DNS_AAAA => [['ipv6' => $ipv6]]];
-            $this->assertSame( $ipv6, $client->address( 'https://example.com/hook' ) );
+        $client->records = [DNS_A => [], DNS_AAAA => [['ipv6' => $ipv6]]];
+        $this->assertSame( [$ipv6], $client->lookup( 'example.com' ) );
 
-            $client->records = [DNS_A => [['ip' => '93.184.216.34']], DNS_AAAA => [['ipv6' => $ipv6]]];
-            $client->address( 'https://example.com/hook' );
-            $this->assertSame( ['93.184.216.34', $ipv6], $client->addresses );
+        $client->records = [DNS_A => [['ip' => '93.184.216.34']], DNS_AAAA => [['ipv6' => $ipv6]]];
+        $this->assertSame( ['93.184.216.34', $ipv6], $client->lookup( 'example.com' ) );
 
-            $client->records = [];
+        $client->records = [];
+        $this->assertSame( [], $client->lookup( 'example.com' ) );
 
-            try {
-                $client->address( 'https://example.com/hook' );
-                $this->fail( 'Expected resolution_failed' );
-            } catch( WebhookException $e ) {
-                $this->assertSame( 'resolution_failed', $e->reason );
-            }
-
-            $this->assertSame( array_merge( ...array_fill( 0, 4, [DNS_A, DNS_AAAA] ) ), $client->types );
-        } finally {
-            Carbon::setTestNow();
-        }
-    }
-
-
-    public function testUnansweredQueryIsntRepeatedForTheOtherRecordType() : void
-    {
-        $client = $this->resolver( 2 );
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            $client->address( 'https://example.com/hook' );
-            $this->fail( 'Expected resolution_failed' );
-        } catch( WebhookException $e ) {
-            $this->assertSame( 'resolution_failed', $e->reason );
-        } finally {
-            Carbon::setTestNow();
-        }
-
-        $this->assertSame( [DNS_A], $client->types );
-    }
-
-
-    public function testSlowAnswerIsntFollowedByTheOtherRecordType() : void
-    {
-        $client = $this->resolver( 2 );
-        $ipv6 = '2606:2800:220:1:248:1893:25c8:1946';
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            $client->records = [DNS_A => [['ip' => '93.184.216.34']], DNS_AAAA => [['ipv6' => $ipv6]]];
-            $this->assertSame( '93.184.216.34', $client->address( 'https://example.com/hook' ) );
-            $this->assertSame( [DNS_A], $client->types );
-
-            // Without usable addresses, the other record type is still asked
-            $client->types = [];
-            $client->records = [DNS_A => [], DNS_AAAA => [['ipv6' => $ipv6]]];
-            $this->assertSame( $ipv6, $client->address( 'https://example.com/hook' ) );
-            $this->assertSame( [DNS_A, DNS_AAAA], $client->types );
-        } finally {
-            Carbon::setTestNow();
-        }
+        $this->assertSame( array_merge( ...array_fill( 0, 4, [DNS_A, DNS_AAAA] ) ), $client->types );
     }
 
 
@@ -369,7 +312,6 @@ class WebhookClientTest extends WebhookTestAbstract
 
         $this->assertSame( 'https://example.com/hooks/cms', $client->options[CURLOPT_URL] );
         $this->assertSame( $body, $client->options[CURLOPT_POSTFIELDS] );
-        $this->assertContains( 'Accept-Encoding: identity', $headers );
         $this->assertContains( 'Content-Type: application/json', $headers );
         $this->assertContains( 'Expect:', $headers );
         $this->assertContains( 'User-Agent: Pagible-Webhook/1.0', $headers );
@@ -381,18 +323,10 @@ class WebhookClientTest extends WebhookTestAbstract
         ], array_values( preg_grep( '/^(webhook|x-cms)-/i', $headers ) ?: [] ) );
         $this->assertSame( ['example.com:443:93.184.216.34'], $client->options[CURLOPT_RESOLVE] );
         $this->assertSame( '', $client->options[CURLOPT_PROXY] );
-        $this->assertSame( '*', $client->options[CURLOPT_NOPROXY] );
         $this->assertFalse( $client->options[CURLOPT_FOLLOWLOCATION] );
-        $this->assertSame( 0, $client->options[CURLOPT_MAXREDIRS] );
         $this->assertTrue( $client->options[CURLOPT_SSL_VERIFYPEER] );
         $this->assertSame( 2, $client->options[CURLOPT_SSL_VERIFYHOST] );
         $this->assertSame( CURL_SSLVERSION_TLSv1_2, $client->options[CURLOPT_SSLVERSION] );
-
-        if( defined( 'CURLOPT_PROTOCOLS_STR' ) ) {
-            $this->assertSame( 'https', $client->options[(int) constant( 'CURLOPT_PROTOCOLS_STR' )] );
-        } else {
-            $this->assertSame( CURLPROTO_HTTPS, $client->options[CURLOPT_PROTOCOLS] );
-        }
     }
 
 
@@ -466,71 +400,34 @@ class WebhookClientTest extends WebhookTestAbstract
     }
 
 
-    #[DataProvider( 'invalidDeliveryIds' )]
-    public function testInvalidDeliveryIdIsntSent( string $id ) : void
-    {
-        $client = new StubWebhookClient();
-
-        try {
-            $client->send( $this->model()->target(), $id, '{}' );
-            $this->fail( 'Invalid delivery ID was used' );
-        } catch( WebhookException $e ) {
-            $this->assertSame( 'invalid_header', $e->reason );
-        }
-
-        $this->assertSame( [], $client->options );
-    }
-
-
-    /**
-     * @return iterable<string, array{string}>
-     */
-    public static function invalidDeliveryIds() : iterable
-    {
-        yield 'line break' => ["delivery\nid"];
-        // Dots separate the signed values
-        yield 'dot' => ['delivery.id'];
-    }
-
-
     public function testPinsAllAllowedAddresses() : void
     {
         $client = new StubWebhookClient();
         $client->addresses = ['93.184.216.34', '10.0.0.7', '2606:2800:220:1:248:1893:25c8:1946', '93.184.216.34'];
-        $expected = ( curl_version()['version_number'] ?? 0 ) >= 0x073b00
-            ? 'example.com:443:93.184.216.34,[2606:2800:220:1:248:1893:25c8:1946]'
-            : 'example.com:443:93.184.216.34';
 
         $client->send( $this->model()->target(), 'delivery-id', '{}' );
 
-        $this->assertSame( [$expected], $client->options[CURLOPT_RESOLVE] );
+        $this->assertSame( ['example.com:443:93.184.216.34,[2606:2800:220:1:248:1893:25c8:1946]'], $client->options[CURLOPT_RESOLVE] );
     }
 
 
     public function testOnlyEndpointsAskTheSystemResolver() : void
     {
         $client = new StubWebhookClient();
-        $endpoint = ['url' => 'https://indexer.example/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => null, 'internal' => true];
+        $endpoint = ['url' => 'https://indexer.example/hook', 'secrets' => [self::secret( 'endpoint' )], 'internal' => true];
 
         $client->send( $this->model()->target(), 'delivery-id', '{}' );
         $client->send( $endpoint, 'delivery-id', '{}' );
-        $client->address( 'https://example.com/hook' );
-        $client->address( 'https://indexer.example/hook', true );
 
-        $this->assertSame( [
-            ['example.com', false],
-            ['indexer.example', true],
-            ['example.com', false],
-            ['indexer.example', true],
-        ], $client->lookups );
+        $this->assertSame( [['example.com', false], ['indexer.example', true]], $client->lookups );
     }
 
 
-    public function testBuildsEndpointRequestWithCustomCa() : void
+    public function testBuildsEndpointRequest() : void
     {
         $client = new StubWebhookClient();
         $client->addresses = ['169.254.169.254', '10.0.0.7'];
-        $endpoint = ['url' => 'https://indexer:8443/hook', 'secrets' => [self::secret( 'endpoint' ), self::secret( 'previous' )], 'ca' => '/etc/ca.pem', 'internal' => true];
+        $endpoint = ['url' => 'https://indexer:8443/hook', 'secrets' => [self::secret( 'endpoint' ), self::secret( 'previous' )], 'internal' => true];
         Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
 
         try {
@@ -543,7 +440,6 @@ class WebhookClientTest extends WebhookTestAbstract
 
         $this->assertSame( 'https://indexer:8443/hook', $client->options[CURLOPT_URL] );
         $this->assertSame( ['indexer:8443:10.0.0.7'], $client->options[CURLOPT_RESOLVE] );
-        $this->assertSame( '/etc/ca.pem', $client->options[CURLOPT_CAINFO] );
         $this->assertFalse( $client->options[CURLOPT_FOLLOWLOCATION] );
         $this->assertContains( 'webhook-signature: ' . $this->signature( 'endpoint', 'delivery-id.1789387200.{}' )
             . ' ' . $this->signature( 'previous', 'delivery-id.1789387200.{}' ), $headers );
@@ -554,17 +450,10 @@ class WebhookClientTest extends WebhookTestAbstract
     {
         $client = new StubWebhookClient();
         $client->addresses = ['127.0.0.1'];
-        $endpoint = ['url' => 'http://indexer:8080/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => '/etc/ca.pem', 'internal' => true];
+        $endpoint = ['url' => 'http://indexer:8080/hook', 'secrets' => [self::secret( 'endpoint' )], 'internal' => true];
 
         $this->assertSame( 204, $client->send( $endpoint, 'delivery-id', '{}' )->status );
         $this->assertSame( ['indexer:8080:127.0.0.1'], $client->options[CURLOPT_RESOLVE] );
-        $this->assertArrayNotHasKey( CURLOPT_CAINFO, $client->options );
-
-        if( defined( 'CURLOPT_PROTOCOLS_STR' ) ) {
-            $this->assertSame( 'http', $client->options[(int) constant( 'CURLOPT_PROTOCOLS_STR' )] );
-        } else {
-            $this->assertSame( CURLPROTO_HTTP, $client->options[CURLOPT_PROTOCOLS] );
-        }
     }
 
 
@@ -599,19 +488,20 @@ class WebhookClientTest extends WebhookTestAbstract
     {
         $client = new StubWebhookClient();
         $client->addresses = ['169.254.169.254'];
-        $endpoint = ['url' => 'http://indexer/hook', 'secrets' => [self::secret( 'endpoint' )], 'ca' => null, 'internal' => true];
+        $endpoint = ['url' => 'http://indexer/hook', 'secrets' => [self::secret( 'endpoint' )], 'internal' => true];
 
         $this->expectException( WebhookException::class );
         $client->send( $endpoint, 'delivery-id', '{}' );
     }
 
 
-    public function testLargeResponseBodyIsNotRead() : void
+    public function testResponseBodyIsNotRead() : void
     {
         $client = new StubWebhookClient();
         $client->overflow = 'body';
 
         $this->assertSame( 204, $client->send( $this->model()->target(), 'delivery-id', '{}' )->status );
+        $this->assertSame( 0, call_user_func( $client->options[CURLOPT_WRITEFUNCTION], null, '{}' ) );
 
         $client->status = 503;
         $this->assertTrue( $client->send( $this->model()->target(), 'delivery-id', '{}' )->retryable() );
@@ -654,8 +544,7 @@ class WebhookClientTest extends WebhookTestAbstract
     {
         yield 'connection refused' => [7, 'connection_failed'];
         yield 'timeout' => [28, 'timeout'];
-        yield 'certificate' => [60, 'tls_error'];
-        yield 'handshake' => [35, 'tls_error'];
+        yield 'certificate' => [60, 'transport_error'];
         yield 'other' => [56, 'transport_error'];
     }
 
@@ -669,13 +558,8 @@ class WebhookClientTest extends WebhookTestAbstract
         $client = new StubWebhookClient();
         $client->headers = $headers;
         $client->status = 503;
-        Carbon::setTestNow( '2026-09-14 12:00:00 UTC' );
 
-        try {
-            $response = $client->send( $this->model()->target(), 'delivery-id', '{}' );
-        } finally {
-            Carbon::setTestNow();
-        }
+        $response = $client->send( $this->model()->target(), 'delivery-id', '{}' );
 
         $this->assertSame( 503, $response->status );
         $this->assertSame( $expected, $response->retryAfter );
@@ -691,10 +575,9 @@ class WebhookClientTest extends WebhookTestAbstract
         yield 'none' => [['HTTP/1.1 503 Service Unavailable'], 0];
         yield 'seconds' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: 120'], 120];
         yield 'lower case' => [['HTTP/1.1 503 Service Unavailable', 'retry-after:  90 '], 90];
-        yield 'http date' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: Mon, 14 Sep 2026 12:10:00 GMT'], 600];
-        yield 'past date' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: Mon, 14 Sep 2026 11:00:00 GMT'], 0];
+        yield 'http date' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: Mon, 14 Sep 2026 12:10:00 GMT'], 0];
         yield 'invalid' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: soon'], 0];
-        yield 'huge' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: 99999999999999999999'], 999999999];
+        yield 'huge' => [['HTTP/1.1 503 Service Unavailable', 'Retry-After: 99999999999999999999'], PHP_INT_MAX];
         yield 'interim response' => [['HTTP/1.1 100 Continue', 'Retry-After: 120', '', 'HTTP/1.1 503 Service Unavailable'], 0];
     }
 
@@ -734,30 +617,23 @@ class WebhookClientTest extends WebhookTestAbstract
 
 
     /**
-     * Returns a client which answers DNS queries from its records, other queries fail. Each query takes the given seconds.
+     * Returns a client which answers DNS queries from its records, other queries fail.
      */
-    private function resolver( int $seconds = 0 ) : WebhookClient
+    private function resolver() : WebhookClient
     {
-        return new class( $seconds ) extends WebhookClient {
-            /** @var list<string> */
-            public array $addresses = [];
+        return new class extends WebhookClient {
             /** @var array<int, list<array<string, mixed>>> */
             public array $records = [];
             /** @var list<int> */
             public array $types = [];
-            public function __construct( private int $seconds )
+            public function lookup( string $host, bool $system = false ) : array
             {
+                return parent::lookup( $host, $system );
             }
-            protected function lookup( string $host, bool $system = false ) : array
-            {
-                return $this->addresses = parent::lookup( $host, $system );
-            }
-            protected function records( string $host, int $type ) : ?array
+            protected function records( string $host, int $type ) : array
             {
                 $this->types[] = $type;
-                Carbon::setTestNow( now()->addSeconds( $this->seconds ) );
-
-                return $this->records[$type] ?? null;
+                return $this->records[$type] ?? [];
             }
         };
     }

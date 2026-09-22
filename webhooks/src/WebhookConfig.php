@@ -22,32 +22,23 @@ class WebhookConfig
     /** @var array<string, string> Descriptions of the configuration problems */
     public const REASONS = [
         'destination_not_allowed' => 'The URL points to a denied address',
-        'invalid_ca' => 'The CA file doesn\'t exist or isn\'t readable',
         'invalid_cache' => 'The cache store must be shared by all servers and queue workers to pause failing destinations and throttle log entries, the "array" and "null" drivers aren\'t',
         'invalid_encryption' => 'Queued deliveries can\'t be encrypted, check the APP_KEY setting',
-        'invalid_endpoint' => 'The endpoint must be an array with "url", "secret", "events" and optional "tenants" and "ca" keys',
+        'invalid_endpoint' => 'The endpoint must be an array with "url", "secret" and "events" keys',
         'invalid_events' => 'The events must be a non-empty list of supported webhook events',
         'invalid_name' => 'The endpoints must use names as keys which may only contain up to 64 letters, digits, "_" and "-" and which must not be numbers',
         'invalid_policy' => 'The "deny_cidrs" setting contains an invalid IP address or range, all deliveries are blocked',
         'invalid_queue' => 'The queue connection doesn\'t exist or uses the "null" driver',
-        'invalid_retry_after' => 'The value must be greater than the sum of the "cms.webhooks.http.connect_timeout" and "cms.webhooks.http.timeout" settings plus 10 seconds for resolving the host name and recording the result, otherwise running deliveries are sent twice',
+        'invalid_retry_after' => 'The value must be greater than the "cms.webhooks.timeout" setting plus 13 seconds for connecting, resolving the host name and recording the result, otherwise running deliveries are sent twice',
         'invalid_secret' => 'The secret must be a string or a list of strings, each "whsec_" followed by at least 24 base64 encoded bytes like from "openssl rand -base64 32", empty entries are ignored',
-        'invalid_tenants' => 'The tenants must be a non-empty list of tenant IDs',
         'invalid_url' => 'The URL isn\'t a valid HTTP or HTTPS URL',
-        'resolution_failed' => 'The host name can\'t be resolved',
     ];
 
     /** @var list<string> */
-    private const KEYS = ['url', 'secret', 'events', 'tenants', 'ca'];
+    private const KEYS = ['url', 'secret', 'events'];
 
     /** Seconds until the same configuration problem is logged again */
     private const LOG_INTERVAL = 600;
-
-    /** Seconds after which queued deliveries which weren't processed indicate a missing queue worker */
-    private const STALLED = 600;
-
-    /** Cache key of the time since queued deliveries are waiting for a queue worker */
-    private const WAITING = 'cms-webhooks-waiting';
 
 
     public function __construct( private WebhookClient $client )
@@ -77,12 +68,12 @@ class WebhookConfig
 
 
     /**
-     * Returns the endpoint if it's subscribed to the event of the tenant or NULL if it was removed or unsubscribed.
+     * Returns the endpoint if it's subscribed to the event or NULL if it was removed or unsubscribed.
      *
-     * @return array{url: string, secrets: list<string>, ca: string|null, internal: bool}|null
+     * @return array{url: string, secrets: list<string>, internal: bool}|null
      * @throws WebhookException If the endpoint configuration is invalid
      */
-    public function endpoint( string $name, string $event, string $tenant ) : ?array
+    public function endpoint( string $name, string $event ) : ?array
     {
         $endpoints = (array) config( 'cms.webhooks.endpoints', [] );
 
@@ -90,17 +81,16 @@ class WebhookConfig
             return null;
         }
 
-        return $this->target( $this->validate( $name, $endpoints[$name] ), $event, $tenant );
+        return $this->target( $this->validate( $name, $endpoints[$name] ), $event );
     }
 
 
     /**
      * Returns the configuration problems with the config keys to fix.
      *
-     * @param bool $resolve Also resolve the endpoint host names like the queue workers do
      * @return array<string, string> Config keys and reason codes, see REASONS
      */
-    public function problems( bool $resolve = false ) : array
+    public function problems() : array
     {
         $problems = [];
 
@@ -111,8 +101,7 @@ class WebhookConfig
         foreach( (array) config( 'cms.webhooks.endpoints', [] ) as $name => $endpoint )
         {
             try {
-                $valid = $this->validate( $name, $endpoint );
-                $resolve && $this->client->address( $valid['url'], true );
+                $this->validate( $name, $endpoint );
             } catch( WebhookException $e ) {
                 // An invalid deny list is already reported as its own problem
                 if( $e->reason !== 'invalid_policy' ) {
@@ -139,12 +128,8 @@ class WebhookConfig
         }
 
         try {
-            $encrypter = app( Encrypter::class );
+            app( Encrypter::class );
         } catch( \Throwable ) {
-            $encrypter = null;
-        }
-
-        if( !$encrypter instanceof Encrypter ) {
             $problems['app.key'] = 'invalid_encryption';
         }
 
@@ -153,92 +138,27 @@ class WebhookConfig
 
 
     /**
-     * Notes that a queue worker processed a delivery or that no delivery is waiting for one.
-     */
-    public function processed() : void
-    {
-        try {
-            Cache::forget( self::WAITING );
-        } catch( \Throwable ) {
-            // the queue can't be monitored without a cache
-        }
-    }
-
-
-    /**
-     * Notes that deliveries were queued unless earlier ones are still waiting for a queue worker.
-     *
-     * @return bool TRUE if no earlier deliveries were waiting, FALSE if they were or without cache
-     */
-    public function queued() : bool
-    {
-        try {
-            // Expires eventually if the queue was cleared and no queue worker will remove it
-            return Cache::add( self::WAITING, now()->getTimestamp(), 7 * 86400 );
-        } catch( \Throwable ) {
-            // the queue can't be monitored without a cache
-            return false;
-        }
-    }
-
-
-    /**
-     * Returns the revision of the endpoint destination.
-     *
-     * Changing the URL to another destination cancels deliveries queued for the previous one.
-     * Changed secrets don't, so secrets can be rotated without losing deliveries.
-     *
-     * @param array{url: string, secrets: list<string>, ca: string|null, internal: bool} $target
-     */
-    public function revision( array $target ) : string
-    {
-        return hash( 'sha256', $target['url'] );
-    }
-
-
-    /**
-     * Returns since when queued deliveries are waiting for a queue worker or NULL if they aren't.
-     *
-     * Deliveries are only waiting if no queue worker processed any delivery for more than 10 minutes.
-     * Deliveries which are deferred to a later time don't count.
-     *
-     * @return int|null Unix timestamp since when deliveries are waiting
-     */
-    public function stalled() : ?int
-    {
-        try {
-            $since = Cache::get( self::WAITING );
-        } catch( \Throwable ) {
-            return null;
-        }
-
-        // Cache stores like Redis return numbers as strings
-        return is_numeric( $since ) && (int) $since <= now()->getTimestamp() - self::STALLED ? (int) $since : null;
-    }
-
-
-    /**
-     * Returns the valid endpoints subscribed to the event of the tenant.
+     * Returns the valid endpoints subscribed to the event, they receive the events of all tenants.
      *
      * Invalid endpoints are skipped and logged so a misconfiguration only stops that endpoint.
      *
-     * @return array<string, string> Endpoint names as keys and revisions as values
+     * @return list<string> Endpoint names
      */
-    public function subscribed( string $event, string $tenant ) : array
+    public function subscribed( string $event ) : array
     {
         $result = [];
 
         foreach( (array) config( 'cms.webhooks.endpoints', [] ) as $name => $endpoint )
         {
             try {
-                $target = $this->target( $this->validate( $name, $endpoint ), $event, $tenant );
+                $target = $this->target( $this->validate( $name, $endpoint ), $event );
             } catch( WebhookException $e ) {
                 $this->warn( 'cms.webhook.endpoint_invalid', ['endpoint' => (string) $name, 'reason' => $e->reason] );
                 continue;
             }
 
             if( $target ) {
-                $result[(string) $name] = $this->revision( $target );
+                $result[] = (string) $name;
             }
         }
 
@@ -268,27 +188,25 @@ class WebhookConfig
 
 
     /**
-     * Returns the endpoint destination if it's subscribed to the event of the tenant.
+     * Returns the endpoint destination if it's subscribed to the event.
      *
-     * @param array{url: string, secrets: list<string>, events: list<string>, tenants: list<string>|null, ca: string|null} $endpoint
-     * @return array{url: string, secrets: list<string>, ca: string|null, internal: bool}|null
+     * @param array{url: string, secrets: list<string>, events: list<string>} $endpoint
+     * @return array{url: string, secrets: list<string>, internal: bool}|null
      */
-    private function target( array $endpoint, string $event, string $tenant ) : ?array
+    private function target( array $endpoint, string $event ) : ?array
     {
-        if( !in_array( $event, $endpoint['events'], true )
-            || $endpoint['tenants'] !== null && !in_array( $tenant, $endpoint['tenants'], true )
-        ) {
+        if( !in_array( $event, $endpoint['events'], true ) ) {
             return null;
         }
 
-        return ['url' => $endpoint['url'], 'secrets' => $endpoint['secrets'], 'ca' => $endpoint['ca'], 'internal' => true];
+        return ['url' => $endpoint['url'], 'secrets' => $endpoint['secrets'], 'internal' => true];
     }
 
 
     /**
      * Returns the validated endpoint configuration.
      *
-     * @return array{url: string, secrets: list<string>, events: list<string>, tenants: list<string>|null, ca: string|null}
+     * @return array{url: string, secrets: list<string>, events: list<string>}
      * @throws WebhookException If the endpoint configuration is invalid
      */
     private function validate( mixed $name, mixed $endpoint ) : array
@@ -306,7 +224,6 @@ class WebhookConfig
             throw new WebhookException( 'invalid_url' );
         }
 
-        // Equivalent URLs must keep the same revision, otherwise a cosmetic change cancels queued deliveries
         $url = $this->client->canonical( $url, true );
 
         // Several secrets allow rotation, empty ones allow optional environment variables
@@ -327,27 +244,7 @@ class WebhookConfig
             throw new WebhookException( 'invalid_events' );
         }
 
-        // Empty values are rejected instead of sending the events of all tenants, e.g. from unset environment variables
-        $tenants = $endpoint['tenants'] ?? null;
-
-        if( $tenants !== null && !$this->validList( $tenants ) ) {
-            throw new WebhookException( 'invalid_tenants' );
-        }
-
-        // Optional values which aren't set are ignored like empty secrets, e.g. from environment variables
-        $ca = $endpoint['ca'] ?? null;
-
-        if( $ca !== null && $ca !== '' && ( !is_string( $ca ) || !is_file( $ca ) || !is_readable( $ca ) ) ) {
-            throw new WebhookException( 'invalid_ca' );
-        }
-
-        return [
-            'url' => $url,
-            'secrets' => $secrets,
-            'events' => $events,
-            'tenants' => $tenants,
-            'ca' => is_string( $ca ) && $ca !== '' ? $ca : null,
-        ];
+        return ['url' => $url, 'secrets' => $secrets, 'events' => $events];
     }
 
 

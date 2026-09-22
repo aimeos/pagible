@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property string $id
  * @property string $tenant_id
  * @property bool $status
- * @property int $revision
  * @property string $name
  * @property string $url
  * @property list<array{secret: string, until: int|null}> $secrets Current secret first, rotated ones with their expiry timestamp
@@ -39,11 +38,7 @@ class Webhook extends Model
     use Tenancy;
 
     protected $table = 'cms_webhooks';
-    protected $hidden = ['url', 'secrets', 'revision'];
-    protected $appends = ['endpoint'];
-
-    private ?WebhookCircuit $circuit = null;
-    private ?string $circuitKey = null;
+    protected $hidden = ['url', 'secrets'];
 
 
     /**
@@ -64,39 +59,19 @@ class Webhook extends Model
      */
     public function circuit() : ?WebhookCircuit
     {
-        if( $this->id === null ) {
-            return null;
-        }
-
-        // Reused so its state is read once, e.g. by WebhookCircuit::load() for several subscriptions
-        if( $this->circuitKey !== ( $key = $this->tenant_id . "\n" . $this->id . "\n" . $this->revision ) )
-        {
-            $this->circuit = WebhookCircuit::webhook( $this->tenant_id, $this->id, $this->revision );
-            $this->circuitKey = $key;
-        }
-
-        return $this->circuit;
+        return $this->id !== null ? WebhookCircuit::webhook( $this->tenant_id, $this->id ) : null;
     }
 
 
     /**
-     * Tests if the destination and secrets can be decrypted, which fails after the application key
-     * changed without keeping the old key in APP_PREVIOUS_KEYS.
+     * Tests if the secrets can be decrypted, which fails after the application key changed without
+     * keeping the old key in APP_PREVIOUS_KEYS.
      */
     public function decryptable() : bool
     {
-        try
-        {
-            // Only loaded values are read, e.g. deliveries don't select the last error
-            foreach( ['url', 'secrets'] as $key )
-            {
-                if( array_key_exists( $key, $this->attributes ) ) {
-                    $this->getAttribute( $key );
-                }
-            }
-        }
-        catch( DecryptException )
-        {
+        try {
+            $this->getAttribute( 'secrets' );
+        } catch( DecryptException ) {
             return false;
         }
 
@@ -121,11 +96,7 @@ class Webhook extends Model
         }
 
         // Returned in the same format as the other dates
-        try {
-            $error['at'] = is_string( $error['at'] ?? null ) ? Carbon::parse( $error['at'] ) : null;
-        } catch( \Throwable ) {
-            $error['at'] = null;
-        }
+        $error['at'] = is_string( $error['at'] ?? null ) ? Carbon::parse( $error['at'] ) : null;
 
         return $error;
     }
@@ -137,18 +108,18 @@ class Webhook extends Model
     }
 
 
+    /**
+     * Returns the destination without the query string and the last path segment, which may contain credentials.
+     */
     public function getEndpointAttribute() : string
     {
-        try {
-            $parts = parse_url( $this->url );
-            $scheme = strtolower( (string) ( $parts['scheme'] ?? 'https' ) );
-            $host = strtolower( (string) ( $parts['host'] ?? '' ) );
-            $port = isset( $parts['port'] ) ? ':' . $parts['port'] : '';
+        // Stored URLs are canonical, so they contain no user info and fragment
+        $parts = parse_url( (string) $this->url ) ?: [];
+        $port = isset( $parts['port'] ) ? ':' . $parts['port'] : '';
+        $path = rtrim( $parts['path'] ?? '', '/' );
 
-            return $host === '' ? '[invalid endpoint]' : $scheme . '://' . $host . $port . '/…';
-        } catch( \Throwable ) {
-            return '[invalid endpoint]';
-        }
+        return ( $parts['scheme'] ?? 'https' ) . '://' . ( $parts['host'] ?? '' ) . $port
+            . substr( $path, 0, (int) strrpos( $path, '/' ) ) . '/';
     }
 
 
@@ -164,8 +135,8 @@ class Webhook extends Model
 
 
     /**
-     * Values which can't be decrypted any more are overwritten instead of compared, e.g. when replacing
-     * the destination.
+     * Values which can't be decrypted any more are overwritten instead of compared, e.g. when rotating
+     * the secret.
      *
      * @param string $key
      */
@@ -186,15 +157,20 @@ class Webhook extends Model
      */
     public function secrets() : array
     {
-        return array_column( $this->validSecrets(), 'secret' );
+        $now = now()->getTimestamp();
+
+        return array_column( array_filter(
+            $this->secrets ?? [],
+            fn( array $entry ) => $entry['until'] === null || $entry['until'] > $now
+        ), 'secret' );
     }
 
 
     /**
      * Returns the destination to send deliveries to.
      *
-     * @return array{url: string, secrets: list<string>, ca: string|null, internal: bool}
-     * @throws WebhookException If the destination can't be decrypted, which retrying doesn't fix
+     * @return array{url: string, secrets: list<string>, internal: bool}
+     * @throws WebhookException If the secrets can't be decrypted, which retrying doesn't fix
      *  until the old application key is added to APP_PREVIOUS_KEYS again
      */
     public function target() : array
@@ -203,23 +179,7 @@ class Webhook extends Model
             throw new WebhookException( 'invalid_encryption' );
         }
 
-        return ['url' => $this->url, 'secrets' => $this->secrets(), 'ca' => null, 'internal' => false];
-    }
-
-
-    /**
-     * Returns the stored secrets without the rotated ones whose grace period is over.
-     *
-     * @return list<array{secret: string, until: int|null}>
-     */
-    public function validSecrets() : array
-    {
-        $now = now()->getTimestamp();
-
-        return array_values( array_filter(
-            $this->secrets ?? [],
-            fn( array $entry ) => $entry['until'] === null || $entry['until'] > $now
-        ) );
+        return ['url' => $this->url, 'secrets' => $this->secrets(), 'internal' => false];
     }
 
 
@@ -230,8 +190,6 @@ class Webhook extends Model
     {
         return [
             'status' => 'boolean',
-            'revision' => 'integer',
-            'url' => 'encrypted',
             'secrets' => 'encrypted:array',
             'events' => 'array',
             'last_error' => 'array',

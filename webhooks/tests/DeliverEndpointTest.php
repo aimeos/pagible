@@ -32,27 +32,19 @@ class DeliverEndpointTest extends WebhookTestAbstract
         $this->assertSame( [[[
             'url' => 'http://indexer:8080/hook',
             'secrets' => [self::secret( 's' )],
-            'ca' => __FILE__,
             'internal' => true,
         ], '{"event":"page.published"}']], $client->calls );
     }
 
 
-    public function testChangedRemovedUnsubscribedOrExpiredJobIsCancelled() : void
+    public function testRemovedUnsubscribedOrExpiredJobIsCancelled() : void
     {
         $client = new StubEndpointClient();
-        $changes = [
-            'url' => ['url' => 'http://indexer:9090/hook'],
-            'events' => ['events' => ['page.deleted']],
-            'tenants' => ['tenants' => ['other']],
-        ];
 
-        foreach( $changes as $change ) {
-            $this->configure();
-            $job = $this->job();
-            $this->configure( $change );
-            $job->handle( $client, app( WebhookConfig::class ) );
-        }
+        $this->configure();
+        $job = $this->job();
+        $this->configure( ['events' => ['page.deleted']] );
+        $job->handle( $client, app( WebhookConfig::class ) );
 
         $this->configure();
         $job = $this->job();
@@ -87,7 +79,7 @@ class DeliverEndpointTest extends WebhookTestAbstract
     {
         $this->configure();
         $job = $this->job();
-        $this->configure( ['events' => ['page.published', 'file.purged'], 'ca' => __DIR__ . '/DeliverWebhookTest.php'] );
+        $this->configure( ['events' => ['page.published', 'file.purged']] );
         $client = new StubEndpointClient();
 
         $job->handle( $client, app( WebhookConfig::class ) );
@@ -96,16 +88,16 @@ class DeliverEndpointTest extends WebhookTestAbstract
     }
 
 
-    public function testEquivalentUrlKeepsQueuedDelivery() : void
+    public function testChangedUrlAppliesToQueuedDelivery() : void
     {
         $this->configure();
         $job = $this->job();
-        $this->configure( ['url' => 'http://INDEXER:8080/sub/../hook'] );
+        $this->configure( ['url' => 'http://indexer:9090/hook'] );
         $client = new StubEndpointClient();
 
         $job->handle( $client, app( WebhookConfig::class ) );
 
-        $this->assertSame( 'http://indexer:8080/hook', $client->calls[0][0]['url'] ?? null );
+        $this->assertSame( 'http://indexer:9090/hook', $client->calls[0][0]['url'] ?? null );
     }
 
 
@@ -190,7 +182,7 @@ class DeliverEndpointTest extends WebhookTestAbstract
 
     public function testPausedEndpointIsPausedForAllTenants() : void
     {
-        $this->configure( ['tenants' => ['acme', 'other']] );
+        $this->configure();
         $client = new StubEndpointClient();
         $client->status = 503;
 
@@ -203,35 +195,11 @@ class DeliverEndpointTest extends WebhookTestAbstract
     }
 
 
-    public function testChangedEndpointDoesntWaitForThePausedDestination() : void
-    {
-        $this->configure();
-        $client = new StubEndpointClient();
-        $client->status = 503;
-        $jobs = [
-            $this->job()->withFakeQueueInteractions(),
-            $this->job( now()->addSeconds( 60 )->timestamp )->withFakeQueueInteractions(),
-        ];
-
-        $this->job()->withFakeQueueInteractions()->handle( $client, app( WebhookConfig::class ) );
-        $this->configure( ['url' => 'http://indexer:9090/hook'] );
-        Log::spy();
-
-        foreach( $jobs as $job ) {
-            $job->handle( $client, app( WebhookConfig::class ) );
-            $this->assertFalse( $job->job->isReleased() );
-        }
-
-        $this->assertCount( 1, $client->calls );
-        Log::shouldNotHaveReceived( 'warning' );
-    }
-
-
     public function testEndpointInvalidatedAfterQueueingIsLoggedWithoutDelivery() : void
     {
         $this->configure();
         $job = $this->job();
-        $this->configure( ['ca' => '/nonexistent/ca.pem'] );
+        $this->configure( ['secret' => 'invalid'] );
         $client = new StubEndpointClient();
         Log::spy();
 
@@ -240,7 +208,7 @@ class DeliverEndpointTest extends WebhookTestAbstract
         $this->assertSame( [], $client->calls );
         Log::shouldHaveReceived( 'warning' )->once()->with(
             'cms.webhook.delivery_failed', \Mockery::on( fn( array $data ) =>
-                $data['endpoint'] === 'indexer' && $data['reason'] === 'invalid_ca'
+                $data['endpoint'] === 'indexer' && $data['reason'] === 'invalid_secret'
             )
         );
     }
@@ -278,20 +246,15 @@ class DeliverEndpointTest extends WebhookTestAbstract
             'url' => 'http://indexer:8080/hook',
             'secret' => self::secret( 's' ),
             'events' => ['page.published'],
-            'tenants' => ['acme'],
-            'ca' => __FILE__,
         ]]] );
     }
 
 
     private function job( ?int $expiresAt = null, string $deliveryId = 'delivery-id', string $tenant = 'acme' ) : DeliverEndpoint
     {
-        $revision = app( WebhookConfig::class )->subscribed( 'page.published', $tenant )['indexer'] ?? '';
-
         return new DeliverEndpoint(
             'indexer',
             $tenant,
-            $revision,
             'page.published',
             $deliveryId,
             '{"event":"page.published"}',

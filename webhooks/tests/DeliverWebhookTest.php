@@ -54,7 +54,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     }
 
 
-    public function testChangedRevisionInactiveOrExpiredJobIsCancelled() : void
+    public function testInactiveOrExpiredJobIsCancelled() : void
     {
         $webhook = $this->webhook();
         $client = new class extends WebhookClient {
@@ -66,11 +66,9 @@ class DeliverWebhookTest extends WebhookTestAbstract
             }
         };
 
-        $webhook->forceFill( ['revision' => 2] )->save();
-        $this->job( $webhook, revision: 1 )->handle( $client, app( WebhookConfig::class ) );
+        $this->job( $webhook, expiresAt: now()->subSecond()->timestamp )->handle( $client, app( WebhookConfig::class ) );
         $webhook->forceFill( ['status' => false] )->save();
-        $this->job( $webhook, revision: 2 )->handle( $client, app( WebhookConfig::class ) );
-        $this->job( $webhook, revision: 2, expiresAt: now()->subSecond()->timestamp )->handle( $client, app( WebhookConfig::class ) );
+        $this->job( $webhook )->handle( $client, app( WebhookConfig::class ) );
 
         $this->assertSame( 0, $client->calls );
     }
@@ -208,7 +206,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     public function testFailuresDuringAPauseDontAdvanceTheSchedule() : void
     {
         $webhook = $this->webhook();
-        $circuit = WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+        $circuit = WebhookCircuit::webhook( 'test', $webhook->id );
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
         try {
@@ -229,10 +227,9 @@ class DeliverWebhookTest extends WebhookTestAbstract
             $circuit->close();
             $this->assertSame( 30, $circuit->open( 'timeout', null, [30, 120] ) );
 
-            // Parallel deliveries asking to wait longer extend the pause without advancing the schedule
-            $this->assertSame( 30, $circuit->open( 'http_error', 429, [30, 120], 10 ) );
-            $this->assertSame( 60, $circuit->open( 'http_error', 429, [30, 120], 60 ) );
-            $this->assertSame( 429, $circuit->paused()['status'] ?? null );
+            // Parallel deliveries asking to wait longer wait for the same pause
+            $this->assertSame( 30, $circuit->open( 'http_error', 429, [30, 120], 60 ) );
+            $this->assertSame( 'timeout', $circuit->paused()['reason'] ?? null );
 
             Carbon::setTestNow( '2026-09-15 12:03:30 UTC' );
             $this->assertSame( 120, $circuit->open( 'timeout', null, [30, 120, 600] ) );
@@ -277,7 +274,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
             $job = $this->job( $webhook )->withFakeQueueInteractions();
             $job->handle( $client, app( WebhookConfig::class ) );
 
-            $this->assertNotNull( WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision )->paused() );
+            $this->assertNotNull( WebhookCircuit::webhook( 'test', $webhook->id )->paused() );
         } finally {
             Carbon::setTestNow();
         }
@@ -333,15 +330,15 @@ class DeliverWebhookTest extends WebhookTestAbstract
         Log::spy();
 
         try {
-            // Removing the event and replacing the destination cancel queued deliveries
-            foreach( [['events' => ['page.deleted']], ['revision' => 2]] as $idx => $change )
+            // Removing the event and deactivating the subscription cancel queued deliveries
+            foreach( [['events' => ['page.deleted']], ['status' => false]] as $idx => $change )
             {
                 Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
                 $webhook = $this->webhook( [
                     'url' => 'https://example.com/hooks/cms' . $idx,
                     'events' => ['page.deleted', 'page.published'],
                 ] );
-                $circuit = WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+                $circuit = WebhookCircuit::webhook( 'test', $webhook->id );
                 $jobs = [
                     $this->job( $webhook )->withFakeQueueInteractions(),
                     $this->job( $webhook, expiresAt: now()->addSeconds( 60 )->timestamp )->withFakeQueueInteractions(),
@@ -430,7 +427,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
         Log::spy();
 
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-        WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision )->open( 'timeout', null, [30] );
+        WebhookCircuit::webhook( 'test', $webhook->id )->open( 'timeout', null, [30] );
 
         Event::listen( CacheHit::class, function( CacheHit $event ) use ( &$read ) {
             $read = $read || str_starts_with( $event->key, 'cms-webhooks-circuit:' );
@@ -463,7 +460,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     public function testLastRetryIsMovedBeforeExpiry() : void
     {
         $webhook = $this->webhook();
-        $circuit = WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+        $circuit = WebhookCircuit::webhook( 'test', $webhook->id );
         $client = $this->client( 503 );
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
         Log::spy();
@@ -540,7 +537,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     {
         $webhook = $this->webhook();
         $client = $this->client( 503 );
-        $circuit = fn() => WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+        $circuit = fn() => WebhookCircuit::webhook( 'test', $webhook->id );
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
         try {
@@ -601,7 +598,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     }
 
 
-    public function testPermanentFailuresAndChangedRevisionsDontPauseTheDestination() : void
+    public function testPermanentFailuresDontPauseTheDestination() : void
     {
         $webhook = $this->webhook();
         $client = $this->client( 410 );
@@ -614,11 +611,6 @@ class DeliverWebhookTest extends WebhookTestAbstract
         $this->job( $webhook )->withFakeQueueInteractions()->handle( $client, app( WebhookConfig::class ) );
         $this->job( $webhook )->withFakeQueueInteractions()->handle( $client, app( WebhookConfig::class ) );
         $this->assertSame( 3, $client->calls );
-
-        // Deactivating or replacing the subscription starts a new revision with a closed circuit
-        $webhook->forceFill( ['revision' => 2] )->save();
-        $this->job( $webhook )->withFakeQueueInteractions()->handle( $client, app( WebhookConfig::class ) );
-        $this->assertSame( 4, $client->calls );
     }
 
 
@@ -685,33 +677,6 @@ class DeliverWebhookTest extends WebhookTestAbstract
     }
 
 
-    public function testProcessedDeliveryShowsTheQueueIsRunning() : void
-    {
-        $webhook = $this->webhook();
-        $config = app( WebhookConfig::class );
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            $config->queued();
-            Carbon::setTestNow( '2026-09-15 12:10:00 UTC' );
-            $this->assertSame( now()->subMinutes( 10 )->timestamp, $config->stalled() );
-
-            $this->job( $webhook )->handle( $this->client( 204 ), $config );
-            $this->assertNull( $config->stalled() );
-
-            // Failed jobs show a running queue too
-            $config->queued();
-            Carbon::setTestNow( '2026-09-15 12:20:00 UTC' );
-            $this->assertNotNull( $config->stalled() );
-
-            $this->job( $webhook )->failed( null );
-            $this->assertNull( $config->stalled() );
-        } finally {
-            Carbon::setTestNow();
-        }
-    }
-
-
     public function testDeliveryHealthDoesntChangeUpdatedAt() : void
     {
         $updated = Carbon::parse( '2026-09-14 12:00:00 UTC' );
@@ -764,24 +729,10 @@ class DeliverWebhookTest extends WebhookTestAbstract
     }
 
 
-    public function testEmptyBackoffScheduleStillDelaysRetries() : void
-    {
-        $default = config( 'cms.webhooks.queue.backoff' );
-        config( ['cms.webhooks.queue.backoff' => []] );
-
-        try {
-            // The queue worker would retry jobs which failed with an exception without waiting
-            $this->assertSame( [60], $this->job( $this->webhook() )->backoff() );
-        } finally {
-            config( ['cms.webhooks.queue.backoff' => $default] );
-        }
-    }
-
-
     public function testOversizedResponseHeadersResumeTheDestination() : void
     {
         $webhook = $this->webhook();
-        $circuit = WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+        $circuit = WebhookCircuit::webhook( 'test', $webhook->id );
         $client = new class extends WebhookClient {
             public function send( array $target, string $deliveryId, string $body, ?int $deadline = null ) : WebhookResponse
             {
@@ -810,7 +761,7 @@ class DeliverWebhookTest extends WebhookTestAbstract
     public function testAbandonedDeliveryReleasesTheDestinationForOthers() : void
     {
         $webhook = $this->webhook();
-        $circuit = WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision );
+        $circuit = WebhookCircuit::webhook( 'test', $webhook->id );
         $client = new class extends WebhookClient {
             public int $calls = 0;
             public function send( array $target, string $deliveryId, string $body, ?int $deadline = null ) : WebhookResponse
@@ -855,13 +806,11 @@ class DeliverWebhookTest extends WebhookTestAbstract
     }
 
 
-    private function job( Webhook $webhook, ?int $revision = null, ?int $expiresAt = null,
-        string $deliveryId = 'delivery-id' ) : DeliverWebhook
+    private function job( Webhook $webhook, ?int $expiresAt = null, string $deliveryId = 'delivery-id' ) : DeliverWebhook
     {
         return new DeliverWebhook(
             $webhook->id,
             $webhook->tenant_id,
-            $revision ?? $webhook->revision,
             'page.published',
             $deliveryId,
             '{"event":"page.published"}',

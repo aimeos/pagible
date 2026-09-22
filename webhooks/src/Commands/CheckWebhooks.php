@@ -15,35 +15,22 @@ use Illuminate\Database\QueryException;
 
 class CheckWebhooks extends Command
 {
-    use HandlesTenants;
-
-    protected $signature = 'cms:webhooks:check
-        {--resolve : Also resolve the endpoint host names, results depend on the DNS of this server}';
+    protected $signature = 'cms:webhooks:check';
     protected $description = 'Check the webhook deny list, operator endpoints, delivery queue and stored subscriptions';
 
 
     public function handle( WebhookConfig $config ) : int
     {
-        $problems = $config->problems( (bool) $this->option( 'resolve' ) );
+        $problems = $config->problems();
 
         foreach( $problems as $key => $reason ) {
             $this->error( $key . ': ' . ( WebhookConfig::REASONS[$reason] ?? $reason ) );
         }
 
-        // A stalled queue isn't a configuration problem and mustn't stop the deploy which starts the workers
-        if( $config->connection() && $config->stalled() ) {
-            $this->warn( 'cms.webhooks.queue.name: No queued delivery was processed for more than 10 minutes, start a queue worker for this queue and connection' );
-        }
-
-        // Only the tenants can replace their subscriptions, so they mustn't stop the deploy either.
+        // Only the tenants can rotate their secrets, so they mustn't stop the deploy.
         // Without an application key, nothing can be decrypted and the missing key is reported instead
-        if( !isset( $problems['app.key'] ) && ( $counts = $this->undecryptable() ) )
-        {
-            $this->warn( sprintf( 'app.key: %d webhook subscription(s) can\'t be decrypted, add the old key to APP_PREVIOUS_KEYS and run cms:webhooks:reencrypt, or replace their URLs', array_sum( $counts ) ) );
-
-            if( $tenants = $this->tenants( $counts ) ) {
-                $this->warn( 'Affected tenants: ' . $tenants );
-            }
+        if( !isset( $problems['app.key'] ) && ( $count = $this->undecryptable() ) ) {
+            $this->warn( sprintf( 'app.key: %d webhook subscription(s) can\'t be decrypted, add the old key to APP_PREVIOUS_KEYS or rotate their secrets', $count ) );
         }
 
         if( $problems !== [] ) {
@@ -61,23 +48,16 @@ class CheckWebhooks extends Command
 
 
     /**
-     * Returns the number of subscriptions by tenant which were encrypted with an application key that isn't configured any more.
-     *
-     * @return array<array-key, int> Number of subscriptions by tenant ID
+     * Returns the number of subscriptions whose secrets were encrypted with an application key that isn't configured any more.
      */
-    private function undecryptable() : array
+    private function undecryptable() : int
     {
-        $counts = [];
+        $count = 0;
 
         try
         {
-            $query = Webhook::withoutTenancy()->select( 'id', 'tenant_id', 'url', 'secrets' );
-
-            foreach( $query->lazyById() as $webhook )
-            {
-                if( !$webhook->decryptable() ) {
-                    $counts[$webhook->tenant_id] = ( $counts[$webhook->tenant_id] ?? 0 ) + 1;
-                }
+            foreach( Webhook::withoutTenancy()->select( 'id', 'secrets' )->lazyById() as $webhook ) {
+                $count += $webhook->decryptable() ? 0 : 1;
             }
         }
         catch( QueryException )
@@ -85,6 +65,6 @@ class CheckWebhooks extends Command
             // The table doesn't exist until the migrations ran
         }
 
-        return $counts;
+        return $count;
     }
 }

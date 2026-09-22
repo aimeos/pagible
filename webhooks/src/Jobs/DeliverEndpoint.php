@@ -22,7 +22,6 @@ class DeliverEndpoint extends BaseDelivery
     public function __construct(
         public readonly string $endpoint,
         string $tenant,
-        public readonly string $revision,
         string $event,
         string $deliveryId,
         string $body,
@@ -34,7 +33,7 @@ class DeliverEndpoint extends BaseDelivery
 
     protected function circuit() : WebhookCircuit
     {
-        return WebhookCircuit::endpoint( $this->endpoint, $this->revision );
+        return WebhookCircuit::endpoint( $this->endpoint );
     }
 
 
@@ -53,11 +52,11 @@ class DeliverEndpoint extends BaseDelivery
     }
 
 
+    /**
+     * Returns the current destination of the endpoint, so a changed URL or secret applies to queued deliveries too.
+     */
     protected function target( WebhookConfig $config ) : ?array
     {
-        $target = $config->endpoint( $this->endpoint, $this->event, $this->tenant );
-
-        // Only a changed URL cancels the delivery, changed secrets sign it with the new ones
-        return $target && hash_equals( $config->revision( $target ), $this->revision ) ? $target : null;
+        return $config->endpoint( $this->endpoint, $this->event );
     }
 }

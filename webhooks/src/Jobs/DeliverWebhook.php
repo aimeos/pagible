@@ -13,14 +13,13 @@ use Aimeos\Cms\WebhookConfig;
 
 
 /**
- * Delivers one immutable payload after revalidating the subscription revision.
+ * Delivers one immutable payload to a tenant subscription.
  */
 class DeliverWebhook extends BaseDelivery
 {
     public function __construct(
         public readonly string $webhookId,
         string $tenant,
-        public readonly int $revision,
         string $event,
         string $deliveryId,
         string $body,
@@ -32,7 +31,7 @@ class DeliverWebhook extends BaseDelivery
 
     protected function circuit() : WebhookCircuit
     {
-        return WebhookCircuit::webhook( $this->tenant, $this->webhookId, $this->revision );
+        return WebhookCircuit::webhook( $this->tenant, $this->webhookId );
     }
 
 
@@ -65,6 +64,9 @@ class DeliverWebhook extends BaseDelivery
 
     /**
      * Returns the destination of the subscription if it's still active and subscribed to the event.
+     *
+     * Deactivating the subscription cancels the queued deliveries, activating it again before they
+     * were processed sends them.
      */
     protected function target( WebhookConfig $config ) : ?array
     {
@@ -77,11 +79,10 @@ class DeliverWebhook extends BaseDelivery
 
 
     /**
-     * Returns the query for the subscription if the delivery wasn't cancelled.
+     * Returns the query for the subscription if it's still subscribed to the event.
      *
-     * Only deactivating and replacing the destination changes the revision, so other changes don't
-     * cancel queued deliveries or reset the pause of the destination. Removing the event cancels
-     * them too, so their results don't change the health of the subscription.
+     * Removing the event cancels the queued deliveries, so their results don't change the health
+     * of the subscription.
      *
      * @return \Illuminate\Database\Eloquent\Builder<Webhook>
      */
@@ -90,7 +91,6 @@ class DeliverWebhook extends BaseDelivery
         return Webhook::withoutTenancy()
             ->where( 'tenant_id', $this->tenant )
             ->where( 'id', $this->webhookId )
-            ->where( 'revision', $this->revision )
             ->whereJsonContains( 'events', $this->event );
     }
 }

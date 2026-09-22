@@ -11,6 +11,10 @@ export default defineConfig({
       framework: 'vue',
       bundler: 'vite',
     },
-    specPattern: 'cypress/unit/**/*.cy.{js,ts}',
+    specPattern: [
+      'cypress/unit/**/*.cy.{js,ts}',
+      // plugin packages share the admin's component-test setup
+      '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}',
+    ],
   },
 })
