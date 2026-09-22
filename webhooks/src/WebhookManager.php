@@ -9,8 +9,6 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Webhook;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Cache\LockTimeoutException;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -42,8 +40,8 @@ class WebhookManager
     /** Maximum number of subscriptions deleted at once, same as "dropWebhook" in the GraphQL schema and the admin panel batches */
     private const DROP_MAX = 100;
 
-    /** Seconds until the next test event can be sent to the same subscription */
-    private const PING_INTERVAL = 10;
+    /** Seconds the previous secret still signs deliveries after rotating the secret */
+    private const ROTATION_GRACE = 86400;
 
 
     public function __construct( private readonly WebhookClient $client )
@@ -69,13 +67,8 @@ class WebhookManager
         $webhook = $this->locked( $tenant, function() use ( $actor, $events, $name, $secret, $status, $url ) {
             $this->assertLimit();
 
-            if( $status ) {
-                $this->assertLimit( active: true );
-            }
-
             return Webhook::forceCreate( [
                 'status' => $status,
-                'revision' => 1,
                 'name' => $name,
                 'url' => $url,
                 'secrets' => [['secret' => $secret, 'until' => null]],
@@ -101,7 +94,7 @@ class WebhookManager
         $tenant = $this->authorize( $user );
         $ids = array_values( array_unique( array_filter( $ids, 'is_string' ) ) );
 
-        // Independent of the total limit because subscriptions above a lowered limit are listed too
+        // Independent of the limit because subscriptions above a lowered limit are listed too
         if( $ids === [] || count( $ids ) > self::DROP_MAX ) {
             throw new Exception( 'Invalid webhook selection.' );
         }
@@ -142,7 +135,6 @@ class WebhookManager
         }
 
         $webhook = $this->find( $id );
-        $this->cooldown( $webhook );
 
         $body = json_encode( [
             'event' => 'webhook.ping',
@@ -167,97 +159,6 @@ class WebhookManager
 
 
     /**
-     * Deletes all subscriptions of a tenant under the same tenant lock as admin mutations.
-     */
-    public function purge( string $tenant ) : int
-    {
-        $count = $this->locked( $tenant, fn() => Webhook::withoutTenancy()->where( 'tenant_id', $tenant )->delete() );
-
-        // One entry for all subscriptions, as their destinations may not be decryptable any more
-        if( $count > 0 )
-        {
-            $fields = ['action' => 'purged', 'actor' => 'cli', 'tenant_id' => $tenant, 'webhook_count' => $count];
-
-            DB::connection( config( 'cms.db', 'sqlite' ) )->afterCommit(
-                fn() => Watch::warn( 'cms.webhook', $fields )
-            );
-        }
-
-        return $count;
-    }
-
-
-    /**
-     * Re-encrypts one subscription under the same tenant lock as admin mutations.
-     *
-     * @throws DecryptException If the stored values can't be decrypted with the configured keys
-     * @throws LockTimeoutException If the subscriptions of the tenant are changed at the same time
-     */
-    public function reencrypt( string $tenant, string $id ) : bool
-    {
-        return $this->locked( $tenant, function() use ( $id, $tenant ) {
-            $webhook = Webhook::withoutTenancy()
-                ->where( 'tenant_id', $tenant )
-                ->where( 'id', $id )
-                ->first();
-
-            if( !$webhook ) {
-                return false;
-            }
-
-            // Rotated secrets whose grace period is over are removed instead of re-encrypted
-            $raw = ( new Webhook() )->forceFill( [
-                'url' => $webhook->url,
-                'secrets' => $webhook->validSecrets(),
-            ] )->getAttributes();
-
-            // Re-encryption isn't a configuration change, so "updated_at" is left untouched
-            return (bool) Webhook::withoutTenancy()
-                ->where( ['tenant_id' => $tenant, 'id' => $id] )
-                ->toBase()
-                ->update( ['url' => $raw['url'], 'secrets' => $raw['secrets']] );
-        } );
-    }
-
-
-    /**
-     * Replaces a destination, rotates its secret and leaves it inactive.
-     *
-     * Queued deliveries to the old destination are cancelled and the delivery health is reset.
-     *
-     * @return array{webhook: Webhook, secret: string}
-     */
-    public function replace( string $id, string $url, ?Authenticatable $user ) : array
-    {
-        $tenant = $this->authorize( $user );
-        $url = $this->canonical( trim( $url ) );
-        $secret = $this->secret();
-        $actor = Utils::editor( $user );
-
-        [$webhook, $oldEndpoint] = $this->locked( $tenant, function() use ( $actor, $id, $secret, $url ) {
-            $webhook = $this->find( $id );
-            $oldEndpoint = $webhook->endpoint;
-
-            $webhook->forceFill( [
-                'url' => $url,
-                'secrets' => [['secret' => $secret, 'until' => null]],
-                'status' => false,
-                'revision' => $webhook->revision + 1,
-                'last_error' => null,
-                'last_success_at' => null,
-                'editor' => $actor,
-            ] )->save();
-
-            return [$webhook, $oldEndpoint];
-        } );
-
-        $this->changed( 'destination_replaced', $actor, $webhook, $oldEndpoint );
-
-        return ['webhook' => $webhook, 'secret' => $secret];
-    }
-
-
-    /**
      * Rotates a secret while the subscription keeps its state and queued deliveries.
      *
      * Deliveries are signed with the current and the previous secret during the grace period
@@ -268,24 +169,28 @@ class WebhookManager
     public function rotate( string $id, ?Authenticatable $user ) : array
     {
         $tenant = $this->authorize( $user );
-        $grace = max( 0, (int) config( 'cms.webhooks.rotation_grace', 86400 ) );
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = $this->locked( $tenant, function() use ( $actor, $grace, $id, $secret ) {
+        $webhook = $this->locked( $tenant, function() use ( $actor, $id, $secret ) {
             $webhook = $this->find( $id );
-
-            // A new secret doesn't help if the destination can't be decrypted any more
-            $this->assertDecryptable( $webhook );
 
             // Only the replaced secret stays valid, a secret rotated before isn't accepted any more
             $secrets = [['secret' => $secret, 'until' => null]];
 
-            if( $grace ) {
-                $secrets[] = ['secret' => $webhook->secrets()[0], 'until' => now()->addSeconds( $grace )->getTimestamp()];
+            // Secrets which can't be decrypted any more are replaced immediately
+            if( $webhook->decryptable() ) {
+                $secrets[] = ['secret' => $webhook->secrets()[0], 'until' => now()->addSeconds( self::ROTATION_GRACE )->getTimestamp()];
             }
 
-            $webhook->forceFill( ['secrets' => $secrets, 'editor' => $actor] )->save();
+            $webhook->forceFill( ['secrets' => $secrets, 'editor' => $actor] );
+
+            // The new secret fixes deliveries which failed because the old one couldn't be decrypted
+            if( ( $webhook->last_error['reason'] ?? null ) === 'invalid_encryption' ) {
+                $webhook->last_error = null;
+            }
+
+            $webhook->save();
 
             return $webhook;
         } );
@@ -311,14 +216,6 @@ class WebhookManager
 
         [$webhook, $changes] = $this->locked( $tenant, function() use ( $actor, $events, $id, $name, $status ) {
             $webhook = $this->find( $id );
-            $active = $webhook->status;
-
-            if( $status && !$active )
-            {
-                // Deliveries would fail until the destination is replaced
-                $this->assertDecryptable( $webhook );
-                $this->assertLimit( active: true );
-            }
 
             $webhook->forceFill( [
                 'name' => $name ?? $webhook->name,
@@ -331,12 +228,7 @@ class WebhookManager
                 return [$webhook, []];
             }
 
-            // Deactivating cancels the queued deliveries so they aren't sent after activating again,
-            // removed events are checked before sending
-            $webhook->forceFill( [
-                'revision' => $active && !$status ? $webhook->revision + 1 : $webhook->revision,
-                'editor' => $actor,
-            ] )->save();
+            $webhook->forceFill( ['editor' => $actor] )->save();
 
             return [$webhook, $changes];
         } );
@@ -349,24 +241,10 @@ class WebhookManager
     }
 
 
-    private function assertDecryptable( Webhook $webhook ) : void
+    private function assertLimit() : void
     {
-        if( !$webhook->decryptable() ) {
-            throw new Exception( 'The webhook can\'t be decrypted, replace its URL instead.' );
-        }
-    }
-
-
-    /**
-     * @param bool $active Checks the limit of active subscriptions instead of all
-     */
-    private function assertLimit( bool $active = false ) : void
-    {
-        $limit = $active ? config( 'cms.webhooks.limits.active', 25 ) : config( 'cms.webhooks.limits.total', 100 );
-        $count = Webhook::query()->when( $active, fn( $query ) => $query->where( 'status', 1 ) )->count();
-
-        if( $count >= max( 1, (int) $limit ) ) {
-            throw new Exception( $active ? 'The active webhook limit has been reached.' : 'The webhook limit has been reached.' );
+        if( Webhook::query()->count() >= max( 1, (int) config( 'cms.webhooks.limit', 25 ) ) ) {
+            throw new Exception( 'The webhook limit has been reached.' );
         }
     }
 
@@ -383,11 +261,6 @@ class WebhookManager
 
     private function canonical( string $url ) : string
     {
-        // Host names are only checked against the deny list when they are resolved for a delivery
-        if( $this->client->policyError() ) {
-            throw new Exception( 'Webhooks are blocked by the server configuration.' );
-        }
-
         try {
             return $this->client->canonical( $url );
         } catch( WebhookException ) {
@@ -397,12 +270,11 @@ class WebhookManager
 
 
     /**
-     * Logs the destination without its path, which may contain credentials.
+     * Logs the endpoint instead of the URL, which may contain credentials.
      *
-     * @param string|null $oldEndpoint Endpoint before the destination was replaced
      * @param list<string>|null $changes Names of the changed fields
      */
-    private function changed( string $action, string $actor, Webhook $webhook, ?string $oldEndpoint = null, ?array $changes = null ) : void
+    private function changed( string $action, string $actor, Webhook $webhook, ?array $changes = null ) : void
     {
         $fields = [
             'action' => $action,
@@ -412,35 +284,12 @@ class WebhookManager
             'event_count' => count( (array) $webhook->events ),
             'tenant_id' => (string) $webhook->tenant_id,
             'endpoint' => $webhook->endpoint,
-            'old_endpoint' => $oldEndpoint,
             'changes' => $changes,
         ];
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->afterCommit(
             fn() => Watch::warn( 'cms.webhook', $fields )
         );
-    }
-
-
-    /**
-     * Limits the test events for each subscription because each one keeps a server process busy
-     * until the destination answered.
-     *
-     * A replaced destination can be tested immediately.
-     */
-    private function cooldown( Webhook $webhook ) : void
-    {
-        $key = 'cms-webhooks-ping:' . hash( 'sha256', $webhook->tenant_id . "\n" . $webhook->id . "\n" . $webhook->revision );
-
-        try {
-            $allowed = Cache::add( $key, true, self::PING_INTERVAL );
-        } catch( \Throwable ) {
-            $allowed = true; // an unavailable cache doesn't prevent test events
-        }
-
-        if( !$allowed ) {
-            throw new Exception( 'Please wait a few seconds before sending another test event.' );
-        }
     }
 
 
@@ -484,19 +333,9 @@ class WebhookManager
     }
 
 
-    /**
-     * Names are shown in one line, so line breaks and other control characters are replaced.
-     * Bidirectional text controls are removed because they can display names reversed.
-     */
     private function name( string $name ) : string
     {
-        $name = preg_replace(
-            ['/[\p{Cc}\x{2028}\x{2029}]+/u', '/[\x{202A}-\x{202E}\x{2066}-\x{2069}]+/u'],
-            [' ', ''],
-            $name
-        );
-
-        if( $name === null || mb_strlen( $name = trim( $name ) ) > 100 ) {
+        if( mb_strlen( $name = trim( $name ) ) > 100 ) {
             throw new Exception( 'Invalid webhook name.' );
         }
 

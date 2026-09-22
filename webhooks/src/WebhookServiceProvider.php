@@ -9,8 +9,6 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Commands\CheckWebhooks;
 use Aimeos\Cms\Commands\InstallWebhooks;
-use Aimeos\Cms\Commands\PurgeWebhooks;
-use Aimeos\Cms\Commands\ReencryptWebhooks;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Moved;
@@ -39,7 +37,8 @@ class WebhookServiceProvider extends Provider
             $basedir . '/admin/dist' => public_path( 'vendor/cms/webhooks' ),
         ], 'cms-admin' );
 
-        if( class_exists( CmsPermissionDirective::class ) && class_exists( BuildSchemaString::class ) ) {
+        // The GraphQL package requires Lighthouse
+        if( class_exists( CmsPermissionDirective::class ) ) {
             Event::listen(
                 BuildSchemaString::class,
                 fn() => file_get_contents( $basedir . '/graphql/cms-webhook.graphql' ) ?: '',
@@ -64,7 +63,7 @@ class WebhookServiceProvider extends Provider
         }
 
         if( $this->app->runningInConsole() ) {
-            $this->commands( [CheckWebhooks::class, InstallWebhooks::class, PurgeWebhooks::class, ReencryptWebhooks::class] );
+            $this->commands( [CheckWebhooks::class, InstallWebhooks::class] );
         }
     }
 

@@ -141,18 +141,16 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
 
 
     /**
-     * Encrypts the stored values with another key, like after changing APP_KEY without APP_PREVIOUS_KEYS.
+     * Encrypts the stored secrets with another key, like after changing APP_KEY without APP_PREVIOUS_KEYS.
      */
     protected function undecryptable( Webhook $webhook ) : Webhook
     {
         $cipher = (string) config( 'app.cipher' );
         $encrypter = new \Illuminate\Encryption\Encrypter( \Illuminate\Encryption\Encrypter::generateKey( $cipher ), $cipher );
 
-        $values = ['url' => $webhook->url, 'secrets' => json_encode( $webhook->secrets, JSON_THROW_ON_ERROR )];
-
-        Webhook::withoutTenancy()->whereKey( $webhook->id )->toBase()->update(
-            array_map( fn( string $value ) => $encrypter->encryptString( $value ), $values )
-        );
+        Webhook::withoutTenancy()->whereKey( $webhook->id )->toBase()->update( [
+            'secrets' => $encrypter->encryptString( json_encode( $webhook->secrets, JSON_THROW_ON_ERROR ) ),
+        ] );
 
         return $webhook;
     }
@@ -167,7 +165,6 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
         $webhook->forceFill( $attributes + [
             'tenant_id' => 'test',
             'status' => true,
-            'revision' => 1,
             'url' => 'https://example.com/hooks/cms',
             'secrets' => self::secrets(),
             'events' => ['page.published'],

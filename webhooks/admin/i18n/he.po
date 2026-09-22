@@ -17,311 +17,309 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: src/views/WebhookList.vue:152
+#: src/views/WebhookList.vue:134
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr "רכיבי Webhook מושבתים על ידי תצורת השרת, לא נשלחים אירועים"
 
-#: src/views/WebhookList.vue:159
+#: src/views/WebhookList.vue:141
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "כל המסירות חסומות על ידי תצורת השרת"
 
-#: src/views/WebhookList.vue:166
-msgctxt "webhooks"
-msgid "No queued delivery was processed since %{date}, check the queue worker"
-msgstr "לא עובדה אף מסירה מהתור מאז %{date}, בדקו את מעבד התור"
-
-#: src/views/WebhookList.vue:194
+#: src/views/WebhookList.vue:168
 msgctxt "webhooks"
 msgid "All"
 msgstr "כל"
 
-#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
-#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
+#: src/views/WebhookList.vue:169 src/views/WebhookList.vue:647
+#: src/views/WebhookList.vue:731 src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Active"
 msgstr "פעיל"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
+#: src/views/WebhookList.vue:170 src/views/WebhookList.vue:648
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "לא פעיל"
 
-#: src/views/WebhookList.vue:245
+#: src/views/WebhookList.vue:210
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "שגיאה באחזור רכיבי Webhook"
 
-#: src/views/WebhookList.vue:315
+#: src/views/WebhookList.vue:274
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "שגיאה בשמירת Webhook"
 
-#: src/views/WebhookList.vue:331
-msgctxt "webhooks"
-msgid "Error replacing webhook destination"
-msgstr "שגיאה בהחלפת יעד ה-Webhook"
-
-#: src/views/WebhookList.vue:336
+#: src/views/WebhookList.vue:279
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
 msgstr "להחליף את הסוד של ה-Webhook הזה? יש לעדכן את המקבלים בסוד החדש."
 
-#: src/views/WebhookList.vue:352
+#: src/views/WebhookList.vue:298
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "שגיאה בהחלפת סוד ה-Webhook"
 
-#: src/views/WebhookList.vue:371
+#: src/views/WebhookList.vue:318
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "אירוע הבדיקה נמסר"
 
-#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+#: src/views/WebhookList.vue:324 src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "אירוע הבדיקה נכשל"
 
-#: src/views/WebhookList.vue:391
+#: src/views/WebhookList.vue:339
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "למחוק את ה-Webhook הזה?"
 
-#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:340 src/views/WebhookList.vue:521
+#: src/views/WebhookList.vue:620
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "מחיקה"
 
-#: src/views/WebhookList.vue:412
+#: src/views/WebhookList.vue:360
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "שגיאה במחיקת Webhook"
 
-#: src/views/WebhookList.vue:420
+#: src/views/WebhookList.vue:368
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "הסוד הועתק"
 
-#: src/views/WebhookList.vue:425
+#: src/views/WebhookList.vue:373
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "לא ניתן להעתיק את הסוד"
 
-#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
+#: src/views/WebhookList.vue:382 src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "None"
 msgstr "אין"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:395
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "החיבור נכשל"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:396
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "גישה נדחתה"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:397
 msgctxt "webhooks"
-msgid "Can't be decrypted, replace the URL"
-msgstr "לא ניתן לפענח, יש להחליף את כתובת ה-URL"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "לא ניתן לפענח את הסוד, יש להחליף אותו"
 
-#: src/views/WebhookList.vue:450
+#: src/views/WebhookList.vue:398
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "נחסם על ידי הגדרות השרת"
 
-#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
-#: src/views/WebhookList.vue:902
+#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:747
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "כתובת URL לא חוקית"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:400
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "התור אינו זמין"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:401
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "המארח לא נמצא"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:402
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "התגובה גדולה מדי"
 
-#: src/views/WebhookList.vue:455
+#: src/views/WebhookList.vue:403
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "תם הזמן הקצוב לבקשה"
 
-#: src/views/WebhookList.vue:456
-msgctxt "webhooks"
-msgid "Secure connection failed"
-msgstr "החיבור המאובטח נכשל"
-
-#: src/views/WebhookList.vue:461
+#: src/views/WebhookList.vue:408
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "הפניות מחדש אינן נעקבות"
 
-#: src/views/WebhookList.vue:462
+#: src/views/WebhookList.vue:409
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "המסירה נכשלה"
 
-#: src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:481
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "שליחת התראות חתומות כאשר תוכן שפורסם משתנה."
 
-#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
+#: src/views/WebhookList.vue:502 src/views/WebhookList.vue:583
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "החלף בחירה"
 
-#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
-#: src/views/WebhookList.vue:782
+#: src/views/WebhookList.vue:529 src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:706
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "הוספת Webhook"
 
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:543
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "חפש"
 
-#: src/views/WebhookList.vue:610
+#: src/views/WebhookList.vue:551
 msgctxt "webhooks"
 msgid "Status"
 msgstr "סטטוס"
 
-#: src/views/WebhookList.vue:618
+#: src/views/WebhookList.vue:559
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "רענן"
 
-#: src/views/WebhookList.vue:659
+#: src/views/WebhookList.vue:600
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "ערוך"
 
-#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
-msgctxt "webhooks"
-msgid "Replace"
-msgstr "החלפה"
-
-#: src/views/WebhookList.vue:678
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "החלפת סוד"
 
-#: src/views/WebhookList.vue:688
-msgctxt "webhooks"
-msgid "Send test event"
-msgstr "שליחת אירוע בדיקה"
-
-#: src/views/WebhookList.vue:731
+#: src/views/WebhookList.vue:653
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "הצלחה אחרונה"
 
-#: src/views/WebhookList.vue:735
+#: src/views/WebhookList.vue:657
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "השגיאה האחרונה"
 
-#: src/views/WebhookList.vue:742
+#: src/views/WebhookList.vue:664
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "מושהה עד"
 
-#: src/views/WebhookList.vue:752
+#: src/views/WebhookList.vue:674
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "טעינה"
 
-#: src/views/WebhookList.vue:758
+#: src/views/WebhookList.vue:680
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "לא נמצאו רשומות"
 
-#: src/views/WebhookList.vue:759
+#: src/views/WebhookList.vue:681
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "לא הוגדרו רכיבי Webhook."
 
-#: src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:703
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "סוד Webhook"
+
+#: src/views/WebhookList.vue:705
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "עריכת Webhook"
 
-#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "יש להעתיק את הסוד עכשיו. הוא לא יוצג שוב."
 
-#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+#: src/views/WebhookList.vue:744
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "כתובת URL של נקודת קצה HTTPS"
 
-#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
-msgctxt "webhooks"
-msgid "Current destination"
-msgstr "יעד נוכחי"
-
-#: src/views/WebhookList.vue:849
-msgctxt "webhooks"
-msgid "Name"
-msgstr "שם"
-
-#: src/views/WebhookList.vue:857
+#: src/views/WebhookList.vue:768
 msgctxt "webhooks"
 msgid "Events"
 msgstr "אירועים"
 
-#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
+#: src/views/WebhookList.vue:775
+msgctxt "webhooks"
+msgid "Name"
+msgstr "שם"
+
+#: src/views/WebhookList.vue:785
 msgctxt "webhooks"
 msgid "Done"
 msgstr "בוצע"
 
-#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
+#: src/views/WebhookList.vue:788
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "העתקת הסוד"
 
-#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+#: src/views/WebhookList.vue:802
+msgctxt "webhooks"
+msgid "Test"
+msgstr "בדיקה"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "ביטול"
 
-#: src/views/WebhookList.vue:884
+#: src/views/WebhookList.vue:816
 msgctxt "webhooks"
 msgid "Save"
 msgstr "שמור"
 
-#: src/views/WebhookList.vue:892
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "החלפת יעד ה-Webhook"
+#~ msgctxt "webhooks"
+#~ msgid "Secure connection failed"
+#~ msgstr "החיבור המאובטח נכשל"
 
-#: src/views/WebhookList.vue:911
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "החלפת היעד מחליפה את הסוד ומשביתה את ה-Webhook."
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "No queued delivery was processed since %{date}, check the queue worker"
+#~ msgstr "לא עובדה אף מסירה מהתור מאז %{date}, בדקו את מעבד התור"
 
-#: src/views/WebhookList.vue:936
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "סוד Webhook"
+#~ msgctxt "webhooks"
+#~ msgid "Error replacing webhook destination"
+#~ msgstr "שגיאה בהחלפת יעד ה-Webhook"
+
+#~ msgctxt "webhooks"
+#~ msgid "Replace"
+#~ msgstr "החלפה"
+
+#~ msgctxt "webhooks"
+#~ msgid "Replace webhook destination"
+#~ msgstr "החלפת יעד ה-Webhook"
+
+#~ msgctxt "webhooks"
+#~ msgid "Current destination"
+#~ msgstr "יעד נוכחי"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Replacing the destination rotates the secret and disables the webhook."
+#~ msgstr "החלפת היעד מחליפה את הסוד ומשביתה את ה-Webhook."
+
+#~ msgctxt "webhooks"
+#~ msgid "Send test event"
+#~ msgstr "שליחת אירוע בדיקה"
 
 #~ msgctxt "webhooks"
 #~ msgid ""

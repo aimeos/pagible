@@ -24,7 +24,6 @@ return new class extends Migration
             $table->uuid( 'id' )->primary();
             $table->string( 'tenant_id', 250 );
             $table->smallInteger( 'status' )->default( 0 );
-            $table->unsignedBigInteger( 'revision' )->default( 1 );
             $table->string( 'name', 100 )->default( '' );
             $table->text( 'url' );
             $table->text( 'secrets' );

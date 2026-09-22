@@ -28,6 +28,12 @@ abstract class BaseDelivery implements ShouldBeEncrypted, ShouldQueue
 {
     use InteractsWithQueue;
 
+    /** @var non-empty-list<int> Seconds a destination is paused after consecutive temporary failures, the last value repeats */
+    private const BACKOFF = [30, 120, 600, 1800];
+
+    /** Seconds until queued deliveries expire */
+    public const MAX_AGE = 86400;
+
     /** Seconds before the delivery expires which are reserved for the last retry */
     private const MARGIN = 60;
 
@@ -36,7 +42,7 @@ abstract class BaseDelivery implements ShouldBeEncrypted, ShouldQueue
 
     /** @var list<string> */
     private const TEMPORARY = [
-        'connection_failed', 'resolution_failed', 'timeout', 'tls_error', 'transport_error', 'transport_unavailable',
+        'connection_failed', 'resolution_failed', 'timeout', 'transport_error',
     ];
 
     public int $timeout;
@@ -63,20 +69,12 @@ abstract class BaseDelivery implements ShouldBeEncrypted, ShouldQueue
      */
     public function backoff() : array
     {
-        $delays = array_values( array_map(
-            fn( mixed $seconds ) => max( 1, (int) $seconds ),
-            (array) config( 'cms.webhooks.queue.backoff', [30, 120, 600, 1800] ),
-        ) );
-
-        // An empty schedule would make the queue worker retry failed jobs without waiting
-        return $delays ?: [60];
+        return self::BACKOFF;
     }
 
 
     public function failed( ?\Throwable $exception ) : void
     {
-        app( WebhookConfig::class )->processed();
-
         if( now()->timestamp > $this->expiresAt ) {
             app( WebhookConfig::class )->warn( 'cms.webhook.delivery_expired', $this->destination() );
             return;
@@ -92,8 +90,6 @@ abstract class BaseDelivery implements ShouldBeEncrypted, ShouldQueue
     {
         // The queue worker aborts jobs which run longer without recording the failure
         $deadline = now()->getTimestampMs() + ( $this->timeout - self::RECORD_TIME ) * 1000;
-
-        $config->processed();
 
         if( !(bool) config( 'cms.webhooks.enabled', false ) ) {
             return;
@@ -198,7 +194,7 @@ abstract class BaseDelivery implements ShouldBeEncrypted, ShouldQueue
     /**
      * Returns the destination or NULL if the delivery was cancelled by removing or changing it.
      *
-     * @return array{url: string, secrets: list<string>, ca: string|null, internal: bool}|null
+     * @return array{url: string, secrets: list<string>, internal: bool}|null
      * @throws WebhookException If the destination became invalid after the delivery was queued
      */
     abstract protected function target( WebhookConfig $config ) : ?array;

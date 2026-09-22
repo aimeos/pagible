@@ -7,11 +7,8 @@
 
 namespace Tests;
 
-use Aimeos\Cms\WebhookClient;
 use Aimeos\Cms\WebhookConfig;
 use Aimeos\Cms\WebhookException;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -34,8 +31,8 @@ class WebhookConfigTest extends WebhookTestAbstract
     {
         config( ['cache.default' => 'file', 'cms.webhooks.endpoints' => [
             'indexer' => self::endpoint( [] ),
-            'search_2' => self::endpoint( ['url' => 'https://search.internal/hook', 'tenants' => ['acme']] ),
-            'ca-file' => self::endpoint( ['url' => 'https://10.0.0.5:8443/hook', 'ca' => __FILE__] ),
+            'search_2' => self::endpoint( ['url' => 'https://search.internal/hook'] ),
+            'private-ip' => self::endpoint( ['url' => 'https://10.0.0.5:8443/hook'] ),
         ]] );
 
         $this->assertSame( [], app( WebhookConfig::class )->problems() );
@@ -64,6 +61,8 @@ class WebhookConfigTest extends WebhookTestAbstract
         yield 'long name' => [str_repeat( 'n', 65 ), self::endpoint( [] ), 'invalid_name'];
         yield 'not an array' => ['indexer', 'http://indexer/hook', 'invalid_endpoint'];
         yield 'unknown key' => ['indexer', self::endpoint( ['headers' => []] ), 'invalid_endpoint'];
+        // Restricting tenants isn't supported, the endpoint mustn't silently receive the events of all tenants
+        yield 'tenants key' => ['indexer', self::endpoint( ['tenants' => ['acme']] ), 'invalid_endpoint'];
         yield 'missing url' => ['indexer', self::endpoint( ['url' => null] ), 'invalid_url'];
         yield 'invalid url' => ['indexer', self::endpoint( ['url' => 'ftp://indexer/hook'] ), 'invalid_url'];
         yield 'metadata url' => ['indexer', self::endpoint( ['url' => 'http://169.254.169.254/hook'] ), 'destination_not_allowed'];
@@ -75,11 +74,6 @@ class WebhookConfigTest extends WebhookTestAbstract
         yield 'secret not a string' => ['indexer', self::endpoint( ['secret' => [self::secret( 's' ), ['nested']]] ), 'invalid_secret'];
         yield 'no events' => ['indexer', self::endpoint( ['events' => []] ), 'invalid_events'];
         yield 'unknown event' => ['indexer', self::endpoint( ['events' => ['page.saved']] ), 'invalid_events'];
-        yield 'empty tenants' => ['indexer', self::endpoint( ['tenants' => []] ), 'invalid_tenants'];
-        yield 'unset tenants variable' => ['indexer', self::endpoint( ['tenants' => ''] ), 'invalid_tenants'];
-        yield 'tenant map' => ['indexer', self::endpoint( ['tenants' => ['a' => 'acme']] ), 'invalid_tenants'];
-        yield 'missing ca' => ['indexer', self::endpoint( ['ca' => '/nonexistent/ca.pem'] ), 'invalid_ca'];
-        yield 'ca not a string' => ['indexer', self::endpoint( ['ca' => false] ), 'invalid_ca'];
     }
 
 
@@ -107,35 +101,6 @@ class WebhookConfigTest extends WebhookTestAbstract
     }
 
 
-    public function testProblemsResolveHostsOnlyOnRequest() : void
-    {
-        $client = new StubWebhookClient();
-        $client->addresses = [];
-        $config = new WebhookConfig( $client );
-        config( ['cache.default' => 'file', 'cms.webhooks.endpoints' => [
-            'indexer' => self::endpoint( [] ),
-            'metadata' => self::endpoint( ['url' => 'http://metadata.internal/hook'] ),
-        ]] );
-
-        $this->assertSame( [], $config->problems() );
-        $this->assertSame( [
-            'cms.webhooks.endpoints.indexer' => 'resolution_failed',
-            'cms.webhooks.endpoints.metadata' => 'resolution_failed',
-        ], $config->problems( true ) );
-
-        $client->addresses = ['169.254.169.254'];
-
-        $this->assertSame( [
-            'cms.webhooks.endpoints.indexer' => 'destination_not_allowed',
-            'cms.webhooks.endpoints.metadata' => 'destination_not_allowed',
-        ], $config->problems( true ) );
-
-        $client->addresses = ['10.0.0.5'];
-
-        $this->assertSame( [], $config->problems( true ) );
-    }
-
-
     public function testProblemsReportUnsuitableQueueTimesAndCache() : void
     {
         $retryAfter = config( 'queue.connections.database.retry_after' );
@@ -160,46 +125,17 @@ class WebhookConfigTest extends WebhookTestAbstract
         config( ['cache.default' => 'file'] );
 
         try {
-            // Both timeouts plus 5 seconds for resolving the host name and 5 for recording the result
+            // The timeout plus 3 seconds for connecting, 5 for resolving the host name and 5 for recording the result
             config( ['queue.connections.database.retry_after' => 24] );
             $this->assertSame( [], app( WebhookConfig::class )->problems() );
 
-            config( ['cms.webhooks.http.timeout' => 11] );
+            config( ['cms.webhooks.timeout' => 11] );
             $this->assertSame(
                 ['queue.connections.database.retry_after' => 'invalid_retry_after'],
                 app( WebhookConfig::class )->problems()
             );
         } finally {
-            config( ['cms.webhooks.http.timeout' => 10, 'queue.connections.database.retry_after' => $retryAfter] );
-        }
-    }
-
-
-    public function testStalledQueueIsNoConfigurationProblem() : void
-    {
-        $config = app( WebhookConfig::class );
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            $config->queued();
-            // Later deliveries don't change since when deliveries are waiting
-            Carbon::setTestNow( '2026-09-15 12:05:00 UTC' );
-            $config->queued();
-
-            $this->assertNull( $config->stalled() );
-
-            Carbon::setTestNow( '2026-09-15 12:10:00 UTC' );
-            $this->assertSame( now()->subMinutes( 10 )->timestamp, $config->stalled() );
-            $this->assertArrayNotHasKey( 'cms.webhooks.queue.name', $config->problems() );
-
-            $config->processed();
-            $this->assertNull( $config->stalled() );
-
-            // Cache stores like Redis return the stored timestamp as string
-            Cache::put( 'cms-webhooks-waiting', (string) now()->subMinutes( 10 )->timestamp, 60 );
-            $this->assertSame( now()->subMinutes( 10 )->timestamp, $config->stalled() );
-        } finally {
-            Carbon::setTestNow();
+            config( ['cms.webhooks.timeout' => 10, 'queue.connections.database.retry_after' => $retryAfter] );
         }
     }
 
@@ -212,53 +148,19 @@ class WebhookConfigTest extends WebhookTestAbstract
     }
 
 
-    public function testSubscribedMatchesEventsAndTenants() : void
+    public function testSubscribedMatchesEvents() : void
     {
         config( ['cms.webhooks.endpoints' => [
-            'indexer' => self::endpoint( ['tenants' => ['acme']] ),
-            'all' => self::endpoint( ['url' => 'https://search.internal/hook', 'events' => ['page.published', 'file.purged']] ),
+            'indexer' => self::endpoint( [] ),
+            'search' => self::endpoint( ['url' => 'https://search.internal/hook', 'events' => ['page.published', 'file.purged']] ),
         ]] );
 
         $config = app( WebhookConfig::class );
 
-        $this->assertSame( ['indexer', 'all'], array_keys( $config->subscribed( 'page.published', 'acme' ) ) );
-        $this->assertSame( ['all'], array_keys( $config->subscribed( 'page.published', 'other' ) ) );
-        $this->assertSame( ['all'], array_keys( $config->subscribed( 'file.purged', 'acme' ) ) );
-        $this->assertSame( [], $config->subscribed( 'page.moved', 'acme' ) );
-    }
-
-
-    public function testUnsetOptionalValuesAreIgnored() : void
-    {
-        // e.g. from environment variables which aren't set, the helper removes NULL values
-        config( ['cms.webhooks.endpoints' => [
-            'indexer' => self::endpoint( [] ) + ['tenants' => null, 'ca' => null],
-            'search' => self::endpoint( ['url' => 'https://search.internal/hook', 'ca' => ''] ),
-        ]] );
-
-        $config = app( WebhookConfig::class );
-
-        $this->assertSame( ['indexer', 'search'], array_keys( $config->subscribed( 'page.published', 'acme' ) ) );
-        $this->assertNull( $config->endpoint( 'indexer', 'page.published', 'acme' )['ca'] );
-        $this->assertNull( $config->endpoint( 'search', 'page.published', 'acme' )['ca'] );
-    }
-
-
-    public function testSubscribedRevisionChangesWithDestination() : void
-    {
-        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( [] )]] );
-        $config = app( WebhookConfig::class );
-        $revision = $config->subscribed( 'page.published', 'acme' )['indexer'];
-
-        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( ['tenants' => ['acme'], 'ca' => __FILE__] )]] );
-        $this->assertSame( $revision, $config->subscribed( 'page.published', 'acme' )['indexer'] );
-
-        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( ['url' => 'http://indexer:9090/hook'] )]] );
-        $this->assertNotSame( $revision, $config->subscribed( 'page.published', 'acme' )['indexer'] );
-
-        // Changed secrets sign queued deliveries with the new secrets instead of cancelling them
-        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( ['secret' => [self::secret( 't' ), self::secret( 's' )]] )]] );
-        $this->assertSame( $revision, $config->subscribed( 'page.published', 'acme' )['indexer'] );
+        $this->assertSame( ['indexer', 'search'], $config->subscribed( 'page.published' ) );
+        $this->assertSame( ['indexer'], $config->subscribed( 'page.deleted' ) );
+        $this->assertSame( ['search'], $config->subscribed( 'file.purged' ) );
+        $this->assertSame( [], $config->subscribed( 'page.moved' ) );
     }
 
 
@@ -272,8 +174,8 @@ class WebhookConfigTest extends WebhookTestAbstract
 
         $config = app( WebhookConfig::class );
 
-        $this->assertSame( ['indexer'], array_keys( $config->subscribed( 'page.published', 'acme' ) ) );
-        $this->assertSame( ['indexer'], array_keys( $config->subscribed( 'page.deleted', 'acme' ) ) );
+        $this->assertSame( ['indexer'], $config->subscribed( 'page.published' ) );
+        $this->assertSame( ['indexer'], $config->subscribed( 'page.deleted' ) );
 
         Log::shouldHaveReceived( 'warning' )->once()->with(
             'cms.webhook.endpoint_invalid', \Mockery::on( fn( array $data ) =>
@@ -303,19 +205,17 @@ class WebhookConfigTest extends WebhookTestAbstract
 
     public function testEndpointReturnsSubscribedDestination() : void
     {
-        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( ['tenants' => ['acme'], 'ca' => __FILE__] )]] );
+        config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( [] )]] );
         $config = app( WebhookConfig::class );
 
         $this->assertSame( [
             'url' => 'http://indexer:8080/hook',
             'secrets' => [self::secret( 's' )],
-            'ca' => __FILE__,
             'internal' => true,
-        ], $config->endpoint( 'indexer', 'page.published', 'acme' ) );
+        ], $config->endpoint( 'indexer', 'page.published' ) );
 
-        $this->assertNull( $config->endpoint( 'indexer', 'file.purged', 'acme' ) );
-        $this->assertNull( $config->endpoint( 'indexer', 'page.published', 'other' ) );
-        $this->assertNull( $config->endpoint( 'search', 'page.published', 'acme' ) );
+        $this->assertNull( $config->endpoint( 'indexer', 'file.purged' ) );
+        $this->assertNull( $config->endpoint( 'search', 'page.published' ) );
     }
 
 
@@ -326,7 +226,7 @@ class WebhookConfigTest extends WebhookTestAbstract
 
         $this->assertSame(
             [self::secret( 't' ), self::secret( 's' )],
-            app( WebhookConfig::class )->endpoint( 'indexer', 'page.published', 'acme' )['secrets'] ?? null
+            app( WebhookConfig::class )->endpoint( 'indexer', 'page.published' )['secrets'] ?? null
         );
     }
 
@@ -336,7 +236,7 @@ class WebhookConfigTest extends WebhookTestAbstract
         config( ['cms.webhooks.endpoints' => ['indexer' => self::endpoint( ['events' => ['page.saved']] )]] );
 
         $this->expectException( WebhookException::class );
-        app( WebhookConfig::class )->endpoint( 'indexer', 'page.published', 'acme' );
+        app( WebhookConfig::class )->endpoint( 'indexer', 'page.published' );
     }
 
 

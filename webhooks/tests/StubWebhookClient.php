@@ -36,13 +36,14 @@ final class StubWebhookClient extends WebhookClient
     {
         $this->options = $options;
 
-        // The status is known when the body arrives, the chunks exceed the limits of WebhookClient
+        // The status is known when the body arrives, WebhookClient stops the transfer then
         if( $this->overflow === 'body' ) {
-            call_user_func( $options[CURLOPT_WRITEFUNCTION], null, str_repeat( 'x', 16385 ) );
+            call_user_func( $options[CURLOPT_WRITEFUNCTION], null, '{"ok":true}' );
             return [false, $this->status, 23];
         }
 
         if( $this->overflow === 'headers' ) {
+            // The header lines exceed the limit of WebhookClient
             call_user_func( $options[CURLOPT_HEADERFUNCTION], null, str_repeat( 'x', 32769 ) );
             return [false, 0, 23];
         }

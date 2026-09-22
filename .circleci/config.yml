@@ -338,6 +338,12 @@ jobs:
             - ~/.npm
       - run: npm run lint
       - run: npm run build
+      - run:
+          # the committed build is shipped and mounted by the admin component tests
+          name: Check that the committed build is up to date
+          command: |
+            git status --short -- dist
+            test -z "$(git status --porcelain -- dist)"
 
   "admin-unit":
     docker:
@@ -362,7 +368,7 @@ jobs:
             case $CIRCLE_NODE_INDEX in
               0) SPECS="cypress/unit/fields/**/*.cy.{js,ts}" ;;
               1) SPECS="cypress/unit/components/**/*.cy.{js,ts}" ;;
-              2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts}" ;;
+              2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts},../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
             esac
             npx cypress run --component --spec "$SPECS"
 

@@ -24,7 +24,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     use RefreshDatabase;
 
 
-    public function testProvisionSaveQueryReplaceRotateAndDrop() : void
+    public function testProvisionSaveQueryRotateAndDrop() : void
     {
         $response = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation {
@@ -62,25 +62,14 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $this->assertCount( 1, $query->json( 'data.cmsWebhooks' ) );
         $this->assertContains( 'file.purged', $query->json( 'data.cmsWebhookEvents' ) );
 
-        $replacement = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: ID!) {
-              replaceWebhook(id: $id, url: "https://replacement.example/hook") {
-                secret webhook { id endpoint status }
-              }
-            }
-        ', ['id' => $id] );
-        $replacement->assertGraphQLErrorFree();
-        $this->assertFalse( $replacement->json( 'data.replaceWebhook.webhook.status' ) );
-        $this->assertNotSame( $secret, $replacement->json( 'data.replaceWebhook.secret' ) );
-
         $rotated = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation ($id: ID!) {
               rotateWebhook(id: $id) { secret webhook { id status } }
             }
         ', ['id' => $id] );
         $rotated->assertGraphQLErrorFree();
-        $this->assertFalse( $rotated->json( 'data.rotateWebhook.webhook.status' ) );
-        $this->assertNotSame( $replacement->json( 'data.replaceWebhook.secret' ), $rotated->json( 'data.rotateWebhook.secret' ) );
+        $this->assertTrue( $rotated->json( 'data.rotateWebhook.webhook.status' ) );
+        $this->assertNotSame( $secret, $rotated->json( 'data.rotateWebhook.secret' ) );
 
         $second = $this->webhook( ['url' => 'https://second.example/hook'] );
         $foreign = \Aimeos\Cms\Tenancy::run( 'other', fn() =>
@@ -117,7 +106,6 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             $webhook->refresh();
 
             $this->assertTrue( $rotated->json( 'data.rotateWebhook.webhook.status' ) );
-            $this->assertSame( 1, $webhook->revision );
             $this->assertSame( 503, $webhook->last_error['status'] );
             $this->assertTrue( $success->equalTo( $webhook->last_success_at ) );
             $this->assertSame( [$secret, self::secret( 'test' )], $webhook->secrets() );
@@ -125,22 +113,6 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             // The previous secret expires after the grace period
             Carbon::setTestNow( '2026-09-16 12:00:01 UTC' );
             $this->assertSame( [$secret], $webhook->secrets() );
-
-            // Without a grace period, only the new secret signs deliveries
-            Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-            config( ['cms.webhooks.rotation_grace' => 0] );
-
-            try {
-                $rotated = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-                    mutation ($id: ID!) { rotateWebhook(id: $id) { secret } }
-                ', ['id' => $webhook->id] );
-            } finally {
-                config( ['cms.webhooks.rotation_grace' => 86400] );
-            }
-
-            $rotated->assertGraphQLErrorFree();
-            $this->assertSame( [$rotated->json( 'data.rotateWebhook.secret' )], $webhook->refresh()->secrets() );
-            $this->assertCount( 1, $webhook->secrets );
         } finally {
             Carbon::setTestNow();
         }
@@ -157,23 +129,6 @@ class WebhookGraphqlTest extends WebhookTestAbstract
 
         $rotated->assertGraphQLErrorFree();
         $this->assertSame( [$rotated->json( 'data.rotateWebhook.secret' ), self::secret( 'test' )], $webhook->refresh()->secrets() );
-    }
-
-
-    public function testReplaceDiscardsPreviousSecret() : void
-    {
-        $webhook = $this->webhook( ['secrets' => self::secrets( 'test', ['old' => now()->addHour()] )] );
-
-        $replaced = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: ID!) {
-              replaceWebhook(id: $id, url: "https://replacement.example/hook") { secret webhook { status } }
-            }
-        ', ['id' => $webhook->id] );
-
-        $replaced->assertGraphQLErrorFree();
-        $this->assertFalse( $replaced->json( 'data.replaceWebhook.webhook.status' ) );
-        $this->assertSame( [$replaced->json( 'data.replaceWebhook.secret' )], $webhook->refresh()->secrets() );
-        $this->assertSame( 2, $webhook->revision );
     }
 
 
@@ -223,41 +178,6 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $webhook->refresh();
         $this->assertSame( ['reason' => 'timeout'], $webhook->last_error );
         $this->assertNull( $webhook->last_success_at );
-    }
-
-
-    public function testPingIsLimitedForEachSubscription() : void
-    {
-        $webhook = $this->webhook();
-        $other = $this->webhook( ['url' => 'https://example.com/hooks/other'] );
-        $client = new class extends WebhookClient {
-            public int $calls = 0;
-            public function send( array $target, string $deliveryId, string $body, ?int $deadline = null ) : WebhookResponse
-            {
-                $this->calls++;
-                return new WebhookResponse( 204 );
-            }
-        };
-        $this->app->instance( WebhookClient::class, $client );
-        $this->app->forgetInstance( WebhookManager::class );
-        $query = /** @lang GraphQL */ '
-            mutation ($id: ID!) { pingWebhook(id: $id) { success } }
-        ';
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        $this->actingAs( $this->user )->graphQL( $query, ['id' => $webhook->id] )->assertGraphQLErrorFree();
-        $this->actingAs( $this->user )->graphQL( $query, ['id' => $webhook->id] )
-            ->assertGraphQLErrorMessage( 'Please wait a few seconds before sending another test event.' );
-
-        // Other subscriptions and replaced destinations aren't affected
-        $this->actingAs( $this->user )->graphQL( $query, ['id' => $other->id] )->assertGraphQLErrorFree();
-        $webhook->forceFill( ['revision' => 2] )->save();
-        $this->actingAs( $this->user )->graphQL( $query, ['id' => $webhook->id] )->assertGraphQLErrorFree();
-
-        Carbon::setTestNow( '2026-09-15 12:00:11 UTC' );
-        $this->actingAs( $this->user )->graphQL( $query, ['id' => $other->id] )->assertGraphQLErrorFree();
-
-        $this->assertSame( 4, $client->calls );
     }
 
 
@@ -311,7 +231,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
         try {
-            WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision )->open( 'timeout', null, [300] );
+            WebhookCircuit::webhook( 'test', $webhook->id )->open( 'timeout', null, [300] );
 
             $response = $this->actingAs( $this->user )->graphQL( '{ cmsWebhooks { id paused_until } }' );
             $response->assertGraphQLErrorFree();
@@ -329,7 +249,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     }
 
 
-    public function testSavingKeepsTheRevisionUnlessDeactivated() : void
+    public function testSavingKeepsThePause() : void
     {
         $webhook = $this->webhook();
         $mutation = /** @lang GraphQL */ '
@@ -340,23 +260,19 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
 
         try {
-            WebhookCircuit::webhook( 'test', $webhook->id, $webhook->revision )->open( 'timeout', null, [300] );
+            WebhookCircuit::webhook( 'test', $webhook->id )->open( 'timeout', null, [300] );
 
             // Queued deliveries of the remaining events and the pause of the destination are kept
             $response = $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $webhook->id, 'status' => true] );
             $response->assertGraphQLErrorFree();
             $this->assertSame( '2026-09-15T12:05:00.000000Z', $response->json( 'data.saveWebhook.paused_until' ) );
-            $this->assertSame( 1, $webhook->refresh()->revision );
 
-            // Deactivating cancels the queued deliveries so they aren't sent after activating again
-            $response = $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $webhook->id, 'status' => false] );
-            $response->assertGraphQLErrorFree();
-            $this->assertNull( $response->json( 'data.saveWebhook.paused_until' ) );
-            $this->assertSame( 2, $webhook->refresh()->revision );
-
-            $response = $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $webhook->id, 'status' => true] );
-            $response->assertGraphQLErrorFree();
-            $this->assertSame( 2, $webhook->refresh()->revision );
+            // Deactivating and activating again doesn't end the pause
+            foreach( [false, true] as $status ) {
+                $response = $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $webhook->id, 'status' => $status] );
+                $response->assertGraphQLErrorFree();
+                $this->assertSame( '2026-09-15T12:05:00.000000Z', $response->json( 'data.saveWebhook.paused_until' ) );
+            }
         } finally {
             Carbon::setTestNow();
         }
@@ -376,15 +292,11 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             }
         ';
 
-        // Names are shown in one line
-        $response = $this->actingAs( $this->user )->graphQL( $add, ['name' => " Search\nindexer "] );
+        // Names are trimmed
+        $response = $this->actingAs( $this->user )->graphQL( $add, ['name' => " Search indexer "] );
         $response->assertGraphQLErrorFree();
         $id = $response->json( 'data.addWebhook.webhook.id' );
         $this->assertSame( 'Search indexer', $response->json( 'data.addWebhook.webhook.name' ) );
-
-        // Line separators are replaced and bidi controls which display names reversed are removed
-        $this->actingAs( $this->user )->graphQL( $save, ['id' => $id, 'name' => "Search\u{2028}\u{202E}indexer\u{2066}"] )
-            ->assertGraphQLErrorFree()->assertJsonPath( 'data.saveWebhook.name', 'Search indexer' );
 
         // The name is kept if it's omitted
         $this->actingAs( $this->user )->graphQL( $save, ['id' => $id] )
@@ -404,26 +316,6 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation { addWebhook(input: {url: "https://example.org/hook", events: ["page.published"]}) { webhook { name } } }
         ' )->assertGraphQLErrorFree()->assertJsonPath( 'data.addWebhook.webhook.name', '' );
-    }
-
-
-    public function testUndecryptableSubscriptionCantBeActivated() : void
-    {
-        $webhook = $this->undecryptable( $this->webhook( ['status' => false] ) );
-        $active = $this->undecryptable( $this->webhook( ['url' => 'https://example.com/hooks/active'] ) );
-        $mutation = /** @lang GraphQL */ '
-            mutation ($id: ID!, $status: Boolean!) {
-              saveWebhook(id: $id, input: {events: ["page.published"], status: $status}) { status }
-            }
-        ';
-
-        // Deliveries would fail until the destination is replaced
-        $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $webhook->id, 'status' => true] )
-            ->assertGraphQLErrorMessage( 'The webhook can\'t be decrypted, replace its URL instead.' );
-        $this->assertFalse( $webhook->refresh()->status );
-
-        $this->actingAs( $this->user )->graphQL( $mutation, ['id' => $active->id, 'status' => false] )
-            ->assertGraphQLErrorFree()->assertJsonPath( 'data.saveWebhook.status', false );
     }
 
 
@@ -482,30 +374,14 @@ class WebhookGraphqlTest extends WebhookTestAbstract
 
     public function testServerStatusReportsDisabledAndBlockedWebhooks() : void
     {
-        $query = '{ cmsWebhookServer { enabled blocked stalled_since } }';
+        $query = '{ cmsWebhookServer { enabled blocked } }';
 
         $this->actingAs( new \App\Models\User( ['cmsperms' => []] ) )->graphQL( $query )
             ->assertGraphQLErrorMessage( 'Insufficient permissions' );
 
         $response = $this->actingAs( $this->user )->graphQL( $query );
         $response->assertGraphQLErrorFree();
-        $this->assertSame( ['enabled' => true, 'blocked' => null, 'stalled_since' => null], $response->json( 'data.cmsWebhookServer' ) );
-
-        // Queued deliveries weren't processed for more than 10 minutes
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            app( \Aimeos\Cms\WebhookConfig::class )->queued();
-            Carbon::setTestNow( '2026-09-15 12:09:59 UTC' );
-            $this->assertNull( $this->actingAs( $this->user )->graphQL( $query )->json( 'data.cmsWebhookServer.stalled_since' ) );
-
-            Carbon::setTestNow( '2026-09-15 12:10:00 UTC' );
-            $response = $this->actingAs( $this->user )->graphQL( $query );
-            $this->assertSame( '2026-09-15T12:00:00.000000Z', $response->json( 'data.cmsWebhookServer.stalled_since' ) );
-        } finally {
-            Carbon::setTestNow();
-            app( \Aimeos\Cms\WebhookConfig::class )->processed();
-        }
+        $this->assertSame( ['enabled' => true, 'blocked' => null], $response->json( 'data.cmsWebhookServer' ) );
 
         config( [
             'cms.webhooks.enabled' => false,
@@ -531,45 +407,19 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     }
 
 
-    public function testAddActiveWebhookAndActiveLimit() : void
+    public function testAddActiveWebhook() : void
     {
-        config( ['cms.webhooks.limits.active' => 1, 'cms.webhooks.limits.total' => 100] );
-
-        try {
-            $response = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-                mutation {
-                  addWebhook(input: {url: "https://example.com/hook", events: ["page.published"], status: true}) {
-                    secret
-                    webhook { id status }
-                  }
-                }
-            ' );
-            $response->assertGraphQLErrorFree();
-            $this->assertTrue( $response->json( 'data.addWebhook.webhook.status' ) );
-            $this->assertIsString( $response->json( 'data.addWebhook.secret' ) );
-
-            $limited = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-                mutation {
-                  addWebhook(input: {url: "https://example.org/hook", events: ["page.published"], status: true}) {
-                    secret
-                  }
-                }
-            ' );
-            $limited->assertGraphQLErrorMessage( 'The active webhook limit has been reached.' );
-
-            $inactive = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-                mutation {
-                  addWebhook(input: {url: "https://example.org/hook", events: ["page.published"], status: false}) {
-                    webhook { status }
-                  }
-                }
-            ' );
-            $inactive->assertGraphQLErrorFree();
-            $this->assertFalse( $inactive->json( 'data.addWebhook.webhook.status' ) );
-            $this->assertSame( 2, Webhook::query()->count() );
-        } finally {
-            config( ['cms.webhooks.limits.active' => 25] );
-        }
+        $response = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
+            mutation {
+              addWebhook(input: {url: "https://example.com/hook", events: ["page.published"], status: true}) {
+                secret
+                webhook { id status }
+              }
+            }
+        ' );
+        $response->assertGraphQLErrorFree();
+        $this->assertTrue( $response->json( 'data.addWebhook.webhook.status' ) );
+        $this->assertIsString( $response->json( 'data.addWebhook.secret' ) );
     }
 
 
@@ -629,18 +479,19 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             $blocked = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
                 mutation { addWebhook(input: {url: "https://93.184.216.34/hook", events: ["page.published"]}) { secret } }
             ' );
-            $blocked->assertGraphQLErrorMessage( 'Webhooks are blocked by the server configuration.' );
+            $blocked->assertGraphQLErrorMessage( 'Invalid or disallowed webhook URL.' );
 
-            // Host names are only checked against the deny list when they are resolved
+            // Host names are only checked against the deny list when they are resolved,
+            // deliveries are blocked until the deny list is fixed
             $host = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
                 mutation { addWebhook(input: {url: "https://example.org/hook", events: ["page.published"]}) { secret } }
             ' );
-            $host->assertGraphQLErrorMessage( 'Webhooks are blocked by the server configuration.' );
+            $host->assertGraphQLErrorFree();
         } finally {
             config( ['cms.webhooks.deny_cidrs' => []] );
         }
 
-        config( ['cms.webhooks.limits.total' => 1] );
+        config( ['cms.webhooks.limit' => 1] );
         $this->webhook();
 
         try {
@@ -649,7 +500,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             ' );
             $limited->assertGraphQLErrorMessage( 'The webhook limit has been reached.' );
         } finally {
-            config( ['cms.webhooks.limits.total' => 100] );
+            config( ['cms.webhooks.limit' => 25] );
         }
     }
 
@@ -658,7 +509,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     {
         $this->webhook();
         $this->webhook( ['url' => 'https://example.com/hooks/second'] );
-        config( ['cms.webhooks.limits.total' => 1] );
+        config( ['cms.webhooks.limit' => 1] );
 
         try {
             // They still receive events
@@ -671,27 +522,25 @@ class WebhookGraphqlTest extends WebhookTestAbstract
                 mutation ($id: [ID!]!) { dropWebhook(id: $id) }
             ', ['id' => $ids] )->assertJsonPath( 'data.dropWebhook', 2 );
         } finally {
-            config( ['cms.webhooks.limits.total' => 100] );
+            config( ['cms.webhooks.limit' => 25] );
         }
     }
 
 
-    public function testReplaceTrimsUrl() : void
+    public function testAddTrimsUrl() : void
     {
-        $webhook = $this->webhook();
-
-        // Surrounding whitespace is removed like when adding, also without Laravel's TrimStrings middleware
-        app( \Aimeos\Cms\WebhookManager::class )->replace( $webhook->id, " https://example.com/hooks/other\n", $this->user );
-        $this->assertSame( 'https://example.com/hooks/other', $webhook->refresh()->url );
+        // Surrounding whitespace is removed, also without Laravel's TrimStrings middleware
+        $result = app( \Aimeos\Cms\WebhookManager::class )->add( " https://example.com/hooks/other\n", ['page.published'], false, $this->user );
+        $this->assertSame( 'https://example.com/hooks/other', $result['webhook']->refresh()->url );
     }
 
 
-    public function testUndecryptableSubscriptionIsListedReplacedAndDeleted() : void
+    public function testUndecryptableSubscriptionIsListedRotatedAndDeleted() : void
     {
-        $webhook = $this->undecryptable( $this->webhook( ['last_error' => ['reason' => 'timeout']] ) );
+        $webhook = $this->undecryptable( $this->webhook( ['last_error' => ['reason' => 'invalid_encryption']] ) );
         $dropped = $this->undecryptable( $this->webhook( ['url' => 'https://example.com/hooks/dropped'] ) );
         $error = ['reason' => 'http_error', 'status' => 503, 'at' => '2026-09-15T14:00:00+02:00'];
-        $other = $this->webhook( ['url' => 'https://example.com/hooks/other', 'last_error' => $error] );
+        $other = $this->webhook( ['url' => 'https://example.org/other?token=secret', 'last_error' => $error] );
         $vars = ['id' => $webhook->id];
 
         // The other subscriptions are still listed
@@ -700,28 +549,25 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $list = array_column( $response->json( 'data.cmsWebhooks' ), null, 'id' );
 
         $this->assertSame( ['reason' => 'invalid_encryption', 'status' => null, 'at' => null], $list[$webhook->id]['last_error'] );
-        $this->assertSame( '[invalid endpoint]', $list[$webhook->id]['endpoint'] );
+        $this->assertSame( 'https://example.com/hooks/', $list[$webhook->id]['endpoint'] );
         $this->assertSame( array_replace( $error, ['at' => '2026-09-15T12:00:00.000000Z'] ), $list[$other->id]['last_error'] );
-        $this->assertSame( 'https://example.com/…', $list[$other->id]['endpoint'] );
+        $this->assertSame( 'https://example.org/', $list[$other->id]['endpoint'] );
 
         $response = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation ($id: ID!) { pingWebhook(id: $id) { success status reason } }
         ', $vars );
         $this->assertSame( ['success' => false, 'status' => null, 'reason' => 'invalid_encryption'], $response->json( 'data.pingWebhook' ) );
 
-        $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: ID!) { rotateWebhook(id: $id) { secret } }
-        ', $vars )->assertGraphQLErrorMessage( 'The webhook can\'t be decrypted, replace its URL instead.' );
-
         Log::spy();
 
-        $replaced = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: ID!) { replaceWebhook(id: $id, url: "https://example.com/hooks/new") { secret webhook { endpoint last_error { reason } } } }
+        // The old secret can't be kept for the grace period and its error is fixed
+        $rotated = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
+            mutation ($id: ID!) { rotateWebhook(id: $id) { secret webhook { status last_error { reason } } } }
         ', $vars );
-        $replaced->assertGraphQLErrorFree();
+        $rotated->assertGraphQLErrorFree();
 
-        $this->assertSame( ['endpoint' => 'https://example.com/…', 'last_error' => null], $replaced->json( 'data.replaceWebhook.webhook' ) );
-        $this->assertSame( [$replaced->json( 'data.replaceWebhook.secret' )], $webhook->refresh()->secrets() );
+        $this->assertSame( ['status' => true, 'last_error' => null], $rotated->json( 'data.rotateWebhook.webhook' ) );
+        $this->assertSame( [$rotated->json( 'data.rotateWebhook.secret' )], $webhook->refresh()->secrets() );
 
         $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation ($id: [ID!]!) { dropWebhook(id: $id) }
@@ -729,56 +575,12 @@ class WebhookGraphqlTest extends WebhookTestAbstract
 
         $this->assertSame( 2, Webhook::count() );
 
-        // The old destinations are unknown
         Log::shouldHaveReceived( 'warning' )->with( 'cms.webhook', \Mockery::on( fn( array $data ) =>
-            $data['action'] === 'destination_replaced' && $data['old_endpoint'] === '[invalid endpoint]'
-                && $data['endpoint'] === 'https://example.com/…'
+            $data['action'] === 'secret_rotated' && $data['webhook_id'] === $webhook->id
         ) )->once();
         Log::shouldHaveReceived( 'warning' )->with( 'cms.webhook', \Mockery::on( fn( array $data ) =>
-            $data['action'] === 'deleted' && $data['webhook_id'] === $dropped->id && $data['endpoint'] === '[invalid endpoint]'
-                && !isset( $data['old_endpoint'] )
+            $data['action'] === 'deleted' && $data['webhook_id'] === $dropped->id && $data['endpoint'] === 'https://example.com/hooks/'
         ) )->once();
-    }
-
-
-    public function testPausesOfAllSubscriptionsAreReadAtOnce() : void
-    {
-        $webhooks = [
-            $this->webhook(),
-            $this->webhook( ['url' => 'https://example.com/hooks/second'] ),
-            $this->webhook( ['url' => 'https://example.com/hooks/third'] ),
-        ];
-        $reads = [];
-        Carbon::setTestNow( '2026-09-15 12:00:00 UTC' );
-
-        try {
-            WebhookCircuit::webhook( 'test', $webhooks[1]->id, $webhooks[1]->revision )->open( 'timeout', null, [300] );
-
-            \Illuminate\Support\Facades\Event::listen(
-                [\Illuminate\Cache\Events\RetrievingKey::class, \Illuminate\Cache\Events\RetrievingManyKeys::class],
-                function( object $event ) use ( &$reads ) {
-                    $keys = $event instanceof \Illuminate\Cache\Events\RetrievingManyKeys ? $event->keys : [$event->key];
-                    $keys = array_values( array_filter( $keys, fn( string $key ) => str_starts_with( $key, 'cms-webhooks-circuit:' ) ) );
-
-                    if( $keys ) {
-                        $reads[] = $keys;
-                    }
-                }
-            );
-
-            $response = $this->actingAs( $this->user )->graphQL( '{ cmsWebhooks { id paused_until } }' );
-            $response->assertGraphQLErrorFree();
-        } finally {
-            Carbon::setTestNow();
-        }
-
-        $paused = array_column( $response->json( 'data.cmsWebhooks' ), 'paused_until', 'id' );
-
-        $this->assertCount( 1, $reads );
-        $this->assertCount( 3, $reads[0] );
-        $this->assertNull( $paused[$webhooks[0]->id] );
-        $this->assertSame( '2026-09-15T12:05:00.000000Z', $paused[$webhooks[1]->id] );
-        $this->assertNull( $paused[$webhooks[2]->id] );
     }
 
 

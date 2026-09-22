@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriNormalizer;
 use Symfony\Component\HttpFoundation\IpUtils;
 
 
@@ -17,13 +16,13 @@ use Symfony\Component\HttpFoundation\IpUtils;
  */
 class WebhookClient
 {
+    /** Seconds to connect to the destination */
+    private const CONNECT_TIMEOUT = 3;
+
     /** Seconds reserved for resolving the host name, which isn't limited by the connect timeout */
     private const RESOLVE_TIME = 5;
 
-    /** Bytes of the response body which are read, larger bodies aren't needed because only the HTTP status counts */
-    private const MAX_BODY = 16384;
-
-    /** Bytes of the response headers which are accepted */
+    /** Bytes of the response headers which are accepted, cURL before 8.3 stores all of them without a limit */
     private const MAX_HEADERS = 32768;
 
     /** @var list<string> */
@@ -33,19 +32,8 @@ class WebhookClient
         '2001::/32', '2002::/16', 'fe80::/10', 'ff00::/8',
     ];
 
-    /** @var list<string> */
-    private const LOOPBACK = ['127.0.0.0/8', '::1/128'];
-
-    /** First libcurl version which accepts several addresses per host in CURLOPT_RESOLVE (7.59.0) */
-    private const RESOLVE_LIST = 0x073b00;
-
     /** @var array<int, string> Failure reasons for cURL error codes, others are "transport_error" */
-    private const ERRORS = [
-        7 => 'connection_failed', 28 => 'timeout',
-        35 => 'tls_error', 51 => 'tls_error', 53 => 'tls_error', 54 => 'tls_error', 58 => 'tls_error',
-        59 => 'tls_error', 60 => 'tls_error', 64 => 'tls_error', 66 => 'tls_error', 77 => 'tls_error',
-        80 => 'tls_error', 82 => 'tls_error', 83 => 'tls_error', 90 => 'tls_error', 91 => 'tls_error',
-    ];
+    private const ERRORS = [7 => 'connection_failed', 28 => 'timeout'];
 
 
     /**
@@ -58,19 +46,6 @@ class WebhookClient
 
 
     /**
-     * Returns the address a request to the URL would connect to.
-     *
-     * @throws WebhookException If the URL is invalid, can't be resolved or isn't allowed
-     */
-    public function address( string $url, bool $internal = false ) : string
-    {
-        $uri = new Uri( $this->canonical( $url, $internal ) );
-
-        return $this->resolve( $this->normalizeHost( $uri->getHost() ), $internal )[0];
-    }
-
-
-    /**
      * Returns the canonical endpoint URL.
      *
      * Subscriptions are limited to public HTTPS hosts on port 443. Operator-defined endpoints
@@ -79,19 +54,7 @@ class WebhookClient
      */
     public function canonical( string $url, bool $internal = false ) : string
     {
-        if( $url === '' || strlen( $url ) > 500
-            || preg_match( '/[\x00-\x20\x7f\\\\]/', $url )
-            || preg_match( '/%(?![0-9a-f]{2})/i', $url )
-            || preg_match( '/%(?:0[0-9a-f]|1[0-9a-f]|7f)/i', $url )
-            || str_contains( $url, '#' )
-        ) {
-            throw new WebhookException( 'invalid_url' );
-        }
-
-        if( !preg_match( '~^([a-z][a-z0-9+.-]*)://([^/?#]+)~i', $url, $matches )
-            || str_contains( $matches[2], '@' )
-            || preg_match( '/%(?:2f|3a|40|5c)/i', $matches[2] )
-        ) {
+        if( preg_match( '/[\x00-\x20\x7f\\\\]/', $url ) || str_contains( $url, '#' ) ) {
             throw new WebhookException( 'invalid_url' );
         }
 
@@ -101,24 +64,19 @@ class WebhookClient
             throw new WebhookException( 'invalid_url' );
         }
 
-        $scheme = strtolower( $uri->getScheme() );
-        $uriHost = strtolower( $uri->getHost() );
-        $host = $this->normalizeHost( $uriHost );
+        // Scheme and host are lower case, default ports are removed and a lone "%" is encoded.
+        // Ports above 65535 are rejected by the parser, port 0 isn't
+        $scheme = $uri->getScheme();
+        $host = $this->normalizeHost( $uri->getHost() );
         $port = $uri->getPort();
 
         if( !in_array( $scheme, ['http', 'https'], true )
-            || $host === '' || $uri->getUserInfo() !== '' || str_ends_with( $host, '.' )
-            || preg_match( '/[^\x21-\x7e]/', $host ) || !$this->validHost( $host )
-            || ( $port !== null && ( $port < 1 || $port > 65535 ) )
+            || $uri->getUserInfo() !== '' || !$this->validHost( $host )
+            || $port === 0
         ) {
             throw new WebhookException( 'invalid_url' );
         }
 
-        // Equivalent URLs get the same form, so cosmetic changes don't cancel queued endpoint deliveries
-        $uri = UriNormalizer::normalize(
-            $uri->withScheme( $scheme )->withHost( $uriHost ),
-            UriNormalizer::PRESERVING_NORMALIZATIONS | UriNormalizer::REMOVE_DOT_SEGMENTS
-        );
         $canonical = (string) $uri;
 
         if( strlen( $canonical ) > 500 ) {
@@ -179,24 +137,18 @@ class WebhookClient
      * left for the request. Without a deadline, the request may take the time reserved for resolving
      * the host name and the configured timeouts.
      *
-     * @param array{url: string, secrets: list<string>, ca: string|null, internal: bool} $target One signature
-     *  per secret, receivers accept any matching one. Only operator-defined endpoints are internal, see canonical()
+     * @param array{url: string, secrets: list<string>, internal: bool} $target Destination whose URL was
+     *  returned by canonical(), one signature per secret, receivers accept any matching one. Only
+     *  operator-defined endpoints are internal
      * @param int|null $deadline Unix time in milliseconds when the request must be finished
      * @throws WebhookException With the "timeout" reason if less than the connect timeout is left
      */
     public function send( array $target, string $deliveryId, string $body, ?int $deadline = null ) : WebhookResponse
     {
-        $url = $this->canonical( $target['url'], $target['internal'] );
-
-        // Dots would make the signed content ambiguous
-        if( preg_match( '/[\x00-\x1f\x7f.]/', $deliveryId ) ) {
-            throw new WebhookException( 'invalid_header' );
-        }
-
         [$connect, $timeout] = self::timeouts();
         $deadline ??= now()->getTimestampMs() + self::duration() * 1000;
 
-        $uri = new Uri( $url );
+        $uri = new Uri( $target['url'] );
         $host = $this->normalizeHost( $uri->getHost() );
         $port = $uri->getPort() ?? ( $uri->getScheme() === 'https' ? 443 : 80 );
         $addresses = $this->resolve( $host, $target['internal'] );
@@ -215,8 +167,6 @@ class WebhookClient
             $target['secrets'],
         ) );
         $headers = [
-            'Accept: application/json',
-            'Accept-Encoding: identity',
             'Content-Type: application/json',
             'Expect:',
             'User-Agent: Pagible-Webhook/1.0',
@@ -224,94 +174,63 @@ class WebhookClient
             'webhook-timestamp: ' . $timestamp,
             'webhook-signature: ' . $signature,
         ];
-        $bodyBytes = 0;
         $headerBytes = 0;
-        $bodyExceeded = false;
         $headersExceeded = false;
+        $bodyStarted = false;
         $retryAfter = 0;
 
-        try
+        $options = [
+            CURLOPT_URL => $target['url'],
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_CONNECTTIMEOUT => $connect,
+            CURLOPT_TIMEOUT_MS => min( $timeout * 1000, $left ),
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+            CURLOPT_PROXY => '',
+            CURLOPT_HEADERFUNCTION => function( $curl, string $line ) use (
+                &$headerBytes, &$headersExceeded, &$retryAfter
+            ) : int {
+                $headerBytes += strlen( $line );
+
+                if( $headerBytes > self::MAX_HEADERS ) {
+                    $headersExceeded = true;
+                    return 0;
+                }
+
+                if( str_starts_with( $line, 'HTTP/' ) ) {
+                    $retryAfter = 0; // headers of a new response
+                } elseif( strncasecmp( $line, 'retry-after:', 12 ) === 0 ) {
+                    $retryAfter = $this->retryAfter( substr( $line, 12 ) );
+                }
+
+                return strlen( $line );
+            },
+            // Only the HTTP status counts, so the transfer stops when the body arrives
+            CURLOPT_WRITEFUNCTION => function( $curl, string $chunk ) use ( &$bodyStarted ) : int {
+                $bodyStarted = true;
+                return 0;
+            },
+        ];
+
+        // Pins all allowed addresses so cURL can try the next one if a server is down
+        if( !filter_var( $host, FILTER_VALIDATE_IP ) )
         {
-            $options = [
-                CURLOPT_URL => $url,
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => $body,
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_FOLLOWLOCATION => false,
-                CURLOPT_MAXREDIRS => 0,
-                CURLOPT_CONNECTTIMEOUT => $connect,
-                CURLOPT_TIMEOUT_MS => min( $timeout * 1000, $left ),
-                CURLOPT_SSL_VERIFYPEER => true,
-                CURLOPT_SSL_VERIFYHOST => 2,
-                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
-                CURLOPT_PROXY => '',
-                CURLOPT_NOPROXY => '*',
-                CURLOPT_HEADERFUNCTION => function( $curl, string $line ) use (
-                    &$headerBytes, &$headersExceeded, &$retryAfter
-                ) : int {
-                    $headerBytes += strlen( $line );
-
-                    if( $headerBytes > self::MAX_HEADERS ) {
-                        $headersExceeded = true;
-                        return 0;
-                    }
-
-                    if( str_starts_with( $line, 'HTTP/' ) ) {
-                        $retryAfter = 0; // headers of a new response
-                    } elseif( strncasecmp( $line, 'retry-after:', 12 ) === 0 ) {
-                        $retryAfter = $this->retryAfter( substr( $line, 12 ) );
-                    }
-
-                    return strlen( $line );
-                },
-                CURLOPT_WRITEFUNCTION => function( $curl, string $chunk ) use (
-                    &$bodyBytes, &$bodyExceeded
-                ) : int {
-                    $bodyBytes += strlen( $chunk );
-
-                    if( $bodyBytes > self::MAX_BODY ) {
-                        $bodyExceeded = true;
-                        return 0;
-                    }
-
-                    return strlen( $chunk );
-                },
-            ];
-
-            if( defined( 'CURLOPT_PROTOCOLS_STR' ) ) {
-                $options[constant( 'CURLOPT_PROTOCOLS_STR' )] = $uri->getScheme();
-            } elseif( defined( 'CURLOPT_PROTOCOLS' ) ) {
-                $options[CURLOPT_PROTOCOLS] = $uri->getScheme() === 'https' ? CURLPROTO_HTTPS : CURLPROTO_HTTP;
-            }
-
-            // Pins all allowed addresses so cURL can try the next one if a server is down
-            if( !filter_var( $host, FILTER_VALIDATE_IP ) )
-            {
-                $version = curl_version()['version_number'] ?? 0;
-                $addresses = $version >= self::RESOLVE_LIST ? $addresses : array_slice( $addresses, 0, 1 );
-                $resolved = array_map( fn( string $ip ) => str_contains( $ip, ':' ) ? '[' . $ip . ']' : $ip, $addresses );
-                $options[CURLOPT_RESOLVE] = [$host . ':' . $port . ':' . implode( ',', $resolved )];
-            }
-
-            if( $target['ca'] !== null && $uri->getScheme() === 'https' ) {
-                $options[CURLOPT_CAINFO] = $target['ca'];
-            }
-
-            [$success, $status, $errno] = $this->execute( $options );
-
-            // The status is known before the body arrives and the rest of a large body isn't needed
-            if( $success || $bodyExceeded && !$headersExceeded && $status > 0 ) {
-                return new WebhookResponse( $status, $retryAfter );
-            }
-
-            throw new WebhookException( $headersExceeded ? 'response_headers_too_large' : ( self::ERRORS[$errno] ?? 'transport_error' ) );
+            $resolved = array_map( fn( string $ip ) => str_contains( $ip, ':' ) ? '[' . $ip . ']' : $ip, $addresses );
+            $options[CURLOPT_RESOLVE] = [$host . ':' . $port . ':' . implode( ',', $resolved )];
         }
-        catch( WebhookException $e ) {
-            throw $e;
+
+        [$success, $status, $errno] = $this->execute( $options );
+
+        // The status is known before the body arrives
+        if( $success || $bodyStarted && $status > 0 ) {
+            return new WebhookResponse( $status, $retryAfter );
         }
-        catch( \Throwable ) {
-            throw new WebhookException( 'transport_error' );
-        }
+
+        throw new WebhookException( $headersExceeded ? 'response_headers_too_large' : ( self::ERRORS[$errno] ?? 'transport_error' ) );
     }
 
 
@@ -323,11 +242,7 @@ class WebhookClient
      */
     protected function execute( array $options ) : array
     {
-        $curl = curl_init();
-
-        if( $curl === false ) {
-            throw new WebhookException( 'transport_unavailable' );
-        }
+        $curl = curl_init() ?: throw new WebhookException( 'transport_error' );
 
         // The handle is closed when it goes out of scope, curl_close() is deprecated since PHP 8.5
         curl_setopt_array( $curl, $options );
@@ -346,23 +261,15 @@ class WebhookClient
     protected function lookup( string $host, bool $system = false ) : array
     {
         $addresses = [];
-        $start = now()->getTimestampMs();
 
         // Queried separately because a failed query for one record type fails a combined lookup
         foreach( [DNS_A => 'ip', DNS_AAAA => 'ipv6'] as $type => $key )
         {
-            $records = $this->records( $host, $type );
-
-            foreach( $records ?? [] as $record )
+            foreach( $this->records( $host, $type ) as $record )
             {
                 if( is_string( $ip = $record[$key] ?? null ) ) {
                     $addresses[] = $ip;
                 }
-            }
-
-            // A slow DNS server isn't waited for twice if it didn't answer or the addresses found can be used
-            if( ( $records === null || $addresses !== [] ) && now()->getTimestampMs() - $start > 1000 ) {
-                break;
             }
         }
 
@@ -377,13 +284,13 @@ class WebhookClient
     /**
      * Returns the DNS records of one type behind a narrow test seam.
      *
-     * @return list<array<string, mixed>>|null Records or NULL if the query failed
+     * @return list<array<string, mixed>> Records, none if the query failed
      */
-    protected function records( string $host, int $type ) : ?array
+    protected function records( string $host, int $type ) : array
     {
         $records = @dns_get_record( $host, $type );
 
-        return is_array( $records ) ? $records : null;
+        return is_array( $records ) ? $records : [];
     }
 
 
@@ -398,8 +305,8 @@ class WebhookClient
             return false;
         }
 
-        return $internal || ( !IpUtils::checkIp( $ip, self::LOOPBACK )
-            && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE ) !== false );
+        // Loopback, private and reserved addresses aren't in the global range
+        return $internal || filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_GLOBAL_RANGE ) !== false;
     }
 
 
@@ -475,19 +382,14 @@ class WebhookClient
 
 
     /**
-     * Returns the seconds from a "Retry-After" header value, which are either seconds or an HTTP date.
+     * Returns the seconds from a "Retry-After" header value, HTTP dates are ignored.
      */
     private function retryAfter( string $value ) : int
     {
         $value = trim( $value );
 
-        if( ctype_digit( $value ) ) {
-            return strlen( $value ) > 9 ? 999999999 : (int) $value;
-        }
-
-        $date = \DateTimeImmutable::createFromFormat( '!D, d M Y H:i:s \G\M\T', $value, new \DateTimeZone( 'UTC' ) );
-
-        return $date ? max( 0, $date->getTimestamp() - now()->getTimestamp() ) : 0;
+        // Huge values are limited to PHP_INT_MAX
+        return ctype_digit( $value ) ? (int) $value : 0;
     }
 
 
@@ -499,8 +401,8 @@ class WebhookClient
     private static function timeouts() : array
     {
         return [
-            max( 1, (int) config( 'cms.webhooks.http.connect_timeout', 3 ) ),
-            max( 1, (int) config( 'cms.webhooks.http.timeout', 10 ) ),
+            self::CONNECT_TIMEOUT,
+            max( 1, (int) config( 'cms.webhooks.timeout', 10 ) ),
         ];
     }
 
@@ -533,7 +435,7 @@ class WebhookClient
 
         foreach( explode( '.', $host ) as $label ) {
             if( $label === '' || strlen( $label ) > 63
-                || !preg_match( '/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i', $label )
+                || !preg_match( '/^[a-z0-9_](?:[a-z0-9_-]*[a-z0-9_])?$/i', $label )
             ) {
                 return false;
             }

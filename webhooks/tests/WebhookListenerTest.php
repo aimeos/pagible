@@ -41,19 +41,12 @@ class WebhookListenerTest extends WebhookTestAbstract
             null, null, null, 'test', 'graphql',
         ) );
 
-        // The queue worker must process the delivery within 10 minutes
-        $this->assertNull( app( \Aimeos\Cms\WebhookConfig::class )->stalled() );
-        $this->travel( 601 )->seconds();
-        $this->assertIsInt( app( \Aimeos\Cms\WebhookConfig::class )->stalled() );
-        $this->travelBack();
-
         Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) use ( $id, $webhook ) {
             $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
 
             return $job instanceof \Illuminate\Contracts\Queue\ShouldBeEncrypted
                 && $job->webhookId === $webhook->id
                 && $job->tenant === 'test'
-                && $job->revision === 1
                 && $payload['event'] === 'page.published'
                 && $payload['tenant_id'] === 'test'
                 && preg_match( '/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}\+00:00$/', $payload['timestamp'] ) === 1
@@ -70,23 +63,17 @@ class WebhookListenerTest extends WebhookTestAbstract
     }
 
 
-    public function testConfiguredEndpointsDispatchForMatchingEventsAndTenants() : void
+    public function testConfiguredEndpointsDispatchForMatchingEventsOfAllTenants() : void
     {
         config( ['cms.webhooks.endpoints' => [
-            'all' => [
-                'url' => 'http://indexer:8080/all',
+            'pages' => [
+                'url' => 'http://indexer:8080/pages',
                 'secret' => self::secret( 'a' ),
                 'events' => ['page.published'],
             ],
-            'acme' => [
-                'url' => 'http://indexer:8080/acme',
-                'secret' => self::secret( 'b' ),
-                'events' => ['page.published'],
-                'tenants' => ['acme'],
-            ],
             'files' => [
                 'url' => 'http://indexer:8080/files',
-                'secret' => self::secret( 'c' ),
+                'secret' => self::secret( 'b' ),
                 'events' => ['file.purged'],
             ],
         ]] );
@@ -100,23 +87,20 @@ class WebhookListenerTest extends WebhookTestAbstract
         }
 
         Queue::assertNotPushed( DeliverWebhook::class );
-        Queue::assertPushed( DeliverEndpoint::class, 3 );
+        Queue::assertPushed( DeliverEndpoint::class, 2 );
         Queue::assertPushed( DeliverEndpoint::class, fn( DeliverEndpoint $job ) =>
-            $job->endpoint === 'all' && $job->tenant === 'test'
-        );
-        Queue::assertPushed( DeliverEndpoint::class, fn( DeliverEndpoint $job ) =>
-            $job->endpoint === 'all' && $job->tenant === 'acme'
+            $job->endpoint === 'pages' && $job->tenant === 'test'
         );
         Queue::assertPushed( DeliverEndpoint::class, function( DeliverEndpoint $job ) {
             $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
 
+            // Endpoints receive the events of all tenants and can distinguish them by the payload
             return $job instanceof \Illuminate\Contracts\Queue\ShouldBeEncrypted
-                && $job->endpoint === 'acme'
+                && $job->endpoint === 'pages'
                 && $job->tenant === 'acme'
                 && $job->event === 'page.published'
-                && strlen( $job->revision ) === 64
                 && $payload['tenant_id'] === 'acme'
-                && !str_contains( serialize( $job ), self::secret( 'b' ) )
+                && !str_contains( serialize( $job ), self::secret( 'a' ) )
                 && !str_contains( serialize( $job ), 'indexer:8080' );
         } );
     }
@@ -228,7 +212,7 @@ class WebhookListenerTest extends WebhookTestAbstract
             public array $calls = [];
 
             /**
-             * @param array{url: string, secrets: list<string>, ca: string|null, internal: bool} $target
+             * @param array{url: string, secrets: list<string>, internal: bool} $target
              */
             public function send( array $target, string $deliveryId, string $body, ?int $deadline = null ) : WebhookResponse
             {
@@ -302,7 +286,7 @@ class WebhookListenerTest extends WebhookTestAbstract
 
 
     #[\PHPUnit\Framework\Attributes\DataProvider( 'failingQueueProvider' )]
-    public function testFailedPushIsShownOnSubscriptionsWithoutStallingTheQueue( string $driver ) : void
+    public function testFailedPushIsShownOnSubscriptions( string $driver ) : void
     {
         $webhook = $this->webhook();
         $this->failingQueue( $driver );
@@ -318,27 +302,6 @@ class WebhookListenerTest extends WebhookTestAbstract
             'cms.webhook.delivery_blocked', \Mockery::on( fn( array $data ) => $data['reason'] === 'queue_failed' )
         );
         $this->assertSame( 'queue_failed', $webhook->refresh()->last_error['reason'] ?? null );
-
-        // No delivery is waiting for a queue worker
-        $this->travel( 601 )->seconds();
-        $this->assertNull( app( \Aimeos\Cms\WebhookConfig::class )->stalled() );
-    }
-
-
-    public function testFailedPushKeepsEarlierDeliveriesWaiting() : void
-    {
-        $this->webhook();
-        app( \Aimeos\Cms\WebhookConfig::class )->queued();
-        $this->failingQueue( 'failing' );
-
-        try {
-            event( new Published( 'page', 'page-id', 'v', '', [], true, tenant: 'test' ) );
-        } finally {
-            config( ['cms.webhooks.queue.connection' => null] );
-        }
-
-        $this->travel( 601 )->seconds();
-        $this->assertIsInt( app( \Aimeos\Cms\WebhookConfig::class )->stalled() );
     }
 
 

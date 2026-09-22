@@ -34,41 +34,16 @@ final class WebhookCircuit
     }
 
 
-    public static function endpoint( string $name, string $revision ) : self
+    public static function endpoint( string $name ) : self
     {
         // One endpoint is a single destination for all tenants
-        return new self( 'endpoint:' . $name . ':' . $revision );
+        return new self( 'endpoint:' . $name );
     }
 
 
-    public static function webhook( string $tenant, string $id, int $revision ) : self
+    public static function webhook( string $tenant, string $id ) : self
     {
-        return new self( 'webhook:' . $tenant . ':' . $id . ':' . $revision );
-    }
-
-
-    /**
-     * Reads the states of several destinations with one cache request.
-     *
-     * @param array<int, self> $circuits
-     */
-    public static function load( array $circuits ) : void
-    {
-        $pending = array_filter( $circuits, fn( self $circuit ) => !$circuit->loaded );
-
-        if( $pending === [] ) {
-            return;
-        }
-
-        try {
-            $states = Cache::many( array_map( fn( self $circuit ) => $circuit->key, $pending ) );
-        } catch( \Throwable ) {
-            $states = []; // an unavailable cache never pauses deliveries
-        }
-
-        foreach( $pending as $circuit ) {
-            $circuit->set( $states[$circuit->key] ?? null );
-        }
+        return new self( 'webhook:' . $tenant . ':' . $id );
     }
 
 
@@ -98,7 +73,7 @@ final class WebhookCircuit
      * Pauses the destination after a temporary failure for the next delay of the backoff schedule.
      *
      * Only a failure after the pause ended advances the schedule, failures of parallel deliveries
-     * while the destination is already paused don't, but they can extend the pause by Retry-After.
+     * while the destination is already paused wait for the same pause.
      *
      * @param non-empty-list<int> $delays Backoff schedule whose last delay repeats
      * @param int $retryAfter Seconds the receiver asked to wait, used if longer than the delay
@@ -113,21 +88,12 @@ final class WebhookCircuit
             $state = $this->state();
             $now = now()->getTimestamp();
 
-            if( $state !== null && $state['until'] > $now )
-            {
-                if( $state['until'] >= $now + $retryAfter ) {
-                    return $state['until'] - $now;
-                }
+            if( $state !== null && $state['until'] > $now ) {
+                return $state['until'] - $now;
+            }
 
-                // Receivers asking to wait longer extend the pause without advancing the schedule
-                $failures = $state['failures'];
-                $pause = $retryAfter;
-            }
-            else
-            {
-                $failures = ( $state['failures'] ?? 0 ) + 1;
-                $pause = max( $delays[min( $failures, count( $delays ) ) - 1], $retryAfter );
-            }
+            $failures = ( $state['failures'] ?? 0 ) + 1;
+            $pause = max( $delays[min( $failures, count( $delays ) ) - 1], $retryAfter );
 
             $state = ['until' => $now + $pause, 'failures' => $failures, 'reason' => $reason, 'status' => $status];
 
@@ -177,34 +143,10 @@ final class WebhookCircuit
         }
 
         try {
-            return Cache::add( $this->key . ':probe', true, max( 1, $seconds ) );
+            return Cache::add( $this->key . ':probe', true, $seconds );
         } catch( \Throwable ) {
             return true;
         }
-    }
-
-
-    /**
-     * Stores the state read from the cache.
-     *
-     * @return array{until: int, failures: int, reason: string, status: int|null}|null
-     */
-    private function set( mixed $state ) : ?array
-    {
-        $this->loaded = true;
-        $this->state = null;
-
-        if( is_array( $state ) )
-        {
-            $this->state = [
-                'until' => (int) ( $state['until'] ?? 0 ),
-                'failures' => max( 1, (int) ( $state['failures'] ?? 1 ) ),
-                'reason' => is_string( $state['reason'] ?? null ) ? $state['reason'] : 'http_error',
-                'status' => is_int( $state['status'] ?? null ) ? $state['status'] : null,
-            ];
-        }
-
-        return $this->state;
     }
 
 
@@ -218,11 +160,13 @@ final class WebhookCircuit
         }
 
         try {
+            /** @var array{until: int, failures: int, reason: string, status: int|null}|null $state Only written by open() */
             $state = Cache::get( $this->key );
         } catch( \Throwable ) {
-            $state = null;
+            $state = null; // an unavailable cache never pauses deliveries
         }
 
-        return $this->set( $state );
+        $this->loaded = true;
+        return $this->state = $state;
     }
 }

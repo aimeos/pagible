@@ -5,8 +5,9 @@ scalar CmsWebhookDateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Sca
 type CmsWebhook {
   id: ID!
   status: Boolean!
-  "Optional name to tell subscriptions apart, as their endpoints only contain the host"
+  "Optional name to tell subscriptions apart"
   name: String!
+  "URL without the query string and the last path segment, which may contain credentials"
   endpoint: String!
   events: [String!]!
   last_error: CmsWebhookError @method(name: "failure")
@@ -20,7 +21,7 @@ type CmsWebhook {
 
 "Last delivery error of a subscription"
 type CmsWebhookError {
-  "Reason code, invalid_encryption if the subscription can't be decrypted with the application keys"
+  "Reason code, invalid_encryption if the secret can't be decrypted with the application keys"
   reason: String!
   "HTTP status of the response"
   status: Int
@@ -40,8 +41,6 @@ type CmsWebhookServer {
   enabled: Boolean!
   "Reason why all deliveries are blocked by the server configuration"
   blocked: String
-  "Queued deliveries are waiting for a queue worker since then"
-  stalled_since: CmsWebhookDateTime
 }
 
 "Result of a test event sent to a subscription"
@@ -87,10 +86,6 @@ extend type Mutation {
   saveWebhook(id: ID!, input: CmsWebhookSaveInput!): CmsWebhook!
     @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@save")
-
-  replaceWebhook(id: ID!, url: String! @rules(apply: ["max:500"])): CmsWebhookProvisioning!
-    @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@replace")
 
   rotateWebhook(id: ID!): CmsWebhookProvisioning!
     @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")

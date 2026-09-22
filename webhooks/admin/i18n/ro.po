@@ -18,57 +18,45 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhook-uri"
 
-#: src/views/WebhookList.vue:152
+#: src/views/WebhookList.vue:134
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Webhookurile sunt dezactivate de configurația serverului, nu se trimit "
 "evenimente"
 
-#: src/views/WebhookList.vue:159
+#: src/views/WebhookList.vue:141
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "Toate livrările sunt blocate de configurația serverului"
 
-#: src/views/WebhookList.vue:166
-msgctxt "webhooks"
-msgid "No queued delivery was processed since %{date}, check the queue worker"
-msgstr ""
-"Nicio livrare din coadă nu a fost procesată din %{date}, verificați procesul "
-"de lucru al cozii"
-
-#: src/views/WebhookList.vue:194
+#: src/views/WebhookList.vue:168
 msgctxt "webhooks"
 msgid "All"
 msgstr "Toate"
 
-#: src/views/WebhookList.vue:195 src/views/WebhookList.vue:725
-#: src/views/WebhookList.vue:809 src/views/WebhookList.vue:817
+#: src/views/WebhookList.vue:169 src/views/WebhookList.vue:647
+#: src/views/WebhookList.vue:731 src/views/WebhookList.vue:735
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Activ"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:726
+#: src/views/WebhookList.vue:170 src/views/WebhookList.vue:648
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Inactiv"
 
-#: src/views/WebhookList.vue:245
+#: src/views/WebhookList.vue:210
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Eroare la preluarea webhookurilor"
 
-#: src/views/WebhookList.vue:315
+#: src/views/WebhookList.vue:274
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Eroare la salvarea webhookului"
 
-#: src/views/WebhookList.vue:331
-msgctxt "webhooks"
-msgid "Error replacing webhook destination"
-msgstr "Eroare la înlocuirea destinației webhookului"
-
-#: src/views/WebhookList.vue:336
+#: src/views/WebhookList.vue:279
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -77,258 +65,269 @@ msgstr ""
 "Reînnoiți secretul acestui webhook? Destinatarii trebuie actualizați cu noul "
 "secret."
 
-#: src/views/WebhookList.vue:352
+#: src/views/WebhookList.vue:298
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Eroare la reînnoirea secretului webhookului"
 
-#: src/views/WebhookList.vue:371
+#: src/views/WebhookList.vue:318
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Eveniment de test livrat"
 
-#: src/views/WebhookList.vue:377 src/views/WebhookList.vue:384
+#: src/views/WebhookList.vue:324 src/views/WebhookList.vue:331
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Eveniment de test eșuat"
 
-#: src/views/WebhookList.vue:391
+#: src/views/WebhookList.vue:339
 msgctxt "webhooks"
 msgid "Delete this webhook?"
 msgstr "Ștergeți acest webhook?"
 
-#: src/views/WebhookList.vue:392 src/views/WebhookList.vue:580
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:340 src/views/WebhookList.vue:521
+#: src/views/WebhookList.vue:620
 msgctxt "webhooks"
 msgid "Delete"
 msgstr "Șterge"
 
-#: src/views/WebhookList.vue:412
+#: src/views/WebhookList.vue:360
 msgctxt "webhooks"
 msgid "Error deleting webhook"
 msgstr "Eroare la ștergerea webhookului"
 
-#: src/views/WebhookList.vue:420
+#: src/views/WebhookList.vue:368
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Secret copiat"
 
-#: src/views/WebhookList.vue:425
+#: src/views/WebhookList.vue:373
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Secretul nu a putut fi copiat"
 
-#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:470
+#: src/views/WebhookList.vue:382 src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "None"
 msgstr "Niciuna"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:395
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Conexiune eșuată"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:396
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Acces refuzat"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:397
 msgctxt "webhooks"
-msgid "Can't be decrypted, replace the URL"
-msgstr "Nu poate fi decriptat, înlocuiți adresa URL"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "Secretul nu poate fi decriptat, reînnoiți-l"
 
-#: src/views/WebhookList.vue:450
+#: src/views/WebhookList.vue:398
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Blocat de configurația serverului"
 
-#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:826
-#: src/views/WebhookList.vue:902
+#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:747
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Nu este o adresă URL validă"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:400
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Coada nu este disponibilă"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:401
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Gazda nu a fost găsită"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:402
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Răspuns prea mare"
 
-#: src/views/WebhookList.vue:455
+#: src/views/WebhookList.vue:403
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Cererea a expirat"
 
-#: src/views/WebhookList.vue:456
-msgctxt "webhooks"
-msgid "Secure connection failed"
-msgstr "Conexiune securizată eșuată"
-
-#: src/views/WebhookList.vue:461
+#: src/views/WebhookList.vue:408
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Redirecționările nu sunt urmate"
 
-#: src/views/WebhookList.vue:462
+#: src/views/WebhookList.vue:409
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Livrare eșuată"
 
-#: src/views/WebhookList.vue:540
+#: src/views/WebhookList.vue:481
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Trimite notificări semnate când se modifică conținutul publicat."
 
-#: src/views/WebhookList.vue:561 src/views/WebhookList.vue:642
+#: src/views/WebhookList.vue:502 src/views/WebhookList.vue:583
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Comută selecția"
 
-#: src/views/WebhookList.vue:588 src/views/WebhookList.vue:765
-#: src/views/WebhookList.vue:782
+#: src/views/WebhookList.vue:529 src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:706
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Adaugă webhook"
 
-#: src/views/WebhookList.vue:602
+#: src/views/WebhookList.vue:543
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Căutare pentru"
 
-#: src/views/WebhookList.vue:610
+#: src/views/WebhookList.vue:551
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Statut"
 
-#: src/views/WebhookList.vue:618
+#: src/views/WebhookList.vue:559
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Reîmprospătați"
 
-#: src/views/WebhookList.vue:659
+#: src/views/WebhookList.vue:600
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Editare"
 
-#: src/views/WebhookList.vue:667 src/views/WebhookList.vue:929
-msgctxt "webhooks"
-msgid "Replace"
-msgstr "Înlocuiește"
-
-#: src/views/WebhookList.vue:678
+#: src/views/WebhookList.vue:610
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Reînnoiește"
 
-#: src/views/WebhookList.vue:688
-msgctxt "webhooks"
-msgid "Send test event"
-msgstr "Trimite un eveniment de test"
-
-#: src/views/WebhookList.vue:731
+#: src/views/WebhookList.vue:653
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Ultima reușită"
 
-#: src/views/WebhookList.vue:735
+#: src/views/WebhookList.vue:657
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Ultima eroare"
 
-#: src/views/WebhookList.vue:742
+#: src/views/WebhookList.vue:664
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Întrerupt până la"
 
-#: src/views/WebhookList.vue:752
+#: src/views/WebhookList.vue:674
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Încărcare"
 
-#: src/views/WebhookList.vue:758
+#: src/views/WebhookList.vue:680
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Nu s-au găsit intrări"
 
-#: src/views/WebhookList.vue:759
+#: src/views/WebhookList.vue:681
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Nu există webhookuri configurate."
 
-#: src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:703
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Secret webhook"
+
+#: src/views/WebhookList.vue:705
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Editează webhookul"
 
-#: src/views/WebhookList.vue:791 src/views/WebhookList.vue:943
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Copiați acest secret acum. Nu va mai fi afișat."
 
-#: src/views/WebhookList.vue:823 src/views/WebhookList.vue:900
+#: src/views/WebhookList.vue:744
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL punct final HTTPS"
 
-#: src/views/WebhookList.vue:835 src/views/WebhookList.vue:896
-msgctxt "webhooks"
-msgid "Current destination"
-msgstr "Destinația curentă"
-
-#: src/views/WebhookList.vue:849
-msgctxt "webhooks"
-msgid "Name"
-msgstr "Nume"
-
-#: src/views/WebhookList.vue:857
+#: src/views/WebhookList.vue:768
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Evenimente"
 
-#: src/views/WebhookList.vue:867 src/views/WebhookList.vue:953
+#: src/views/WebhookList.vue:775
+msgctxt "webhooks"
+msgid "Name"
+msgstr "Nume"
+
+#: src/views/WebhookList.vue:785
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Gata"
 
-#: src/views/WebhookList.vue:870 src/views/WebhookList.vue:956
+#: src/views/WebhookList.vue:788
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copiază secretul"
 
-#: src/views/WebhookList.vue:875 src/views/WebhookList.vue:920
+#: src/views/WebhookList.vue:802
+msgctxt "webhooks"
+msgid "Test"
+msgstr "Testează"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Anulează"
 
-#: src/views/WebhookList.vue:884
+#: src/views/WebhookList.vue:816
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Salvați"
 
-#: src/views/WebhookList.vue:892
-msgctxt "webhooks"
-msgid "Replace webhook destination"
-msgstr "Înlocuiește destinația webhookului"
+#~ msgctxt "webhooks"
+#~ msgid "Secure connection failed"
+#~ msgstr "Conexiune securizată eșuată"
 
-#: src/views/WebhookList.vue:911
-msgctxt "webhooks"
-msgid "Replacing the destination rotates the secret and disables the webhook."
-msgstr "Înlocuirea destinației reînnoiește secretul și dezactivează webhookul."
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "No queued delivery was processed since %{date}, check the queue worker"
+#~ msgstr ""
+#~ "Nicio livrare din coadă nu a fost procesată din %{date}, verificați "
+#~ "procesul de lucru al cozii"
 
-#: src/views/WebhookList.vue:936
-msgctxt "webhooks"
-msgid "Webhook secret"
-msgstr "Secret webhook"
+#~ msgctxt "webhooks"
+#~ msgid "Error replacing webhook destination"
+#~ msgstr "Eroare la înlocuirea destinației webhookului"
+
+#~ msgctxt "webhooks"
+#~ msgid "Replace"
+#~ msgstr "Înlocuiește"
+
+#~ msgctxt "webhooks"
+#~ msgid "Replace webhook destination"
+#~ msgstr "Înlocuiește destinația webhookului"
+
+#~ msgctxt "webhooks"
+#~ msgid "Current destination"
+#~ msgstr "Destinația curentă"
+
+#~ msgctxt "webhooks"
+#~ msgid ""
+#~ "Replacing the destination rotates the secret and disables the webhook."
+#~ msgstr ""
+#~ "Înlocuirea destinației reînnoiește secretul și dezactivează webhookul."
+
+#~ msgctxt "webhooks"
+#~ msgid "Send test event"
+#~ msgstr "Trimite un eveniment de test"
 
 #~ msgctxt "webhooks"
 #~ msgid ""

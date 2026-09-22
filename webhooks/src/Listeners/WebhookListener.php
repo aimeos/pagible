@@ -10,12 +10,12 @@ namespace Aimeos\Cms\Listeners;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Jobs\BaseDelivery;
 use Aimeos\Cms\Jobs\DeliverEndpoint;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\WebhookConfig;
 use Aimeos\Cms\WebhookManager;
-use Illuminate\Queue\SyncQueue;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 
@@ -32,8 +32,7 @@ class WebhookListener
 
     public function handle( Event|Bulk $event ) : void
     {
-        if( !(bool) config( 'cms.webhooks.enabled', false )
-            || !( $name = $this->name( $event ) )
+        if( !( $name = $this->name( $event ) )
             || !( $tenant = $event->tenant ) && \Aimeos\Cms\Tenancy::$callback !== null
         ) {
             return;
@@ -52,9 +51,9 @@ class WebhookListener
                 ->where( 'tenant_id', $tenant )
                 ->where( 'status', 1 )
                 ->whereJsonContains( 'events', $name )
-                ->pluck( 'revision', 'id' );
+                ->pluck( 'id' );
 
-            $endpoints = $this->config->subscribed( $name, $tenant );
+            $endpoints = $this->config->subscribed( $name );
 
             if( $webhooks->isEmpty() && $endpoints === [] ) {
                 return;
@@ -68,27 +67,23 @@ class WebhookListener
             ];
 
             $body = json_encode( $payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES );
-            $expires = now()->addSeconds(
-                max( 60, (int) config( 'cms.webhooks.queue.max_age', 86400 ) )
-            )->getTimestamp();
+            $expires = now()->addSeconds( BaseDelivery::MAX_AGE )->getTimestamp();
 
-            $jobs = $webhooks->map( fn( mixed $revision, string $id ) =>
+            $jobs = $webhooks->map( fn( string $id ) =>
                 new DeliverWebhook(
                     $id,
                     $tenant,
-                    (int) $revision,
                     $name,
                     (string) Str::uuid(),
                     $body,
                     $expires,
                 )
-            )->values()->all();
+            )->all();
 
-            foreach( $endpoints as $endpoint => $revision ) {
+            foreach( $endpoints as $endpoint ) {
                 $jobs[] = new DeliverEndpoint(
                     $endpoint,
                     $tenant,
-                    $revision,
                     $name,
                     (string) Str::uuid(),
                     $body,
@@ -98,7 +93,7 @@ class WebhookListener
 
             // Lost deliveries aren't retried, so editors must see that the subscriptions missed events
             if( !$this->queue( $jobs ) ) {
-                $this->lost( $tenant, $webhooks->keys()->all() );
+                $this->lost( $tenant, $webhooks->all() );
             }
         }
         catch( \Throwable $e ) {
@@ -138,40 +133,9 @@ class WebhookListener
         $name = (string) config( 'cms.webhooks.queue.name', 'cms-webhooks' );
 
         try {
-            $queue = Queue::connection( $this->config->connection() );
+            Queue::connection( $this->config->connection() )->bulk( $jobs, queue: $name );
         } catch( \Throwable $e ) {
             report( $e );
-            return false;
-        }
-
-        // Synchronous jobs run immediately and one failing destination must not stop the others
-        if( $queue instanceof SyncQueue )
-        {
-            foreach( $jobs as $job )
-            {
-                try {
-                    $queue->bulk( [$job], queue: $name );
-                } catch( \Throwable $e ) {
-                    report( $e );
-                }
-            }
-
-            return true;
-        }
-
-        // Before pushing because a queue worker may process the jobs immediately
-        $waiting = $this->config->queued();
-
-        try {
-            $queue->bulk( $jobs, queue: $name );
-        } catch( \Throwable $e ) {
-            report( $e );
-
-            // No delivery waits for a queue worker, so the marker would report a stalled worker instead
-            if( $waiting ) {
-                $this->config->processed();
-            }
-
             return false;
         }
 
