@@ -391,6 +391,42 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertSee( 'Test file description', false );
         $response->assertSee( 'Test TIFF file description', false );
         $this->assertSame( 2, substr_count( (string) $response->getContent(), '<picture' ) );
+        $this->assertSame( 1, substr_count( (string) $response->getContent(), 'rel="preload" as="image"' ) );
+        $response->assertSee( 'imagesrcset="https://picsum.photos/id/0/500/333 500w,https://picsum.photos/id/0/1000/666 1000w"', false );
+    }
+
+
+    public function testHeroPreloadsFirstImageOnly()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $hero = fn( $id ) => [
+            'id' => $id,
+            'type' => 'hero',
+            'group' => 'main',
+            'data' => [
+                'title' => 'Hero preload',
+                'background' => ['id' => $file->id, 'type' => 'file'],
+                'files' => [['id' => $file->id, 'type' => 'file']],
+            ],
+        ];
+
+        Resource::addPage( [
+            'lang' => 'en',
+            'name' => 'Hero preload',
+            'title' => 'Hero preload',
+            'path' => 'hero-preload',
+            'status' => 1,
+            'content' => [$hero( 'hero-one' ), $hero( 'hero-two' )],
+        ], $this->user, parent: $root->id );
+
+        $response = $this->actingAs( $this->user )->get( '/hero-preload' );
+        $content = (string) $response->getContent();
+
+        $response->assertStatus( 200 );
+        $this->assertSame( 1, substr_count( $content, 'rel="preload" as="image"' ) );
+        $this->assertLessThan( strpos( $content, '</head>' ), strpos( $content, 'rel="preload" as="image" fetchpriority="high"' ) );
+        $response->assertSee( 'imagesizes="100vw"', false );
     }
 
 

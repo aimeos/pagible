@@ -3,7 +3,7 @@
 @endPushOnce
 
 @if($bg = cms($files, $data->background?->id ?? null))
-    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
+    @include('cms::pic', ['file' => $bg, 'main' => true, 'preload' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
 @endif
 
 <div class="first">
@@ -36,11 +36,17 @@
         @foreach($heroFileIds as $idx => $id)
             @if($file = cms($files, $id))
                 @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
+                    @php($poster = ($preview = current(array_reverse((array) cms($file, 'previews', [])))) ? cmsasset($page, $file, $preview) : null)
+                    @if($poster && $idx === 0)
+                        @pushOnce('head', 'cms-lcp-preload')
+                        <link rel="preload" as="image" fetchpriority="high" href="{{ $poster }}">
+                        @endPushOnce
+                    @endif
                     <video autoplay muted loop playsinline preload="metadata"
                         title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
                         src="{{ cmsasset($page, $file) }}"
-                        @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-                            poster="{{ cmsasset($page, $file, $preview) }}"
+                        @if($poster)
+                            poster="{{ $poster }}"
                         @endif
                     >
                     </video>
@@ -48,6 +54,7 @@
                     @include('cms::pic', [
                         'file' => $file,
                         'main' => $idx === 0,
+                        'preload' => $idx === 0,
                         'sizes' => count($heroFileIds) > 1 ? '(min-width: 768px) 25vw, 50vw' : '50vw',
                     ])
                 @endif
