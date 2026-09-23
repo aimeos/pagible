@@ -42,9 +42,9 @@ final class WebhookResolver
     /**
      * @param array{id: list<string>} $args
      */
-    public function drop( mixed $root, array $args ) : int
+    public function purge( mixed $root, array $args ) : int
     {
-        return $this->manager->drop( $args['id'], Auth::user() );
+        return $this->manager->purge( $args['id'], Auth::user() );
     }
 
 

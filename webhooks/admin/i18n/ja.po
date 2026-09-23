@@ -17,44 +17,49 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhook"
 
-#: src/views/WebhookList.vue:134
+#: src/views/WebhookList.vue:144
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "サーバー設定により Webhook は無効になっているため、イベントは送信されません"
 
-#: src/views/WebhookList.vue:141
+#: src/views/WebhookList.vue:151
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "サーバー設定によりすべての配信がブロックされています"
 
-#: src/views/WebhookList.vue:168
+#: src/views/WebhookList.vue:180
+msgctxt "webhooks"
+msgid "Status"
+msgstr "ステータス"
+
+#: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "All"
 msgstr "すべて"
 
-#: src/views/WebhookList.vue:169 src/views/WebhookList.vue:647
-#: src/views/WebhookList.vue:731 src/views/WebhookList.vue:735
+#: src/views/WebhookList.vue:188 src/views/WebhookList.vue:685
+#: src/views/WebhookList.vue:777 src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Active"
 msgstr "有効"
 
-#: src/views/WebhookList.vue:170 src/views/WebhookList.vue:648
+#: src/views/WebhookList.vue:193 src/views/WebhookList.vue:686
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "無効"
 
-#: src/views/WebhookList.vue:210
+#: src/views/WebhookList.vue:242
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Webhook の取得中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:274
+#: src/views/WebhookList.vue:306
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Webhook の保存中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:279
+#: src/views/WebhookList.vue:311
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -63,229 +68,224 @@ msgstr ""
 "この Webhook のシークレットを更新しますか？受信側を新しいシークレットに更新す"
 "る必要があります。"
 
-#: src/views/WebhookList.vue:298
+#: src/views/WebhookList.vue:330
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Webhook シークレットの更新中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:350
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "テストイベントを配信しました"
 
-#: src/views/WebhookList.vue:324 src/views/WebhookList.vue:331
+#: src/views/WebhookList.vue:356 src/views/WebhookList.vue:363
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "テストイベントに失敗しました"
 
-#: src/views/WebhookList.vue:339
+#: src/views/WebhookList.vue:371
 msgctxt "webhooks"
-msgid "Delete this webhook?"
-msgstr "この Webhook を削除しますか？"
+msgid "Purge this webhook?"
+msgstr "この Webhook を完全に削除しますか？"
 
-#: src/views/WebhookList.vue:340 src/views/WebhookList.vue:521
-#: src/views/WebhookList.vue:620
+#: src/views/WebhookList.vue:372 src/views/WebhookList.vue:566
+#: src/views/WebhookList.vue:658
 msgctxt "webhooks"
-msgid "Delete"
-msgstr "削除"
+msgid "Purge"
+msgstr "完全に削除"
 
-#: src/views/WebhookList.vue:360
+#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
-msgid "Error deleting webhook"
-msgstr "Webhook の削除中にエラーが発生しました"
+msgid "Error purging webhook"
+msgstr "Webhook の完全削除中にエラーが発生しました"
 
-#: src/views/WebhookList.vue:368
+#: src/views/WebhookList.vue:400
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "シークレットをコピーしました"
 
-#: src/views/WebhookList.vue:373
+#: src/views/WebhookList.vue:405
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "シークレットをコピーできませんでした"
 
-#: src/views/WebhookList.vue:382 src/views/WebhookList.vue:417
+#: src/views/WebhookList.vue:414 src/views/WebhookList.vue:458
 msgctxt "webhooks"
 msgid "None"
 msgstr "なし"
 
-#: src/views/WebhookList.vue:395
+#: src/views/WebhookList.vue:427
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "接続に失敗しました"
 
-#: src/views/WebhookList.vue:396
+#: src/views/WebhookList.vue:428
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "アクセス拒否"
 
-#: src/views/WebhookList.vue:397
+#: src/views/WebhookList.vue:429
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "シークレットを復号できません。更新してください"
 
-#: src/views/WebhookList.vue:398
+#: src/views/WebhookList.vue:433
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "サーバー設定によりブロックされました"
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:747
+#: src/views/WebhookList.vue:437 src/views/WebhookList.vue:793
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "有効なURLではない"
 
-#: src/views/WebhookList.vue:400
+#: src/views/WebhookList.vue:438
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "キューを利用できません"
 
-#: src/views/WebhookList.vue:401
+#: src/views/WebhookList.vue:439
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "ホストが見つかりません"
 
-#: src/views/WebhookList.vue:402
+#: src/views/WebhookList.vue:440
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "レスポンスが大きすぎます"
 
-#: src/views/WebhookList.vue:403
+#: src/views/WebhookList.vue:444
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "リクエストがタイムアウトしました"
 
-#: src/views/WebhookList.vue:408
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "リダイレクトはたどりません"
 
-#: src/views/WebhookList.vue:409
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "配信に失敗しました"
 
-#: src/views/WebhookList.vue:481
+#: src/views/WebhookList.vue:526
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "公開済みコンテンツが変更されたときに署名付き通知を送信します。"
 
-#: src/views/WebhookList.vue:502 src/views/WebhookList.vue:583
+#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:621
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "選択を切り替える"
 
-#: src/views/WebhookList.vue:529 src/views/WebhookList.vue:687
-#: src/views/WebhookList.vue:706
+#: src/views/WebhookList.vue:574 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Webhook を追加"
 
-#: src/views/WebhookList.vue:543
+#: src/views/WebhookList.vue:588
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "検索"
 
-#: src/views/WebhookList.vue:551
-msgctxt "webhooks"
-msgid "Status"
-msgstr "ステータス"
-
-#: src/views/WebhookList.vue:559
+#: src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "リフレッシュ"
 
-#: src/views/WebhookList.vue:600
+#: src/views/WebhookList.vue:638
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "編集"
 
-#: src/views/WebhookList.vue:610
+#: src/views/WebhookList.vue:648
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "更新"
 
-#: src/views/WebhookList.vue:653
+#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "最終成功"
 
-#: src/views/WebhookList.vue:657
+#: src/views/WebhookList.vue:695
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "直近のエラー"
 
-#: src/views/WebhookList.vue:664
+#: src/views/WebhookList.vue:702
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "一時停止の期限"
 
-#: src/views/WebhookList.vue:674
+#: src/views/WebhookList.vue:712
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "ローディング"
 
-#: src/views/WebhookList.vue:680
+#: src/views/WebhookList.vue:718
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "エントリーが見つかりません"
 
-#: src/views/WebhookList.vue:681
+#: src/views/WebhookList.vue:719
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Webhook は設定されていません。"
 
-#: src/views/WebhookList.vue:703
+#: src/views/WebhookList.vue:747
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhook シークレット"
 
-#: src/views/WebhookList.vue:705
+#: src/views/WebhookList.vue:749
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Webhook を編集"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "このシークレットを今すぐコピーしてください。再表示されません。"
 
-#: src/views/WebhookList.vue:744
+#: src/views/WebhookList.vue:790
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS エンドポイント URL"
 
-#: src/views/WebhookList.vue:768
+#: src/views/WebhookList.vue:816
 msgctxt "webhooks"
 msgid "Events"
 msgstr "イベント"
 
-#: src/views/WebhookList.vue:775
+#: src/views/WebhookList.vue:823
 msgctxt "webhooks"
 msgid "Name"
 msgstr "名前"
 
-#: src/views/WebhookList.vue:785
+#: src/views/WebhookList.vue:833
 msgctxt "webhooks"
 msgid "Done"
 msgstr "完了"
 
-#: src/views/WebhookList.vue:788
+#: src/views/WebhookList.vue:836
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "シークレットをコピー"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:850
 msgctxt "webhooks"
 msgid "Test"
 msgstr "テスト"
 
-#: src/views/WebhookList.vue:805
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/views/WebhookList.vue:816
+#: src/views/WebhookList.vue:862
 msgctxt "webhooks"
 msgid "Save"
 msgstr "セーブ"

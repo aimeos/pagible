@@ -17,45 +17,50 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: src/views/WebhookList.vue:134
+#: src/views/WebhookList.vue:144
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Τα webhook είναι απενεργοποιημένα από τη ρύθμιση του διακομιστή, δεν "
 "αποστέλλονται συμβάντα"
 
-#: src/views/WebhookList.vue:141
+#: src/views/WebhookList.vue:151
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "Όλες οι παραδόσεις αποκλείονται από τη ρύθμιση του διακομιστή"
 
-#: src/views/WebhookList.vue:168
+#: src/views/WebhookList.vue:180
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Κατάσταση"
+
+#: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "All"
 msgstr "Όλα"
 
-#: src/views/WebhookList.vue:169 src/views/WebhookList.vue:647
-#: src/views/WebhookList.vue:731 src/views/WebhookList.vue:735
+#: src/views/WebhookList.vue:188 src/views/WebhookList.vue:685
+#: src/views/WebhookList.vue:777 src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Ενεργό"
 
-#: src/views/WebhookList.vue:170 src/views/WebhookList.vue:648
+#: src/views/WebhookList.vue:193 src/views/WebhookList.vue:686
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Ανενεργό"
 
-#: src/views/WebhookList.vue:210
+#: src/views/WebhookList.vue:242
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Σφάλμα κατά την ανάκτηση των webhook"
 
-#: src/views/WebhookList.vue:274
+#: src/views/WebhookList.vue:306
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Σφάλμα κατά την αποθήκευση του webhook"
 
-#: src/views/WebhookList.vue:279
+#: src/views/WebhookList.vue:311
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -64,231 +69,226 @@ msgstr ""
 "Να ανανεωθεί το μυστικό αυτού του webhook; Οι παραλήπτες πρέπει να "
 "ενημερωθούν με το νέο μυστικό."
 
-#: src/views/WebhookList.vue:298
+#: src/views/WebhookList.vue:330
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Σφάλμα κατά την ανανέωση του μυστικού webhook"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:350
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Το δοκιμαστικό συμβάν παραδόθηκε"
 
-#: src/views/WebhookList.vue:324 src/views/WebhookList.vue:331
+#: src/views/WebhookList.vue:356 src/views/WebhookList.vue:363
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Το δοκιμαστικό συμβάν απέτυχε"
 
-#: src/views/WebhookList.vue:339
+#: src/views/WebhookList.vue:371
 msgctxt "webhooks"
-msgid "Delete this webhook?"
-msgstr "Να διαγραφεί αυτό το webhook;"
+msgid "Purge this webhook?"
+msgstr "Να διαγραφεί οριστικά αυτό το webhook;"
 
-#: src/views/WebhookList.vue:340 src/views/WebhookList.vue:521
-#: src/views/WebhookList.vue:620
+#: src/views/WebhookList.vue:372 src/views/WebhookList.vue:566
+#: src/views/WebhookList.vue:658
 msgctxt "webhooks"
-msgid "Delete"
-msgstr "Διαγραφή"
+msgid "Purge"
+msgstr "Οριστική διαγραφή"
 
-#: src/views/WebhookList.vue:360
+#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
-msgid "Error deleting webhook"
-msgstr "Σφάλμα κατά τη διαγραφή του webhook"
+msgid "Error purging webhook"
+msgstr "Σφάλμα κατά την οριστική διαγραφή του webhook"
 
-#: src/views/WebhookList.vue:368
+#: src/views/WebhookList.vue:400
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Το μυστικό αντιγράφηκε"
 
-#: src/views/WebhookList.vue:373
+#: src/views/WebhookList.vue:405
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Δεν ήταν δυνατή η αντιγραφή του μυστικού"
 
-#: src/views/WebhookList.vue:382 src/views/WebhookList.vue:417
+#: src/views/WebhookList.vue:414 src/views/WebhookList.vue:458
 msgctxt "webhooks"
 msgid "None"
 msgstr "Κανένα"
 
-#: src/views/WebhookList.vue:395
+#: src/views/WebhookList.vue:427
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Η σύνδεση απέτυχε"
 
-#: src/views/WebhookList.vue:396
+#: src/views/WebhookList.vue:428
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Άρνηση πρόσβασης"
 
-#: src/views/WebhookList.vue:397
+#: src/views/WebhookList.vue:429
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Δεν είναι δυνατή η αποκρυπτογράφηση του μυστικού, ανανεώστε το"
 
-#: src/views/WebhookList.vue:398
+#: src/views/WebhookList.vue:433
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Αποκλείστηκε από τη διαμόρφωση του διακομιστή"
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:747
+#: src/views/WebhookList.vue:437 src/views/WebhookList.vue:793
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Δεν είναι έγκυρο URL"
 
-#: src/views/WebhookList.vue:400
+#: src/views/WebhookList.vue:438
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Η ουρά δεν είναι διαθέσιμη"
 
-#: src/views/WebhookList.vue:401
+#: src/views/WebhookList.vue:439
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Ο κεντρικός υπολογιστής δεν βρέθηκε"
 
-#: src/views/WebhookList.vue:402
+#: src/views/WebhookList.vue:440
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Η απόκριση είναι πολύ μεγάλη"
 
-#: src/views/WebhookList.vue:403
+#: src/views/WebhookList.vue:444
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Λήξη χρονικού ορίου αιτήματος"
 
-#: src/views/WebhookList.vue:408
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Οι ανακατευθύνσεις δεν ακολουθούνται"
 
-#: src/views/WebhookList.vue:409
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Η παράδοση απέτυχε"
 
-#: src/views/WebhookList.vue:481
+#: src/views/WebhookList.vue:526
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr ""
 "Αποστολή υπογεγραμμένων ειδοποιήσεων όταν αλλάζει το δημοσιευμένο "
 "περιεχόμενο."
 
-#: src/views/WebhookList.vue:502 src/views/WebhookList.vue:583
+#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:621
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Εναλλαγή επιλογής"
 
-#: src/views/WebhookList.vue:529 src/views/WebhookList.vue:687
-#: src/views/WebhookList.vue:706
+#: src/views/WebhookList.vue:574 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Προσθήκη webhook"
 
-#: src/views/WebhookList.vue:543
+#: src/views/WebhookList.vue:588
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Αναζήτηση για"
 
-#: src/views/WebhookList.vue:551
-msgctxt "webhooks"
-msgid "Status"
-msgstr "Κατάσταση"
-
-#: src/views/WebhookList.vue:559
+#: src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Ανανέωση"
 
-#: src/views/WebhookList.vue:600
+#: src/views/WebhookList.vue:638
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Επεξεργασία"
 
-#: src/views/WebhookList.vue:610
+#: src/views/WebhookList.vue:648
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Ανανέωση"
 
-#: src/views/WebhookList.vue:653
+#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Τελευταία επιτυχία"
 
-#: src/views/WebhookList.vue:657
+#: src/views/WebhookList.vue:695
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Τελευταίο σφάλμα"
 
-#: src/views/WebhookList.vue:664
+#: src/views/WebhookList.vue:702
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Σε παύση έως"
 
-#: src/views/WebhookList.vue:674
+#: src/views/WebhookList.vue:712
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Φόρτωση"
 
-#: src/views/WebhookList.vue:680
+#: src/views/WebhookList.vue:718
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Δεν βρέθηκαν καταχωρήσεις"
 
-#: src/views/WebhookList.vue:681
+#: src/views/WebhookList.vue:719
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Δεν έχουν ρυθμιστεί webhook."
 
-#: src/views/WebhookList.vue:703
+#: src/views/WebhookList.vue:747
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Μυστικό webhook"
 
-#: src/views/WebhookList.vue:705
+#: src/views/WebhookList.vue:749
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Επεξεργασία webhook"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Αντιγράψτε αυτό το μυστικό τώρα. Δεν θα εμφανιστεί ξανά."
 
-#: src/views/WebhookList.vue:744
+#: src/views/WebhookList.vue:790
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL τελικού σημείου HTTPS"
 
-#: src/views/WebhookList.vue:768
+#: src/views/WebhookList.vue:816
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Συμβάντα"
 
-#: src/views/WebhookList.vue:775
+#: src/views/WebhookList.vue:823
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Όνομα"
 
-#: src/views/WebhookList.vue:785
+#: src/views/WebhookList.vue:833
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Έγινε"
 
-#: src/views/WebhookList.vue:788
+#: src/views/WebhookList.vue:836
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Αντιγραφή μυστικού"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:850
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Δοκιμή"
 
-#: src/views/WebhookList.vue:805
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: src/views/WebhookList.vue:816
+#: src/views/WebhookList.vue:862
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Αποθήκευση"

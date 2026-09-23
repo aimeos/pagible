@@ -112,7 +112,7 @@ once every 10 minutes for the same problem and destination:
 
 | Entry | Logged when |
 |-------|-------------|
-| `cms.webhook` | A subscription was `created`, `updated`, `secret_rotated` or `deleted`, with the editor, ID, status, events, endpoint and changed fields |
+| `cms.webhook` | A subscription was `created`, `updated`, `secret_rotated` or `purged`, with the editor, ID, status, events, endpoint and changed fields |
 | `cms.webhook.delivered` | An operator endpoint received a delivery (only if `CMS_LOG_CHANNEL` is set) |
 | `cms.webhook.delivery_retried` | A delivery failed temporarily, with the reason and HTTP status |
 | `cms.webhook.delivery_failed` | A delivery failed for good |

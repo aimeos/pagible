@@ -24,7 +24,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     use RefreshDatabase;
 
 
-    public function testProvisionSaveQueryRotateAndDrop() : void
+    public function testProvisionSaveQueryRotateAndPurge() : void
     {
         $response = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
             mutation {
@@ -75,11 +75,11 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $foreign = \Aimeos\Cms\Tenancy::run( 'other', fn() =>
             $this->webhook( ['url' => 'https://other.example/hook'] )
         );
-        $dropped = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: [ID!]!) { dropWebhook(id: $id) }
+        $purged = $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
+            mutation ($id: [ID!]!) { purgeWebhook(id: $id) }
         ', ['id' => [$id, $second->id, $foreign->id]] );
-        $dropped->assertGraphQLErrorFree();
-        $this->assertSame( 2, $dropped->json( 'data.dropWebhook' ) );
+        $purged->assertGraphQLErrorFree();
+        $this->assertSame( 2, $purged->json( 'data.purgeWebhook' ) );
         $this->assertSame( 1, Webhook::withoutTenancy()->count() );
         $this->assertTrue( Webhook::withoutTenancy()->whereKey( $foreign->id )->exists() );
     }
@@ -517,10 +517,10 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             $response->assertGraphQLErrorFree();
             $this->assertCount( 2, $ids = $response->json( 'data.cmsWebhooks.*.id' ) );
 
-            // All listed subscriptions can be deleted at once
+            // All listed subscriptions can be purged at once
             $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-                mutation ($id: [ID!]!) { dropWebhook(id: $id) }
-            ', ['id' => $ids] )->assertJsonPath( 'data.dropWebhook', 2 );
+                mutation ($id: [ID!]!) { purgeWebhook(id: $id) }
+            ', ['id' => $ids] )->assertJsonPath( 'data.purgeWebhook', 2 );
         } finally {
             config( ['cms.webhooks.limit' => 25] );
         }
@@ -535,10 +535,10 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     }
 
 
-    public function testUndecryptableSubscriptionIsListedRotatedAndDeleted() : void
+    public function testUndecryptableSubscriptionIsListedRotatedAndPurged() : void
     {
         $webhook = $this->undecryptable( $this->webhook( ['last_error' => ['reason' => 'invalid_encryption']] ) );
-        $dropped = $this->undecryptable( $this->webhook( ['url' => 'https://example.com/hooks/dropped'] ) );
+        $purged = $this->undecryptable( $this->webhook( ['url' => 'https://example.com/hooks/purged'] ) );
         $error = ['reason' => 'http_error', 'status' => 503, 'at' => '2026-09-15T14:00:00+02:00'];
         $other = $this->webhook( ['url' => 'https://example.org/other?token=secret', 'last_error' => $error] );
         $vars = ['id' => $webhook->id];
@@ -570,8 +570,8 @@ class WebhookGraphqlTest extends WebhookTestAbstract
         $this->assertSame( [$rotated->json( 'data.rotateWebhook.secret' )], $webhook->refresh()->secrets() );
 
         $this->actingAs( $this->user )->graphQL( /** @lang GraphQL */ '
-            mutation ($id: [ID!]!) { dropWebhook(id: $id) }
-        ', ['id' => [$dropped->id]] )->assertGraphQLErrorFree()->assertJsonPath( 'data.dropWebhook', 1 );
+            mutation ($id: [ID!]!) { purgeWebhook(id: $id) }
+        ', ['id' => [$purged->id]] )->assertGraphQLErrorFree()->assertJsonPath( 'data.purgeWebhook', 1 );
 
         $this->assertSame( 2, Webhook::count() );
 
@@ -579,7 +579,7 @@ class WebhookGraphqlTest extends WebhookTestAbstract
             $data['action'] === 'secret_rotated' && $data['webhook_id'] === $webhook->id
         ) )->once();
         Log::shouldHaveReceived( 'warning' )->with( 'cms.webhook', \Mockery::on( fn( array $data ) =>
-            $data['action'] === 'deleted' && $data['webhook_id'] === $dropped->id && $data['endpoint'] === 'https://example.com/hooks/'
+            $data['action'] === 'purged' && $data['webhook_id'] === $purged->id && $data['endpoint'] === 'https://example.com/hooks/'
         ) )->once();
     }
 

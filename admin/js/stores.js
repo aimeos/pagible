@@ -3,7 +3,7 @@
  */
 
 import gql from 'graphql-tag'
-import { defineAsyncComponent, h, markRaw, reactive } from 'vue'
+import { defineAsyncComponent, h, markRaw, reactive, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect } from './echo'
@@ -266,6 +266,20 @@ export const useUserStore = defineStore('user', {
       return null
     },
 
+    /**
+     * Returns the reactive list filter of the panel, saved per user on every change
+     *
+     * Call it while a component is set up, e.g. in data(), so the watcher stops on unmount.
+     *
+     * @param {String} panel Settings key of the panel, e.g. "page"
+     * @param {Object} defaults Filter values used if nothing is saved yet
+     */
+    filter(panel, defaults) {
+      const filter = reactive({ ...defaults, ...this.getData(panel, 'filter') })
+      watch(filter, (value) => this.saveData(panel, 'filter', value))
+      return filter
+    },
+
     getData(panel, key, defval = null) {
       return this.me?.settings?.[panel]?.[key] ?? defval
     },
@@ -388,7 +402,7 @@ export const usePluginStore = defineStore('plugin', {
     const subpanels = {}
 
     for (const [key, def] of Object.entries(plugins.panels || {})) {
-      panels[key] = pluginComponent(def)
+      panels[key] = pluginComponent({ ...def, key })
     }
 
     for (const [host, group] of Object.entries(plugins.subpanels || {})) {

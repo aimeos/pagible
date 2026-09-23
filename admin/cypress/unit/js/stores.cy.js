@@ -1,4 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia'
+import { effectScope, nextTick } from 'vue'
 import {
   useAppStore,
   useChangeStore,
@@ -94,6 +95,35 @@ describe('useUserStore', () => {
         expect(views.stack).to.deep.equal([])
         expect(clearStore).to.have.been.calledOnce
       })
+    })
+  })
+
+  describe('filter()', () => {
+    it('merges the stored filter into the defaults', () => {
+      const user = useUserStore()
+      user.me = { settings: { page: { filter: { view: 'list' } } } }
+      const scope = effectScope()
+      const filter = scope.run(() => user.filter('page', { view: 'tree', lang: null }))
+      expect(filter).to.deep.equal({ view: 'list', lang: null })
+      scope.stop()
+    })
+
+    it('saves the filter on changes until the scope stops', async () => {
+      const user = useUserStore()
+      user.me = { settings: {} }
+      const scope = effectScope()
+      const filter = scope.run(() => user.filter('page', { view: 'tree' }))
+
+      filter.view = 'list'
+      await nextTick()
+      expect(user.me.settings.page.filter).to.deep.equal({ view: 'list' })
+
+      scope.stop()
+      user.me.settings = {}
+      filter.view = 'tree'
+      await nextTick()
+      expect(user.me.settings).to.deep.equal({})
+      clearTimeout(user.saveTimer)
     })
   })
 

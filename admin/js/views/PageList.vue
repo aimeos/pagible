@@ -65,18 +65,11 @@ export default {
       scrollTop: 0,
       dictating: false,
       defaults: defaults,
-      filter: { ...defaults, ...this.user?.getData('page', 'filter') }
+      filter: this.user.filter('page', defaults)
     }
   },
 
   watch: {
-    filter: {
-      deep: true,
-      handler(val) {
-        this.user.saveData('page', 'filter', val)
-      }
-    },
-
     chatOpen(val) {
       // Refresh the list once when the chat closes after a turn (it may have created/changed pages).
       // Reload the current filter rather than overwriting the editor's saved filter.
@@ -354,7 +347,7 @@ export default {
   </v-main>
 
   <AsideList
-    v-model:filter="filter"
+    :filter="filter"
     :defaults="defaults"
     :content="asideContent"
   />

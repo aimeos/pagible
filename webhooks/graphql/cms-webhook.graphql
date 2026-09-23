@@ -95,8 +95,8 @@ extend type Mutation {
     @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@ping")
 
-  # Same maximum as WebhookManager::DROP_MAX and the batches deleted by the admin panel
-  dropWebhook(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"])): Int!
+  # Same maximum as WebhookManager::PURGE_MAX and the batches purged by the admin panel
+  purgeWebhook(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"])): Int!
     @guard @cmsPermission(action: "config:webhook") @throttle(name: "cms-graphql")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@drop")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\WebhookResolver@purge")
 }
