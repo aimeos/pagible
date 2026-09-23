@@ -25,7 +25,6 @@ export default {
     toolbar-color="warning"
     role="alertdialog"
     max-width="600"
-    scrollable
   >
     <div class="warning">
       <v-icon :icon="mdiAlertCircleOutline" color="warning" size="40" aria-hidden="true" />

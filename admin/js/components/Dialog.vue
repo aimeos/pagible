@@ -36,6 +36,7 @@ export default {
     :model-value="modelValue"
     :aria-label="title"
     :max-width="maxWidth"
+    scrollable
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <v-card :loading="cardLoading">

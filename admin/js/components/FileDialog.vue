@@ -25,7 +25,6 @@ export default {
     :title="$gettext('Media')"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
-    scrollable
   >
     <FileListItems :filter="filter" :grid="grid" @select="$emit('add', $event)" embed />
   </CmsDialog>

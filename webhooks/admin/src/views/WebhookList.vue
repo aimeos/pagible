@@ -181,6 +181,7 @@ export default {
         {
           key: "status",
           title: this.$pgettext("webhooks", "Status"),
+          open: true,
           items: [
             {
               title: this.$pgettext("webhooks", "All"),
@@ -835,7 +836,7 @@ export default {
           active
           >{{ $pgettext("webhooks", "Test") }}</v-btn
         >
-        <v-btn variant="outlined" @click="close">{{
+        <v-btn variant="text" @click="close">{{
           $pgettext("webhooks", "Cancel")
         }}</v-btn>
         <v-btn
