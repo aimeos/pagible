@@ -1,0 +1,1 @@
+import{jt as e,rr as t,yn as n}from"./charts-BFwsnyip.js";import{Rt as r}from"./layout-kcIWOhWX.js";function i(e,...t){requestAnimationFrame(()=>{let n=r();n&&n!==document.body&&(t.some(e=>e?.contains(n))||(e.value=!1))})}function a(r,i,a){let o=!1;n(r,t=>{t||(o=!0,e(()=>o=!1))}),n(i,e=>{!e||o?o=!1:t(a)&&(r.value=!0)})}export{a as n,i as t};
