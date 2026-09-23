@@ -3,17 +3,14 @@
 @endPushOnce
 
 @if(count($heroFiles = (array) ($data->files ?? [])) > 1)
-    @pushOnce('foot')
+    @pushOnce('foot', 'cms-slideshow')
     <link href="{{ cmstheme($page, 'slideshow.css') }}" rel="preload" as="style">
-    @endPushOnce
-
-    @pushOnce('foot')
     <script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
     @endPushOnce
 @endif
 
 @if($bg = cms($files, $data->background?->id ?? null))
-    @include('cms::pic', ['file' => $bg, 'main' => true, 'preload' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
+    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
 @endif
 
 <div class="first">
@@ -50,17 +47,11 @@
                     @if($file = cms($files, data_get($item, 'id')))
                         <div class="hero-slide">
                             @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
-                                @php($poster = ($preview = current(array_reverse((array) cms($file, 'previews', [])))) ? cmsasset($page, $file, $preview) : null)
-                                @if($poster && $idx === 0)
-                                    @pushOnce('head', 'cms-lcp-preload')
-                                    <link rel="preload" as="image" fetchpriority="high" href="{{ $poster }}">
-                                    @endPushOnce
-                                @endif
                                 <video autoplay muted loop playsinline preload="metadata"
                                     title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
                                     src="{{ cmsasset($page, $file) }}"
-                                    @if($poster)
-                                        poster="{{ $poster }}"
+                                    @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
+                                        poster="{{ cmsasset($page, $file, $preview) }}"
                                     @endif
                                 >
                                 </video>
@@ -68,7 +59,6 @@
                                 @include('cms::pic', [
                                     'file' => $file,
                                     'main' => $idx === 0,
-                                    'preload' => $idx === 0,
                                     'sizes' => '(min-width: 768px) 50vw, 100vw',
                                 ])
                             @endif
@@ -85,17 +75,11 @@
             @foreach($heroFiles as $idx => $item)
                 @if($file = cms($files, data_get($item, 'id')))
                     @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
-                        @php($poster = ($preview = current(array_reverse((array) cms($file, 'previews', [])))) ? cmsasset($page, $file, $preview) : null)
-                        @if($poster && $idx === 0)
-                            @pushOnce('head', 'cms-lcp-preload')
-                            <link rel="preload" as="image" fetchpriority="high" href="{{ $poster }}">
-                            @endPushOnce
-                        @endif
                         <video autoplay muted loop playsinline preload="metadata"
                             title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
                             src="{{ cmsasset($page, $file) }}"
-                            @if($poster)
-                                poster="{{ $poster }}"
+                            @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
+                                poster="{{ cmsasset($page, $file, $preview) }}"
                             @endif
                         >
                         </video>
@@ -103,7 +87,6 @@
                         @include('cms::pic', [
                             'file' => $file,
                             'main' => $idx === 0,
-                            'preload' => $idx === 0,
                             'sizes' => '50vw',
                         ])
                     @endif
