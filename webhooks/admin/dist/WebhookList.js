@@ -75,6 +75,7 @@ var m = "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.5
 	name: "WebhookList",
 	inject: {
 		apollo: {},
+		confirm: {},
 		messages: {},
 		pluginAside: { default: null }
 	},
@@ -239,14 +240,19 @@ var m = "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.5
 			}, this.$pgettext("webhooks", "Test event failed")), this.testing = !1;
 		},
 		async purge(e = null) {
-			let t = e ? [e.id] : [...this.checked], n = e ? `${this.$pgettext("webhooks", "Purge this webhook?")}\n\n${this.label(e)}` : `${this.$pgettext("webhooks", "Purge")} (${t.length})?`;
-			!this.saving && t.length && window.confirm(n) && await this.change(async () => {
-				for (let e = 0; e < t.length; e += 100) {
-					let n = new Set(t.slice(e, e + 100));
+			let t = e ? [e] : this.items.filter((e) => this.checked.has(e.id));
+			if (this.saving || !t.length || !await this.confirm.purge(t.map((e) => ({
+				name: e.name || e.endpoint,
+				info: e.name ? e.endpoint : ""
+			})))) return;
+			let n = t.map((e) => e.id);
+			await this.change(async () => {
+				for (let e = 0; e < n.length; e += 100) {
+					let t = new Set(n.slice(e, e + 100));
 					await this.apollo.mutate({
 						mutation: j,
-						variables: { id: [...n] }
-					}), this.items = this.items.filter((e) => !n.has(e.id)), this.checked = new Set([...this.checked].filter((e) => !n.has(e)));
+						variables: { id: [...t] }
+					}), this.items = this.items.filter((e) => !t.has(e.id)), this.checked = new Set([...this.checked].filter((e) => !t.has(e)));
 				}
 			}, this.$pgettext("webhooks", "Error purging webhook"));
 		},

@@ -17,50 +17,50 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhook"
 
-#: src/views/WebhookList.vue:144
+#: src/views/WebhookList.vue:147
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Webhook dinonaktifkan oleh konfigurasi server, tidak ada peristiwa yang "
 "dikirim"
 
-#: src/views/WebhookList.vue:151
+#: src/views/WebhookList.vue:154
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "Semua pengiriman diblokir oleh konfigurasi server"
 
-#: src/views/WebhookList.vue:180
+#: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Status"
 
-#: src/views/WebhookList.vue:183
+#: src/views/WebhookList.vue:186
 msgctxt "webhooks"
 msgid "All"
 msgstr "Semua"
 
-#: src/views/WebhookList.vue:188 src/views/WebhookList.vue:685
-#: src/views/WebhookList.vue:777 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
+#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktif"
 
-#: src/views/WebhookList.vue:193 src/views/WebhookList.vue:686
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Tidak aktif"
 
-#: src/views/WebhookList.vue:242
+#: src/views/WebhookList.vue:249
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Kesalahan saat mengambil webhook"
 
-#: src/views/WebhookList.vue:306
+#: src/views/WebhookList.vue:313
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Kesalahan saat menyimpan webhook"
 
-#: src/views/WebhookList.vue:311
+#: src/views/WebhookList.vue:318
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -68,227 +68,225 @@ msgid ""
 msgstr ""
 "Ganti rahasia webhook ini? Penerima harus diperbarui dengan rahasia baru."
 
-#: src/views/WebhookList.vue:330
+#: src/views/WebhookList.vue:337
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Kesalahan saat mengganti rahasia webhook"
 
-#: src/views/WebhookList.vue:350
+#: src/views/WebhookList.vue:357
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Peristiwa uji terkirim"
 
-#: src/views/WebhookList.vue:356 src/views/WebhookList.vue:363
+#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Peristiwa uji gagal"
 
-#: src/views/WebhookList.vue:371
-msgctxt "webhooks"
-msgid "Purge this webhook?"
-msgstr "Hapus webhook ini secara permanen?"
-
-#: src/views/WebhookList.vue:372 src/views/WebhookList.vue:566
-#: src/views/WebhookList.vue:658
-msgctxt "webhooks"
-msgid "Purge"
-msgstr "Hapus permanen"
-
-#: src/views/WebhookList.vue:392
+#: src/views/WebhookList.vue:411
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Kesalahan saat menghapus webhook secara permanen"
 
-#: src/views/WebhookList.vue:400
+#: src/views/WebhookList.vue:419
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Rahasia disalin"
 
-#: src/views/WebhookList.vue:405
+#: src/views/WebhookList.vue:424
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Rahasia tidak dapat disalin"
 
-#: src/views/WebhookList.vue:414 src/views/WebhookList.vue:458
+#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
 msgctxt "webhooks"
 msgid "None"
 msgstr "Tidak ada"
 
-#: src/views/WebhookList.vue:427
+#: src/views/WebhookList.vue:446
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Koneksi gagal"
 
-#: src/views/WebhookList.vue:428
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Akses ditolak"
 
-#: src/views/WebhookList.vue:429
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Rahasia tidak dapat didekripsi, ganti rahasia"
 
-#: src/views/WebhookList.vue:433
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Diblokir oleh konfigurasi server"
 
-#: src/views/WebhookList.vue:437 src/views/WebhookList.vue:793
+#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Bukan URL yang valid"
 
-#: src/views/WebhookList.vue:438
+#: src/views/WebhookList.vue:451
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Antrean tidak tersedia"
 
-#: src/views/WebhookList.vue:439
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Host tidak ditemukan"
 
-#: src/views/WebhookList.vue:440
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Respons terlalu besar"
 
-#: src/views/WebhookList.vue:444
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Waktu permintaan habis"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:459
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Pengalihan tidak diikuti"
 
-#: src/views/WebhookList.vue:450
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Pengiriman gagal"
 
-#: src/views/WebhookList.vue:526
+#: src/views/WebhookList.vue:522
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Kirim notifikasi bertanda tangan saat konten yang diterbitkan berubah."
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:621
+#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Aktifkan/nonaktifkan pilihan"
 
-#: src/views/WebhookList.vue:574 src/views/WebhookList.vue:725
-#: src/views/WebhookList.vue:750
+#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "Hapus permanen"
+
+#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Tambah webhook"
 
-#: src/views/WebhookList.vue:588
+#: src/views/WebhookList.vue:584
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Cari"
 
-#: src/views/WebhookList.vue:597
+#: src/views/WebhookList.vue:593
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Segarkan"
 
-#: src/views/WebhookList.vue:638
+#: src/views/WebhookList.vue:634
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Sunting"
 
-#: src/views/WebhookList.vue:648
+#: src/views/WebhookList.vue:644
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Ganti rahasia"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:687
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Keberhasilan terakhir"
 
-#: src/views/WebhookList.vue:695
+#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Kesalahan terakhir"
 
-#: src/views/WebhookList.vue:702
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Dijeda hingga"
 
-#: src/views/WebhookList.vue:712
+#: src/views/WebhookList.vue:708
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Memuat"
 
-#: src/views/WebhookList.vue:718
+#: src/views/WebhookList.vue:714
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Tidak ada entri yang ditemukan"
 
-#: src/views/WebhookList.vue:719
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Belum ada webhook yang dikonfigurasi."
 
-#: src/views/WebhookList.vue:747
+#: src/views/WebhookList.vue:737
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Rahasia webhook"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:739
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Edit webhook"
 
-#: src/views/WebhookList.vue:759
+#: src/views/WebhookList.vue:749
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Salin rahasia ini sekarang. Rahasia ini tidak akan ditampilkan lagi."
 
-#: src/views/WebhookList.vue:790
+#: src/views/WebhookList.vue:778
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL titik akhir HTTPS"
 
-#: src/views/WebhookList.vue:816
+#: src/views/WebhookList.vue:802
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Peristiwa"
 
-#: src/views/WebhookList.vue:823
+#: src/views/WebhookList.vue:809
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Nama"
 
-#: src/views/WebhookList.vue:833
+#: src/views/WebhookList.vue:819
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Selesai"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:822
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Salin rahasia"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:836
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Uji"
 
-#: src/views/WebhookList.vue:853
+#: src/views/WebhookList.vue:839
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Batal"
 
-#: src/views/WebhookList.vue:862
+#: src/views/WebhookList.vue:850
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Simpan"
+
+#~ msgctxt "webhooks"
+#~ msgid "Purge this webhook?"
+#~ msgstr "Hapus webhook ini secara permanen?"
 
 #~ msgctxt "webhooks"
 #~ msgid "Secure connection failed"

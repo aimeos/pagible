@@ -123,6 +123,7 @@ export const useUserStore = defineStore('user', {
       useAppStore().urlproxy = urlproxy
       useClipboardStore().$reset()
       useChangeStore().$reset()
+      useConfirmStore().close(false)
       const dirty = useDirtyStore()
       dirty.unregister()
       dirty.$reset()
@@ -557,6 +558,34 @@ export const useSideStore = defineStore('side', {
         this.show[key] = {}
       }
       this.show[key][what] = !this.show[key][what]
+    }
+  }
+})
+
+export const useConfirmStore = defineStore('confirm', {
+  state: () => ({
+    hint: '',
+    items: [],
+    pendingResolve: null,
+    show: false
+  }),
+
+  actions: {
+    close(value) {
+      const fn = this.pendingResolve
+      this.pendingResolve = null
+      this.show = false
+
+      if (fn) fn(value)
+    },
+
+    purge(items, hint = '') {
+      this.close(false)
+      Object.assign(this, { items, hint, show: true })
+
+      return new Promise((resolve) => {
+        this.pendingResolve = resolve
+      })
     }
   }
 })

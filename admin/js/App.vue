@@ -1,6 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import ConfirmDialog from './components/ConfirmDialog.vue'
 import UnsavedDialog from './components/UnsavedDialog.vue'
 import { cleanEcho, setupEcho } from './echo'
 import { invalidateList } from './graphql'
@@ -9,7 +10,7 @@ import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './st
 const CONTENT_TYPES = ['page', 'element', 'file']
 
 export default {
-  components: { UnsavedDialog },
+  components: { ConfirmDialog, UnsavedDialog },
 
   data: () => ({
     destroyed: true,
@@ -88,6 +89,7 @@ export default {
       </transition-group>
     </main>
 
+    <ConfirmDialog />
     <UnsavedDialog />
     <v-snackbar-queue v-model="messages.queue"></v-snackbar-queue>
     <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">

@@ -22,7 +22,7 @@ import EditBulkDialog from './EditBulkDialog.vue'
 import ListSort from './ListSort.vue'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList, listFetchPolicy } from '../graphql'
-import { useUserStore, useMessageStore, useChangeStore } from '../stores'
+import { useUserStore, useMessageStore, useChangeStore, useConfirmStore } from '../stores'
 import { debounce, frozenParse, safeParse } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
@@ -184,10 +184,12 @@ export default {
     const messages = useMessageStore()
     const user = useUserStore()
     const changes = useChangeStore()
+    const confirm = useConfirmStore()
 
     return {
       user,
       changes,
+      confirm,
       messages,
       mdiDotsVertical,
       mdiPublish,
@@ -496,7 +498,7 @@ export default {
         })
     },
 
-    purge(item) {
+    async purge(item) {
       if (!this.user.can('element:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -504,7 +506,10 @@ export default {
 
       const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
-      if (!list.length) {
+      if (
+        !list.length ||
+        !(await this.confirm.purge(list.map((item) => ({ name: item.name, info: item.type }))))
+      ) {
         return
       }
 

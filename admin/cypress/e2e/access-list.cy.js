@@ -192,12 +192,13 @@ describe('Access list', () => {
     cy.get('.assigned-access').should('exist').and('have.class', 'v-autocomplete')
   })
 
-  it('deletes selected access values after confirmation', () => {
+  it('purges selected access values after confirmation', () => {
     visitAccess()
 
     cy.get('.items .v-checkbox-btn').first().click()
     cy.get('.btn-delete').click()
-    cy.get('.v-dialog').contains('button', 'Delete').click()
+    cy.get('.v-dialog .v-list').should('contain', 'alpha')
+    cy.get('.v-dialog .btn-confirm').click()
 
     cy.wait('@deleteAccess').then(({ request }) => {
       const operation = Array.isArray(request.body) ? request.body[0] : request.body

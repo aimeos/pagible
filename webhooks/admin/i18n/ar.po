@@ -17,275 +17,273 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "خطافات الويب"
 
-#: src/views/WebhookList.vue:144
+#: src/views/WebhookList.vue:147
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr "تم تعطيل خطافات الويب بواسطة إعدادات الخادم، ولا يتم إرسال أي أحداث"
 
-#: src/views/WebhookList.vue:151
+#: src/views/WebhookList.vue:154
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "جميع عمليات التسليم محظورة بواسطة إعدادات الخادم"
 
-#: src/views/WebhookList.vue:180
+#: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "Status"
 msgstr "الحالة"
 
-#: src/views/WebhookList.vue:183
+#: src/views/WebhookList.vue:186
 msgctxt "webhooks"
 msgid "All"
 msgstr "الكل"
 
-#: src/views/WebhookList.vue:188 src/views/WebhookList.vue:685
-#: src/views/WebhookList.vue:777 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
+#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
 msgctxt "webhooks"
 msgid "Active"
 msgstr "نشط"
 
-#: src/views/WebhookList.vue:193 src/views/WebhookList.vue:686
+#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "غير نشط"
 
-#: src/views/WebhookList.vue:242
+#: src/views/WebhookList.vue:249
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "خطأ في جلب خطافات الويب"
 
-#: src/views/WebhookList.vue:306
+#: src/views/WebhookList.vue:313
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "خطأ في حفظ خطاف الويب"
 
-#: src/views/WebhookList.vue:311
+#: src/views/WebhookList.vue:318
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
 msgstr "هل تريد تجديد سر خطاف الويب هذا؟ يجب تحديث المستقبِلات بالسر الجديد."
 
-#: src/views/WebhookList.vue:330
+#: src/views/WebhookList.vue:337
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "خطأ في تجديد سر خطاف الويب"
 
-#: src/views/WebhookList.vue:350
+#: src/views/WebhookList.vue:357
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "تم تسليم الحدث التجريبي"
 
-#: src/views/WebhookList.vue:356 src/views/WebhookList.vue:363
+#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "فشل الحدث التجريبي"
 
-#: src/views/WebhookList.vue:371
-msgctxt "webhooks"
-msgid "Purge this webhook?"
-msgstr "هل تريد حذف خطاف الويب هذا نهائيًا؟"
-
-#: src/views/WebhookList.vue:372 src/views/WebhookList.vue:566
-#: src/views/WebhookList.vue:658
-msgctxt "webhooks"
-msgid "Purge"
-msgstr "حذف نهائي"
-
-#: src/views/WebhookList.vue:392
+#: src/views/WebhookList.vue:411
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "خطأ في حذف خطاف الويب نهائيًا"
 
-#: src/views/WebhookList.vue:400
+#: src/views/WebhookList.vue:419
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "تم نسخ السر"
 
-#: src/views/WebhookList.vue:405
+#: src/views/WebhookList.vue:424
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "تعذر نسخ السر"
 
-#: src/views/WebhookList.vue:414 src/views/WebhookList.vue:458
+#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
 msgctxt "webhooks"
 msgid "None"
 msgstr "لا يوجد"
 
-#: src/views/WebhookList.vue:427
+#: src/views/WebhookList.vue:446
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "فشل الاتصال"
 
-#: src/views/WebhookList.vue:428
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "تم رفض الدخول"
 
-#: src/views/WebhookList.vue:429
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "يتعذر فك تشفير السر، جدّده"
 
-#: src/views/WebhookList.vue:433
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "محظور بسبب إعدادات الخادم"
 
-#: src/views/WebhookList.vue:437 src/views/WebhookList.vue:793
+#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "عنوان URL غير صالح"
 
-#: src/views/WebhookList.vue:438
+#: src/views/WebhookList.vue:451
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "قائمة الانتظار غير متاحة"
 
-#: src/views/WebhookList.vue:439
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "لم يتم العثور على المضيف"
 
-#: src/views/WebhookList.vue:440
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "الاستجابة كبيرة جدًا"
 
-#: src/views/WebhookList.vue:444
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "انتهت مهلة الطلب"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:459
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "لا تتم متابعة عمليات إعادة التوجيه"
 
-#: src/views/WebhookList.vue:450
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "فشل التسليم"
 
-#: src/views/WebhookList.vue:526
+#: src/views/WebhookList.vue:522
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "أرسل إشعارات موقعة عند تغيير المحتوى المنشور."
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:621
+#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "تبديل التحديد"
 
-#: src/views/WebhookList.vue:574 src/views/WebhookList.vue:725
-#: src/views/WebhookList.vue:750
+#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "حذف نهائي"
+
+#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "إضافة خطاف ويب"
 
-#: src/views/WebhookList.vue:588
+#: src/views/WebhookList.vue:584
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "البحث عن"
 
-#: src/views/WebhookList.vue:597
+#: src/views/WebhookList.vue:593
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "تحديث"
 
-#: src/views/WebhookList.vue:638
+#: src/views/WebhookList.vue:634
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "تحرير"
 
-#: src/views/WebhookList.vue:648
+#: src/views/WebhookList.vue:644
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "تجديد"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:687
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "آخر نجاح"
 
-#: src/views/WebhookList.vue:695
+#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "الخطأ الأخير"
 
-#: src/views/WebhookList.vue:702
+#: src/views/WebhookList.vue:698
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "متوقف مؤقتًا حتى"
 
-#: src/views/WebhookList.vue:712
+#: src/views/WebhookList.vue:708
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "التحميل"
 
-#: src/views/WebhookList.vue:718
+#: src/views/WebhookList.vue:714
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "لم يتم العثور على إدخالات"
 
-#: src/views/WebhookList.vue:719
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "لم يتم إعداد أي خطافات ويب."
 
-#: src/views/WebhookList.vue:747
+#: src/views/WebhookList.vue:737
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "سر خطاف الويب"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:739
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "تعديل خطاف الويب"
 
-#: src/views/WebhookList.vue:759
+#: src/views/WebhookList.vue:749
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "انسخ هذا السر الآن. لن يظهر مرة أخرى."
 
-#: src/views/WebhookList.vue:790
+#: src/views/WebhookList.vue:778
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "عنوان URL لنقطة نهاية HTTPS"
 
-#: src/views/WebhookList.vue:816
+#: src/views/WebhookList.vue:802
 msgctxt "webhooks"
 msgid "Events"
 msgstr "الأحداث"
 
-#: src/views/WebhookList.vue:823
+#: src/views/WebhookList.vue:809
 msgctxt "webhooks"
 msgid "Name"
 msgstr "الاسم"
 
-#: src/views/WebhookList.vue:833
+#: src/views/WebhookList.vue:819
 msgctxt "webhooks"
 msgid "Done"
 msgstr "تم"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:822
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "نسخ السر"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:836
 msgctxt "webhooks"
 msgid "Test"
 msgstr "اختبار"
 
-#: src/views/WebhookList.vue:853
+#: src/views/WebhookList.vue:839
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "إلغاء"
 
-#: src/views/WebhookList.vue:862
+#: src/views/WebhookList.vue:850
 msgctxt "webhooks"
 msgid "Save"
 msgstr "الحفظ"
+
+#~ msgctxt "webhooks"
+#~ msgid "Purge this webhook?"
+#~ msgstr "هل تريد حذف خطاف الويب هذا نهائيًا؟"
 
 #~ msgctxt "webhooks"
 #~ msgid "Secure connection failed"

@@ -2,13 +2,13 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiAlertCircleOutline, mdiDelete, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
+import { mdiDeleteForever, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
 import AccessUsers from '../components/AccessUsers.vue'
 import CmsDialog from '../components/Dialog.vue'
 import { apolloClient } from '../graphql'
-import { useDrawerStore, useMessageStore, useUserStore } from '../stores'
+import { useConfirmStore, useDrawerStore, useMessageStore, useUserStore } from '../stores'
 
 const FETCH_ACCESS = gql`
   query {
@@ -39,16 +39,17 @@ export default {
   },
 
   setup() {
+    const confirm = useConfirmStore()
     const drawer = useDrawerStore()
     const messages = useMessageStore()
     const user = useUserStore()
 
     return {
+      confirm,
       drawer,
       messages,
       user,
-      mdiAlertCircleOutline,
-      mdiDelete,
+      mdiDeleteForever,
       mdiKeyPlus,
       mdiMagnify,
       mdiMenu
@@ -63,8 +64,7 @@ export default {
       value: '',
       loading: true,
       saving: false,
-      addDialog: false,
-      deleteDialog: false
+      addDialog: false
     }
   },
 
@@ -174,7 +174,19 @@ export default {
 
     async remove() {
       const values = Array.from(this.checked)
-      if (!values.length || this.saving) return
+
+      if (
+        !values.length ||
+        this.saving ||
+        !(await this.confirm.purge(
+          values.map((name) => ({ name })),
+          this.$gettext(
+            'Existing restrictions are not changed and will continue to reference the purged access values.'
+          )
+        ))
+      ) {
+        return
+      }
 
       this.saving = true
 
@@ -186,9 +198,8 @@ export default {
 
         this.items = response.data.deleteAccess
         this.checked = new Set()
-        this.deleteDialog = false
       } catch (error) {
-        this.messages.add(this.$gettext('Error deleting access values') + ':\n' + error, 'error')
+        this.messages.add(this.$gettext('Error purging access values') + ':\n' + error, 'error')
       } finally {
         this.saving = false
       }
@@ -263,9 +274,9 @@ export default {
                   />
                   <v-btn
                     v-if="checked.size"
-                    @click="deleteDialog = true"
-                    :title="$gettext('Delete')"
-                    :icon="mdiDelete"
+                    @click="remove()"
+                    :title="$gettext('Purge')"
+                    :icon="mdiDeleteForever"
                     color="error"
                     variant="text"
                     class="btn-delete"
@@ -343,32 +354,6 @@ export default {
         </v-btn>
       </template>
     </CmsDialog>
-
-    <CmsDialog
-      v-model="deleteDialog"
-      :title="$gettext('Delete access values')"
-      toolbar-color="warning"
-      max-width="520"
-      role="alertdialog"
-    >
-      <div class="warning">
-        <v-icon :icon="mdiAlertCircleOutline" color="warning" size="40" />
-        <p>
-          {{
-            $gettext(
-              'Existing restrictions are not changed and will continue to reference the deleted access values.'
-            )
-          }}
-        </p>
-      </div>
-
-      <template #actions="{ close }">
-        <v-btn @click="close" variant="text">{{ $gettext('Cancel') }}</v-btn>
-        <v-btn @click="remove()" :loading="saving" color="error" variant="flat">
-          {{ $gettext('Delete') }}
-        </v-btn>
-      </template>
-    </CmsDialog>
   </Teleport>
 </template>
 
@@ -393,16 +378,6 @@ export default {
 .notfound {
   padding: 32px;
   text-align: center;
-}
-
-.warning {
-  align-items: center;
-  display: flex;
-  gap: 16px;
-}
-
-.warning p {
-  margin: 0;
 }
 
 .subtabs {

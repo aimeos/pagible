@@ -1,70 +1,48 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: lv\n"
-"Language-Team: none\n"
-"Last-Translator: Automatically generated\n"
-"MIME-Version: 1.0\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"2);\n"
 
-#: js/ai.js:44
-#: js/ai.js:91
-#: js/ai.js:146
-#: js/components/ElementListItems.vue:249
-#: js/components/ElementListItems.vue:288
-#: js/components/ElementListItems.vue:376
-#: js/components/ElementListItems.vue:412
-#: js/components/ElementListItems.vue:452
-#: js/components/ElementListItems.vue:492
-#: js/components/ElementListItems.vue:537
-#: js/components/Fields.vue:119
-#: js/components/FileAiDialog.vue:154
-#: js/components/FileDetailItem.vue:156
-#: js/components/FileDetailItem.vue:194
-#: js/components/FileDetailItem.vue:232
-#: js/components/FileDetailItem.vue:266
-#: js/components/FileDetailItem.vue:271
-#: js/components/FileDetailItem.vue:314
-#: js/components/FileDetailItemImage.vue:383
-#: js/components/FileDetailItemVideo.vue:67
-#: js/components/FileDetailItemVideo.vue:134
-#: js/components/FileDetailItemVideo.vue:171
-#: js/components/FileListItems.vue:232
-#: js/components/FileListItems.vue:291
-#: js/components/FileListItems.vue:379
-#: js/components/FileListItems.vue:412
-#: js/components/FileListItems.vue:449
-#: js/components/FileListItems.vue:489
-#: js/components/FileListItems.vue:534
-#: js/components/PageDetailContentList.vue:367
-#: js/components/PageDetailContentList.vue:467
-#: js/components/PageListItems.vue:425
-#: js/components/PageListItems.vue:496
-#: js/components/PageListItems.vue:571
-#: js/components/PageListItems.vue:666
-#: js/components/PageListItems.vue:737
-#: js/components/PageListItems.vue:802
-#: js/components/PageListItems.vue:935
-#: js/components/PageListItems.vue:963
-#: js/components/PageListItems.vue:1095
-#: js/components/PageListItems.vue:1136
-#: js/components/PageListItems.vue:1244
-#: js/components/PageListItems.vue:1322
-#: js/components/PageListItems.vue:1373
-#: js/fields/File.vue:104
-#: js/fields/Images.vue:118
-#: js/fields/Items.vue:211
-#: js/publish.js:38
-#: js/views/ElementDetail.vue:272
-#: js/views/ElementDetail.vue:372
-#: js/views/FileDetail.vue:260
-#: js/views/FileDetail.vue:338
-#: js/views/PageDetail.vue:488
-#: js/views/PageDetail.vue:579
-#: js/views/PageDetail.vue:689
-#: js/views/PageList.vue:212
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:252
+#: js/components/ElementListItems.vue:291
+#: js/components/ElementListItems.vue:427
+#: js/components/ElementListItems.vue:463
+#: js/components/ElementListItems.vue:503
+#: js/components/ElementListItems.vue:545
+#: js/components/ElementListItems.vue:590 js/components/Fields.vue:118
+#: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
+#: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
+#: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
+#: js/components/FileDetailItem.vue:316
+#: js/components/FileDetailItemImage.vue:386
+#: js/components/FileDetailItemVideo.vue:68
+#: js/components/FileDetailItemVideo.vue:136
+#: js/components/FileDetailItemVideo.vue:174
+#: js/components/FileListItems.vue:241 js/components/FileListItems.vue:286
+#: js/components/FileListItems.vue:422 js/components/FileListItems.vue:455
+#: js/components/FileListItems.vue:492 js/components/FileListItems.vue:534
+#: js/components/FileListItems.vue:579
+#: js/components/PageDetailContentList.vue:369
+#: js/components/PageDetailContentList.vue:463
+#: js/components/PageListItems.vue:449 js/components/PageListItems.vue:521
+#: js/components/PageListItems.vue:618 js/components/PageListItems.vue:711
+#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:844
+#: js/components/PageListItems.vue:975 js/components/PageListItems.vue:1004
+#: js/components/PageListItems.vue:1136 js/components/PageListItems.vue:1177
+#: js/components/PageListItems.vue:1298 js/components/PageListItems.vue:1376
+#: js/components/PageListItems.vue:1427 js/fields/File.vue:147
+#: js/fields/Images.vue:114 js/fields/Items.vue:209 js/publish.js:39
+#: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
+#: js/views/FileDetail.vue:262 js/views/FileList.vue:178
+#: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
+#: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "Atļauja liegta"
 
@@ -84,15 +62,15 @@ msgstr "Teksta ģenerēšanai ir nepieciešama uzvedne"
 msgid "Error generating text"
 msgstr "Kļūda, ģenerējot tekstu"
 
-#: js/chat.js:32
+#: js/chat.js:33
 msgid "The chat assistant is not available."
 msgstr "Tērzēšanas palīgs nav pieejams."
 
-#: js/chat.js:55
+#: js/chat.js:56
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Atbilde jau tiek ģenerēta. Lūdzu, uzgaidiet, līdz tā būs pabeigta."
 
-#: js/chat.js:57
+#: js/chat.js:58
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Pārāk daudz pieprasījumu. Lūdzu, uzgaidiet brīdi un mēģiniet vēlreiz."
 
@@ -116,9 +94,8 @@ msgstr "Lietotājs izveidots"
 msgid "Error creating user"
 msgstr "Kļūda, izveidojot lietotāju"
 
-#: js/components/AccessUsers.vue:357
-#: js/components/PageAccess.vue:124
-#: js/views/AccessList.vue:149
+#: js/components/AccessUsers.vue:357 js/components/PageAccess.vue:126
+#: js/views/AccessList.vue:141
 msgid "Error fetching access roles"
 msgstr "Kļūda, ielādējot piekļuves lomas"
 
@@ -126,8 +103,7 @@ msgstr "Kļūda, ielādējot piekļuves lomas"
 msgid "Error fetching user access roles"
 msgstr "Kļūda, ielādējot lietotāja piekļuves lomas"
 
-#: js/components/AccessUsers.vue:416
-#: js/components/AccessUsers.vue:417
+#: js/components/AccessUsers.vue:416 js/components/AccessUsers.vue:417
 msgid "Create user"
 msgstr "Izveidot lietotāju"
 
@@ -139,15 +115,12 @@ msgstr "E-pasta adrese"
 msgid "Search user by email"
 msgstr "Meklēt lietotāju pēc e-pasta adreses"
 
-#: js/components/AccessUsers.vue:445
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:445 js/components/AccessUsers.vue:446
 msgid "Search"
 msgstr "Meklēt"
 
-#: js/components/AccessUsers.vue:461
-#: js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:153
-#: js/components/FieldsDialog.vue:62
+#: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
+#: js/components/DetailAppBar.vue:149
 msgid "Save"
 msgstr "Saglabāt"
 
@@ -155,8 +128,7 @@ msgstr "Saglabāt"
 msgid "Account"
 msgstr "Konta"
 
-#: js/components/AccessUsers.vue:476
-#: js/components/AccessUsers.vue:483
+#: js/components/AccessUsers.vue:476 js/components/AccessUsers.vue:483
 msgid "Assigned frontend roles"
 msgstr "Piešķirtās lietotāja saskarnes lomas"
 
@@ -172,13 +144,23 @@ msgstr "Pēc pasūtījuma"
 msgid "Available roles"
 msgstr "Pieejamās lomas"
 
-#: js/components/AccessUsers.vue:518
-#: js/components/ElementListItems.vue:913
-#: js/components/FileListItems.vue:997
-#: js/components/PageListItems.vue:1917
-#: js/views/AccessList.vue:314
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
+#: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1948
+#: js/views/AccessList.vue:320
 msgid "No entries found"
 msgstr "Nav atrasts neviens ieraksts"
+
+#: js/components/ActionMenu.vue:26
+msgid "Actions"
+msgstr "Darbības"
+
+#: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
+#: js/components/ChatDialog.vue:338 js/components/ChatDialog.vue:339
+#: js/components/Dialog.vue:45 js/components/FieldsAside.vue:186
+#: js/components/FileDetailItemImage.vue:757
+#: js/components/FileDetailItemImage.vue:811 js/components/UnsavedDialog.vue:39
+msgid "Close"
+msgstr "Aizvērt"
 
 #: js/components/AsideCount.vue:65
 msgid "Used elements"
@@ -188,9 +170,8 @@ msgstr "Izmantotie elementi"
 msgid "Filters"
 msgstr "Filtri"
 
-#: js/components/AsideList.vue:76
-#: js/components/Fields.vue:326
-#: js/components/Fields.vue:357
+#: js/components/AsideList.vue:76 js/components/Fields.vue:326
+#: js/components/Fields.vue:359
 msgid "Reset"
 msgstr "Atiestatīt"
 
@@ -198,25 +179,14 @@ msgstr "Atiestatīt"
 msgid "id"
 msgstr "id"
 
-#: js/components/AsideMeta.vue:25
-#: js/components/ListSort.vue:28
-#: js/fields/Audio.vue:147
-#: js/fields/File.vue:442
-#: js/fields/Image.vue:204
-#: js/fields/Media.vue:199
-#: js/fields/Video.vue:147
+#: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
+#: js/fields/File.vue:502
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29
-#: js/fields/Audio.vue:151
-#: js/fields/File.vue:446
-#: js/fields/Image.vue:208
-#: js/fields/Media.vue:203
-#: js/fields/Video.vue:151
-#: js/views/ElementList.vue:111
-#: js/views/FileList.vue:110
-#: js/views/PageList.vue:178
+#: js/components/AsideMeta.vue:29 js/fields/File.vue:506
+#: js/views/ElementList.vue:140 js/views/FileList.vue:139
+#: js/views/PageList.vue:182
 msgid "editor"
 msgstr "redaktors"
 
@@ -224,12 +194,7 @@ msgstr "redaktors"
 msgid "created"
 msgstr "izveidots"
 
-#: js/components/AsideMeta.vue:39
-#: js/fields/Audio.vue:155
-#: js/fields/File.vue:450
-#: js/fields/Image.vue:212
-#: js/fields/Media.vue:207
-#: js/fields/Video.vue:155
+#: js/components/AsideMeta.vue:39 js/fields/File.vue:510
 msgid "updated"
 msgstr "atjaunināts"
 
@@ -237,15 +202,13 @@ msgstr "atjaunināts"
 msgid "deleted"
 msgstr "dzēsts"
 
-#: js/components/AsideMeta.vue:57
-#: js/components/AsideMeta.vue:59
-#: js/components/HistoryDialog.vue:38
+#: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
+#: js/components/HistoryDialog.vue:39
 msgid "Meta data"
 msgstr "Meta dati"
 
-#: js/components/ChangesDialog.vue:54
-#: js/components/ChangesDialog.vue:55
-#: js/components/HistoryDialog.vue:37
+#: js/components/ChangesDialog.vue:54 js/components/ChangesDialog.vue:55
+#: js/components/HistoryDialog.vue:39
 msgid "Fields"
 msgstr "Lauki"
 
@@ -253,14 +216,12 @@ msgstr "Lauki"
 msgid "Meta tags"
 msgstr "Metatagi"
 
-#: js/components/ChangesDialog.vue:57
-#: js/components/HistoryDialog.vue:39
+#: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:40
 msgid "Configuration"
 msgstr "Konfigurācija"
 
-#: js/components/ChangesDialog.vue:58
-#: js/components/HistoryDialog.vue:40
-#: js/views/PageDetail.vue:816
+#: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
+#: js/views/PageDetail.vue:832
 msgid "Content"
 msgstr "Saturs"
 
@@ -276,67 +237,19 @@ msgstr "Konflikti no „%{editor}“"
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:322
-#: js/components/ChatDialog.vue:300
-#: js/components/ChatDialog.vue:301
-#: js/components/EditBulkDialog.vue:60
-#: js/components/ElementListItems.vue:709
-#: js/components/ElementListItems.vue:821
-#: js/components/Fields.vue:289
-#: js/components/FieldsDialog.vue:63
-#: js/components/FileAiDialog.vue:263
-#: js/components/FileDetailItemImage.vue:664
-#: js/components/FileDetailItemImage.vue:772
-#: js/components/FileDetailItemImage.vue:826
-#: js/components/FileDetailItemImage.vue:911
-#: js/components/FileDetailItemImage.vue:1017
-#: js/components/FileDialog.vue:37
-#: js/components/FileListItems.vue:695
-#: js/components/FileListItems.vue:836
-#: js/components/FileUrlDialog.vue:204
-#: js/components/HistoryDialog.vue:473
-#: js/components/PageBulkDialog.vue:142
-#: js/components/PageDetailContentList.vue:889
-#: js/components/PageListItems.vue:1557
-#: js/components/PageListItems.vue:1725
-#: js/components/PageListItems.vue:1942
-#: js/components/SchemaDialog.vue:38
-#: js/components/UnsavedDialog.vue:39
-#: js/components/User.vue:121
-#: js/fields/Items.vue:382
-#: js/fields/Items.vue:466
-#: js/fields/Table.vue:212
-#: js/fields/Table.vue:307
-#: js/views/AccessList.vue:334
-#: js/views/AccessList.vue:366
-msgid "Close"
-msgstr "Aizvērt"
-
-#: js/components/ChangesDialog.vue:344
-#: js/components/HistoryDialog.vue:624
+#: js/components/ChangesDialog.vue:344 js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr "Atgriezt"
 
-#: js/components/ChangesDialog.vue:347
-#: js/components/ChangesDialog.vue:374
+#: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
 msgid "Changes"
 msgstr "Izmaiņas"
 
 #: js/components/ChangesDialog.vue:396
-#: js/components/HistoryDialog.vue:340
-#: js/components/HistoryDialog.vue:524
-#: js/components/HistoryDialog.vue:555
-#: js/components/HistoryDialog.vue:688
-#: js/components/HistoryDialog.vue:719
 msgid "Removed"
 msgstr "Noņemts"
 
 #: js/components/ChangesDialog.vue:403
-#: js/components/HistoryDialog.vue:139
-#: js/components/HistoryDialog.vue:532
-#: js/components/HistoryDialog.vue:563
-#: js/components/HistoryDialog.vue:696
-#: js/components/HistoryDialog.vue:727
 msgid "Added"
 msgstr "Pievienots"
 
@@ -352,361 +265,295 @@ msgstr "Paturi manējo"
 msgid "Merge both"
 msgstr "Apvienot abus"
 
-#: js/components/ChatDialog.vue:231
+#: js/components/ChatDialog.vue:267
 msgid "Done"
 msgstr "Gatavs"
 
-#: js/components/ChatDialog.vue:239
+#: js/components/ChatDialog.vue:275
 msgid "Sorry, something went wrong."
 msgstr "Atvainojiet, kaut kas nogāja greizi."
 
-#: js/components/ChatDialog.vue:288
+#: js/components/ChatDialog.vue:326
 msgid "AI Assistant"
 msgstr "AI palīgs"
 
-#: js/components/ChatDialog.vue:292
-#: js/components/ChatDialog.vue:293
+#: js/components/ChatDialog.vue:330 js/components/ChatDialog.vue:331
 msgid "New chat"
 msgstr "Jauna tērzēšana"
 
-#: js/components/ChatDialog.vue:312
-#: js/views/PageList.vue:284
+#: js/components/ChatDialog.vue:350 js/views/ElementList.vue:251
+#: js/views/FileList.vue:250 js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr "Kā varu jums palīdzēt?"
 
-#: js/components/ChatDialog.vue:334
-#: js/components/PageDetailContentList.vue:791
-#: js/components/PageDetailContentList.vue:897
-#: js/components/PageListItems.vue:1764
-#: js/fields/Items.vue:390
+#: js/components/ChatDialog.vue:377 js/components/PageDetailContentList.vue:798
+#: js/components/PageDetailContentList.vue:886
+#: js/components/PageListItems.vue:1800 js/fields/Items.vue:373
 msgid "Copy"
 msgstr "Kopēt"
 
-#: js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:390
 msgid "Send a message ..."
 msgstr "Nosūtīt ziņu..."
 
-#: js/components/ChatDialog.vue:363
-#: js/components/ChatDialog.vue:364
-#: js/components/Fields.vue:319
-#: js/components/FileAiDialog.vue:260
-#: js/components/FileDetailItem.vue:481
-#: js/components/PageDetailContentList.vue:761
-#: js/fields/Items.vue:496
-#: js/views/PageList.vue:316
+#: js/components/ChatDialog.vue:405 js/components/ChatDialog.vue:406
+#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:250
+#: js/components/FileDetailItem.vue:483
+#: js/components/PageDetailContentList.vue:768 js/fields/Items.vue:460
+#: js/views/ElementList.vue:283 js/views/FileList.vue:282
+#: js/views/PageList.vue:320
 msgid "Dictate"
 msgstr "Diktēt"
 
-#: js/components/ChatDialog.vue:374
-#: js/components/ChatDialog.vue:375
+#: js/components/ChatDialog.vue:416 js/components/ChatDialog.vue:417
 msgid "Stop"
 msgstr "Stop"
 
-#: js/components/ChatDialog.vue:384
-#: js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:426 js/components/ChatDialog.vue:427
+#: js/views/ElementList.vue:276 js/views/FileList.vue:275
 msgid "Send"
 msgstr "Sūtīt"
 
-#: js/components/DetailAppBar.vue:116
-#: js/views/AccessList.vue:227
-#: js/views/ElementList.vue:135
-#: js/views/FileList.vue:134
-#: js/views/PageList.vue:251
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:751
+#: js/components/ElementListItems.vue:858 js/components/FileListItems.vue:729
+#: js/components/FileListItems.vue:865 js/components/PageListItems.vue:1655
+#: js/components/PageListItems.vue:1893 js/views/AccessList.vue:274
+msgid "Purge"
+msgstr "Dzēst neatgriezeniski"
+
+#: js/components/ConfirmDialog.vue:34
+msgid "The following entry will be permanently deleted and cannot be restored:"
+msgid_plural ""
+"The following %{num} entries will be permanently deleted and cannot be "
+"restored:"
+msgstr[0] ""
+"Šis %{num} ieraksts tiks neatgriezeniski dzēsts, un to nevarēs atjaunot:"
+msgstr[1] ""
+"Šie %{num} ieraksti tiks neatgriezeniski dzēsti, un tos nevarēs atjaunot:"
+msgstr[2] ""
+"Šie %{num} ieraksti tiks neatgriezeniski dzēsti, un tos nevarēs atjaunot:"
+
+#: js/components/ConfirmDialog.vue:48 js/components/ElementListItems.vue:876
+#: js/components/PageListItems.vue:892 js/components/PageListItems.vue:1921
+msgid "New"
+msgstr "Jauns"
+
+#: js/components/ConfirmDialog.vue:56 js/components/FileDetailItemImage.vue:640
+#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:341
+msgid "Cancel"
+msgstr "Atcelt"
+
+#: js/components/ConfirmDialog.vue:58
+msgid "Confirm"
+msgstr "Apstiprināt"
+
+#: js/components/DetailAppBar.vue:112 js/views/AccessList.vue:226
+#: js/views/ElementList.vue:218 js/views/FileList.vue:217
+#: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "Izvēlne"
 
-#: js/components/DetailAppBar.vue:120
+#: js/components/DetailAppBar.vue:116
 msgid "Back to list view"
 msgstr "Atgriezties pie saraksta skata"
 
-#: js/components/DetailAppBar.vue:136
+#: js/components/DetailAppBar.vue:132
 msgid "View history"
 msgstr "Skatīt vēsturi"
 
-#: js/components/DetailAppBar.vue:145
+#: js/components/DetailAppBar.vue:141
 msgid "View merge changes"
 msgstr "Skatīt apvienošanas izmaiņas"
 
-#: js/components/DetailAppBar.vue:188 js/components/DetailAppBar.vue:214
-msgid "Schedule"
-msgstr "Ieplānot"
-
-#: js/components/DetailAppBar.vue:167 js/components/DetailAppBar.vue:183
-#: js/components/ElementListItems.vue:715
-#: js/components/ElementListItems.vue:829
-#: js/components/FileListItems.vue:701
-#: js/components/FileListItems.vue:842
-#: js/components/PageListItems.vue:1563
-#: js/components/PageListItems.vue:1733
+#: js/components/DetailAppBar.vue:163 js/components/DetailAppBar.vue:179
+#: js/components/ElementListItems.vue:731
+#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:709
+#: js/components/FileListItems.vue:835 js/components/PageListItems.vue:1611
+#: js/components/PageListItems.vue:1756
 msgid "Publish"
 msgstr "Publicēt"
 
-#: js/components/DetailAppBar.vue:218
-#: js/views/ElementList.vue:153
-#: js/views/FileList.vue:152
-#: js/views/PageList.vue:269
+#: js/components/DetailAppBar.vue:182
+msgid "Publish & Close"
+msgstr ""
+
+#: js/components/DetailAppBar.vue:187 js/components/DetailAppBar.vue:213
+msgid "Schedule"
+msgstr "Ieplānot"
+
+#: js/components/DetailAppBar.vue:222
+msgid "Schedule & Close"
+msgstr ""
+
+#: js/components/DetailAppBar.vue:230 js/views/ElementList.vue:236
+#: js/views/FileList.vue:235 js/views/PageList.vue:273
+#: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "Pārslēgt sānu izvēlni"
 
-#: js/components/EditBulkDialog.vue:52
-#: js/components/EditBulkDialog.vue:59
-#: js/components/ElementListItems.vue:720
-#: js/components/ElementListItems.vue:844
-#: js/components/FileListItems.vue:706
-#: js/components/FileListItems.vue:857
-#: js/components/PageBulkDialog.vue:134
-#: js/components/PageBulkDialog.vue:141
-#: js/components/PageListItems.vue:1578
-#: js/components/PageListItems.vue:1741
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:736
+#: js/components/ElementListItems.vue:840 js/components/FileListItems.vue:714
+#: js/components/FileListItems.vue:847 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1627 js/components/PageListItems.vue:1777
 msgid "Edit properties"
 msgstr "Rediģēt īpašības"
 
-#: js/components/EditBulkDialog.vue:65
+#: js/components/EditBulkDialog.vue:63
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Lietojiet atlasītos rekvizītus %{num} ierakstam."
 msgstr[1] "Lietojiet atlasītos rekvizītus %{num} ierakstiem."
 msgstr[2] "Lietojiet atlasītos rekvizītus %{num} ierakstiem."
 
-#: js/components/EditBulkDialog.vue:72
-#: js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:402
-#: js/components/ListSort.vue:25
-#: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:254
-#: js/components/User.vue:108
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language"
 msgstr "Valoda"
 
-#: js/components/EditBulkDialog.vue:85
-#: js/components/PageAccess.vue:200
-#: js/components/PageBulkDialog.vue:250
+#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
+#: js/components/PageBulkDialog.vue:268
 msgid "Apply"
 msgstr "Lietot"
 
 #: js/components/ElementDetailItem.vue:75
-#: js/components/ElementDetailRefs.vue:148
-#: js/components/FileDetailItem.vue:389
-#: js/components/FileDetailRefs.vue:152
-#: js/components/FileDetailRefs.vue:182
-#: js/components/ListSort.vue:29
+#: js/components/ElementDetailRefs.vue:148 js/components/FileDetailItem.vue:391
+#: js/components/FileDetailRefs.vue:152 js/components/FileDetailRefs.vue:182
+#: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "Nosaukums"
 
-#: js/components/ElementDetailRefs.vue:63
-#: js/components/FileDetailRefs.vue:66
+#: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
 msgstr "jā"
 
-#: js/components/ElementDetailRefs.vue:66
-#: js/components/FileDetailRefs.vue:69
+#: js/components/ElementDetailRefs.vue:66 js/components/FileDetailRefs.vue:69
 msgid "no"
 msgstr "nē"
 
-#: js/components/ElementDetailRefs.vue:141
-#: js/components/Navigation.vue:26
-#: js/components/SchemaDialog.vue:45
-#: js/routes.js:59
-#: js/views/ElementList.vue:145
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:24
+#: js/components/SchemaDialog.vue:38 js/views/ElementList.vue:228
 msgid "Shared elements"
 msgstr "Koplietojamie elementi"
 
 #: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176
-#: js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180
-#: js/components/FileDetailRefs.vue:202
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
 msgid "ID"
 msgstr "ID"
 
-#: js/components/ElementDetailRefs.vue:147
-#: js/components/FileDetailRefs.vue:151
+#: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "URL"
 
-#: js/components/ElementDetailRefs.vue:160
-#: js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:173
-#: js/components/PageListItems.vue:416
+#: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:440
 msgid "Restricted"
 msgstr "Ierobežots"
 
-#: js/components/ElementDetailRefs.vue:171
-#: js/components/FileDetailRefs.vue:197
+#: js/components/ElementDetailRefs.vue:171 js/components/FileDetailRefs.vue:197
 msgid "Versions"
 msgstr "Versijas"
 
-#: js/components/ElementDetailRefs.vue:177
-#: js/components/FileDetailRefs.vue:181
-#: js/components/FileDetailRefs.vue:203
-#: js/components/ListSort.vue:33
+#: js/components/ElementDetailRefs.vue:177 js/components/FileDetailRefs.vue:181
+#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:36
 msgid "Type"
 msgstr "Tips"
 
-#: js/components/ElementDetailRefs.vue:178
-#: js/components/FileDetailRefs.vue:204
-#: js/views/ElementList.vue:95
-#: js/views/FileList.vue:94
-#: js/views/PageList.vue:144
+#: js/components/ElementDetailRefs.vue:178 js/components/FileDetailRefs.vue:204
+#: js/views/ElementList.vue:124 js/views/FileList.vue:123
+#: js/views/PageList.vue:148
 msgid "Published"
 msgstr "Publicēts"
 
-#: js/components/ElementListItems.vue:314
+#: js/components/ElementListItems.vue:317
 msgid "Error trashing shared element"
 msgstr "Kļūda, pārvietojot koplietojamo elementu uz atkritni"
 
-#: js/components/ElementListItems.vue:403
+#: js/components/ElementListItems.vue:454
 msgid "Error restoring shared element"
 msgstr "Kļūda koplietojamā elementa atjaunošanā"
 
-#: js/components/ElementListItems.vue:443
+#: js/components/ElementListItems.vue:494
 msgid "Error publishing shared element"
 msgstr "Kļūda koplietojamā elementa publicēšanā"
 
-#: js/components/ElementListItems.vue:478
+#: js/components/ElementListItems.vue:532
 msgid "Error purging shared element"
 msgstr "Kļūda, neatgriezeniski dzēšot koplietojamo elementu"
 
-#: js/components/ElementListItems.vue:530
+#: js/components/ElementListItems.vue:583
 msgid "Error saving shared element"
 msgstr "Saglabājot koplietoto elementu, radās kļūda"
 
-#: js/components/ElementListItems.vue:614
+#: js/components/ElementListItems.vue:640
 msgid "Error fetching shared elements"
 msgstr "Kļūda kopīgo elementu iegūšanā"
 
-#: js/components/ElementListItems.vue:686
-#: js/components/FileListItems.vue:672
-#: js/components/PageDetailContentList.vue:777
-#: js/components/PageListItems.vue:1535
-#: js/views/AccessList.vue:263
-#: js/views/AccessList.vue:307
+#: js/components/ElementListItems.vue:715 js/components/FileListItems.vue:693
+#: js/components/PageDetailContentList.vue:784
+#: js/components/PageListItems.vue:1595 js/views/AccessList.vue:269
+#: js/views/AccessList.vue:313
 msgid "Toggle selection"
 msgstr "Pārslēgt atlasi"
 
-#: js/components/ElementListItems.vue:691
-#: js/components/ElementListItems.vue:701
-#: js/components/ElementListItems.vue:708
-#: js/components/ElementListItems.vue:804
-#: js/components/ElementListItems.vue:813
-#: js/components/ElementListItems.vue:820
-#: js/components/FileListItems.vue:677
-#: js/components/FileListItems.vue:687
-#: js/components/FileListItems.vue:694
-#: js/components/FileListItems.vue:818
-#: js/components/FileListItems.vue:827
-#: js/components/FileListItems.vue:835
-#: js/components/PageDetailContentList.vue:785
-#: js/components/PageDetailContentList.vue:868
-#: js/components/PageDetailContentList.vue:878
-#: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1549
-#: js/components/PageListItems.vue:1556
-#: js/components/PageListItems.vue:1714
-#: js/components/PageListItems.vue:1722
-#: js/fields/Items.vue:362
-#: js/fields/Items.vue:371
-#: js/fields/Items.vue:379
-#: js/fields/Table.vue:201
-#: js/fields/Table.vue:209
-#: js/fields/Table.vue:296
-#: js/fields/Table.vue:304
-msgid "Actions"
-msgstr "Darbības"
-
-#: js/components/ElementListItems.vue:725
-#: js/components/ElementListItems.vue:852
-#: js/components/FileListItems.vue:711
-#: js/components/FileListItems.vue:865
-#: js/components/PageDetailContentList.vue:811
-#: js/components/PageDetailContentList.vue:907
-#: js/components/PageListItems.vue:1591
-#: js/components/PageListItems.vue:1847
-#: js/fields/Items.vue:400
-#: js/fields/Table.vue:236
-#: js/fields/Table.vue:331
-#: js/views/AccessList.vue:268
-#: js/views/AccessList.vue:382
+#: js/components/ElementListItems.vue:741
+#: js/components/ElementListItems.vue:848 js/components/FileListItems.vue:719
+#: js/components/FileListItems.vue:855
+#: js/components/PageDetailContentList.vue:818
+#: js/components/PageDetailContentList.vue:896
+#: js/components/PageListItems.vue:1645 js/components/PageListItems.vue:1883
+#: js/fields/Items.vue:383 js/fields/Table.vue:213 js/fields/Table.vue:283
 msgid "Delete"
 msgstr "Dzēst"
 
-#: js/components/ElementListItems.vue:730
-#: js/components/ElementListItems.vue:857
-#: js/components/FileListItems.vue:716
-#: js/components/FileListItems.vue:870
-#: js/components/PageListItems.vue:1596
-#: js/components/PageListItems.vue:1852
+#: js/components/ElementListItems.vue:746
+#: js/components/ElementListItems.vue:853 js/components/FileListItems.vue:724
+#: js/components/FileListItems.vue:860 js/components/PageListItems.vue:1650
+#: js/components/PageListItems.vue:1888
 msgid "Restore"
 msgstr "Atjaunot"
 
-#: js/components/ElementListItems.vue:735
-#: js/components/ElementListItems.vue:862
-#: js/components/FileListItems.vue:721
-#: js/components/FileListItems.vue:875
-#: js/components/PageListItems.vue:1601
-#: js/components/PageListItems.vue:1857
-msgid "Purge"
-msgstr "Dzēst neatgriezeniski"
-
-#: js/components/ElementListItems.vue:746
-#: js/components/ElementListItems.vue:921
-#: js/components/PageDetailContentList.vue:1008
-#: js/components/PageDetailItemSection.vue:212
-#: js/fields/Items.vue:533
+#: js/components/ElementListItems.vue:760
+#: js/components/ElementListItems.vue:904
+#: js/components/PageDetailContentList.vue:996
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:500
 msgid "Add element"
 msgstr "Pievienot elementu"
 
-#: js/components/ElementListItems.vue:760
-#: js/components/FileListItems.vue:757
-#: js/components/PageDetailContentList.vue:821
-#: js/components/PageListItems.vue:1624
-#: js/views/AccessList.vue:292
+#: js/components/ElementListItems.vue:774 js/components/FileListItems.vue:763
+#: js/components/PageDetailContentList.vue:827
+#: js/components/PageListItems.vue:1676 js/views/AccessList.vue:298
 msgid "Search for"
 msgstr "Meklēt"
 
-#: js/components/ElementListItems.vue:771
-#: js/components/FileListItems.vue:770
-#: js/components/PageListItems.vue:1636
+#: js/components/ElementListItems.vue:785 js/components/FileListItems.vue:776
 msgid "Updated by another user"
 msgstr "Atjaunināja cits lietotājs"
 
-#: js/components/ElementListItems.vue:777
-#: js/components/FileListItems.vue:776
-#: js/components/PageListItems.vue:1642
+#: js/components/ElementListItems.vue:791 js/components/FileListItems.vue:782
+#: js/components/PageListItems.vue:1693
 msgid "Refresh"
 msgstr "Atsvaidzināt"
 
-#: js/components/ElementListItems.vue:781
+#: js/components/ElementListItems.vue:796
 msgid "Reload elements"
 msgstr "Atjaunot elementus"
 
-#: js/components/ElementListItems.vue:882
-#: js/components/PageListItems.vue:850
-#: js/components/PageListItems.vue:1887
-msgid "New"
-msgstr "Jauns"
-
-#: js/components/ElementListItems.vue:898
-#: js/components/FileListItems.vue:981
-#: js/components/HistoryDialog.vue:479
-#: js/components/PageListItems.vue:1901
-#: js/fields/Autocomplete.vue:181
-#: js/fields/Combobox.vue:27
-#: js/fields/Url.vue:135
+#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:969
+#: js/components/HistoryDialog.vue:200 js/components/PageListItems.vue:1943
+#: js/fields/Autocomplete.vue:188 js/fields/Combobox.vue:27
+#: js/fields/Url.vue:164
 msgid "Loading"
 msgstr "Iekraušana"
 
-#: js/components/Fields.vue:270
-#: js/components/Fields.vue:279
-#: js/components/Fields.vue:288
-#: js/fields/Items.vue:445
-#: js/fields/Items.vue:454
-#: js/fields/Items.vue:463
+#: js/components/Fields.vue:282 js/components/Fields.vue:288
+#: js/fields/Items.vue:425 js/fields/Items.vue:431
 msgid "Translate"
 msgstr "Tulkot"
 
-#: js/components/Fields.vue:307
-#: js/fields/Items.vue:485
+#: js/components/Fields.vue:307 js/fields/Items.vue:449
 msgid "Generate text"
 msgstr "Ģenerēt tekstu"
 
@@ -718,513 +565,652 @@ msgstr "Atjaunināts cits redaktors"
 msgid "Overwritten"
 msgstr "Pārrakstīts"
 
-#: js/components/FieldsDialog.vue:49
-#: js/components/FieldsDialog.vue:57
+#: js/components/FieldsAside.vue:86
+msgid "Mobile"
+msgstr ""
+
+#: js/components/FieldsAside.vue:87
+msgid "Tablet"
+msgstr ""
+
+#: js/components/FieldsAside.vue:88
+msgid "Computer"
+msgstr ""
+
+#: js/components/FieldsAside.vue:88
+msgid "Full width"
+msgstr ""
+
+#: js/components/FieldsAside.vue:179
 msgid "Content Element"
 msgstr "Satura elements"
 
-#: js/components/FileAiDialog.vue:142
-#: js/components/FileListItems.vue:276
-#: js/components/FileUrlDialog.vue:68
-#: js/components/FileUrlDialog.vue:168
-#: js/fields/File.vue:136
-#: js/fields/Images.vue:166
-msgid "Error adding file %{path}"
-msgstr "Kļūda pievienojot failu %{path}"
+#: js/components/FieldsAside.vue:192
+msgid "Add element before"
+msgstr "Pievienot elementu pirms"
 
-#: js/components/FileAiDialog.vue:191
-msgid "Error creating file"
-msgstr "Kļūda, veidojot failu"
+#: js/components/FieldsAside.vue:200
+msgid "Add element after"
+msgstr "Pievienot elementu pēc"
 
-#: js/components/FileAiDialog.vue:246
-#: js/components/FileAiDialog.vue:254
-msgid "Create image"
-msgstr "Izveidot attēlu"
+#: js/components/FieldsAside.vue:208
+msgid "Remove element"
+msgstr "Elementa noņemšana"
 
-#: js/components/FileAiDialog.vue:268
-msgid "Describe the image content"
-msgstr "Aprakstiet attēla saturu"
+#: js/components/FieldsAside.vue:216
+msgid "Responsive preview"
+msgstr ""
 
-#: js/components/FileAiDialog.vue:281
-msgid "New image"
-msgstr "Jauns attēls"
+#: js/components/FieldsAside.vue:248
+#: js/components/PageDetailContentList.vue:939
+msgid "Change to"
+msgstr "Mainīt uz"
 
-#: js/components/FileAiDialog.vue:286
-msgid "Current images"
-msgstr "Pašreizējie attēli"
+#: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
+#: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
+#: js/fields/Images.vue:383
+msgid "Edit"
+msgstr "Rediģēt"
 
-#: js/components/FileAiDialog.vue:292
-#: js/components/FileAiDialog.vue:321
-#: js/components/FileUrlDialog.vue:244
-#: js/fields/Audio.vue:88
-#: js/fields/File.vue:383
-#: js/fields/Image.vue:137
-#: js/fields/Images.vue:415
-#: js/fields/Media.vue:146
-#: js/fields/Video.vue:88
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:238
 msgid "Remove"
 msgstr "Noņemt"
 
-#: js/components/FileAiDialog.vue:313
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:271
+#: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
+#: js/fields/File.vue:166 js/fields/Images.vue:146
+msgid "Error adding file %{path}"
+msgstr "Kļūda pievienojot failu %{path}"
+
+#: js/components/FileAiDialog.vue:182
+msgid "Error creating file"
+msgstr "Kļūda, veidojot failu"
+
+#: js/components/FileAiDialog.vue:238
+msgid "Create image"
+msgstr "Izveidot attēlu"
+
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the image content"
+msgstr "Aprakstiet attēla saturu"
+
+#: js/components/FileAiDialog.vue:264
+msgid "New image"
+msgstr "Jauns attēls"
+
+#: js/components/FileAiDialog.vue:268
+msgid "Current images"
+msgstr "Pašreizējie attēli"
+
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr "Izmantotie attēli"
 
-#: js/components/FileAiDialog.vue:332
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr "Atlasiet attēlus"
 
-#: js/components/FileDetailItem.vue:111
+#: js/components/FileDetailItem.vue:112
 msgid "Copied to clipboard"
 msgstr "Kopēts uz starpliktuvi"
 
-#: js/components/FileDetailItem.vue:142
+#: js/components/FileDetailItem.vue:143
 msgid "Error describing file"
 msgstr "Kļūda, aprakstot failu"
 
-#: js/components/FileDetailItem.vue:221
-#: js/components/FileListItems.vue:527
-#: js/fields/File.vue:266
-#: js/fields/Images.vue:305
-#: js/views/FileDetail.vue:322
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:572
+#: js/fields/File.vue:300 js/fields/Images.vue:296 js/views/FileDetail.vue:325
 msgid "Error saving file"
 msgstr "Kļūda, saglabājot failu"
 
-#: js/components/FileDetailItem.vue:237
+#: js/components/FileDetailItem.vue:239
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripcija ir pieejama tikai audio un video failiem."
 
-#: js/components/FileDetailItem.vue:412
+#: js/components/FileDetailItem.vue:414
 msgid "Copy URL"
 msgstr "Kopēt URL"
 
-#: js/components/FileDetailItem.vue:455
+#: js/components/FileDetailItem.vue:457
 msgid "Descriptions"
 msgstr "Apraksti"
 
-#: js/components/FileDetailItem.vue:463
-#: js/components/FileDetailItem.vue:522
+#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
 msgid "Translate text"
 msgstr "Tulkot tekstu"
 
-#: js/components/FileDetailItem.vue:471
+#: js/components/FileDetailItem.vue:473
 msgid "Generate description"
 msgstr "Izveidot aprakstu"
 
-#: js/components/FileDetailItem.vue:498
+#: js/components/FileDetailItem.vue:500
 msgid "Description (%{lang})"
 msgstr "Apraksts (%{lang})"
 
-#: js/components/FileDetailItem.vue:514
+#: js/components/FileDetailItem.vue:516
 msgid "Transcriptions"
 msgstr "Transkripcijas"
 
-#: js/components/FileDetailItem.vue:530
+#: js/components/FileDetailItem.vue:532
 msgid "Transcribe file content"
 msgstr "Failu satura transkripcija"
 
-#: js/components/FileDetailItem.vue:548
+#: js/components/FileDetailItem.vue:550
 msgid "Transcription (%{lang})"
 msgstr "Transkripcija (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:219
+#: js/components/FileDetailItemImage.vue:222
 msgid "Error erasing image part"
 msgstr "Kļūda, dzēšot attēla daļu"
 
-#: js/components/FileDetailItemImage.vue:326
+#: js/components/FileDetailItemImage.vue:329
 msgid "Error editing image part"
 msgstr "Kļūda, rediģējot attēla daļu"
 
-#: js/components/FileDetailItemImage.vue:348
+#: js/components/FileDetailItemImage.vue:351
 msgid "Error removing background"
 msgstr "Kļūda, noņemot fonu"
 
-#: js/components/FileDetailItemImage.vue:454
+#: js/components/FileDetailItemImage.vue:457
 msgid "Error editing image"
 msgstr "Kļūda, rediģējot attēlu"
 
-#: js/components/FileDetailItemImage.vue:541
+#: js/components/FileDetailItemImage.vue:544
 msgid "Error uncropping image"
 msgstr "Kļūda, paplašinot attēlu"
 
-#: js/components/FileDetailItemImage.vue:586
+#: js/components/FileDetailItemImage.vue:589
 msgid "Error upscaling image"
 msgstr "Kļūda, palielinot attēla izšķirtspēju"
 
-#: js/components/FileDetailItemImage.vue:637
-#: js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:349
-#: js/views/AccessList.vue:380
-msgid "Cancel"
-msgstr "Atcelt"
-
-#: js/components/FileDetailItemImage.vue:644
-#: js/components/FileDetailItemImage.vue:653
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:646
+#: js/components/FileDetailItemImage.vue:651
 msgid "Select area"
 msgstr "Izvēlieties apgabalu"
 
-#: js/components/FileDetailItemImage.vue:676
+#: js/components/FileDetailItemImage.vue:663
 msgid "Original ratio"
 msgstr "Sākotnējā attiecība"
 
-#: js/components/FileDetailItemImage.vue:685
+#: js/components/FileDetailItemImage.vue:672
 msgid "No ratio"
 msgstr "Nav attiecība"
 
-#: js/components/FileDetailItemImage.vue:690
+#: js/components/FileDetailItemImage.vue:677
 msgid "Square"
 msgstr "Kvadrāts"
 
-#: js/components/FileDetailItemImage.vue:736
+#: js/components/FileDetailItemImage.vue:721
 msgid "Crop selected area"
 msgstr "Apgriezt atlasīto apgabalu"
 
-#: js/components/FileDetailItemImage.vue:746
+#: js/components/FileDetailItemImage.vue:731
 msgid "Erase selected area"
 msgstr "Izdzēst atlasīto apgabalu"
 
-#: js/components/FileDetailItemImage.vue:761
-#: js/components/FileDetailItemImage.vue:769
-#: js/components/FileDetailItemImage.vue:790
+#: js/components/FileDetailItemImage.vue:746
+#: js/components/FileDetailItemImage.vue:754
+#: js/components/FileDetailItemImage.vue:775
 msgid "Edit image"
 msgstr "Rediģēt attēlu"
 
-#: js/components/FileDetailItemImage.vue:780
+#: js/components/FileDetailItemImage.vue:765
 msgid "Describe the changes"
 msgstr "Aprakstiet izmaiņas"
 
-#: js/components/FileDetailItemImage.vue:799
+#: js/components/FileDetailItemImage.vue:784
 msgid "Remove background"
 msgstr "Fona noņemšana"
 
-#: js/components/FileDetailItemImage.vue:815
-#: js/components/FileDetailItemImage.vue:823
-#: js/components/FileDetailItemImage.vue:881
+#: js/components/FileDetailItemImage.vue:800
+#: js/components/FileDetailItemImage.vue:808
+#: js/components/FileDetailItemImage.vue:866
 msgid "Expand image"
 msgstr "Izvērst attēlu"
 
-#: js/components/FileDetailItemImage.vue:838
+#: js/components/FileDetailItemImage.vue:823
 msgid "Top"
 msgstr "Augšā"
 
-#: js/components/FileDetailItemImage.vue:850
+#: js/components/FileDetailItemImage.vue:835
 msgid "Left"
 msgstr "Kreisā"
 
-#: js/components/FileDetailItemImage.vue:860
+#: js/components/FileDetailItemImage.vue:845
 msgid "Right"
 msgstr "Pa labi"
 
-#: js/components/FileDetailItemImage.vue:872
+#: js/components/FileDetailItemImage.vue:857
 msgid "Bottom"
 msgstr "Apakšējā daļa"
 
-#: js/components/FileDetailItemImage.vue:889
-msgid "Upscale"
-msgstr "Palielināt izšķirtspēju"
-
-#: js/components/FileDetailItemImage.vue:900
-#: js/components/FileDetailItemImage.vue:908
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:880
 msgid "Upscale image"
 msgstr "Palielināt attēla izšķirtspēju"
 
-#: js/components/FileDetailItemImage.vue:924
-#: js/components/FileDetailItemImage.vue:934
-#: js/components/FileDetailItemImage.vue:944
-#: js/components/FileDetailItemImage.vue:954
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
+#: js/components/FileDetailItemImage.vue:913
+#: js/components/FileDetailItemImage.vue:923
 msgid "Scale %{factor}"
 msgstr "Mērogs %{factor}"
 
-#: js/components/FileDetailItemImage.vue:965
+#: js/components/FileDetailItemImage.vue:932
 msgid "Rotate counter-clockwise"
 msgstr "Pagrieziet pretēji pulksteņrādītāja rādītāja virzienam"
 
-#: js/components/FileDetailItemImage.vue:971
+#: js/components/FileDetailItemImage.vue:938
 msgid "Rotate clockwise"
 msgstr "Pagrieziet pulksteņrādītāja rādītāja virzienā"
 
-#: js/components/FileDetailItemImage.vue:978
+#: js/components/FileDetailItemImage.vue:945
 msgid "Flip horizontally"
 msgstr "Flip horizontāli"
 
-#: js/components/FileDetailItemImage.vue:984
+#: js/components/FileDetailItemImage.vue:951
 msgid "Flip vertically"
 msgstr "Flip vertikāli"
 
-#: js/components/FileDetailItemImage.vue:991
+#: js/components/FileDetailItemImage.vue:958
 msgid "Convert to monochrome"
 msgstr "Pārvērst melnbaltā attēlā"
 
-#: js/components/FileDetailItemImage.vue:994
+#: js/components/FileDetailItemImage.vue:961
 msgid "Download"
 msgstr "Lejupielādēt"
 
-#: js/components/FileDetailItemImage.vue:998
-#: js/components/FileDetailItemImage.vue:1008
-#: js/components/FileDetailItemImage.vue:1016
+#: js/components/FileDetailItemImage.vue:963
+#: js/components/FileDetailItemImage.vue:968
 msgid "Undo"
 msgstr "Atcelt"
 
-#: js/components/FileDetailItemImage.vue:1024
+#: js/components/FileDetailItemImage.vue:977
 msgid "Previous edit"
 msgstr "Iepriekšējā rediģēšana"
 
-#: js/components/FileDetailItemImage.vue:1029
+#: js/components/FileDetailItemImage.vue:982
 msgid "Original"
 msgstr "Oriģināls"
 
-#: js/components/FileDetailItemVideo.vue:73
+#: js/components/FileDetailItemVideo.vue:74
 msgid "No video element found"
 msgstr "Nav atrasts neviens video elements"
 
-#: js/components/FileDetailItemVideo.vue:120
+#: js/components/FileDetailItemVideo.vue:122
 msgid "Error saving video cover"
 msgstr "Kļūda, saglabājot video vāku"
 
-#: js/components/FileDetailItemVideo.vue:161
+#: js/components/FileDetailItemVideo.vue:164
 msgid "Error removing video cover"
 msgstr "Kļūda, noņemot video vāku"
 
-#: js/components/FileDetailItemVideo.vue:177
+#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Nav atlasīts neviens fails"
 
-#: js/components/FileDetailItemVideo.vue:206
+#: js/components/FileDetailItemVideo.vue:210
 msgid "Error uploading video cover"
 msgstr "Kļūda, augšupielādējot video vāku"
 
-#: js/components/FileDetailItemVideo.vue:239
+#: js/components/FileDetailItemVideo.vue:243
 msgid "Use as cover image"
 msgstr "Izmantot kā vāka attēlu"
 
-#: js/components/FileDetailItemVideo.vue:247
+#: js/components/FileDetailItemVideo.vue:251
 msgid "Upload cover image"
 msgstr "Augšējā attēla augšupielāde"
 
-#: js/components/FileDetailRefs.vue:145
-#: js/components/Navigation.vue:21
-#: js/routes.js:39
-#: js/views/PageList.vue:261
-#: js/views/PageList.vue:278
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:22
+#: js/views/PageList.vue:265 js/views/PageList.vue:282
 msgid "Pages"
 msgstr "Lapas"
 
-#: js/components/FileDetailRefs.vue:175
-#: js/views/ElementList.vue:162
+#: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
 msgid "Elements"
 msgstr "Elementi"
 
-#: js/components/FileDialog.vue:28
-#: js/components/FileDialog.vue:36
-#: js/components/Navigation.vue:28
-#: js/routes.js:79
-#: js/views/FileList.vue:144
-#: js/views/FileList.vue:161
-msgid "Files"
-msgstr "Faili"
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
+#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:23
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "Plašsaziņas līdzekļi"
 
-#: js/components/FileListItems.vue:317
+#: js/components/FileListItems.vue:312
 msgid "Error trashing file"
 msgstr "Kļūda, pārvietojot failu uz atkritni"
 
-#: js/components/FileListItems.vue:405
+#: js/components/FileListItems.vue:448
 msgid "Error restoring file"
 msgstr "Kļūda, atjaunojot failu"
 
-#: js/components/FileListItems.vue:442
-#: js/views/FileDetail.vue:239
+#: js/components/FileListItems.vue:485 js/views/FileDetail.vue:246
 msgid "Error publishing file"
 msgstr "Kļūda publicējot failu"
 
-#: js/components/FileListItems.vue:475
+#: js/components/FileListItems.vue:521
 msgid "Error purging file"
 msgstr "Kļūda, neatgriezeniski dzēšot failu"
 
-#: js/components/FileListItems.vue:600
+#: js/components/FileListItems.vue:618
 msgid "Error fetching files"
 msgstr "Kļūda failu iegūšanā"
 
-#: js/components/FileListItems.vue:734
-#: js/components/FileListItems.vue:744
-#: js/components/FileListItems.vue:1007
-#: js/components/FileListItems.vue:1017
-#: js/components/FileUrlDialog.vue:202
-#: js/fields/Images.vue:428
-#: js/fields/Images.vue:452
+#: js/components/FileListItems.vue:740 js/components/FileListItems.vue:750
+#: js/components/FileListItems.vue:984 js/components/FileListItems.vue:994
+#: js/components/FileUrlDialog.vue:197 js/fields/Images.vue:409
+#: js/fields/Images.vue:433
 msgid "Add files"
 msgstr "Pievienot failus"
 
-#: js/components/FileListItems.vue:744
-#: js/components/FileListItems.vue:963
-#: js/components/FileListItems.vue:1017
-#: js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:750 js/components/FileListItems.vue:951
+#: js/components/FileListItems.vue:994 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Aizsargāt ar lapas piekļuvi"
 
-#: js/components/FileListItems.vue:780
+#: js/components/FileListItems.vue:787
 msgid "Reload files"
 msgstr "Atkārtoti ielādēt failus"
 
-#: js/components/FileListItems.vue:789
+#: js/components/FileListItems.vue:796
 msgid "Grid view"
 msgstr "Tīkla skats"
 
-#: js/components/FileListItems.vue:797
+#: js/components/FileListItems.vue:804
 msgid "List view"
 msgstr "Saraksta skats"
 
-#: js/components/FileUrlDialog.vue:121
+#: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
 msgstr "Vismaz viens URL ir garāks par 255 rakstzīmēm"
 
-#: js/components/FileUrlDialog.vue:157
+#: js/components/FileUrlDialog.vue:152
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Vismaz viens fails nav \"%{mime}*\" tipa."
 
-#: js/components/FileUrlDialog.vue:161
+#: js/components/FileUrlDialog.vue:156
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Failam nav tipa \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:192
-#: js/components/FileUrlDialog.vue:200
-#: js/fields/Images.vue:435
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:416
 msgid "Add files from URLs"
 msgstr "Failu pievienošana no URL"
 
-#: js/components/FileUrlDialog.vue:202
-#: js/fields/Audio.vue:100
-#: js/fields/File.vue:395
-#: js/fields/Image.vue:149
-#: js/fields/Media.vue:157
-#: js/fields/Video.vue:100
+#: js/components/FileUrlDialog.vue:197 js/fields/File.vue:441
 msgid "Add file"
 msgstr "Pievienot failu"
 
-#: js/components/FileUrlDialog.vue:216
+#: js/components/FileUrlDialog.vue:210
 msgid "Enter one URL per line"
 msgstr "Ievadiet vienu URL katrā rindā"
 
-#: js/components/FileUrlDialog.vue:232
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
 msgstr "Ievadiet URL"
 
-#: js/components/HistoryDialog.vue:464
-#: js/components/HistoryDialog.vue:472
-msgid "History"
-msgstr "Vēsture"
+#: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
+#: js/components/PageDetailContentList.vue:957
+msgid "Shared element"
+msgstr "Koplietojamais elements"
 
-#: js/components/HistoryDialog.vue:502
+#: js/components/HistoryDialog.vue:62
+msgid "Content block"
+msgstr "Satura bloks"
+
+#: js/components/HistoryDialog.vue:67
+msgid "Group: %{group} · Position %{num}"
+msgstr "Grupa: %{group} · Pozīcija %{num}"
+
+#: js/components/HistoryDialog.vue:75
+msgid "Moved from position %{from} to %{to}"
+msgstr "Pārvietots no pozīcijas %{from} uz %{to}"
+
+#: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} lauks ir mainīts"
+msgstr[1] "%{num} lauki mainīti"
+msgstr[2] "%{num} lauki mainīti"
+
+#: js/components/HistoryDialog.vue:77
+msgid "%{selected} of %{total} selected"
+msgstr "Atlasīts %{selected} no %{total}"
+
+#: js/components/HistoryDialog.vue:84
+msgid "Unknown date"
+msgstr "Nezināms datums"
+
+#: js/components/HistoryDialog.vue:123
+msgid "Block position"
+msgstr "Bloka pozīcija"
+
+#: js/components/HistoryDialog.vue:128
+msgid "Value"
+msgstr "Vērtība"
+
+#: js/components/HistoryDialog.vue:172
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} bloks ir pievienots"
+msgstr[1] "Pievienoti %{num} bloki"
+msgstr[2] "Pievienoti %{num} bloki"
+
+#: js/components/HistoryDialog.vue:173
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} bloks ir noņemts"
+msgstr[1] "%{num} bloki ir noņemti"
+msgstr[2] "%{num} bloki ir noņemti"
+
+#: js/components/HistoryDialog.vue:174
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} bloks mainīts"
+msgstr[1] "Mainīti %{num} bloki"
+msgstr[2] "Mainīti %{num} bloki"
+
+#: js/components/HistoryDialog.vue:175
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} bloks ir pārvietots"
+msgstr[1] "%{num} bloki ir pārvietoti"
+msgstr[2] "%{num} bloki ir pārvietoti"
+
+#: js/components/HistoryDialog.vue:176
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} fails ir mainīts"
+msgstr[1] "%{num} faili ir mainīti"
+msgstr[2] "%{num} faili ir mainīti"
+
+#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:207
+#: js/components/HistoryDialog.vue:303
 msgid "No changes"
 msgstr "Nav izmaiņu"
 
-#: js/components/HistoryDialog.vue:512
-msgid "Current"
-msgstr "Pašreizējais"
+#: js/components/HistoryDialog.vue:191
+msgid "History"
+msgstr "Vēsture"
 
-#: js/components/HistoryDialog.vue:628
-#: js/components/HistoryDialog.vue:792
-msgid "Apply changes"
-msgstr "Piemērot izmaiņas"
+#: js/components/HistoryDialog.vue:203
+msgid "Error fetching versions"
+msgstr "Ienesot versijas, radās kļūda"
 
-#: js/components/HistoryDialog.vue:636
-#: js/components/HistoryDialog.vue:800
-msgid "Toggle all"
-msgstr "Izvēlēties visus"
+#: js/components/HistoryDialog.vue:204
+msgid "Retry"
+msgstr "Mēģiniet vēlreiz"
 
-#: js/components/HistoryDialog.vue:788
-msgid "Revert to version"
-msgstr "Atgriezties pie iepriekšējās versijas"
+#: js/components/HistoryDialog.vue:218
+msgid "Current changes"
+msgstr "Pašreizējās izmaiņas"
 
-#: js/components/ListSort.vue:24
-#: js/views/PageDetail.vue:809
+#: js/components/HistoryDialog.vue:224
+msgid "Scheduled for %{date}"
+msgstr "Paredzēts %{date}"
+
+#: js/components/HistoryDialog.vue:232
+msgid "Select all"
+msgstr "Atlasiet visu"
+
+#: js/components/HistoryDialog.vue:246
+msgid "Block added"
+msgstr "Bloks ir pievienots"
+
+#: js/components/HistoryDialog.vue:247
+msgid "Block removed"
+msgstr "Bloks noņemts"
+
+#: js/components/HistoryDialog.vue:267
+msgid "Keep current position"
+msgstr "Saglabājiet pašreizējo pozīciju"
+
+#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
+msgid "Keep current value"
+msgstr "Saglabājiet pašreizējo vērtību"
+
+#: js/components/HistoryDialog.vue:313
+msgid "Previous version: Latest saved version"
+msgstr "Iepriekšējā versija: jaunākā saglabātā versija"
+
+#: js/components/HistoryDialog.vue:313
+msgid "Previous version: %{date}"
+msgstr "Iepriekšējā versija: %{date}"
+
+#: js/components/HistoryDialog.vue:314
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} no %{total} atlasīts atgriešanai"
+
+#: js/components/HistoryDialog.vue:317
+msgid "Revert selected changes"
+msgstr "Atsaukt atlasītās izmaiņas"
+
+#: js/components/HistoryDialog.vue:320
+msgid "Restore previous version"
+msgstr "Atjaunot iepriekšējo versiju"
+
+#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
+#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+msgid "Previous value"
+msgstr "Iepriekšējā vērtība"
+
+#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
+#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+msgid "New value"
+msgstr "Jauna vērtība"
+
+#: js/components/HistoryField.vue:90
+msgid "Enlarge %{name}"
+msgstr "Palielināt %{name}"
+
+#: js/components/HistoryField.vue:96 js/components/HistoryField.vue:123
+msgid "Loading preview"
+msgstr "Notiek priekšskatījuma ielāde"
+
+#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:99
+#: js/components/HistoryField.vue:104 js/components/HistoryField.vue:124
+#: js/components/HistoryField.vue:126
+msgid "Preview unavailable"
+msgstr "Priekšskatījums nav pieejams"
+
+#: js/components/HistoryField.vue:113
+msgid "Image preview"
+msgstr "Attēla priekšskatījums"
+
+#: js/components/HistoryField.vue:114
+msgid "Close preview"
+msgstr "Aizvērt priekšskatījumu"
+
+#: js/components/HistoryField.vue:134
+msgid "Table preview"
+msgstr "Tabulas priekšskatījums"
+
+#: js/components/HistoryField.vue:138
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} rinda ir izlaista"
+msgstr[1] "%{num} rindas ir izlaistas"
+msgstr[2] "%{num} rindas ir izlaistas"
+
+#: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
 msgid "Editor"
 msgstr "Redaktors"
 
-#: js/components/ListSort.vue:26
+#: js/components/ListSort.vue:29
 msgid "Latest"
 msgstr "Jaunākais"
 
-#: js/components/ListSort.vue:27
+#: js/components/ListSort.vue:30
 msgid "Latest edit"
 msgstr "Pēdējoreiz mainīts"
 
-#: js/components/ListSort.vue:30
+#: js/components/ListSort.vue:33
 msgid "Oldest"
 msgstr "Vecākais"
 
-#: js/components/ListSort.vue:31
+#: js/components/ListSort.vue:34
 msgid "Oldest edit"
 msgstr "Pirmoreiz mainīts"
 
-#: js/components/ListSort.vue:32
-#: js/views/PageList.vue:135
+#: js/components/ListSort.vue:35 js/views/PageList.vue:139
 msgid "Tree"
 msgstr "Koks"
 
-#: js/components/ListSort.vue:34
+#: js/components/ListSort.vue:37
 msgid "Usage"
 msgstr "Izmantošana"
 
-#: js/components/ListSort.vue:61
-#: js/components/ListSort.vue:62
+#: js/components/ListSort.vue:60
 msgid "Sort by"
 msgstr "Kārtot pēc"
 
-#: js/components/Navigation.vue:29
-#: js/components/PageAccess.vue:180
-#: js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:419
-#: js/components/PageListItems.vue:1583
-#: js/components/PageListItems.vue:1746
-#: js/components/PageListItems.vue:1936
-#: js/components/PageListItems.vue:1941
-#: js/routes.js:100
-#: js/views/AccessList.vue:236
-#: js/views/AccessList.vue:245
-msgid "Access"
-msgstr "Piekļuve"
+#: js/components/Navigation.vue:25 js/views/AccessList.vue:248
+msgid "Users"
+msgstr "Lietotāji"
 
 #: js/components/Navigation.vue:45
 msgid "Panels"
 msgstr "Paneļi"
 
-#: js/components/PageAccess.vue:102
+#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Mainot piekļuvi lapai, radās kļūda"
 
-#: js/components/PageAccess.vue:168
+#: js/components/PageAccess.vue:170
 msgid "Access changes take effect immediately after cache expiry"
-msgstr "Piekļuves izmaiņas stājas spēkā tūlīt pēc kešatmiņas derīguma termiņa beigām"
+msgstr ""
+"Piekļuves izmaiņas stājas spēkā tūlīt pēc kešatmiņas derīguma termiņa beigām"
 
-#: js/components/PageAccess.vue:171
+#: js/components/PageAccess.vue:173
 msgid "Public"
 msgstr "Publisks"
 
-#: js/components/PageAccess.vue:172
-#: js/components/PageListItems.vue:420
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:444
 msgid "Authenticated users"
 msgstr "Autentificēti lietotāji"
 
-#: js/components/PageAccess.vue:190
-#: js/components/PageBulkDialog.vue:261
+#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
+#: js/components/PageListItems.vue:443 js/components/PageListItems.vue:1632
+#: js/components/PageListItems.vue:1782 js/components/PageListItems.vue:1970
+#: js/views/AccessList.vue:235 js/views/AccessList.vue:244
+msgid "Access"
+msgstr "Piekļuve"
+
+#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:282
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Lapu lielapjoma izmaiņas ir ierobežotas līdz 1000 lapām"
 
-#: js/components/PageAccess.vue:209
-#: js/components/PageBulkDialog.vue:257
+#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:276
 msgid "Apply recursively"
 msgstr "Lietot rekursīvi"
 
-#: js/components/PageBulkDialog.vue:42
-#: js/components/PageDetailItemProps.vue:56
-#: js/views/PageList.vue:173
+#: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:56
+#: js/views/PageList.vue:177
 msgid "No cache"
 msgstr "Nav kešatmiņas"
 
-#: js/components/PageBulkDialog.vue:43
-#: js/components/PageBulkDialog.vue:44
-#: js/components/PageBulkDialog.vue:45
-#: js/components/PageBulkDialog.vue:46
+#: js/components/PageBulkDialog.vue:55 js/components/PageBulkDialog.vue:56
+#: js/components/PageBulkDialog.vue:57 js/components/PageBulkDialog.vue:58
 #: js/components/PageDetailItemProps.vue:57
 #: js/components/PageDetailItemProps.vue:58
 #: js/components/PageDetailItemProps.vue:59
@@ -1235,12 +1221,9 @@ msgstr[0] "%{num} minūte"
 msgstr[1] "%{num} minūtes"
 msgstr[2] "%{num} minūšu"
 
-#: js/components/PageBulkDialog.vue:47
-#: js/components/PageBulkDialog.vue:48
-#: js/components/PageBulkDialog.vue:49
-#: js/components/PageBulkDialog.vue:50
-#: js/components/PageBulkDialog.vue:51
-#: js/components/PageDetailItemProps.vue:61
+#: js/components/PageBulkDialog.vue:59 js/components/PageBulkDialog.vue:60
+#: js/components/PageBulkDialog.vue:61 js/components/PageBulkDialog.vue:62
+#: js/components/PageBulkDialog.vue:63 js/components/PageDetailItemProps.vue:61
 #: js/components/PageDetailItemProps.vue:62
 #: js/components/PageDetailItemProps.vue:63
 #: js/components/PageDetailItemProps.vue:64
@@ -1251,260 +1234,217 @@ msgstr[0] "%{num} stunda"
 msgstr[1] "%{num} stundas"
 msgstr[2] "%{num} stundu"
 
-#: js/components/PageBulkDialog.vue:54
-#: js/components/PageDetailItemProps.vue:68
-#: js/views/PageList.vue:165
+#: js/components/PageBulkDialog.vue:66 js/components/PageDetailItemProps.vue:68
+#: js/views/PageList.vue:169
 msgid "Disabled"
 msgstr "Atspējots"
 
-#: js/components/PageBulkDialog.vue:55
-#: js/components/PageDetailItemProps.vue:69
-#: js/views/PageList.vue:163
+#: js/components/PageBulkDialog.vue:67 js/components/PageDetailItemProps.vue:69
+#: js/views/PageList.vue:167
 msgid "Enabled"
 msgstr "Ieslēgts"
 
-#: js/components/PageBulkDialog.vue:56
-#: js/components/PageDetailItemProps.vue:70
+#: js/components/PageBulkDialog.vue:68 js/components/PageDetailItemProps.vue:70
 msgid "Hidden in navigation"
 msgstr "Slēpts navigācijā"
 
-#: js/components/PageBulkDialog.vue:62
-#: js/components/PageDetailItemProps.vue:79
+#: js/components/PageBulkDialog.vue:74 js/components/PageDetailItemProps.vue:79
 msgid "Domain name is invalid"
 msgstr "Domēna vārds ir nederīgs"
 
-#: js/components/PageBulkDialog.vue:147
+#: js/components/PageBulkDialog.vue:161
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Lietojiet atlasītos rekvizītus %{num} lapai."
 msgstr[1] "Lietojiet atlasītos rekvizītus %{num} lapām."
 msgstr[2] "Lietojiet atlasītos rekvizītus %{num} lapām."
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:172
 msgid "Change status"
 msgstr "Mainīt statusu"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:241
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
 msgid "Status"
 msgstr "Statuss"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:186
 msgid "Change cache time"
 msgstr "Mainiet kešatmiņas laiku"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:354
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "Cache time"
 msgstr "Kešatmiņas laiks"
 
-#: js/components/PageBulkDialog.vue:180
+#: js/components/PageBulkDialog.vue:200
 msgid "Change language"
 msgstr "Mainīt valodu"
 
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:212
 msgid "Change theme"
 msgstr "Mainīt tēmu"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Theme"
 msgstr "Tēma"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:224
 msgid "Change page type"
 msgstr "Mainiet lapas veidu"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:332
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Page type"
 msgstr "Lapas tips"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:236
 msgid "Change tag"
 msgstr "Mainīt tagu"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:343
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Page tag"
 msgstr "Lapas birka"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:249
 msgid "Change domain"
 msgstr "Mainīt domēnu"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:308
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain"
 msgstr "Domēns"
 
-#: js/components/PageDetailContentList.vue:176
-#: js/components/PageDetailContentList.vue:186
-#: js/components/PageDetailContentList.vue:644
+#: js/components/PageDetailContentList.vue:184
+#: js/components/PageDetailContentList.vue:194
+#: js/components/PageDetailContentList.vue:647
 msgid "Content element not found"
 msgstr "Satura elements nav atrasts"
 
-#: js/components/PageDetailContentList.vue:418
+#: js/components/PageDetailContentList.vue:420
 msgid "Error refining content"
 msgstr "Kļūdas satura precizēšana"
 
-#: js/components/PageDetailContentList.vue:474
+#: js/components/PageDetailContentList.vue:470
 msgid "Element not found"
 msgstr "Nav atrasts elements"
 
-#: js/components/PageDetailContentList.vue:479
+#: js/components/PageDetailContentList.vue:475
 msgid "Element is already shared"
 msgstr "Elements jau ir koplietojams"
 
-#: js/components/PageDetailContentList.vue:521
+#: js/components/PageDetailContentList.vue:518
 msgid "Unable to make element shared"
 msgstr "Nevar izveidot koplietošanas elementu"
 
-#: js/components/PageDetailContentList.vue:540
+#: js/components/PageDetailContentList.vue:537
 msgid "Not available for this content element"
 msgstr "Nav pieejams šim satura elementam"
 
-#: js/components/PageDetailContentList.vue:651
+#: js/components/PageDetailContentList.vue:654
 msgid "Element is not shared"
 msgstr "Elements nav koplietojams"
 
-#: js/components/PageDetailContentList.vue:726
+#: js/components/PageDetailContentList.vue:733
 msgid "Describe the task you want to perform"
 msgstr "Aprakstiet uzdevumu, ko vēlaties veikt"
 
-#: js/components/PageDetailContentList.vue:740
-#: js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "Paslēpt palīdzību"
 
-#: js/components/PageDetailContentList.vue:740
-#: js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "Rādīt palīdzību"
 
-#: js/components/PageDetailContentList.vue:752
+#: js/components/PageDetailContentList.vue:759
 msgid "Refining ..."
 msgstr "Pilnveido..."
 
-#: js/components/PageDetailContentList.vue:752
+#: js/components/PageDetailContentList.vue:759
 msgid "Refine content based on prompt"
 msgstr "Precizēt saturu, pamatojoties uz aicinājumu"
 
-#: js/components/PageDetailContentList.vue:769
-#: js/views/PageList.vue:324
+#: js/components/PageDetailContentList.vue:776 js/views/ElementList.vue:291
+#: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "Palīdzība"
 
-#: js/components/PageDetailContentList.vue:770
+#: js/components/PageDetailContentList.vue:777
 msgid "AI can add or improve content based on your input"
-msgstr "Mākslīgais intelekts var pievienot vai uzlabot saturu, pamatojoties uz jūsu ievadītajiem datiem."
+msgstr ""
+"Mākslīgais intelekts var pievienot vai uzlabot saturu, pamatojoties uz jūsu "
+"ievadītajiem datiem."
 
-#: js/components/PageDetailContentList.vue:771
+#: js/components/PageDetailContentList.vue:778
 msgid "It can take a long time depending on the task and content size"
 msgstr "Tas var aizņemt ilgu laiku atkarībā no uzdevuma un satura apjoma."
 
-#: js/components/PageDetailContentList.vue:796
-#: js/components/PageDetailContentList.vue:902
-#: js/components/PageListItems.vue:1759
-#: js/fields/Items.vue:395
+#: js/components/PageDetailContentList.vue:803
+#: js/components/PageDetailContentList.vue:891
+#: js/components/PageListItems.vue:1795 js/fields/Items.vue:378
 msgid "Cut"
 msgstr "Nogrieziet"
 
-#: js/components/PageDetailContentList.vue:801
-#: js/components/PageListItems.vue:1772
-#: js/components/PageListItems.vue:1797
+#: js/components/PageDetailContentList.vue:808
+#: js/components/PageListItems.vue:1808 js/components/PageListItems.vue:1833
 msgid "Paste"
 msgstr "Ielīmēt"
 
-#: js/components/PageDetailContentList.vue:806
-#: js/components/PageDetailContentList.vue:960
+#: js/components/PageDetailContentList.vue:813
+#: js/components/PageDetailContentList.vue:949
 msgid "Merge"
 msgstr "Apvienot"
 
-#: js/components/PageDetailContentList.vue:853
-#: js/fields/Items.vue:342
+#: js/components/PageDetailContentList.vue:866 js/fields/Items.vue:348
 msgid "Move element"
 msgstr "Pārvietot elementu"
 
-#: js/components/PageDetailContentList.vue:915
-#: js/fields/Items.vue:408
+#: js/components/PageDetailContentList.vue:904 js/fields/Items.vue:391
 msgid "Paste before"
 msgstr "Ielīmējiet pirms"
 
-#: js/components/PageDetailContentList.vue:920
-#: js/fields/Items.vue:413
+#: js/components/PageDetailContentList.vue:909 js/fields/Items.vue:396
 msgid "Paste after"
 msgstr "Ielīmējiet pēc"
 
-#: js/components/PageDetailContentList.vue:925
-#: js/fields/Items.vue:418
-#: js/fields/Table.vue:223
-#: js/fields/Table.vue:318
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:401
+#: js/fields/Table.vue:200 js/fields/Table.vue:270
 msgid "Insert before"
 msgstr "Ievietot pirms"
 
-#: js/components/PageDetailContentList.vue:930
-#: js/fields/Items.vue:423
-#: js/fields/Table.vue:231
-#: js/fields/Table.vue:326
+#: js/components/PageDetailContentList.vue:919 js/fields/Items.vue:406
+#: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Insert after"
 msgstr "Ievietot pēc"
 
-#: js/components/PageDetailContentList.vue:940
+#: js/components/PageDetailContentList.vue:929
 msgid "Make shared"
 msgstr "Veidojiet koplietošanas"
 
-#: js/components/PageDetailContentList.vue:945
+#: js/components/PageDetailContentList.vue:934
 msgid "Merge copy"
 msgstr "Apvienot kopiju"
 
-#: js/components/PageDetailContentList.vue:950
-msgid "Change to"
-msgstr "Mainīt uz"
-
-#: js/components/PageDetailContentList.vue:955
+#: js/components/PageDetailContentList.vue:944
 msgid "Split"
 msgstr "Sadalīt"
 
-#: js/components/PageDetailContentList.vue:970
-msgid "Shared element"
-msgstr "Koplietojamais elements"
-
-#: js/components/PageDetailEditor.vue:87
+#: js/components/PageDetailEditor.vue:77
 msgid "Double-click to edit"
 msgstr "Divreiz noklikšķiniet, lai rediģētu"
 
-#: js/components/PageDetailEditor.vue:292
-msgid "Edit element"
-msgstr "Rediģēt elementu"
-
-#: js/components/PageDetailEditor.vue:299
-msgid "Add element before"
-msgstr "Pievienot elementu pirms"
-
-#: js/components/PageDetailEditor.vue:305
-msgid "Add element after"
-msgstr "Pievienot elementu pēc"
-
-#: js/components/PageDetailEditor.vue:312
-msgid "Remove element"
-msgstr "Elementa noņemšana"
-
-#: js/components/PageDetailEditor.vue:319
+#: js/components/PageDetailEditor.vue:260
 msgid "Preview mode"
 msgstr "Priekšskatījuma režīms"
 
-#: js/components/PageDetailEditor.vue:322
+#: js/components/PageDetailEditor.vue:263
 msgid "Not CMS content"
 msgstr "Ne CMS saturs"
-
-#: js/components/PageDetailEditor.vue:337
-msgid "Fullscreen mode"
-msgstr "Pilnekrāna režīms"
-
-#: js/components/PageDetailEditor.vue:345
-msgid "Exit fullscreen mode"
-msgstr "Iziet no pilnekrāna režīma"
 
 #: js/components/PageDetailItem.vue:81
 msgid "Detail"
@@ -1520,7 +1460,7 @@ msgstr "Konfigurēšana"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/views/Login.vue:44
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
 #: js/views/Login.vue:47
 msgid "Field is required"
 msgstr "Lauks ir obligāts"
@@ -1533,23 +1473,23 @@ msgstr "Ceļš nedrīkst sākties ar slīpsvītru (/)"
 msgid "URL is not valid"
 msgstr "URL nav derīgs"
 
-#: js/components/PageDetailItemProps.vue:122
+#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "Ceļš jau tiek izmantots citā lapā"
 
-#: js/components/PageDetailItemProps.vue:268
+#: js/components/PageDetailItemProps.vue:272
 msgid "Page title"
 msgstr "Lapas virsraksts"
 
-#: js/components/PageDetailItemProps.vue:279
+#: js/components/PageDetailItemProps.vue:283
 msgid "Page name"
 msgstr "Lapas nosaukums"
 
-#: js/components/PageDetailItemProps.vue:294
+#: js/components/PageDetailItemProps.vue:298
 msgid "URL path"
 msgstr "URL ceļš"
 
-#: js/components/PageDetailItemProps.vue:370
+#: js/components/PageDetailItemProps.vue:377
 msgid "Redirect URL"
 msgstr "Pārvirzīšanas URL"
 
@@ -1562,7 +1502,7 @@ msgid "Remove content element"
 msgstr "Noņemt satura elementu"
 
 #: js/components/PageDetailMetrics.vue:141
-#: js/components/PageDetailMetrics.vue:558
+#: js/components/PageDetailMetrics.vue:566
 msgid "Views"
 msgstr "Skati"
 
@@ -1584,7 +1524,7 @@ msgid "Impressions"
 msgstr "Seansi"
 
 #: js/components/PageDetailMetrics.vue:163
-#: js/components/PageDetailMetrics.vue:559
+#: js/components/PageDetailMetrics.vue:567
 msgid "Clicks"
 msgstr "Klikšķi"
 
@@ -1640,197 +1580,205 @@ msgstr "Mijiedarbība uz nākamo krāsu"
 msgid "Cumulative layout shift"
 msgstr "Kumulatīvā izkārtojuma maiņa"
 
-#: js/components/PageDetailMetrics.vue:385
+#: js/components/PageDetailMetrics.vue:393
 msgid "Page metrics"
 msgstr "Lapas metrikas"
 
-#: js/components/PageDetailMetrics.vue:391
+#: js/components/PageDetailMetrics.vue:399
 msgid "Days"
 msgstr "Dienas"
 
-#: js/components/PageDetailMetrics.vue:418
+#: js/components/PageDetailMetrics.vue:426
 msgid "Weekly Insights"
 msgstr "Iknedēļas ieskats"
 
-#: js/components/PageDetailMetrics.vue:447
+#: js/components/PageDetailMetrics.vue:455
 msgid "Views & Visits"
 msgstr "Skati un apmeklējumi"
 
-#: js/components/PageDetailMetrics.vue:456
+#: js/components/PageDetailMetrics.vue:464
 msgid "Visit Durations (minutes)"
 msgstr "Apmeklējuma ilgums (minūtēs)"
 
-#: js/components/PageDetailMetrics.vue:468
+#: js/components/PageDetailMetrics.vue:476
 msgid "Referrers"
 msgstr "Novirzīšanas avoti"
 
-#: js/components/PageDetailMetrics.vue:511
+#: js/components/PageDetailMetrics.vue:519
 msgid "Countries"
 msgstr "Valstis"
 
-#: js/components/PageDetailMetrics.vue:527
+#: js/components/PageDetailMetrics.vue:535
 msgid "Page Speed"
 msgstr "Lapas ātrums"
 
-#: js/components/PageDetailMetrics.vue:552
+#: js/components/PageDetailMetrics.vue:560
 msgid "Google Search: Queries"
 msgstr "Meklēšana pakalpojumā Google: Pieprasījumi"
 
-#: js/components/PageDetailMetrics.vue:560
+#: js/components/PageDetailMetrics.vue:568
 msgid "Percent"
 msgstr "Procenti"
 
-#: js/components/PageDetailMetrics.vue:561
+#: js/components/PageDetailMetrics.vue:569
 msgid "Position"
 msgstr "Pozīcija"
 
-#: js/components/PageDetailMetrics.vue:588
+#: js/components/PageDetailMetrics.vue:596
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google meklēšana: seansi un klikšķi"
 
-#: js/components/PageDetailMetrics.vue:597
+#: js/components/PageDetailMetrics.vue:605
 msgid "Google Search: Conversions"
 msgstr "Meklēšana pakalpojumā Google: Konversijas"
 
-#: js/components/PageListItems.vue:453
+#: js/components/PageListItems.vue:478
 msgid "Error adding root page"
 msgstr "Kļūda pievienojot saknes lapu"
 
-#: js/components/PageListItems.vue:512
+#: js/components/PageListItems.vue:551
 msgid "Cache cleared"
 msgstr "Kešatmiņa notīrīta"
 
-#: js/components/PageListItems.vue:515
+#: js/components/PageListItems.vue:552
+msgid "Cache cleared for %{num} page."
+msgid_plural "Cache cleared for %{num} pages."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: js/components/PageListItems.vue:562
 msgid "Error clearing cache"
 msgstr "Kļūda, notīrot kešatmiņu"
 
-#: js/components/PageListItems.vue:611
+#: js/components/PageListItems.vue:658
 msgid "Error trashing page"
 msgstr "Kļūda, pārvietojot lapu uz atkritni"
 
-#: js/components/PageListItems.vue:707
+#: js/components/PageListItems.vue:752
 msgid "Error fetching pages"
 msgstr "Kļūda lapu ielādēšanā"
 
-#: js/components/PageListItems.vue:788
+#: js/components/PageListItems.vue:833
 msgid "Error inserting page"
 msgstr "Kļūda, ievietojot lapu"
 
-#: js/components/PageListItems.vue:844
+#: js/components/PageListItems.vue:886
 msgid "Error restoring page"
 msgstr "Kļūda atjaunot lapu"
 
-#: js/components/PageListItems.vue:854
+#: js/components/PageListItems.vue:896
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, ceļš: %{path}, domēns: %{domain})"
 
-#: js/components/PageListItems.vue:857
+#: js/components/PageListItems.vue:904
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, saite: %{path})"
 
-#: js/components/PageListItems.vue:953
+#: js/components/PageListItems.vue:994
 msgid "Error moving page"
 msgstr "Kļūda pārvietojas lapu"
 
-#: js/components/PageListItems.vue:1044
+#: js/components/PageListItems.vue:1085
 msgid "Error copying page"
 msgstr "Kļūda lapas kopēšana"
 
-#: js/components/PageListItems.vue:1049
-#: js/views/PageDetail.vue:251
+#: js/components/PageListItems.vue:1090 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "Kļūda lapas iegūšanā"
 
-#: js/components/PageListItems.vue:1129
-#: js/views/PageDetail.vue:461
+#: js/components/PageListItems.vue:1170 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "Kļūdu publicēšanas lapa"
 
-#: js/components/PageListItems.vue:1171
+#: js/components/PageListItems.vue:1195
+msgid "All subpages of these pages will be purged as well."
+msgstr "Arī visas šo lapu apakšlapas tiks neatgriezeniski dzēstas."
+
+#: js/components/PageListItems.vue:1225
 msgid "Error purging page"
 msgstr "Kļūda, neatgriezeniski dzēšot lapu"
 
-#: js/components/PageListItems.vue:1304
+#: js/components/PageListItems.vue:1358
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} lapu nevarēja atjaunināt"
 msgstr[1] "%{num} lapas nevarēja atjaunināt"
 msgstr[2] "%{num} lapas nevarēja atjaunināt"
 
-#: js/components/PageListItems.vue:1315
-#: js/components/PageListItems.vue:1411
-#: js/views/PageDetail.vue:569
+#: js/components/PageListItems.vue:1369 js/components/PageListItems.vue:1467
+#: js/views/PageDetail.vue:606
 msgid "Error saving page"
 msgstr "Kļūda, saglabājot lapu"
 
-#: js/components/PageListItems.vue:1366
+#: js/components/PageListItems.vue:1420
 msgid "Error searching pages"
 msgstr "Kļūda, meklējot lapas"
 
-#: js/components/PageListItems.vue:1568
+#: js/components/PageListItems.vue:1616 js/components/PageListItems.vue:1762
 msgid "Enable"
 msgstr "Ieslēgt"
 
-#: js/components/PageListItems.vue:1573
+#: js/components/PageListItems.vue:1621 js/components/PageListItems.vue:1767
 msgid "Disable"
 msgstr "Atslēgt"
 
-#: js/components/PageListItems.vue:1613
-#: js/components/PageListItems.vue:1924
-msgid "Add page"
-msgstr "Pievienot lapu"
-
-#: js/components/PageListItems.vue:1646
-msgid "Reload page tree"
-msgstr "Pārlādēt lapas koku"
-
-#: js/components/PageListItems.vue:1669
-msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr "Lai pārvietotos, izmantojiet bultu taustiņus. Lai mainītu secību, nospiediet Alt kopā ar bultu taustiņiem."
-
-#: js/components/PageListItems.vue:1670
-msgid "Moved to position %{position} of %{total}"
-msgstr "Pārvietots uz %{position}. pozīciju no %{total}"
-
-#: js/components/PageListItems.vue:1671
-msgid "Outdented to level %{level}, position %{position} of %{total}"
-msgstr "Atkāpe samazināta līdz %{level}. līmenim, %{position}. pozīcija no %{total}"
-
-#: js/components/PageListItems.vue:1672
-msgid "Indented to level %{level}, position %{position} of %{total}"
-msgstr "Atkāpe palielināta līdz %{level}. līmenim, %{position}. pozīcija no %{total}"
-
-#: js/components/PageListItems.vue:1697
-msgid "Toggle child nodes"
-msgstr "Pārslēgt bērnu mezglus"
-
-#: js/components/PageListItems.vue:1751
+#: js/components/PageListItems.vue:1637 js/components/PageListItems.vue:1787
 msgid "Clear cache"
 msgstr "Notīrīt kešatmiņu"
 
-#: js/components/PageListItems.vue:1778
-#: js/components/PageListItems.vue:1803
-#: js/components/PageListItems.vue:1828
+#: js/components/PageListItems.vue:1665 js/components/PageListItems.vue:1955
+msgid "Add page"
+msgstr "Pievienot lapu"
+
+#: js/components/PageListItems.vue:1687
+msgid "Reload page tree"
+msgstr "Pārlādēt lapas koku"
+
+#: js/components/PageListItems.vue:1714
+msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
+msgstr ""
+"Lai pārvietotos, izmantojiet bultu taustiņus. Lai mainītu secību, nospiediet "
+"Alt kopā ar bultu taustiņiem."
+
+#: js/components/PageListItems.vue:1716
+msgid "Moved to position %{position} of %{total}"
+msgstr "Pārvietots uz %{position}. pozīciju no %{total}"
+
+#: js/components/PageListItems.vue:1718
+msgid "Outdented to level %{level}, position %{position} of %{total}"
+msgstr ""
+"Atkāpe samazināta līdz %{level}. līmenim, %{position}. pozīcija no %{total}"
+
+#: js/components/PageListItems.vue:1724
+msgid "Indented to level %{level}, position %{position} of %{total}"
+msgstr ""
+"Atkāpe palielināta līdz %{level}. līmenim, %{position}. pozīcija no %{total}"
+
+#: js/components/PageListItems.vue:1743
+msgid "Toggle child nodes"
+msgstr "Pārslēgt bērnu mezglus"
+
+#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
+#: js/components/PageListItems.vue:1864
 msgid "Before"
 msgstr "Pirms"
 
-#: js/components/PageListItems.vue:1783
-#: js/components/PageListItems.vue:1808
-#: js/components/PageListItems.vue:1833
+#: js/components/PageListItems.vue:1819 js/components/PageListItems.vue:1844
+#: js/components/PageListItems.vue:1869
 msgid "Into"
 msgstr "Uz"
 
-#: js/components/PageListItems.vue:1788
-#: js/components/PageListItems.vue:1813
-#: js/components/PageListItems.vue:1838
+#: js/components/PageListItems.vue:1824 js/components/PageListItems.vue:1849
+#: js/components/PageListItems.vue:1874
 msgid "After"
 msgstr "Pēc"
 
-#: js/components/PageListItems.vue:1822
+#: js/components/PageListItems.vue:1858
 msgid "Insert"
 msgstr "Ievietot"
 
-#: js/components/PageListItems.vue:1946
+#: js/components/PageListItems.vue:1973
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Lietot piekļuves iestatījumus %{num} lapai."
@@ -1838,7 +1786,6 @@ msgstr[1] "Lietot piekļuves iestatījumus %{num} lapām."
 msgstr[2] "Lietot piekļuves iestatījumus %{num} lapu."
 
 #: js/components/SchemaDialog.vue:29
-#: js/components/SchemaDialog.vue:37
 msgid "Content elements"
 msgstr "Satura elementi"
 
@@ -1846,14 +1793,14 @@ msgstr "Satura elementi"
 msgid "uncategorized"
 msgstr "neklasificēts"
 
-#: js/components/UnsavedDialog.vue:31
-#: js/components/UnsavedDialog.vue:37
+#: js/components/UnsavedDialog.vue:31 js/components/UnsavedDialog.vue:37
 msgid "Unsaved changes"
 msgstr "Neizglābtās izmaiņas"
 
 #: js/components/UnsavedDialog.vue:45
 msgid "You have unsaved changes that will be lost if you leave."
-msgstr "Jums ir nesaglabātas izmaiņas, kas tiks zaudētas, ja jūs aizvērsiet lapu."
+msgstr ""
+"Jums ir nesaglabātas izmaiņas, kas tiks zaudētas, ja jūs aizvērsiet lapu."
 
 #: js/components/UnsavedDialog.vue:51
 msgid "Discard"
@@ -1863,101 +1810,38 @@ msgstr "Atcelt"
 msgid "Save & leave"
 msgstr "Saglabāt un aiziet"
 
-#: js/components/User.vue:61
+#: js/components/User.vue:60
 msgid "Failed to load user"
 msgstr "Neizdevās ielādēt lietotāju"
 
-#: js/components/User.vue:100
+#: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "Pārslēgt gaismas/tumsas režīmu"
 
-#: js/components/User.vue:115
-#: js/components/User.vue:120
+#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Pārslēgt valodu"
 
-#: js/components/User.vue:137
+#: js/components/User.vue:120
 msgid "User menu"
 msgstr "Lietotāja izvēlne"
 
-#: js/components/User.vue:148
+#: js/components/User.vue:134
 msgid "Logout"
 msgstr "Izrakstīšanās"
 
-#: js/fields/Audio.vue:59
-#: js/fields/Audio.vue:83
-#: js/fields/File.vue:338
-#: js/fields/File.vue:378
-#: js/fields/Image.vue:102
-#: js/fields/Image.vue:132
-#: js/fields/Images.vue:410
-#: js/fields/Media.vue:110
-#: js/fields/Media.vue:141
-#: js/fields/Video.vue:59
-#: js/fields/Video.vue:83
-msgid "Edit"
-msgstr "Rediģēt"
-
-#: js/fields/Audio.vue:74
-#: js/fields/File.vue:369
-#: js/fields/Image.vue:123
-#: js/fields/Images.vue:401
-#: js/fields/Media.vue:132
-#: js/fields/Video.vue:74
-msgid "Open menu"
-msgstr "Atvērt izvēlni"
-
-#: js/fields/Audio.vue:107
-#: js/fields/File.vue:402
-#: js/fields/Image.vue:156
-#: js/fields/Media.vue:164
-#: js/fields/Video.vue:107
-msgid "Add file from URL"
-msgstr "Failu pievienošana no URL"
-
-#: js/fields/Audio.vue:112
-#: js/fields/File.vue:407
-#: js/fields/Image.vue:169
-#: js/fields/Media.vue:177
-#: js/fields/Video.vue:112
-msgid "Upload file"
-msgstr "Augšupielādēt failu"
-
-#: js/fields/Audio.vue:132
-#: js/fields/File.vue:427
-#: js/fields/Image.vue:189
-#: js/fields/Video.vue:132
-msgid "Drop file here to upload"
-msgstr "Nometiet failu šeit, lai augšupielādētu"
-
-#: js/fields/Audio.vue:139
-#: js/fields/File.vue:434
-#: js/fields/Image.vue:196
-#: js/fields/Media.vue:191
-#: js/fields/Video.vue:139
-msgid "name"
-msgstr "nosaukums"
-
-#: js/fields/Audio.vue:143
-#: js/fields/File.vue:438
-#: js/fields/Image.vue:200
-#: js/fields/Media.vue:195
-#: js/fields/Video.vue:143
-msgid "description"
-msgstr "apraksts"
-
-#: js/fields/Autocomplete.vue:42
-#: js/fields/Color.vue:20
-#: js/fields/Date.vue:24
-#: js/fields/Html.vue:19
-#: js/fields/Number.vue:33
-#: js/fields/Select.vue:38
-#: js/fields/Url.vue:59
+#: js/fields/Autocomplete.vue:43 js/fields/Color.vue:20 js/fields/Date.vue:24
+#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
+#: js/fields/Url.vue:75
 msgid "Value is required"
 msgstr "Nepieciešamā vērtība"
 
-#: js/fields/Autocomplete.vue:180
-#: js/fields/Combobox.vue:26
+#: js/fields/Autocomplete.vue:48 js/fields/Images.vue:97
+#: js/fields/Items.vue:121
+msgid "Maximum is %{num} entries"
+msgstr "Maksimālais skaits ir %{num} ieraksti"
+
+#: js/fields/Autocomplete.vue:187 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Dati nav pieejami"
 
@@ -1965,41 +1849,57 @@ msgstr "Dati nav pieejami"
 msgid "Value must be a hex color code"
 msgstr "Vērtībai jābūt sešburtu krāsas kodam"
 
-#: js/fields/File.vue:97
+#: js/fields/File.vue:140
 msgid "File is required"
 msgstr "Faili ir nepieciešami"
 
-#: js/fields/Image.vue:164
-#: js/fields/Images.vue:445
-#: js/fields/Media.vue:172
+#: js/fields/File.vue:448
+msgid "Add file from URL"
+msgstr "Failu pievienošana no URL"
+
+#: js/fields/File.vue:456 js/fields/Images.vue:426
 msgid "Create file"
 msgstr "Izveidot failu"
 
-#: js/fields/Images.vue:97
-#: js/fields/Items.vue:118
+#: js/fields/File.vue:462
+msgid "Upload file"
+msgstr "Augšupielādēt failu"
+
+#: js/fields/File.vue:487
+msgid "Drop file here to upload"
+msgstr "Nometiet failu šeit, lai augšupielādētu"
+
+#: js/fields/File.vue:494
+msgid "name"
+msgstr "nosaukums"
+
+#: js/fields/File.vue:498
+msgid "description"
+msgstr "apraksts"
+
+#: js/fields/Images.vue:93 js/fields/Items.vue:124
 msgid "Minimum is %{num} entries"
 msgstr "Minimālais ir %{num} ieraksti"
 
-#: js/fields/Images.vue:101
-#: js/fields/Items.vue:115
-msgid "Maximum is %{num} entries"
-msgstr "Maksimālais skaits ir %{num} ieraksti"
-
-#: js/fields/Images.vue:469
+#: js/fields/Images.vue:450
 msgid "Drop files here"
 msgstr "Nometiet failus šeit"
 
-#: js/fields/Markdown.vue:144
-#: js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37
-#: js/fields/Text.vue:125
+#: js/fields/Map.vue:231
+msgid "Clear location"
+msgstr ""
+
+#: js/fields/Map.vue:234
+msgid "Click the map to set the location"
+msgstr ""
+
+#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
+#: js/fields/String.vue:37 js/fields/Text.vue:125
 msgid "Minimum length is %{num} characters"
 msgstr "Minimālais garums ir %{num} rakstzīmes"
 
-#: js/fields/Markdown.vue:148
-#: js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41
-#: js/fields/Text.vue:129
+#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
+#: js/fields/String.vue:41 js/fields/Text.vue:129
 msgid "Maximum length is %{num} characters"
 msgstr "Maksimālais garums ir %{num} zīmes"
 
@@ -2023,65 +1923,55 @@ msgstr "Maksimums ir %{num} kolonnas"
 msgid "Move column"
 msgstr "Pārvietot sleju"
 
-#: js/fields/Table.vue:192
+#: js/fields/Table.vue:190
 msgid "Column actions"
 msgstr "Kolonnu darbības"
 
-#: js/fields/Table.vue:254
+#: js/fields/Table.vue:229
 msgid "Move row"
 msgstr "Pārvietot rindu"
 
-#: js/fields/Table.vue:287
+#: js/fields/Table.vue:260
 msgid "Row actions"
 msgstr "Rindu darbības"
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:57 js/utils.js:165
+msgid "None"
+msgstr "Nav"
+
+#: js/fields/Url.vue:58
+msgid "Sponsored"
+msgstr ""
+
+#: js/fields/Url.vue:59
+msgid "Nofollow"
+msgstr ""
+
+#: js/fields/Url.vue:76
 msgid "Not a valid URL"
 msgstr "Nav derīgs URL"
 
-#: js/fields/Url.vue:70
+#: js/fields/Url.vue:86
 msgid "Invalid URL schema configuration"
 msgstr "Nederīga URL shēmas konfigurācija"
 
-#: js/fields/Url.vue:135
+#: js/fields/Url.vue:164
 msgid "No pages found"
 msgstr "Lapas nav atrastas"
+
+#: js/fields/Url.vue:176
+msgid "Link attribute"
+msgstr ""
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
 msgstr "Apvienots ar izmaiņām no %{editor}"
 
-#: js/routes.js:30
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Pieteikšanās"
-
-#: js/routes.js:50
-#: js/views/PageDetail.vue:758
-#: js/views/PageDetail.vue:804
-#: js/views/PageDetail.vue:823
-msgid "Page"
-msgstr "Lapa"
-
-#: js/routes.js:70
-#: js/views/ElementDetail.vue:422
-#: js/views/ElementDetail.vue:442
-#: js/views/ElementDetail.vue:447
-msgid "Element"
-msgstr "Elements"
-
-#: js/routes.js:90
-#: js/views/FileDetail.vue:385
-#: js/views/FileDetail.vue:405
-#: js/views/FileDetail.vue:410
-msgid "File"
-msgstr "Failu"
-
-#: js/routes.js:127
+#: js/routes.js:126
 msgid "You do not have permission to access %{path}"
 msgstr "Jums nav piekļuves atļaujas %{path}"
 
-#: js/stores.js:353
+#: js/stores.js:384
 msgid "Failed to load plugin"
 msgstr "Neizdevās ielādēt spraudni"
 
@@ -2192,372 +2082,438 @@ msgstr "tabula"
 
 #: js/strings.js:38
 msgctxt "st"
+msgid "map"
+msgstr ""
+
+#: js/strings.js:39
+msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:39
+#: js/strings.js:40
 msgctxt "st"
 msgid "image"
 msgstr "attēls"
 
-#: js/strings.js:40
+#: js/strings.js:41
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:41
+#: js/strings.js:42
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:42
+#: js/strings.js:43
 msgctxt "st"
 msgid "file"
 msgstr "fails"
 
-#: js/strings.js:43
+#: js/strings.js:44
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:44
+#: js/strings.js:45
+msgctxt "st"
+msgid "CTA"
+msgstr ""
+
+#: js/strings.js:46
 msgctxt "st"
 msgid "cards"
 msgstr "Kartītes"
 
-#: js/strings.js:45
+#: js/strings.js:47
 msgctxt "st"
 msgid "blog"
 msgstr "Blogs"
 
-#: js/strings.js:46
+#: js/strings.js:48
 msgctxt "st"
 msgid "article"
 msgstr "Raksts"
 
-#: js/strings.js:47
+#: js/strings.js:49
 msgctxt "st"
 msgid "questions"
 msgstr "BUJ"
 
-#: js/strings.js:48
+#: js/strings.js:50
 msgctxt "st"
 msgid "toc"
 msgstr "saturs"
 
-#: js/strings.js:49
+#: js/strings.js:51
 msgctxt "st"
 msgid "contact"
 msgstr "Kontakti"
 
-#: js/strings.js:50
+#: js/strings.js:52
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metatagi"
 
-#: js/strings.js:51
+#: js/strings.js:53
 msgctxt "st"
 msgid "social-media"
 msgstr "Sociālie tīkli"
 
-#: js/strings.js:52
+#: js/strings.js:54
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanoniskais URL"
 
-#: js/strings.js:53
+#: js/strings.js:55
 msgctxt "st"
 msgid "robots"
 msgstr "Meklētājprogrammas"
 
-#: js/strings.js:54
+#: js/strings.js:56
 msgctxt "st"
 msgid "theme"
 msgstr "Tēma"
 
-#: js/strings.js:55
+#: js/strings.js:57
 msgctxt "st"
 msgid "styles"
 msgstr "stili"
 
-#: js/strings.js:56
+#: js/strings.js:58
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:59
+#: js/strings.js:61
 msgctxt "fn"
 msgid "button"
 msgstr "poga"
 
-#: js/strings.js:60
+#: js/strings.js:62
+msgctxt "fn"
+msgid "buttons"
+msgstr ""
+
+#: js/strings.js:63
 msgctxt "fn"
 msgid "cards"
 msgstr "Kartītes"
 
-#: js/strings.js:61
+#: js/strings.js:64
 msgctxt "fn"
 msgid "description"
 msgstr "apraksts"
 
-#: js/strings.js:62
+#: js/strings.js:65
 msgctxt "fn"
 msgid "file"
 msgstr "fails"
 
-#: js/strings.js:63
+#: js/strings.js:66
 msgctxt "fn"
 msgid "files"
 msgstr "faili"
 
-#: js/strings.js:64
+#: js/strings.js:67
 msgctxt "fn"
 msgid "follow"
 msgstr "Sekošana saitēm"
 
-#: js/strings.js:65
+#: js/strings.js:68
 msgctxt "fn"
 msgid "header"
 msgstr "galvene"
 
-#: js/strings.js:66
+#: js/strings.js:69
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksēšana"
 
-#: js/strings.js:67
+#: js/strings.js:70
 msgctxt "fn"
 msgid "keywords"
 msgstr "atslēgas vārdi"
 
-#: js/strings.js:68
+#: js/strings.js:71
 msgctxt "fn"
 msgid "language"
 msgstr "valoda"
 
-#: js/strings.js:69
+#: js/strings.js:72
+msgctxt "fn"
+msgid "label"
+msgstr ""
+
+#: js/strings.js:73
 msgctxt "fn"
 msgid "level"
 msgstr "līmenis"
 
-#: js/strings.js:70
+#: js/strings.js:74
 msgctxt "fn"
 msgid "limit"
 msgstr "ierobežojums"
 
-#: js/strings.js:71
+#: js/strings.js:75
+msgctxt "fn"
+msgid "location"
+msgstr ""
+
+#: js/strings.js:76
 msgctxt "fn"
 msgid "main"
 msgstr "Galv. attēls"
 
-#: js/strings.js:72
+#: js/strings.js:77
 msgctxt "fn"
 msgid "order"
 msgstr "secība"
 
-#: js/strings.js:73
+#: js/strings.js:78
 msgctxt "fn"
 msgid "parent-page"
 msgstr "vecāku lapa"
 
-#: js/strings.js:74
+#: js/strings.js:79
 msgctxt "fn"
 msgid "position"
 msgstr "pozīcija"
 
-#: js/strings.js:75
+#: js/strings.js:80
 msgctxt "fn"
 msgid "text"
 msgstr "teksts"
 
-#: js/strings.js:76
+#: js/strings.js:81
 msgctxt "fn"
 msgid "table"
 msgstr "tabula"
 
-#: js/strings.js:77
+#: js/strings.js:82
 msgctxt "fn"
 msgid "title"
 msgstr "virsraksts"
 
-#: js/strings.js:78
+#: js/strings.js:83
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:80
+#: js/strings.js:85
 msgctxt "fn"
 msgid "image"
 msgstr "attēls"
 
-#: js/strings.js:81
+#: js/strings.js:86
 msgctxt "fn"
 msgid "images"
 msgstr "attēli"
 
-#: js/strings.js:82
+#: js/strings.js:87
 msgctxt "fn"
 msgid "items"
 msgstr "preces"
 
-#: js/strings.js:83
+#: js/strings.js:88
 msgctxt "fn"
 msgid "introduction"
 msgstr "ievads"
 
-#: js/strings.js:84
+#: js/strings.js:89
 msgctxt "fn"
 msgid "load immediately"
 msgstr "nekavējoties ielādēt"
 
-#: js/strings.js:85
+#: js/strings.js:90
 msgctxt "fn"
 msgid "source code"
 msgstr "avota kods"
 
-#: js/strings.js:86
+#: js/strings.js:91
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Priekšgala piekļuves loma"
 
-#: js/strings.js:87
+#: js/strings.js:92
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Maksājumu cenas"
 
-#: js/strings.js:88
+#: js/strings.js:93
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Maksājuma atsauce"
 
-#: js/strings.js:89
+#: js/strings.js:94
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Maksājuma veids"
 
-#: js/strings.js:90
+#: js/strings.js:95
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valūta"
 
-#: js/strings.js:91
+#: js/strings.js:96
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Norēķinu intervāls"
 
-#: js/strings.js:92
+#: js/strings.js:97
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Cenas vienība"
 
-#: js/strings.js:93
+#: js/strings.js:98
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Mērķa lapa vai saite"
 
-#: js/strings.js:96
+#: js/strings.js:99
+msgctxt "fn"
+msgid "Mandatory fields"
+msgstr ""
+
+#: js/strings.js:100
+msgctxt "fn"
+msgid "Optional fields"
+msgstr ""
+
+#: js/strings.js:101
+msgctxt "fn"
+msgid "Link label"
+msgstr ""
+
+#: js/strings.js:104
+msgctxt "op"
+msgid "Name"
+msgstr ""
+
+#: js/strings.js:105
+msgctxt "op"
+msgid "Company"
+msgstr ""
+
+#: js/strings.js:106
+msgctxt "op"
+msgid "Telephone"
+msgstr ""
+
+#: js/strings.js:107
+msgctxt "op"
+msgid "E-Mail"
+msgstr ""
+
+#: js/strings.js:108
+msgctxt "op"
+msgid "Subject"
+msgstr ""
+
+#: js/strings.js:109
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekot saitēm"
 
-#: js/strings.js:97
+#: js/strings.js:110
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksēt"
 
-#: js/strings.js:98
+#: js/strings.js:111
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekot saitēm"
 
-#: js/strings.js:99
+#: js/strings.js:112
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksēt"
 
-#: js/strings.js:100
+#: js/strings.js:113
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abonements"
 
-#: js/strings.js:101
+#: js/strings.js:114
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienreizējs maksājums"
 
-#: js/strings.js:104
+#: js/strings.js:117
 msgctxt "ai"
 msgid "Done"
 msgstr "Paveikts"
 
-#: js/strings.js:105
+#: js/strings.js:118
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau pastāv"
 
-#: js/strings.js:108
+#: js/strings.js:121
 msgctxt "sg"
 msgid "expert"
 msgstr "Papildu"
 
-#: js/strings.js:109
+#: js/strings.js:122
 msgctxt "sg"
 msgid "theme"
 msgstr "Tēma"
 
-#: js/strings.js:110
+#: js/strings.js:123
+msgctxt "st"
+msgid "website"
+msgstr ""
+
+#: js/strings.js:124
 msgctxt "st"
 msgid "logo"
 msgstr "Logotips"
 
-#: js/strings.js:111
+#: js/strings.js:125
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatīvs logotips"
 
-#: js/strings.js:112
+#: js/strings.js:126
 msgctxt "st"
 msgid "icon"
 msgstr "Ikona"
 
-#: js/utils.js:201
-msgid "None"
-msgstr "Nav"
-
-#: js/utils.js:251
-#: js/views/ElementList.vue:94
-#: js/views/ElementList.vue:104
-#: js/views/ElementList.vue:113
-#: js/views/FileList.vue:93
-#: js/views/FileList.vue:103
-#: js/views/FileList.vue:112
-#: js/views/PageList.vue:143
-#: js/views/PageList.vue:153
-#: js/views/PageList.vue:162
-#: js/views/PageList.vue:172
-#: js/views/PageList.vue:180
+#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/views/ElementList.vue:142 js/views/FileList.vue:122
+#: js/views/FileList.vue:132 js/views/FileList.vue:141
+#: js/views/PageList.vue:147 js/views/PageList.vue:157
+#: js/views/PageList.vue:166 js/views/PageList.vue:176
+#: js/views/PageList.vue:184
 msgid "All"
 msgstr "Visi"
 
-#: js/views/AccessList.vue:177
+#: js/views/AccessList.vue:169
 msgid "Error adding access value"
 msgstr "Pievienojot piekļuves vērtību, radās kļūda"
 
-#: js/views/AccessList.vue:199
-msgid "Error deleting access values"
-msgstr "Dzēšot piekļuves vērtības, radās kļūda"
+#: js/views/AccessList.vue:181
+msgid ""
+"Existing restrictions are not changed and will continue to reference the "
+"purged access values."
+msgstr ""
+"Esošie ierobežojumi netiek mainīti un turpinās atsaukties uz neatgriezeniski "
+"dzēstajām piekļuves vērtībām."
 
-#: js/views/AccessList.vue:231
-#: js/views/ElementList.vue:139
-#: js/views/FileList.vue:138
-#: js/views/PageList.vue:255
+#: js/views/AccessList.vue:198
+msgid "Error purging access values"
+msgstr "Kļūda, neatgriezeniski dzēšot piekļuves vērtības"
+
+#: js/views/AccessList.vue:230 js/views/ElementList.vue:222
+#: js/views/FileList.vue:221 js/views/PageList.vue:259
+#: js/views/PluginPanel.vue:70
 msgid "Close navigation"
 msgstr "Aizvērt navigāciju"
 
-#: js/views/AccessList.vue:231
-#: js/views/ElementList.vue:139
-#: js/views/FileList.vue:138
-#: js/views/PageList.vue:255
+#: js/views/AccessList.vue:230 js/views/ElementList.vue:222
+#: js/views/FileList.vue:221 js/views/PageList.vue:259
+#: js/views/PluginPanel.vue:70
 msgid "Open navigation"
 msgstr "Atvērt navigāciju"
 
@@ -2565,139 +2521,136 @@ msgstr "Atvērt navigāciju"
 msgid "Roles"
 msgstr "Lomas"
 
-#: js/views/AccessList.vue:250
-msgid "Users"
-msgstr "Lietotāji"
-
-#: js/views/AccessList.vue:278
-#: js/views/AccessList.vue:330
-#: js/views/AccessList.vue:333
+#: js/views/AccessList.vue:284 js/views/AccessList.vue:329
 msgid "Add access value"
 msgstr "Pievienojiet piekļuves vērtību"
 
-#: js/views/AccessList.vue:340
+#: js/views/AccessList.vue:333
 msgid "Access value"
 msgstr "Piekļuves vērtība"
 
-#: js/views/AccessList.vue:351
+#: js/views/AccessList.vue:349
 msgid "Add"
 msgstr "Pievienot"
 
-#: js/views/AccessList.vue:361
-#: js/views/AccessList.vue:365
-msgid "Delete access values"
-msgstr "Dzēst piekļuves vērtības"
-
-#: js/views/AccessList.vue:372
-msgid "Existing restrictions are not changed and will continue to reference the deleted access values."
-msgstr "Esošie ierobežojumi netiek mainīti un turpinās atsaukties uz dzēstajām piekļuves vērtībām."
-
-#: js/views/ElementDetail.vue:198
+#: js/views/ElementDetail.vue:205
 msgid "Error fetching element"
 msgstr "Kļūda, iegūstot elementu"
 
-#: js/views/ElementDetail.vue:249
+#: js/views/ElementDetail.vue:243
 msgid "Element published successfully"
 msgstr "Veiksmīgi publicēts elements"
 
-#: js/views/ElementDetail.vue:250
+#: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Elements plānots publicēšanai %{date}"
 
-#: js/views/ElementDetail.vue:251
+#: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
 msgstr "Kļūda, publicējot elementu"
 
-#: js/views/ElementDetail.vue:278
-#: js/views/FileDetail.vue:266
-#: js/views/PageDetail.vue:494
+#: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:268
+#: js/views/PageDetail.vue:532
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Ir nederīgi lauki, lūdzu, vispirms novērsiet kļūdas."
 
-#: js/views/ElementDetail.vue:320
+#: js/views/ElementDetail.vue:309
 msgid "Element saved successfully"
 msgstr "Elements veiksmīgi saglabāts"
 
-#: js/views/ElementDetail.vue:333
+#: js/views/ElementDetail.vue:323
 msgid "Error saving element"
 msgstr "Kļūda, saglabājot elementu"
 
-#: js/views/ElementDetail.vue:403
-msgid "Error fetching element versions"
-msgstr "Kļūda elementa versiju iegūšanā"
+#: js/views/ElementDetail.vue:383 js/views/ElementDetail.vue:403
+#: js/views/ElementDetail.vue:408
+msgid "Element"
+msgstr "Elements"
 
-#: js/views/ElementDetail.vue:449
-#: js/views/FileDetail.vue:412
+#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:389
 msgid "Used by"
 msgstr "Izmanto"
 
-#: js/views/ElementList.vue:92
-#: js/views/FileList.vue:91
-#: js/views/PageList.vue:141
+#: js/views/ElementList.vue:121 js/views/FileList.vue:120
+#: js/views/PageList.vue:145
 msgid "publish"
 msgstr "publicēt"
 
-#: js/views/ElementList.vue:96
-#: js/views/FileList.vue:95
-#: js/views/PageList.vue:145
+#: js/views/ElementList.vue:125 js/views/FileList.vue:124
+#: js/views/PageList.vue:149
 msgid "Scheduled"
 msgstr "Plānotais"
 
-#: js/views/ElementList.vue:97
-#: js/views/FileList.vue:96
-#: js/views/PageList.vue:146
+#: js/views/ElementList.vue:126 js/views/FileList.vue:125
+#: js/views/PageList.vue:150
 msgid "Drafts"
 msgstr "Melnraksti"
 
-#: js/views/ElementList.vue:102
-#: js/views/FileList.vue:101
-#: js/views/PageList.vue:151
+#: js/views/ElementList.vue:131 js/views/FileList.vue:130
+#: js/views/PageList.vue:155
 msgid "trashed"
 msgstr "Atkritne"
 
-#: js/views/ElementList.vue:105
-#: js/views/FileList.vue:104
-#: js/views/PageList.vue:154
+#: js/views/ElementList.vue:134 js/views/FileList.vue:133
+#: js/views/PageList.vue:158
 msgid "Available only"
 msgstr "Tikai pieejamie"
 
-#: js/views/ElementList.vue:106
-#: js/views/FileList.vue:105
-#: js/views/PageList.vue:155
+#: js/views/ElementList.vue:135 js/views/FileList.vue:134
+#: js/views/PageList.vue:159
 msgid "Only trashed"
 msgstr "Tikai atkritnē"
 
-#: js/views/ElementList.vue:114
-#: js/views/FileList.vue:113
-#: js/views/PageList.vue:181
+#: js/views/ElementList.vue:143 js/views/FileList.vue:142
+#: js/views/PageList.vue:185
 msgid "Edited by me"
 msgstr "Rediģējis es"
 
-#: js/views/ElementList.vue:119
-#: js/views/FileList.vue:118
-#: js/views/PageList.vue:186
+#: js/views/ElementList.vue:148 js/views/FileList.vue:147
+#: js/views/PageList.vue:190
 msgid "languages"
 msgstr "valodas"
 
-#: js/views/FileDetail.vue:182
+#: js/views/ElementList.vue:251 js/views/FileList.vue:250
+#: js/views/PageList.vue:288
+msgid "Press Enter to open the chat"
+msgstr "Nospiediet Enter, lai atvērtu tērzēšanu"
+
+#: js/views/ElementList.vue:292
+msgid "AI can find and manage shared elements based on your input"
+msgstr ""
+
+#: js/views/ElementList.vue:293 js/views/FileList.vue:292
+#: js/views/PageList.vue:338
+msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
+msgstr ""
+"Nospiediet Enter vai bultiņu, lai atvērtu MI asistentu un pilnveidotu saturu "
+"tērzēšanā"
+
+#: js/views/FileDetail.vue:189
 msgid "Error fetching file"
 msgstr "Kļūda, lejupielādējot failu"
 
-#: js/views/FileDetail.vue:237
+#: js/views/FileDetail.vue:244
 msgid "File published successfully"
 msgstr "Veiksmīgi publicēts fails"
 
-#: js/views/FileDetail.vue:238
+#: js/views/FileDetail.vue:245
 msgid "File scheduled for publishing at %{date}"
 msgstr "Faila publicēšana plānota vietnē %{date}"
 
-#: js/views/FileDetail.vue:311
+#: js/views/FileDetail.vue:313
 msgid "File saved successfully"
 msgstr "Faili ir veiksmīgi saglabāti"
 
-#: js/views/FileDetail.vue:368
-msgid "Error fetching file versions"
-msgstr "Kļūda failu versiju iegūšanā"
+#: js/views/FileDetail.vue:362 js/views/FileDetail.vue:382
+#: js/views/FileDetail.vue:387
+msgid "File"
+msgstr "Failu"
+
+#: js/views/FileList.vue:291
+msgid "AI can find and manage media files based on your input"
+msgstr ""
 
 #: js/views/Login.vue:45
 msgid "Invalid e-mail address"
@@ -2731,243 +2684,131 @@ msgstr "Rādīt paroli"
 msgid "Error"
 msgstr "Kļūda"
 
-#: js/views/PageDetail.vue:459
+#: js/views/Login.vue:175
+msgid "Login"
+msgstr "Pieteikšanās"
+
+#: js/views/PageDetail.vue:198
+msgid ""
+"The user is viewing the page with ID \"%{id}\". When they refer to \"this "
+"page\", use get-page with that ID."
+msgstr ""
+"Lietotājs skata lapu ar ID “%{id}”. Ja tiek minēta “šī lapa”, izmantojiet "
+"get-page ar šo ID."
+
+#: js/views/PageDetail.vue:497
 msgid "Page published successfully"
 msgstr "Lapa publicēta veiksmīgi"
 
-#: js/views/PageDetail.vue:460
+#: js/views/PageDetail.vue:498
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Lapu plānots publicēt %{date}"
 
-#: js/views/PageDetail.vue:547
-msgid "Page saved successfully"
-msgstr "Lapa veiksmīgi saglabāta"
-
-#: js/views/PageDetail.vue:584
-msgid "No page schema for \"content\" found"
-msgstr "Nav atrasta neviena \"content\" lapas shēma"
-
-#: js/views/PageDetail.vue:722
-msgid "Error fetching page versions"
-msgstr "Kļūda lapu versiju iegūšanā"
-
-#: js/views/PageDetail.vue:783
-msgid "Translate page"
-msgstr "Tulkot lapu"
-
-#: js/views/PageDetail.vue:826
-msgid "Metrics"
-msgstr "Metrikas"
-
-#: js/views/PageList.vue:133
-msgid "view"
-msgstr "Skats"
-
-#: js/views/PageList.vue:136
-msgid "List"
-msgstr "Saraksts"
-
-#: js/views/PageList.vue:160
-msgid "status"
-msgstr "statuss"
-
-#: js/views/PageList.vue:164
-msgid "Hidden"
-msgstr "Slēptais"
-
-#: js/views/PageList.vue:170
-msgid "cache"
-msgstr "kešatmiņa"
-
-#: js/views/PageList.vue:284
-msgid "Press Enter to open the chat"
-msgstr "Nospiediet Enter, lai atvērtu tērzēšanu"
-
-#: js/views/PageList.vue:309
-msgid "Generate page based on prompt"
-msgstr "Izveidot lapu, pamatojoties uz uzaicinājumu"
-
-#: js/views/PageList.vue:327
-msgid "AI can create a page and content based on your input and add it to the page tree"
-msgstr "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un pievienot to lapas kokam."
-
-#: js/views/PageList.vue:334
-msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr "Nospiediet Enter vai bultiņu, lai atvērtu MI asistentu un pilnveidotu saturu tērzēšanā"
-
-#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:797
+#: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
 msgid "Rate this page and suggest improvements"
 msgstr "Novērtējiet šo lapu un iesakiet uzlabojumus"
 
-#: js/views/PageDetail.vue:188
-msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
-msgstr "Lietotājs skata lapu ar ID “%{id}”. Ja tiek minēta “šī lapa”, izmantojiet get-page ar šo ID."
+#: js/views/PageDetail.vue:584
+msgid "Page saved successfully"
+msgstr "Lapa veiksmīgi saglabāta"
 
-#: js/components/HistoryDialog.vue
-msgid "Media"
-msgstr "Plašsaziņas līdzekļi"
+#: js/views/PageDetail.vue:621
+msgid "No page schema for \"content\" found"
+msgstr "Nav atrasta neviena \"content\" lapas shēma"
 
-#: js/components/HistoryDialog.vue
-msgid "Content block"
-msgstr "Satura bloks"
+#: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
+#: js/views/PageDetail.vue:839
+msgid "Page"
+msgstr "Lapa"
 
-#: js/components/HistoryDialog.vue
-msgid "Group: %{group} · Position %{num}"
-msgstr "Grupa: %{group} · Pozīcija %{num}"
+#: js/views/PageDetail.vue:797
+msgid "Translate page"
+msgstr "Tulkot lapu"
 
-#: js/components/HistoryDialog.vue
-msgid "Moved from position %{from} to %{to}"
-msgstr "Pārvietots no pozīcijas %{from} uz %{to}"
+#: js/views/PageDetail.vue:842
+msgid "Metrics"
+msgstr "Metrikas"
 
-#: js/components/HistoryDialog.vue
-msgid "%{selected} of %{total} selected"
-msgstr "Atlasīts %{selected} no %{total}"
+#: js/views/PageList.vue:137
+msgid "view"
+msgstr "Skats"
 
-#: js/components/HistoryDialog.vue
-msgid "Unknown date"
-msgstr "Nezināms datums"
+#: js/views/PageList.vue:140
+msgid "List"
+msgstr "Saraksts"
 
-#: js/components/HistoryDialog.vue
-msgid "Block position"
-msgstr "Bloka pozīcija"
+#: js/views/PageList.vue:164
+msgid "status"
+msgstr "statuss"
 
-#: js/components/HistoryDialog.vue
-msgid "Value"
-msgstr "Vērtība"
+#: js/views/PageList.vue:168
+msgid "Hidden"
+msgstr "Slēptais"
 
-#: js/components/HistoryDialog.vue
-msgid "Error fetching versions"
-msgstr "Ienesot versijas, radās kļūda"
+#: js/views/PageList.vue:174
+msgid "cache"
+msgstr "kešatmiņa"
 
-#: js/components/HistoryDialog.vue
-msgid "Retry"
-msgstr "Mēģiniet vēlreiz"
+#: js/views/PageList.vue:313
+msgid "Generate page based on prompt"
+msgstr "Izveidot lapu, pamatojoties uz uzaicinājumu"
 
-#: js/components/HistoryDialog.vue
-msgid "Current changes"
-msgstr "Pašreizējās izmaiņas"
+#: js/views/PageList.vue:331
+msgid ""
+"AI can create a page and content based on your input and add it to the page "
+"tree"
+msgstr ""
+"AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un "
+"pievienot to lapas kokam."
 
-#: js/components/HistoryDialog.vue
-msgid "Scheduled for %{date}"
-msgstr "Paredzēts %{date}"
+#~ msgid "Error deleting access values"
+#~ msgstr "Dzēšot piekļuves vērtības, radās kļūda"
 
-#: js/components/HistoryDialog.vue
-msgid "Select all"
-msgstr "Atlasiet visu"
+#~ msgid "Upscale"
+#~ msgstr "Palielināt izšķirtspēju"
 
-#: js/components/HistoryDialog.vue
-msgid "Block added"
-msgstr "Bloks ir pievienots"
+#~ msgid "Files"
+#~ msgstr "Faili"
 
-#: js/components/HistoryDialog.vue
-msgid "Block removed"
-msgstr "Bloks noņemts"
+#~ msgid "Current"
+#~ msgstr "Pašreizējais"
 
-#: js/components/HistoryDialog.vue
-msgid "Keep current position"
-msgstr "Saglabājiet pašreizējo pozīciju"
+#~ msgid "Apply changes"
+#~ msgstr "Piemērot izmaiņas"
 
-#: js/components/HistoryDialog.vue
-msgid "Keep current value"
-msgstr "Saglabājiet pašreizējo vērtību"
+#~ msgid "Toggle all"
+#~ msgstr "Izvēlēties visus"
 
-#: js/components/HistoryDialog.vue
-msgid "Previous version: Latest saved version"
-msgstr "Iepriekšējā versija: jaunākā saglabātā versija"
+#~ msgid "Revert to version"
+#~ msgstr "Atgriezties pie iepriekšējās versijas"
 
-#: js/components/HistoryDialog.vue
-msgid "Previous version: %{date}"
-msgstr "Iepriekšējā versija: %{date}"
+#~ msgid "Edit element"
+#~ msgstr "Rediģēt elementu"
 
-#: js/components/HistoryDialog.vue
-msgid "%{selected} of %{total} selected for reverting"
-msgstr "%{selected} no %{total} atlasīts atgriešanai"
+#~ msgid "Fullscreen mode"
+#~ msgstr "Pilnekrāna režīms"
 
-#: js/components/HistoryDialog.vue
-msgid "Revert selected changes"
-msgstr "Atsaukt atlasītās izmaiņas"
+#~ msgid "Exit fullscreen mode"
+#~ msgstr "Iziet no pilnekrāna režīma"
 
-#: js/components/HistoryDialog.vue
-msgid "Restore previous version"
-msgstr "Atjaunot iepriekšējo versiju"
+#~ msgid "Open menu"
+#~ msgstr "Atvērt izvēlni"
 
-#: js/components/HistoryField.vue
-msgid "Previous value"
-msgstr "Iepriekšējā vērtība"
+#~ msgid "Delete access values"
+#~ msgstr "Dzēst piekļuves vērtības"
 
-#: js/components/HistoryField.vue
-msgid "New value"
-msgstr "Jauna vērtība"
+#~ msgid ""
+#~ "Existing restrictions are not changed and will continue to reference the "
+#~ "deleted access values."
+#~ msgstr ""
+#~ "Esošie ierobežojumi netiek mainīti un turpinās atsaukties uz dzēstajām "
+#~ "piekļuves vērtībām."
 
-#: js/components/HistoryField.vue
-msgid "Enlarge %{name}"
-msgstr "Palielināt %{name}"
+#~ msgid "Error fetching element versions"
+#~ msgstr "Kļūda elementa versiju iegūšanā"
 
-#: js/components/HistoryField.vue
-msgid "Loading preview"
-msgstr "Notiek priekšskatījuma ielāde"
+#~ msgid "Error fetching file versions"
+#~ msgstr "Kļūda failu versiju iegūšanā"
 
-#: js/components/HistoryField.vue
-msgid "Preview unavailable"
-msgstr "Priekšskatījums nav pieejams"
-
-#: js/components/HistoryField.vue
-msgid "Image preview"
-msgstr "Attēla priekšskatījums"
-
-#: js/components/HistoryField.vue
-msgid "Close preview"
-msgstr "Aizvērt priekšskatījumu"
-
-#: js/components/HistoryField.vue
-msgid "Table preview"
-msgstr "Tabulas priekšskatījums"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} field changed"
-msgid_plural "%{num} fields changed"
-msgstr[0] "%{num} lauks ir mainīts"
-msgstr[1] "%{num} lauki mainīti"
-msgstr[2] "%{num} lauki mainīti"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} block added"
-msgid_plural "%{num} blocks added"
-msgstr[0] "%{num} bloks ir pievienots"
-msgstr[1] "Pievienoti %{num} bloki"
-msgstr[2] "Pievienoti %{num} bloki"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} block removed"
-msgid_plural "%{num} blocks removed"
-msgstr[0] "%{num} bloks ir noņemts"
-msgstr[1] "%{num} bloki ir noņemti"
-msgstr[2] "%{num} bloki ir noņemti"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} block changed"
-msgid_plural "%{num} blocks changed"
-msgstr[0] "%{num} bloks mainīts"
-msgstr[1] "Mainīti %{num} bloki"
-msgstr[2] "Mainīti %{num} bloki"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} block moved"
-msgid_plural "%{num} blocks moved"
-msgstr[0] "%{num} bloks ir pārvietots"
-msgstr[1] "%{num} bloki ir pārvietoti"
-msgstr[2] "%{num} bloki ir pārvietoti"
-
-#: js/components/HistoryDialog.vue
-msgid "%{num} file changed"
-msgid_plural "%{num} files changed"
-msgstr[0] "%{num} fails ir mainīts"
-msgstr[1] "%{num} faili ir mainīti"
-msgstr[2] "%{num} faili ir mainīti"
-
-#: js/components/HistoryField.vue
-msgid "%{num} row omitted"
-msgid_plural "%{num} rows omitted"
-msgstr[0] "%{num} rinda ir izlaista"
-msgstr[1] "%{num} rindas ir izlaistas"
-msgstr[2] "%{num} rindas ir izlaistas"
+#~ msgid "Error fetching page versions"
+#~ msgstr "Kļūda lapu versiju iegūšanā"
