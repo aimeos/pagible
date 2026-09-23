@@ -39,6 +39,7 @@ import ListSort from './ListSort.vue'
 import {
   useAppStore,
   useUserStore,
+  useConfirmStore,
   useLanguageStore,
   useMessageStore,
   useChangeStore
@@ -306,11 +307,13 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
     const changes = useChangeStore()
+    const confirm = useConfirmStore()
 
     return {
       app,
       user,
       changes,
+      confirm,
       languages,
       messages,
       mdiDotsVertical,
@@ -1169,7 +1172,7 @@ export default {
         })
     },
 
-    purge(stat) {
+    async purge(stat) {
       if (!this.user.can('page:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -1181,7 +1184,18 @@ export default {
             return stat._checked && stat.data.id
           })
 
-      if (!list.length) {
+      if (
+        !list.length ||
+        !(await this.confirm.purge(
+          list.map((stat) => ({
+            name: stat.data.name,
+            info: '/' + (stat.data.path || '')
+          })),
+          list.some((stat) => stat.data.has)
+            ? this.$gettext('All subpages of these pages will be purged as well.')
+            : ''
+        ))
+      ) {
         return
       }
 

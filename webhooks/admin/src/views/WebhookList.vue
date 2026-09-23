@@ -100,6 +100,7 @@ export default {
 
   inject: {
     apollo: {},
+    confirm: {},
     messages: {},
     // filter sidebar of the admin, not available outside of its plugin panel
     pluginAside: { default: null },
@@ -372,12 +373,24 @@ export default {
     },
 
     async purge(item = null) {
-      const ids = item ? [item.id] : [...this.checked];
-      const question = item
-        ? `${this.$pgettext("webhooks", "Purge this webhook?")}\n\n${this.label(item)}`
-        : `${this.$pgettext("webhooks", "Purge")} (${ids.length})?`;
+      const list = item
+        ? [item]
+        : this.items.filter((entry) => this.checked.has(entry.id));
 
-      if (this.saving || !ids.length || !window.confirm(question)) return;
+      if (
+        this.saving ||
+        !list.length ||
+        !(await this.confirm.purge(
+          list.map((entry) => ({
+            name: entry.name || entry.endpoint,
+            info: entry.name ? entry.endpoint : "",
+          })),
+        ))
+      ) {
+        return;
+      }
+
+      const ids = list.map((entry) => entry.id);
 
       await this.change(
         async () => {

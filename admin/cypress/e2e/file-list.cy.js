@@ -426,6 +426,8 @@ describe('File List', () => {
     visitFiles([file])
     cy.get('.items .v-list-item .btn-actions.item-menu').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Purge').click()
+    cy.get('.v-dialog .v-list').should('contain', file.name)
+    cy.get('.v-dialog .btn-confirm').click()
     cy.wait('@purgeFile')
   })
 

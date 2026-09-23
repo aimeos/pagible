@@ -1,4 +1,5 @@
 import AccessList from '../../../js/views/AccessList.vue'
+import { useConfirmStore } from '../../../js/stores'
 
 describe('AccessList', () => {
   it('uses the standard shell for access dialogs', () => {
@@ -25,15 +26,13 @@ describe('AccessList', () => {
     cy.get('.v-dialog:visible button[aria-label="Close"]').click()
 
     cy.then(() => {
-      view.deleteDialog = true
-    })
+      view.checked = new Set(['editor'])
+      view.remove()
 
-    cy.contains('.v-dialog:visible .v-toolbar-title', 'Delete access values').should('exist')
-    cy.get('.v-dialog:visible .v-toolbar').should('have.class', 'bg-warning')
-    cy.get('.v-dialog:visible').should('have.attr', 'role', 'alertdialog')
-    cy.get('.v-dialog:visible .v-card-actions').within(() => {
-      cy.contains('.v-btn', 'Cancel').should('exist')
-      cy.contains('.v-btn', 'Delete').should('exist')
+      const confirm = useConfirmStore()
+      expect(confirm.show).to.be.true
+      expect(confirm.items).to.deep.equal([{ name: 'editor' }])
+      confirm.close(false)
     })
   })
 })

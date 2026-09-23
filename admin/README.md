@@ -212,6 +212,7 @@ The admin injects these shared objects into all extension components:
 | Injection | Description |
 |-----------|-------------|
 | `apollo` | Shared Apollo GraphQL client |
+| `confirm` | Purge confirmation, `await confirm.purge([{ name, info }], hint)` resolves to `true` if confirmed |
 | `messages` | Snackbar message store |
 | `pluginAside` | Adds the filter sidebar to top-level panels, `null` in editor sub-panels |
 

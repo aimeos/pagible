@@ -24,7 +24,13 @@ import LoadingSpinner from './LoadingSpinner.vue'
 import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList, listFetchPolicy } from '../graphql'
-import { useAppStore, useUserStore, useMessageStore, useChangeStore } from '../stores'
+import {
+  useAppStore,
+  useUserStore,
+  useMessageStore,
+  useChangeStore,
+  useConfirmStore
+} from '../stores'
 import { debounce, fileurl, filesrcset } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
@@ -159,11 +165,13 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
     const changes = useChangeStore()
+    const confirm = useConfirmStore()
 
     return {
       app,
       user,
       changes,
+      confirm,
       messages,
       mdiDotsVertical,
       mdiPublish,
@@ -479,7 +487,7 @@ export default {
         })
     },
 
-    purge(item) {
+    async purge(item) {
       if (!this.user.can('file:purge')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
@@ -487,7 +495,10 @@ export default {
 
       const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
 
-      if (!list.length) {
+      if (
+        !list.length ||
+        !(await this.confirm.purge(list.map((item) => ({ name: item.name, info: item.mime }))))
+      ) {
         return
       }
 

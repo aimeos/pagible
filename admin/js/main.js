@@ -10,7 +10,7 @@ import apollo, { apolloClient } from './graphql'
 import i18n from './i18n'
 import logger from './log'
 import router, { addPluginRoutes } from './routes'
-import { useMessageStore } from './stores'
+import { useConfirmStore, useMessageStore } from './stores'
 import vuetify from './vuetify'
 import App from './App.vue'
 
@@ -57,6 +57,7 @@ app
 
 // Expose host services to plugin panels and sub-panels.
 app.provide('apollo', apolloClient)
+app.provide('confirm', useConfirmStore(pinia))
 app.provide('messages', useMessageStore(pinia))
 
 // Pinia is active now, so usePluginStore() is safe; register a route per plugin panel.

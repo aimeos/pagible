@@ -6,7 +6,13 @@ import '@/assets/base.css'
 
 // component state like "this" in the view, methods are bound unless a test replaces them
 function vm(data = {}) {
-  const state = { $pgettext: (context, value) => value, messages: { add: cy.stub() }, saving: false, ...data }
+  const state = {
+    $pgettext: (context, value) => value,
+    confirm: { purge: cy.stub().resolves(true) },
+    messages: { add: cy.stub() },
+    saving: false,
+    ...data
+  }
 
   for (const name in WebhookList.methods) {
     state[name] ??= WebhookList.methods[name].bind(state)
@@ -19,7 +25,9 @@ function vm(data = {}) {
 function mount(component, apollo, pluginAside = null) {
   const messages = { add: cy.stub() }
 
-  cy.mount(pluginUi(component), { global: { provide: { apollo, messages, pluginAside } } })
+  const confirm = { purge: cy.stub().resolves(false) }
+
+  cy.mount(pluginUi(component), { global: { provide: { apollo, confirm, messages, pluginAside } } })
 
   return messages
 }
@@ -393,7 +401,6 @@ describe('WebhookList', () => {
     state.toggle()
     expect([...state.checked]).to.deep.equal(['first', 'second'])
 
-    cy.stub(window, 'confirm').returns(true)
     await state.purge()
 
     expect(mutate).to.have.been.calledOnce
@@ -413,7 +420,6 @@ describe('WebhookList', () => {
       items
     })
 
-    cy.stub(window, 'confirm').returns(true)
     await state.purge()
 
     expect(mutate).to.have.been.calledTwice
@@ -425,13 +431,24 @@ describe('WebhookList', () => {
     expect(state.messages.add).to.have.been.calledWith('Error purging webhook:\nError: failed', 'error')
   })
 
-  it('names the webhook when asking before purging it', async () => {
-    const confirm = cy.stub(window, 'confirm').returns(false)
-    const state = vm({ change: cy.stub().resolves() })
+  it('lists the webhooks in the purge dialog and keeps them if cancelled', async () => {
+    const state = vm({
+      change: cy.stub().resolves(),
+      confirm: { purge: cy.stub().resolves(false) },
+      checked: new Set(['first', 'second']),
+      items: [
+        { id: 'first', name: 'Shop', endpoint: 'https://example.com/' },
+        { id: 'second', name: '', endpoint: 'https://example.com/hook' },
+        { id: 'third', name: 'Blog', endpoint: 'https://example.com/blog' }
+      ]
+    })
 
-    await state.purge({ id: 'first', name: 'Shop', endpoint: 'https://example.com/' })
+    await state.purge()
 
-    expect(confirm.lastCall.args[0]).to.equal('Purge this webhook?\n\nShop · https://example.com/')
+    expect(state.confirm.purge).to.have.been.calledOnceWith([
+      { name: 'Shop', info: 'https://example.com/' },
+      { name: 'https://example.com/hook', info: '' }
+    ])
     expect(state.change).not.to.have.been.called
   })
 
