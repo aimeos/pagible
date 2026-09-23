@@ -37,8 +37,8 @@ class WebhookManager
     ];
 
 
-    /** Maximum number of subscriptions deleted at once, same as "dropWebhook" in the GraphQL schema and the admin panel batches */
-    private const DROP_MAX = 100;
+    /** Maximum number of subscriptions purged at once, same as "purgeWebhook" in the GraphQL schema and the admin panel batches */
+    private const PURGE_MAX = 100;
 
     /** Seconds the previous secret still signs deliveries after rotating the secret */
     private const ROTATION_GRACE = 86400;
@@ -85,17 +85,17 @@ class WebhookManager
 
 
     /**
-     * Deletes subscriptions belonging to the current tenant.
+     * Permanently deletes subscriptions belonging to the current tenant.
      *
      * @param list<string> $ids
      */
-    public function drop( array $ids, ?Authenticatable $user ) : int
+    public function purge( array $ids, ?Authenticatable $user ) : int
     {
         $tenant = $this->authorize( $user );
         $ids = array_values( array_unique( array_filter( $ids, 'is_string' ) ) );
 
         // Independent of the limit because subscriptions above a lowered limit are listed too
-        if( $ids === [] || count( $ids ) > self::DROP_MAX ) {
+        if( $ids === [] || count( $ids ) > self::PURGE_MAX ) {
             throw new Exception( 'Invalid webhook selection.' );
         }
 
@@ -111,7 +111,7 @@ class WebhookManager
         } );
 
         foreach( $webhooks as $webhook ) {
-            $this->changed( 'deleted', $actor, $webhook );
+            $this->changed( 'purged', $actor, $webhook );
         }
 
         return $webhooks->count();

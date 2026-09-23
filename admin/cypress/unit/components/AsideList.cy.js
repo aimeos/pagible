@@ -58,14 +58,22 @@ describe('AsideList', () => {
     cy.contains('.v-btn', 'Draft').should('exist')
   })
 
-  it('emits update:filter when reset is clicked after changes', () => {
-    const onUpdate = cy.spy().as('update')
-    cy.mount(AsideList, {
-      props: { content, filter: { status: 'PUBLISHED' }, 'onUpdate:filter': onUpdate },
-    })
+  it('restores the initial filter when reset is clicked after changes', () => {
+    const filter = { status: 'PUBLISHED', publish: null }
+    cy.mount(AsideList, { props: { content, filter } })
     cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })
     cy.contains('.v-btn', 'Draft').click({ force: true })
+    cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: 'DRAFT' })
     cy.contains('.v-btn', 'Reset').click({ force: true })
-    cy.get('@update').should('have.been.called')
+    cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: null })
+  })
+
+  it('resets the filter object in place', () => {
+    const filter = { status: 'PUBLISHED', publish: 'DRAFT' }
+    cy.mount(AsideList, {
+      props: { content, filter, defaults: { status: null, publish: null } },
+    })
+    cy.contains('.v-btn', 'Reset').click({ force: true })
+    cy.wrap(filter).should('deep.equal', { status: null, publish: null })
   })
 })

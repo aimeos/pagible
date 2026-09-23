@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import WebhookList from '../../../src/views/WebhookList.vue'
 import BuiltWebhookList from '../../../dist/WebhookList.js'
 import { pluginUi } from '@/plugin'
@@ -15,10 +16,10 @@ function vm(data = {}) {
 }
 
 // returns the messages stub to check the notifications of the view
-function mount(component, apollo) {
+function mount(component, apollo, pluginAside = null) {
   const messages = { add: cy.stub() }
 
-  cy.mount(pluginUi(component), { global: { provide: { apollo, messages } } })
+  cy.mount(pluginUi(component), { global: { provide: { apollo, messages, pluginAside } } })
 
   return messages
 }
@@ -341,11 +342,20 @@ describe('WebhookList', () => {
 
     const filtered = WebhookList.computed.filtered.call({
       items,
-      statusFilter: null,
+      filter: { status: null },
       term: null
     })
 
     expect(filtered).to.deep.equal(items)
+  })
+
+  it('filters webhooks by status', () => {
+    const items = [fixture(), fixture({ id: 'second', status: false })]
+    const filtered = (status) => WebhookList.computed.filtered.call({ items, filter: { status }, term: '' })
+
+    expect(filtered(null)).to.deep.equal(items)
+    expect(filtered(true)).to.deep.equal([items[0]])
+    expect(filtered(false)).to.deep.equal([items[1]])
   })
 
   it('finds webhooks by their name', () => {
@@ -353,7 +363,7 @@ describe('WebhookList', () => {
 
     const filtered = WebhookList.computed.filtered.call({
       items,
-      statusFilter: null,
+      filter: { status: null },
       term: ' SHOP '
     })
 
@@ -371,8 +381,8 @@ describe('WebhookList', () => {
     expect([...state.checked]).to.deep.equal(['second'])
   })
 
-  it('selects and deletes several webhooks in one mutation', async () => {
-    const mutate = cy.stub().resolves({ data: { dropWebhook: 2 } })
+  it('selects and purges several webhooks in one mutation', async () => {
+    const mutate = cy.stub().resolves({ data: { purgeWebhook: 2 } })
     const state = vm({
       apollo: { mutate },
       checked: new Set(),
@@ -384,7 +394,7 @@ describe('WebhookList', () => {
     expect([...state.checked]).to.deep.equal(['first', 'second'])
 
     cy.stub(window, 'confirm').returns(true)
-    await state.remove()
+    await state.purge()
 
     expect(mutate).to.have.been.calledOnce
     expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['first', 'second'] })
@@ -392,10 +402,10 @@ describe('WebhookList', () => {
     expect(state.checked.size).to.equal(0)
   })
 
-  it('deletes more webhooks than allowed in one mutation in batches', async () => {
+  it('purges more webhooks than allowed in one mutation in batches', async () => {
     const items = Array.from({ length: 150 }, (value, index) => ({ id: `id${index}` }))
     const mutate = cy.stub()
-    mutate.onFirstCall().resolves({ data: { dropWebhook: 100 } })
+    mutate.onFirstCall().resolves({ data: { purgeWebhook: 100 } })
     mutate.onSecondCall().rejects(new Error('failed'))
     const state = vm({
       apollo: { mutate },
@@ -404,24 +414,24 @@ describe('WebhookList', () => {
     })
 
     cy.stub(window, 'confirm').returns(true)
-    await state.remove()
+    await state.purge()
 
     expect(mutate).to.have.been.calledTwice
     expect(mutate.firstCall.args[0].variables.id).to.have.length(100)
     expect(mutate.secondCall.args[0].variables.id).to.deep.equal(items.slice(100).map((item) => item.id))
-    // webhooks deleted before the failure are removed from the list and the selection
+    // webhooks purged before the failure are removed from the list and the selection
     expect(state.items).to.deep.equal(items.slice(100))
     expect([...state.checked]).to.deep.equal(items.slice(100).map((item) => item.id))
-    expect(state.messages.add).to.have.been.calledWith('Error deleting webhook:\nError: failed', 'error')
+    expect(state.messages.add).to.have.been.calledWith('Error purging webhook:\nError: failed', 'error')
   })
 
-  it('names the webhook when asking before deleting it', async () => {
+  it('names the webhook when asking before purging it', async () => {
     const confirm = cy.stub(window, 'confirm').returns(false)
     const state = vm({ change: cy.stub().resolves() })
 
-    await state.remove({ id: 'first', name: 'Shop', endpoint: 'https://example.com/' })
+    await state.purge({ id: 'first', name: 'Shop', endpoint: 'https://example.com/' })
 
-    expect(confirm.lastCall.args[0]).to.equal('Delete this webhook?\n\nShop · https://example.com/')
+    expect(confirm.lastCall.args[0]).to.equal('Purge this webhook?\n\nShop · https://example.com/')
     expect(state.change).not.to.have.been.called
   })
 
@@ -438,7 +448,7 @@ describe('WebhookList', () => {
   })
 
   // mounts the view with a named webhook and one whose secret can't be decrypted
-  function mountList() {
+  function mountList(pluginAside = null) {
     // dialogs show the current destination and warnings, which don't fit into a lower viewport
     // component tests don't center dialogs, so their top edge is at half the viewport height
     cy.viewport(1280, 1200)
@@ -470,7 +480,7 @@ describe('WebhookList', () => {
       }
     })
 
-    return { mutate, messages: mount(WebhookList, { mutate, query }) }
+    return { mutate, messages: mount(WebhookList, { mutate, query }, pluginAside) }
   }
 
   it('uses the CMS list surface and shows the name before the endpoint', () => {
@@ -478,7 +488,6 @@ describe('WebhookList', () => {
 
     cy.get('.v-sheet.box.scroll').should('exist')
     cy.get('.header .search .v-text-field').should('exist')
-    cy.get('.header .search .v-select').should('exist')
     cy.get('.btn-add').should('exist')
     cy.get('.btn-reload').should('exist')
     cy.get('.webhook-server').should('not.exist')
@@ -491,17 +500,31 @@ describe('WebhookList', () => {
     cy.get('[role="listitem"]').last().find('.item-endpoint').should('not.exist')
   })
 
-  it('filters webhooks by status and search term', () => {
-    mountList()
+  it('filters by the status of the admin filter sidebar', () => {
+    // filter as returned by the plugin panel of the admin
+    const filter = reactive({ status: false })
+    const pluginAside = cy.stub().returns(filter)
+    mountList(pluginAside)
 
-    cy.get('.header .search .v-select').click()
-    cy.get('.v-overlay-container .v-list-item').contains('Active').click()
+    cy.get('.v-list.items > .v-list-item').should('have.length', 1)
+    cy.contains('https://example.com/archive/').should('exist')
+    cy.then(() => {
+      const [content, defaults] = pluginAside.firstCall.args
+
+      expect(defaults).to.deep.equal({ status: null })
+      expect(content()[0].items.map((item) => item.value)).to.deep.equal([
+        { status: null },
+        { status: true },
+        { status: false }
+      ])
+      filter.status = true
+    })
     cy.get('.v-list.items > .v-list-item').should('have.length', 1)
     cy.contains('https://example.com/orders/').should('exist')
+  })
 
-    cy.get('.header .search .v-select').click()
-    cy.get('.v-overlay-container .v-list-item').contains('All').click()
-    cy.get('.v-list.items > .v-list-item').should('have.length', 2)
+  it('filters webhooks by search term', () => {
+    mountList()
 
     cy.get('.search input').first().type('orders')
     cy.get('.v-list.items > .v-list-item').should('have.length', 1)

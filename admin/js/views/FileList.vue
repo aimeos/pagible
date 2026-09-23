@@ -56,18 +56,11 @@ export default {
       help: false,
       scrollTop: 0,
       defaults: defaults,
-      filter: { ...defaults, ...this.user?.getData('file', 'filter') }
+      filter: this.user.filter('file', defaults)
     }
   },
 
   watch: {
-    filter: {
-      deep: true,
-      handler(val) {
-        this.user.saveData('file', 'filter', val)
-      }
-    },
-
     chatOpen(val) {
       if (!val && this.chatPending) {
         this.chatPending = false
@@ -306,7 +299,7 @@ export default {
   </v-main>
 
   <AsideList
-    v-model:filter="filter"
+    :filter="filter"
     :defaults="defaults"
     :content="asideContent"
   />

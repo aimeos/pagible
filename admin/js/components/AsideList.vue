@@ -11,8 +11,6 @@ export default {
     filter: { type: Object, required: true }
   },
 
-  emits: ['update:filter'],
-
   setup() {
     const drawer = useDrawerStore()
     return { drawer, mdiCloseCircleOutline }
@@ -54,12 +52,14 @@ export default {
       return this.filter[key] !== null ? true : false
     },
 
+    reset() {
+      Object.assign(this.filter, this.initial)
+    },
+
     toggle(item) {
       for (const key in item.value) {
         this.filter[key] = item.value[key]
       }
-
-      this.$emit('update:filter', this.filter)
     }
   }
 }
@@ -70,7 +70,7 @@ export default {
     <v-btn
       class="reset"
       :disabled="disabled"
-      @click="$emit('update:filter', { ...initial })"
+      @click="reset()"
       :prepend-icon="mdiCloseCircleOutline"
       variant="text"
       >{{ $gettext('Reset') }}</v-btn

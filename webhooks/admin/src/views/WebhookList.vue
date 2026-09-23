@@ -3,11 +3,14 @@
 <script>
 import gql from "graphql-tag";
 import {
-  mdiDelete,
+  mdiCheckCircleOutline,
+  mdiCloseCircleOutline,
+  mdiDeleteForever,
   mdiDotsVertical,
   mdiKeyVariant,
   mdiMagnify,
   mdiPencil,
+  mdiPlaylistCheck,
   mdiPlus,
   mdiRefresh,
 } from "@mdi/js";
@@ -86,39 +89,48 @@ const PING = gql`
   }
 `;
 
-const DROP = gql`
-  mutation DropWebhook($id: [ID!]!) {
-    dropWebhook(id: $id)
+const PURGE = gql`
+  mutation PurgeWebhook($id: [ID!]!) {
+    purgeWebhook(id: $id)
   }
 `;
 
 export default {
   name: "WebhookList",
 
-  inject: ["apollo", "messages"],
+  inject: {
+    apollo: {},
+    messages: {},
+    // filter sidebar of the admin, not available outside of its plugin panel
+    pluginAside: { default: null },
+  },
 
-  data: () => ({
-    dialog: false,
-    loading: true,
-    saving: false,
-    testing: false,
-    items: [],
-    checked: new Set(),
-    names: [],
-    selected: null,
-    term: "",
-    statusFilter: null,
-    url: "",
-    name: "",
-    events: [],
-    status: false,
-    secret: "",
-    server: { enabled: true, blocked: null },
-  }),
+  data() {
+    const defaults = { status: null };
+
+    return {
+      dialog: false,
+      loading: true,
+      saving: false,
+      testing: false,
+      items: [],
+      checked: new Set(),
+      names: [],
+      selected: null,
+      term: "",
+      filter: this.pluginAside?.(() => this.asideContent, defaults) ?? defaults,
+      url: "",
+      name: "",
+      events: [],
+      status: false,
+      secret: "",
+      server: { enabled: true, blocked: null },
+    };
+  },
 
   setup() {
     return {
-      mdiDelete,
+      mdiDeleteForever,
       mdiDotsVertical,
       mdiKeyVariant,
       mdiMagnify,
@@ -151,7 +163,7 @@ export default {
       const term = (this.term ?? "").trim().toLocaleLowerCase();
 
       return this.items.filter((item) => {
-        if (this.statusFilter !== null && item.status !== this.statusFilter)
+        if (this.filter.status !== null && item.status !== this.filter.status)
           return false;
 
         return (
@@ -163,13 +175,39 @@ export default {
       });
     },
 
-    statusItems() {
+    asideContent() {
       return [
-        { title: this.$pgettext("webhooks", "All"), value: null },
-        { title: this.$pgettext("webhooks", "Active"), value: true },
-        { title: this.$pgettext("webhooks", "Inactive"), value: false },
+        {
+          key: "status",
+          title: this.$pgettext("webhooks", "Status"),
+          items: [
+            {
+              title: this.$pgettext("webhooks", "All"),
+              icon: mdiPlaylistCheck,
+              value: { status: null },
+            },
+            {
+              title: this.$pgettext("webhooks", "Active"),
+              icon: mdiCheckCircleOutline,
+              value: { status: true },
+            },
+            {
+              title: this.$pgettext("webhooks", "Inactive"),
+              icon: mdiCloseCircleOutline,
+              value: { status: false },
+            },
+          ],
+        },
       ];
     },
+  },
+
+  created() {
+    // the selection may contain webhooks which aren't shown anymore
+    this.$watch(
+      () => [this.filter.status, this.term],
+      () => (this.checked = new Set()),
+    );
   },
 
   mounted() {
@@ -333,22 +371,22 @@ export default {
       this.testing = false;
     },
 
-    async remove(item = null) {
+    async purge(item = null) {
       const ids = item ? [item.id] : [...this.checked];
       const question = item
-        ? `${this.$pgettext("webhooks", "Delete this webhook?")}\n\n${this.label(item)}`
-        : `${this.$pgettext("webhooks", "Delete")} (${ids.length})?`;
+        ? `${this.$pgettext("webhooks", "Purge this webhook?")}\n\n${this.label(item)}`
+        : `${this.$pgettext("webhooks", "Purge")} (${ids.length})?`;
 
       if (this.saving || !ids.length || !window.confirm(question)) return;
 
       await this.change(
         async () => {
-          // the server deletes up to 100 webhooks at once, see dropWebhook in the GraphQL schema
+          // the server purges up to 100 webhooks at once, see purgeWebhook in the GraphQL schema
           for (let i = 0; i < ids.length; i += 100) {
             const removed = new Set(ids.slice(i, i + 100));
 
             await this.apollo.mutate({
-              mutation: DROP,
+              mutation: PURGE,
               variables: { id: [...removed] },
             });
             this.items = this.items.filter((entry) => !removed.has(entry.id));
@@ -357,7 +395,7 @@ export default {
             );
           }
         },
-        this.$pgettext("webhooks", "Error deleting webhook"),
+        this.$pgettext("webhooks", "Error purging webhook"),
       );
     },
 
@@ -460,16 +498,6 @@ export default {
       }
     },
   },
-
-  watch: {
-    statusFilter() {
-      this.checked = new Set();
-    },
-
-    term() {
-      this.checked = new Set();
-    },
-  },
 };
 </script>
 
@@ -514,11 +542,11 @@ export default {
             </template>
             <v-list-item>
               <v-btn
-                :prepend-icon="mdiDelete"
+                :prepend-icon="mdiDeleteForever"
                 :disabled="saving"
                 variant="text"
-                @click="remove()"
-                >{{ $pgettext("webhooks", "Delete") }} ({{
+                @click="purge()"
+                >{{ $pgettext("webhooks", "Purge") }} ({{
                   checked.size
                 }})</v-btn
               >
@@ -544,13 +572,6 @@ export default {
             variant="underlined"
             hide-details
             clearable
-          />
-          <v-select
-            v-model="statusFilter"
-            :items="statusItems"
-            :label="$pgettext('webhooks', 'Status')"
-            variant="underlined"
-            hide-details
           />
         </div>
 
@@ -613,11 +634,11 @@ export default {
                 <v-divider />
                 <v-list-item>
                   <v-btn
-                    :prepend-icon="mdiDelete"
+                    :prepend-icon="mdiDeleteForever"
                     :disabled="saving"
                     variant="text"
-                    @click="remove(item)"
-                    >{{ $pgettext("webhooks", "Delete") }}</v-btn
+                    @click="purge(item)"
+                    >{{ $pgettext("webhooks", "Purge") }}</v-btn
                   >
                 </v-list-item>
               </CmsActionMenu>
@@ -818,5 +839,4 @@ export default {
       </template>
     </template>
   </CmsDialog>
-
 </template>

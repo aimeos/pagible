@@ -18,43 +18,48 @@ msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooki"
 
-#: src/views/WebhookList.vue:134
+#: src/views/WebhookList.vue:144
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr "Webhooki ir atspējoti servera konfigurācijā, notikumi netiek sūtīti"
 
-#: src/views/WebhookList.vue:141
+#: src/views/WebhookList.vue:151
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration"
 msgstr "Visas piegādes ir bloķētas servera konfigurācijā"
 
-#: src/views/WebhookList.vue:168
+#: src/views/WebhookList.vue:180
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Statuss"
+
+#: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "All"
 msgstr "Visi"
 
-#: src/views/WebhookList.vue:169 src/views/WebhookList.vue:647
-#: src/views/WebhookList.vue:731 src/views/WebhookList.vue:735
+#: src/views/WebhookList.vue:188 src/views/WebhookList.vue:685
+#: src/views/WebhookList.vue:777 src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktīvs"
 
-#: src/views/WebhookList.vue:170 src/views/WebhookList.vue:648
+#: src/views/WebhookList.vue:193 src/views/WebhookList.vue:686
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Neaktīvs"
 
-#: src/views/WebhookList.vue:210
+#: src/views/WebhookList.vue:242
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Kļūda, ielādējot webhookus"
 
-#: src/views/WebhookList.vue:274
+#: src/views/WebhookList.vue:306
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Kļūda, saglabājot webhooku"
 
-#: src/views/WebhookList.vue:279
+#: src/views/WebhookList.vue:311
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -63,229 +68,224 @@ msgstr ""
 "Vai atjaunot šī webhooka slepeno atslēgu? Saņēmējiem jānorāda jaunā slepenā "
 "atslēga."
 
-#: src/views/WebhookList.vue:298
+#: src/views/WebhookList.vue:330
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Kļūda, atjaunojot webhooka slepeno atslēgu"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:350
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Testa notikums piegādāts"
 
-#: src/views/WebhookList.vue:324 src/views/WebhookList.vue:331
+#: src/views/WebhookList.vue:356 src/views/WebhookList.vue:363
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Testa notikums neizdevās"
 
-#: src/views/WebhookList.vue:339
+#: src/views/WebhookList.vue:371
 msgctxt "webhooks"
-msgid "Delete this webhook?"
-msgstr "Vai dzēst šo webhooku?"
+msgid "Purge this webhook?"
+msgstr "Vai neatgriezeniski dzēst šo webhooku?"
 
-#: src/views/WebhookList.vue:340 src/views/WebhookList.vue:521
-#: src/views/WebhookList.vue:620
+#: src/views/WebhookList.vue:372 src/views/WebhookList.vue:566
+#: src/views/WebhookList.vue:658
 msgctxt "webhooks"
-msgid "Delete"
-msgstr "Dzēst"
+msgid "Purge"
+msgstr "Dzēst neatgriezeniski"
 
-#: src/views/WebhookList.vue:360
+#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
-msgid "Error deleting webhook"
-msgstr "Kļūda, dzēšot webhooku"
+msgid "Error purging webhook"
+msgstr "Kļūda, neatgriezeniski dzēšot webhooku"
 
-#: src/views/WebhookList.vue:368
+#: src/views/WebhookList.vue:400
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Slepenā atslēga nokopēta"
 
-#: src/views/WebhookList.vue:373
+#: src/views/WebhookList.vue:405
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Neizdevās nokopēt slepeno atslēgu"
 
-#: src/views/WebhookList.vue:382 src/views/WebhookList.vue:417
+#: src/views/WebhookList.vue:414 src/views/WebhookList.vue:458
 msgctxt "webhooks"
 msgid "None"
 msgstr "Nav"
 
-#: src/views/WebhookList.vue:395
+#: src/views/WebhookList.vue:427
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Savienojums neizdevās"
 
-#: src/views/WebhookList.vue:396
+#: src/views/WebhookList.vue:428
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Piekļuve liegta"
 
-#: src/views/WebhookList.vue:397
+#: src/views/WebhookList.vue:429
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Nevar atšifrēt slepeno atslēgu, atjaunojiet to"
 
-#: src/views/WebhookList.vue:398
+#: src/views/WebhookList.vue:433
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Bloķēts servera konfigurācijas dēļ"
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:747
+#: src/views/WebhookList.vue:437 src/views/WebhookList.vue:793
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Nav derīgs URL"
 
-#: src/views/WebhookList.vue:400
+#: src/views/WebhookList.vue:438
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Rinda nav pieejama"
 
-#: src/views/WebhookList.vue:401
+#: src/views/WebhookList.vue:439
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Resursdators nav atrasts"
 
-#: src/views/WebhookList.vue:402
+#: src/views/WebhookList.vue:440
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Atbilde ir pārāk liela"
 
-#: src/views/WebhookList.vue:403
+#: src/views/WebhookList.vue:444
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Pieprasījuma noildze"
 
-#: src/views/WebhookList.vue:408
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Novirzīšanām netiek sekots"
 
-#: src/views/WebhookList.vue:409
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Piegāde neizdevās"
 
-#: src/views/WebhookList.vue:481
+#: src/views/WebhookList.vue:526
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Sūtīt parakstītus paziņojumus, kad mainās publicētais saturs."
 
-#: src/views/WebhookList.vue:502 src/views/WebhookList.vue:583
+#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:621
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Pārslēgt atlasi"
 
-#: src/views/WebhookList.vue:529 src/views/WebhookList.vue:687
-#: src/views/WebhookList.vue:706
+#: src/views/WebhookList.vue:574 src/views/WebhookList.vue:725
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Pievienot webhooku"
 
-#: src/views/WebhookList.vue:543
+#: src/views/WebhookList.vue:588
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Meklēt"
 
-#: src/views/WebhookList.vue:551
-msgctxt "webhooks"
-msgid "Status"
-msgstr "Statuss"
-
-#: src/views/WebhookList.vue:559
+#: src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Atsvaidzināt"
 
-#: src/views/WebhookList.vue:600
+#: src/views/WebhookList.vue:638
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Rediģēt"
 
-#: src/views/WebhookList.vue:610
+#: src/views/WebhookList.vue:648
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Atjaunot"
 
-#: src/views/WebhookList.vue:653
+#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Pēdējā veiksmīgā izpilde"
 
-#: src/views/WebhookList.vue:657
+#: src/views/WebhookList.vue:695
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Pēdējā kļūda"
 
-#: src/views/WebhookList.vue:664
+#: src/views/WebhookList.vue:702
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Apturēts līdz"
 
-#: src/views/WebhookList.vue:674
+#: src/views/WebhookList.vue:712
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Iekraušana"
 
-#: src/views/WebhookList.vue:680
+#: src/views/WebhookList.vue:718
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Nav atrasts neviens ieraksts"
 
-#: src/views/WebhookList.vue:681
+#: src/views/WebhookList.vue:719
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Nav konfigurētu webhooku."
 
-#: src/views/WebhookList.vue:703
+#: src/views/WebhookList.vue:747
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhooka slepenā atslēga"
 
-#: src/views/WebhookList.vue:705
+#: src/views/WebhookList.vue:749
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Rediģēt webhooku"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:759
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Nokopējiet šo slepeno atslēgu tagad. Tā vairs netiks parādīta."
 
-#: src/views/WebhookList.vue:744
+#: src/views/WebhookList.vue:790
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS gala punkta URL"
 
-#: src/views/WebhookList.vue:768
+#: src/views/WebhookList.vue:816
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Notikumi"
 
-#: src/views/WebhookList.vue:775
+#: src/views/WebhookList.vue:823
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Nosaukums"
 
-#: src/views/WebhookList.vue:785
+#: src/views/WebhookList.vue:833
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Gatavs"
 
-#: src/views/WebhookList.vue:788
+#: src/views/WebhookList.vue:836
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopēt slepeno atslēgu"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:850
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testēt"
 
-#: src/views/WebhookList.vue:805
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Atcelt"
 
-#: src/views/WebhookList.vue:816
+#: src/views/WebhookList.vue:862
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Saglabāt"

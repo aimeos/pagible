@@ -1,213 +1,270 @@
 # PagibleAI CMS Admin Backend
 
-Admin panel for [Pagible CMS](https://pagible.com) built with Vue 3, Vuetify, and CKEditor 5.
+Admin panel for [Pagible CMS](https://pagible.com), built with Vue 3, Vuetify and CKEditor 5.
 
-This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible). For full installation, use:
+This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible). To install the full CMS, use:
 
 ```bash
 composer require aimeos/pagible
 ```
 
+## Contents
+
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Directory Structure](#directory-structure)
+- [Architecture](#architecture)
+- [Admin Extensions](#admin-extensions)
+- [License](#license)
+
 ## Tech Stack
 
-- **Vue 3** with Composition API
-- **Vite** - Build tool and dev server
-- **Vuetify** - Material Design component library
-- **Pinia** - State management
-- **Apollo Client** - GraphQL (batch + file upload support)
-- **CKEditor 5** - Rich text editing
-- **Chart.js** - Metrics visualization
-- **vue3-gettext** - Internationalization (33 languages)
-- **Cypress** - Component and E2E testing
+| Library | Purpose |
+|---------|---------|
+| **Vue 3** | UI framework (Composition API) |
+| **Vite** | Build tool and dev server |
+| **Vuetify** | Material Design component library |
+| **Pinia** | State management |
+| **Apollo Client** | GraphQL client with batching and file uploads |
+| **CKEditor 5** | Rich text editing |
+| **Chart.js** | Metrics visualization |
+| **vue3-gettext** | Internationalization (33 languages) |
+| **Cypress** | Component and E2E testing |
 
-## Configuration
-
-After installation, the configuration is available in `config/cms/admin.php`:
-
-### Theme Colors
-
-The `colors` section defines Vuetify theme colors for `light` and `dark` modes. Each theme contains 14 color tokens (background, surface, primary, secondary, error, info, success, warning, text-primary, text-secondary, map-accent, border, etc.) using 6-char hex format (`#RRGGBB`).
-
-### Media Proxy
-
-| Option | Env Variable | Default | Description |
-|--------|-------------|---------|-------------|
-| `proxy.maxsize` | `CMS_PROXY_MAXSIZE` | `10` | Maximum downloadable file size in MB via proxy |
-| `proxy.timeout` | `CMS_PROXY_TIMEOUT` | `30` | Stream timeout in seconds |
-| `proxy.middleware` | | `['throttle:cms-proxy']` | Middleware applied to the proxy route |
-
-## Commands
-
-### cms:install:admin
-
-Installs the Pagible CMS admin package.
+## Installation
 
 ```bash
 php artisan cms:install:admin
 ```
 
-Publishes admin assets and configuration to `public/vendor/cms/admin` and `config/cms/admin.php`.
+This publishes the admin assets to `public/vendor/cms/admin` and the configuration to `config/cms/admin.php`.
 
-## Project Setup
+## Configuration
+
+All options are in `config/cms/admin.php`.
+
+### Theme Colors
+
+The `colors` section defines the Vuetify theme colors for the `light` and `dark` modes. Each theme contains 14 color tokens, e.g. `background`, `surface`, `primary`, `secondary`, `error`, `info`, `success`, `warning`, `text-primary`, `text-secondary`, `map-accent` and `border`. Values use the 6-digit hex format (`#RRGGBB`).
+
+### Media Proxy
+
+| Option | Env variable | Default | Description |
+|--------|--------------|---------|-------------|
+| `proxy.maxsize` | `CMS_PROXY_MAXSIZE` | `10` | Maximum file size in MB downloadable via the proxy |
+| `proxy.timeout` | `CMS_PROXY_TIMEOUT` | `30` | Stream timeout in seconds |
+| `proxy.middleware` | | `['throttle:cms-proxy']` | Middleware applied to the proxy route |
+
+## Development
+
+Install the dependencies first:
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the Vite dev server with hot reload |
+| `npm run build` | Compile and minify for production |
+| `npm run test:unit` | Run [Cypress component tests](https://on.cypress.io/component) headless |
+| `npm run test:unit:dev` | Open the Cypress component test runner |
+| `npm run test:e2e` | Run [Cypress](https://www.cypress.io/) E2E tests against the production build |
+| `npm run test:e2e:dev` | Open the Cypress E2E runner against the Vite dev server |
+| `npm run lint` | Lint and auto-fix with [ESLint](https://eslint.org/) |
+| `npm run format` | Format the code with Prettier |
+| `npm run gettext:extract` | Extract translatable strings |
+| `npm run gettext:compile` | Compile translations |
 
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Component Tests with [Cypress Component Testing](https://on.cypress.io/component)
-
-```sh
-npm run test:unit:dev # or `npm run test:unit` for headless testing
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+`test:e2e:dev` is much faster during development, but always test the production build before deploying (e.g. in CI):
 
 ```sh
 npm run build
 npm run test:e2e
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
-
-### Other Commands
-
-```sh
-npm run format           # Prettier formatting
-npm run gettext:extract  # Extract translatable strings
-npm run gettext:compile  # Compile translations
-```
+> [!NOTE]
+> The running application serves a published copy of `dist/`. After `npm run build`, run `php artisan vendor:publish --tag=cms-admin --force` to see the changes.
 
 ## Directory Structure
 
 ```
 admin/
-├── src/
-│   ├── main.js              # App entry point and plugin setup
-│   ├── App.vue              # Root component (provides helpers via inject)
-│   ├── routes.js            # Vue Router config (login, pages, elements, files)
-│   ├── stores.js            # Pinia stores (auth, app, config, clipboard, etc.)
-│   ├── graphql.js           # Apollo Client setup (batch + upload links)
-│   ├── i18n.js              # Internationalization config
-│   ├── vuetify.js           # Vuetify theme and locale config
-│   ├── audio.js             # Audio recording and transcription
-│   ├── utils.js             # UID generation
-│   ├── components/          # Reusable components (30+)
-│   ├── views/               # Page views (Login, PageList/Detail, etc.)
-│   ├── fields/              # Dynamic field type components (23+)
-│   └── assets/              # Stylesheets
-├── tests/components/        # Cypress component tests
-├── cypress/e2e/             # Cypress E2E tests
-├── i18n/                    # Translation JSON files (33 languages)
-└── index.html               # HTML template with data-attribute config
+├── js/
+│   ├── main.js          # App entry point and plugin setup
+│   ├── App.vue          # Root component
+│   ├── routes.js        # Vue Router config (login, pages, elements, files)
+│   ├── stores.js        # Pinia stores
+│   ├── graphql.js       # Apollo Client setup (batch + upload links)
+│   ├── config.js        # Configuration read from the #app data attributes
+│   ├── plugin.js        # Public component surface for admin extensions
+│   ├── ai.js            # AI text generation, translation and transcription
+│   ├── i18n.js          # Internationalization config
+│   ├── vuetify.js       # Vuetify theme and locale config
+│   ├── components/      # Reusable components
+│   ├── views/           # Page views (Login, PageList, PageDetail, etc.)
+│   ├── fields/          # Dynamic field type components
+│   └── assets/          # Stylesheets
+├── cypress/
+│   ├── unit/            # Cypress component tests
+│   └── e2e/             # Cypress E2E tests
+├── i18n/                # Translation files (33 languages)
+├── src/                 # Laravel service provider, controllers, commands
+├── tests/               # PHPUnit tests
+└── index.html           # Development HTML template with data-attribute config
 ```
 
-## Architecture Notes
+## Architecture
 
-### Admin Extensions
+### App Configuration
 
-Composer packages register top-level panels and page, element or file editor sub-panels with `Aimeos\Cms\Plugin::register()`. The component URL must point to a Vite-built ES module whose default export is a Vue component. Components are loaded lazily; the admin host supplies the application shell for top-level panels and injects the shared `apollo` client and `messages` store.
+The app reads its configuration from data attributes of the `#app` element (see `js/config.js`):
 
-External panels should use the host-owned Vuetify and CMS components exported as `pluginComponents` from `js/plugin.js`. This keeps one Vuetify runtime and gives extensions the same common form, layout, list, feedback and navigation primitives as the core admin. Components declared by the extension itself are preserved when the host wraps it.
+| Attribute | Description |
+|-----------|-------------|
+| `data-urladmin` | Admin base URL |
+| `data-urlgraphql` | GraphQL endpoint |
+| `data-urlproxy` | Media proxy URL (for CORS) |
+| `data-urlpage` / `data-urlfile` | Public page and file URLs |
+| `data-locales` | Available content locales (JSON) |
+| `data-theme` | Vuetify theme (JSON) |
+| `data-plugins` | Registered extension panels (JSON) |
 
-CMS components are loaded only when rendered. `CmsActionMenu` provides the responsive action menu/dialog shell, while `CmsDialog` provides the standard dialog header, content and action layout. `CmsFilePicker` provides the standard media dialog; it accepts `v-model`, optional `filter` and `grid` properties, and emits `add` with the selected file. `CmsLoadingSpinner` provides the shared loading indicator.
+### GraphQL API
 
-Extensions keep their translations in their own package by registering a locale URL with `Plugin::i18n()`, then assigning its key as the panel's `i18n` value. Catalog URLs contain one `{locale}` placeholder and point to split JSON files published with the extension. Use the same key as the gettext context for all extension strings, for example `$pgettext('commerce', 'Products')`. The host loads the active package catalog into its shared gettext instance without allowing it to overwrite core or other package contexts.
+All data operations use Apollo Client over GraphQL with two transport links:
 
-Application-shell components, Vuetify Labs components and heavy specialized widgets are intentionally outside this public surface. Add reusable components to `pluginComponents` together with their contract tests; otherwise, an extension must register and maintain the component itself. All extension-facing labels and messages must be translated.
+- **Batch link**: groups up to 50 operations sent within 20ms
+- **Upload link**: handles file uploads via `apollo-upload-client`
 
-### Dynamic Field System
+On 401/unauthenticated errors, the client redirects to the login view.
 
-Field components in `src/fields/` (String, Select, Html, Table, Images, etc.) are auto-registered at startup via `import.meta.glob()` in `main.js`. They follow a common interface:
+### Permissions
+
+UI visibility is driven by the permission object in `user.me.permission`. Check access with `user.can('page:view')` or `user.can(['page:save', 'page:delete'])` (returns `true` if any permission matches). Common permissions:
+
+| Permissions | Area |
+|-------------|------|
+| `page:view`, `page:save` | Pages |
+| `element:view`, `element:save` | Shared elements |
+| `file:view`, `file:add` | Files |
+| `audio:transcribe`, `text:write`, `text:translate` | AI features |
+
+Route guards enforce permissions and redirect unauthenticated users to the login view.
+
+### State Management
+
+The Pinia stores are defined in `js/stores.js`:
+
+| Store | Purpose |
+|-------|---------|
+| `useUserStore` | Authentication, user info, permission checks, per-user settings |
+| `useAppStore` | URL configuration |
+| `useSchemaStore` | Element and content schemas |
+| `useLanguageStore` | Available languages |
+| `useMessageStore` | Snackbar notification queue |
+| `useDrawerStore` / `useSideStore` | UI panel state |
+| `useClipboardStore` | Copy/paste storage |
+| `useDirtyStore` | Unsaved changes tracking |
+| `useChangeStore` | Saved items pending update in the lists |
+| `useViewStack` | Stack of opened detail views |
+| `usePluginStore` | Registered extension panels |
+
+### View Stack Navigation
+
+Instead of route-based dialogs, detail views are opened on a stack using `openView()` and `closeView()` of `useViewStack`. This enables slide-in transitions and nested editing (e.g. page → file → element).
+
+### Dynamic Fields
+
+Field components in `js/fields/` (String, Select, Html, Table, Images, etc.) are registered automatically via `import.meta.glob()`. They are rendered based on the schema configuration, so pages and elements can define their own field layouts. All fields share a common interface:
 
 - **Props**: `modelValue`, `config`, `assets`, `readonly`, `context`
 - **Emits**: `update:modelValue`, `error`
 
-Fields are rendered dynamically based on schema configuration, allowing pages and elements to define their own field layouts.
+### AI Features
 
-### GraphQL API
+Permission-gated AI functions in `js/ai.js`:
 
-All data operations use Apollo Client through GraphQL. Two transport links handle different needs:
-
-- **Batch Link** - Groups multiple queries (up to 50 ops, 20ms interval)
-- **Upload Link** - Handles file uploads via `apollo-upload-client`
-
-On 401/unauthenticated errors, the client automatically redirects to the login view.
-
-### View Stack Navigation
-
-Instead of route-based dialogs, the app uses a stack-based overlay system. `App.vue` provides `openView()` and `closeView()` helpers via Vue's provide/inject, enabling modal-like slide-in transitions for detail views.
-
-### Permission System
-
-UI visibility is driven by a JSON permission object stored in `auth.me.permission`. Check access with `auth.can('page:view')` or `auth.can(['page:save', 'page:delete'])`. Common permissions:
-
-- `page:view`, `page:save` - Page management
-- `element:view`, `element:save` - Shared elements
-- `file:view`, `file:add` - File management
-- `audio:transcribe`, `text:write`, `text:translate` - AI features
-
-Route guards enforce permissions and redirect unauthenticated users to login.
-
-### State Management
-
-Nine focused Pinia stores in `src/stores.js`:
-
-- **useAuthStore** - Authentication, user info, permission checks
-- **useAppStore** - URL configuration from HTML data attributes
-- **useConfigStore** - App config (dot-notation access)
-- **useSchemaStore** - Element/content schemas
-- **useLanguageStore** - 180+ language translations
-- **useMessageStore** - Snackbar notification queue
-- **useDrawerStore** / **useSideStore** - UI panel state
-- **useClipboardStore** - Copy/paste storage
+- **Text generation**: `write(prompt, context, files)`
+- **Translation**: `translate(texts, to, from, context)`
+- **Audio transcription**: `transcribe(file)`, recorded via the MediaRecorder API and AudioWorklet
 
 ### Internationalization
 
-All user-facing strings must use `$gettext('message')` or `$pgettext('context', 'message')`. Translations are in `i18n/*.json` for 33 languages. Run `npm run gettext:extract` after adding new strings and `npm run gettext:compile` after updating translations.
+All user-facing strings must use `$gettext('message')` or `$pgettext('context', 'message')`. Translations for 33 languages are in `i18n/`. Run `npm run gettext:extract` after adding new strings and `npm run gettext:compile` after updating translations.
 
-### App Configuration
+## Admin Extensions
 
-The app reads configuration from `index.html` data attributes on the `#app` element:
+Composer packages can add their own panels to the admin backend.
 
-- `data-urladmin` - Admin base URL
-- `data-urlgraphql` - GraphQL endpoint
-- `data-urlproxy` - Media proxy URL (for CORS)
-- `data-urlpage` / `data-urlfile` - Public page/file URLs
-- `data-config` - JSON config (locales, themes)
-- `data-schemas` - JSON field schemas (content, meta, config)
+### Registering Panels
 
-### AI Features
+Register top-level panels, or sub-panels for the page, element or file editors, with `Aimeos\Cms\Plugin::register()`:
 
-The app integrates AI capabilities (permission-gated):
+- The component URL must point to a Vite-built ES module whose default export is a Vue component.
+- Components are loaded lazily.
+- For top-level panels, the admin supplies the application shell.
 
-- **Text generation** - `write(prompt, context, files)`
-- **Translation** - `translate(texts, to, from, context)`
-- **Audio transcription** - `transcribe(file)` via MediaRecorder API + AudioWorklet
+The admin injects these shared objects into all extension components:
+
+| Injection | Description |
+|-----------|-------------|
+| `apollo` | Shared Apollo GraphQL client |
+| `messages` | Snackbar message store |
+| `pluginAside` | Adds the filter sidebar to top-level panels, `null` in editor sub-panels |
+
+`pluginAside(content, defaults)` shows the filter sidebar of the core list views together with its toggle button in the app bar. `content` is a function returning the filter groups, so translated labels stay up to date, and `defaults` contains the initial filter values used on reset. It returns the reactive filter, which the admin stores per user:
+
+```js
+export default {
+  inject: { pluginAside: { default: null } },
+
+  data() {
+    const defaults = { status: null }
+    return { filter: this.pluginAside?.(() => this.asideContent, defaults) ?? defaults }
+  },
+
+  computed: {
+    asideContent() {
+      return [{
+        key: 'status',
+        title: this.$pgettext('commerce', 'Status'),
+        items: [
+          { title: this.$pgettext('commerce', 'All'), icon: mdiPlaylistCheck, value: { status: null } },
+          { title: this.$pgettext('commerce', 'Active'), icon: mdiCheckCircleOutline, value: { status: true } }
+        ]
+      }]
+    }
+  }
+}
+```
+
+### Shared Components
+
+Extensions should use the Vuetify and CMS components provided by the host, exported as `pluginComponents` from `js/plugin.js`. This keeps a single Vuetify runtime and gives extensions the same form, layout, list, feedback and navigation primitives as the core admin. Components declared by the extension itself are preserved.
+
+CMS components are loaded only when rendered:
+
+| Component | Description |
+|-----------|-------------|
+| `CmsActionMenu` | Responsive action menu/dialog shell |
+| `CmsDialog` | Standard dialog with header, content and actions |
+| `CmsFilePicker` | Media dialog; accepts `v-model` and optional `filter` and `grid` props, emits `add` with the selected file |
+| `CmsLoadingSpinner` | Shared loading indicator |
+
+Application-shell components, Vuetify Labs components and heavy specialized widgets are intentionally not part of this public surface. Reusable components can be added to `pluginComponents` together with contract tests; otherwise, extensions must register and maintain them themselves.
+
+### Translations
+
+Extensions keep their translations in their own package:
+
+1. Register a catalog URL with `Plugin::i18n()`. It must contain one `{locale}` placeholder and point to the split JSON files published with the extension.
+2. Use its key as the panel's `i18n` value.
+3. Use the same key as gettext context for all extension strings, e.g. `$pgettext('commerce', 'Products')`.
+
+The admin loads the catalog of the active locale into its shared gettext instance without overwriting the core or other package contexts. All labels and messages of extensions must be translated.
 
 ## License
 
