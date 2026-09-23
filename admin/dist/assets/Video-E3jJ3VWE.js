@@ -1,1 +1,0 @@
-import e from"./File-DqKuwNPy.js";var t={extends:e,setup:e.setup,computed:{kind(){return`video`}}};export{t as default};

@@ -126,6 +126,7 @@ var m = "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.5
 			return [{
 				key: "status",
 				title: this.$pgettext("webhooks", "Status"),
+				open: !0,
 				items: [
 					{
 						title: this.$pgettext("webhooks", "All"),
@@ -573,7 +574,7 @@ function $(e, m, h, g, _, v) {
 				_: 1
 			}, 8, ["disabled", "loading"])) : r("", !0),
 			s(x, {
-				variant: "outlined",
+				variant: "text",
 				onClick: a
 			}, {
 				default: f(() => [o(d(e.$pgettext("webhooks", "Cancel")), 1)]),
