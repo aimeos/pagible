@@ -50,6 +50,28 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testImageSizes() : void
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
+		$files = collect( ['image' => (object) [
+			'id' => 'image',
+			'name' => 'Image',
+			'path' => 'https://example.com/image.webp',
+			'previews' => [],
+		]] );
+		$default = 'sizes="(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px"';
+
+		$data = (object) ['file' => (object) ['id' => 'image']];
+		$this->assertStringContainsString( $default, view( 'cms::image', compact( 'data', 'files', 'page' ) )->render() );
+
+		$sizes = '50vw';
+		$this->assertStringContainsString( 'sizes="50vw"', view( 'cms::image', compact( 'data', 'files', 'page', 'sizes' ) )->render() );
+
+		$data = (object) ['files' => [(object) ['id' => 'image']]];
+		$this->assertStringContainsString( $default, view( 'cms::slideshow', compact( 'data', 'files', 'page' ) )->render() );
+	}
+
+
 	public function testRegister()
 	{
 		$theme = Schema::get( 'cms' );

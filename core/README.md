@@ -21,7 +21,7 @@ After installation, the configuration is available in `config/cms.php`:
 | `disks.private.name` | `local` | Filesystem disk for page-access-protected uploads (`CMS_PRIVATE_DISK`) |
 | `disks.private.ttl` | `300` | Lifetime in seconds of temporary private storage URLs (`CMS_PRIVATE_TTL`) |
 | `image.driver` | `gd` | Intervention Image driver used for image processing (`CMS_IMAGE_DRIVER`) |
-| `image.preview-sizes` | `[480, 960, 1920]` | Preview image widths in pixels for uploaded images |
+| `image.preview-sizes` | `[480, 720, 960, 1920]` | Preview image widths in pixels for uploaded images |
 | `locales` | `en,ar,zh,fr,de,es,pt,pt-BR,ru` | Comma-separated ISO language codes. First locale is the default for new content |
 | `lock` | `30` | Page-tree write-lock lifetime and maximum acquisition wait in seconds (`CMS_LOCK`) |
 | `multidomain` | `false` | Enable domain-based page routing |

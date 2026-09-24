@@ -53,6 +53,27 @@ class PagibleThemeTest extends ThemeTestAbstract
     }
 
 
+    public function testImageSizesMatchLayout() : void
+    {
+        $page = ( new Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en', 'theme' => 'pagible'] );
+        $files = collect( ['image-id' => (object) [
+            'id' => 'image-id',
+            'name' => 'Image',
+            'path' => 'https://example.com/image.webp',
+            'previews' => [],
+        ]] );
+        $sizes = 'sizes="(max-width: 575px) 90vw, (max-width: 1200px) calc(90vw - 3.6rem), 1022px"';
+
+        $data = (object) ['file' => (object) ['id' => 'image-id']];
+        $html = view( cmsviews( $page, (object) ['type' => 'image'] )[0], compact( 'data', 'files', 'page' ) )->render();
+        $this->assertStringContainsString( $sizes, $html );
+
+        $data = (object) ['files' => [(object) ['id' => 'image-id']], 'captions' => true];
+        $html = view( cmsviews( $page, (object) ['type' => 'slideshow'] )[0], compact( 'data', 'files', 'page' ) )->render();
+        $this->assertStringContainsString( $sizes, $html );
+    }
+
+
     protected function getPackageProviders( $app )
     {
         return array_merge( parent::getPackageProviders( $app ), [

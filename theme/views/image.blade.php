@@ -3,7 +3,7 @@
 @endPushOnce
 
 @if($file = cms($files, $data->file?->id ?? null))
-	@include('cms::pic', ['file' => $file, 'main' => $data->main ?? false, 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
+	@include('cms::pic', ['file' => $file, 'main' => $data->main ?? false, 'sizes' => $sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'])
 @else
 	<!-- no image file -->
 @endif

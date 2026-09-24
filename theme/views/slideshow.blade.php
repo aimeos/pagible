@@ -14,13 +14,13 @@
 				@if($file = cms($files, $item->id ?? null))
 					@if($data->captions ?? false)
 						<figure>
-							@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? ($data->main ?? false) : false), 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
+							@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? ($data->main ?? false) : false), 'sizes' => $sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'])
 							@if($caption = cms($file, 'description')?->{cms($page, 'lang')})
 								<figcaption>{{ $caption }}</figcaption>
 							@endif
 						</figure>
 					@else
-						@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? ($data->main ?? false) : false), 'sizes' => '(max-width: 1200px) 100vw, 1200px'])
+						@include('cms::pic', ['file' => $file, 'main' => ($idx == 0 ? ($data->main ?? false) : false), 'sizes' => $sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'])
 					@endif
 				@else
 					<!-- no image file -->
