@@ -60,7 +60,7 @@ class Previews extends Command
     /**
      * Command description
      */
-    protected $description = 'Creates missing preview images for the configured sizes and removes previews of sizes no longer configured';
+    protected $description = 'Updates image previews to the configured sizes';
 
 
     /**
