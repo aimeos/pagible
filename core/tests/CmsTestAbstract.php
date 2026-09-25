@@ -44,11 +44,20 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
     }
 
 
+    /**
+     * Simulates the tenant context managed by Stancl tenancy.
+     */
+    protected function manageTenancy( bool $managed = true ) : void
+    {
+        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, $managed );
+    }
+
+
     protected function tearDown(): void
     {
         \Aimeos\Cms\Access::extend( null );
         \Aimeos\Cms\Access::using( null );
-        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, false );
+        $this->manageTenancy( false );
         ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
         \Aimeos\Cms\Schema::source( null );
         parent::tearDown();
