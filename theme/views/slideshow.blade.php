@@ -41,7 +41,7 @@
 </div>
 
 <script type="application/ld+json">{!! cmsjson([
-	'@context' => 'https://schema.org',
+	'@@context' => 'https://schema.org',
 	'@type' => 'ImageGallery',
 	'name' => $data->title ?? cms($page, 'title'),
 	'image' => collect($data->files ?? [])
