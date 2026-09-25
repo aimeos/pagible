@@ -27,7 +27,7 @@ export default {
     this.initial = { ...(this.defaults || this.filter) }
     this.open = this.content
       .map((group, index) => {
-        return this.has(group.key) ? index : false
+        return group.open || this.has(group.key) ? index : false
       })
       .filter((idx) => idx !== false)
   },

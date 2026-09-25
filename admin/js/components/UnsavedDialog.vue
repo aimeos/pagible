@@ -26,6 +26,7 @@ export default {
   <v-dialog
     :model-value="dirtyStore.show"
     max-width="440"
+    scrollable
     persistent
     role="alertdialog"
     :aria-label="$gettext('Unsaved changes')"
@@ -51,7 +52,7 @@ export default {
           {{ $gettext('Discard') }}
         </v-btn>
         <v-spacer />
-        <v-btn @click="dirtyStore.cancel()" variant="outlined">
+        <v-btn @click="dirtyStore.cancel()" variant="text">
           {{ $gettext('Cancel') }}
         </v-btn>
         <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="tonal" color="primary" active>

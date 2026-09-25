@@ -738,6 +738,7 @@ export default {
         v-model="menu['paint']"
         transition="scale-transition"
         max-width="600"
+        scrollable
       >
         <template #activator="{ props }">
           <v-btn
@@ -792,6 +793,7 @@ export default {
         v-model="menu['uncrop']"
         transition="scale-transition"
         max-width="300"
+        scrollable
       >
         <template #activator="{ props }">
           <v-btn

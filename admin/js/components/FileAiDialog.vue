@@ -239,7 +239,6 @@ export default {
     :card-loading="loading ? 'primary' : false"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
-    scrollable
   >
     <template #toolbar-actions>
       <v-btn

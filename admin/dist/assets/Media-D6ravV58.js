@@ -1,1 +1,0 @@
-import e from"./File-BFWlq29r.js";var t={extends:e,setup:e.setup,computed:{kind(){return`media`}}};export{t as default};

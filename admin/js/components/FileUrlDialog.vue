@@ -190,7 +190,6 @@ export default {
     @update:model-value="$emit('update:modelValue', $event)"
     @after-leave="cleanup()"
     max-width="1200"
-    scrollable
   >
     <template #toolbar-actions>
       <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">

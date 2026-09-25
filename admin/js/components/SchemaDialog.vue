@@ -29,7 +29,6 @@ export default {
     :title="$gettext('Content elements')"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
-    scrollable
   >
     <SchemaItems :type="type" @add="$emit('add', $event)" />
 

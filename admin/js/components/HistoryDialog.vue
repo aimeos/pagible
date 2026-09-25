@@ -192,7 +192,6 @@ export default {
     @update:model-value="$emit('update:modelValue', $event)"
     content-class="history-body"
     max-width="1200"
-    scrollable
   >
     <v-expansion-panels v-model="opened" class="version-panels" elevation="2">
           <v-timeline side="end" align="start">
