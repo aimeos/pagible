@@ -1046,6 +1046,10 @@ class Resource
                 ) {
                     $storedPreviews = (array) $tmp->previews;
                 }
+                elseif( is_string( $source ) && $preview === null && !isset( $input['previews'] ) ) {
+                    // previews of the previous image don't belong to the new path, they are created for supported images
+                    $storedPreviews = $tmp->syncPreviews( [] ) ?? [];
+                }
             }
 
             $file = Utils::storageLock( $tenant,

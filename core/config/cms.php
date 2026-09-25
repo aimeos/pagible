@@ -131,6 +131,7 @@ return [
         'driver' => env( 'CMS_IMAGE_DRIVER', 'gd' ),
         'preview-sizes' => [
             ['width' => 480, 'height' => 270],
+            ['width' => 720, 'height' => 405],
             ['width' => 960, 'height' => 540],
             ['width' => 1920, 'height' => 1080],
         ]

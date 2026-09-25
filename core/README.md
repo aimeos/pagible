@@ -21,7 +21,7 @@ After installation, the configuration is available in `config/cms.php`:
 | `disks.private.name` | `local` | Filesystem disk for page-access-protected uploads (`CMS_PRIVATE_DISK`) |
 | `disks.private.ttl` | `300` | Lifetime in seconds of temporary private storage URLs (`CMS_PRIVATE_TTL`) |
 | `image.driver` | `gd` | Intervention Image driver used for image processing (`CMS_IMAGE_DRIVER`) |
-| `image.preview-sizes` | `[480, 960, 1920]` | Preview image widths in pixels for uploaded images |
+| `image.preview-sizes` | `[480, 720, 960, 1920]` | Preview image widths in pixels for uploaded images |
 | `locales` | `en,ar,zh,fr,de,es,pt,pt-BR,ru` | Comma-separated ISO language codes. First locale is the default for new content |
 | `lock` | `30` | Page-tree write-lock lifetime and maximum acquisition wait in seconds (`CMS_LOCK`) |
 | `multidomain` | `false` | Enable domain-based page routing |
@@ -207,6 +207,22 @@ Publishes scheduled versions where `publish_at` has passed. Registered to run au
 ```bash
 php artisan cms:publish
 ```
+
+### cms:previews
+
+Creates missing preview images for the sizes configured in `cms.image.preview-sizes` and removes previews of sizes no longer configured. Only images supported by the image driver are updated, previews of other files (e.g. PDFs or videos) are kept. The previews are generated from the latest version of each file and stored in a new version (editor `cms:previews`), which is published if the latest version was. Replaced previews aren't deleted directly but when the older versions referencing them are pruned.
+
+```bash
+php artisan cms:previews [--tenant=ID] [--id=ID]... [--force]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--tenant=ID` | Only update files of this tenant (`--tenant=` for the default, empty tenant); all tenants if omitted |
+| `--id=ID` | Only update the files with these IDs (can be used multiple times) |
+| `--force` | Replace all previews, e.g. after changing the image driver, format or quality |
+
+If the command is stopped, run it again to update the remaining files. Only one instance runs at a time (per tenant for tenants managed by stancl/tenancy); the lock expires after one day if the command has been killed and is stored in the cache, so use a cache store shared by all servers if it can be started on more than one. Files changed or locked while the command is running are skipped and updated by the next run. If the storage is locked, e.g. by a running backup, the tenant is stopped. Skipped files, files which can't be updated and stopped tenants are logged as `cms.previews` warning, only the latter two make the command fail. If tenants are managed by stancl/tenancy, use `php artisan tenants:run cms:previews` to process all tenants.
 
 ### cms:benchmark:core
 

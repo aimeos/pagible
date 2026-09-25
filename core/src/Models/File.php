@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Interfaces\DriverInterface;
+use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\ImageManager;
 
 
@@ -195,12 +196,7 @@ class File extends Base
     public function addPreviews( UploadedFile|string $resource ) : self
     {
         $sizes = config( 'cms.image.preview-sizes', [[]] );
-        $disk = Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) );
-        $dir = $this->dir();
-
-        /** @var ImageManager $manager */
-        $manager = ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . ucFirst( config( 'cms.image.driver', 'gd' ) ) . '\Driver' );
-        $ext = $manager->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
+        $manager = $this->imageManager();
 
         if( is_string( $resource ) && Utils::isValidUrl( $resource ) ) {
             $resource = $this->fetchUrl( $resource, $manager->driver() );
@@ -231,37 +227,9 @@ class File extends Base
             throw new \Aimeos\Cms\Exception( 'Invalid image URL' );
         }
 
-        $this->checkPixels( $resource );
-
-        $file = $manager->read( $resource );
-
+        // previews of the previous image must not remain if creating the new ones fails
         $this->previews = [];
-        $map = [];
-
-        try
-        {
-            foreach( $sizes as $size )
-            {
-                $image = ( clone $file )->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
-                $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
-                $path = $dir . '/' . $this->filename( $filename, $ext, $size );
-
-                if( !$disk->put( $path, $ptr ) ) {
-                    throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
-                }
-
-                $map[$image->width()] = $path;
-                unset( $image, $ptr );
-            }
-        }
-        catch( \Throwable $t )
-        {
-            $disk->delete( array_values( $map ) );
-            throw $t;
-        }
-
-        $this->previews = $map;
-        unset( $file );
+        $this->previews = $this->storePreviews( $resource, $sizes, [], $filename );
 
         return $this;
     }
@@ -663,6 +631,104 @@ class File extends Base
 
 
     /**
+     * Tests if previews can be generated from the file itself.
+     *
+     * @return bool TRUE if the file is an image supported by the image driver, FALSE if not
+     */
+    public function previewable() : bool
+    {
+        return (string) $this->path !== '' && $this->imageManager()->driver()->supports( (string) $this->mime );
+    }
+
+
+    /**
+     * Compares the previews with the configured sizes without generating images.
+     *
+     * The configured size of a preview is taken from its file name. Previews of files which
+     * aren't supported images as well as remote and SVG previews are never changed.
+     *
+     * @param array<int|string, string> $previews Existing previews as width/path pairs
+     * @param bool $force Replace all previews
+     * @return array{keep: array<int, string>, missing: array<string, array<string, mixed>>}
+     *  Previews to keep and missing sizes by name
+     */
+    public function diffPreviews( array $previews, bool $force = false ) : array
+    {
+        $config = [];
+        $keep = [];
+
+        foreach( config( 'cms.image.preview-sizes', [[]] ) as $size ) {
+            $config[self::sizeName( $size )] = $size;
+        }
+
+        $missing = $config;
+        $all = [];
+
+        foreach( $previews as $width => $path ) {
+            $all[(int) $width] = (string) $path;
+        }
+
+        if( !$this->previewable() ) {
+            return ['keep' => $all, 'missing' => []];
+        }
+
+        foreach( $all as $width => $path )
+        {
+            if( str_starts_with( $path, 'http' ) || strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) === 'svg' ) {
+                return ['keep' => $all, 'missing' => []];
+            }
+
+            // previews without the sizes in their file names are replaced
+            if( ( $names = array_flip( self::previewSizes( $path ) ) ) && array_intersect_key( $config, $names ) ) {
+                $missing = array_diff_key( $missing, $names );
+                $keep[$width] = $path;
+            }
+        }
+
+        if( $force ) {
+            return ['keep' => [], 'missing' => $config];
+        }
+
+        return ['keep' => $keep, 'missing' => $missing];
+    }
+
+
+    /**
+     * Adds previews for missing configured sizes and leaves out previews of sizes no longer configured.
+     *
+     * Missing previews are generated from the file itself if it's a supported image. Removed
+     * previews are not deleted from the storage.
+     *
+     * @param array<int|string, string> $previews Existing previews as width/path pairs
+     * @param array{keep: array<int, string>, missing: array<string, array<string, mixed>>}|null $diff
+     *  Result of diffPreviews() for these previews if already available
+     * @return array<int, string>|null New previews as width/path pairs or NULL if nothing changed
+     * @throws \Aimeos\Cms\Exception If the source image is not available or invalid
+     * @see diffPreviews()
+     */
+    public function syncPreviews( array $previews, ?array $diff = null ) : ?array
+    {
+        ['keep' => $map, 'missing' => $sizes] = $diff ?? $this->diffPreviews( $previews );
+
+        if( $sizes && ( $resource = $this->previewSource( $this->imageManager()->driver() ) ) )
+        {
+            // all sizes are required to find the ones resulting in the same width as the missing sizes
+            try {
+                $map = $this->storePreviews( $resource, config( 'cms.image.preview-sizes', [[]] ), $map, $this->name ?: 'image' );
+            } finally {
+                fclose( $resource );
+            }
+        }
+
+        ksort( $map );
+        $old = array_map( 'strval', $previews );
+        ksort( $old );
+
+        return $map === $old ? null : $map;
+    }
+
+
+    /**
      * Returns the searchable data for the file.
      *
      * @return array<string, mixed>
@@ -908,10 +974,10 @@ class File extends Base
      *
      * @param string $filename Name of the file
      * @param string|null $ext File extension to use, if not given, the original file extension is used
-     * @param array<string, mixed> $size Image width and height, if used
+     * @param string $size Names of the preview sizes, if used
      * @return string New file name
      */
-    protected function filename( string $filename, ?string $ext = null, array $size = [] ) : string
+    protected function filename( string $filename, ?string $ext = null, string $size = '' ) : string
     {
         $regex = '/([[:cntrl:]]|[[:blank:]]|\/|\.)+/smu';
 
@@ -920,7 +986,16 @@ class File extends Base
 
         $hash = strtr( base64_encode( random_bytes( 3 ) ), '+/', '-_' );
 
-        return $name . '_' . ( $size['width'] ?? $size['height'] ?? '' ) . '_' . $hash . '.' . $ext;
+        return $name . '_' . $size . '_' . $hash . '.' . $ext;
+    }
+
+
+    /**
+     * Returns the image manager for the configured image driver.
+     */
+    protected function imageManager() : ImageManager
+    {
+        return ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . ucFirst( config( 'cms.image.driver', 'gd' ) ) . '\Driver' );
     }
 
 
@@ -962,6 +1037,158 @@ class File extends Base
         if( $preview || str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {
             $this->addPreviews( $preview ?? $source );
         }
+    }
+
+
+    /**
+     * Returns the image previews can be generated from as temporary file.
+     *
+     * @param DriverInterface $driver Image driver for the format support check
+     * @return resource|null Seekable temporary file or NULL if the file is no supported image
+     */
+    protected function previewSource( DriverInterface $driver )
+    {
+        $path = (string) $this->path;
+
+        if( $path === '' || !$driver->supports( (string) $this->mime ) ) {
+            return null;
+        }
+
+        if( str_starts_with( $path, 'http' ) ) {
+            return Utils::isValidUrl( $path ) ? $this->fetchUrl( $path, $driver ) : null;
+        }
+
+        $disk = Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) );
+
+        if( !( $stream = $disk->readStream( $path ) ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to read file "%s"', $path ) );
+        }
+
+        try
+        {
+            if( !( $tmp = tmpfile() ) ) {
+                throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
+            }
+
+            stream_copy_to_stream( $stream, $tmp );
+            fseek( $tmp, 0 );
+
+            return $tmp;
+        }
+        finally
+        {
+            fclose( $stream );
+        }
+    }
+
+
+    /**
+     * Stores previews of the image for the sizes not contained in the file names of the existing previews.
+     *
+     * Sizes resulting in the same width, e.g. because the image is smaller, share one preview
+     * whose file name contains all of them. An existing preview of that width is replaced if
+     * its file name doesn't contain all of them.
+     *
+     * @param UploadedFile|resource $resource Uploaded image or image file handle
+     * @param iterable<array<string, mixed>> $sizes Maximum preview widths and heights
+     * @param array<int, string> $map Existing previews as width/path pairs
+     * @param string $filename Name of the original file
+     * @return array<int, string> Existing and new previews as width/path pairs
+     */
+    protected function storePreviews( mixed $resource, iterable $sizes, array $map, string $filename ) : array
+    {
+        $this->checkPixels( $resource );
+
+        $image = $this->imageManager()->read( $resource );
+        $existing = array_merge( ...array_map( self::previewSizes( ... ), array_values( $map ) ) );
+        $targets = [];
+        $created = [];
+
+        foreach( $sizes as $size )
+        {
+            $target = $image->size()->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
+            $targets[$target->width()][0] ??= $target;
+            $targets[$target->width()][1][] = self::sizeName( $size );
+        }
+
+        krsort( $targets );
+
+        try
+        {
+            foreach( $targets as $width => [$target, $names] )
+            {
+                if( !array_diff( $names, $existing ) ) {
+                    continue;
+                }
+
+                // each preview is scaled down from the next larger one, so the full image is scaled only once
+                if( $image->width() !== $target->width() || $image->height() !== $target->height() ) {
+                    $image->resize( $target->width(), $target->height() );
+                }
+
+                $map[$width] = $created[] = $this->storePreview( $image, implode( '-', $names ), $filename );
+            }
+        }
+        catch( \Throwable $t )
+        {
+            Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) )->delete( $created );
+            throw $t;
+        }
+
+        ksort( $map );
+        return $map;
+    }
+
+
+    /**
+     * Returns the name of the preview size used in the preview file names.
+     *
+     * @param array<string, mixed> $size Maximum preview width and height
+     * @return string Width, height if no width is configured or empty string
+     */
+    protected static function sizeName( array $size ) : string
+    {
+        return (string) ( $size['width'] ?? $size['height'] ?? '' );
+    }
+
+
+    /**
+     * Returns the names of the preview sizes contained in the preview file name.
+     *
+     * @param string $path Preview path
+     * @return list<string> Names of the preview sizes or empty if the file name contains none
+     */
+    protected static function previewSizes( string $path ) : array
+    {
+        if( preg_match( '/_([\d-]*)_[A-Za-z0-9_-]{4}\.[A-Za-z0-9]+$/', $path, $match ) !== 1 ) {
+            return [];
+        }
+
+        return explode( '-', $match[1] );
+    }
+
+
+    /**
+     * Stores the image as preview.
+     *
+     * @param ImageInterface $image Image scaled down to the preview size
+     * @param string $size Names of the configured preview sizes used in the file name
+     * @param string $filename Name of the original file
+     * @return string Path of the stored preview
+     */
+    protected function storePreview( ImageInterface $image, string $size, string $filename ) : string
+    {
+        $ext = $this->imageManager()->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
+        $disk = Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) );
+
+        $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
+        $path = $this->dir() . '/' . $this->filename( $filename, $ext, $size );
+
+        if( !$disk->put( $path, $ptr ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
+        }
+
+        return $path;
     }
 
 

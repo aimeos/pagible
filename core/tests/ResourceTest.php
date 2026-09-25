@@ -553,6 +553,37 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSaveFileCreatesPreviewsOfChangedPath()
+    {
+        $this->previews( function( File $file ) {
+            $path = $file->dir() . '/other.jpg';
+            Storage::disk( 'previews-save' )->put( $path, UploadedFile::fake()->image( 'other.jpg', 800, 400 )->getContent() );
+
+            // an API client changing only the path mustn't keep the previews of the old image
+            $saved = Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            $previews = (array) $saved->latest?->data->previews;
+
+            $this->assertEquals( $path, $saved->latest?->data->path );
+            $this->assertEquals( [480, 720], array_keys( $previews ) );
+            $this->assertEmpty( array_intersect( $previews, (array) $file->previews ) );
+            Storage::disk( 'previews-save' )->assertExists( array_values( $previews ) );
+        } );
+    }
+
+
+    public function testSaveFileClearsPreviewsOfChangedPathWithoutImage()
+    {
+        $this->previews( function( File $file ) {
+            $path = $file->dir() . '/other.pdf';
+            Storage::disk( 'previews-save' )->put( $path, '%PDF-1.4 document' );
+
+            $saved = Resource::saveFile( $file->id, ['path' => $path], $this->user );
+
+            $this->assertEquals( [], (array) $saved->latest?->data->previews );
+        } );
+    }
+
+
     public function testAddFileRejectsPrivateDiskConfiguredAsPublic()
     {
         config( [
@@ -2297,6 +2328,39 @@ class ResourceTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
             'content' => $content,
         ], $this->user, parent: $this->root()->id );
+    }
+
+
+    /**
+     * Passes a file with previews to the callback, whose preview sizes have been changed afterwards.
+     */
+    protected function previews( \Closure $fcn ) : void
+    {
+        config( ['cms.disks.public.name' => 'previews-save', 'cms.image.preview-sizes' => [['width' => 480]]] );
+        Storage::fake( 'previews-save' );
+
+        try
+        {
+            $file = new File();
+            $file->ingest( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) );
+            $file = Resource::addFile( $file, $this->user );
+
+            config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720]]] );
+
+            $fcn( $file );
+        }
+        finally
+        {
+            config( [
+                'cms.disks.public.name' => 'public',
+                'cms.image.preview-sizes' => [
+                    ['width' => 480, 'height' => 270],
+                    ['width' => 720, 'height' => 405],
+                    ['width' => 960, 'height' => 540],
+                    ['width' => 1920, 'height' => 1080],
+                ],
+            ] );
+        }
     }
 
 

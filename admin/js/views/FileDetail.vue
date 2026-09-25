@@ -94,6 +94,7 @@ export default {
     echoCleanup: null,
     echoPromise: null,
     file: null,
+    initial: null,
     error: false,
     changed: null,
     loading: true,
@@ -154,6 +155,7 @@ export default {
 
   created() {
     this.dirtyStore.register(() => this.save(true))
+    this.initial = this.previewsJson()
 
     if (!this.item?.id || !this.user.can('file:view')) {
       this.loading = false
@@ -195,6 +197,7 @@ export default {
         this.item.published = latest?.published
         this.item.updated_at = latest?.created_at
         this.item.editor = latest?.editor
+        this.initial = this.previewsJson()
       }, () => !this.dirty)
     },
 
@@ -239,6 +242,10 @@ export default {
       })
     },
 
+    previewsJson() {
+      return JSON.stringify(this.item?.previews || {})
+    },
+
     publish(at = null, close = false) {
       publishItem(this, 'file', {
         success: this.$gettext('File published successfully'),
@@ -276,6 +283,7 @@ export default {
       }
 
       this.saving = true
+      const previews = this.previewsJson()
 
       return this.$apollo
         .mutate({
@@ -285,7 +293,8 @@ export default {
             input: {
               transcription: JSON.stringify(this.item.transcription || {}),
               description: JSON.stringify(this.item.description || {}),
-              previews: JSON.stringify(this.item.previews || {}),
+              // keep previews updated in the meantime (e.g. by cms:previews) if unchanged
+              ...(previews !== this.initial ? { previews } : {}),
               path: this.item.path,
               name: this.item.name,
               lang: this.item.lang
@@ -309,6 +318,7 @@ export default {
           Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
           this.item.updated_at = latest?.created_at
           this.item.latestId = latest?.id
+          this.initial = this.previewsJson()
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
 

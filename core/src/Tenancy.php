@@ -148,6 +148,17 @@ class Tenancy
 
 
     /**
+     * Returns whether the tenant lifecycle is managed by stancl/tenancy.
+     *
+     * In managed mode, operations can only run in the tenant context initialized by Stancl.
+     */
+    public static function managed() : bool
+    {
+        return self::$managed;
+    }
+
+
+    /**
      * Runs an operation in the requested tenant context.
      *
      * Stancl owns its tenant lifecycle and must have initialized the context before
