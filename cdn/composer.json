@@ -1,0 +1,43 @@
+{
+    "name": "aimeos/pagible-cdn",
+    "description": "Pagible CMS CDN cache purging",
+    "keywords": ["laravel", "cms", "cdn", "cache", "cloudflare", "fastly", "varnish"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "friendsofsymfony/http-cache": "^3.2",
+        "php-http/guzzle7-adapter": "^1.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0||^11.0",
+        "larastan/larastan": "^3.9"
+    },
+    "suggest": {
+        "aimeos/pagible-theme": "Provides the page routes whose URLs are purged"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\CdnServiceProvider"
+            ]
+        }
+    }
+}

@@ -25,6 +25,7 @@ parameters:
 		- search/src
 		- backup/src
 		- cashier/src
+		- cdn/src
 		- pulse/src
 		- theme/src
 		- theme/database/seeders

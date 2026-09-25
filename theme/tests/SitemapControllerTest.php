@@ -67,6 +67,23 @@ class SitemapControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testIndexMultidomain()
+    {
+        config( ['cms.multidomain' => true] );
+        Page::where( 'path', 'hidden' )->firstOrFail()->forceFill( ['domain' => 'other.test'] )->saveQuietly();
+
+        $controller = new \Aimeos\Cms\Controllers\SitemapController();
+
+        ob_start();
+        $response = $controller->index();
+        $response->getCallback()();
+        $content = ob_get_clean();
+
+        $this->assertStringNotContainsString( 'hidden', $content );
+        $this->assertStringContainsString( 'disabled-child', $content );
+    }
+
+
     public function testNews()
     {
         config( ['app.name' => 'Application name', 'app.locale' => 'de_DE'] );

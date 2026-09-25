@@ -14,10 +14,13 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
+use Aimeos\Cms\Jobs\InvalidatePages;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
@@ -645,9 +648,13 @@ class ResourceTest extends CoreTestAbstract
             'page_id' => $pages[1]->id, 'element_id' => $element->id,
         ] );
 
-        Event::fake( [PageInvalidated::class] );
+        Event::fake( [PageInvalidated::class, FilesRemoved::class] );
 
         $moved = Resource::relocateFiles( [$file->id], 'private', $this->user )->firstOrFail();
+
+        Event::assertDispatched( FilesRemoved::class, fn( FilesRemoved $event ) =>
+            $event->tenant === 'test' && !array_diff( $paths, $event->paths )
+        );
 
         $this->assertSame( 'private', $moved->disk );
         foreach( $paths as $path ) {
@@ -660,8 +667,10 @@ class ResourceTest extends CoreTestAbstract
             );
         }
 
-        Event::fake( [PageInvalidated::class] );
+        Event::fake( [PageInvalidated::class, FilesRemoved::class] );
         $moved = Resource::relocateFiles( [$file->id], 'public', $this->user )->firstOrFail();
+
+        Event::assertNotDispatched( FilesRemoved::class );
 
         $this->assertSame( 'public', $moved->disk );
         foreach( $paths as $path ) {
@@ -1322,7 +1331,7 @@ class ResourceTest extends CoreTestAbstract
             $this->assertCount( 2, $ids[$model] );
         }
 
-        $this->expectsDatabaseQueryCount( 22 );
+        $this->expectsDatabaseQueryCount( 30 );
 
         foreach( $ids as $model => $modelIds ) {
             Resource::drop( $model, $modelIds, $this->user );
@@ -1400,7 +1409,7 @@ class ResourceTest extends CoreTestAbstract
 
         Element::withoutSyncingToSearch( fn() => Element::whereIn( 'id', $ids )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 4 );
 
         $items = Publication::publish( Element::class, $ids, $this->user );
 
@@ -1419,7 +1428,7 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -1652,7 +1661,7 @@ class ResourceTest extends CoreTestAbstract
         Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
         Event::fake( [PageInvalidated::class] );
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
@@ -1664,7 +1673,8 @@ class ResourceTest extends CoreTestAbstract
             );
         }
 
-        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) );
+        // The published file is also used by another page of the fixtures
+        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) + 1 );
     }
 
 
@@ -1677,7 +1687,7 @@ class ResourceTest extends CoreTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->where( 'page_id', $page->id )->delete();
         $db->table( 'cms_page_file' )->insert( ['page_id' => $page->id, 'file_id' => $other->id] );
-        $this->expectsDatabaseQueryCount( 11 );
+        $this->expectsDatabaseQueryCount( 13 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -1719,7 +1729,99 @@ class ResourceTest extends CoreTestAbstract
             $event->domain === (string) $page->domain
             && $event->paths === [(string) $page->path]
         );
-        Event::assertDispatchedTimes( PageInvalidated::class, 1 );
+        // The published file is also used by other pages of the fixtures
+        Event::assertDispatchedTimes( PageInvalidated::class, 2 );
+    }
+
+
+    public function testPublishElementInvalidatesPages()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $paths = $element->bypages()->pluck( 'path' )->all();
+        $this->assertNotEmpty( $paths );
+
+        $element = Resource::saveElement( $element->id, ['data' => ['type' => 'footer', 'text' => 'Changed']], $this->user );
+        Event::fake( [PageInvalidated::class] );
+
+        $element->publish( $element->latest()->firstOrFail() );
+
+        $this->assertEqualsCanonicalizing( $paths, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->all() );
+    }
+
+
+    public function testDropElementInvalidatesPages()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $paths = $element->bypages()->pluck( 'path' )->all();
+        Event::fake( [PageInvalidated::class] );
+
+        Resource::drop( Element::class, [$element->id], $this->user );
+
+        $this->assertEqualsCanonicalizing( $paths, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->all() );
+    }
+
+
+    public function testPurgeElementInvalidatesPages()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $paths = $element->bypages()->pluck( 'path' )->all();
+        Event::fake( [PageInvalidated::class] );
+
+        Resource::purge( Element::class, [$element->id], $this->user );
+
+        $this->assertEqualsCanonicalizing( $paths, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->all() );
+    }
+
+
+    public function testPurgeDroppedElementSkipsPages()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        Resource::drop( Element::class, [$element->id], $this->user );
+        Event::fake( [PageInvalidated::class] );
+
+        Resource::purge( Element::class, [$element->id], $this->user );
+
+        Event::assertNotDispatched( PageInvalidated::class );
+    }
+
+
+    public function testPurgeElementQueued()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $this->sharedPages( $element );
+
+        $count = $element->bypages()->count();
+        Queue::fake( [InvalidatePages::class] );
+        Event::fake( [PageInvalidated::class] );
+
+        Resource::purge( Element::class, [$element->id], $this->user );
+
+        Event::assertNotDispatched( PageInvalidated::class );
+        Queue::assertPushed( InvalidatePages::class, function( InvalidatePages $job ) {
+            $job->handle();
+            return true;
+        } );
+        $this->assertCount( $count, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->unique() );
+    }
+
+
+    public function testInvalidateRefsQueued()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $this->sharedPages( $element );
+
+        $count = $element->bypages()->count();
+        Queue::fake( [InvalidatePages::class] );
+        Event::fake( [PageInvalidated::class] );
+
+        Resource::invalidateRefs( [$element->id] );
+
+        Event::assertNotDispatched( PageInvalidated::class );
+        Queue::assertPushed( InvalidatePages::class, function( InvalidatePages $job ) {
+            $job->handle();
+            return true;
+        } );
+        $this->assertCount( $count, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->unique() );
     }
 
 
@@ -2040,8 +2142,13 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['path' => $versioned, 'previews' => []],
         ] );
 
+        Event::fake( [FilesRemoved::class] );
+
         ( new DeleteFilePaths( 'test', [$owned, $versioned, $orphan, $legacy, $foreign] ) )->handle();
 
+        Event::assertDispatched( FilesRemoved::class, fn( FilesRemoved $event ) =>
+            $event->tenant === 'test' && $event->paths === [$orphan]
+        );
         Storage::disk( 'guarded-cleanup' )->assertExists( $owned );
         Storage::disk( 'guarded-cleanup' )->assertExists( $versioned );
         Storage::disk( 'guarded-cleanup' )->assertMissing( $orphan );
@@ -2224,12 +2331,6 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
-    {
-        return Page::where( 'tag', 'root' )->firstOrFail();
-    }
-
-
     /**
      * Passes a file with previews to the callback, whose preview sizes have been changed afterwards.
      */
@@ -2259,6 +2360,34 @@ class ResourceTest extends CoreTestAbstract
                     ['width' => 1920, 'height' => 1080],
                 ],
             ] );
+        }
+    }
+
+
+    protected function root() : Page
+    {
+        return Page::where( 'tag', 'root' )->firstOrFail();
+    }
+
+
+    /**
+     * Adds 251 pages using the element by bulk insert instead of creating them through the model.
+     */
+    protected function sharedPages( Element $element ) : void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $row = (array) $db->table( 'cms_pages' )->where( 'id', $element->bypages()->value( 'id' ) )->first();
+        $rows = [];
+
+        for( $i = 0; $i < 251; $i++ ) {
+            $rows[] = ['id' => (string) Str::uuid7(), 'path' => 'shared-' . $i] + $row;
+        }
+
+        // SQL Server allows max. 2100 bound parameters per statement
+        foreach( array_chunk( $rows, 50 ) as $chunk )
+        {
+            $db->table( 'cms_pages' )->insert( $chunk );
+            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $chunk ) );
         }
     }
 }

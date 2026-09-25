@@ -30,6 +30,7 @@ class PruneVersions implements ShouldBeUnique, ShouldQueue
     public function __construct( public string $model, public string $tenant, public array $ids )
     {
         sort( $this->ids );
+        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
     }
 
 

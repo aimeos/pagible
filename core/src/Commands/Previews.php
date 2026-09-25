@@ -251,7 +251,7 @@ class Previews extends Command implements Isolatable
     protected function refresh( array $live, array $ids ) : void
     {
         foreach( array_chunk( $live, self::INVALIDATE ) as $chunk ) {
-            Resource::invalidateFiles( $chunk );
+            Resource::invalidateRefs( [], $chunk );
         }
 
         try

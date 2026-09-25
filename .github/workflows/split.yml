@@ -23,6 +23,7 @@ jobs:
           - { package: cashier-mollie, repo: pagible-cashier-mollie }
           - { package: cashier-paddle, repo: pagible-cashier-paddle }
           - { package: cashier-stripe, repo: pagible-cashier-stripe }
+          - { package: cdn, repo: pagible-cdn }
           - { package: core, repo: pagible-core }
           - { package: graphql, repo: pagible-graphql }
           - { package: import, repo: pagible-import }

@@ -211,18 +211,24 @@ class SitemapController extends Controller
      * scopes are inherited from the `Nav` model and compiled into the builder
      * by `toBase()`.
      *
-     * @return \Illuminate\Database\Query\Builder Base query with public status and `to` filters applied
+     * @return \Illuminate\Database\Query\Builder Base query with public status, `to` and domain filters applied
      */
     protected function query() : \Illuminate\Database\Query\Builder
     {
         // Sitemaps are publicly cacheable, so their contents must never depend on
         // the authenticated editor exception implemented by the Status scope.
-        return Nav::whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
+        $query = Nav::whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
             ->where( function( $q ) {
                 $q->whereNull( 'to' )->orWhere( 'to', '' );
             } )
-            ->wherePublic()
-            ->toBase();
+            ->wherePublic();
+
+        // Pages are only served on their own domain and sitemaps must not list URLs of other hosts
+        if( config( 'cms.multidomain' ) ) {
+            $query->where( ( new Nav() )->qualifyColumn( 'domain' ), (string) request()->route( 'domain', '' ) );
+        }
+
+        return $query->toBase();
     }
 
 
