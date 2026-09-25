@@ -15,7 +15,6 @@ use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\LockTimeoutException;
-use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -28,7 +27,7 @@ use Illuminate\Support\Facades\Storage;
  * version was. Removed previews are never deleted directly. They are still referenced by the
  * previous versions and deleted when these versions are pruned.
  */
-class Previews extends Command implements Isolatable
+class Previews extends Command
 {
     /**
      * Editor name of the created versions
@@ -63,11 +62,6 @@ class Previews extends Command implements Isolatable
      */
     protected $description = 'Creates missing preview images for the configured sizes and removes previews of sizes no longer configured';
 
-    /**
-     * Don't run the command if another instance is already running
-     */
-    protected $isolated = true;
-
 
     /**
      * Execute command
@@ -85,31 +79,6 @@ class Previews extends Command implements Isolatable
         }
 
         return $failed ? self::FAILURE : self::SUCCESS;
-    }
-
-
-    /**
-     * Returns when the isolation lock expires if the command has been killed.
-     *
-     * Runs of large tenants can take several hours and a second instance would
-     * generate the same previews again.
-     *
-     * @return \DateInterval Lifetime of the isolation lock
-     */
-    public function isolationLockExpiresAt() : \DateInterval
-    {
-        return new \DateInterval( 'P1D' );
-    }
-
-
-    /**
-     * Returns the ID of the isolation lock, which is per tenant for tenants managed by Stancl.
-     *
-     * @return string Lock ID
-     */
-    public function isolatableId() : string
-    {
-        return Tenancy::managed() ? 'tenant-' . Tenancy::value() : 'all';
     }
 
 

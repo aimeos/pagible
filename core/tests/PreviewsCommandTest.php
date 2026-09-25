@@ -396,26 +396,6 @@ class PreviewsCommandTest extends CoreTestAbstract
     }
 
 
-    public function testPreviewsIsolated(): void
-    {
-        $command = $this->app->make( \Illuminate\Contracts\Console\Kernel::class )->all()['cms:previews'];
-        $mutex = $this->app->make( \Illuminate\Console\CacheCommandMutex::class );
-
-        $this->assertTrue( $mutex->create( $command ) );
-
-        try
-        {
-            $this->artisan( 'cms:previews' )
-                ->expectsOutputToContain( 'The [cms:previews] command is already running.' )
-                ->assertExitCode( 0 );
-        }
-        finally
-        {
-            $mutex->forget( $command );
-        }
-    }
-
-
     public function testPreviewsManagedTenancy(): void
     {
         $this->manageTenancy();
