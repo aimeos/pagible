@@ -62,6 +62,11 @@ class Previews extends Command
      */
     protected $description = 'Updates image previews to the configured sizes';
 
+    /**
+     * If a line of progress dots hasn't been terminated yet
+     */
+    private bool $dots = false;
+
 
     /**
      * Execute command
@@ -102,6 +107,19 @@ class Previews extends Command
                 return false;
             }
         } );
+    }
+
+
+    /**
+     * Terminates the line of progress dots before other output is written.
+     */
+    protected function flush() : void
+    {
+        if( $this->dots )
+        {
+            $this->newLine();
+            $this->dots = false;
+        }
     }
 
 
@@ -232,6 +250,7 @@ class Previews extends Command
         }
         catch( LockTimeoutException )
         {
+            $this->flush();
             $this->warn( sprintf( 'Tenant "%s": Stopped pruning old versions because the storage is locked', Tenancy::value() ) );
         }
     }
@@ -239,6 +258,8 @@ class Previews extends Command
 
     /**
      * Reports the result of updating the previews of the file and adds it to the statistics.
+     *
+     * Updated files are reported as dots in verbose mode (-v) and by their IDs in very verbose mode (-vv).
      *
      * @param array{updated: int, skipped: list<string>, failed: list<string>} $stats Statistics
      * @param string $id File ID
@@ -249,6 +270,7 @@ class Previews extends Command
     {
         if( is_string( $result ) )
         {
+            $this->flush();
             $this->error( sprintf( 'File "%s": %s', $id, $result ) );
             $stats['failed'][] = $id;
             return $stats;
@@ -256,8 +278,16 @@ class Previews extends Command
 
         if( $result['skipped'] )
         {
+            $this->flush();
             $this->warn( sprintf( 'File "%s": Skipped because it has been changed in the meantime', $id ) );
             $stats['skipped'][] = $id;
+        }
+
+        if( $result['updated'] && $this->output->isVeryVerbose() ) {
+            $this->line( sprintf( 'File "%s": Updated', $id ) );
+        } elseif( $result['updated'] && $this->output->isVerbose() ) {
+            $this->output->write( '.' );
+            $this->dots = true;
         }
 
         $stats['updated'] += (int) $result['updated'];
@@ -441,6 +471,7 @@ class Previews extends Command
         }
         catch( LockTimeoutException )
         {
+            $this->flush();
             // otherwise, each remaining file would wait for the lock until the backup has finished
             $this->error( sprintf( 'Tenant "%s": Stopped because the storage is locked, e.g. by a running backup', $tenant ) );
             $locked = true;
@@ -449,6 +480,8 @@ class Previews extends Command
         {
             $this->refresh( $live, $changed );
         }
+
+        $this->flush();
 
         $this->info( sprintf( 'Tenant "%s": %d file(s) updated, %d skipped, %d failed', $tenant,
             $stats['updated'], count( $stats['skipped'] ), count( $stats['failed'] ) ) );
@@ -509,8 +542,8 @@ class Previews extends Command
     protected function walk( \Closure $callback ) : void
     {
         $query = $this->files();
-        // progress bars flood the logs of non-interactive runs with lines
-        $bar = $this->output->isDecorated() ? $this->output->createProgressBar( $query->count() ) : null;
+        // progress bars flood the logs of non-interactive runs with lines and would overwrite the verbose output
+        $bar = $this->output->isDecorated() && !$this->output->isVerbose() ? $this->output->createProgressBar( $query->count() ) : null;
         $batch = [];
 
         foreach( $query->lazyById( 100 ) as $file )

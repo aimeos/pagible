@@ -127,6 +127,37 @@ class PreviewsCommandTest extends CoreTestAbstract
     }
 
 
+    public function testPreviewsVerbose(): void
+    {
+        config( ['cms.image.preview-sizes' => [['width' => 480]]] );
+
+        $this->file();
+
+        config( ['cms.image.preview-sizes' => [['width' => 720]]] );
+
+        $this->artisan( 'cms:previews', ['-v' => true] )
+            ->expectsOutput( '.' )
+            ->expectsOutput( 'Tenant "test": 1 file(s) updated, 0 skipped, 0 failed' )
+            ->assertExitCode( 0 );
+    }
+
+
+    public function testPreviewsVeryVerbose(): void
+    {
+        config( ['cms.image.preview-sizes' => [['width' => 480]]] );
+
+        $file = $this->file();
+
+        config( ['cms.image.preview-sizes' => [['width' => 720]]] );
+
+        $this->artisan( 'cms:previews', ['-vv' => true] )
+            ->expectsOutput( sprintf( 'File "%s": Updated', $file->id ) )
+            ->doesntExpectOutput( '.' )
+            ->expectsOutput( 'Tenant "test": 1 file(s) updated, 0 skipped, 0 failed' )
+            ->assertExitCode( 0 );
+    }
+
+
     public function testPreviewsCollapsedSizes(): void
     {
         config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720], ['width' => 960]]] );
