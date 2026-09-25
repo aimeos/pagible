@@ -1181,7 +1181,7 @@ class File extends Base
         $ext = $this->imageManager()->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
         $disk = Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) );
 
-        $ptr = $image->encodeByExtension( $ext, quality: 90 )->toFilePointer();
+        $ptr = $image->encodeByExtension( $ext, quality: (int) config( 'cms.image.quality', 75 ) )->toFilePointer();
         $path = $this->dir() . '/' . $this->filename( $filename, $ext, $size );
 
         if( !$disk->put( $path, $ptr ) ) {
