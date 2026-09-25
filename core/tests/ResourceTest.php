@@ -2319,7 +2319,11 @@ class ResourceTest extends CoreTestAbstract
             $rows[] = ['id' => (string) Str::uuid7(), 'path' => 'shared-' . $i] + $row;
         }
 
-        $db->table( 'cms_pages' )->insert( $rows );
-        $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $rows ) );
+        // SQL Server allows max. 2100 bound parameters per statement
+        foreach( array_chunk( $rows, 50 ) as $chunk )
+        {
+            $db->table( 'cms_pages' )->insert( $chunk );
+            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $chunk ) );
+        }
     }
 }
