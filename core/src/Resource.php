@@ -574,7 +574,7 @@ class Resource
      *
      * @param array<string> $ids File UUIDs
      */
-    protected static function invalidateFiles( array $ids ) : void
+    public static function invalidateFiles( array $ids ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $direct = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $ids );
@@ -964,6 +964,10 @@ class Resource
                     || is_string( $source ) && str_starts_with( $source, 'http' )
                 ) {
                     $storedPreviews = (array) $tmp->previews;
+                }
+                elseif( is_string( $source ) && $preview === null && !isset( $input['previews'] ) ) {
+                    // previews of the previous image don't belong to the new path, they are created for supported images
+                    $storedPreviews = $tmp->syncPreviews( [] ) ?? [];
                 }
             }
 

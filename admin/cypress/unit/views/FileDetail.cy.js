@@ -214,6 +214,31 @@ describe('FileDetail', () => {
         })
       })
     })
+
+    it('only sends the previews if they have been changed', () => {
+      const inputs = []
+      const mutate = (options) => {
+        inputs.push(options.variables.input)
+        return Promise.resolve({ data: { saveFile: { latest: { id: 'v2', data: '{}' } } } })
+      }
+
+      mountDetail({ 'file:save': true }, { previews: { 480: 'a_480.webp' } }, { mutate }).then(() => {
+        // the previews are taken when created, as reload() isn't called without file:view
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        vm.dirty = true
+
+        return vm.save().then(() => {
+          expect(inputs[0]).to.not.have.property('previews')
+
+          vm.item.previews = {}
+          vm.dirty = true
+
+          return vm.save()
+        }).then(() => {
+          expect(inputs[1].previews).to.equal('{}')
+        })
+      })
+    })
   })
 
   describe('versions()', () => {
