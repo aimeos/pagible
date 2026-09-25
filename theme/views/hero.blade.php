@@ -3,8 +3,10 @@
 @endPushOnce
 
 @if(count($heroFiles = (array) ($data->files ?? [])) > 1)
+    @pushOnce('head', 'cms-slideshow-head')
+    <link href="{{ cmstheme($page, 'slideshow.css') }}" rel="stylesheet">
+    @endPushOnce
     @pushOnce('foot', 'cms-slideshow')
-    <link href="{{ cmstheme($page, 'slideshow.css') }}" rel="preload" as="style">
     <script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
     @endPushOnce
 @endif

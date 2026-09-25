@@ -1,5 +1,13 @@
-@pushOnce('foot', 'cms-slideshow')
+@if($data->main ?? false)
+@pushOnce('head', 'cms-slideshow-head')
+<link href="{{ cmstheme($page, 'slideshow.css') }}" rel="stylesheet">
+@endPushOnce
+@else
+@pushOnce('foot', 'cms-slideshow-css')
 <link href="{{ cmstheme($page, 'slideshow.css') }}" rel="preload" as="style">
+@endPushOnce
+@endif
+@pushOnce('foot', 'cms-slideshow')
 <script defer src="{{ cmstheme($page, 'slideshow.js') }}"></script>
 @endPushOnce
 
