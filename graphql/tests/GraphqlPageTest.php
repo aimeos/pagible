@@ -1142,7 +1142,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page->latest()->update( ['published' => false] );
         $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Jobs;
 
+use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Utils;
@@ -30,6 +31,7 @@ class DeleteFilePaths implements ShouldQueue
      */
     public function __construct( public string $tenant, public array $paths )
     {
+        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
     }
 
 
@@ -101,6 +103,8 @@ class DeleteFilePaths implements ShouldQueue
         foreach( ['public', 'private'] as $disk ) {
             Storage::disk( File::diskName( $disk ) )->delete( array_keys( $paths ) );
         }
+
+        FilesRemoved::dispatch( $this->tenant, array_keys( $paths ) );
     }
 
 

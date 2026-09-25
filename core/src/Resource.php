@@ -7,8 +7,10 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Jobs\InvalidatePages;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -229,6 +231,39 @@ class Resource
 
 
     /**
+     * Invalidates the routes of the published pages with the given IDs.
+     *
+     * @param array<string> $ids Page UUIDs
+     */
+    public static function invalidateIds( array $ids ) : void
+    {
+        self::invalidatePages( Page::whereIn( 'id', $ids )->select( 'id', 'domain', 'path' )->get() );
+    }
+
+
+    /**
+     * Invalidates the published pages using the Elements, the Files directly or the Files through an Element.
+     *
+     * The pages are invalidated by queued jobs, so publishing content shared by many pages doesn't slow down
+     * the request. The jobs get the page IDs because the references of purged items don't exist any more when they run.
+     *
+     * @param array<string> $elements Element UUIDs
+     * @param array<string> $files File UUIDs
+     */
+    public static function invalidateRefs( array $elements, array $files = [] ) : void
+    {
+        if( !$query = self::refPages( $elements, $files ) ) {
+            return;
+        }
+
+        // Jobs dispatched after commit are kept in memory until then, so reading the IDs in chunks wouldn't save memory
+        foreach( $query->pluck( 'page_id' )->unique()->chunk( 1000 ) as $chunk ) {
+            InvalidatePages::dispatch( Tenancy::value(), $chunk->map( strval( ... ) )->values()->all() )->afterCommit();
+        }
+    }
+
+
+    /**
      * Moves a page to a new position in the tree and broadcasts the change.
      *
      * @param string $id Page UUID
@@ -369,7 +404,7 @@ class Resource
             {
                 $files = ( new File() )->newCollection( array_values( $changed ) );
 
-                self::invalidateFiles( $files->modelKeys() );
+                self::invalidateRefs( [], $files->modelKeys() );
                 File::announceMany( $files, 'saved', $editor, ['disk' => $disk], true );
             }
         }
@@ -570,24 +605,22 @@ class Resource
 
 
     /**
-     * Invalidates published pages using a File directly or through an Element in bounded chunks.
+     * Invalidates the published pages using the Elements or Files of a lifecycle action.
      *
-     * @param array<string> $ids File UUIDs
+     * @param class-string<Base> $model Element or File class
+     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Elements or Files
+     * @param string $action Lifecycle action like "dropped", "purged" or "restored"
      */
-    protected static function invalidateFiles( array $ids ) : void
+    protected static function invalidateItemRefs( string $model, \Illuminate\Database\Eloquent\Collection $items, string $action ) : void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $direct = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $ids );
-        $shared = $db->table( 'cms_element_file as ef' )
-            ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-            ->select( 'pe.page_id' )->whereIn( 'ef.file_id', $ids );
-        $pages = $direct->unionAll( $shared );
-
-        foreach( Page::whereIn( 'id', $pages )
-            ->select( 'id', 'domain', 'path' )->lazyById( 250 )->chunk( 250 ) as $items )
+        if( $action === 'purged' )
         {
-            self::invalidatePages( $items );
+            // Pages using deleted items were invalidated when they were deleted
+            $items = $items->reject( fn( Base $item ) => $item->trashed() );
         }
+
+        $keys = array_map( strval( ... ), $items->modelKeys() );
+        $model === File::class ? self::invalidateRefs( [], $keys ) : self::invalidateRefs( $keys );
     }
 
 
@@ -611,6 +644,45 @@ class Resource
         foreach( $paths as $domain => $domainPaths ) {
             PageInvalidated::dispatch( (string) $domain, $domainPaths );
         }
+    }
+
+
+    /**
+     * Returns the query for the IDs of the pages using the Elements, the Files directly or the Files through an Element.
+     *
+     * The page table isn't joined because MySQL can't optimize IN() subqueries with UNION, which would scan all pages.
+     * Deleted pages are skipped by the queued jobs instead.
+     *
+     * @param array<string> $elements Element UUIDs
+     * @param array<string> $files File UUIDs
+     * @return \Illuminate\Database\Query\Builder|null Query for the page IDs or NULL if there are no items
+     */
+    protected static function refPages( array $elements, array $files ) : ?\Illuminate\Database\Query\Builder
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $queries = [];
+
+        if( $elements ) {
+            $queries[] = $db->table( 'cms_page_element' )->select( 'page_id' )->whereIn( 'element_id', $elements );
+        }
+
+        if( $files )
+        {
+            $queries[] = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $files );
+            $queries[] = $db->table( 'cms_element_file as ef' )
+                ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
+                ->select( 'pe.page_id' )->whereIn( 'ef.file_id', $files );
+        }
+
+        if( !$pages = array_shift( $queries ) ) {
+            return null;
+        }
+
+        foreach( $queries as $query ) {
+            $pages->unionAll( $query );
+        }
+
+        return $pages;
     }
 
 
@@ -677,6 +749,10 @@ class Resource
 
         $file->disk = $disk;
         $file->editor = $editor;
+
+        if( $disk === 'private' && !$paths->isEmpty() ) {
+            FilesRemoved::dispatch( (string) $file->tenant_id, array_values( $paths->all() ) );
+        }
     }
 
 
@@ -740,6 +816,11 @@ class Resource
 
             if( $items->isEmpty() ) {
                 return $items;
+            }
+
+            // Before purging because the references are removed with the items, dispatched after commit
+            if( !$isPage ) {
+                self::invalidateItemRefs( $model, $items, $action );
             }
 
             if( $isPage && ( $action !== 'restored' || Scout::usesExternalSearch() ) ) {

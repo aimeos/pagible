@@ -194,6 +194,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Queue
+    |--------------------------------------------------------------------------
+    |
+    | Queue connection and name for the background jobs of the CMS, e.g. for
+    | pruning versions, deleting files and invalidating pages using shared
+    | content. Leave empty to use the default queue connection and name.
+    |
+    */
+    'queue' => [
+        'connection' => env( 'CMS_QUEUE_CONNECTION' ),
+        'name' => env( 'CMS_QUEUE' ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Number of stored versions
     |--------------------------------------------------------------------------
     |

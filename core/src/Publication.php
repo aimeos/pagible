@@ -82,6 +82,12 @@ final class Publication
      */
     public function flush( ?string $editor = null ) : void
     {
+        // Pages show the published content of shared elements and files
+        Resource::invalidateRefs(
+            array_map( strval( ... ), array_keys( $this->models[Element::class] ?? [] ) ),
+            array_map( strval( ... ), array_keys( $this->models[File::class] ?? [] ) ),
+        );
+
         foreach( $this->models as $model => $items ) {
             Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
         }

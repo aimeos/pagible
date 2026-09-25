@@ -22,10 +22,13 @@
 		"laravel/pulse": "^1.7",
 		"laravel-json-api/testing": "^3.1",
 		"larastan/larastan": "^3.9",
+		"friendsofsymfony/http-cache": "^3.2",
+		"php-http/guzzle7-adapter": "^1.1",
 		"om/potrans": "^1.0.1",
 		"kkomelin/laravel-translatable-string-exporter": "^1.26"
 	},
 	"suggest": {
+		"aimeos/pagible-cdn": "For purging changed pages and removed files from CDNs and caching proxies",
 		"aimeos/pagible-webhooks": "For signed outbound notifications when CMS content changes"
 	},
 	"repositories": [
@@ -37,7 +40,8 @@
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
 		{"type": "path", "url": "theme"},
-		{"type": "path", "url": "webhooks"}
+		{"type": "path", "url": "webhooks"},
+		{"type": "path", "url": "cdn"}
 	],
 	"autoload": {
 		"psr-4": {
@@ -49,6 +53,7 @@
 			"Aimeos\\Cms\\": [
 				"backup/src/",
 				"cashier/src/",
+				"cdn/src/",
 				"import/src/",
 				"pulse/src/",
 				"themes/glass/src/",
@@ -70,6 +75,7 @@
 				"admin/tests/",
 				"ai/tests/",
 				"cashier/tests/",
+				"cdn/tests/",
 				"graphql/tests/",
 				"import/tests/",
 				"jsonapi/tests/",

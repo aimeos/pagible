@@ -533,7 +533,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 dropElement(id: ["' . $element->id . '"]) {
@@ -561,7 +561,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepElement(id: ["' . $element->id . '"]) {
@@ -588,7 +588,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 4 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 pubElement(id: ["' . $element->id . '"]) {
@@ -663,7 +663,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 3 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgeElement(id: "' . $element->id . '") {
