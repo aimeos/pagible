@@ -144,12 +144,14 @@ p code {
     overflow-wrap: anywhere;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     overflow-x: auto;
     display: block;
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     background-color: var(--pico-contrast-background);
     border: 4px solid var(--pico-primary);
     padding: 2rem 5%;

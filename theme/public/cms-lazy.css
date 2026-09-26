@@ -161,7 +161,8 @@ p code {
     font-size: 0.875em;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     background-color: var(--pico-contrast);
     color: var(--pico-contrast-inverse);
     overflow-x: auto;
@@ -169,7 +170,8 @@ pre code[class*=language-] {
     border-radius: calc(var(--pico-border-radius) * 2);
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     background-color: var(--pico-contrast);
     border-radius: calc(var(--pico-border-radius) * 2);
     padding: 1.5rem;

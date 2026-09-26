@@ -144,13 +144,15 @@ blockquote {
     max-width: 60rem;
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     background-color: var(--pico-code-background-color);
     border: 1px solid var(--pico-muted-border-color);
     padding: 1rem;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     color: var(--pico-code-color);
     font-family: var(--pico-font-family-monospace);
     overflow-x: auto;

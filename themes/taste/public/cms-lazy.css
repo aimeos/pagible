@@ -89,7 +89,8 @@ blockquote {
     font-size: 0.75rem;
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     padding: 2rem;
     border-radius: var(--pico-border-radius);
     background: var(--pico-code-background-color);

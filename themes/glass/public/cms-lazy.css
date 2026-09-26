@@ -169,7 +169,8 @@ p code {
     font-size: 0.875em;
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     backdrop-filter: blur(20px);
     background: var(--pico-contrast-background);
     border: 1px solid var(--pico-contrast-border);
@@ -182,12 +183,14 @@ pre:has(code[class*="language-"]) {
     padding: 2rem;
 }
 
-pre:has(code[class*="language-"]):hover {
+pre:has(code[class*="language-"]):hover,
+pre:has(> code):hover {
     box-shadow: 0 0.75rem 2.5rem -0.25rem #00000066, 0 0 0 1px var(--pico-contrast-background);
     border-color: var(--pico-contrast-hover-border);
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     color: var(--pico-code-color);
     font-family: var(--pico-font-family-monospace);
     overflow-x: auto;

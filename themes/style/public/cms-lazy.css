@@ -146,14 +146,16 @@ dialog.search .load-more:disabled {
     color: var(--pico-muted-color);
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     background-color: var(--pico-muted-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     border: 1px solid var(--pico-muted-background-color);
     padding: 2rem;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     color: var(--pico-color);
     font-family: var(--pico-font-family-monospace);
     border-radius: calc(var(--pico-border-radius) * 2);

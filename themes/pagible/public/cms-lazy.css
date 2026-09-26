@@ -137,20 +137,23 @@ p code {
     overflow-wrap: anywhere;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     background-color: var(--pico-muted-background-color);
     overflow-x: auto;
     padding: 0.5rem;
     display: block;
 }
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     padding: 2rem 5%;
     background: var(--cms-accent-gradient-tight);
 }
 
 @media screen and (min-width: 768px) {
-    pre:has(code[class*="language-"]) {
+    pre:has(code[class*="language-"]),
+    pre:has(> code) {
         background:
             var(--cms-accent-gradient-tight),
             url('code-background.svg') no-repeat -10% calc(100% + 2.5rem) / 20% auto,

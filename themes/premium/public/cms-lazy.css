@@ -153,14 +153,16 @@ blockquote {
 }
 
 
-pre:has(code[class*="language-"]) {
+pre:has(code[class*="language-"]),
+pre:has(> code) {
     background-color: var(--pico-code-background-color);
     border-radius: calc(var(--pico-border-radius) * 2);
     border: 1px solid var(--pico-muted-border-color);
     padding: 2rem;
 }
 
-pre code[class*=language-] {
+pre code[class*=language-],
+pre > code {
     color: var(--pico-code-color);
     font-family: var(--pico-font-family-monospace);
     background-color: var(--pico-code-background-color);
