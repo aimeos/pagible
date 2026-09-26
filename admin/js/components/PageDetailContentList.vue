@@ -324,7 +324,7 @@ export default {
       }
 
       const entries = (this.clipboard.get('page-content') || []).map((el) => {
-        return { ...el, group: this.section, id: uid() }
+        return { ...el, group: this.section, id: uid(), _changed: true }
       })
 
       this.content.splice(idx, 0, ...entries)
