@@ -10,8 +10,6 @@
         "supporting";
     gap: 2rem;
     align-items: center;
-    min-height: 28rem;
-    padding-block: clamp(4rem, 12vw, 9rem);
 }
 
 .text-trio .text-trio-title {
@@ -19,7 +17,7 @@
     max-width: 14ch;
     margin: 0 auto;
     color: var(--pico-contrast-hover);
-    font-size: clamp(2rem, 3.2vw, 3.5rem);
+    font-size: calc(var(--pico-font-size) * 1.5);
     line-height: 1.25;
     text-align: center;
     text-transform: uppercase;
@@ -44,7 +42,6 @@
     .text-trio {
         grid-template-areas: "leading title supporting";
         grid-template-columns: minmax(0, 1fr) minmax(16rem, 1.25fr) minmax(0, 1fr);
-        min-height: 34rem;
     }
 
     .text-trio .text-trio-supporting {

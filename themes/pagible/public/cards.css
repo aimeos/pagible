@@ -66,3 +66,8 @@
     font-size: calc(var(--pico-font-size) * 1.2);
     margin: 1rem 0;
 }
+
+.cards .card-item .title a {
+    text-decoration: none;
+    color: inherit;
+}
