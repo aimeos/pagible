@@ -126,15 +126,29 @@ body {
 /* Slide animation */
 .slide-stack-enter-active,
 .slide-stack-leave-active {
-  transition: transform 0.3s ease;
+  box-shadow: -24px 0 48px -16px rgba(var(--v-theme-background), 0.45);
+}
+
+.slide-stack-enter-active {
+  transition:
+    transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.24s ease-out;
+}
+
+.slide-stack-leave-active {
+  transition:
+    transform 0.24s cubic-bezier(0.4, 0, 1, 1),
+    opacity 0.24s ease-in;
 }
 
 .slide-stack-enter-from {
   transform: translateX(100%);
+  opacity: 0.6;
 }
 
 .slide-stack-leave-to {
   transform: translateX(100%);
+  opacity: 0.6;
 }
 
 a:focus-visible,
@@ -143,12 +157,5 @@ button:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slide-stack-enter-active,
-  .slide-stack-leave-active {
-    transition: none;
-  }
 }
 </style>

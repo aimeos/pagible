@@ -5,7 +5,6 @@ import { markRaw } from 'vue'
 import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 import {
-  mdiAccount,
   mdiBroom,
   mdiClose,
   mdiContentCopy,
@@ -51,7 +50,6 @@ export default {
 
     return {
       user,
-      mdiAccount,
       mdiBroom,
       mdiClose,
       mdiContentCopy,
@@ -351,14 +349,6 @@ export default {
         </div>
 
         <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
-          <v-avatar
-            :color="m.role === 'user' ? 'success' : 'primary'"
-            variant="tonal"
-            size="40"
-            class="chat-avatar"
-          >
-            <v-icon :icon="m.role === 'user' ? mdiAccount : mdiCreation" size="20" />
-          </v-avatar>
           <div class="chat-bubble" :class="{ error: m.error }">
             <!-- Each completed block is rendered once into m.blocks and appended as its own element,
                  so neither DOMPurify nor the DOM re-processes earlier blocks. The open trailing block
@@ -370,7 +360,11 @@ export default {
               <div v-if="m.streaming && m.pending" class="chat-md" v-html="render(m.pending)"></div>
             </template>
             <div v-else class="chat-text">{{ m.content }}</div>
-            <span v-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>
+            <span v-if="m.streaming && !m.content" class="chat-typing" role="status">
+              <span></span><span></span><span></span>
+              <span class="chat-sr">{{ $gettext('Thinking ...') }}</span>
+            </span>
+            <span v-else-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>
             <v-btn
               v-if="m.role === 'assistant' && m.content && !m.streaming"
               :icon="mdiContentCopy"
@@ -427,8 +421,9 @@ export default {
               :aria-label="$gettext('Send')"
               :disabled="!input.trim()"
               color="primary"
-              variant="tonal"
+              variant="flat"
               size="small"
+              class="chat-send"
             />
           </template>
         </v-textarea>
@@ -449,17 +444,11 @@ export default {
   flex: 0 0 auto;
 }
 
-.chat-toolbar :deep(.v-toolbar-title) {
-  font-weight: 600;
-}
-
 .chat-messages {
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 20px;
-  background:
-    linear-gradient(180deg, rgba(var(--v-theme-primary), var(--v-idle-opacity)), transparent 96px),
-    rgb(var(--v-theme-surface));
+  background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.06), transparent 120px);
 }
 
 .chat-empty {
@@ -477,48 +466,48 @@ export default {
   margin-bottom: 4px;
 }
 
-.chat-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  max-width: 480px;
-}
-
-.chat-suggestion {
-  cursor: pointer;
-}
-
 .chat-row {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
   margin-bottom: 14px;
+  animation: chat-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes chat-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-row {
+    animation: none;
+  }
 }
 
 .chat-row.user {
-  --v-activated-opacity: 0.33;
-
-  flex-direction: row-reverse;
-}
-
-.chat-avatar {
-  flex: 0 0 auto;
+  justify-content: flex-end;
 }
 
 .chat-bubble {
   position: relative;
+  min-width: 0;
   max-width: 80%;
   padding: 11px 15px;
-  border: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
+  border: 1px solid rgba(var(--v-theme-primary), 0.16);
   border-radius: 16px;
-  background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
+  border-top-left-radius: 4px;
+  background-color: rgba(var(--v-theme-primary), 0.06);
   color: rgb(var(--v-theme-on-surface));
 }
 
 .chat-row.user .chat-bubble {
-  border-color: rgba(var(--v-theme-success), var(--v-border-opacity));
-  background-color: rgba(var(--v-theme-success), var(--v-activated-opacity));
+  border: 0;
+  border-radius: 16px;
+  border-top-right-radius: 4px;
+  background-color: rgb(var(--v-theme-primary));
+  box-shadow: 0 6px 18px -6px rgba(var(--v-theme-primary), 0.45);
+  color: rgb(var(--v-theme-on-primary));
 }
 
 .chat-bubble.error {
@@ -584,7 +573,7 @@ export default {
   margin: 0 0 8px;
   padding: 8px 10px;
   border-radius: 6px;
-  background-color: rgba(var(--v-theme-on-surface), 0.06);
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
   white-space: pre-wrap;
   overflow-x: auto;
 }
@@ -610,6 +599,62 @@ export default {
 .chat-md :deep(th) {
   font-weight: 600;
   background-color: rgba(var(--v-theme-on-surface), 0.04);
+}
+
+/* "Thinking" dots shown until the first streamed chunk arrives */
+.chat-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 1.5em;
+}
+
+.chat-typing > span:not(.chat-sr) {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
+  animation: chat-bounce 1.2s ease-in-out infinite;
+}
+
+.chat-typing > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-typing > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes chat-bounce {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.chat-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-typing > span:not(.chat-sr) {
+    animation: none;
+  }
+
+  .chat-typing > span:not(.chat-sr) {
+    opacity: 0.7;
+  }
 }
 
 .chat-cursor {
@@ -644,7 +689,12 @@ export default {
 .chat-input {
   flex: 0 0 auto;
   padding: 14px 16px 16px;
-  border-top: 1px solid rgba(var(--v-theme-primary), var(--v-border-opacity));
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.chat-send:not(.v-btn--disabled) {
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
+  color: rgb(var(--v-theme-on-primary));
 }
 
 .chat-input :deep(textarea) {

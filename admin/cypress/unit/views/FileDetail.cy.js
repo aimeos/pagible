@@ -82,7 +82,8 @@ describe('FileDetail', () => {
     mountDetail()
     cy.contains('.detail-tabs .v-tab', 'File')
       .should('have.class', 'v-tab--selected')
-      .and('have.css', 'background-color', 'rgba(0, 0, 0, 0.08)')
+      .and('have.css', 'box-shadow')
+      .and('include', 'inset')
     cy.get('.detail-tabs .v-tab__slider').should('not.exist')
   })
 

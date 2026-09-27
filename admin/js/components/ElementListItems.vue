@@ -16,6 +16,7 @@ import {
   mdiPencil
 } from '@mdi/js'
 import ActionMenu from './ActionMenu.vue'
+import ListSkeleton from './ListSkeleton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
@@ -145,6 +146,7 @@ const SORT_OPTIONS = Object.freeze([
 export default {
   components: {
     ActionMenu,
+    ListSkeleton,
     LoadingSpinner,
     SchemaDialog,
     EditBulkDialog,
@@ -888,7 +890,8 @@ export default {
     </v-list-item>
   </v-list>
 
-  <p v-if="loading" class="loading">
+  <ListSkeleton v-if="loading && !items?.length" />
+  <p v-else-if="loading" class="loading">
     {{ $gettext('Loading') }}
     <LoadingSpinner width="32" height="32" />
   </p>
@@ -916,16 +919,13 @@ export default {
 </template>
 
 <style scoped>
-.layoout .v-list-item {
-  text-transform: uppercase;
-}
-
 .items {
   margin: 0;
 }
 
 .items .v-list-item {
   border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  border-radius: 0;
   contain-intrinsic-size: auto 56px;
   content-visibility: auto;
   padding: 4px 0;

@@ -101,12 +101,7 @@ export default {
 
 <style scoped>
 .v-navigation-drawer {
-  border-top-left-radius: 8px;
-}
-
-.v-locale--is-rtl .v-navigation-drawer {
-  border-top-left-radius: 0;
-  border-top-right-radius: 8px;
+  border-start-start-radius: 8px;
 }
 
 .v-btn.reset {

@@ -264,7 +264,8 @@ export default {
         @click="apply(false)"
         :disabled="!hasInput || !valid || limited"
         class="btn-apply"
-        variant="outlined"
+        variant="flat"
+        color="primary"
         >{{ $gettext('Apply') }}</v-btn
       >
       <v-btn

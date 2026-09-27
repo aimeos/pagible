@@ -36,6 +36,9 @@ export async function switchLocale(code) {
 
 const vuetify = createVuetify({
   components: { VDialog, VMenu },
+  defaults: {
+    VDialog: { transition: 'cms-dialog' }
+  },
   display: {
     thresholds: {
       md: 960,

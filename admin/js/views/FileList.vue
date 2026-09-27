@@ -326,12 +326,4 @@ export default {
 .v-input--horizontal :deep(.v-input__append) {
   margin: 0;
 }
-
-.help {
-  color: rgb(var(--v-theme-on-surface));
-  background-color: rgb(var(--v-theme-surface-light));
-  padding: 16px 24px 16px 32px;
-  margin-bottom: 16px;
-  border-radius: 8px;
-}
 </style>

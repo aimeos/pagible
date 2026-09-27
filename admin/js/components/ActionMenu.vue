@@ -77,7 +77,32 @@ export default {
   max-height: calc(100dvh - 48px);
 }
 
+/* Dark mode: same colors as the tab navigation, light mode keeps the surface colors */
+.action-menu-card.v-theme--dark,
+.v-theme--dark .action-menu-card {
+  --v-border-color: var(--v-theme-on-background);
+  background-color: rgb(var(--v-theme-background)) !important;
+  color: rgb(var(--v-theme-on-background)) !important;
+}
+
 .action-menu-list {
+  background-color: transparent;
+  color: inherit;
   overflow-y: auto;
+}
+
+.action-menu-list :deep(.v-list-item),
+.action-menu-list :deep(.v-list-group__header) {
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.action-menu-list :deep(.v-list-item:hover),
+.action-menu-list :deep(.v-list-item:focus-within) {
+  background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
+}
+
+.action-menu-list :deep(.v-list-item .v-btn:hover > .v-btn__overlay) {
+  opacity: 0;
 }
 </style>

@@ -39,7 +39,7 @@ export default {
     scrollable
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card :loading="cardLoading">
+    <v-card :loading="cardLoading === true ? 'primary' : cardLoading">
       <v-toolbar density="compact" :color="toolbarColor">
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <slot name="toolbar-actions" :close="close" />
