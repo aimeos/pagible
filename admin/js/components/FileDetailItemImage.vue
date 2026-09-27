@@ -1004,8 +1004,13 @@ export default {
   width: 100%;
   min-height: 180px;
   object-fit: contain;
-  background-color: #fff;
-  background-image: conic-gradient(#ccc 25%, #fff 0 50%, #ccc 0 75%, #fff 0);
+  background-color: rgb(var(--v-theme-surface));
+  background-image: conic-gradient(
+    rgba(var(--v-theme-on-surface), 0.12) 25%,
+    transparent 0 50%,
+    rgba(var(--v-theme-on-surface), 0.12) 0 75%,
+    transparent 0
+  );
   background-repeat: repeat;
   background-size: 16px 16px;
 }
@@ -1018,7 +1023,7 @@ export default {
   position: absolute;
   top: calc(50% + 16px);
   left: 50%;
-  color: #fff;
+  color: rgb(var(--v-theme-on-background));
   font-size: 14px;
   line-height: 1.2;
   padding: 12px 6px;
@@ -1026,23 +1031,8 @@ export default {
   white-space: nowrap;
   pointer-events: none;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.toolbar {
-  gap: 8px;
-  width: 100%;
-  display: flex;
-  padding: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: rgb(var(--v-theme-background));
-}
-
-@media (max-width: 768px) {
-  .toolbar {
-    width: auto;
-  }
+  background: rgba(var(--v-theme-background), 0.72);
+  backdrop-filter: blur(8px);
 }
 
 .uncrop .single,

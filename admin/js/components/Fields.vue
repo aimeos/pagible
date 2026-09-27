@@ -370,7 +370,7 @@ export default {
 .item {
   margin: 24px 0;
   padding-inline-start: 8px;
-  border-inline-start: 3px solid #d0d8e0;
+  border-inline-start: 3px solid rgba(var(--v-theme-primary), 0.16);
 }
 
 .item.protected {
@@ -409,6 +409,5 @@ export default {
   text-transform: capitalize;
   font-weight: bold;
   margin-bottom: 4px;
-  min-height: 48px;
 }
 </style>

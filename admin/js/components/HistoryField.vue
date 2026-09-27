@@ -264,11 +264,11 @@ export default {
 }
 
 .file.removed {
-  border-color: rgba(var(--v-theme-error), 0.5);
+  border-color: rgba(var(--v-theme-error), 0.4);
 }
 
 .file.added {
-  border-color: rgba(var(--v-theme-success), 0.5);
+  border-color: rgba(var(--v-theme-success), 0.4);
 }
 
 .file video, .file audio {
@@ -308,12 +308,12 @@ export default {
 }
 
 .change-old .highlight {
-  background: rgba(var(--v-theme-error), 0.25);
+  background: rgba(var(--v-theme-error), 0.2);
   text-decoration: line-through;
 }
 
 .change-new .highlight {
-  background: rgba(var(--v-theme-success), 0.25);
+  background: rgba(var(--v-theme-success), 0.2);
   text-decoration: underline;
 }
 

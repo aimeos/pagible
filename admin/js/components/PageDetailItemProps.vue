@@ -388,8 +388,8 @@ export default {
 
 <style scoped>
 :deep(.v-field__prefix) {
-  background: rgba(var(--v-theme-on-surface), 0.05);
-  border-inline-end: thin solid rgba(var(--v-theme-on-surface), 0.15);
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border-inline-end: thin solid rgba(var(--v-theme-on-surface), 0.12);
   padding-inline: 8px;
   margin-inline-end: 4px;
   align-self: stretch;

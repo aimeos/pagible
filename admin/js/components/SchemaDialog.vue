@@ -43,8 +43,8 @@ export default {
 
 <style scoped>
 .v-tabs {
-  background-color: rgb(var(--v-theme-emphasis, var(--v-theme-surface-light)));
-  color: rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)));
+  background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
+  color: rgb(var(--v-theme-on-surface));
   margin-bottom: 8px;
 }
 </style>

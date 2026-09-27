@@ -184,23 +184,36 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(var(--v-theme-background));
+  background:
+    radial-gradient(circle at 20% 15%, rgba(var(--v-theme-primary), 0.28), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(var(--v-theme-secondary), 0.24), transparent 45%),
+    rgb(var(--v-theme-background));
   height: 100vh;
   width: 100%;
 }
 
 .login .v-card {
-  background-color: rgb(var(--v-theme-primary));
+  background: linear-gradient(
+    135deg,
+    rgb(var(--v-theme-primary)),
+    color-mix(in srgb, rgb(var(--v-theme-primary)) 55%, rgb(var(--v-theme-secondary)))
+  );
   color: rgb(var(--v-theme-on-primary));
-  border-radius: 8px;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 24px 48px -16px rgba(var(--v-theme-background), 0.6),
+    0 0 64px -8px rgba(var(--v-theme-primary), 0.45);
   padding: 8px;
   width: 20rem;
   opacity: 0;
+  transform: translateY(12px);
 }
 
 .login.show .v-card {
   opacity: 1;
-  transition: opacity 0.5s;
+  transform: none;
+  transition: opacity 0.5s, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .login .v-card-title {

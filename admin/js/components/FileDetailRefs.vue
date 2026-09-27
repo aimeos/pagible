@@ -139,7 +139,7 @@ export default {
 
 <template>
   <v-container>
-    <v-sheet class="scroll">
+    <v-sheet class="scroll refs">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
         <v-expansion-panel v-if="file.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
@@ -222,21 +222,5 @@ export default {
 <style scoped>
 .v-sheet.scroll {
   height: calc(100vh - 96px);
-}
-
-.v-expansion-panel-title {
-  font-weight: bold;
-  font-size: 110%;
-}
-
-.v-table.pages tbody tr,
-.v-table.elements tbody tr,
-.v-table.versions tbody tr {
-  cursor: pointer;
-}
-
-thead th {
-  font-weight: bold !important;
-  width: 33%;
 }
 </style>

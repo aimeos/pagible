@@ -507,7 +507,7 @@ export default {
 
 <style scoped>
 .v-expansion-panel.v-expansion-panel--active.item {
-  border: 1px solid #d0d8e0;
+  border: 1px solid rgb(var(--v-theme-border-light, var(--v-border-color)));
 }
 
 .items.v-expansion-panels {
