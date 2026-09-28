@@ -33,7 +33,7 @@ export default {
     aria-describedby="unsaved-description"
   >
     <v-card>
-      <v-toolbar density="compact" class="unsaved-toolbar">
+      <v-toolbar density="compact" color="warning">
         <v-toolbar-title>
           {{ $gettext('Unsaved changes') }}
         </v-toolbar-title>
@@ -55,7 +55,7 @@ export default {
         <v-btn @click="dirtyStore.cancel()" variant="text">
           {{ $gettext('Cancel') }}
         </v-btn>
-        <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="tonal" color="primary" active>
+        <v-btn ref="saveBtn" @click="dirtyStore.saveAndLeave()" variant="flat" color="primary">
           {{ $gettext('Save & leave') }}
         </v-btn>
       </v-card-actions>
@@ -64,15 +64,6 @@ export default {
 </template>
 
 <style scoped>
-.unsaved-toolbar {
-  background: rgb(var(--v-theme-warning));
-  color: #000;
-}
-
-.unsaved-toolbar :deep(.v-btn) {
-  color: #000;
-}
-
 .unsaved-body {
   display: flex;
   align-items: center;

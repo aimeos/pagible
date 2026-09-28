@@ -32,16 +32,15 @@ describe('SchemaItems', () => {
     cy.get('.v-tab').should('contain', 'media')
   })
 
-  it('uses emphasis colors for schema group tabs', () => {
+  it('uses the accent tint for schema group tabs', () => {
     mountWithSchemas()
     cy.get('.v-tabs')
       .then(($tabs) => {
         $tabs[0].style.setProperty('transition', 'none')
-        $tabs[0].style.setProperty('--v-theme-background', '30, 41, 59')
-        $tabs[0].style.setProperty('--v-theme-emphasis', '248, 250, 252')
-        $tabs[0].style.setProperty('--v-theme-on-emphasis', '15, 23, 42')
+        $tabs[0].style.setProperty('--v-theme-nav-accent', '96, 165, 250')
+        $tabs[0].style.setProperty('--v-theme-on-surface', '15, 23, 42')
       })
-      .should('have.css', 'background-color', 'rgb(248, 250, 252)')
+      .should('have.css', 'background-color', 'rgba(96, 165, 250, 0.16)')
       .and('have.css', 'color', 'rgb(15, 23, 42)')
   })
 

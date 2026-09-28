@@ -559,8 +559,6 @@ export default {
 }
 
 .loading {
-  display: flex;
-  align-items: center;
   gap: 12px;
 }
 

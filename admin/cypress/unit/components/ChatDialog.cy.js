@@ -50,7 +50,7 @@ describe('ChatDialog', () => {
     cy.contains('.chat-empty', 'What shall I do for you?').should('exist')
   })
 
-  it('uses blue for AI messages and green for user messages', () => {
+  it('shows AI and user messages without avatars on opposite sides', () => {
     mountDialog()
     cy.then(() => {
       const vm = Cypress.vueWrapper.findComponent(ChatDialog).vm
@@ -59,9 +59,9 @@ describe('ChatDialog', () => {
         { id: 2, role: 'user', content: 'Create a landing page' },
       ]
     })
-    cy.get('.chat-row.assistant .chat-avatar').should('have.class', 'text-primary')
-    cy.get('.chat-row.user .chat-avatar').should('have.class', 'text-success')
-    cy.get('.chat-row.user').should('have.css', '--v-activated-opacity', '0.33')
+    cy.get('.chat-avatar').should('not.exist')
+    cy.get('.chat-row.user').should('have.css', 'justify-content', 'flex-end')
+    cy.get('.chat-row.user .chat-bubble').should('have.css', 'background-image', 'none')
   })
 
   it('disables the send button when the input is empty', () => {

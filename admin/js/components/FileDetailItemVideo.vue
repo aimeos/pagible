@@ -269,22 +269,6 @@ export default {
   max-height: 100%;
 }
 
-.toolbar {
-  gap: 8px;
-  width: 100%;
-  display: flex;
-  padding: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: rgb(var(--v-theme-background));
-}
-
-@media (max-width: 768px) {
-  .toolbar {
-    width: auto;
-  }
-}
-
 img.video-preview {
   width: 100px;
   cursor: pointer;

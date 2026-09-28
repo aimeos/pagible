@@ -3,6 +3,7 @@
 <script>
 import { useDirtyStore, useDrawerStore, useUserStore, useViewStack } from '../stores'
 import {
+  mdiCheck,
   mdiChevronLeft,
   mdiChevronRight,
   mdiDatabaseArrowDown,
@@ -54,6 +55,7 @@ export default {
       drawer,
       user,
       viewStack,
+      mdiCheck,
       mdiChevronLeft,
       mdiChevronRight,
       mdiDatabaseArrowDown,
@@ -65,8 +67,23 @@ export default {
   },
 
   data: () => ({
-    publishMenu: false
+    publishMenu: false,
+    saved: false
   }),
+
+  beforeUnmount() {
+    clearTimeout(this.savedTimer)
+  },
+
+  watch: {
+    saving(value, old) {
+      if (old && !value && !this.dirty && !this.error) {
+        clearTimeout(this.savedTimer)
+        this.saved = true
+        this.savedTimer = setTimeout(() => (this.saved = false), 1600)
+      }
+    }
+  },
 
   methods: {
     async goBack() {
@@ -150,7 +167,8 @@ export default {
         :disabled="saveDisabled"
         :variant="saveDisabled ? 'plain' : 'flat'"
         :color="error ? 'error' : conflict ? 'warning' : !saveDisabled ? 'primary' : ''"
-        :icon="mdiDatabaseArrowDown"
+        :icon="saved ? mdiCheck : mdiDatabaseArrowDown"
+        :class="{ saved }"
         class="menu-save"
       />
 
@@ -174,6 +192,9 @@ export default {
           </v-btn>
         </template>
         <v-card class="menu-content publish-menu">
+          <v-toolbar density="compact">
+            <v-toolbar-title>{{ $gettext('Publish') }}</v-toolbar-title>
+          </v-toolbar>
           <v-card-actions class="publish-menu-actions">
             <v-btn @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
               {{ $gettext('Publish') }}
@@ -238,6 +259,42 @@ export default {
 <style scoped>
 .v-toolbar-title {
   margin-inline-start: 0;
+}
+
+.v-app-bar .v-btn.menu-save.saved {
+  background-color: rgb(var(--v-theme-success)) !important;
+  color: rgb(var(--v-theme-on-success)) !important;
+  opacity: 1;
+  animation: save-pulse 0.9s ease-out;
+}
+
+.v-app-bar .v-btn.menu-save.saved :deep(.v-icon) {
+  animation: save-pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+}
+
+@keyframes save-pulse {
+  from {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-success), 0.55);
+  }
+  to {
+    box-shadow: 0 0 0 12px rgba(var(--v-theme-success), 0);
+  }
+}
+
+@keyframes save-pop {
+  from {
+    transform: scale(0.4);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-app-bar .v-btn.menu-save.saved,
+  .v-app-bar .v-btn.menu-save.saved :deep(.v-icon) {
+    animation: none;
+  }
 }
 
 .v-app-bar .v-btn.menu-publish.active {
