@@ -33,19 +33,19 @@
                 "leading": {
                     "type": "string",
                     "label": "Leading text",
-                    "min": 1,
+                    "required": true,
                     "max": 180
                 },
                 "title": {
                     "type": "string",
                     "label": "Central text",
-                    "min": 1,
+                    "required": true,
                     "max": 100
                 },
                 "supporting": {
                     "type": "string",
                     "label": "Supporting text",
-                    "min": 1,
+                    "required": true,
                     "max": 180
                 }
             }

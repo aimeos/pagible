@@ -122,7 +122,6 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertSame( 'basic', $website['group'] );
 		$this->assertSame( 'string', $website['fields']['title']['type'] );
-		$this->assertSame( 1, $website['fields']['title']['min'] );
 		$this->assertSame( 255, $website['fields']['title']['max'] );
 		$this->assertTrue( $website['fields']['title']['required'] );
 	}
@@ -162,7 +161,6 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 'expert', $robots['group'] );
 		$this->assertSame( 'plaintext', $robots['fields']['text']['type'] );
 		$this->assertTrue( $robots['fields']['text']['required'] );
-		$this->assertSame( 1, $robots['fields']['text']['min'] );
 		$this->assertSame( 500000, $robots['fields']['text']['max'] );
 	}
 
@@ -190,12 +188,10 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertSame( 'CTA', $schema['label'] );
 		$this->assertTrue( $fields['title']['required'] );
-		$this->assertSame( 1, $fields['title']['min'] );
 		$this->assertSame( 'markdown', $fields['text']['type'] );
 		$this->assertArrayNotHasKey( 'required', $fields['text'] );
 		$this->assertSame( 'items', $buttons['type'] );
 		$this->assertTrue( $buttons['required'] );
-		$this->assertSame( 1, $buttons['min'] );
 		$this->assertSame( 3, $buttons['max'] );
 		$this->assertTrue( $buttons['item']['label']['required'] );
 		$this->assertSame( 'url', $buttons['item']['url']['type'] );

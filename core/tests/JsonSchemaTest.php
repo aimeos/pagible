@@ -157,6 +157,41 @@ class JsonSchemaTest extends CoreTestAbstract
     }
 
 
+    public function testRequiredNotEmpty() : void
+    {
+        Schema::source( fn() => [
+            'test' => [
+                'content' => [
+                    'block' => [
+                        'fields' => [
+                            'title' => ['type' => 'string', 'required' => true],
+                            'code' => ['type' => 'string', 'min' => 3, 'required' => true],
+                            'text' => ['type' => 'markdown'],
+                            'images' => ['type' => 'images', 'required' => true],
+                            'count' => ['type' => 'number', 'required' => true],
+                        ],
+                    ],
+                ],
+            ],
+        ] );
+
+        try
+        {
+            $fields = $this->fields( JsonSchema::build(), 'test::block' );
+
+            $this->assertSame( 1, $fields['title']['minLength'] );
+            $this->assertSame( 3, $fields['code']['minLength'] );
+            $this->assertArrayNotHasKey( 'minLength', $fields['text'] );
+            $this->assertSame( 1, $fields['images']['minItems'] );
+            $this->assertArrayNotHasKey( 'minimum', $fields['count'] );
+        }
+        finally
+        {
+            Schema::source( null );
+        }
+    }
+
+
     public function testStrictMode() : void
     {
         Schema::source( fn() => [
