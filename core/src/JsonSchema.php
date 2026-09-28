@@ -113,6 +113,8 @@ class JsonSchema
     /**
      * Applies min/max bounds to a field schema as length, item count or value range.
      *
+     * Required text and list fields must not be empty, so they need at least one character or item.
+     *
      * @param array<string, mixed> $schema JSON Schema type definition
      * @param array<string, mixed> $field Raw field definition
      * @return array<string, mixed> JSON Schema type definition with bounds applied
@@ -131,6 +133,10 @@ class JsonSchema
 
         if( $keys )
         {
+            if( !empty( $field['required'] ) && $keys[0] !== 'minimum' ) {
+                $min = max( $min ?? 0, 1 );
+            }
+
             if( $min !== null ) {
                 $schema[$keys[0]] = $min;
             }
@@ -148,8 +154,9 @@ class JsonSchema
      * Builds the JSON Schema object for an element's "data" from its field definitions.
      *
      * Hidden fields are emitted as required single-value enums carrying their fixed value.
-     * Only fields explicitly marked as required are required. In AI mode, optional fields
-     * are nullable so providers that force all properties to be required still accept null.
+     * Only fields explicitly marked as required are required and required text or list fields
+     * must not be empty. In AI mode, optional fields are nullable so providers that force all
+     * properties to be required still accept null.
      *
      * @param array<string, mixed> $fields Raw field definitions
      * @param bool $strict TRUE for strict mode, FALSE for AI mode
