@@ -141,13 +141,109 @@ class FileToolsTest extends McpTestAbstract
     }
 
 
+    public function testAddFileContent()
+    {
+        Storage::fake( 'public' );
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>';
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'content' => 'data:image/svg+xml;base64,' . base64_encode( $svg ),
+            'name' => 'Inline icon',
+        ] );
+
+        $file = File::where( 'name', 'Inline icon' )->firstOrFail();
+
+        $response->assertOk()->assertSee( [$file->id, 'image/svg+xml'] );
+        Storage::disk( 'public' )->assertExists( $file->path );
+    }
+
+
+    public function testAddFileContentInvalid()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'content' => 'not base64!',
+        ] );
+
+        $response->assertOk()->assertSee( ['Invalid file content'] );
+    }
+
+
+    public function testAddFileContentMimetype()
+    {
+        config( ['cms.upload.mimetypes' => ['image/']] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'content' => base64_encode( 'plain text content' ),
+            'name' => 'text.txt',
+        ] );
+
+        $response->assertOk()->assertSee( ['not allowed'] );
+        $this->assertNull( File::where( 'name', 'text.txt' )->first() );
+    }
+
+
+    public function testAddFileContentTooLarge()
+    {
+        config( ['cms.upload.filesize' => 0.0001] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'content' => base64_encode( str_repeat( 'x', 1000 ) ),
+        ] );
+
+        $response->assertOk()->assertSee( ['exceeds the maximum'] );
+    }
+
+
+    public function testAddFileContentLimit()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'content' => str_repeat( 'A', 8388612 ),
+        ] );
+
+        $response->assertHasErrors( ['must not exceed 8 MB'] );
+    }
+
+
+    public function testAddFileUrlAndContent()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'url' => 'https://example.com/document.txt',
+            'content' => base64_encode( 'text' ),
+        ] );
+
+        $response->assertHasErrors( ['url'] );
+    }
+
+
+    public function testAddFileRequiresSource()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'name' => 'Nothing',
+        ] );
+
+        $response->assertHasErrors( ['You must specify the URL'] );
+    }
+
+
+    public function testAddFileDownloadFailed()
+    {
+        Http::fake( ['https://example.com/*' => Http::response( '', 404 )] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
+            'url' => 'https://example.com/missing.jpg',
+        ] );
+
+        $response->assertOk()->assertSee( ['Failed to download'] );
+    }
+
+
     public function testAddFileInvalidUrl()
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddFile::class, [
             'url' => 'ftp://invalid.com/file.jpg',
         ] );
 
-        $response->assertOk()->assertSee( ['error'] );
+        $response->assertHasErrors( ['valid "http" or "https" URL'] );
     }
 
 
@@ -186,6 +282,40 @@ class FileToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['Renamed image'] );
+    }
+
+
+    public function testSaveFileContent()
+    {
+        Storage::fake( 'public' );
+        $file = File::where( 'name', 'Test image' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
+            'id' => $file->id,
+            'latest_id' => $file->latest_id,
+            'content' => base64_encode( 'plain text content' ),
+            'name' => 'notes.txt',
+        ] );
+
+        $response->assertOk()->assertSee( ['notes.txt', 'text/plain'] );
+
+        $path = $file->fresh()->latest->data->path;
+        $this->assertNotSame( $file->path, $path );
+        Storage::disk( 'public' )->assertExists( $path );
+    }
+
+
+    public function testSaveFileContentInvalid()
+    {
+        $file = File::where( 'name', 'Test image' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
+            'id' => $file->id,
+            'latest_id' => $file->latest_id,
+            'content' => '%%%',
+        ] );
+
+        $response->assertOk()->assertSee( ['Invalid file content'] );
     }
 
 

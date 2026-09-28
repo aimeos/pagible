@@ -1,3 +1,4 @@
+import '../../../js/assets/base.css'
 import { h } from 'vue'
 import SchemaDialog from '../../../js/components/SchemaDialog.vue'
 
@@ -6,7 +7,9 @@ const stubs = {
     props: ['type'],
     render() { return h('div', { class: 'schema-items-stub', 'data-type': this.type }) }
   },
-  ElementListItems: { template: '<div class="element-list-stub" />' },
+  ElementListItems: {
+    render() { return h('div', { class: 'element-list-stub' }, 'shared') }
+  },
 }
 
 function mountDialog(props = {}) {
@@ -21,6 +24,7 @@ function mountDialog(props = {}) {
 
 describe('SchemaDialog', () => {
   beforeEach(() => {
+    cy.viewport(800, 600)
     cy.on('uncaught:exception', () => false)
   })
 
@@ -59,14 +63,16 @@ describe('SchemaDialog', () => {
     cy.get('.schema-items-stub').should('have.attr', 'data-type', 'sidebar')
   })
 
-  it('renders the ElementListItems stub by default', () => {
-    mountDialog()
-    cy.get('.element-list-stub').should('exist')
+  it('shows "New elements" and "Shared elements" tabs when elements prop is true', () => {
+    mountDialog({ elements: true })
+    cy.contains('.v-tab', 'New elements').should('exist')
+    cy.contains('.v-tab', 'Shared elements').should('exist')
   })
 
-  it('shows "Shared elements" tab when elements prop is true', () => {
-    mountDialog({ elements: true })
-    cy.contains('Shared elements').should('exist')
+  it('renders the ElementListItems stub in the shared elements tab', () => {
+    mountDialog()
+    cy.contains('.v-tab', 'Shared elements').click()
+    cy.get('.element-list-stub').should('be.visible')
   })
 
   it('uses the accent tint for the shared elements header', () => {
@@ -81,8 +87,9 @@ describe('SchemaDialog', () => {
       .and('have.css', 'color', 'rgb(15, 23, 42)')
   })
 
-  it('hides ElementListItems when elements prop is false', () => {
+  it('hides the tabs and ElementListItems when elements prop is false', () => {
     mountDialog({ elements: false })
+    cy.get('.v-dialog .v-tab').should('not.exist')
     cy.get('.element-list-stub').should('not.exist')
   })
 })

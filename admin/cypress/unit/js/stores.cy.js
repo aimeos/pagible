@@ -127,6 +127,37 @@ describe('useUserStore', () => {
     })
   })
 
+  describe('setting()', () => {
+    it('returns the stored value or the default', () => {
+      const user = useUserStore()
+      user.me = { settings: { page: { sort: { column: 'ID' } } } }
+      const scope = effectScope()
+      scope.run(() => {
+        expect(user.setting('page', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'ID' })
+        expect(user.setting('file', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'LFT' })
+      })
+      scope.stop()
+    })
+
+    it('saves replaced values until the scope stops', async () => {
+      const user = useUserStore()
+      user.me = { settings: {} }
+      const scope = effectScope()
+      const sort = scope.run(() => user.setting('schema', 'sort', { column: 'POSITION' }))
+
+      sort.value = { column: 'NAME' }
+      await nextTick()
+      expect(user.me.settings.schema.sort).to.deep.equal({ column: 'NAME' })
+
+      scope.stop()
+      user.me.settings = {}
+      sort.value = { column: 'POSITION' }
+      await nextTick()
+      expect(user.me.settings).to.deep.equal({})
+      clearTimeout(user.saveTimer)
+    })
+  })
+
   describe('getData()', () => {
     it('returns defval when me is null', () => {
       const user = useUserStore()

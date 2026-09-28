@@ -1,3 +1,4 @@
+import '../../../js/assets/base.css'
 import SchemaItems from '../../../js/components/SchemaItems.vue'
 import { useSchemaStore } from '../../../js/stores'
 
@@ -80,6 +81,67 @@ describe('SchemaItems', () => {
     })
     cy.contains('.v-btn', 'Heading').click()
     cy.get('@add').should('have.been.calledWithMatch', { type: 'heading' })
+  })
+
+  it('renders the group tabs vertically', () => {
+    cy.viewport(800, 600)
+    mountWithSchemas()
+    cy.get('.v-tabs').should('have.class', 'v-tabs--vertical')
+  })
+
+  it('renders the group tabs horizontally on small screens', () => {
+    mountWithSchemas()
+    cy.get('.v-tabs').should('have.class', 'v-tabs--horizontal')
+  })
+
+  it('searches for elements across all groups', () => {
+    mountWithSchemas()
+    cy.get('.search input').type('image')
+    cy.get('.items .v-btn').should('have.length', 1).and('contain', 'Image')
+    cy.get('.search input').clear().type('e')
+    cy.get('.items .v-btn').should('have.length', 3)
+  })
+
+  it('shows a message when the search has no matches', () => {
+    mountWithSchemas()
+    cy.get('.search input').type('xyz')
+    cy.get('.items .v-btn').should('not.exist')
+    cy.contains('No entries found').should('exist')
+  })
+
+  it('clears the search when a group tab is clicked', () => {
+    mountWithSchemas()
+    cy.get('.search input').type('image')
+    cy.contains('.v-tab', 'basic').click()
+    cy.get('.search input').should('have.value', '')
+    cy.get('.items .v-btn').should('contain', 'Heading')
+  })
+
+  it('sorts elements by name', () => {
+    mountWithSchemas({
+      page: {
+        zeta: { label: 'Zeta', group: 'basic', icon: '' },
+        alpha: { label: 'Alpha', group: 'basic', icon: '' },
+      },
+    })
+    cy.get('.items .v-btn').first().should('contain', 'Zeta')
+    cy.get('.btn-sort button').click()
+    cy.contains('.v-overlay .v-list .v-btn', 'Name').click()
+    cy.get('.btn-sort button').should('contain', 'Name')
+    cy.get('.items .v-btn').first().should('contain', 'Alpha')
+  })
+
+  it('reloads the content elements', () => {
+    mountWithSchemas().then(() => {
+      cy.stub(useSchemaStore(), 'reload').resolves().as('reload')
+    })
+    cy.get('.btn-reload').click()
+    cy.get('@reload').should('have.been.calledOnce')
+  })
+
+  it('shows the first group when there is no "basic" group', () => {
+    mountWithSchemas({ page: { image: { label: 'Image', group: 'media', icon: '' } } })
+    cy.get('.items .v-btn').should('have.length', 1).and('contain', 'Image')
   })
 
   it('renders no tabs when there are no schemas for the type', () => {

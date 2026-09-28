@@ -3,7 +3,7 @@
  */
 
 import gql from 'graphql-tag'
-import { defineAsyncComponent, h, markRaw, reactive, watch } from 'vue'
+import { defineAsyncComponent, h, markRaw, reactive, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect } from './echo'
@@ -281,6 +281,21 @@ export const useUserStore = defineStore('user', {
       return filter
     },
 
+    /**
+     * Returns a ref of the panel setting, saved per user on every change
+     *
+     * Call it while a component is set up, e.g. in data(), so the watcher stops on unmount.
+     *
+     * @param {String} panel Settings key of the panel, e.g. "page"
+     * @param {String} key Name of the setting, e.g. "sort"
+     * @param {*} defval Value used if nothing is saved yet
+     */
+    setting(panel, key, defval) {
+      const value = ref(this.getData(panel, key, defval))
+      watch(value, (val) => this.saveData(panel, key, val), { deep: true })
+      return value
+    },
+
     getData(panel, key, defval = null) {
       return this.me?.settings?.[panel]?.[key] ?? defval
     },
@@ -466,22 +481,27 @@ export const useMessageStore = defineStore('message', {
 let _generation = 0
 let _loading = null
 
+function restart() {
+  _generation++
+  _loading = null
+}
+
 export const useSchemaStore = defineStore('schema', {
   state: () => ({ themes: {}, content: {}, meta: {}, config: {} }),
   actions: {
     clear() {
-      _generation++
-      _loading = null
+      restart()
       this.$reset()
     },
 
-    load() {
+    load(fresh = false) {
       if (_loading) return _loading instanceof Promise ? _loading : Promise.resolve()
 
       const generation = _generation
 
       _loading = apolloClient.query({
-        query: FETCH_SCHEMAS
+        query: FETCH_SCHEMAS,
+        fetchPolicy: fresh ? 'network-only' : 'cache-first'
       }).then((result) => {
         if (generation !== _generation) return
 
@@ -513,6 +533,11 @@ export const useSchemaStore = defineStore('schema', {
       }).then(() => generation === _generation ? _loading : null)
 
       return _loading
+    },
+
+    reload() {
+      restart()
+      return this.load(true)
     }
   }
 })

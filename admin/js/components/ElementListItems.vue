@@ -165,7 +165,7 @@ export default {
       items: [],
       checked: new Set(),
       term: '',
-      sort: this.user.getData('element', 'sort') || { column: 'ID', order: 'DESC' },
+      sort: this.user.setting('element', 'sort', { column: 'ID', order: 'DESC' }),
       page: 1,
       last: 1,
       limit: 100,
@@ -697,12 +697,8 @@ export default {
       this.search()
     },
 
-    sort: {
-      deep: true,
-      handler() {
-        this.user.saveData('element', 'sort', this.sort)
-        this.search()
-      }
+    sort() {
+      this.search()
     }
   }
 }
@@ -795,6 +791,7 @@ export default {
 
       <v-btn
         @click="reload()"
+        :loading="loading"
         :title="$gettext('Reload elements')"
         :icon="mdiRefresh"
         class="btn-reload"
