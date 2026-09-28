@@ -151,7 +151,7 @@ class File extends Base
         $this->path = null;
 
         if( !$upload->isValid() ) {
-            throw new \Aimeos\Cms\Exception( 'Invalid file upload' );
+            throw new \Aimeos\Cms\InvalidException( 'Invalid file upload' );
         }
 
         $disk = Storage::disk( self::diskName( (string) $this->getAttribute( 'disk' ) ) );
@@ -166,7 +166,7 @@ class File extends Base
 
             if( !( $content = Utils::cleanSvg( $content ) ) ) {
                 $msg = 'Invalid file "%s"';
-                throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName() ) );
+                throw new \Aimeos\Cms\InvalidException( sprintf( $msg, $upload->getClientOriginalName() ) );
             }
 
             if( !$disk->put( $path, $content ) ) {
@@ -224,7 +224,7 @@ class File extends Base
         }
 
         if( is_string( $resource ) ) {
-            throw new \Aimeos\Cms\Exception( 'Invalid image URL' );
+            throw new \Aimeos\Cms\InvalidException( 'Invalid image URL' );
         }
 
         // previews of the previous image must not remain if creating the new ones fails
@@ -348,7 +348,7 @@ class File extends Base
         if( $source instanceof UploadedFile ) {
             self::checkUpload( $source );
         } elseif( is_string( $source ) && str_starts_with( $source, 'http' ) && !Utils::isValidUrl( $source ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid URL "%s"', $source ) );
+            throw new \Aimeos\Cms\InvalidException( sprintf( 'Invalid URL "%s"', $source ) );
         }
 
         if( $preview ) {
@@ -390,7 +390,7 @@ class File extends Base
             }
 
             if( $source !== null && !Utils::isValidMimetype( (string) $this->mime ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'File type "%s" not allowed, permitted types: %s',
+                throw new \Aimeos\Cms\InvalidException( sprintf( 'File type "%s" not allowed, permitted types: %s',
                     $this->mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
             }
 
@@ -817,7 +817,7 @@ class File extends Base
             $content = @gzdecode( $raw, $max + 1 );
 
             if( $content === false || strlen( $content ) > $max ) {
-                throw new \Aimeos\Cms\Exception( 'Decompressed SVG exceeds the maximum upload size' );
+                throw new \Aimeos\Cms\InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
             }
 
             $raw = $content;
@@ -857,7 +857,7 @@ class File extends Base
         }
 
         if( !is_string( $path ) || !( $info = @getimagesize( $path ) ) ) {
-            throw new \Aimeos\Cms\Exception( 'Invalid image' );
+            throw new \Aimeos\Cms\InvalidException( 'Invalid image' );
         }
 
         $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
@@ -865,7 +865,7 @@ class File extends Base
         $height = (int) $info[1];
 
         if( $height < 1 || $width < 1 || $width > intdiv( $max, $height ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Image exceeds the maximum size of %d pixels', $max ) );
+            throw new \Aimeos\Cms\InvalidException( sprintf( 'Image exceeds the maximum size of %d pixels', $max ) );
         }
     }
 
@@ -878,18 +878,18 @@ class File extends Base
         $label = $preview ? 'Preview' : 'File';
 
         if( !$upload->isValid() ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
+            throw new \Aimeos\Cms\InvalidException( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
         }
 
         if( !Utils::isValidUpload( $upload ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
+            throw new \Aimeos\Cms\InvalidException( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
                 $label, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
         }
 
         $mime = (string) $upload->getMimeType();
 
         if( ( $preview && !str_starts_with( $mime, 'image/' ) ) || !Utils::isValidMimetype( $mime ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( '%s type "%s" not allowed, permitted types: %s',
+            throw new \Aimeos\Cms\InvalidException( sprintf( '%s type "%s" not allowed, permitted types: %s',
                 $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
         }
     }
@@ -907,7 +907,7 @@ class File extends Base
         $response = Utils::http( $url, ['stream' => true] );
 
         if( !$response->successful() ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
+            throw new \Aimeos\Cms\InvalidException( sprintf( 'Failed to download "%s"', $url ) );
         }
 
         $limit = max( 0, (float) config( 'cms.upload.filesize', 50 ) );
@@ -920,14 +920,14 @@ class File extends Base
 
         if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
             $body->close();
-            throw new \Aimeos\Cms\Exception( $message );
+            throw new \Aimeos\Cms\InvalidException( $message );
         }
 
         $bytes = $body->read( min( 4096, $max + 1 ) );
 
         if( strlen( $bytes ) > $max ) {
             $body->close();
-            throw new \Aimeos\Cms\Exception( $message );
+            throw new \Aimeos\Cms\InvalidException( $message );
         }
 
         $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
@@ -956,7 +956,7 @@ class File extends Base
             if( $size > $max ) {
                 $body->close();
                 fclose( $tmp );
-                throw new \Aimeos\Cms\Exception( $message );
+                throw new \Aimeos\Cms\InvalidException( $message );
             }
 
             fwrite( $tmp, $chunk );
