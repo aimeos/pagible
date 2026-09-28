@@ -145,7 +145,7 @@ msgstr "תפקידים זמינים"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
 #: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1947
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "לא נמצאו רשומות"
 
@@ -522,7 +522,7 @@ msgstr "הוסף אלמנט"
 
 #: js/components/ElementListItems.vue:772 js/components/FileListItems.vue:761
 #: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "חפש"
@@ -536,7 +536,7 @@ msgstr "עודכן על ידי משתמש אחר"
 msgid "Refresh"
 msgstr "רענן"
 
-#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "טען מחדש את האלמנטים"
 
@@ -1774,11 +1774,11 @@ msgstr "אלמנטים תוכניים"
 msgid "New elements"
 msgstr "רכיבים חדשים"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "ללא קטגוריה"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "שגיאה בטעינת רכיבי התוכן"
 
@@ -2174,296 +2174,416 @@ msgid "javascript"
 msgstr "javascript"
 
 #: js/strings.js:61
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "כותרת מקטע מ-H1 עד H6"
+
+#: js/strings.js:62
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "טקסט מעוצב עם פסקאות, רשימות וקישורים"
+
+#: js/strings.js:63
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "תמונה לצד טקסט מעוצב"
+
+#: js/strings.js:64
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "קוד מקור עם הדגשת תחביר"
+
+#: js/strings.js:65
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "טבלת נתונים עם שורת או עמודת כותרת אופציונלית"
+
+#: js/strings.js:66
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "מפה אינטראקטיבית עם מיקום, טקסט וקישור"
+
+#: js/strings.js:67
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML מותאם אישית להטמעות ווידג'טים"
+
+#: js/strings.js:68
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "תמונה רספונסיבית יחידה"
+
+#: js/strings.js:69
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "שקופיות מתחלפות עם מספר תמונות"
+
+#: js/strings.js:70
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "וידאו מוטמע עם פקדי הפעלה"
+
+#: js/strings.js:71
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "אודיו מוטמע עם פקדי הפעלה"
+
+#: js/strings.js:72
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "קובץ להורדה, למשל מסמך PDF"
+
+#: js/strings.js:73
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "פתיח גדול עם כותרת, טקסט, כפתורים ורקע"
+
+#: js/strings.js:74
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "קריאה לפעולה עם טקסט וכפתורים"
+
+#: js/strings.js:75
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "רשת כרטיסים עם תמונה, כותרת וטקסט"
+
+#: js/strings.js:76
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "ציטוטי לקוחות עם שם, תפקיד ותמונה"
+
+#: js/strings.js:77
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "פתיח מאמר עם גלריית תמונות וכותב"
+
+#: js/strings.js:78
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "רשימת מאמרי בלוג מדף אב"
+
+#: js/strings.js:79
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "רשימת חדשות מדף אב"
+
+#: js/strings.js:80
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "דף משנה מודגש ואחריו דפי משנה נוספים"
+
+#: js/strings.js:81
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "תוכניות מחיר עם מנויים או תשלומים חד-פעמיים"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "שאלות נפוצות עם תשובות"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "תוכן עניינים עם קישורים לכותרות הדף"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "טופס יצירת קשר עם שדות הניתנים להגדרה"
+
+#: js/strings.js:87
 msgctxt "fn"
 msgid "button"
 msgstr "כפתור"
 
-#: js/strings.js:62
+#: js/strings.js:88
 msgctxt "fn"
 msgid "buttons"
 msgstr ""
 
-#: js/strings.js:63
+#: js/strings.js:89
 msgctxt "fn"
 msgid "cards"
 msgstr "כרטיסים"
 
-#: js/strings.js:64
+#: js/strings.js:90
 msgctxt "fn"
 msgid "description"
 msgstr "תיאור"
 
-#: js/strings.js:65
+#: js/strings.js:91
 msgctxt "fn"
 msgid "file"
 msgstr "קובץ"
 
-#: js/strings.js:66
+#: js/strings.js:92
 msgctxt "fn"
 msgid "files"
 msgstr "קבצים"
 
-#: js/strings.js:67
+#: js/strings.js:93
 msgctxt "fn"
 msgid "follow"
 msgstr "מעקב אחר קישורים"
 
-#: js/strings.js:68
+#: js/strings.js:94
 msgctxt "fn"
 msgid "header"
 msgstr "כותרת"
 
-#: js/strings.js:69
+#: js/strings.js:95
 msgctxt "fn"
 msgid "index"
 msgstr "הוספה לאינדקס"
 
-#: js/strings.js:70
+#: js/strings.js:96
 msgctxt "fn"
 msgid "keywords"
 msgstr "מילות מפתח"
 
-#: js/strings.js:71
+#: js/strings.js:97
 msgctxt "fn"
 msgid "language"
 msgstr "שפה"
 
-#: js/strings.js:72
+#: js/strings.js:98
 msgctxt "fn"
 msgid "label"
 msgstr ""
 
-#: js/strings.js:73
+#: js/strings.js:99
 msgctxt "fn"
 msgid "level"
 msgstr "רמה"
 
-#: js/strings.js:74
+#: js/strings.js:100
 msgctxt "fn"
 msgid "limit"
 msgstr "גבול"
 
-#: js/strings.js:75
+#: js/strings.js:101
 msgctxt "fn"
 msgid "location"
 msgstr ""
 
-#: js/strings.js:76
+#: js/strings.js:102
 msgctxt "fn"
 msgid "main"
 msgstr "תמונה ראשית"
 
-#: js/strings.js:77
+#: js/strings.js:103
 msgctxt "fn"
 msgid "order"
 msgstr "סדר"
 
-#: js/strings.js:78
+#: js/strings.js:104
 msgctxt "fn"
 msgid "parent-page"
 msgstr "דף-אב"
 
-#: js/strings.js:79
+#: js/strings.js:105
 msgctxt "fn"
 msgid "position"
 msgstr "מיקום"
 
-#: js/strings.js:80
+#: js/strings.js:106
 msgctxt "fn"
 msgid "text"
 msgstr "טקסט"
 
-#: js/strings.js:81
+#: js/strings.js:107
 msgctxt "fn"
 msgid "table"
 msgstr "טבלה"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "title"
 msgstr "כותרת"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "url"
 msgstr "כתובת אתר"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "image"
 msgstr "תמונה"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "images"
 msgstr "תמונות"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "items"
 msgstr "פריטים"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "introduction"
 msgstr "מבוא"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "load immediately"
 msgstr "טען מיד"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "source code"
 msgstr "קוד מקור"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "תפקיד גישה לממשק הקדמי"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "מחירי תשלום"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "אסמכתת תשלום"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "סוג תשלום"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "Currency"
 msgstr "מטבע"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "מרווח חיוב"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "Price unit"
 msgstr "יחידת מחיר"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "דף יעד או קישור"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr ""
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "Optional fields"
 msgstr ""
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "Link label"
 msgstr ""
 
-#: js/strings.js:104
+#: js/strings.js:130
 msgctxt "op"
 msgid "Name"
 msgstr ""
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "op"
 msgid "Company"
 msgstr ""
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "op"
 msgid "Telephone"
 msgstr ""
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "op"
 msgid "E-Mail"
 msgstr ""
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "op"
 msgid "Subject"
 msgstr ""
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "op"
 msgid "Follow"
 msgstr "מעקב אחר קישורים"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "op"
 msgid "Index"
 msgstr "הוספה לאינדקס"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "op"
 msgid "No follow"
 msgstr "ללא מעקב אחר קישורים"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "op"
 msgid "No index"
 msgstr "ללא הוספה לאינדקס"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "op"
 msgid "Subscription"
 msgstr "מנוי"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "op"
 msgid "One-time payment"
 msgstr "תשלום חד-פעמי"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "ai"
 msgid "Done"
 msgstr "בוצע"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "ai"
 msgid "Already exists"
 msgstr "כבר קיים"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "sg"
 msgid "expert"
 msgstr "מתקדם"
 
-#: js/strings.js:122
+#: js/strings.js:148
 msgctxt "sg"
 msgid "theme"
 msgstr "ערכת נושא"
 
-#: js/strings.js:123
+#: js/strings.js:149
 msgctxt "st"
 msgid "website"
 msgstr ""
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "st"
 msgid "logo"
 msgstr "לוגו"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "לוגו חלופי"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "st"
 msgid "icon"
 msgstr "סמל"

@@ -85,7 +85,9 @@ export default {
         }
 
         return list.filter((item) =>
-          [item.type, this.label(item)].some((str) => str.toLowerCase().includes(term))
+          [item.type, this.label(item), this.description(item)].some((str) =>
+            str.toLowerCase().includes(term)
+          )
         )
       })
     }
@@ -94,6 +96,10 @@ export default {
   methods: {
     add(item) {
       this.$emit('add', { type: item.type })
+    },
+
+    description(item) {
+      return item.description ? this.$pgettext('sd', item.description) : ''
     },
 
     group(name) {
@@ -165,19 +171,22 @@ export default {
       }}</v-tab>
     </v-tabs>
 
-    <v-card class="items">
-      <v-btn
-        v-for="item in items"
-        :key="item.type"
-        @click="add(item)"
-        variant="text"
-        stacked
-      >
-        <template v-slot:prepend>
-          <span class="el-icon" v-safe-svg="item.icon"></span>
-        </template>
-        {{ label(item) }}
-      </v-btn>
+    <v-card class="items" flat>
+      <div class="grid">
+        <v-list-item
+          v-for="item in items"
+          :key="item.type"
+          :title="label(item)"
+          :subtitle="description(item) || undefined"
+          @click="add(item)"
+          class="item"
+          link
+        >
+          <template v-slot:prepend>
+            <span class="el-icon" v-safe-svg="item.icon"></span>
+          </template>
+        </v-list-item>
+      </div>
 
       <p v-if="matches && !matches.length" class="none">
         {{ $gettext('No entries found') }}
@@ -189,22 +198,48 @@ export default {
 <style scoped>
 .schemas {
   display: flex;
-  align-items: flex-start;
+  border: 1px solid rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.32);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.v-tabs--vertical {
-  border-radius: 4px;
+.schemas .v-tabs {
+  border-radius: 0;
   flex-shrink: 0;
-  margin-inline-end: 16px;
+}
+
+.schemas .v-tab--selected {
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .items {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  container-type: inline-size;
   flex-grow: 1;
   min-width: 0;
-  padding: 8px 0;
+  padding: 8px;
+  border-radius: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px 8px;
+}
+
+@container (width >= 576px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.item {
+  border-radius: 4px;
+  padding-block: 8px;
+}
+
+.item :deep(.v-list-item-subtitle) {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .none {
@@ -214,21 +249,23 @@ export default {
 @media (max-width: 599px) {
   .schemas {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .v-tabs {
-    margin-bottom: 8px;
   }
 }
 
-.items .v-btn,
 .v-tab {
   max-width: 12rem;
   min-width: 8rem !important;
 }
 
 .el-icon {
+  flex-shrink: 0;
   width: 2rem;
+  margin-inline-end: 16px;
+}
+
+.el-icon :deep(svg) {
+  display: block;
+  width: 100%;
+  height: 2rem;
 }
 </style>

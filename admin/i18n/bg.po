@@ -145,7 +145,7 @@ msgstr "Налични роли"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
 #: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1947
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Не са намерени записи"
 
@@ -525,7 +525,7 @@ msgstr "Добавяне на елемент"
 
 #: js/components/ElementListItems.vue:772 js/components/FileListItems.vue:761
 #: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Търсене за"
@@ -539,7 +539,7 @@ msgstr "Актуализирано от друг потребител"
 msgid "Refresh"
 msgstr "Опресняване"
 
-#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "Презареждане на елементи"
 
@@ -1780,11 +1780,11 @@ msgstr "Елементи на съдържанието"
 msgid "New elements"
 msgstr "Нови елементи"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "Uncategorized"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "Грешка при извличане на елементите на съдържанието"
 
@@ -2180,296 +2180,416 @@ msgid "javascript"
 msgstr "javascript"
 
 #: js/strings.js:61
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "Заглавие на раздел от H1 до H6"
+
+#: js/strings.js:62
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Форматиран текст с абзаци, списъци и връзки"
+
+#: js/strings.js:63
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "Изображение до форматиран текст"
+
+#: js/strings.js:64
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "Изходен код с оцветяване на синтаксиса"
+
+#: js/strings.js:65
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "Таблица с данни с незадължителен заглавен ред или колона"
+
+#: js/strings.js:66
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "Интерактивна карта с местоположение, текст и връзка"
+
+#: js/strings.js:67
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "Персонализиран HTML за вграждания и уиджети"
+
+#: js/strings.js:68
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "Едно адаптивно изображение"
+
+#: js/strings.js:69
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "Сменящи се слайдове с няколко изображения"
+
+#: js/strings.js:70
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "Вградено видео с контроли за възпроизвеждане"
+
+#: js/strings.js:71
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "Вградено аудио с контроли за възпроизвеждане"
+
+#: js/strings.js:72
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "Файл за изтегляне, например PDF документ"
+
+#: js/strings.js:73
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "Голямо въведение със заглавие, текст, бутони и фон"
+
+#: js/strings.js:74
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "Призив за действие с текст и бутони"
+
+#: js/strings.js:75
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "Решетка от карти с изображение, заглавие и текст"
+
+#: js/strings.js:76
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "Цитати на клиенти с име, роля и снимка"
+
+#: js/strings.js:77
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "Въведение на статия с галерия и автор"
+
+#: js/strings.js:78
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "Списък с блог статии от родителска страница"
+
+#: js/strings.js:79
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "Списък с новини от родителска страница"
+
+#: js/strings.js:80
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "Открояваща се подстраница, последвана от други подстраници"
+
+#: js/strings.js:81
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "Ценови планове с абонаменти или еднократни плащания"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "Често задавани въпроси с отговори"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "Съдържание с връзки към заглавията на страницата"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "Форма за контакт с настройваеми полета"
+
+#: js/strings.js:87
 msgctxt "fn"
 msgid "button"
 msgstr "бутон"
 
-#: js/strings.js:62
+#: js/strings.js:88
 msgctxt "fn"
 msgid "buttons"
 msgstr ""
 
-#: js/strings.js:63
+#: js/strings.js:89
 msgctxt "fn"
 msgid "cards"
 msgstr "Карти"
 
-#: js/strings.js:64
+#: js/strings.js:90
 msgctxt "fn"
 msgid "description"
 msgstr "описание"
 
-#: js/strings.js:65
+#: js/strings.js:91
 msgctxt "fn"
 msgid "file"
 msgstr "файл"
 
-#: js/strings.js:66
+#: js/strings.js:92
 msgctxt "fn"
 msgid "files"
 msgstr "файлове"
 
-#: js/strings.js:67
+#: js/strings.js:93
 msgctxt "fn"
 msgid "follow"
 msgstr "Следване на връзки"
 
-#: js/strings.js:68
+#: js/strings.js:94
 msgctxt "fn"
 msgid "header"
 msgstr "заглавие"
 
-#: js/strings.js:69
+#: js/strings.js:95
 msgctxt "fn"
 msgid "index"
 msgstr "Индексиране"
 
-#: js/strings.js:70
+#: js/strings.js:96
 msgctxt "fn"
 msgid "keywords"
 msgstr "ключови думи"
 
-#: js/strings.js:71
+#: js/strings.js:97
 msgctxt "fn"
 msgid "language"
 msgstr "език"
 
-#: js/strings.js:72
+#: js/strings.js:98
 msgctxt "fn"
 msgid "label"
 msgstr ""
 
-#: js/strings.js:73
+#: js/strings.js:99
 msgctxt "fn"
 msgid "level"
 msgstr "ниво"
 
-#: js/strings.js:74
+#: js/strings.js:100
 msgctxt "fn"
 msgid "limit"
 msgstr "ограничение"
 
-#: js/strings.js:75
+#: js/strings.js:101
 msgctxt "fn"
 msgid "location"
 msgstr ""
 
-#: js/strings.js:76
+#: js/strings.js:102
 msgctxt "fn"
 msgid "main"
 msgstr "Основна снимка"
 
-#: js/strings.js:77
+#: js/strings.js:103
 msgctxt "fn"
 msgid "order"
 msgstr "ред"
 
-#: js/strings.js:78
+#: js/strings.js:104
 msgctxt "fn"
 msgid "parent-page"
 msgstr "родителска страница"
 
-#: js/strings.js:79
+#: js/strings.js:105
 msgctxt "fn"
 msgid "position"
 msgstr "позиция"
 
-#: js/strings.js:80
+#: js/strings.js:106
 msgctxt "fn"
 msgid "text"
 msgstr "текст"
 
-#: js/strings.js:81
+#: js/strings.js:107
 msgctxt "fn"
 msgid "table"
 msgstr "таблица"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "title"
 msgstr "заглавие"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "image"
 msgstr "изображение"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "images"
 msgstr "изображения"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "items"
 msgstr "артикули"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "introduction"
 msgstr "Въведение"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "load immediately"
 msgstr "незабавно зареждане"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "source code"
 msgstr "изходен код"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Роля за достъп до потребителския интерфейс"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Цени за плащане"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Референция за плащане"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Вид плащане"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "Currency"
 msgstr "Валута"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Интервал на фактуриране"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Ценова единица"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Целева страница или връзка"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr ""
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "Optional fields"
 msgstr ""
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "Link label"
 msgstr ""
 
-#: js/strings.js:104
+#: js/strings.js:130
 msgctxt "op"
 msgid "Name"
 msgstr ""
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "op"
 msgid "Company"
 msgstr ""
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "op"
 msgid "Telephone"
 msgstr ""
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "op"
 msgid "E-Mail"
 msgstr ""
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "op"
 msgid "Subject"
 msgstr ""
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "op"
 msgid "Follow"
 msgstr "Следване на връзки"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "op"
 msgid "Index"
 msgstr "Индексиране"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "op"
 msgid "No follow"
 msgstr "Без следване на връзки"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "op"
 msgid "No index"
 msgstr "Без индексиране"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "op"
 msgid "Subscription"
 msgstr "Абонамент"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Еднократно плащане"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "ai"
 msgid "Done"
 msgstr "Готово"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Вече съществува"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "sg"
 msgid "expert"
 msgstr "Разширени"
 
-#: js/strings.js:122
+#: js/strings.js:148
 msgctxt "sg"
 msgid "theme"
 msgstr "Тема"
 
-#: js/strings.js:123
+#: js/strings.js:149
 msgctxt "st"
 msgid "website"
 msgstr ""
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "st"
 msgid "logo"
 msgstr "Лого"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Алтернативно лого"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "st"
 msgid "icon"
 msgstr "Икона"
