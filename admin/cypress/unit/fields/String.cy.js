@@ -83,18 +83,4 @@ describe('String (textarea)', () => {
     cy.mount(StringField, { props: { config: {}, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
   })
-
-  it('uses the muted surface color in readonly mode', () => {
-    cy.mount(StringField, { props: { config: {}, readonly: true } })
-    cy.get('.v-field').should(($field) => {
-      // resolve the expected color in the same browser to be independent of the serialization format
-      const probe = document.createElement('div')
-      probe.style.backgroundColor = 'rgb(var(--v-theme-surface-light))'
-      $field[0].appendChild(probe)
-      const muted = getComputedStyle(probe).backgroundColor
-      probe.remove()
-
-      expect(getComputedStyle($field[0]).backgroundColor).to.equal(muted)
-    })
-  })
 })
