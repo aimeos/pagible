@@ -6,7 +6,7 @@ describe('plugin translations', () => {
     plugins.i18n = {}
   })
 
-  it('adds only the registered context and preserves core messages', () => {
+  it('adds the registered context and preserves core messages', () => {
     const translations = {
       de: {
         Save: 'Speichern',
@@ -25,12 +25,34 @@ describe('plugin translations', () => {
 
     expect(mergeCatalog(translations, catalog, 'de', 'webhooks')).to.deep.equal({
       de: {
-        Save: { '': 'Speichern', webhooks: 'Webhook speichern' },
+        Save: { '': 'Speichern', webhooks: 'Webhook speichern', ignored: 'Ignored' },
         Done: { '': ['Fertig', 'Fertig'], webhooks: ['Webhook fertig', 'Webhooks fertig'] },
-        Close: { '': 'Schließen', dialog: 'Dialog schließen', webhooks: 'Webhook schließen' }
+        Close: { '': 'Schließen', dialog: 'Dialog schließen', webhooks: 'Webhook schließen' },
+        Add: { ignored: 'Ignored' }
       }
     })
     expect(translations.de.Save).to.equal('Speichern')
+  })
+
+  it('adds missing contexts without overriding existing ones', () => {
+    const translations = {
+      de: {
+        Price: { fn: 'Preis' }
+      }
+    }
+    const catalog = {
+      de: {
+        Price: { fn: 'Kaufpreis', op: 'Preis' },
+        property: { st: 'Immobilie' }
+      }
+    }
+
+    expect(mergeCatalog(translations, catalog, 'de', 'estate')).to.deep.equal({
+      de: {
+        Price: { fn: 'Preis', op: 'Preis' },
+        property: { st: 'Immobilie' }
+      }
+    })
   })
 
   it('translates labels in their package context', () => {

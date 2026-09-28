@@ -19,20 +19,22 @@ function object(value) {
 }
 
 /**
- * Adds one package catalog to the shared translations without allowing it to
- * replace the host's default messages or another package's context.
+ * Adds one package catalog to the shared translations. The package's own
+ * context always wins, other contexts (e.g. theme element and field names)
+ * are only added if missing so host and package messages are never replaced.
  */
 export function mergeCatalog(translations, catalog, locale, context) {
   const current = translations[locale] || {}
   const merged = { ...current }
 
   for (const [id, contexts] of Object.entries(catalog?.[locale] || {})) {
-    if (!object(contexts) || contexts[context] === undefined) continue
+    if (!object(contexts)) continue
 
     const existing = merged[id]
-    merged[id] = object(existing)
-      ? { ...existing, [context]: contexts[context] }
-      : { ...(existing === undefined ? {} : { '': existing }), [context]: contexts[context] }
+    const entry = object(existing) ? existing : existing === undefined ? {} : { '': existing }
+    const own = contexts[context] === undefined ? {} : { [context]: contexts[context] }
+
+    merged[id] = { ...contexts, ...entry, ...own }
   }
 
   return { ...translations, [locale]: merged }
