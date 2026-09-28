@@ -32,6 +32,7 @@ export default {
         Name: this.$gettext('Name'),
         Oldest: this.$gettext('Oldest'),
         'Oldest edit': this.$gettext('Oldest edit'),
+        Position: this.$gettext('Position'),
         Tree: this.$gettext('Tree'),
         Type: this.$gettext('Type'),
         Usage: this.$gettext('Usage')

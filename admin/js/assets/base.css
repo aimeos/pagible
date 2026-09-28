@@ -84,6 +84,11 @@ input:-webkit-autofill:focus {
   border-radius: 8px 8px 0 0;
 }
 
+.tint-tabs {
+  background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
+  color: rgb(var(--v-theme-on-surface));
+}
+
 .detail-tabs .v-tab--selected {
   background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
   box-shadow: inset 0 -3px 0 rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));

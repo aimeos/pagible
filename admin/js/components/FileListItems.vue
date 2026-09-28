@@ -146,7 +146,7 @@ export default {
       items: [],
       checked: new Set(),
       term: '',
-      sort: this.user.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
+      sort: this.user.setting('file', 'sort', { column: 'ID', order: 'DESC' }),
       page: 1,
       last: 1,
       limit: 100,
@@ -671,12 +671,8 @@ export default {
       this.search()
     },
 
-    sort: {
-      deep: true,
-      handler() {
-        this.user.saveData('file', 'sort', this.sort)
-        this.search()
-      }
+    sort() {
+      this.search()
     },
 
     vgrid(val) {
@@ -786,6 +782,7 @@ export default {
 
       <v-btn
         @click="reload()"
+        :loading="loading"
         :title="$gettext('Reload files')"
         :icon="mdiRefresh"
         class="btn-reload"

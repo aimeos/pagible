@@ -292,7 +292,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
-      sort: this.user.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
+      sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
       echoCleanup: null,
@@ -1571,12 +1571,8 @@ export default {
       }
     },
 
-    sort: {
-      deep: true,
-      handler() {
-        this.user.saveData('page', 'sort', this.sort)
-        this.reload(false)
-      }
+    sort() {
+      this.reload(false)
     },
 
     term() {
@@ -1683,6 +1679,7 @@ export default {
 
     <v-btn
       @click="reload()"
+      :loading="loading"
       :color="outdated ? 'warning' : ''"
       :title="$gettext('Reload page tree')"
       :variant="outdated ? 'tonal' : 'text'"
