@@ -563,10 +563,10 @@ export default {
                 <v-col cols="12" sm="6" class="key"></v-col>
                 <v-col cols="12" sm="6">
                   <v-row>
-                    <v-col cols="3">{{ $gettext('Views') }}</v-col>
+                    <v-col cols="3">{{ $gettext('Impressions') }}</v-col>
                     <v-col cols="3">{{ $gettext('Clicks') }}</v-col>
                     <v-col cols="3">{{ $gettext('Percent') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Position') }}</v-col>
+                    <v-col cols="3">{{ $pgettext('search ranking', 'Position') }}</v-col>
                   </v-row>
                 </v-col>
               </v-row>

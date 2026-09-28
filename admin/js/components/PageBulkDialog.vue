@@ -263,6 +263,7 @@ export default {
       <v-btn
         @click="apply(false)"
         :disabled="!hasInput || !valid || limited"
+        data-confirm
         class="btn-apply"
         variant="outlined"
         >{{ $gettext('Apply') }}</v-btn

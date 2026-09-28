@@ -4,6 +4,26 @@
 
 // only for translation extraction
 
+/*
+ * Translation contexts (msgctxt) for $pgettext(), used for dynamic names below
+ * and for UI labels whose meaning is ambiguous without context:
+ *
+ * - cs: content sections of a page
+ * - sg: schema groups and page config groups
+ * - as: aside drawer filters
+ * - st: element states, schema elements and page config elements
+ * - fn: field names in the element editor
+ * - op: option labels of select fields
+ * - ai: AI response messages
+ * - clipboard: "Cut" and "Copy" actions
+ * - image edge: "Top", "Left", "Right" and "Bottom" of an image
+ * - page status: "Enable" and "Disable" of pages
+ * - search ranking: "Position" in the search results
+ * - text element: "Split" a text element
+ *
+ * New contexts should use descriptive words like the last ones, not abbreviations.
+ */
+
 if ($pgettext) {
   // content sections
   $pgettext('cs', 'main')

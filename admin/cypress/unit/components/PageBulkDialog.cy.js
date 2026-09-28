@@ -1,5 +1,6 @@
 import PageBulkDialog from '../../../js/components/PageBulkDialog.vue'
 import { useSchemaStore } from '../../../js/stores'
+import { keydown } from '../../../js/shortcuts'
 
 describe('PageBulkDialog', () => {
   it('opens the status dropdown and shows options on a real click', () => {
@@ -44,5 +45,32 @@ describe('PageBulkDialog', () => {
     mount(1001, 0)
     cy.get('.prop').first().find('input[type="checkbox"]').check({ force: true })
     cy.get('.btn-apply').should('be.disabled')
+  })
+
+  it('applies the changes with Ctrl+Enter once the input is valid', () => {
+    const onApply = cy.stub().as('apply')
+    const press = () => cy.window().then(() => {
+      keydown(new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, cancelable: true }))
+    })
+
+    cy.mount(PageBulkDialog, {
+      props: { modelValue: true, count: 2, onApply },
+      global: {
+        plugins: [{
+          install() {
+            useSchemaStore().load = () => Promise.resolve()
+          }
+        }],
+      },
+    })
+
+    cy.get('.btn-apply').should('be.disabled').and('have.attr', 'data-confirm')
+    press()
+    cy.get('@apply').should('not.have.been.called')
+
+    cy.get('.prop').first().find('input[type="checkbox"]').check({ force: true })
+    cy.get('.btn-apply').should('be.enabled')
+    press()
+    cy.get('@apply').should('have.been.calledOnce')
   })
 })

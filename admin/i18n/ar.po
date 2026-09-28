@@ -10,13 +10,13 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:252
-#: js/components/ElementListItems.vue:291
-#: js/components/ElementListItems.vue:427
-#: js/components/ElementListItems.vue:463
-#: js/components/ElementListItems.vue:503
-#: js/components/ElementListItems.vue:545
-#: js/components/ElementListItems.vue:590 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
+#: js/components/ElementListItems.vue:299
+#: js/components/ElementListItems.vue:435
+#: js/components/ElementListItems.vue:471
+#: js/components/ElementListItems.vue:511
+#: js/components/ElementListItems.vue:553
+#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -25,22 +25,22 @@ msgstr ""
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:241 js/components/FileListItems.vue:286
-#: js/components/FileListItems.vue:422 js/components/FileListItems.vue:455
-#: js/components/FileListItems.vue:492 js/components/FileListItems.vue:534
-#: js/components/FileListItems.vue:579
-#: js/components/PageDetailContentList.vue:369
-#: js/components/PageDetailContentList.vue:463
-#: js/components/PageListItems.vue:449 js/components/PageListItems.vue:521
-#: js/components/PageListItems.vue:618 js/components/PageListItems.vue:711
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:844
-#: js/components/PageListItems.vue:975 js/components/PageListItems.vue:1004
-#: js/components/PageListItems.vue:1136 js/components/PageListItems.vue:1177
-#: js/components/PageListItems.vue:1298 js/components/PageListItems.vue:1376
-#: js/components/PageListItems.vue:1427 js/fields/File.vue:147
-#: js/fields/Images.vue:114 js/fields/Items.vue:209 js/publish.js:39
+#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
+#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
+#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
+#: js/components/FileListItems.vue:587
+#: js/components/PageDetailContentList.vue:412
+#: js/components/PageDetailContentList.vue:506
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
+#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
+#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
+#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
+#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
+#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
+#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
-#: js/views/FileDetail.vue:262 js/views/FileList.vue:178
+#: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
 #: js/views/PageList.vue:216
 msgid "Permission denied"
@@ -73,6 +73,110 @@ msgstr "يتم بالفعل إنشاء استجابة. يرجى الانتظار
 #: js/chat.js:58
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "طلبات كثيرة جدًا. الرجاء الانتظار لحظة وحاول مرة أخرى."
+
+#: js/commands.js:53
+msgid "Open command palette"
+msgstr "فتح لوحة الأوامر"
+
+#: js/commands.js:60
+msgid "Confirm dialog"
+msgstr "تأكيد مربع الحوار"
+
+#: js/commands.js:67
+msgid "Save changes"
+msgstr "حفظ التغييرات"
+
+#: js/commands.js:75
+msgid "Open publish menu"
+msgstr "فتح قائمة النشر"
+
+#: js/commands.js:81
+msgid "New page, file or element"
+msgstr "صفحة أو ملف أو عنصر جديد"
+
+#: js/commands.js:87
+msgid "Search in list"
+msgstr "البحث في القائمة"
+
+#: js/commands.js:93
+msgid "Previous tab"
+msgstr "علامة التبويب السابقة"
+
+#: js/commands.js:99
+msgid "Next tab"
+msgstr "علامة التبويب التالية"
+
+#: js/commands.js:105
+msgid "Show or hide side panel"
+msgstr "إظهار أو إخفاء اللوحة الجانبية"
+
+#: js/commands.js:111 js/components/DetailAppBar.vue:168
+msgid "Back to list view"
+msgstr "العودة إلى عرض القائمة"
+
+#: js/commands.js:118
+msgid "Show keyboard shortcuts"
+msgstr "عرض اختصارات لوحة المفاتيح"
+
+#: js/commands.js:124
+msgid "Select focused page, file or element"
+msgstr "تحديد الصفحة أو الملف أو العنصر النشط"
+
+#: js/commands.js:130
+msgid "Delete focused page, file or element"
+msgstr "حذف الصفحة أو الملف أو العنصر النشط"
+
+#: js/commands.js:137
+msgid "Copy page"
+msgstr "نسخ الصفحة"
+
+#: js/commands.js:144
+msgid "Cut page"
+msgstr "قص الصفحة"
+
+#: js/commands.js:151
+msgid "Paste page"
+msgstr "لصق الصفحة"
+
+#: js/commands.js:170 js/components/CommandPalette.vue:106
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
+#: js/views/PageList.vue:265 js/views/PageList.vue:282
+msgid "Pages"
+msgstr "الصفحات"
+
+#: js/commands.js:171
+msgid "Go to pages"
+msgstr "الانتقال إلى الصفحات"
+
+#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
+#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "الوسائط"
+
+#: js/commands.js:177
+msgid "Go to media"
+msgstr "الانتقال إلى الوسائط"
+
+#: js/commands.js:182 js/components/CommandPalette.vue:108
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
+#: js/components/SchemaDialog.vue:37 js/views/ElementList.vue:228
+msgid "Shared elements"
+msgstr "العناصر المشتركة"
+
+#: js/commands.js:183
+msgid "Go to shared elements"
+msgstr "الانتقال إلى العناصر المشتركة"
+
+#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/views/AccessList.vue:252
+msgid "Users"
+msgstr "المستخدمون"
+
+#: js/commands.js:189
+msgid "Go to users"
+msgstr "الانتقال إلى المستخدمين"
 
 #: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
@@ -120,9 +224,9 @@ msgid "Search"
 msgstr "بحث"
 
 #: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:149
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
-msgstr "الحفظ"
+msgstr "حفظ"
 
 #: js/components/AccessUsers.vue:471
 msgid "Account"
@@ -144,21 +248,21 @@ msgstr "مخصص"
 msgid "Available roles"
 msgstr "الأدوار المتاحة"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
-#: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1948
-#: js/views/AccessList.vue:320
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:906
+#: js/components/FileListItems.vue:988 js/components/PageListItems.vue:1942
+#: js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "لم يتم العثور على إدخالات"
 
-#: js/components/ActionMenu.vue:26
+#: js/components/ActionMenu.vue:26 js/components/CommandPalette.vue:104
 msgid "Actions"
 msgstr "الإجراءات"
 
 #: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
-#: js/components/ChatDialog.vue:338 js/components/ChatDialog.vue:339
-#: js/components/Dialog.vue:45 js/components/FieldsAside.vue:186
-#: js/components/FileDetailItemImage.vue:757
-#: js/components/FileDetailItemImage.vue:811 js/components/UnsavedDialog.vue:39
+#: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
+#: js/components/Dialog.vue:46 js/components/FieldsAside.vue:186
+#: js/components/FileDetailItemImage.vue:758
+#: js/components/FileDetailItemImage.vue:813 js/components/UnsavedDialog.vue:40
 msgid "Close"
 msgstr "إغلاق"
 
@@ -175,9 +279,11 @@ msgstr "المرشحات"
 msgid "Reset"
 msgstr "إعادة تعيين"
 
-#: js/components/AsideMeta.vue:21
-msgid "id"
-msgstr "الهوية"
+#: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+msgid "ID"
+msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
 #: js/fields/File.vue:502
@@ -227,11 +333,11 @@ msgstr "المحتوى"
 
 #: js/components/ChangesDialog.vue:313
 msgid "Conflict resolution"
-msgstr "حل النزاعات"
+msgstr "حل التعارضات"
 
 #: js/components/ChangesDialog.vue:317
 msgid "Conflicts from %{editor}"
-msgstr "النزاعات من %{editor}"
+msgstr "التعارضات من %{editor}"
 
 #: js/components/ChangesDialog.vue:320
 msgid "%{count} / %{total}"
@@ -239,7 +345,7 @@ msgstr "%{count} / %{total}"
 
 #: js/components/ChangesDialog.vue:344 js/components/FieldsAside.vue:256
 msgid "Revert"
-msgstr "الرجوع"
+msgstr "استرجاع"
 
 #: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
 msgid "Changes"
@@ -265,63 +371,107 @@ msgstr "احتفظ بما يخصني"
 msgid "Merge both"
 msgstr "دمج الاثنين"
 
-#: js/components/ChatDialog.vue:267
+#: js/components/ChatDialog.vue:265
 msgid "Done"
 msgstr "تم"
 
-#: js/components/ChatDialog.vue:275
+#: js/components/ChatDialog.vue:273
 msgid "Sorry, something went wrong."
 msgstr "عذرًا، حدث خطأ ما."
 
-#: js/components/ChatDialog.vue:326
+#: js/components/ChatDialog.vue:324
 msgid "AI Assistant"
 msgstr "مساعد الذكاء الاصطناعي"
 
-#: js/components/ChatDialog.vue:330 js/components/ChatDialog.vue:331
+#: js/components/ChatDialog.vue:328 js/components/ChatDialog.vue:329
 msgid "New chat"
 msgstr "دردشة جديدة"
 
-#: js/components/ChatDialog.vue:350 js/views/ElementList.vue:251
+#: js/components/ChatDialog.vue:348 js/views/ElementList.vue:251
 #: js/views/FileList.vue:250 js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr "ماذا يمكنني أن أفعل من أجلك؟"
 
-#: js/components/ChatDialog.vue:377 js/components/PageDetailContentList.vue:798
-#: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1800 js/fields/Items.vue:373
+#: js/components/ChatDialog.vue:365
+msgid "Thinking ..."
+msgstr "جارٍ التفكير ..."
+
+#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
+#: js/components/PageDetailContentList.vue:937
+#: js/components/PageListItems.vue:1793 js/fields/Items.vue:370
+msgctxt "clipboard"
 msgid "Copy"
 msgstr "نسخ"
 
-#: js/components/ChatDialog.vue:390
+#: js/components/ChatDialog.vue:384
 msgid "Send a message ..."
 msgstr "أرسل رسالة..."
 
-#: js/components/ChatDialog.vue:405 js/components/ChatDialog.vue:406
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:250
+#: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
+#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
 #: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:768 js/fields/Items.vue:460
+#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
 msgstr "إملاء"
 
-#: js/components/ChatDialog.vue:416 js/components/ChatDialog.vue:417
+#: js/components/ChatDialog.vue:410 js/components/ChatDialog.vue:411
 msgid "Stop"
 msgstr "توقف"
 
-#: js/components/ChatDialog.vue:426 js/components/ChatDialog.vue:427
+#: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
 #: js/views/ElementList.vue:276 js/views/FileList.vue:275
 msgid "Send"
 msgstr "أرسل"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:751
-#: js/components/ElementListItems.vue:858 js/components/FileListItems.vue:729
-#: js/components/FileListItems.vue:865 js/components/PageListItems.vue:1655
-#: js/components/PageListItems.vue:1893 js/views/AccessList.vue:274
+#: js/components/CommandPalette.vue:105
+msgid "Go to"
+msgstr "انتقال إلى"
+
+#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:885 js/components/PageListItems.vue:875
+#: js/components/PageListItems.vue:1914
+msgid "New"
+msgstr "جديد"
+
+#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
+#: js/components/ShortcutDialog.vue:32
+msgid "Command palette"
+msgstr "لوحة الأوامر"
+
+#: js/components/CommandPalette.vue:289
+msgid "Type a command or search pages, files and elements"
+msgstr "اكتب أمرًا أو ابحث في الصفحات والملفات والعناصر"
+
+#: js/components/CommandPalette.vue:290
+msgid "Command or search term"
+msgstr "أمر أو عبارة بحث"
+
+#: js/components/CommandPalette.vue:303
+msgid "Commands"
+msgstr "الأوامر"
+
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+msgid "then"
+msgstr "ثم"
+
+#: js/components/CommandPalette.vue:329
+msgid "Search failed, please try again"
+msgstr "فشل البحث، يرجى المحاولة مرة أخرى"
+
+#: js/components/CommandPalette.vue:330
+msgid "No results"
+msgstr "لا توجد نتائج"
+
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:759
+#: js/components/ElementListItems.vue:867 js/components/FileListItems.vue:737
+#: js/components/FileListItems.vue:878 js/components/PageListItems.vue:1650
+#: js/components/PageListItems.vue:1886 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "حذف نهائي"
 
-#: js/components/ConfirmDialog.vue:34
+#: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
 msgid_plural ""
 "The following %{num} entries will be permanently deleted and cannot be "
@@ -333,68 +483,59 @@ msgstr[3] "سيتم حذف الإدخالات التالية (%{num}) نهائي
 msgstr[4] "سيتم حذف الإدخالات التالية (%{num}) نهائيًا ولا يمكن استعادتها:"
 msgstr[5] "سيتم حذف الإدخالات التالية (%{num}) نهائيًا ولا يمكن استعادتها:"
 
-#: js/components/ConfirmDialog.vue:48 js/components/ElementListItems.vue:876
-#: js/components/PageListItems.vue:892 js/components/PageListItems.vue:1921
-msgid "New"
-msgstr "جديد"
-
-#: js/components/ConfirmDialog.vue:56 js/components/FileDetailItemImage.vue:640
-#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:341
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
 msgstr "إلغاء"
 
-#: js/components/ConfirmDialog.vue:58
+#: js/components/ConfirmDialog.vue:57
 msgid "Confirm"
 msgstr "تأكيد"
 
-#: js/components/DetailAppBar.vue:112 js/views/AccessList.vue:226
+#: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
 #: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "القائمة"
 
-#: js/components/DetailAppBar.vue:116
-msgid "Back to list view"
-msgstr "العودة إلى عرض القائمة"
-
-#: js/components/DetailAppBar.vue:132
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
-msgstr "عرض التاريخ"
+msgstr "عرض السجل"
 
-#: js/components/DetailAppBar.vue:141
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "عرض تغييرات الدمج"
 
-#: js/components/DetailAppBar.vue:163 js/components/DetailAppBar.vue:179
-#: js/components/ElementListItems.vue:731
-#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:709
-#: js/components/FileListItems.vue:835 js/components/PageListItems.vue:1611
-#: js/components/PageListItems.vue:1756
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:739
+#: js/components/ElementListItems.vue:834 js/components/FileListItems.vue:717
+#: js/components/FileListItems.vue:848 js/components/PageListItems.vue:1606
+#: js/components/PageListItems.vue:1749
 msgid "Publish"
-msgstr "النشر"
+msgstr "نشر"
 
-#: js/components/DetailAppBar.vue:182
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
-msgstr ""
+msgstr "نشر وإغلاق"
 
-#: js/components/DetailAppBar.vue:187 js/components/DetailAppBar.vue:213
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "جدولة"
 
-#: js/components/DetailAppBar.vue:222
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
-msgstr ""
+msgstr "جدولة وإغلاق"
 
-#: js/components/DetailAppBar.vue:230 js/views/ElementList.vue:236
+#: js/components/DetailAppBar.vue:289 js/views/ElementList.vue:236
 #: js/views/FileList.vue:235 js/views/PageList.vue:273
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "تبديل القائمة الجانبية"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:736
-#: js/components/ElementListItems.vue:840 js/components/FileListItems.vue:714
-#: js/components/FileListItems.vue:847 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1627 js/components/PageListItems.vue:1777
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:744
+#: js/components/ElementListItems.vue:849 js/components/FileListItems.vue:722
+#: js/components/FileListItems.vue:860 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1622 js/components/PageListItems.vue:1770
 msgid "Edit properties"
 msgstr "تعديل الخصائص"
 
@@ -402,7 +543,7 @@ msgstr "تعديل الخصائص"
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "قم بتطبيق الخصائص المحددة على %{num} من الإدخالات."
-msgstr[1] "قم بتطبيق الخصائص المحددة على الإدخال %{num}."
+msgstr[1] "قم بتطبيق الخصائص المحددة على إدخال واحد."
 msgstr[2] "قم بتطبيق الخصائص المحددة على %{num} من الإدخالات."
 msgstr[3] "قم بتطبيق الخصائص المحددة على %{num} من الإدخالات."
 msgstr[4] "قم بتطبيق الخصائص المحددة على %{num} من الإدخالات."
@@ -416,7 +557,7 @@ msgid "Language"
 msgstr "اللغة"
 
 #: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:268
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "تطبيق"
 
@@ -435,23 +576,12 @@ msgstr "نعم"
 msgid "no"
 msgstr "لا"
 
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:24
-#: js/components/SchemaDialog.vue:38 js/views/ElementList.vue:228
-msgid "Shared elements"
-msgstr "العناصر المشتركة"
-
-#: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
-msgid "ID"
-msgstr "ID"
-
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "عنوان URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:440
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
 msgid "Restricted"
 msgstr "مقيد"
 
@@ -470,93 +600,93 @@ msgstr "النوع"
 msgid "Published"
 msgstr "منشورة"
 
-#: js/components/ElementListItems.vue:317
+#: js/components/ElementListItems.vue:325
 msgid "Error trashing shared element"
 msgstr "خطأ في نقل العنصر المشترك إلى سلة المهملات"
 
-#: js/components/ElementListItems.vue:454
+#: js/components/ElementListItems.vue:462
 msgid "Error restoring shared element"
 msgstr "خطأ في استعادة العنصر المشترك"
 
-#: js/components/ElementListItems.vue:494
+#: js/components/ElementListItems.vue:502
 msgid "Error publishing shared element"
 msgstr "خطأ في نشر عنصر مشترك"
 
-#: js/components/ElementListItems.vue:532
+#: js/components/ElementListItems.vue:540
 msgid "Error purging shared element"
 msgstr "خطأ في حذف العنصر المشترك نهائيًا"
 
-#: js/components/ElementListItems.vue:583
+#: js/components/ElementListItems.vue:591
 msgid "Error saving shared element"
 msgstr "حدث خطأ أثناء حفظ العنصر المشترك"
 
-#: js/components/ElementListItems.vue:640
+#: js/components/ElementListItems.vue:648
 msgid "Error fetching shared elements"
 msgstr "خطأ في جلب العناصر المشتركة"
 
-#: js/components/ElementListItems.vue:715 js/components/FileListItems.vue:693
-#: js/components/PageDetailContentList.vue:784
-#: js/components/PageListItems.vue:1595 js/views/AccessList.vue:269
-#: js/views/AccessList.vue:313
+#: js/components/ElementListItems.vue:723 js/components/FileListItems.vue:701
+#: js/components/PageDetailContentList.vue:827
+#: js/components/PageListItems.vue:1590 js/views/AccessList.vue:273
+#: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "تبديل التحديد"
 
-#: js/components/ElementListItems.vue:741
-#: js/components/ElementListItems.vue:848 js/components/FileListItems.vue:719
-#: js/components/FileListItems.vue:855
-#: js/components/PageDetailContentList.vue:818
-#: js/components/PageDetailContentList.vue:896
-#: js/components/PageListItems.vue:1645 js/components/PageListItems.vue:1883
-#: js/fields/Items.vue:383 js/fields/Table.vue:213 js/fields/Table.vue:283
+#: js/components/ElementListItems.vue:749
+#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:727
+#: js/components/FileListItems.vue:868
+#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:947
+#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1876
+#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "حذف"
 
-#: js/components/ElementListItems.vue:746
-#: js/components/ElementListItems.vue:853 js/components/FileListItems.vue:724
-#: js/components/FileListItems.vue:860 js/components/PageListItems.vue:1650
-#: js/components/PageListItems.vue:1888
+#: js/components/ElementListItems.vue:754
+#: js/components/ElementListItems.vue:862 js/components/FileListItems.vue:732
+#: js/components/FileListItems.vue:873 js/components/PageListItems.vue:1645
+#: js/components/PageListItems.vue:1881
 msgid "Restore"
-msgstr "الاستعادة"
+msgstr "استعادة"
 
-#: js/components/ElementListItems.vue:760
-#: js/components/ElementListItems.vue:904
-#: js/components/PageDetailContentList.vue:996
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:500
+#: js/components/ElementListItems.vue:768
+#: js/components/ElementListItems.vue:914
+#: js/components/PageDetailContentList.vue:1047
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "إضافة عنصر"
 
-#: js/components/ElementListItems.vue:774 js/components/FileListItems.vue:763
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1676 js/views/AccessList.vue:298
+#: js/components/ElementListItems.vue:783 js/components/FileListItems.vue:772
+#: js/components/PageDetailContentList.vue:870
+#: js/components/PageListItems.vue:1672 js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "البحث عن"
 
-#: js/components/ElementListItems.vue:785 js/components/FileListItems.vue:776
+#: js/components/ElementListItems.vue:794 js/components/FileListItems.vue:785
 msgid "Updated by another user"
 msgstr "تم التحديث بواسطة مستخدم آخر"
 
-#: js/components/ElementListItems.vue:791 js/components/FileListItems.vue:782
-#: js/components/PageListItems.vue:1693
+#: js/components/ElementListItems.vue:800 js/components/FileListItems.vue:791
+#: js/components/PageListItems.vue:1689
 msgid "Refresh"
 msgstr "تحديث"
 
-#: js/components/ElementListItems.vue:796
+#: js/components/ElementListItems.vue:805
 msgid "Reload elements"
 msgstr "إعادة تحميل العناصر"
 
-#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:969
-#: js/components/HistoryDialog.vue:200 js/components/PageListItems.vue:1943
-#: js/fields/Autocomplete.vue:188 js/fields/Combobox.vue:27
-#: js/fields/Url.vue:164
+#: js/components/ElementListItems.vue:902 js/components/FileListItems.vue:983
+#: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
+#: js/components/PageListItems.vue:1937 js/fields/Autocomplete.vue:201
+#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
-msgstr "التحميل"
+msgstr "جارٍ التحميل"
 
 #: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:425 js/fields/Items.vue:431
+#: js/fields/Items.vue:422 js/fields/Items.vue:428
 msgid "Translate"
 msgstr "ترجمة"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:449
+#: js/components/Fields.vue:307 js/fields/Items.vue:446
 msgid "Generate text"
 msgstr "إنشاء نص"
 
@@ -570,19 +700,19 @@ msgstr "تم استبداله"
 
 #: js/components/FieldsAside.vue:86
 msgid "Mobile"
-msgstr ""
+msgstr "الهاتف المحمول"
 
 #: js/components/FieldsAside.vue:87
 msgid "Tablet"
-msgstr ""
+msgstr "جهاز لوحي"
 
 #: js/components/FieldsAside.vue:88
 msgid "Computer"
-msgstr ""
+msgstr "الحاسوب"
 
 #: js/components/FieldsAside.vue:88
 msgid "Full width"
-msgstr ""
+msgstr "العرض الكامل"
 
 #: js/components/FieldsAside.vue:179
 msgid "Content Element"
@@ -602,27 +732,27 @@ msgstr "إزالة العنصر"
 
 #: js/components/FieldsAside.vue:216
 msgid "Responsive preview"
-msgstr ""
+msgstr "معاينة متجاوبة"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:939
+#: js/components/PageDetailContentList.vue:990
 msgid "Change to"
 msgstr "التغيير إلى"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:383
+#: js/fields/Images.vue:386
 msgid "Edit"
 msgstr "تحرير"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
-#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:238
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
+#: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
 msgid "Remove"
 msgstr "إزالة"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:271
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:146
+#: js/fields/File.vue:166 js/fields/Images.vue:149
 msgid "Error adding file %{path}"
 msgstr "خطأ في إضافة الملف %{path}"
 
@@ -634,23 +764,23 @@ msgstr "خطأ في إنشاء الملف"
 msgid "Create image"
 msgstr "إنشاء صورة"
 
-#: js/components/FileAiDialog.vue:257
+#: js/components/FileAiDialog.vue:256
 msgid "Describe the image content"
 msgstr "وصف محتوى الصورة"
 
-#: js/components/FileAiDialog.vue:264
+#: js/components/FileAiDialog.vue:263
 msgid "New image"
 msgstr "صورة جديدة"
 
-#: js/components/FileAiDialog.vue:268
+#: js/components/FileAiDialog.vue:267
 msgid "Current images"
 msgstr "الصور الحالية"
 
-#: js/components/FileAiDialog.vue:293
+#: js/components/FileAiDialog.vue:292
 msgid "Images used"
 msgstr "الصور المستخدمة"
 
-#: js/components/FileAiDialog.vue:310
+#: js/components/FileAiDialog.vue:309
 msgid "Select images"
 msgstr "تحديد الصور"
 
@@ -662,8 +792,8 @@ msgstr "تم نسخها إلى الحافظة"
 msgid "Error describing file"
 msgstr "خطأ في وصف الملف"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:572
-#: js/fields/File.vue:300 js/fields/Images.vue:296 js/views/FileDetail.vue:325
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
+#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
 msgid "Error saving file"
 msgstr "خطأ في حفظ الملف"
 
@@ -752,88 +882,92 @@ msgstr "اقتصاص المنطقة المحددة"
 msgid "Erase selected area"
 msgstr "مسح المنطقة المحددة"
 
-#: js/components/FileDetailItemImage.vue:746
-#: js/components/FileDetailItemImage.vue:754
-#: js/components/FileDetailItemImage.vue:775
+#: js/components/FileDetailItemImage.vue:747
+#: js/components/FileDetailItemImage.vue:755
+#: js/components/FileDetailItemImage.vue:776
 msgid "Edit image"
 msgstr "تحرير الصورة"
 
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:766
 msgid "Describe the changes"
 msgstr "وصف التغييرات"
 
-#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:785
 msgid "Remove background"
 msgstr "إزالة الخلفية"
 
-#: js/components/FileDetailItemImage.vue:800
-#: js/components/FileDetailItemImage.vue:808
-#: js/components/FileDetailItemImage.vue:866
+#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:810
+#: js/components/FileDetailItemImage.vue:868
 msgid "Expand image"
 msgstr "توسيع الصورة"
 
-#: js/components/FileDetailItemImage.vue:823
+#: js/components/FileDetailItemImage.vue:825
+msgctxt "image edge"
 msgid "Top"
 msgstr "أعلى"
 
-#: js/components/FileDetailItemImage.vue:835
+#: js/components/FileDetailItemImage.vue:837
+msgctxt "image edge"
 msgid "Left"
 msgstr "يسار"
 
-#: js/components/FileDetailItemImage.vue:845
+#: js/components/FileDetailItemImage.vue:847
+msgctxt "image edge"
 msgid "Right"
 msgstr "يمين"
 
-#: js/components/FileDetailItemImage.vue:857
+#: js/components/FileDetailItemImage.vue:859
+msgctxt "image edge"
 msgid "Bottom"
 msgstr "أسفل"
 
-#: js/components/FileDetailItemImage.vue:873
-#: js/components/FileDetailItemImage.vue:880
+#: js/components/FileDetailItemImage.vue:875
+#: js/components/FileDetailItemImage.vue:882
 msgid "Upscale image"
 msgstr "رفع دقة الصورة"
 
-#: js/components/FileDetailItemImage.vue:893
-#: js/components/FileDetailItemImage.vue:903
-#: js/components/FileDetailItemImage.vue:913
-#: js/components/FileDetailItemImage.vue:923
+#: js/components/FileDetailItemImage.vue:895
+#: js/components/FileDetailItemImage.vue:905
+#: js/components/FileDetailItemImage.vue:915
+#: js/components/FileDetailItemImage.vue:925
 msgid "Scale %{factor}"
 msgstr "المقياس %{factor}"
 
-#: js/components/FileDetailItemImage.vue:932
+#: js/components/FileDetailItemImage.vue:934
 msgid "Rotate counter-clockwise"
 msgstr "تدوير عكس اتجاه عقارب الساعة"
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:940
 msgid "Rotate clockwise"
 msgstr "تدوير في اتجاه عقارب الساعة"
 
-#: js/components/FileDetailItemImage.vue:945
+#: js/components/FileDetailItemImage.vue:947
 msgid "Flip horizontally"
 msgstr "اقلب أفقيًا"
 
-#: js/components/FileDetailItemImage.vue:951
+#: js/components/FileDetailItemImage.vue:953
 msgid "Flip vertically"
 msgstr "اقلب عمودياً"
 
-#: js/components/FileDetailItemImage.vue:958
+#: js/components/FileDetailItemImage.vue:960
 msgid "Convert to monochrome"
 msgstr "تحويل إلى صورة أحادية اللون"
 
-#: js/components/FileDetailItemImage.vue:961
+#: js/components/FileDetailItemImage.vue:963
 msgid "Download"
 msgstr "تنزيل"
 
-#: js/components/FileDetailItemImage.vue:963
-#: js/components/FileDetailItemImage.vue:968
+#: js/components/FileDetailItemImage.vue:965
+#: js/components/FileDetailItemImage.vue:970
 msgid "Undo"
-msgstr "التراجع"
+msgstr "تراجع"
 
-#: js/components/FileDetailItemImage.vue:977
+#: js/components/FileDetailItemImage.vue:979
 msgid "Previous edit"
 msgstr "التعديل السابق"
 
-#: js/components/FileDetailItemImage.vue:982
+#: js/components/FileDetailItemImage.vue:984
 msgid "Original"
 msgstr "الأصلي"
 
@@ -847,7 +981,7 @@ msgstr "خطأ في حفظ غلاف الفيديو"
 
 #: js/components/FileDetailItemVideo.vue:164
 msgid "Error removing video cover"
-msgstr "خطأ في إزالة غطاء الفيديو"
+msgstr "خطأ في إزالة غلاف الفيديو"
 
 #: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
@@ -865,62 +999,51 @@ msgstr "استخدام كصورة غلاف"
 msgid "Upload cover image"
 msgstr "تحميل صورة الغلاف"
 
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:22
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
-msgid "Pages"
-msgstr "الصفحات"
-
 #: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
 msgid "Elements"
 msgstr "العناصر"
 
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
-#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:23
-#: js/views/FileList.vue:227 js/views/FileList.vue:244
-msgid "Media"
-msgstr "وسائل الإعلام"
-
-#: js/components/FileListItems.vue:312
+#: js/components/FileListItems.vue:320
 msgid "Error trashing file"
 msgstr "خطأ في نقل الملف إلى سلة المهملات"
 
-#: js/components/FileListItems.vue:448
+#: js/components/FileListItems.vue:456
 msgid "Error restoring file"
 msgstr "خطأ في استعادة الملف"
 
-#: js/components/FileListItems.vue:485 js/views/FileDetail.vue:246
+#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
 msgid "Error publishing file"
 msgstr "خطأ في نشر الملف"
 
-#: js/components/FileListItems.vue:521
+#: js/components/FileListItems.vue:529
 msgid "Error purging file"
 msgstr "خطأ في حذف الملف نهائيًا"
 
-#: js/components/FileListItems.vue:618
+#: js/components/FileListItems.vue:626
 msgid "Error fetching files"
 msgstr "خطأ في جلب الملفات"
 
-#: js/components/FileListItems.vue:740 js/components/FileListItems.vue:750
-#: js/components/FileListItems.vue:984 js/components/FileListItems.vue:994
-#: js/components/FileUrlDialog.vue:197 js/fields/Images.vue:409
-#: js/fields/Images.vue:433
+#: js/components/FileListItems.vue:748 js/components/FileListItems.vue:758
+#: js/components/FileListItems.vue:998 js/components/FileListItems.vue:1008
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
+#: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "إضافة ملفات"
 
-#: js/components/FileListItems.vue:750 js/components/FileListItems.vue:951
-#: js/components/FileListItems.vue:994 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:758 js/components/FileListItems.vue:964
+#: js/components/FileListItems.vue:1008 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "حماية بواسطة صلاحيات الوصول إلى الصفحة"
 
-#: js/components/FileListItems.vue:787
+#: js/components/FileListItems.vue:796
 msgid "Reload files"
 msgstr "إعادة تحميل الملفات"
 
-#: js/components/FileListItems.vue:796
+#: js/components/FileListItems.vue:805
 msgid "Grid view"
 msgstr "عرض الشبكة"
 
-#: js/components/FileListItems.vue:804
+#: js/components/FileListItems.vue:813
 msgid "List view"
 msgstr "عرض القائمة"
 
@@ -936,24 +1059,24 @@ msgstr "ملف واحد على الأقل ليس من النوع \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "الملف ليس من النوع \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:416
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
 msgid "Add files from URLs"
 msgstr "إضافة ملفات من عناوين URL"
 
-#: js/components/FileUrlDialog.vue:197 js/fields/File.vue:441
+#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:441
 msgid "Add file"
 msgstr "إضافة ملف"
 
-#: js/components/FileUrlDialog.vue:210
+#: js/components/FileUrlDialog.vue:209
 msgid "Enter one URL per line"
 msgstr "أدخل عنوان URL واحد لكل سطر"
 
-#: js/components/FileUrlDialog.vue:226
+#: js/components/FileUrlDialog.vue:225
 msgid "Enter URL"
 msgstr "أدخل عنوان URL"
 
 #: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:957
+#: js/components/PageDetailContentList.vue:1008
 msgid "Shared element"
 msgstr "العنصر المشترك"
 
@@ -972,12 +1095,12 @@ msgstr "تم النقل من الموضع %{from} إلى %{to}"
 #: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
-msgstr[0] "تم تغيير حقل %{num}"
-msgstr[1] "تم تغيير حقول %{num}"
-msgstr[2] "تم تغيير حقول %{num}"
-msgstr[3] "تم تغيير حقول %{num}"
-msgstr[4] "تم تغيير حقول %{num}"
-msgstr[5] "تم تغيير حقول %{num}"
+msgstr[0] "لم يتم تغيير أي حقل"
+msgstr[1] "تم تغيير حقل واحد"
+msgstr[2] "تم تغيير حقلين"
+msgstr[3] "تم تغيير %{num} حقول"
+msgstr[4] "تم تغيير %{num} حقلًا"
+msgstr[5] "تم تغيير %{num} حقل"
 
 #: js/components/HistoryDialog.vue:77
 msgid "%{selected} of %{total} selected"
@@ -998,115 +1121,115 @@ msgstr "القيمة"
 #: js/components/HistoryDialog.vue:172
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
-msgstr[0] "تمت إضافة كتلة %{num}"
-msgstr[1] "تمت إضافة كتل %{num}"
-msgstr[2] "تمت إضافة كتل %{num}"
-msgstr[3] "تمت إضافة كتل %{num}"
-msgstr[4] "تمت إضافة كتل %{num}"
-msgstr[5] "تمت إضافة كتل %{num}"
+msgstr[0] "لم تتم إضافة أي كتلة"
+msgstr[1] "تمت إضافة كتلة واحدة"
+msgstr[2] "تمت إضافة كتلتين"
+msgstr[3] "تمت إضافة %{num} كتل"
+msgstr[4] "تمت إضافة %{num} كتلة"
+msgstr[5] "تمت إضافة %{num} كتلة"
 
 #: js/components/HistoryDialog.vue:173
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
-msgstr[0] "تمت إزالة كتلة %{num}"
-msgstr[1] "تمت إزالة كتل %{num}"
-msgstr[2] "تمت إزالة كتل %{num}"
-msgstr[3] "تمت إزالة كتل %{num}"
-msgstr[4] "تمت إزالة كتل %{num}"
-msgstr[5] "تمت إزالة كتل %{num}"
+msgstr[0] "لم تتم إزالة أي كتلة"
+msgstr[1] "تمت إزالة كتلة واحدة"
+msgstr[2] "تمت إزالة كتلتين"
+msgstr[3] "تمت إزالة %{num} كتل"
+msgstr[4] "تمت إزالة %{num} كتلة"
+msgstr[5] "تمت إزالة %{num} كتلة"
 
 #: js/components/HistoryDialog.vue:174
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
-msgstr[0] "تم تغيير كتلة %{num}"
-msgstr[1] "تم تغيير كتل %{num}"
-msgstr[2] "تم تغيير كتل %{num}"
-msgstr[3] "تم تغيير كتل %{num}"
-msgstr[4] "تم تغيير كتل %{num}"
-msgstr[5] "تم تغيير كتل %{num}"
+msgstr[0] "لم يتم تغيير أي كتلة"
+msgstr[1] "تم تغيير كتلة واحدة"
+msgstr[2] "تم تغيير كتلتين"
+msgstr[3] "تم تغيير %{num} كتل"
+msgstr[4] "تم تغيير %{num} كتلة"
+msgstr[5] "تم تغيير %{num} كتلة"
 
 #: js/components/HistoryDialog.vue:175
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
-msgstr[0] "تم نقل كتلة %{num}"
-msgstr[1] "تم نقل كتل %{num}"
-msgstr[2] "تم نقل كتل %{num}"
-msgstr[3] "تم نقل كتل %{num}"
-msgstr[4] "تم نقل كتل %{num}"
-msgstr[5] "تم نقل كتل %{num}"
+msgstr[0] "لم يتم نقل أي كتلة"
+msgstr[1] "تم نقل كتلة واحدة"
+msgstr[2] "تم نقل كتلتين"
+msgstr[3] "تم نقل %{num} كتل"
+msgstr[4] "تم نقل %{num} كتلة"
+msgstr[5] "تم نقل %{num} كتلة"
 
 #: js/components/HistoryDialog.vue:176
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
-msgstr[0] "تم تغيير ملف %{num}"
-msgstr[1] "تم تغيير ملفات %{num}"
-msgstr[2] "تم تغيير ملفات %{num}"
-msgstr[3] "تم تغيير ملفات %{num}"
-msgstr[4] "تم تغيير ملفات %{num}"
-msgstr[5] "تم تغيير ملفات %{num}"
+msgstr[0] "لم يتم تغيير أي ملف"
+msgstr[1] "تم تغيير ملف واحد"
+msgstr[2] "تم تغيير ملفين"
+msgstr[3] "تم تغيير %{num} ملفات"
+msgstr[4] "تم تغيير %{num} ملفًا"
+msgstr[5] "تم تغيير %{num} ملف"
 
-#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:207
-#: js/components/HistoryDialog.vue:303
+#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
+#: js/components/HistoryDialog.vue:302
 msgid "No changes"
 msgstr "لا توجد تغييرات"
 
 #: js/components/HistoryDialog.vue:191
 msgid "History"
-msgstr "التاريخ"
+msgstr "السجل"
 
-#: js/components/HistoryDialog.vue:203
+#: js/components/HistoryDialog.vue:202
 msgid "Error fetching versions"
 msgstr "حدث خطأ أثناء جلب الإصدارات"
 
-#: js/components/HistoryDialog.vue:204
+#: js/components/HistoryDialog.vue:203
 msgid "Retry"
 msgstr "أعد المحاولة"
 
-#: js/components/HistoryDialog.vue:218
+#: js/components/HistoryDialog.vue:217
 msgid "Current changes"
 msgstr "التغييرات الحالية"
 
-#: js/components/HistoryDialog.vue:224
+#: js/components/HistoryDialog.vue:223
 msgid "Scheduled for %{date}"
-msgstr "من المقرر ل %{date}"
+msgstr "مجدول في %{date}"
 
-#: js/components/HistoryDialog.vue:232
+#: js/components/HistoryDialog.vue:231
 msgid "Select all"
 msgstr "حدد الكل"
 
-#: js/components/HistoryDialog.vue:246
+#: js/components/HistoryDialog.vue:245
 msgid "Block added"
 msgstr "تمت إضافة الكتلة"
 
-#: js/components/HistoryDialog.vue:247
+#: js/components/HistoryDialog.vue:246
 msgid "Block removed"
 msgstr "تمت إزالة الكتلة"
 
-#: js/components/HistoryDialog.vue:267
+#: js/components/HistoryDialog.vue:266
 msgid "Keep current position"
 msgstr "الحفاظ على الوضع الحالي"
 
-#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
+#: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
 msgid "Keep current value"
 msgstr "الحفاظ على القيمة الحالية"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:312
 msgid "Previous version: Latest saved version"
 msgstr "الإصدار السابق: أحدث إصدار محفوظ"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:312
 msgid "Previous version: %{date}"
 msgstr "الإصدار السابق: %{date}"
 
-#: js/components/HistoryDialog.vue:314
+#: js/components/HistoryDialog.vue:313
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "تم تحديد %{selected} من %{total} للعودة"
 
-#: js/components/HistoryDialog.vue:317
+#: js/components/HistoryDialog.vue:316
 msgid "Revert selected changes"
 msgstr "التراجع عن التغييرات المحددة"
 
-#: js/components/HistoryDialog.vue:320
+#: js/components/HistoryDialog.vue:319
 msgid "Restore previous version"
 msgstr "استعادة الإصدار السابق"
 
@@ -1149,12 +1272,12 @@ msgstr "معاينة الجدول"
 #: js/components/HistoryField.vue:138
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
-msgstr[0] "تم حذف صف %{num}"
-msgstr[1] "تم حذف صفوف %{num}"
-msgstr[2] "تم حذف صفوف %{num}"
-msgstr[3] "تم حذف صفوف %{num}"
-msgstr[4] "تم حذف صفوف %{num}"
-msgstr[5] "تم حذف صفوف %{num}"
+msgstr[0] "لم يتم إغفال أي صف"
+msgstr[1] "تم إغفال صف واحد"
+msgstr[2] "تم إغفال صفين"
+msgstr[3] "تم إغفال %{num} صفوف"
+msgstr[4] "تم إغفال %{num} صفًا"
+msgstr[5] "تم إغفال %{num} صف"
 
 #: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
 msgid "Editor"
@@ -1188,13 +1311,13 @@ msgstr "الاستخدام"
 msgid "Sort by"
 msgstr "فرز حسب"
 
-#: js/components/Navigation.vue:25 js/views/AccessList.vue:248
-msgid "Users"
-msgstr "المستخدمون"
-
-#: js/components/Navigation.vue:45
+#: js/components/Navigation.vue:53
 msgid "Panels"
 msgstr "اللوحات"
+
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+msgid "Keyboard shortcuts"
+msgstr "اختصارات لوحة المفاتيح"
 
 #: js/components/PageAccess.vue:104
 msgid "Error changing page access"
@@ -1208,22 +1331,22 @@ msgstr "تدخل تغييرات الوصول حيز التنفيذ فور انت
 msgid "Public"
 msgstr "عام"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
 msgid "Authenticated users"
 msgstr "المستخدمين المصادق عليهم"
 
 #: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:443 js/components/PageListItems.vue:1632
-#: js/components/PageListItems.vue:1782 js/components/PageListItems.vue:1970
-#: js/views/AccessList.vue:235 js/views/AccessList.vue:244
+#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1627
+#: js/components/PageListItems.vue:1775 js/components/PageListItems.vue:1964
+#: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "الوصول"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:282
+#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "تقتصر التغييرات المجمعة للصفحة على 1000 صفحة"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:276
+#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "تطبيق بشكل متكرر"
 
@@ -1342,137 +1465,139 @@ msgstr "علامة الصفحة"
 
 #: js/components/PageBulkDialog.vue:249
 msgid "Change domain"
-msgstr "تغيير المجال"
+msgstr "تغيير النطاق"
 
 #: js/components/PageBulkDialog.vue:254
 #: js/components/PageDetailItemProps.vue:315
 msgid "Domain"
-msgstr "المجال"
+msgstr "النطاق"
 
-#: js/components/PageDetailContentList.vue:184
-#: js/components/PageDetailContentList.vue:194
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:185
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:690
 msgid "Content element not found"
 msgstr "عنصر المحتوى غير موجود"
 
-#: js/components/PageDetailContentList.vue:420
+#: js/components/PageDetailContentList.vue:463
 msgid "Error refining content"
-msgstr "خطأ في تنقية المحتوى"
+msgstr "خطأ في تحسين المحتوى"
 
-#: js/components/PageDetailContentList.vue:470
+#: js/components/PageDetailContentList.vue:513
 msgid "Element not found"
 msgstr "لم يتم العثور على العنصر"
 
-#: js/components/PageDetailContentList.vue:475
+#: js/components/PageDetailContentList.vue:518
 msgid "Element is already shared"
 msgstr "العنصر مشترك بالفعل"
 
-#: js/components/PageDetailContentList.vue:518
+#: js/components/PageDetailContentList.vue:561
 msgid "Unable to make element shared"
-msgstr "غير قادر على جعل العنصر المشترك"
+msgstr "تعذر جعل العنصر مشتركًا"
 
-#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:580
 msgid "Not available for this content element"
 msgstr "غير متوفر لعنصر المحتوى هذا"
 
-#: js/components/PageDetailContentList.vue:654
+#: js/components/PageDetailContentList.vue:697
 msgid "Element is not shared"
 msgstr "العنصر غير مشترك"
 
-#: js/components/PageDetailContentList.vue:733
+#: js/components/PageDetailContentList.vue:776
 msgid "Describe the task you want to perform"
 msgstr "وصف المهمة التي تريد القيام بها"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "إخفاء المساعدة"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "عرض المساعدة"
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refining ..."
 msgstr "جارٍ التحسين..."
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refine content based on prompt"
 msgstr "تنقيح المحتوى بناءً على المطالبة"
 
-#: js/components/PageDetailContentList.vue:776 js/views/ElementList.vue:291
+#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
 #: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "مساعدة"
 
-#: js/components/PageDetailContentList.vue:777
+#: js/components/PageDetailContentList.vue:820
 msgid "AI can add or improve content based on your input"
 msgstr "يمكن للذكاء الاصطناعي إضافة محتوى أو تحسينه بناءً على مدخلاتك"
 
-#: js/components/PageDetailContentList.vue:778
+#: js/components/PageDetailContentList.vue:821
 msgid "It can take a long time depending on the task and content size"
 msgstr "يمكن أن يستغرق الأمر وقتًا طويلاً حسب المهمة وحجم المحتوى"
 
-#: js/components/PageDetailContentList.vue:803
-#: js/components/PageDetailContentList.vue:891
-#: js/components/PageListItems.vue:1795 js/fields/Items.vue:378
+#: js/components/PageDetailContentList.vue:846
+#: js/components/PageDetailContentList.vue:942
+#: js/components/PageListItems.vue:1788 js/fields/Items.vue:375
+msgctxt "clipboard"
 msgid "Cut"
 msgstr "قص"
 
-#: js/components/PageDetailContentList.vue:808
-#: js/components/PageListItems.vue:1808 js/components/PageListItems.vue:1833
+#: js/components/PageDetailContentList.vue:851
+#: js/components/PageListItems.vue:1801 js/components/PageListItems.vue:1826
 msgid "Paste"
 msgstr "لصق"
 
-#: js/components/PageDetailContentList.vue:813
-#: js/components/PageDetailContentList.vue:949
+#: js/components/PageDetailContentList.vue:856
+#: js/components/PageDetailContentList.vue:1000
 msgid "Merge"
-msgstr "الدمج"
+msgstr "دمج"
 
-#: js/components/PageDetailContentList.vue:866 js/fields/Items.vue:348
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
 msgid "Move element"
 msgstr "نقل العنصر"
 
-#: js/components/PageDetailContentList.vue:904 js/fields/Items.vue:391
+#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
 msgid "Paste before"
 msgstr "لصق قبل"
 
-#: js/components/PageDetailContentList.vue:909 js/fields/Items.vue:396
+#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
 msgid "Paste after"
 msgstr "لصق بعد"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:401
-#: js/fields/Table.vue:200 js/fields/Table.vue:270
+#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "إدراج قبل"
 
-#: js/components/PageDetailContentList.vue:919 js/fields/Items.vue:406
-#: js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "إدراج بعد"
 
-#: js/components/PageDetailContentList.vue:929
+#: js/components/PageDetailContentList.vue:980
 msgid "Make shared"
-msgstr "جعل المشاركة"
+msgstr "جعله مشتركًا"
 
-#: js/components/PageDetailContentList.vue:934
+#: js/components/PageDetailContentList.vue:985
 msgid "Merge copy"
 msgstr "دمج نسخة"
 
-#: js/components/PageDetailContentList.vue:944
+#: js/components/PageDetailContentList.vue:995
+msgctxt "text element"
 msgid "Split"
-msgstr "انقسام"
+msgstr "تقسيم"
 
-#: js/components/PageDetailEditor.vue:77
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "انقر نقرًا مزدوجًا للتعديل"
 
-#: js/components/PageDetailEditor.vue:260
+#: js/components/PageDetailEditor.vue:266
 msgid "Preview mode"
 msgstr "وضع المعاينة"
 
-#: js/components/PageDetailEditor.vue:263
+#: js/components/PageDetailEditor.vue:269
 msgid "Not CMS content"
 msgstr "ليس محتوى نظام إدارة المحتوى"
 
@@ -1521,7 +1646,7 @@ msgstr "مسار عنوان URL"
 
 #: js/components/PageDetailItemProps.vue:377
 msgid "Redirect URL"
-msgstr "إعادة توجيه عنوان URL"
+msgstr "عنوان URL لإعادة التوجيه"
 
 #: js/components/PageDetailItemSection.vue:60
 msgid "The element has already been added"
@@ -1531,292 +1656,295 @@ msgstr "تمت إضافة العنصر بالفعل"
 msgid "Remove content element"
 msgstr "إزالة عنصر المحتوى"
 
-#: js/components/PageDetailMetrics.vue:141
-#: js/components/PageDetailMetrics.vue:566
+#: js/components/PageDetailMetrics.vue:149
 msgid "Views"
 msgstr "المشاهدات"
 
-#: js/components/PageDetailMetrics.vue:142
+#: js/components/PageDetailMetrics.vue:150
 msgid "Visits"
 msgstr "الزيارات"
 
-#: js/components/PageDetailMetrics.vue:143
-#: js/components/PageDetailMetrics.vue:184
+#: js/components/PageDetailMetrics.vue:151
+#: js/components/PageDetailMetrics.vue:192
 msgid "Conversions"
 msgstr "التحويلات"
 
-#: js/components/PageDetailMetrics.vue:152
+#: js/components/PageDetailMetrics.vue:160
 msgid "Duration"
 msgstr "المدة"
 
-#: js/components/PageDetailMetrics.vue:162
+#: js/components/PageDetailMetrics.vue:170
+#: js/components/PageDetailMetrics.vue:574
 msgid "Impressions"
 msgstr "مرات الظهور"
 
-#: js/components/PageDetailMetrics.vue:163
-#: js/components/PageDetailMetrics.vue:567
+#: js/components/PageDetailMetrics.vue:171
+#: js/components/PageDetailMetrics.vue:575
 msgid "Clicks"
 msgstr "النقرات"
 
-#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:180
 msgid "Percentage"
 msgstr "النسبة المئوية"
 
-#: js/components/PageDetailMetrics.vue:181
+#: js/components/PageDetailMetrics.vue:189
 msgid "Page Views"
 msgstr "مشاهدات الصفحة"
 
-#: js/components/PageDetailMetrics.vue:182
+#: js/components/PageDetailMetrics.vue:190
 msgid "Page Visits"
 msgstr "زيارات الصفحة"
 
-#: js/components/PageDetailMetrics.vue:185
+#: js/components/PageDetailMetrics.vue:193
 msgid "Visit Duration (minutes)"
 msgstr "مدة الزيارة (بالدقائق)"
 
-#: js/components/PageDetailMetrics.vue:186
+#: js/components/PageDetailMetrics.vue:194
 msgid "Google Impressions"
 msgstr "مرات الظهور على Google"
 
-#: js/components/PageDetailMetrics.vue:187
+#: js/components/PageDetailMetrics.vue:195
 msgid "Google Clicks"
 msgstr "نقرات جوجل"
 
-#: js/components/PageDetailMetrics.vue:188
+#: js/components/PageDetailMetrics.vue:196
 msgid "Google Conversion Rate"
 msgstr "معدل التحويل في Google"
 
-#: js/components/PageDetailMetrics.vue:194
+#: js/components/PageDetailMetrics.vue:202
 msgid "Round trip time"
 msgstr "زمن رحلة الذهاب والعودة"
 
-#: js/components/PageDetailMetrics.vue:195
+#: js/components/PageDetailMetrics.vue:203
 msgid "Time to first byte"
 msgstr "وقت البايت الأول"
 
-#: js/components/PageDetailMetrics.vue:196
+#: js/components/PageDetailMetrics.vue:204
 msgid "First contentful paint"
-msgstr "طلاء المحتوى الأول"
+msgstr "أول عرض للمحتوى"
 
-#: js/components/PageDetailMetrics.vue:197
+#: js/components/PageDetailMetrics.vue:205
 msgid "Largest contentful paint"
-msgstr "أكبر طلاء ذو محتوى أكبر"
+msgstr "أكبر عرض للمحتوى"
 
-#: js/components/PageDetailMetrics.vue:198
+#: js/components/PageDetailMetrics.vue:206
 msgid "Interaction to next paint"
-msgstr "التفاعل إلى الطلاء التالي"
+msgstr "التفاعل حتى العرض التالي"
 
-#: js/components/PageDetailMetrics.vue:199
+#: js/components/PageDetailMetrics.vue:207
 msgid "Cumulative layout shift"
 msgstr "تحول التخطيط التراكمي"
 
-#: js/components/PageDetailMetrics.vue:393
+#: js/components/PageDetailMetrics.vue:401
 msgid "Page metrics"
 msgstr "مقاييس الصفحة"
 
-#: js/components/PageDetailMetrics.vue:399
+#: js/components/PageDetailMetrics.vue:407
 msgid "Days"
 msgstr "الأيام"
 
-#: js/components/PageDetailMetrics.vue:426
+#: js/components/PageDetailMetrics.vue:434
 msgid "Weekly Insights"
 msgstr "رؤى أسبوعية"
 
-#: js/components/PageDetailMetrics.vue:455
+#: js/components/PageDetailMetrics.vue:463
 msgid "Views & Visits"
 msgstr "المشاهدات والزيارات"
 
-#: js/components/PageDetailMetrics.vue:464
+#: js/components/PageDetailMetrics.vue:472
 msgid "Visit Durations (minutes)"
 msgstr "مدة الزيارة (بالدقائق)"
 
-#: js/components/PageDetailMetrics.vue:476
+#: js/components/PageDetailMetrics.vue:484
 msgid "Referrers"
 msgstr "مصادر الإحالة"
 
-#: js/components/PageDetailMetrics.vue:519
+#: js/components/PageDetailMetrics.vue:527
 msgid "Countries"
 msgstr "الدول"
 
-#: js/components/PageDetailMetrics.vue:535
+#: js/components/PageDetailMetrics.vue:543
 msgid "Page Speed"
 msgstr "سرعة الصفحة"
 
-#: js/components/PageDetailMetrics.vue:560
+#: js/components/PageDetailMetrics.vue:568
 msgid "Google Search: Queries"
 msgstr "بحث جوجل: الاستعلامات"
 
-#: js/components/PageDetailMetrics.vue:568
+#: js/components/PageDetailMetrics.vue:576
 msgid "Percent"
 msgstr "النسبة المئوية"
 
-#: js/components/PageDetailMetrics.vue:569
+#: js/components/PageDetailMetrics.vue:577
+msgctxt "search ranking"
 msgid "Position"
 msgstr "الترتيب"
 
-#: js/components/PageDetailMetrics.vue:596
+#: js/components/PageDetailMetrics.vue:604
 msgid "Google Search: Impressions & Clicks"
 msgstr "بحث Google: مرات الظهور والنقرات"
 
-#: js/components/PageDetailMetrics.vue:605
+#: js/components/PageDetailMetrics.vue:613
 msgid "Google Search: Conversions"
 msgstr "بحث جوجل: التحويلات"
 
-#: js/components/PageListItems.vue:478
+#: js/components/PageListItems.vue:482
 msgid "Error adding root page"
 msgstr "خطأ في إضافة صفحة الجذر"
 
-#: js/components/PageListItems.vue:551
+#: js/components/PageListItems.vue:547
 msgid "Cache cleared"
 msgstr "تم مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:552
+#: js/components/PageListItems.vue:548
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحة."
+msgstr[1] "تم مسح ذاكرة التخزين المؤقت لصفحة واحدة."
+msgstr[2] "تم مسح ذاكرة التخزين المؤقت لصفحتين."
+msgstr[3] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحات."
+msgstr[4] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحةً."
+msgstr[5] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحة."
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:558
 msgid "Error clearing cache"
 msgstr "خطأ في مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:658
+#: js/components/PageListItems.vue:630
 msgid "Error trashing page"
 msgstr "خطأ في نقل الصفحة إلى سلة المهملات"
 
-#: js/components/PageListItems.vue:752
+#: js/components/PageListItems.vue:724
 msgid "Error fetching pages"
 msgstr "خطأ في جلب الصفحات"
 
-#: js/components/PageListItems.vue:833
+#: js/components/PageListItems.vue:805
 msgid "Error inserting page"
 msgstr "خطأ في إدراج الصفحة"
 
-#: js/components/PageListItems.vue:886
+#: js/components/PageListItems.vue:869
 msgid "Error restoring page"
 msgstr "خطأ في استعادة الصفحة"
 
-#: js/components/PageListItems.vue:896
+#: js/components/PageListItems.vue:879
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}، المسار: %{path}، النطاق: %{domain})"
 
-#: js/components/PageListItems.vue:904
+#: js/components/PageListItems.vue:887
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}، الرابط: %{path})"
 
-#: js/components/PageListItems.vue:994
+#: js/components/PageListItems.vue:977
 msgid "Error moving page"
 msgstr "خطأ في نقل الصفحة"
 
-#: js/components/PageListItems.vue:1085
+#: js/components/PageListItems.vue:1068
 msgid "Error copying page"
 msgstr "خطأ في نسخ الصفحة"
 
-#: js/components/PageListItems.vue:1090 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "خطأ في جلب الصفحة"
 
-#: js/components/PageListItems.vue:1170 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "خطأ في نشر الصفحة"
 
-#: js/components/PageListItems.vue:1195
+#: js/components/PageListItems.vue:1172
 msgid "All subpages of these pages will be purged as well."
 msgstr "سيتم أيضًا حذف جميع الصفحات الفرعية لهذه الصفحات نهائيًا."
 
-#: js/components/PageListItems.vue:1225
+#: js/components/PageListItems.vue:1202
 msgid "Error purging page"
 msgstr "خطأ في حذف الصفحة نهائيًا"
 
-#: js/components/PageListItems.vue:1358
+#: js/components/PageListItems.vue:1335
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "تعذر تحديث %{num} من الصفحات"
-msgstr[1] "تعذر تحديث الصفحة %{num}."
+msgstr[1] "تعذر تحديث صفحة واحدة"
 msgstr[2] "تعذر تحديث %{num} من الصفحات"
 msgstr[3] "تعذر تحديث %{num} من الصفحات"
 msgstr[4] "تعذر تحديث %{num} من الصفحات"
 msgstr[5] "تعذر تحديث %{num} من الصفحات"
 
-#: js/components/PageListItems.vue:1369 js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
 #: js/views/PageDetail.vue:606
 msgid "Error saving page"
 msgstr "خطأ في حفظ الصفحة"
 
-#: js/components/PageListItems.vue:1420
+#: js/components/PageListItems.vue:1397
 msgid "Error searching pages"
 msgstr "خطأ في البحث عن الصفحات"
 
-#: js/components/PageListItems.vue:1616 js/components/PageListItems.vue:1762
+#: js/components/PageListItems.vue:1611 js/components/PageListItems.vue:1755
+msgctxt "page status"
 msgid "Enable"
-msgstr "التمكين"
+msgstr "تمكين"
 
-#: js/components/PageListItems.vue:1621 js/components/PageListItems.vue:1767
+#: js/components/PageListItems.vue:1616 js/components/PageListItems.vue:1760
+msgctxt "page status"
 msgid "Disable"
 msgstr "تعطيل"
 
-#: js/components/PageListItems.vue:1637 js/components/PageListItems.vue:1787
+#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1780
 msgid "Clear cache"
 msgstr "مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:1665 js/components/PageListItems.vue:1955
+#: js/components/PageListItems.vue:1660 js/components/PageListItems.vue:1949
 msgid "Add page"
 msgstr "إضافة صفحة"
 
-#: js/components/PageListItems.vue:1687
+#: js/components/PageListItems.vue:1683
 msgid "Reload page tree"
 msgstr "إعادة تحميل شجرة الصفحات"
 
-#: js/components/PageListItems.vue:1714
+#: js/components/PageListItems.vue:1706
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "استخدم مفاتيح الأسهم للتنقل. اضغط على مفتاح Alt مع مفاتيح الأسهم لإعادة "
 "الترتيب."
 
-#: js/components/PageListItems.vue:1716
+#: js/components/PageListItems.vue:1708
 msgid "Moved to position %{position} of %{total}"
 msgstr "تم النقل إلى الموضع %{position} من أصل %{total}"
 
-#: js/components/PageListItems.vue:1718
+#: js/components/PageListItems.vue:1710
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "تم تقليل المسافة البادئة إلى المستوى %{level}، الموضع %{position} من أصل "
 "%{total}"
 
-#: js/components/PageListItems.vue:1724
+#: js/components/PageListItems.vue:1716
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "تمت زيادة المسافة البادئة إلى المستوى %{level}، الموضع %{position} من أصل "
 "%{total}"
 
-#: js/components/PageListItems.vue:1743
+#: js/components/PageListItems.vue:1736
 msgid "Toggle child nodes"
 msgstr "تبديل العقد الفرعية"
 
-#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
-#: js/components/PageListItems.vue:1864
+#: js/components/PageListItems.vue:1807 js/components/PageListItems.vue:1832
+#: js/components/PageListItems.vue:1857
 msgid "Before"
 msgstr "قبل"
 
-#: js/components/PageListItems.vue:1819 js/components/PageListItems.vue:1844
-#: js/components/PageListItems.vue:1869
+#: js/components/PageListItems.vue:1812 js/components/PageListItems.vue:1837
+#: js/components/PageListItems.vue:1862
 msgid "Into"
 msgstr "في"
 
-#: js/components/PageListItems.vue:1824 js/components/PageListItems.vue:1849
-#: js/components/PageListItems.vue:1874
+#: js/components/PageListItems.vue:1817 js/components/PageListItems.vue:1842
+#: js/components/PageListItems.vue:1867
 msgid "After"
 msgstr "بعد"
 
-#: js/components/PageListItems.vue:1858
+#: js/components/PageListItems.vue:1851
 msgid "Insert"
 msgstr "إدراج"
 
-#: js/components/PageListItems.vue:1973
+#: js/components/PageListItems.vue:1967
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "تطبيق إعدادات الوصول على %{num} صفحة."
@@ -1834,19 +1962,91 @@ msgstr "عناصر المحتوى"
 msgid "uncategorized"
 msgstr "غير مصنف"
 
-#: js/components/UnsavedDialog.vue:31 js/components/UnsavedDialog.vue:37
+#: js/components/ShortcutDialog.vue:23
+msgid "General"
+msgstr "عام"
+
+#: js/components/ShortcutDialog.vue:28
+msgid "Close dialog or menu"
+msgstr "إغلاق مربع الحوار أو القائمة"
+
+#: js/components/ShortcutDialog.vue:34
+msgid "Move between commands and results"
+msgstr "التنقل بين الأوامر والنتائج"
+
+#: js/components/ShortcutDialog.vue:35
+msgid "Run command or open result"
+msgstr "تنفيذ الأمر أو فتح النتيجة"
+
+#: js/components/ShortcutDialog.vue:36
+msgid "Close command palette"
+msgstr "إغلاق لوحة الأوامر"
+
+#: js/components/ShortcutDialog.vue:40
+msgid "Lists"
+msgstr "القوائم"
+
+#: js/components/ShortcutDialog.vue:44
+msgid "Edit views"
+msgstr "طرق عرض التحرير"
+
+#: js/components/ShortcutDialog.vue:48
+msgid "Page content"
+msgstr "محتوى الصفحة"
+
+#: js/components/ShortcutDialog.vue:49
+msgid "Move content element up or down"
+msgstr "نقل عنصر المحتوى لأعلى أو لأسفل"
+
+#: js/components/ShortcutDialog.vue:52
+msgid "Page tree"
+msgstr "شجرة الصفحات"
+
+#: js/components/ShortcutDialog.vue:54
+msgid "Move between pages"
+msgstr "التنقل بين الصفحات"
+
+#: js/components/ShortcutDialog.vue:55
+msgid "Expand page"
+msgstr "توسيع الصفحة"
+
+#: js/components/ShortcutDialog.vue:56
+msgid "Add subpage to focused page"
+msgstr "إضافة صفحة فرعية إلى الصفحة المحددة"
+
+#: js/components/ShortcutDialog.vue:57
+msgid "Reorder or re-nest page"
+msgstr "إعادة ترتيب الصفحة أو نقلها في الهيكل"
+
+#: js/components/ShortcutDialog.vue:62
+msgid "AI chat"
+msgstr "محادثة الذكاء الاصطناعي"
+
+#: js/components/ShortcutDialog.vue:64
+msgid "Send message"
+msgstr "إرسال الرسالة"
+
+#: js/components/ShortcutDialog.vue:65
+msgid "New line"
+msgstr "سطر جديد"
+
+#: js/components/ShortcutDialog.vue:66
+msgid "Recall previous messages"
+msgstr "استدعاء الرسائل السابقة"
+
+#: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
 msgid "Unsaved changes"
 msgstr "التغييرات غير المحفوظة"
 
-#: js/components/UnsavedDialog.vue:45
+#: js/components/UnsavedDialog.vue:46
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "هناك تغييرات لم يتم حفظها، وستفقدها إذا غادرت."
 
-#: js/components/UnsavedDialog.vue:51
+#: js/components/UnsavedDialog.vue:52
 msgid "Discard"
 msgstr "تجاهل"
 
-#: js/components/UnsavedDialog.vue:58
+#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "حفظ ومغادرة"
 
@@ -1870,22 +2070,11 @@ msgstr "قائمة المستخدم"
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
-#: js/fields/Autocomplete.vue:43 js/fields/Color.vue:20 js/fields/Date.vue:24
-#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
-#: js/fields/Url.vue:75
-msgid "Value is required"
-msgstr "القيمة مطلوبة"
-
-#: js/fields/Autocomplete.vue:48 js/fields/Images.vue:97
-#: js/fields/Items.vue:121
-msgid "Maximum is %{num} entries"
-msgstr "الحد الأقصى %{num} الإدخالات"
-
-#: js/fields/Autocomplete.vue:187 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "لا توجد بيانات متاحة"
 
-#: js/fields/Color.vue:21
+#: js/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "يجب أن تكون القيمة رمزاً لونياً سداسي عشرياً"
 
@@ -1897,7 +2086,7 @@ msgstr "الملف مطلوب"
 msgid "Add file from URL"
 msgstr "إضافة ملف من URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:426
+#: js/fields/File.vue:456 js/fields/Images.vue:429
 msgid "Create file"
 msgstr "إنشاء ملف"
 
@@ -1917,605 +2106,643 @@ msgstr "الاسم"
 msgid "description"
 msgstr "الوصف"
 
-#: js/fields/Images.vue:93 js/fields/Items.vue:124
-msgid "Minimum is %{num} entries"
-msgstr "الحد الأدنى %{num} الإدخالات"
-
-#: js/fields/Images.vue:450
+#: js/fields/Images.vue:453
 msgid "Drop files here"
 msgstr "قم بإسقاط الملفات هنا"
 
 #: js/fields/Map.vue:231
 msgid "Clear location"
-msgstr ""
+msgstr "مسح الموقع"
 
 #: js/fields/Map.vue:234
 msgid "Click the map to set the location"
-msgstr ""
+msgstr "انقر على الخريطة لتحديد الموقع"
 
-#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37 js/fields/Text.vue:125
-msgid "Minimum length is %{num} characters"
-msgstr "الحد الأدنى للطول هو %{num} حرف "
-
-#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41 js/fields/Text.vue:129
-msgid "Maximum length is %{num} characters"
-msgstr "الحد الأقصى للطول هو %{num} حرف"
-
-#: js/fields/Radio.vue:24
-msgid "Selection is required"
-msgstr "الاختيار مطلوب"
-
-#: js/fields/String.vue:45
+#: js/fields/String.vue:44
 msgid "Value has invalid format"
 msgstr "القيمة لها تنسيق غير صالح"
 
-#: js/fields/Table.vue:73
-msgid "Minimum are %{num} columns"
-msgstr "الحد الأدنى %{num} أعمدة "
-
-#: js/fields/Table.vue:77
-msgid "Maximum are %{num} columns"
-msgstr "الحد الأقصى %{num} أعمدة "
-
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:168
 msgid "Move column"
 msgstr "نقل العمود"
 
-#: js/fields/Table.vue:190
+#: js/fields/Table.vue:185
 msgid "Column actions"
 msgstr "إجراءات الأعمدة"
 
-#: js/fields/Table.vue:229
+#: js/fields/Table.vue:224
 msgid "Move row"
 msgstr "نقل الصف"
 
-#: js/fields/Table.vue:260
+#: js/fields/Table.vue:255
 msgid "Row actions"
 msgstr "إجراءات الصفوف"
 
-#: js/fields/Url.vue:57 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:165
 msgid "None"
 msgstr "لا يوجد"
 
-#: js/fields/Url.vue:58
-msgid "Sponsored"
-msgstr ""
-
 #: js/fields/Url.vue:59
-msgid "Nofollow"
-msgstr ""
+msgid "Sponsored"
+msgstr "مموَّل"
 
-#: js/fields/Url.vue:76
+#: js/fields/Url.vue:60
+msgid "Nofollow"
+msgstr "عدم التتبّع (nofollow)"
+
+#: js/fields/Url.vue:77
 msgid "Not a valid URL"
 msgstr "عنوان URL غير صالح"
 
-#: js/fields/Url.vue:86
+#: js/fields/Url.vue:87
 msgid "Invalid URL schema configuration"
 msgstr "تكوين مخطط عنوان URL غير صالح"
 
-#: js/fields/Url.vue:164
+#: js/fields/Url.vue:165
 msgid "No pages found"
 msgstr "لم يتم العثور على أي صفحات"
 
-#: js/fields/Url.vue:176
+#: js/fields/Url.vue:177
 msgid "Link attribute"
-msgstr ""
+msgstr "سمة الرابط"
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
-msgstr "تم دمج التغييرات الواردة في %{editor}"
+msgstr "تم الدمج مع التغييرات من %{editor}"
 
 #: js/routes.js:126
 msgid "You do not have permission to access %{path}"
 msgstr "ليس لديك إذن للوصول إلى %{path}"
 
+#: js/rules.js:18
+msgid "Value is required"
+msgstr "القيمة مطلوبة"
+
+#: js/rules.js:23
+msgid "At least %{num} entry is required"
+msgid_plural "At least %{num} entries are required"
+msgstr[0] "مطلوب %{num} إدخال على الأقل"
+msgstr[1] "مطلوب %{num} إدخال على الأقل"
+msgstr[2] "مطلوب %{num} إدخالين على الأقل"
+msgstr[3] "مطلوب %{num} إدخالات على الأقل"
+msgstr[4] "مطلوب %{num} إدخالًا على الأقل"
+msgstr[5] "مطلوب %{num} إدخال على الأقل"
+
+#: js/rules.js:30
+msgid "At most %{num} entry is allowed"
+msgid_plural "At most %{num} entries are allowed"
+msgstr[0] "يُسمح بـ %{num} إدخال كحد أقصى"
+msgstr[1] "يُسمح بـ %{num} إدخال كحد أقصى"
+msgstr[2] "يُسمح بـ %{num} إدخالين كحد أقصى"
+msgstr[3] "يُسمح بـ %{num} إدخالات كحد أقصى"
+msgstr[4] "يُسمح بـ %{num} إدخالًا كحد أقصى"
+msgstr[5] "يُسمح بـ %{num} إدخال كحد أقصى"
+
+#: js/rules.js:38
+msgid "At least %{num} character is required"
+msgid_plural "At least %{num} characters are required"
+msgstr[0] "مطلوب %{num} حرف على الأقل"
+msgstr[1] "مطلوب %{num} حرف على الأقل"
+msgstr[2] "مطلوب %{num} حرفين على الأقل"
+msgstr[3] "مطلوب %{num} أحرف على الأقل"
+msgstr[4] "مطلوب %{num} حرفًا على الأقل"
+msgstr[5] "مطلوب %{num} حرف على الأقل"
+
+#: js/rules.js:48
+msgid "At most %{num} character is allowed"
+msgid_plural "At most %{num} characters are allowed"
+msgstr[0] "يُسمح بـ %{num} حرف كحد أقصى"
+msgstr[1] "يُسمح بـ %{num} حرف كحد أقصى"
+msgstr[2] "يُسمح بـ %{num} حرفين كحد أقصى"
+msgstr[3] "يُسمح بـ %{num} أحرف كحد أقصى"
+msgstr[4] "يُسمح بـ %{num} حرفًا كحد أقصى"
+msgstr[5] "يُسمح بـ %{num} حرف كحد أقصى"
+
+#: js/rules.js:55
+msgid "At least %{num} column is required"
+msgid_plural "At least %{num} columns are required"
+msgstr[0] "مطلوب %{num} عمود على الأقل"
+msgstr[1] "مطلوب %{num} عمود على الأقل"
+msgstr[2] "مطلوب %{num} عمودين على الأقل"
+msgstr[3] "مطلوب %{num} أعمدة على الأقل"
+msgstr[4] "مطلوب %{num} عمودًا على الأقل"
+msgstr[5] "مطلوب %{num} عمود على الأقل"
+
+#: js/rules.js:62
+msgid "At most %{num} column is allowed"
+msgid_plural "At most %{num} columns are allowed"
+msgstr[0] "يُسمح بـ %{num} عمود كحد أقصى"
+msgstr[1] "يُسمح بـ %{num} عمود كحد أقصى"
+msgstr[2] "يُسمح بـ %{num} عمودين كحد أقصى"
+msgstr[3] "يُسمح بـ %{num} أعمدة كحد أقصى"
+msgstr[4] "يُسمح بـ %{num} عمودًا كحد أقصى"
+msgstr[5] "يُسمح بـ %{num} عمود كحد أقصى"
+
 #: js/stores.js:384
 msgid "Failed to load plugin"
 msgstr "فشل تحميل البرنامج المساعد"
 
-#: js/strings.js:9
+#: js/strings.js:29
 msgctxt "cs"
 msgid "main"
 msgstr "الرئيسية"
 
-#: js/strings.js:10
+#: js/strings.js:30
 msgctxt "cs"
 msgid "header"
 msgstr "الرأس"
 
-#: js/strings.js:11
+#: js/strings.js:31
 msgctxt "cs"
 msgid "footer"
 msgstr "التذييل"
 
-#: js/strings.js:12
+#: js/strings.js:32
 msgctxt "cs"
 msgid "sidebar"
 msgstr "الشريط الجانبي"
 
-#: js/strings.js:13
+#: js/strings.js:33
 msgctxt "cs"
 msgid "aside"
-msgstr "جانباً"
+msgstr "محتوى جانبي"
 
-#: js/strings.js:16
+#: js/strings.js:36
 msgctxt "sg"
 msgid "basic"
 msgstr "الأساسيات"
 
-#: js/strings.js:17
+#: js/strings.js:37
 msgctxt "sg"
 msgid "content"
 msgstr "المحتوى"
 
-#: js/strings.js:18
+#: js/strings.js:38
 msgctxt "sg"
 msgid "media"
 msgstr "الوسائط"
 
-#: js/strings.js:19
+#: js/strings.js:39
 msgctxt "sg"
 msgid "forms"
 msgstr "النماذج"
 
-#: js/strings.js:22
+#: js/strings.js:42
 msgctxt "as"
 msgid "type"
 msgstr "النوع"
 
-#: js/strings.js:23
+#: js/strings.js:43
 msgctxt "as"
 msgid "state"
 msgstr "الحالة"
 
-#: js/strings.js:26
+#: js/strings.js:46
 msgctxt "st"
 msgid "valid"
-msgstr "ساري المفعول"
+msgstr "صالح"
 
-#: js/strings.js:27
+#: js/strings.js:47
 msgctxt "st"
 msgid "changed"
 msgstr "تغيرت"
 
-#: js/strings.js:28
+#: js/strings.js:48
 msgctxt "st"
 msgid "error"
 msgstr "الخطأ"
 
-#: js/strings.js:31
+#: js/strings.js:51
 msgctxt "st"
 msgid "reference"
 msgstr "المرجع"
 
-#: js/strings.js:32
+#: js/strings.js:52
 msgctxt "st"
 msgid "heading"
 msgstr "العنوان"
 
-#: js/strings.js:33
+#: js/strings.js:53
 msgctxt "st"
 msgid "text"
 msgstr "النص"
 
-#: js/strings.js:34
+#: js/strings.js:54
 msgctxt "st"
 msgid "image-text"
 msgstr "صورة-نص"
 
-#: js/strings.js:35
+#: js/strings.js:55
 msgctxt "st"
 msgid "slideshow"
 msgstr "عرض الشرائح"
 
-#: js/strings.js:36
+#: js/strings.js:56
 msgctxt "st"
 msgid "code"
 msgstr "الكود"
 
-#: js/strings.js:37
+#: js/strings.js:57
 msgctxt "st"
 msgid "table"
 msgstr "الجدول"
 
-#: js/strings.js:38
+#: js/strings.js:58
 msgctxt "st"
 msgid "map"
-msgstr ""
+msgstr "الخريطة"
 
-#: js/strings.js:39
+#: js/strings.js:59
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:40
+#: js/strings.js:60
 msgctxt "st"
 msgid "image"
 msgstr "الصورة"
 
-#: js/strings.js:41
+#: js/strings.js:61
 msgctxt "st"
 msgid "video"
 msgstr "فيديو"
 
-#: js/strings.js:42
+#: js/strings.js:62
 msgctxt "st"
 msgid "audio"
 msgstr "الصوت"
 
-#: js/strings.js:43
+#: js/strings.js:63
 msgctxt "st"
 msgid "file"
 msgstr "الملف"
 
-#: js/strings.js:44
+#: js/strings.js:64
 msgctxt "st"
 msgid "hero"
 msgstr "واجهة"
 
-#: js/strings.js:45
+#: js/strings.js:65
 msgctxt "st"
 msgid "CTA"
-msgstr ""
+msgstr "دعوة لاتخاذ إجراء"
 
-#: js/strings.js:46
+#: js/strings.js:66
 msgctxt "st"
 msgid "cards"
 msgstr "بطاقات"
 
-#: js/strings.js:47
+#: js/strings.js:67
 msgctxt "st"
 msgid "blog"
 msgstr "مدونة"
 
-#: js/strings.js:48
+#: js/strings.js:68
 msgctxt "st"
 msgid "article"
 msgstr "مقال"
 
-#: js/strings.js:49
+#: js/strings.js:69
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:50
+#: js/strings.js:70
 msgctxt "st"
 msgid "toc"
 msgstr "جدول المحتويات"
 
-#: js/strings.js:51
+#: js/strings.js:71
 msgctxt "st"
 msgid "contact"
 msgstr "الاتصال"
 
-#: js/strings.js:52
+#: js/strings.js:72
 msgctxt "st"
 msgid "meta-tags"
-msgstr "البيانات الوصفية"
+msgstr "علامات ميتا"
 
-#: js/strings.js:53
+#: js/strings.js:73
 msgctxt "st"
 msgid "social-media"
 msgstr "وسائل التواصل الاجتماعي"
 
-#: js/strings.js:54
+#: js/strings.js:74
 msgctxt "st"
 msgid "canonical"
 msgstr "الرابط الأساسي"
 
-#: js/strings.js:55
+#: js/strings.js:75
 msgctxt "st"
 msgid "robots"
 msgstr "محركات البحث"
 
-#: js/strings.js:56
+#: js/strings.js:76
 msgctxt "st"
 msgid "theme"
 msgstr "المظهر"
 
-#: js/strings.js:57
+#: js/strings.js:77
 msgctxt "st"
 msgid "styles"
 msgstr "الأنماط"
 
-#: js/strings.js:58
+#: js/strings.js:78
 msgctxt "st"
 msgid "javascript"
 msgstr "جافا سكريبت"
 
-#: js/strings.js:61
+#: js/strings.js:81
 msgctxt "fn"
 msgid "button"
 msgstr "الزر"
 
-#: js/strings.js:62
+#: js/strings.js:82
 msgctxt "fn"
 msgid "buttons"
-msgstr ""
+msgstr "الأزرار"
 
-#: js/strings.js:63
+#: js/strings.js:83
 msgctxt "fn"
 msgid "cards"
 msgstr "بطاقات"
 
-#: js/strings.js:64
+#: js/strings.js:84
 msgctxt "fn"
 msgid "description"
 msgstr "الوصف"
 
-#: js/strings.js:65
+#: js/strings.js:85
 msgctxt "fn"
 msgid "file"
 msgstr "الملف"
 
-#: js/strings.js:66
+#: js/strings.js:86
 msgctxt "fn"
 msgid "files"
 msgstr "الملفات"
 
-#: js/strings.js:67
+#: js/strings.js:87
 msgctxt "fn"
 msgid "follow"
 msgstr "تتبّع الروابط"
 
-#: js/strings.js:68
+#: js/strings.js:88
 msgctxt "fn"
 msgid "header"
 msgstr "الرأس"
 
-#: js/strings.js:69
+#: js/strings.js:89
 msgctxt "fn"
 msgid "index"
 msgstr "الفهرسة"
 
-#: js/strings.js:70
+#: js/strings.js:90
 msgctxt "fn"
 msgid "keywords"
 msgstr "الكلمات المفتاحية"
 
-#: js/strings.js:71
+#: js/strings.js:91
 msgctxt "fn"
 msgid "language"
 msgstr "اللغة"
 
-#: js/strings.js:72
+#: js/strings.js:92
 msgctxt "fn"
 msgid "label"
-msgstr ""
+msgstr "التسمية"
 
-#: js/strings.js:73
+#: js/strings.js:93
 msgctxt "fn"
 msgid "level"
 msgstr "المستوى"
 
-#: js/strings.js:74
+#: js/strings.js:94
 msgctxt "fn"
 msgid "limit"
 msgstr "الحد"
 
-#: js/strings.js:75
+#: js/strings.js:95
 msgctxt "fn"
 msgid "location"
-msgstr ""
+msgstr "الموقع"
 
-#: js/strings.js:76
+#: js/strings.js:96
 msgctxt "fn"
 msgid "main"
 msgstr "صورة رئيسية"
 
-#: js/strings.js:77
+#: js/strings.js:97
 msgctxt "fn"
 msgid "order"
 msgstr "الترتيب"
 
-#: js/strings.js:78
+#: js/strings.js:98
 msgctxt "fn"
 msgid "parent-page"
 msgstr "الصفحة الأصل"
 
-#: js/strings.js:79
+#: js/strings.js:99
 msgctxt "fn"
 msgid "position"
 msgstr "الموضع"
 
-#: js/strings.js:80
+#: js/strings.js:100
 msgctxt "fn"
 msgid "text"
 msgstr "النص"
 
-#: js/strings.js:81
+#: js/strings.js:101
 msgctxt "fn"
 msgid "table"
 msgstr "الجدول"
 
-#: js/strings.js:82
+#: js/strings.js:102
 msgctxt "fn"
 msgid "title"
 msgstr "العنوان"
 
-#: js/strings.js:83
+#: js/strings.js:103
 msgctxt "fn"
 msgid "url"
 msgstr "الرابط"
 
-#: js/strings.js:85
+#: js/strings.js:105
 msgctxt "fn"
 msgid "image"
 msgstr "الصورة"
 
-#: js/strings.js:86
+#: js/strings.js:106
 msgctxt "fn"
 msgid "images"
 msgstr "الصور"
 
-#: js/strings.js:87
+#: js/strings.js:107
 msgctxt "fn"
 msgid "items"
 msgstr "العناصر"
 
-#: js/strings.js:88
+#: js/strings.js:108
 msgctxt "fn"
 msgid "introduction"
 msgstr "مقدمة"
 
-#: js/strings.js:89
+#: js/strings.js:109
 msgctxt "fn"
 msgid "load immediately"
 msgstr "التحميل فوراً"
 
-#: js/strings.js:90
+#: js/strings.js:110
 msgctxt "fn"
 msgid "source code"
 msgstr "كود المصدر"
 
-#: js/strings.js:91
+#: js/strings.js:111
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "دور الوصول للواجهة الأمامية"
 
-#: js/strings.js:92
+#: js/strings.js:112
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "أسعار الدفع"
 
-#: js/strings.js:93
+#: js/strings.js:113
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "مرجع الدفع"
 
-#: js/strings.js:94
+#: js/strings.js:114
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "نوع الدفع"
 
-#: js/strings.js:95
+#: js/strings.js:115
 msgctxt "fn"
 msgid "Currency"
 msgstr "عملة"
 
-#: js/strings.js:96
+#: js/strings.js:116
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "فترة الفوترة"
 
-#: js/strings.js:97
+#: js/strings.js:117
 msgctxt "fn"
 msgid "Price unit"
 msgstr "وحدة السعر"
 
-#: js/strings.js:98
+#: js/strings.js:118
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "الصفحة المستهدفة أو الرابط"
 
-#: js/strings.js:99
+#: js/strings.js:119
 msgctxt "fn"
 msgid "Mandatory fields"
-msgstr ""
+msgstr "الحقول الإلزامية"
 
-#: js/strings.js:100
+#: js/strings.js:120
 msgctxt "fn"
 msgid "Optional fields"
-msgstr ""
+msgstr "الحقول الاختيارية"
 
-#: js/strings.js:101
+#: js/strings.js:121
 msgctxt "fn"
 msgid "Link label"
-msgstr ""
+msgstr "نص الرابط"
 
-#: js/strings.js:104
+#: js/strings.js:124
 msgctxt "op"
 msgid "Name"
-msgstr ""
+msgstr "الاسم"
 
-#: js/strings.js:105
+#: js/strings.js:125
 msgctxt "op"
 msgid "Company"
-msgstr ""
+msgstr "الشركة"
 
-#: js/strings.js:106
+#: js/strings.js:126
 msgctxt "op"
 msgid "Telephone"
-msgstr ""
+msgstr "الهاتف"
 
-#: js/strings.js:107
+#: js/strings.js:127
 msgctxt "op"
 msgid "E-Mail"
-msgstr ""
+msgstr "البريد الإلكتروني"
 
-#: js/strings.js:108
+#: js/strings.js:128
 msgctxt "op"
 msgid "Subject"
-msgstr ""
+msgstr "الموضوع"
 
-#: js/strings.js:109
+#: js/strings.js:129
 msgctxt "op"
 msgid "Follow"
 msgstr "تتبّع الروابط"
 
-#: js/strings.js:110
+#: js/strings.js:130
 msgctxt "op"
 msgid "Index"
 msgstr "فهرسة"
 
-#: js/strings.js:111
+#: js/strings.js:131
 msgctxt "op"
 msgid "No follow"
 msgstr "عدم تتبّع الروابط"
 
-#: js/strings.js:112
+#: js/strings.js:132
 msgctxt "op"
 msgid "No index"
 msgstr "عدم الفهرسة"
 
-#: js/strings.js:113
+#: js/strings.js:133
 msgctxt "op"
 msgid "Subscription"
 msgstr "اشتراك"
 
-#: js/strings.js:114
+#: js/strings.js:134
 msgctxt "op"
 msgid "One-time payment"
 msgstr "دفعة لمرة واحدة"
 
-#: js/strings.js:117
+#: js/strings.js:137
 msgctxt "ai"
 msgid "Done"
 msgstr "تم"
 
-#: js/strings.js:118
+#: js/strings.js:138
 msgctxt "ai"
 msgid "Already exists"
 msgstr "موجود بالفعل"
 
-#: js/strings.js:121
+#: js/strings.js:141
 msgctxt "sg"
 msgid "expert"
 msgstr "متقدم"
 
-#: js/strings.js:122
+#: js/strings.js:142
 msgctxt "sg"
 msgid "theme"
 msgstr "المظهر"
 
-#: js/strings.js:123
+#: js/strings.js:143
 msgctxt "st"
 msgid "website"
-msgstr ""
+msgstr "الموقع الإلكتروني"
 
-#: js/strings.js:124
+#: js/strings.js:144
 msgctxt "st"
 msgid "logo"
 msgstr "الشعار"
 
-#: js/strings.js:125
+#: js/strings.js:145
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "الشعار البديل"
 
-#: js/strings.js:126
+#: js/strings.js:146
 msgctxt "st"
 msgid "icon"
 msgstr "الأيقونة"
@@ -2533,7 +2760,7 @@ msgstr "الكل"
 msgid "Error adding access value"
 msgstr "حدث خطأ أثناء إضافة قيمة الوصول"
 
-#: js/views/AccessList.vue:181
+#: js/views/AccessList.vue:183
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
@@ -2541,41 +2768,41 @@ msgstr ""
 "لم يتم تغيير القيود الحالية وستستمر في الإشارة إلى قيم الوصول المحذوفة "
 "نهائيًا."
 
-#: js/views/AccessList.vue:198
+#: js/views/AccessList.vue:202
 msgid "Error purging access values"
 msgstr "خطأ في حذف قيم الوصول نهائيًا"
 
-#: js/views/AccessList.vue:230 js/views/ElementList.vue:222
+#: js/views/AccessList.vue:234 js/views/ElementList.vue:222
 #: js/views/FileList.vue:221 js/views/PageList.vue:259
 #: js/views/PluginPanel.vue:70
 msgid "Close navigation"
 msgstr "إغلاق التنقل"
 
-#: js/views/AccessList.vue:230 js/views/ElementList.vue:222
+#: js/views/AccessList.vue:234 js/views/ElementList.vue:222
 #: js/views/FileList.vue:221 js/views/PageList.vue:259
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
 msgstr "فتح التنقل"
 
-#: js/views/AccessList.vue:249
+#: js/views/AccessList.vue:253
 msgid "Roles"
 msgstr "الأدوار"
 
-#: js/views/AccessList.vue:284 js/views/AccessList.vue:329
+#: js/views/AccessList.vue:288 js/views/AccessList.vue:333
 msgid "Add access value"
 msgstr "إضافة قيمة الوصول"
 
-#: js/views/AccessList.vue:333
+#: js/views/AccessList.vue:337
 msgid "Access value"
 msgstr "قيمة الوصول"
 
-#: js/views/AccessList.vue:349
+#: js/views/AccessList.vue:353
 msgid "Add"
 msgstr "أضف"
 
 #: js/views/ElementDetail.vue:205
 msgid "Error fetching element"
-msgstr "خطأ في جلب العنصر الخطأ"
+msgstr "خطأ في جلب العنصر"
 
 #: js/views/ElementDetail.vue:243
 msgid "Element published successfully"
@@ -2589,7 +2816,7 @@ msgstr "العنصر المقرر نشره في %{date}"
 msgid "Error publishing element"
 msgstr "خطأ في نشر العنصر"
 
-#: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:268
+#: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
 #: js/views/PageDetail.vue:532
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "هناك حقول غير صالحة، يرجى حل الأخطاء أولاً"
@@ -2607,7 +2834,7 @@ msgstr "خطأ في حفظ العنصر"
 msgid "Element"
 msgstr "العنصر"
 
-#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:389
+#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:399
 msgid "Used by"
 msgstr "مستخدمة من قبل"
 
@@ -2659,6 +2886,7 @@ msgstr "اضغط Enter لفتح المحادثة"
 #: js/views/ElementList.vue:292
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
+"يمكن للذكاء الاصطناعي العثور على العناصر المشتركة وإدارتها بناءً على مدخلاتك"
 
 #: js/views/ElementList.vue:293 js/views/FileList.vue:292
 #: js/views/PageList.vue:338
@@ -2666,30 +2894,31 @@ msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "اضغط Enter أو السهم لفتح مساعد الذكاء الاصطناعي وتحسين المحتوى في محادثة"
 
-#: js/views/FileDetail.vue:189
+#: js/views/FileDetail.vue:191
 msgid "Error fetching file"
 msgstr "حدث خطأ أثناء استرداد الملف"
 
-#: js/views/FileDetail.vue:244
+#: js/views/FileDetail.vue:251
 msgid "File published successfully"
 msgstr "تم نشر الملف بنجاح"
 
-#: js/views/FileDetail.vue:245
+#: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
 msgstr "ملف مجدول للنشر في %{date}"
 
-#: js/views/FileDetail.vue:313
+#: js/views/FileDetail.vue:323
 msgid "File saved successfully"
 msgstr "تم حفظ الملف بنجاح"
 
-#: js/views/FileDetail.vue:362 js/views/FileDetail.vue:382
-#: js/views/FileDetail.vue:387
+#: js/views/FileDetail.vue:372 js/views/FileDetail.vue:392
+#: js/views/FileDetail.vue:397
 msgid "File"
 msgstr "ملف"
 
 #: js/views/FileList.vue:291
 msgid "AI can find and manage media files based on your input"
 msgstr ""
+"يمكن للذكاء الاصطناعي العثور على ملفات الوسائط وإدارتها بناءً على مدخلاتك"
 
 #: js/views/Login.vue:45
 msgid "Invalid e-mail address"
@@ -2753,7 +2982,7 @@ msgstr "تم حفظ الصفحة بنجاح"
 
 #: js/views/PageDetail.vue:621
 msgid "No page schema for \"content\" found"
-msgstr "لم يتم العثور على مخطط صفحة \"المحتوى\""
+msgstr "لم يتم العثور على مخطط صفحة لـ \"content\""
 
 #: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
 #: js/views/PageDetail.vue:839
@@ -2799,6 +3028,60 @@ msgid ""
 msgstr ""
 "يمكن للذكاء الاصطناعي إنشاء صفحة ومحتوى بناءً على مدخلاتك وإضافتها إلى شجرة "
 "الصفحات"
+
+#~ msgid "Selection is required"
+#~ msgstr "الاختيار مطلوب"
+
+#~ msgid "Minimum is %{num} entries"
+#~ msgstr "الحد الأدنى هو %{num} إدخالات"
+
+#~ msgid "Maximum is %{num} entries"
+#~ msgstr "الحد الأقصى هو %{num} إدخالات"
+
+#~ msgid "Minimum length is %{num} characters"
+#~ msgstr "الحد الأدنى للطول هو %{num} حرف "
+
+#~ msgid "Maximum length is %{num} characters"
+#~ msgstr "الحد الأقصى للطول هو %{num} حرف"
+
+#~ msgid "id"
+#~ msgstr "المعرّف"
+
+#~ msgid "Copy"
+#~ msgstr "نسخ"
+
+#~ msgid "Top"
+#~ msgstr "أعلى"
+
+#~ msgid "Left"
+#~ msgstr "يسار"
+
+#~ msgid "Right"
+#~ msgstr "يمين"
+
+#~ msgid "Bottom"
+#~ msgstr "أسفل"
+
+#~ msgid "Cut"
+#~ msgstr "قص"
+
+#~ msgid "Split"
+#~ msgstr "تقسيم"
+
+#~ msgid "Position"
+#~ msgstr "الترتيب"
+
+#~ msgid "Enable"
+#~ msgstr "تمكين"
+
+#~ msgid "Disable"
+#~ msgstr "تعطيل"
+
+#~ msgid "Minimum are %{num} columns"
+#~ msgstr "الحد الأدنى %{num} أعمدة "
+
+#~ msgid "Maximum are %{num} columns"
+#~ msgstr "الحد الأقصى %{num} أعمدة "
 
 #~ msgid "Error deleting access values"
 #~ msgstr "حدث خطأ أثناء حذف قيم الوصول"

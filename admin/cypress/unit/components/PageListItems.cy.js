@@ -1,4 +1,5 @@
 import PageListItems from '../../../js/components/PageListItems.vue'
+import { isMac } from '../../../js/commands'
 import { useUserStore } from '../../../js/stores'
 
 const stubs = {
@@ -639,6 +640,56 @@ describe('PageListItems', () => {
         expect(JSON.parse(input.config)).to.deep.equal(aux.config)
         expect(JSON.parse(input.meta)).to.deep.equal(aux.meta)
       })
+    })
+  })
+
+  it('cuts the focused page with Ctrl+X and Cmd+X', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const cut = (opts) => {
+        vm.clip = null
+        vm.$refs.tree.activeDescendant = { data: { id: 'p1' } }
+        wrapper.find('.draggable-stub').element.dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'x', bubbles: true, cancelable: true, ...opts })
+        )
+        return vm.clip?.type
+      }
+
+      expect(cut({ ctrlKey: true })).to.equal('cut')
+      expect(cut({ metaKey: true })).to.equal('cut')
+      expect(cut({ metaKey: true, shiftKey: true })).to.equal(undefined)
+    })
+  })
+
+  it('selects and deletes the focused page with Space and Delete', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const stat = { data: { id: 'p1' } }
+      const press = (key, opts = {}) => {
+        const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...opts })
+        wrapper.find('.draggable-stub').element.dispatchEvent(ev)
+        return ev.defaultPrevented
+      }
+
+      vm.drop = cy.stub()
+      vm.$refs.tree.activeDescendant = stat
+
+      expect(press(' ')).to.equal(true)
+      expect(stat._checked).to.equal(true)
+      expect(press(' ', { repeat: true })).to.equal(false) // holding Space doesn't toggle repeatedly
+      expect(stat._checked).to.equal(true)
+      expect(press('Delete')).to.equal(true)
+      expect(vm.drop).to.have.been.calledOnceWith(stat)
+
+      // Backspace only deletes on macOS like in the file and element lists
+      press('Backspace')
+      expect(vm.drop.callCount).to.equal(isMac ? 2 : 1)
+
+      // pages already in the trash aren't trashed again
+      vm.drop.resetHistory()
+      stat.data.deleted_at = '2026-01-01 00:00:00'
+      press('Delete')
+      expect(vm.drop).not.to.have.been.called
     })
   })
 

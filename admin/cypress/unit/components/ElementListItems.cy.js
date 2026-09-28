@@ -1,5 +1,6 @@
 import ElementListItems from '../../../js/components/ElementListItems.vue'
 import { useUserStore } from '../../../js/stores'
+import { trigger } from '../../../js/shortcuts'
 
 const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },
@@ -114,6 +115,22 @@ describe('ElementListItems', () => {
   it('shows add button with element:add permission and not embed', () => {
     mountList({ embed: false }, { 'element:view': true, 'element:add': true })
     cy.get('button.btn-add').should('exist')
+  })
+
+  it('focuses the search field and opens the element type picker via shortcuts', () => {
+    mountList({ embed: false }, { 'element:view': true, 'element:add': true })
+    cy.get('.search input').should('exist')
+    cy.then(() => expect(trigger('search')).to.equal(true))
+    cy.get('.search input').should('have.focus')
+    cy.get('.v-dialog:visible').should('not.exist')
+    cy.then(() => trigger('create'))
+    cy.contains('.v-dialog:visible', 'Content elements').should('exist')
+  })
+
+  it('registers no shortcuts when embedded', () => {
+    mountList({ embed: true }, { 'element:view': true })
+    cy.get('.search input').should('exist')
+    cy.then(() => expect(trigger('search')).to.equal(false))
   })
 
   it('hides add button when embed is true', () => {
@@ -259,6 +276,79 @@ describe('ElementListItems', () => {
           input: { lang: 'de' },
         })
         expect([...vm.checked]).to.deep.equal(['element-2'])
+      })
+    })
+  })
+
+  describe('list keys', () => {
+    const query = () => cy.stub().resolves({
+      data: {
+        elements: {
+          data: ['element-1', 'element-2'].map((id) => ({
+            id,
+            type: 'text',
+            data: '{}',
+            latest: { data: '{"name":"' + id + '"}', files: [] },
+          })),
+          paginatorInfo: { lastPage: 1 },
+        },
+      },
+    })
+
+    const load = ({ wrapper }) => wrapper.findComponent(ElementListItems).vm.search()
+
+    const press = (id, key) => cy.get(`.items [data-id="${id}"] .item-content`).then(($el) => {
+      $el[0].focus()
+      $el[0].dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+    })
+
+    it('toggles the focused element with Space', () => {
+      mountList({}, { 'element:view': true }, { query: query() }).then(load)
+
+      press('element-2', ' ')
+      cy.get('.items [data-id="element-2"] .item-check input').should('be.checked')
+      cy.get('.items [data-id="element-1"] .item-check input').should('not.be.checked')
+      press('element-2', ' ')
+      cy.get('.items [data-id="element-2"] .item-check input').should('not.be.checked')
+    })
+
+    it('leaves Space on the checkbox to the browser', () => {
+      mountList({}, { 'element:view': true }, { query: query() }).then(load)
+
+      cy.get('.items [data-id="element-2"] .item-check input').then(($el) => {
+        const ev = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
+        $el[0].dispatchEvent(ev)
+        expect(ev.defaultPrevented).to.equal(false)
+      })
+      cy.get('.items [data-id="element-2"] .item-check input').should('not.be.checked')
+    })
+
+    it('does not delete with Backspace outside of macOS', () => {
+      const mutate = cy.stub().resolves({ data: { dropElement: [] } })
+      mountList({}, { 'element:view': true, 'element:drop': true }, { query: query(), mutate }).then(load)
+
+      press('element-1', 'Backspace')
+      cy.wait(100)
+      cy.then(() => expect(mutate).not.to.have.been.called)
+    })
+
+    it('deletes the focused element with Del', () => {
+      const mutate = cy.stub().resolves({ data: { dropElement: [] } })
+      mountList({}, { 'element:view': true, 'element:drop': true }, { query: query(), mutate }).then(load)
+
+      press('element-1', 'Delete')
+      cy.wrap(mutate).should('have.been.calledOnce').then(() => {
+        expect(mutate.firstCall.args[0].variables.id).to.deep.equal(['element-1'])
+      })
+    })
+
+    it('does not delete from an embedded list', () => {
+      const mutate = cy.stub().resolves({ data: { dropElement: [] } })
+      mountList({ embed: true }, { 'element:view': true, 'element:drop': true }, { query: query(), mutate }).then(load)
+
+      press('element-1', 'Delete')
+      cy.get('.items [data-id="element-1"]').should('exist').then(() => {
+        expect(mutate).not.to.have.been.called
       })
     })
   })

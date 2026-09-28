@@ -1,16 +1,19 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import CommandPalette from './components/CommandPalette.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
+import ShortcutDialog from './components/ShortcutDialog.vue'
 import UnsavedDialog from './components/UnsavedDialog.vue'
 import { cleanEcho, setupEcho } from './echo'
 import { invalidateList } from './graphql'
+import { keydown, setNavigate } from './shortcuts'
 import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './stores'
 
 const CONTENT_TYPES = ['page', 'element', 'file']
 
 export default {
-  components: { ConfirmDialog, UnsavedDialog },
+  components: { CommandPalette, ConfirmDialog, ShortcutDialog, UnsavedDialog },
 
   data: () => ({
     destroyed: true,
@@ -29,12 +32,16 @@ export default {
 
   created() {
     window.addEventListener('beforeunload', this.beforeUnload)
+    window.addEventListener('keydown', keydown, true)
+    setNavigate((name) => this.$router.push({ name }))
   },
 
   beforeUnmount() {
     this.destroyed = true
     cleanEcho(this)
     window.removeEventListener('beforeunload', this.beforeUnload)
+    window.removeEventListener('keydown', keydown, true)
+    setNavigate(null)
   },
 
   watch: {
@@ -89,7 +96,9 @@ export default {
       </transition-group>
     </main>
 
+    <CommandPalette v-if="user.me" />
     <ConfirmDialog />
+    <ShortcutDialog />
     <UnsavedDialog />
     <v-snackbar-queue v-model="messages.queue"></v-snackbar-queue>
     <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">

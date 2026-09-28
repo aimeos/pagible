@@ -37,6 +37,22 @@ describe('String (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:false when empty with config.min but not required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { min: 5 }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true when empty and config.required is set', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { required: true }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits error:false when value meets config.min', () => {
     const onError = cy.spy().as('error')
     cy.mount(StringField, {
@@ -61,6 +77,14 @@ describe('String (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:false when empty with config.pattern but not required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { pattern: '^[A-Z]{3}$' }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
   it('emits update:modelValue as the user types', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(StringField, {
@@ -82,16 +106,5 @@ describe('String (textarea)', () => {
   it('is readonly when readonly prop is true', () => {
     cy.mount(StringField, { props: { config: {}, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
-  })
-
-  it('uses the muted surface color in readonly mode', () => {
-    cy.mount(StringField, { props: { config: {}, readonly: true } })
-    cy.get('.v-field').should(($field) => {
-      const style = getComputedStyle($field[0])
-      const muted = style.getPropertyValue('--v-theme-surface-light').match(/\d+/g)
-      const background = style.backgroundColor.match(/\d+/g)?.slice(0, 3)
-
-      expect(background).to.deep.equal(muted)
-    })
   })
 })

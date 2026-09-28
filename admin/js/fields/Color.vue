@@ -1,6 +1,8 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { required } from '../rules'
+
 export default {
   props: {
     modelValue: { type: String },
@@ -17,7 +19,7 @@ export default {
   computed: {
     rules() {
       return [
-        (v) => !this.config.required || !!v || this.$gettext(`Value is required`),
+        required(this.$gettext, this.config.required),
         (v) => !v || /^#[0-9A-F]{6,8}$/i.test(v) || this.$gettext(`Value must be a hex color code`)
       ]
     }

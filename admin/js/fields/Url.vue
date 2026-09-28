@@ -14,6 +14,7 @@
  */
 
 import gql from 'graphql-tag'
+import { required } from '../rules'
 import { debounce } from '../utils'
 
 export default {
@@ -72,7 +73,7 @@ export default {
 
     rules() {
       return [
-        (v) => !this.config.required || !!v || this.$gettext(`Value is required`),
+        required(this.$gettext, this.config.required),
         (v) => this.check(v) || this.$gettext(`Not a valid URL`)
       ]
     }

@@ -68,9 +68,15 @@ describe('Markdown (CKEditor)', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
-  it('validates empty string against min', () => {
+  it('accepts an empty string with min if not required', () => {
     const onError = cy.spy().as('error')
-    mountMarkdown({ config: { min: 1, default: '' }, onError })
+    mountMarkdown({ config: { min: 5, default: '' }, onError })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('rejects an empty string if required', () => {
+    const onError = cy.spy().as('error')
+    mountMarkdown({ config: { required: true, default: '' }, onError })
     cy.get('@error').should('have.been.calledWith', true)
   })
 })

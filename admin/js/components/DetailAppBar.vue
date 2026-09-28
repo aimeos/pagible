@@ -2,6 +2,7 @@
 
 <script>
 import { useDirtyStore, useDrawerStore, useUserStore, useViewStack } from '../stores'
+import { commands, hint, useShortcuts } from '../shortcuts'
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -49,6 +50,15 @@ export default {
     const user = useUserStore()
     const viewStack = useViewStack()
 
+    useShortcuts((vm) => ({
+      aside: () => vm.drawer.toggle('aside'),
+      back: () => vm.goBack(),
+      nextTab: () => vm.switchTab(1),
+      prevTab: () => vm.switchTab(-1),
+      publish: () => vm.openPublish(),
+      save: () => !vm.saveDisabled && !vm.saving && vm.$emit('save')
+    }))
+
     return {
       dirtyStore,
       drawer,
@@ -60,13 +70,22 @@ export default {
       mdiHistory,
       mdiKeyboardBackspace,
       mdiSwapHorizontal,
-      allowedMinutes
+      allowedMinutes,
+      commands,
+      hint
     }
   },
 
   data: () => ({
     publishMenu: false
   }),
+
+  watch: {
+    publishMenu(value) {
+      // focus the publish button so Enter confirms, e.g. after opening the menu by shortcut
+      value && this.$nextTick(() => this.focusPublish())
+    }
+  },
 
   methods: {
     async goBack() {
@@ -79,6 +98,24 @@ export default {
       } else {
         this.$router.push({ name: `${this.type}:view` })
       }
+    },
+
+    focusPublish() {
+      this.$refs.publishNow?.$el.focus()
+    },
+
+    openPublish() {
+      if (!this.pubDisabled) {
+        this.publishMenu = true
+      }
+    },
+
+    switchTab(dir) {
+      // clicking the tab also executes the tab's own click handlers
+      const tabs = [...(this.$el?.closest?.('.v-layout')?.querySelectorAll('.detail-tabs .v-tab:not([disabled])') || [])]
+      const idx = tabs.findIndex((tab) => tab.classList.contains('v-tab--selected'))
+
+      tabs[idx + dir]?.click()
     },
 
     publish(close = false) {
@@ -113,7 +150,8 @@ export default {
     <template v-slot:prepend>
       <v-btn
         @click="goBack()"
-        :title="$gettext('Back to list view')"
+        :title="$gettext('Back to list view') + ` (${hint('back')})`"
+        :aria-keyshortcuts="commands.back.aria"
         :icon="mdiKeyboardBackspace"
         class="btn-back"
       />
@@ -146,7 +184,8 @@ export default {
       <v-btn
         @click="$emit('save')"
         :loading="saving"
-        :title="$gettext('Save')"
+        :title="$gettext('Save') + ` (${hint('save')})`"
+        :aria-keyshortcuts="commands.save.aria"
         :disabled="saveDisabled"
         :variant="saveDisabled ? 'plain' : 'flat'"
         :color="error ? 'error' : conflict ? 'warning' : !saveDisabled ? 'primary' : ''"
@@ -160,7 +199,8 @@ export default {
             v-bind="props"
             icon
             :loading="publishing"
-            :title="$gettext('Publish')"
+            :title="$gettext('Publish') + ` (${hint('publish')})`"
+            :aria-keyshortcuts="commands.publish.aria"
             :disabled="pubDisabled"
             :variant="pubDisabled ? 'plain' : 'flat'"
             :class="{ active: canPublish, error: error }"
@@ -175,7 +215,7 @@ export default {
         </template>
         <v-card class="menu-content publish-menu">
           <v-card-actions class="publish-menu-actions">
-            <v-btn @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
+            <v-btn ref="publishNow" @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
               {{ $gettext('Publish') }}
             </v-btn>
             <v-btn @click="publish(true)" variant="flat" class="menu-publish-close" color="primary" :disabled="error" block>

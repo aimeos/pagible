@@ -17,6 +17,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 './node_modules/.bin/cypress open --e2e'",
     "test:unit": "./node_modules/.bin/cypress run --component",
     "test:unit:dev": "./node_modules/.bin/cypress open --component",
+    "test:i18n": "./node_modules/.bin/cypress run --component --expose i18nComplete=1 --spec cypress/unit/js/translations.cy.js",
     "lint": "eslint --fix",
     "format": "prettier --write src/",
     "gettext:extract": "vue-gettext-extract",

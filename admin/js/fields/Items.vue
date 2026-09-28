@@ -4,9 +4,9 @@
 /**
  * Configuration:
  * - `identity`: string, generated property name identifying each item
- * - `max`: int, maximum number of characters allowed in the input field
- * - `min`: int, minimum number of characters required in the input field
- * - `required`: boolean, if true, the field is required
+ * - `max`: int, maximum number of entries allowed
+ * - `min`: int, minimum number of entries required
+ * - `required`: boolean, if true, at least one entry is required
  */
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
@@ -25,6 +25,7 @@ import {
   mdiViewGridPlus
 } from '@mdi/js'
 import VirtualList from 'vue-virtual-sortable'
+import { required, minEntries, maxEntries } from '../rules'
 import ActionMenu from '../components/ActionMenu.vue'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
 import { fieldTypes, protectTypes } from '../fieldtypes'
@@ -115,13 +116,9 @@ export default {
   computed: {
     rules() {
       return [
-        (v) =>
-          !this.config.max ||
-          (this.config.max && v.length <= this.config.max) ||
-          this.$gettext(`Maximum is %{num} entries`, { num: this.config.max }),
-        (v) =>
-          ((this.config.min ?? 1) && v.length >= (this.config.min ?? 1)) ||
-          this.$gettext(`Minimum is %{num} entries`, { num: this.config.min ?? 1 })
+        required(this.$gettext, this.config.required),
+        minEntries(this.$ngettext, this.config.min),
+        maxEntries(this.$ngettext, this.config.max)
       ]
     }
   },
@@ -370,12 +367,12 @@ export default {
 
               <v-list-item>
                 <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                  $gettext('Copy')
+                  $pgettext('clipboard', 'Copy')
                 }}</v-btn>
               </v-list-item>
               <v-list-item>
                 <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                  $gettext('Cut')
+                  $pgettext('clipboard', 'Cut')
                 }}</v-btn>
               </v-list-item>
               <v-list-item>

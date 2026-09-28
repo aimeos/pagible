@@ -4,7 +4,15 @@
 import { useDisplay } from 'vuetify'
 import { pluginLabel } from '../i18n'
 import { useUserStore, useDrawerStore, usePluginStore } from '../stores'
-import { mdiFileTree, mdiShareVariant, mdiFolderMultipleImage, mdiKeyVariant } from '@mdi/js'
+import { commands, hint, shortcuts } from '../shortcuts'
+import {
+  mdiConsoleLine,
+  mdiFileTree,
+  mdiShareVariant,
+  mdiFolderMultipleImage,
+  mdiKeyboardOutline,
+  mdiKeyVariant
+} from '@mdi/js'
 
 export default {
   setup() {
@@ -13,7 +21,7 @@ export default {
     const user = useUserStore()
     const plugin = usePluginStore()
 
-    return { user, drawer, plugin, mobile }
+    return { user, drawer, plugin, mobile, commands, hint, shortcuts, mdiConsoleLine, mdiKeyboardOutline }
   },
 
   computed: {
@@ -61,6 +69,35 @@ export default {
         </v-list-item>
       </template>
     </v-list>
+
+    <template #append>
+      <v-list>
+        <v-list-item rounded="lg">
+          <button
+            type="button"
+            class="router-link btn-palette"
+            :aria-keyshortcuts="commands.palette.aria"
+            @click="shortcuts.palette = true"
+          >
+            <v-icon :icon="mdiConsoleLine" class="icon" />
+            {{ $gettext('Command palette') }}
+            <kbd class="hint" aria-hidden="true">{{ hint('palette') }}</kbd>
+          </button>
+        </v-list-item>
+        <v-list-item rounded="lg">
+          <button
+            type="button"
+            class="router-link btn-shortcuts"
+            :aria-keyshortcuts="commands.sheet.aria"
+            @click="shortcuts.sheet = true"
+          >
+            <v-icon :icon="mdiKeyboardOutline" class="icon" />
+            {{ $gettext('Keyboard shortcuts') }}
+            <kbd class="hint" aria-hidden="true">{{ hint('sheet') }}</kbd>
+          </button>
+        </v-list-item>
+      </v-list>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -81,12 +118,31 @@ export default {
   border-top-left-radius: 8px;
 }
 
+button.router-link {
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+
+.btn-palette .hint,
+.btn-shortcuts .hint {
+  margin-inline-start: auto;
+  padding: 0 6px;
+  border: 1px solid rgba(var(--v-border-color), 0.38);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+button.router-link:focus-visible,
 a.router-link:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: -2px;
   border-radius: 4px;
 }
 
+button.router-link,
 a.router-link,
 a.router-link:focus,
 a.router-link:visited {

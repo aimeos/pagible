@@ -16,10 +16,26 @@ describe('Html (textarea)', () => {
     cy.get('textarea').first().should('have.value', '<p>Default</p>')
   })
 
-  it('emits error:true when value is empty (always required)', () => {
+  it('emits error:false when value is empty and not required', () => {
     const onError = cy.spy().as('error')
     cy.mount(Html, {
       props: { modelValue: '', config: {}, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true when value is empty and required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Html, {
+      props: { modelValue: '', config: { required: true }, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('emits error:true when value exceeds config.max', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Html, {
+      props: { modelValue: '<p>Content</p>', config: { max: 5 }, onError },
     })
     cy.get('@error').should('have.been.calledWith', true)
   })

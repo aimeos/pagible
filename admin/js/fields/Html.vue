@@ -1,6 +1,15 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { minChars, maxChars, required } from '../rules'
+
+/**
+ * Configuration:
+ * - `max`: int, maximum number of characters allowed
+ * - `min`: int, minimum number of characters required if the field isn't empty
+ * - `placeholder`: string, placeholder text for the input field
+ * - `required`: boolean, if true, the field must not be empty
+ */
 export default {
   props: {
     modelValue: { type: String },
@@ -16,7 +25,11 @@ export default {
 
   computed: {
     rules() {
-      return [(v) => !!v || this.$gettext(`Value is required`)]
+      return [
+        required(this.$gettext, this.config.required),
+        minChars(this.$ngettext, this.config.min),
+        maxChars(this.$ngettext, this.config.max)
+      ]
     }
   },
 
