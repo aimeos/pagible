@@ -425,7 +425,7 @@ describe('Element Detail', () => {
     detailView().find('.v-tab').contains('Content').click()
     detailView().find('.content').should('have.length', 1)
     detailView().find('button.btn-add').click()
-    cy.get('.v-dialog').contains('button', 'heading').click()
+    cy.get('.v-dialog').contains('.item', 'heading').click()
 
     detailView().find('.content').should('have.length', 2)
     detailView().find('.menu-save').should('not.be.disabled')
