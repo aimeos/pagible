@@ -7,11 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -21,12 +21,15 @@ use Laravel\Mcp\Request;
 
 
 #[Name('add-file')]
-#[Title('Add a media file from a URL')]
-#[Description('Adds a new media file (image, video, audio, document) from a URL. Automatically generates preview images for image files. Returns the created file as a JSON object, including the latest_id to pass to save-file when editing it.')]
+#[Title('Add a media file from a URL or content')]
+#[Description('Adds a new media file (image, video, audio, document) from a URL or base64 encoded content. Prefer the URL for large files. Automatically generates preview images for image files. Returns the created file as a JSON object, including the latest_id to pass to save-file when editing it.')]
 class AddFile extends Tool
 {
+    use Concerns\Upload;
+
+
     /**
-     * Validates, ingests, and stores the remote File requested by the MCP client.
+     * Validates, ingests, and stores the remote or uploaded File requested by the MCP client.
      *
      * @param Request $request Authorized MCP tool request
      * @return \Laravel\Mcp\ResponseFactory Structured File data or validation error
@@ -38,20 +41,17 @@ class AddFile extends Tool
         }
 
         $v = $request->validate([
-            'url' => 'required|string|max:500',
+            'url' => 'required_without:content|prohibits:content|string|max:500|url:http,https',
+            'content' => 'string|max:8388608',
             'disk' => 'sometimes|string|in:public,private',
             'name' => 'string|max:255',
             'lang' => 'nullable|string|max:5',
             'description' => 'array',
         ], [
-            'url.required' => 'You must specify the URL of the file to add, e.g., "https://example.com/image.jpg".',
+            'url.required_without' => 'You must specify the URL of the file to add, e.g., "https://example.com/image.jpg", or its base64 encoded content.',
+            'content.max' => 'The file content must not exceed 8 MB, pass a URL instead.',
+            'url.url' => 'The URL must be a valid "http" or "https" URL.',
         ] );
-
-        $url = $v['url'];
-
-        if( !str_starts_with( $url, 'http' ) || !Utils::isValidUrl( $url ) ) {
-            return Response::structured( ['error' => sprintf( 'The URL "%s" must be a valid "http" or "https" URL.', $url )] );
-        }
 
         $file = new File();
         $file->disk = $v['disk'] ?? 'public';
@@ -64,13 +64,9 @@ class AddFile extends Tool
         // Fetch the file and generate previews outside the transaction to keep
         // slow network and image work off the database connection.
         try {
-            $file->ingest( $url );
-        } catch( \Aimeos\Cms\Exception $e ) {
-            if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
-                return Response::structured( ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )] );
-            }
-
-            throw $e;
+            $this->source( $v, fn( UploadedFile|string $source ) => $file->ingest( $source ) );
+        } catch( \Aimeos\Cms\InvalidException $e ) {
+            return Response::structured( ['error' => $e->getMessage()] );
         }
 
         $file = Resource::addFile( $file, $request->user() );
@@ -88,13 +84,14 @@ class AddFile extends Tool
     {
         return [
             'url' => $schema->string()
-                ->description('The URL of the file to add, e.g., "https://example.com/photo.jpg".')
-                ->required(),
+                ->description('The URL of the file to add, e.g., "https://example.com/photo.jpg". Either "url" or "content" is required.'),
+            'content' => $schema->string()
+                ->description('Base64 encoded file content (optionally as data URI) if the file has no public URL. Up to 8 MB, only suitable for small files; pass "name" with file extension, e.g., "icon.svg".'),
             'disk' => $schema->string()
                 ->enum( ['public', 'private'] )
                 ->description('Storage visibility. Defaults to "public"; use "private" to protect it with page access.'),
             'name' => $schema->string()
-                ->description('Display name for the file. If omitted, the URL is used as the name.'),
+                ->description('Display name for the file. If omitted, the URL or "file" is used as the name.'),
             'lang' => $schema->string()
                 ->description('ISO language code, e.g., "en" or "de".'),
             'description' => $schema->object()
