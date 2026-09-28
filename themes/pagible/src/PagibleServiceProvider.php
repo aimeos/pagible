@@ -14,6 +14,10 @@ class PagibleServiceProvider extends Provider
         Schema::register( $basedir, 'pagible' );
         View::addNamespace( 'pagible', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'pagible', '/vendor/cms/pagible/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/pagible' )], 'cms-theme' );
     }
 }

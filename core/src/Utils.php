@@ -120,7 +120,7 @@ class Utils
             $content = @gzdecode( $content, $max + 1 );
 
             if( $content === false || strlen( $content ) > $max ) {
-                throw new Exception( 'Decompressed SVG exceeds the maximum upload size' );
+                throw new InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
             }
         }
 
@@ -239,7 +239,7 @@ class Utils
             $response->toPsrResponse()->getBody()->close();
 
             if( $location === '' || $redirects >= 2 ) {
-                throw new Exception( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
+                throw new InvalidException( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
             }
 
             $url = (string) UriResolver::resolve( new Uri( $url ), new Uri( $location ) );
@@ -394,7 +394,7 @@ class Utils
             $response = self::http( $path, ['stream' => true], ['Range' => 'bytes=0-299'] );
 
             if( !$response->successful() ) {
-                throw new Exception( 'URL not accessible' );
+                throw new InvalidException( 'URL not accessible' );
             }
 
             $body = $response->toPsrResponse()->getBody();
@@ -558,7 +558,7 @@ class Utils
         // Syntactic validation only; the host is resolved once below and the
         // result reused for both the allow-check and the connection pin.
         if( !self::isValidUrl( $url, false ) ) {
-            throw new Exception( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
+            throw new InvalidException( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
         }
 
         $parsed = (array) parse_url( $url );
@@ -566,7 +566,7 @@ class Utils
         $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
 
         if( !( $ip = self::resolve( $host ) ) ) {
-            throw new Exception( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
+            throw new InvalidException( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
         }
 
         return [

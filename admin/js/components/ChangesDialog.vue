@@ -479,7 +479,7 @@ h3.section-header:first-child {
 
 .conflict-card.solved {
   border-color: rgba(var(--v-theme-on-surface), 0.08);
-  background: rgba(var(--v-theme-on-surface), 0.02);
+  background: rgba(var(--v-theme-on-surface), 0.04);
 }
 
 .conflict-card.solved .conflict-key {

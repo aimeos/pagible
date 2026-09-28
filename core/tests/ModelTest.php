@@ -245,7 +245,7 @@ class ModelTest extends CoreTestAbstract
         config( ['cms.allow-internal' => true, 'cms.upload.filesize' => 0.001] );
         Http::fake( ['*' => Http::response( str_repeat( 'x', 4097 ), 200 )] );
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum size of 0.001 MB' );
 
         ( new File( ['name' => 'remote.png'] ) )->addPreviews( 'http://127.0.0.1/remote.png' );
@@ -260,7 +260,7 @@ class ModelTest extends CoreTestAbstract
         $file = new File( ['name' => 'remote.txt'] );
         $file->disk = 'private';
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
         $file->ingest( 'http://127.0.0.1/remote.txt' );
@@ -275,7 +275,7 @@ class ModelTest extends CoreTestAbstract
         $file = new File( ['name' => 'remote.txt'] );
         $file->disk = 'private';
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
         $file->ingest( 'http://127.0.0.1/remote.txt' );
@@ -289,7 +289,7 @@ class ModelTest extends CoreTestAbstract
         $png = "\x89PNG\r\n\x1a\n" . pack( 'N', strlen( $header ) ) . $chunk . pack( 'N', crc32( $chunk ) );
         $upload = UploadedFile::fake()->createWithContent( 'large.png', $png );
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Image exceeds the maximum size of 16777216 pixels' );
 
         ( new File( ['name' => 'large.png'] ) )->addPreviews( $upload );
@@ -304,7 +304,7 @@ class ModelTest extends CoreTestAbstract
         $png = "\x89PNG\r\n\x1a\n" . pack( 'N', strlen( $header ) ) . $chunk . pack( 'N', crc32( $chunk ) );
         Http::fake( ['*' => Http::response( $png, 200, ['Content-Type' => 'image/png'] )] );
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Image exceeds the maximum size of 10000000 pixels' );
 
         ( new File( ['name' => 'remote.png'] ) )->addPreviews( 'http://127.0.0.1/remote.png' );
@@ -318,7 +318,7 @@ class ModelTest extends CoreTestAbstract
             . str_repeat( 'x', 4096 ) . '--><rect width="1" height="1"/></svg>';
         Http::fake( ['*' => Http::response( gzencode( $svg ), 200 )] );
 
-        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectException( \Aimeos\Cms\InvalidException::class );
         $this->expectExceptionMessage( 'Decompressed SVG exceeds the maximum upload size' );
 
         ( new File( ['name' => 'remote.svgz'] ) )->addPreviews( 'http://127.0.0.1/remote.svgz' );

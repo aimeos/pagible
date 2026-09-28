@@ -20,7 +20,7 @@ class PagibleThemeTest extends ThemeTestAbstract
         $schema = Schema::get( 'pagible' )['content']['pagible::text-trio'];
 
         $this->assertSame( 'Text Trio', $schema['label'] );
-        $this->assertSame( 'content', $schema['group'] );
+        $this->assertSame( 'pagible', $schema['group'] );
         $this->assertSame( ['leading', 'title', 'supporting'], array_keys( $schema['fields'] ) );
         $this->assertSame( ['string', 'string', 'string'], array_column( $schema['fields'], 'type' ) );
     }

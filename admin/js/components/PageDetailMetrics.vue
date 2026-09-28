@@ -114,6 +114,14 @@ export default {
   },
 
   computed: {
+    palette() {
+      return {
+        primary: this.colors?.primary || '#1D4ED8',
+        secondary: this.colors?.secondary || '#7C3AED',
+        success: this.colors?.success || '#047857'
+      }
+    },
+
     chartOptions() {
       const isRtl = this.$vuetify.locale.isRtl
       const tickColor = this.colors?.['surface-variant']
@@ -138,9 +146,9 @@ export default {
         labels: this.views.map((d) => d.key),
         grouped: true,
         datasets: [
-          this.dataset('#C00000', this.$gettext('Views'), this.views.map((d) => d.value)),
-          this.dataset('#0000C0', this.$gettext('Visits'), this.visits.map((d) => d.value)),
-          this.dataset('#008000', this.$gettext('Conversions'), this.conversions.map((d) => d.value))
+          this.dataset(this.palette.primary, this.$gettext('Views'), this.views.map((d) => d.value)),
+          this.dataset(this.palette.secondary, this.$gettext('Visits'), this.visits.map((d) => d.value)),
+          this.dataset(this.palette.success, this.$gettext('Conversions'), this.conversions.map((d) => d.value))
         ]
       })
     },
@@ -149,7 +157,7 @@ export default {
       return markRaw({
         labels: this.durations.map((d) => d.key),
         datasets: [
-          this.dataset('#0000C0', this.$gettext('Duration'), this.durations.map((d) => d.value))
+          this.dataset(this.palette.primary, this.$gettext('Duration'), this.durations.map((d) => d.value))
         ]
       })
     },
@@ -159,8 +167,8 @@ export default {
         labels: this.impressions.map((d) => d.key),
         grouped: true,
         datasets: [
-          this.dataset('#C00000', this.$gettext('Impressions'), this.impressions.map((d) => d.value)),
-          this.dataset('#0000C0', this.$gettext('Clicks'), this.clicks.map((d) => d.value))
+          this.dataset(this.palette.primary, this.$gettext('Impressions'), this.impressions.map((d) => d.value)),
+          this.dataset(this.palette.secondary, this.$gettext('Clicks'), this.clicks.map((d) => d.value))
         ]
       })
     },
@@ -169,7 +177,7 @@ export default {
       return markRaw({
         labels: this.ctrs.map((d) => d.key),
         datasets: [
-          this.dataset('#008000', this.$gettext('Percentage'), this.ctrs.map((d) => d.value))
+          this.dataset(this.palette.success, this.$gettext('Percentage'), this.ctrs.map((d) => d.value))
         ]
       })
     },
@@ -666,27 +674,28 @@ export default {
 }
 
 .panel .good {
-  color: #008000;
-}
-
-.v-theme--dark .panel .good {
-  color: #00a000;
+  color: rgb(var(--v-theme-success));
 }
 
 .panel .bad {
-  color: #c00000;
-}
-
-.v-theme--dark .panel .bad {
-  color: #ff4000;
+  color: rgb(var(--v-theme-error));
 }
 
 .panel .warn {
-  color: #b46000;
+  color: rgb(var(--v-theme-warning));
 }
 
-.v-theme--dark .panel .warn {
-  color: #e0a000;
+/* Blend towards the text color so the trend colors keep AA contrast on the tinted panels */
+.emphasis-bg .good {
+  color: color-mix(in srgb, rgb(var(--v-theme-success)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
+}
+
+.emphasis-bg .bad {
+  color: color-mix(in srgb, rgb(var(--v-theme-error)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
+}
+
+.emphasis-bg .warn {
+  color: color-mix(in srgb, rgb(var(--v-theme-warning)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
 }
 
 .panel.chart .v-card-text {

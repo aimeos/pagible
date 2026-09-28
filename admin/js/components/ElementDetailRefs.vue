@@ -135,7 +135,7 @@ export default {
 
 <template>
   <v-container>
-    <v-sheet class="scroll">
+    <v-sheet class="scroll refs">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
         <v-expansion-panel v-if="element.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Shared elements') }}</v-expansion-panel-title>
@@ -194,21 +194,6 @@ export default {
 </template>
 
 <style scoped>
-.v-expansion-panel-title {
-  font-weight: bold;
-  font-size: 110%;
-}
-
-.v-table.pages tbody tr,
-.v-table.versions tbody tr {
-  cursor: pointer;
-}
-
-thead th {
-  font-weight: bold !important;
-  width: 33%;
-}
-
 .v-sheet.scroll {
   height: calc(100vh - 96px);
 }

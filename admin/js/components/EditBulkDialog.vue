@@ -79,7 +79,7 @@ export default {
     />
 
     <template #actions>
-      <v-btn @click="apply()" :disabled="lang === null" data-confirm class="btn-apply" variant="text">{{
+      <v-btn @click="apply()" :disabled="lang === null" data-confirm class="btn-apply" variant="flat" color="primary">{{
         $gettext('Apply')
       }}</v-btn>
     </template>

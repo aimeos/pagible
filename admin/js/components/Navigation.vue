@@ -154,8 +154,36 @@ a.router-link:visited {
   padding: 8px;
 }
 
+.v-navigation-drawer--left .v-list-item {
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.v-navigation-drawer--left .v-list-item:hover {
+  background-color: rgba(var(--v-theme-on-background), 0.06);
+}
+
 .v-list-item:has(.router-link-active) {
-  background-color: rgba(var(--v-theme-on-background), var(--v-selected-opacity));
+  background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
+}
+
+.v-list-item:has(.router-link-active)::before {
+  content: '';
+  position: absolute;
+  inset-block: 8px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 3px;
+  /* secondary is lightened towards the text color so it stays visible on the dark navigation */
+  background: linear-gradient(
+    180deg,
+    rgb(var(--v-theme-nav-accent, var(--v-theme-primary))),
+    color-mix(in srgb, rgb(var(--v-theme-secondary)) 60%, rgb(var(--v-theme-on-background)))
+  );
+}
+
+.v-list-item:has(.router-link-active) .icon {
+  color: rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));
 }
 
 .v-list-item .icon {

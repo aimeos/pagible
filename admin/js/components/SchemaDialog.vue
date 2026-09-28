@@ -19,7 +19,11 @@ export default {
     elements: { type: Boolean, default: true },
     type: { type: String, default: 'content' }
   },
-  emits: ['update:modelValue', 'add']
+  emits: ['update:modelValue', 'add'],
+
+  data: () => ({
+    tab: 'new'
+  })
 }
 </script>
 
@@ -30,21 +34,24 @@ export default {
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
   >
-    <SchemaItems :type="type" @add="$emit('add', $event)" />
+    <v-tabs v-if="elements" v-model="tab" class="tint-tabs">
+      <v-tab value="new">{{ $gettext('New elements') }}</v-tab>
+      <v-tab value="shared">{{ $gettext('Shared elements') }}</v-tab>
+    </v-tabs>
 
-    <div v-if="elements">
-      <v-tabs>
-        <v-tab>{{ $gettext('Shared elements') }}</v-tab>
-      </v-tabs>
-      <ElementListItems @select="$emit('add', $event)" embed />
-    </div>
+    <v-tabs-window v-model="tab">
+      <v-tabs-window-item value="new">
+        <SchemaItems :type="type" @add="$emit('add', $event)" />
+      </v-tabs-window-item>
+      <v-tabs-window-item v-if="elements" value="shared">
+        <ElementListItems @select="$emit('add', $event)" embed />
+      </v-tabs-window-item>
+    </v-tabs-window>
   </CmsDialog>
 </template>
 
 <style scoped>
 .v-tabs {
-  background-color: rgb(var(--v-theme-emphasis, var(--v-theme-surface-light)));
-  color: rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)));
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 </style>

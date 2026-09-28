@@ -13,7 +13,6 @@ import {
   mdiPlus,
   mdiMagnify,
   mdiRefresh,
-  mdiMenuDown,
   mdiMenuRight,
   mdiEyeOffOutline,
   mdiContentCut,
@@ -32,6 +31,7 @@ import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
+import ListSkeleton from './ListSkeleton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
@@ -266,6 +266,7 @@ export default {
     CmsDialog,
     Draggable,
     ListSort,
+    ListSkeleton,
     LoadingSpinner,
     PageAccess,
     PageBulkDialog
@@ -293,7 +294,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
-      sort: this.user.getData('page', 'sort') || { column: 'LFT', order: 'ASC' },
+      sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
       echoCleanup: null,
@@ -330,7 +331,6 @@ export default {
       mdiPlus,
       mdiMagnify,
       mdiRefresh,
-      mdiMenuDown,
       mdiMenuRight,
       mdiEyeOffOutline,
       mdiContentCut,
@@ -1566,12 +1566,8 @@ export default {
       }
     },
 
-    sort: {
-      deep: true,
-      handler() {
-        this.user.saveData('page', 'sort', this.sort)
-        this.reload(false)
-      }
+    sort() {
+      this.reload(false)
     },
 
     term() {
@@ -1679,6 +1675,7 @@ export default {
 
     <v-btn
       @click="reload()"
+      :loading="loading"
       :color="outdated ? 'warning' : ''"
       :title="$gettext('Reload page tree')"
       :variant="outdated ? 'tonal' : 'text'"
@@ -1730,8 +1727,9 @@ export default {
           v-else
           @click="load(stat, node)"
           @keydown.enter.prevent="load(stat, node)"
-          :class="{ hidden: !node.has && !stat.children.length }"
-          :icon="stat.open ? mdiMenuDown : mdiMenuRight"
+          :icon="mdiMenuRight"
+          :class="{ hidden: !node.has && !stat.children.length, open: stat.open }"
+          class="btn-toggle"
           :title="$gettext('Toggle child nodes')"
           variant="text"
         />
@@ -1931,7 +1929,8 @@ export default {
     </template>
   </Draggable>
 
-  <p v-if="loading" class="loading">
+  <ListSkeleton v-if="loading && !items?.length" />
+  <p v-else-if="loading" class="loading">
     {{ $gettext('Loading') }}
     <LoadingSpinner width="32" height="32" />
   </p>
@@ -2000,6 +1999,14 @@ export default {
   outline: none;
 }
 
+.tree-node-inner {
+  transition: background-color 0.15s ease;
+}
+
+.tree-node-inner:hover {
+  background-color: rgba(var(--v-theme-primary), 0.06);
+}
+
 .tree-node:focus > .tree-node-inner,
 .tree-node-inner:focus-within {
   background-color: rgb(var(--v-theme-surface-light));
@@ -2017,6 +2024,18 @@ export default {
   flex-shrink: 0;
   justify-content: end;
   margin-inline-end: 8px;
+}
+
+.tree-node-inner .btn-toggle .v-icon {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tree-node-inner .btn-toggle.open .v-icon {
+  transform: rotate(90deg);
+}
+
+.v-locale--is-rtl .tree-node-inner .btn-toggle.open .v-icon {
+  transform: scaleX(-1) rotate(90deg);
 }
 
 .tree-node-inner .spinner {

@@ -15,6 +15,10 @@ class EstateServiceProvider extends Provider
         View::addNamespace( 'estate', $basedir . '/views' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'estate', '/vendor/cms/estate/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/estate' )], 'cms-theme' );
     }
 }

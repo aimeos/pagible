@@ -20,6 +20,7 @@ import {
 } from '@mdi/js'
 import ActionMenu from './ActionMenu.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
+import ListSkeleton from './ListSkeleton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
@@ -128,6 +129,7 @@ export default {
   components: {
     ActionMenu,
     EditBulkDialog,
+    ListSkeleton,
     LoadingSpinner,
     ListSort
   },
@@ -145,7 +147,7 @@ export default {
       items: [],
       checked: new Set(),
       term: '',
-      sort: this.user.getData('file', 'sort') || { column: 'ID', order: 'DESC' },
+      sort: this.user.setting('file', 'sort', { column: 'ID', order: 'DESC' }),
       page: 1,
       last: 1,
       limit: 100,
@@ -675,12 +677,8 @@ export default {
       this.search()
     },
 
-    sort: {
-      deep: true,
-      handler() {
-        this.user.saveData('file', 'sort', this.sort)
-        this.search()
-      }
+    sort() {
+      this.search()
     },
 
     vgrid(val) {
@@ -791,6 +789,7 @@ export default {
 
       <v-btn
         @click="reload()"
+        :loading="loading"
         :title="$gettext('Reload files')"
         :icon="mdiRefresh"
         class="btn-reload"
@@ -976,7 +975,8 @@ export default {
     </v-list-item>
   </v-list>
 
-  <p v-if="loading" class="loading">
+  <ListSkeleton v-if="loading && !items?.length" />
+  <p v-else-if="loading" class="loading">
     {{ $gettext('Loading') }}
     <LoadingSpinner width="32" height="32" />
   </p>
@@ -1143,10 +1143,6 @@ a.item-usage {
 
 .items.grid .item-preview .v-img {
   display: block;
-}
-
-.items.grid .item-open {
-  display: none;
 }
 
 .items.grid .item-content {

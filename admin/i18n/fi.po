@@ -160,7 +160,7 @@ msgstr "Siirry mediaan"
 
 #: js/commands.js:182 js/components/CommandPalette.vue:108
 #: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:37 js/views/ElementList.vue:228
+#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
 msgid "Shared elements"
 msgstr "Jaetut elementit"
 
@@ -247,9 +247,9 @@ msgstr "Mukautettu"
 msgid "Available roles"
 msgstr "Saatavilla olevat roolit"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:906
-#: js/components/FileListItems.vue:988 js/components/PageListItems.vue:1942
-#: js/views/AccessList.vue:324
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
+#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
+#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Merkintöjä ei löytynyt"
 
@@ -397,7 +397,7 @@ msgstr "Ajattelee ..."
 
 #: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
 #: js/components/PageDetailContentList.vue:937
-#: js/components/PageListItems.vue:1793 js/fields/Items.vue:370
+#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopioi"
@@ -429,8 +429,8 @@ msgid "Go to"
 msgstr "Siirry"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:885 js/components/PageListItems.vue:875
-#: js/components/PageListItems.vue:1914
+#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
+#: js/components/PageListItems.vue:1911
 msgid "New"
 msgstr "Uusi"
 
@@ -463,10 +463,10 @@ msgstr "Haku epäonnistui, yritä uudelleen"
 msgid "No results"
 msgstr "Ei tuloksia"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:759
-#: js/components/ElementListItems.vue:867 js/components/FileListItems.vue:737
-#: js/components/FileListItems.vue:878 js/components/PageListItems.vue:1650
-#: js/components/PageListItems.vue:1886 js/views/AccessList.vue:278
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
+#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
+#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
+#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "Poista pysyvästi"
 
@@ -503,10 +503,10 @@ msgid "View merge changes"
 msgstr "Tarkastele yhdistämismuutoksia"
 
 #: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:739
-#: js/components/ElementListItems.vue:834 js/components/FileListItems.vue:717
-#: js/components/FileListItems.vue:848 js/components/PageListItems.vue:1606
-#: js/components/PageListItems.vue:1749
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
+#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
+#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
+#: js/components/PageListItems.vue:1746
 msgid "Publish"
 msgstr "Julkaise"
 
@@ -528,10 +528,10 @@ msgstr "Ajasta ja sulje"
 msgid "Toggle side menu"
 msgstr "Näytä tai piilota sivuvalikko"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:744
-#: js/components/ElementListItems.vue:849 js/components/FileListItems.vue:722
-#: js/components/FileListItems.vue:860 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1622 js/components/PageListItems.vue:1770
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
+#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
+#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
 msgid "Edit properties"
 msgstr "Muokkaa ominaisuuksia"
 
@@ -582,7 +582,7 @@ msgid "Versions"
 msgstr "Versiot"
 
 #: js/components/ElementDetailRefs.vue:177 js/components/FileDetailRefs.vue:181
-#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:36
+#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:37
 msgid "Type"
 msgstr "Tyyppi"
 
@@ -616,59 +616,60 @@ msgstr "Virhe tallennettaessa jaettua elementtiä"
 msgid "Error fetching shared elements"
 msgstr "Virhe jaettujen elementtien noutamisessa"
 
-#: js/components/ElementListItems.vue:723 js/components/FileListItems.vue:701
+#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
 #: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1590 js/views/AccessList.vue:273
+#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "Vaihda valintaa"
 
-#: js/components/ElementListItems.vue:749
-#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:727
-#: js/components/FileListItems.vue:868
+#: js/components/ElementListItems.vue:745
+#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
+#: js/components/FileListItems.vue:865
 #: js/components/PageDetailContentList.vue:861
 #: js/components/PageDetailContentList.vue:947
-#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1876
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
 #: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "Poista"
 
-#: js/components/ElementListItems.vue:754
-#: js/components/ElementListItems.vue:862 js/components/FileListItems.vue:732
-#: js/components/FileListItems.vue:873 js/components/PageListItems.vue:1645
-#: js/components/PageListItems.vue:1881
+#: js/components/ElementListItems.vue:750
+#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
+#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
+#: js/components/PageListItems.vue:1878
 msgid "Restore"
 msgstr "Palauta"
 
-#: js/components/ElementListItems.vue:768
-#: js/components/ElementListItems.vue:914
+#: js/components/ElementListItems.vue:764
+#: js/components/ElementListItems.vue:911
 #: js/components/PageDetailContentList.vue:1047
 #: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "Lisää elementti"
 
-#: js/components/ElementListItems.vue:783 js/components/FileListItems.vue:772
+#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
 #: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1672 js/views/AccessList.vue:302
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
+#: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Etsi"
 
-#: js/components/ElementListItems.vue:794 js/components/FileListItems.vue:785
+#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
 msgid "Updated by another user"
 msgstr "Toisen käyttäjän päivittämä"
 
-#: js/components/ElementListItems.vue:800 js/components/FileListItems.vue:791
-#: js/components/PageListItems.vue:1689
+#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
+#: js/components/PageListItems.vue:1686
 msgid "Refresh"
 msgstr "Päivitä"
 
-#: js/components/ElementListItems.vue:805
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
 msgid "Reload elements"
 msgstr "Lataa elementit uudelleen"
 
-#: js/components/ElementListItems.vue:902 js/components/FileListItems.vue:983
+#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
 #: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1937 js/fields/Autocomplete.vue:201
+#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
 #: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
 msgstr "Ladataan"
@@ -1015,27 +1016,27 @@ msgstr "Virhe tiedoston pysyvässä poistamisessa"
 msgid "Error fetching files"
 msgstr "Virhe tiedostojen noutamisessa"
 
-#: js/components/FileListItems.vue:748 js/components/FileListItems.vue:758
-#: js/components/FileListItems.vue:998 js/components/FileListItems.vue:1008
+#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
+#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
 #: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
 #: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "Lisää tiedostoja"
 
-#: js/components/FileListItems.vue:758 js/components/FileListItems.vue:964
-#: js/components/FileListItems.vue:1008 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
+#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Suojaa sivun käyttöoikeuksilla"
 
-#: js/components/FileListItems.vue:796
+#: js/components/FileListItems.vue:793
 msgid "Reload files"
 msgstr "Lataa tiedostot uudelleen"
 
-#: js/components/FileListItems.vue:805
+#: js/components/FileListItems.vue:802
 msgid "Grid view"
 msgstr "Ruudukkonäkymä"
 
-#: js/components/FileListItems.vue:813
+#: js/components/FileListItems.vue:810
 msgid "List view"
 msgstr "Luettelonäkymä"
 
@@ -1263,15 +1264,19 @@ msgstr "Vanhin"
 msgid "Oldest edit"
 msgstr "Vanhin muokkaus"
 
-#: js/components/ListSort.vue:35 js/views/PageList.vue:139
+#: js/components/ListSort.vue:35
+msgid "Position"
+msgstr "Sijoitus"
+
+#: js/components/ListSort.vue:36 js/views/PageList.vue:139
 msgid "Tree"
 msgstr "Puu"
 
-#: js/components/ListSort.vue:37
+#: js/components/ListSort.vue:38
 msgid "Usage"
 msgstr "Käyttö"
 
-#: js/components/ListSort.vue:60
+#: js/components/ListSort.vue:61
 msgid "Sort by"
 msgstr "Lajittelu"
 
@@ -1302,8 +1307,8 @@ msgid "Authenticated users"
 msgstr "Autentikoidut käyttäjät"
 
 #: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1627
-#: js/components/PageListItems.vue:1775 js/components/PageListItems.vue:1964
+#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
+#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Käyttöoikeudet"
@@ -1494,13 +1499,13 @@ msgstr "Se voi kestää kauan riippuen tehtävästä ja sisällön koosta."
 
 #: js/components/PageDetailContentList.vue:846
 #: js/components/PageDetailContentList.vue:942
-#: js/components/PageListItems.vue:1788 js/fields/Items.vue:375
+#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Leikkaa"
 
 #: js/components/PageDetailContentList.vue:851
-#: js/components/PageListItems.vue:1801 js/components/PageListItems.vue:1826
+#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
 msgid "Paste"
 msgstr "Liitä"
 
@@ -1824,82 +1829,90 @@ msgstr "Sivun tallennusvirhe"
 msgid "Error searching pages"
 msgstr "Virhe sivujen haussa"
 
-#: js/components/PageListItems.vue:1611 js/components/PageListItems.vue:1755
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
 msgctxt "page status"
 msgid "Enable"
 msgstr "Ota käyttöön"
 
-#: js/components/PageListItems.vue:1616 js/components/PageListItems.vue:1760
+#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
 msgctxt "page status"
 msgid "Disable"
 msgstr "Poista käytöstä"
 
-#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1780
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
 msgid "Clear cache"
 msgstr "Tyhjennä välimuisti"
 
-#: js/components/PageListItems.vue:1660 js/components/PageListItems.vue:1949
+#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
 msgid "Add page"
 msgstr "Lisää sivu"
 
-#: js/components/PageListItems.vue:1683
+#: js/components/PageListItems.vue:1680
 msgid "Reload page tree"
 msgstr "Lataa sivupuu uudelleen"
 
-#: js/components/PageListItems.vue:1706
+#: js/components/PageListItems.vue:1703
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Liiku nuolinäppäimillä. Järjestä uudelleen painamalla Alt-näppäintä ja "
 "nuolinäppäimiä."
 
-#: js/components/PageListItems.vue:1708
+#: js/components/PageListItems.vue:1705
 msgid "Moved to position %{position} of %{total}"
 msgstr "Siirretty kohtaan %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1710
+#: js/components/PageListItems.vue:1707
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Sisennystä vähennetty tasolle %{level}, kohta %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1716
+#: js/components/PageListItems.vue:1713
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Sisennystä lisätty tasolle %{level}, kohta %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1736
+#: js/components/PageListItems.vue:1733
 msgid "Toggle child nodes"
 msgstr "Näytä tai piilota alasolmut"
 
-#: js/components/PageListItems.vue:1807 js/components/PageListItems.vue:1832
-#: js/components/PageListItems.vue:1857
+#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
+#: js/components/PageListItems.vue:1854
 msgid "Before"
 msgstr "Ennen"
 
-#: js/components/PageListItems.vue:1812 js/components/PageListItems.vue:1837
-#: js/components/PageListItems.vue:1862
+#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
+#: js/components/PageListItems.vue:1859
 msgid "Into"
 msgstr "Sisään"
 
-#: js/components/PageListItems.vue:1817 js/components/PageListItems.vue:1842
-#: js/components/PageListItems.vue:1867
+#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
+#: js/components/PageListItems.vue:1864
 msgid "After"
 msgstr "Jälkeen"
 
-#: js/components/PageListItems.vue:1851
+#: js/components/PageListItems.vue:1848
 msgid "Insert"
 msgstr "Lisää"
 
-#: js/components/PageListItems.vue:1967
+#: js/components/PageListItems.vue:1964
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Käytä käyttöoikeusasetuksia %{num} sivulle."
 msgstr[1] "Käytä käyttöoikeusasetuksia %{num} sivulle."
 
-#: js/components/SchemaDialog.vue:29
+#: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Sisältöelementit"
 
-#: js/components/SchemaItems.vue:29
+#: js/components/SchemaDialog.vue:38
+msgid "New elements"
+msgstr "Uudet elementit"
+
+#: js/components/SchemaItems.vue:100
 msgid "uncategorized"
 msgstr "luokittelematon"
+
+#: js/components/SchemaItems.vue:113
+msgid "Error fetching content elements"
+msgstr "Virhe sisältöelementtien hakemisessa"
 
 #: js/components/ShortcutDialog.vue:23
 msgid "General"
@@ -2154,7 +2167,7 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Enintään %{num} sarake sallitaan"
 msgstr[1] "Enintään %{num} saraketta sallitaan"
 
-#: js/stores.js:384
+#: js/stores.js:399
 msgid "Failed to load plugin"
 msgstr "Laajennuksen lataaminen epäonnistui"
 
@@ -2985,9 +2998,6 @@ msgstr ""
 
 #~ msgid "Split"
 #~ msgstr "Jaa"
-
-#~ msgid "Position"
-#~ msgstr "Sijoitus"
 
 #~ msgid "Enable"
 #~ msgstr "Ota käyttöön"

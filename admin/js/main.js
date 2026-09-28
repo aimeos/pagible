@@ -23,6 +23,7 @@ let purify = null
 let purifyLoading = null
 
 app.directive('safe-svg', (el, binding) => {
+  if (binding.value === binding.oldValue) return
   if (purify) {
     el.innerHTML = purify.sanitize(binding.value, {
       USE_PROFILES: { svg: true, svgFilters: true }

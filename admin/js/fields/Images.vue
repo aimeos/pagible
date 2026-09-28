@@ -570,7 +570,7 @@ export default {
 
 .images .add .dropzone.dragover {
   border-color: rgb(var(--v-theme-primary));
-  background-color: rgba(var(--v-theme-primary), 0.08);
+  background-color: rgba(var(--v-theme-primary), 0.06);
   color: rgb(var(--v-theme-primary));
 }
 
