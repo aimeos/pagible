@@ -1,5 +1,6 @@
+import { reactive } from 'vue'
 import FileListItems from '../../../js/components/FileListItems.vue'
-import { useUserStore } from '../../../js/stores'
+import { useMessageStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
 }
@@ -366,5 +367,49 @@ describe('FileListItems', () => {
     cy.wrap(mutate).should('have.been.calledOnce').then(() => {
       expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['file-1'] })
     })
+  })
+
+  it('offers undo after trashing files', () => {
+    const mutate = cy.stub().resolves({ data: {} })
+
+    mountList({}, { 'file:view': true, 'file:drop': true, 'file:keep': true }, { mutate }).then(({ wrapper }) => {
+      const messages = useMessageStore()
+      messages.queue = []
+
+      wrapper.findComponent(FileListItems).vm.drop({ id: 'file-1' })
+
+      cy.wrap(messages).its('queue.length').should('equal', 1).then(() => {
+        const item = messages.queue[0]
+        expect(item.text).to.equal('Moved to trash')
+        expect(messages.action(item['data-action']).label).to.equal('Undo')
+
+        messages.run(item['data-action'])
+        expect(messages.action(item['data-action'])).to.equal(null)
+      })
+
+      cy.wrap(mutate).should('have.been.calledTwice').then(() => {
+        expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['file-1'] })
+      })
+    })
+  })
+
+  it('shows reset button for filtered empty lists', () => {
+    const defaults = { trashed: 'WITHOUT', publish: null, editor: null, lang: null }
+    const filter = reactive({ ...defaults, publish: 'DRAFT' })
+
+    mountList({ defaults, filter }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
+    cy.get('.notfound').should('contain', 'No entries found')
+    cy.get('.notfound .btn-reset-filter').click()
+    cy.get('.notfound').should('contain', 'No entries yet').then(() => {
+      expect(filter.publish).to.equal(null)
+    })
+  })
+
+  it('shows no entries yet for unfiltered empty lists', () => {
+    const defaults = { trashed: 'WITHOUT', publish: null, editor: null, lang: null }
+
+    mountList({ defaults, filter: { ...defaults } }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
+    cy.get('.notfound').should('contain', 'No entries yet')
+    cy.get('.notfound .btn-reset-filter').should('not.exist')
   })
 })

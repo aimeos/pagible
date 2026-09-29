@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { useAppStore } from '../stores'
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 const LineChart = defineAsyncComponent(() =>
   Promise.all([
@@ -52,7 +53,8 @@ const FETCH_METRICS = gql`
 
 export default {
   components: {
-    LineChart
+    LineChart,
+    LoadingSpinner
   },
 
   props: {
@@ -424,7 +426,7 @@ export default {
       </v-alert>
 
       <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
-        <v-progress-circular indeterminate size="32" />
+        <LoadingSpinner width="32" height="32" />
       </div>
 
       <!-- Overview -->

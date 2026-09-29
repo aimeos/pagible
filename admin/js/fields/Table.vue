@@ -205,7 +205,7 @@ export default {
                 </v-list-item>
                 <v-list-item v-if="cols.length > 1">
                   <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmCol(idx)">{{
-                    $gettext('Delete')
+                    $gettext('Remove')
                   }}</v-btn>
                 </v-list-item>
               </ActionMenu>
@@ -275,7 +275,7 @@ export default {
                 </v-list-item>
                 <v-list-item v-if="table.length > 1">
                   <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmRow(rowidx)">{{
-                    $gettext('Delete')
+                    $gettext('Remove')
                   }}</v-btn>
                 </v-list-item>
               </ActionMenu>

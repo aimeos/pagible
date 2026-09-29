@@ -259,7 +259,7 @@ export default {
       clearable
     ></v-textarea>
 
-    <v-btn :loading="loading" :disabled="!chat" @click="create()" variant="outlined" class="create" data-confirm>
+    <v-btn :loading="loading" :disabled="!chat" @click="create()" variant="flat" color="primary" class="create" data-confirm>
       {{ $gettext('New image') }}
     </v-btn>
 

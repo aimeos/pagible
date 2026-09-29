@@ -341,7 +341,7 @@ export default {
           </ul>
         </div>
 
-        <PageListItems ref="pagelist" @select="open($event)" :filter="filter" />
+        <PageListItems ref="pagelist" @select="open($event)" :filter="filter" :defaults="defaults" />
       </v-sheet>
     </v-container>
   </v-main>

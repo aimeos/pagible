@@ -94,6 +94,31 @@ export function empty(val) {
 }
 
 /**
+ * Validates a form, scrolls to the first visible invalid input and focuses it
+ *
+ * Validating the form is required because inputs only show their errors after the
+ * user interacted with them, e.g. empty required fields aren't highlighted otherwise.
+ *
+ * @param {Object} form VForm component instance
+ * @returns {Promise<boolean>} True if an invalid input has been focused
+ */
+export async function focusInvalid(form) {
+  const result = await form?.validate()
+
+  for (const { id } of result?.errors || []) {
+    const input = document.getElementById(id)
+
+    if (input && input.getClientRects().length) {
+      input.closest('.v-input')?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+      input.focus({ preventScroll: true })
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Checks if any value in an object is truthy
  *
  * @param {Object} obj Object to check

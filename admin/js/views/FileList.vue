@@ -293,7 +293,7 @@ export default {
           </ul>
         </div>
 
-        <FileListItems ref="filelist" @select="open($event)" :filter="filter" />
+        <FileListItems ref="filelist" @select="open($event)" :filter="filter" :defaults="defaults" />
       </v-sheet>
     </v-container>
   </v-main>

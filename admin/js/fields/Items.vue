@@ -377,7 +377,7 @@ export default {
               </v-list-item>
               <v-list-item>
                 <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                  $gettext('Delete')
+                  $gettext('Remove')
                 }}</v-btn>
               </v-list-item>
 

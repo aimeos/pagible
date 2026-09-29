@@ -18,7 +18,7 @@ import { invalidateList } from '../graphql'
 import { pluginLabel } from '../i18n'
 import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { frozenParse, hasTrue, safeParse, txlocales } from '../utils'
+import { focusInvalid, frozenParse, hasTrue, safeParse, txlocales } from '../utils'
 import { setupReload, cleanEcho } from '../echo'
 import { loadVersions, reloadVersion } from '../version'
 import {
@@ -513,6 +513,23 @@ export default {
       this.errors = {}
     },
 
+    async showError() {
+      const tab = this.errors.content ? 'content' : this.errors.page ? 'page' : null
+
+      if (!tab) {
+        return
+      }
+
+      this.tab = tab
+      this.aside = tab === 'content' ? 'count' : this.asidePage
+
+      await this.$nextTick()
+      await this.$refs[tab]?.showError()
+      await this.$nextTick()
+
+      focusInvalid(this.$refs.form)
+    },
+
     review() {
       this.chatOpen = true
       this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Rate this page and suggest improvements')))
@@ -532,6 +549,7 @@ export default {
           this.$gettext('There are invalid fields, please resolve the errors first'),
           'error'
         )
+        this.showError()
         return Promise.resolve(false)
       }
 
@@ -819,7 +837,7 @@ export default {
 
   <v-main class="page-details" :aria-label="$gettext('Page')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />
-    <v-form v-else @submit.prevent>
+    <v-form v-else ref="form" @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
         <v-tab v-if="app.urlpage" value="editor" @click="aside = editorElement ? 'editor' : ''">
           {{ $gettext('Editor') }}

@@ -165,9 +165,9 @@ describe('Element List', () => {
 
   // ---- Loading & empty state ----
 
-  it('shows "No entries found" when element list is empty', () => {
+  it('shows "No entries yet" when element list is empty', () => {
     visitElements([])
-    cy.get('.element-list').should('contain', 'No entries found')
+    cy.get('.element-list').should('contain', 'No entries yet')
   })
 
   it('shows element items when elements are returned', () => {

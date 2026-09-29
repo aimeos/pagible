@@ -50,7 +50,8 @@ export default {
         <slot />
       </v-card-text>
 
-      <v-card-actions v-if="$slots.actions" class="dialog-actions">
+      <v-card-actions v-if="$slots.actions || $slots['actions-start']" class="dialog-actions">
+        <slot name="actions-start" :close="close" />
         <v-spacer />
         <slot name="actions" :close="close" />
       </v-card-actions>

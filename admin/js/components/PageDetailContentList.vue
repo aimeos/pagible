@@ -563,6 +563,21 @@ export default {
         })
     },
 
+    async showError() {
+      const el = this.content.find((el) => el._error && this.shown(el))
+
+      if (!el) {
+        return
+      }
+
+      if (!this.panel.includes(el.id)) {
+        this.panel.push(el.id)
+      }
+
+      reveal(this.$refs.list, el.id, 'auto')
+      await this.$nextTick()
+    },
+
     shown(el) {
       const valid = this.side.shown('state', 'valid')
       const error = this.side.shown('state', 'error')
@@ -858,7 +873,7 @@ export default {
           </v-list-item>
           <v-list-item v-if="checkedCount">
             <v-btn :prepend-icon="mdiDelete" variant="text" @click="purge()">{{
-              $gettext('Delete')
+              $gettext('Remove')
             }}</v-btn>
           </v-list-item>
         </ActionMenu>
@@ -944,7 +959,7 @@ export default {
                 </v-list-item>
                 <v-list-item>
                   <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                    $gettext('Delete')
+                    $gettext('Remove')
                   }}</v-btn>
                 </v-list-item>
 

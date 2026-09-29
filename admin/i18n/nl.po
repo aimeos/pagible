@@ -9,38 +9,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
-#: js/components/ElementListItems.vue:299
-#: js/components/ElementListItems.vue:435
-#: js/components/ElementListItems.vue:471
-#: js/components/ElementListItems.vue:511
-#: js/components/ElementListItems.vue:553
-#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:292
+#: js/components/ElementListItems.vue:331
+#: js/components/ElementListItems.vue:477
+#: js/components/ElementListItems.vue:517
+#: js/components/ElementListItems.vue:557
+#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:644 js/components/Fields.vue:118
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
-#: js/components/FileDetailItemImage.vue:386
+#: js/components/FileDetailItemImage.vue:387
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
-#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
-#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
-#: js/components/FileListItems.vue:587
+#: js/components/FileListItems.vue:281 js/components/FileListItems.vue:326
+#: js/components/FileListItems.vue:472 js/components/FileListItems.vue:509
+#: js/components/FileListItems.vue:546 js/components/FileListItems.vue:588
+#: js/components/FileListItems.vue:633
 #: js/components/PageDetailContentList.vue:412
 #: js/components/PageDetailContentList.vue:506
-#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
-#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
-#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
-#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
-#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
-#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
-#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
+#: js/components/PageListItems.vue:486 js/components/PageListItems.vue:586
+#: js/components/PageListItems.vue:659 js/components/PageListItems.vue:786
+#: js/components/PageListItems.vue:857 js/components/PageListItems.vue:930
+#: js/components/PageListItems.vue:1063 js/components/PageListItems.vue:1092
+#: js/components/PageListItems.vue:1218 js/components/PageListItems.vue:1259
+#: js/components/PageListItems.vue:1380 js/components/PageListItems.vue:1458
+#: js/components/PageListItems.vue:1509 js/fields/File.vue:147
 #: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
+#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "Toestemming geweigerd"
@@ -148,8 +148,8 @@ msgid "Go to pages"
 msgstr "Ga naar pagina's"
 
 #: js/commands.js:176 js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
+#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "Media"
@@ -247,8 +247,8 @@ msgstr "Op maat"
 msgid "Available roles"
 msgstr "Beschikbare rollen"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
-#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Geen items gevonden"
@@ -257,11 +257,9 @@ msgstr "Geen items gevonden"
 msgid "Actions"
 msgstr "Acties"
 
-#: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
-#: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
-#: js/components/Dialog.vue:46 js/components/FieldsAside.vue:186
-#: js/components/FileDetailItemImage.vue:758
-#: js/components/FileDetailItemImage.vue:813 js/components/UnsavedDialog.vue:40
+#: js/components/ActionMenu.vue:61 js/components/ChatDialog.vue:336
+#: js/components/ChatDialog.vue:337 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:186
 msgid "Close"
 msgstr "Sluit"
 
@@ -273,8 +271,8 @@ msgstr "Gebruikte elementen"
 msgid "Filters"
 msgstr "Filters"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:326
-#: js/components/Fields.vue:359
+#: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
+#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
 msgid "Reset"
 msgstr "Reset"
 
@@ -308,65 +306,62 @@ msgid "deleted"
 msgstr "verwijderd"
 
 #: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
-#: js/components/HistoryDialog.vue:39
+#: js/components/HistoryDialog.vue:40
 msgid "Meta data"
 msgstr "Metagegevens"
 
-#: js/components/ChangesDialog.vue:54 js/components/ChangesDialog.vue:55
-#: js/components/HistoryDialog.vue:39
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:40
 msgid "Fields"
 msgstr "Velden"
 
-#: js/components/ChangesDialog.vue:56
+#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Metatags"
 
-#: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:40
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:41
 msgid "Configuration"
 msgstr "Configuratie"
 
-#: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
-#: js/views/PageDetail.vue:832
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
+#: js/views/PageDetail.vue:850
 msgid "Content"
 msgstr "Inhoud"
 
-#: js/components/ChangesDialog.vue:313
-msgid "Conflict resolution"
-msgstr "Conflictoplossing"
-
-#: js/components/ChangesDialog.vue:317
+#: js/components/ChangesDialog.vue:320
 msgid "Conflicts from %{editor}"
 msgstr "Conflicten uit %{editor}"
 
-#: js/components/ChangesDialog.vue:320
+#: js/components/ChangesDialog.vue:326
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:344 js/components/FieldsAside.vue:256
+#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:326
+#: js/components/Fields.vue:359 js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr "Terugzetten"
 
-#: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
+#: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
 msgid "Changes"
 msgstr "Wijzigingen"
 
-#: js/components/ChangesDialog.vue:396
+#: js/components/ChangesDialog.vue:400
 msgid "Removed"
 msgstr "Verwijderd"
 
-#: js/components/ChangesDialog.vue:403
+#: js/components/ChangesDialog.vue:407
 msgid "Added"
 msgstr "Toegevoegd"
 
-#: js/components/ChangesDialog.vue:441
+#: js/components/ChangesDialog.vue:445
 msgid "Use theirs"
 msgstr "Hun versie gebruiken"
 
-#: js/components/ChangesDialog.vue:447
+#: js/components/ChangesDialog.vue:451
 msgid "Keep mine"
 msgstr "Mijn versie behouden"
 
-#: js/components/ChangesDialog.vue:454
+#: js/components/ChangesDialog.vue:458
 msgid "Merge both"
 msgstr "Beide samenvoegen"
 
@@ -395,9 +390,9 @@ msgstr "Wat kan ik voor je doen?"
 msgid "Thinking ..."
 msgstr "Denkt na ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
-#: js/components/PageDetailContentList.vue:937
-#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:856
+#: js/components/PageDetailContentList.vue:952
+#: js/components/PageListItems.vue:1896 js/fields/Items.vue:370
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopiëren"
@@ -409,7 +404,7 @@ msgstr "Stuur een bericht..."
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
 #: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
 #: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
+#: js/components/PageDetailContentList.vue:826 js/fields/Items.vue:457
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
@@ -429,8 +424,8 @@ msgid "Go to"
 msgstr "Ga naar"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
-#: js/components/PageListItems.vue:1911
+#: js/components/ElementListItems.vue:928 js/components/PageListItems.vue:978
+#: js/components/PageListItems.vue:2017
 msgid "New"
 msgstr "Nieuw"
 
@@ -463,10 +458,11 @@ msgstr "Zoeken mislukt, probeer het opnieuw"
 msgid "No results"
 msgstr "Geen resultaten"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
-#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
-#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ElementListItems.vue:801
+#: js/components/ElementListItems.vue:910 js/components/FileListItems.vue:779
+#: js/components/FileListItems.vue:921 js/components/PageListItems.vue:1751
+#: js/components/PageListItems.vue:1989 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "Definitief verwijderen"
 
@@ -481,14 +477,10 @@ msgstr[1] ""
 "De volgende %{num} items worden definitief verwijderd en kunnen niet worden "
 "hersteld:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
+#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:345
 msgid "Cancel"
 msgstr "Annuleren"
-
-#: js/components/ConfirmDialog.vue:57
-msgid "Confirm"
-msgstr "Bevestigen"
 
 #: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
@@ -505,10 +497,10 @@ msgid "View merge changes"
 msgstr "Wijzigingen in de samenvoeging bekijken"
 
 #: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
-#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
-#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
-#: js/components/PageListItems.vue:1746
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:781
+#: js/components/ElementListItems.vue:877 js/components/FileListItems.vue:759
+#: js/components/FileListItems.vue:891 js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1852
 msgid "Publish"
 msgstr "Publiceer"
 
@@ -530,10 +522,10 @@ msgstr "Inplannen & sluiten"
 msgid "Toggle side menu"
 msgstr "Zijmenu schakelen"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
-#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
-#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:786
+#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:764
+#: js/components/FileListItems.vue:903 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1723 js/components/PageListItems.vue:1873
 msgid "Edit properties"
 msgstr "Eigenschappen bewerken"
 
@@ -575,7 +567,7 @@ msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:477
 msgid "Restricted"
 msgstr "Beperkt"
 
@@ -594,87 +586,104 @@ msgstr "Type"
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: js/components/ElementListItems.vue:325
+#: js/components/ElementListItems.vue:356 js/components/FileListItems.vue:351
+#: js/components/PageListItems.vue:729
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "Naar de prullenbak verplaatst"
+msgstr[1] "%{num} items naar de prullenbak verplaatst"
+
+#: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:948
+#: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
+#: js/components/PageListItems.vue:708
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+#: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
 msgstr "Fout bij het verplaatsen van het gedeelde element naar de prullenbak"
 
-#: js/components/ElementListItems.vue:462
+#: js/components/ElementListItems.vue:508
 msgid "Error restoring shared element"
 msgstr "Fout bij het herstellen van gedeeld element"
 
-#: js/components/ElementListItems.vue:502
+#: js/components/ElementListItems.vue:548
 msgid "Error publishing shared element"
 msgstr "Fout bij het publiceren van gedeeld element"
 
-#: js/components/ElementListItems.vue:540
+#: js/components/ElementListItems.vue:586
 msgid "Error purging shared element"
 msgstr "Fout bij het definitief verwijderen van het gedeelde element"
 
-#: js/components/ElementListItems.vue:591
+#: js/components/ElementListItems.vue:637
 msgid "Error saving shared element"
 msgstr "Fout bij opslaan van gedeeld element"
 
-#: js/components/ElementListItems.vue:648
+#: js/components/ElementListItems.vue:694
 msgid "Error fetching shared elements"
 msgstr "Fout bij het ophalen van gedeelde elementen"
 
-#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:765 js/components/FileListItems.vue:743
+#: js/components/PageDetailContentList.vue:842
+#: js/components/PageListItems.vue:1691 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "Selectie wijzigen"
 
-#: js/components/ElementListItems.vue:745
-#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
-#: js/components/FileListItems.vue:865
-#: js/components/PageDetailContentList.vue:861
-#: js/components/PageDetailContentList.vue:947
-#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
-#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/ElementListItems.vue:791
+#: js/components/ElementListItems.vue:900 js/components/FileListItems.vue:769
+#: js/components/FileListItems.vue:911 js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1979
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: js/components/ElementListItems.vue:750
-#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
-#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
-#: js/components/PageListItems.vue:1878
+#: js/components/ElementListItems.vue:796
+#: js/components/ElementListItems.vue:905 js/components/FileListItems.vue:774
+#: js/components/FileListItems.vue:916 js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1984
 msgid "Restore"
 msgstr "Herstel"
 
-#: js/components/ElementListItems.vue:764
-#: js/components/ElementListItems.vue:911
-#: js/components/PageDetailContentList.vue:1047
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
+#: js/components/ElementListItems.vue:810
+#: js/components/ElementListItems.vue:968
+#: js/components/PageDetailContentList.vue:1062
+#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "Element toevoegen"
 
-#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
-#: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
+#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:814
+#: js/components/PageDetailContentList.vue:885
+#: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Zoeken naar"
 
-#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
+#: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
 msgid "Updated by another user"
 msgstr "Bijgewerkt door een andere gebruiker"
 
-#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
-#: js/components/PageListItems.vue:1686
+#: js/components/ElementListItems.vue:842 js/components/FileListItems.vue:833
+#: js/components/PageListItems.vue:1791
 msgid "Refresh"
 msgstr "Vernieuwen"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
+#: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "Elementen opnieuw laden"
 
-#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
-#: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
+#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:201
 #: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
 msgstr "Laden"
+
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/PageListItems.vue:2056
+msgid "No entries yet"
+msgstr "Nog geen items"
 
 #: js/components/Fields.vue:282 js/components/Fields.vue:288
 #: js/fields/Items.vue:422 js/fields/Items.vue:428
@@ -730,7 +739,7 @@ msgid "Responsive preview"
 msgstr "Responsieve voorvertoning"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:990
+#: js/components/PageDetailContentList.vue:1005
 msgid "Change to"
 msgstr "Veranderen in"
 
@@ -742,10 +751,13 @@ msgstr "Bewerk"
 
 #: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
 #: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
+#: js/components/PageDetailContentList.vue:876
+#: js/components/PageDetailContentList.vue:962 js/fields/Items.vue:380
+#: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "Verwijder"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
 #: js/fields/File.vue:166 js/fields/Images.vue:149
 msgid "Error adding file %{path}"
@@ -787,8 +799,8 @@ msgstr "Naar klembord gekopieerd"
 msgid "Error describing file"
 msgstr "Fout bij het beschrijven van het bestand"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
-#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:626
+#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:337
 msgid "Error saving file"
 msgstr "Fout bij opslaan bestand"
 
@@ -828,141 +840,136 @@ msgstr "Bestandsinhoud transcriberen"
 msgid "Transcription (%{lang})"
 msgstr "Transcriptie (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:222
+#: js/components/FileDetailItemImage.vue:223
 msgid "Error erasing image part"
 msgstr "Fout bij het wissen van afbeeldingsgedeelte"
 
-#: js/components/FileDetailItemImage.vue:329
+#: js/components/FileDetailItemImage.vue:330
 msgid "Error editing image part"
 msgstr "Fout bij het bewerken van afbeeldingsonderdeel"
 
-#: js/components/FileDetailItemImage.vue:351
+#: js/components/FileDetailItemImage.vue:352
 msgid "Error removing background"
 msgstr "Fout bij het verwijderen van achtergrond"
 
-#: js/components/FileDetailItemImage.vue:457
+#: js/components/FileDetailItemImage.vue:458
 msgid "Error editing image"
 msgstr "Fout bij het bewerken van afbeelding"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:545
 msgid "Error uncropping image"
 msgstr "Fout bij het uitbreiden van de afbeelding"
 
-#: js/components/FileDetailItemImage.vue:589
+#: js/components/FileDetailItemImage.vue:590
 msgid "Error upscaling image"
 msgstr "Fout bij het verhogen van de beeldresolutie"
 
-#: js/components/FileDetailItemImage.vue:646
-#: js/components/FileDetailItemImage.vue:651
+#: js/components/FileDetailItemImage.vue:647
+#: js/components/FileDetailItemImage.vue:652
 msgid "Select area"
 msgstr "Gebied selecteren"
 
-#: js/components/FileDetailItemImage.vue:663
+#: js/components/FileDetailItemImage.vue:664
 msgid "Original ratio"
 msgstr "Originele verhouding"
 
-#: js/components/FileDetailItemImage.vue:672
+#: js/components/FileDetailItemImage.vue:673
 msgid "No ratio"
 msgstr "Geen verhouding"
 
-#: js/components/FileDetailItemImage.vue:677
+#: js/components/FileDetailItemImage.vue:678
 msgid "Square"
 msgstr "Vierkant"
 
-#: js/components/FileDetailItemImage.vue:721
+#: js/components/FileDetailItemImage.vue:722
 msgid "Crop selected area"
 msgstr "Geselecteerd gebied bijsnijden"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:732
 msgid "Erase selected area"
 msgstr "Wis geselecteerd gebied"
 
-#: js/components/FileDetailItemImage.vue:747
-#: js/components/FileDetailItemImage.vue:755
-#: js/components/FileDetailItemImage.vue:776
+#: js/components/FileDetailItemImage.vue:743
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:765
 msgid "Edit image"
 msgstr "Afbeelding bewerken"
 
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe the changes"
 msgstr "Beschrijf de veranderingen"
 
-#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:774
 msgid "Remove background"
 msgstr "Achtergrond verwijderen"
 
-#: js/components/FileDetailItemImage.vue:802
-#: js/components/FileDetailItemImage.vue:810
-#: js/components/FileDetailItemImage.vue:868
+#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:791
+#: js/components/FileDetailItemImage.vue:845
 msgid "Expand image"
 msgstr "Afbeelding vergroten"
 
-#: js/components/FileDetailItemImage.vue:825
+#: js/components/FileDetailItemImage.vue:802
 msgctxt "image edge"
 msgid "Top"
 msgstr "Top"
 
-#: js/components/FileDetailItemImage.vue:837
+#: js/components/FileDetailItemImage.vue:814
 msgctxt "image edge"
 msgid "Left"
 msgstr "Links"
 
-#: js/components/FileDetailItemImage.vue:847
+#: js/components/FileDetailItemImage.vue:824
 msgctxt "image edge"
 msgid "Right"
 msgstr "Rechts"
 
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:836
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Onder"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:882
+#: js/components/FileDetailItemImage.vue:853
+#: js/components/FileDetailItemImage.vue:860
 msgid "Upscale image"
 msgstr "Beeldresolutie verhogen"
 
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
-#: js/components/FileDetailItemImage.vue:915
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:883
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
 msgid "Scale %{factor}"
 msgstr "Schaal %{factor}"
 
-#: js/components/FileDetailItemImage.vue:934
+#: js/components/FileDetailItemImage.vue:912
 msgid "Rotate counter-clockwise"
 msgstr "Linksom draaien"
 
-#: js/components/FileDetailItemImage.vue:940
+#: js/components/FileDetailItemImage.vue:918
 msgid "Rotate clockwise"
 msgstr "Rechtsom draaien"
 
-#: js/components/FileDetailItemImage.vue:947
+#: js/components/FileDetailItemImage.vue:925
 msgid "Flip horizontally"
 msgstr "Horizontaal omklappen"
 
-#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileDetailItemImage.vue:931
 msgid "Flip vertically"
 msgstr "Verticaal omklappen"
 
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:938
 msgid "Convert to monochrome"
 msgstr "Omzetten naar zwart-wit"
 
-#: js/components/FileDetailItemImage.vue:963
+#: js/components/FileDetailItemImage.vue:941
 msgid "Download"
 msgstr "Downloaden"
 
-#: js/components/FileDetailItemImage.vue:965
-#: js/components/FileDetailItemImage.vue:970
-msgid "Undo"
-msgstr "Ongedaan maken"
-
-#: js/components/FileDetailItemImage.vue:979
+#: js/components/FileDetailItemImage.vue:957
 msgid "Previous edit"
 msgstr "Vorige bewerking"
 
-#: js/components/FileDetailItemImage.vue:984
+#: js/components/FileDetailItemImage.vue:962
 msgid "Original"
 msgstr "Origineel"
 
@@ -998,47 +1005,47 @@ msgstr "Upload omslagafbeelding"
 msgid "Elements"
 msgstr "Elementen"
 
-#: js/components/FileListItems.vue:320
+#: js/components/FileListItems.vue:362
 msgid "Error trashing file"
 msgstr "Fout bij het verplaatsen van het bestand naar de prullenbak"
 
-#: js/components/FileListItems.vue:456
+#: js/components/FileListItems.vue:502
 msgid "Error restoring file"
 msgstr "Fout bij het herstellen van bestand"
 
-#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:539 js/views/FileDetail.vue:253
 msgid "Error publishing file"
 msgstr "Fout bij publiceren bestand"
 
-#: js/components/FileListItems.vue:529
+#: js/components/FileListItems.vue:575
 msgid "Error purging file"
 msgstr "Fout bij het definitief verwijderen van het bestand"
 
-#: js/components/FileListItems.vue:626
+#: js/components/FileListItems.vue:672
 msgid "Error fetching files"
 msgstr "Fout bij het ophalen van bestanden"
 
-#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
-#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
+#: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
+#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
 #: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
 #: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "Bestanden toevoegen"
 
-#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
-#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
+#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Beveiligen met paginatoegang"
 
-#: js/components/FileListItems.vue:793
+#: js/components/FileListItems.vue:839
 msgid "Reload files"
 msgstr "Bestanden opnieuw laden"
 
-#: js/components/FileListItems.vue:802
+#: js/components/FileListItems.vue:848
 msgid "Grid view"
 msgstr "Roosterweergave"
 
-#: js/components/FileListItems.vue:810
+#: js/components/FileListItems.vue:856
 msgid "List view"
 msgstr "Lijstweergave"
 
@@ -1070,183 +1077,183 @@ msgstr "Voer één URL per regel in"
 msgid "Enter URL"
 msgstr "URL invoeren"
 
-#: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:1008
+#: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
+#: js/components/PageDetailContentList.vue:1023
 msgid "Shared element"
 msgstr "Gedeeld element"
 
-#: js/components/HistoryDialog.vue:62
+#: js/components/HistoryDialog.vue:63
 msgid "Content block"
 msgstr "Inhoudsblok"
 
-#: js/components/HistoryDialog.vue:67
+#: js/components/HistoryDialog.vue:68
 msgid "Group: %{group} · Position %{num}"
 msgstr "Groep: %{group} · Positie %{num}"
 
-#: js/components/HistoryDialog.vue:75
+#: js/components/HistoryDialog.vue:76
 msgid "Moved from position %{from} to %{to}"
 msgstr "Verplaatst van positie %{from} naar %{to}"
 
-#: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
+#: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} veld gewijzigd"
 msgstr[1] "%{num} velden gewijzigd"
 
-#: js/components/HistoryDialog.vue:77
+#: js/components/HistoryDialog.vue:78
 msgid "%{selected} of %{total} selected"
 msgstr "%{selected} van %{total} geselecteerd"
 
-#: js/components/HistoryDialog.vue:84
+#: js/components/HistoryDialog.vue:85
 msgid "Unknown date"
 msgstr "Onbekende datum"
 
-#: js/components/HistoryDialog.vue:123
+#: js/components/HistoryDialog.vue:124
 msgid "Block position"
 msgstr "Blokpositie"
 
-#: js/components/HistoryDialog.vue:128
+#: js/components/HistoryDialog.vue:129
 msgid "Value"
 msgstr "Waarde"
 
-#: js/components/HistoryDialog.vue:172
+#: js/components/HistoryDialog.vue:173
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "%{num} blok toegevoegd"
 msgstr[1] "%{num} blokken toegevoegd"
 
-#: js/components/HistoryDialog.vue:173
+#: js/components/HistoryDialog.vue:174
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} blok verwijderd"
 msgstr[1] "%{num} blokken verwijderd"
 
-#: js/components/HistoryDialog.vue:174
+#: js/components/HistoryDialog.vue:175
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} blok gewijzigd"
 msgstr[1] "%{num} blokken gewijzigd"
 
-#: js/components/HistoryDialog.vue:175
+#: js/components/HistoryDialog.vue:176
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} blok verplaatst"
 msgstr[1] "%{num} blokken verplaatst"
 
-#: js/components/HistoryDialog.vue:176
+#: js/components/HistoryDialog.vue:177
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} bestand gewijzigd"
 msgstr[1] "%{num} bestanden gewijzigd"
 
-#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
-#: js/components/HistoryDialog.vue:302
+#: js/components/HistoryDialog.vue:178 js/components/HistoryDialog.vue:207
+#: js/components/HistoryDialog.vue:303
 msgid "No changes"
 msgstr "Geen wijzigingen"
 
-#: js/components/HistoryDialog.vue:191
+#: js/components/HistoryDialog.vue:192
 msgid "History"
 msgstr "Geschiedenis"
 
-#: js/components/HistoryDialog.vue:202
+#: js/components/HistoryDialog.vue:203
 msgid "Error fetching versions"
 msgstr "Fout bij ophalen van versies"
 
-#: js/components/HistoryDialog.vue:203
+#: js/components/HistoryDialog.vue:204
 msgid "Retry"
 msgstr "Opnieuw proberen"
 
-#: js/components/HistoryDialog.vue:217
+#: js/components/HistoryDialog.vue:218
 msgid "Current changes"
 msgstr "Huidige veranderingen"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Scheduled for %{date}"
 msgstr "Gepland voor %{date}"
 
-#: js/components/HistoryDialog.vue:231
+#: js/components/HistoryDialog.vue:232
 msgid "Select all"
 msgstr "Selecteer alles"
 
-#: js/components/HistoryDialog.vue:245
+#: js/components/HistoryDialog.vue:246
 msgid "Block added"
 msgstr "Blok toegevoegd"
 
-#: js/components/HistoryDialog.vue:246
+#: js/components/HistoryDialog.vue:247
 msgid "Block removed"
 msgstr "Blok verwijderd"
 
-#: js/components/HistoryDialog.vue:266
+#: js/components/HistoryDialog.vue:267
 msgid "Keep current position"
 msgstr "Behoud huidige positie"
 
-#: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
+#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
 msgid "Keep current value"
 msgstr "Behoud huidige waarde"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: Latest saved version"
 msgstr "Vorige versie: Laatst opgeslagen versie"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: %{date}"
 msgstr "Vorige versie: %{date}"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:314
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "%{selected} van %{total} geselecteerd voor terugzetten"
 
-#: js/components/HistoryDialog.vue:316
+#: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
 msgstr "Geselecteerde wijzigingen ongedaan maken"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "Restore previous version"
 msgstr "Vorige versie herstellen"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "Previous value"
 msgstr "Vorige waarde"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "New value"
 msgstr "Nieuwe waarde"
 
-#: js/components/HistoryField.vue:90
+#: js/components/HistoryField.vue:91
 msgid "Enlarge %{name}"
 msgstr "Vergroot %{name}"
 
-#: js/components/HistoryField.vue:96 js/components/HistoryField.vue:123
+#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:124
 msgid "Loading preview"
 msgstr "Voorbeeld laden"
 
-#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:99
-#: js/components/HistoryField.vue:104 js/components/HistoryField.vue:124
-#: js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:100
+#: js/components/HistoryField.vue:105 js/components/HistoryField.vue:125
+#: js/components/HistoryField.vue:127
 msgid "Preview unavailable"
 msgstr "Voorbeeld niet beschikbaar"
 
-#: js/components/HistoryField.vue:113
+#: js/components/HistoryField.vue:114
 msgid "Image preview"
 msgstr "Afbeeldingsvoorbeeld"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Close preview"
 msgstr "Voorbeeld sluiten"
 
-#: js/components/HistoryField.vue:134
+#: js/components/HistoryField.vue:135
 msgid "Table preview"
 msgstr "Tabelvoorbeeld"
 
-#: js/components/HistoryField.vue:138
+#: js/components/HistoryField.vue:139
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} rij weggelaten"
 msgstr[1] "%{num} rijen weggelaten"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
+#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
 msgid "Editor"
 msgstr "Redacteur"
 
@@ -1303,13 +1310,13 @@ msgstr ""
 msgid "Public"
 msgstr "Openbaar"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:481
 msgid "Authenticated users"
 msgstr "Geauthenticeerde gebruikers"
 
-#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
-#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
+#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:116
+#: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
+#: js/components/PageListItems.vue:1878 js/components/PageListItems.vue:2078
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Toegang"
@@ -1434,7 +1441,7 @@ msgstr "Domein"
 
 #: js/components/PageDetailContentList.vue:185
 #: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:690
+#: js/components/PageDetailContentList.vue:705
 msgid "Content element not found"
 msgstr "Inhoudselement niet gevonden"
 
@@ -1454,97 +1461,97 @@ msgstr "Element is al gedeeld"
 msgid "Unable to make element shared"
 msgstr "Kan gedeeld element niet maken"
 
-#: js/components/PageDetailContentList.vue:580
+#: js/components/PageDetailContentList.vue:595
 msgid "Not available for this content element"
 msgstr "Niet beschikbaar voor dit inhoudselement"
 
-#: js/components/PageDetailContentList.vue:697
+#: js/components/PageDetailContentList.vue:712
 msgid "Element is not shared"
 msgstr "Element wordt niet gedeeld"
 
-#: js/components/PageDetailContentList.vue:776
+#: js/components/PageDetailContentList.vue:791
 msgid "Describe the task you want to perform"
 msgstr "Beschrijf de taak die je wilt uitvoeren"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:805 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "Hulp verbergen"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:805 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "Hulp tonen"
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:817
 msgid "Refining ..."
 msgstr "Verfijnen ..."
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:817
 msgid "Refine content based on prompt"
 msgstr "Inhoud verfijnen op basis van prompt"
 
-#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
+#: js/components/PageDetailContentList.vue:834 js/views/ElementList.vue:291
 #: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "Hulp"
 
-#: js/components/PageDetailContentList.vue:820
+#: js/components/PageDetailContentList.vue:835
 msgid "AI can add or improve content based on your input"
 msgstr "AI kan inhoud toevoegen of verbeteren op basis van jouw input"
 
-#: js/components/PageDetailContentList.vue:821
+#: js/components/PageDetailContentList.vue:836
 msgid "It can take a long time depending on the task and content size"
 msgstr "Het kan lang duren, afhankelijk van de taak en de inhoudsgrootte"
 
-#: js/components/PageDetailContentList.vue:846
-#: js/components/PageDetailContentList.vue:942
-#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:957
+#: js/components/PageListItems.vue:1891 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Knippen"
 
-#: js/components/PageDetailContentList.vue:851
-#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
+#: js/components/PageDetailContentList.vue:866
+#: js/components/PageListItems.vue:1904 js/components/PageListItems.vue:1929
 msgid "Paste"
 msgstr "Plakken"
 
-#: js/components/PageDetailContentList.vue:856
-#: js/components/PageDetailContentList.vue:1000
+#: js/components/PageDetailContentList.vue:871
+#: js/components/PageDetailContentList.vue:1015
 msgid "Merge"
 msgstr "Samenvoegen"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:929 js/fields/Items.vue:345
 msgid "Move element"
 msgstr "Element verplaatsen"
 
-#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:388
 msgid "Paste before"
 msgstr "Plakken voor"
 
-#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:975 js/fields/Items.vue:393
 msgid "Paste after"
 msgstr "Plakken na"
 
-#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:980 js/fields/Items.vue:398
 #: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "Invoegen vóór"
 
-#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:985 js/fields/Items.vue:403
 #: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "Invoegen na"
 
-#: js/components/PageDetailContentList.vue:980
+#: js/components/PageDetailContentList.vue:995
 msgid "Make shared"
 msgstr "Gedeeld maken"
 
-#: js/components/PageDetailContentList.vue:985
+#: js/components/PageDetailContentList.vue:1000
 msgid "Merge copy"
 msgstr "Kopie samenvoegen"
 
-#: js/components/PageDetailContentList.vue:995
+#: js/components/PageDetailContentList.vue:1010
 msgctxt "text element"
 msgid "Split"
 msgstr "Splitsen"
@@ -1561,15 +1568,15 @@ msgstr "Voorbeeldmodus"
 msgid "Not CMS content"
 msgstr "Geen CMS inhoud"
 
-#: js/components/PageDetailItem.vue:81
+#: js/components/PageDetailItem.vue:95
 msgid "Detail"
 msgstr "Detail"
 
-#: js/components/PageDetailItem.vue:88
+#: js/components/PageDetailItem.vue:102
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:95
+#: js/components/PageDetailItem.vue:109
 msgid "Config"
 msgstr "Config"
 
@@ -1612,289 +1619,293 @@ msgstr "Omleidings-URL"
 msgid "The element has already been added"
 msgstr "Het element is al toegevoegd"
 
-#: js/components/PageDetailItemSection.vue:185
+#: js/components/PageDetailItemSection.vue:193
 msgid "Remove content element"
 msgstr "Inhoudselement verwijderen"
 
-#: js/components/PageDetailMetrics.vue:149
+#: js/components/PageDetailMetrics.vue:151
 msgid "Views"
 msgstr "Weergaven"
 
-#: js/components/PageDetailMetrics.vue:150
+#: js/components/PageDetailMetrics.vue:152
 msgid "Visits"
 msgstr "Bezoeken"
 
-#: js/components/PageDetailMetrics.vue:151
-#: js/components/PageDetailMetrics.vue:192
+#: js/components/PageDetailMetrics.vue:153
+#: js/components/PageDetailMetrics.vue:194
 msgid "Conversions"
 msgstr "Conversies"
 
-#: js/components/PageDetailMetrics.vue:160
+#: js/components/PageDetailMetrics.vue:162
 msgid "Duration"
 msgstr "Duur"
 
-#: js/components/PageDetailMetrics.vue:170
-#: js/components/PageDetailMetrics.vue:574
+#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:576
 msgid "Impressions"
 msgstr "Impressies"
 
-#: js/components/PageDetailMetrics.vue:171
-#: js/components/PageDetailMetrics.vue:575
+#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:577
 msgid "Clicks"
 msgstr "Klikken"
 
-#: js/components/PageDetailMetrics.vue:180
+#: js/components/PageDetailMetrics.vue:182
 msgid "Percentage"
 msgstr "Percentage"
 
-#: js/components/PageDetailMetrics.vue:189
+#: js/components/PageDetailMetrics.vue:191
 msgid "Page Views"
 msgstr "Paginaweergaven"
 
-#: js/components/PageDetailMetrics.vue:190
+#: js/components/PageDetailMetrics.vue:192
 msgid "Page Visits"
 msgstr "Paginabezoeken"
 
-#: js/components/PageDetailMetrics.vue:193
+#: js/components/PageDetailMetrics.vue:195
 msgid "Visit Duration (minutes)"
 msgstr "Duur bezoek (minuten)"
 
-#: js/components/PageDetailMetrics.vue:194
+#: js/components/PageDetailMetrics.vue:196
 msgid "Google Impressions"
 msgstr "Google-vertoningen"
 
-#: js/components/PageDetailMetrics.vue:195
+#: js/components/PageDetailMetrics.vue:197
 msgid "Google Clicks"
 msgstr "Google klikken"
 
-#: js/components/PageDetailMetrics.vue:196
+#: js/components/PageDetailMetrics.vue:198
 msgid "Google Conversion Rate"
 msgstr "Google Conversiepercentage"
 
-#: js/components/PageDetailMetrics.vue:202
+#: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
 msgstr "Round-trip-tijd"
 
-#: js/components/PageDetailMetrics.vue:203
+#: js/components/PageDetailMetrics.vue:205
 msgid "Time to first byte"
 msgstr "Tijd tot eerste byte"
 
-#: js/components/PageDetailMetrics.vue:204
+#: js/components/PageDetailMetrics.vue:206
 msgid "First contentful paint"
 msgstr "Eerste inhoudsweergave"
 
-#: js/components/PageDetailMetrics.vue:205
+#: js/components/PageDetailMetrics.vue:207
 msgid "Largest contentful paint"
 msgstr "Grootste inhoudsweergave"
 
-#: js/components/PageDetailMetrics.vue:206
+#: js/components/PageDetailMetrics.vue:208
 msgid "Interaction to next paint"
 msgstr "Interactie tot volgende weergave"
 
-#: js/components/PageDetailMetrics.vue:207
+#: js/components/PageDetailMetrics.vue:209
 msgid "Cumulative layout shift"
 msgstr "Cumulatieve verschuiving in lay-out"
 
-#: js/components/PageDetailMetrics.vue:401
+#: js/components/PageDetailMetrics.vue:403
 msgid "Page metrics"
 msgstr "Paginastatistieken"
 
-#: js/components/PageDetailMetrics.vue:407
+#: js/components/PageDetailMetrics.vue:409
 msgid "Days"
 msgstr "Dagen"
 
-#: js/components/PageDetailMetrics.vue:434
+#: js/components/PageDetailMetrics.vue:436
 msgid "Weekly Insights"
 msgstr "Wekelijkse inzichten"
 
-#: js/components/PageDetailMetrics.vue:463
+#: js/components/PageDetailMetrics.vue:465
 msgid "Views & Visits"
 msgstr "Weergaven en bezoeken"
 
-#: js/components/PageDetailMetrics.vue:472
+#: js/components/PageDetailMetrics.vue:474
 msgid "Visit Durations (minutes)"
 msgstr "Bezoekduur (minuten)"
 
-#: js/components/PageDetailMetrics.vue:484
+#: js/components/PageDetailMetrics.vue:486
 msgid "Referrers"
 msgstr "Verwijzende bronnen"
 
-#: js/components/PageDetailMetrics.vue:527
+#: js/components/PageDetailMetrics.vue:529
 msgid "Countries"
 msgstr "Landen"
 
-#: js/components/PageDetailMetrics.vue:543
+#: js/components/PageDetailMetrics.vue:545
 msgid "Page Speed"
 msgstr "Pagina Snelheid"
 
-#: js/components/PageDetailMetrics.vue:568
+#: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
 msgstr "Zoeken met Google: Zoekopdrachten"
 
-#: js/components/PageDetailMetrics.vue:576
+#: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
 msgstr "Percentage"
 
-#: js/components/PageDetailMetrics.vue:577
+#: js/components/PageDetailMetrics.vue:579
 msgctxt "search ranking"
 msgid "Position"
 msgstr "Positie"
 
-#: js/components/PageDetailMetrics.vue:604
+#: js/components/PageDetailMetrics.vue:606
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google Zoeken: vertoningen en klikken"
 
-#: js/components/PageDetailMetrics.vue:613
+#: js/components/PageDetailMetrics.vue:615
 msgid "Google Search: Conversions"
 msgstr "Google Zoeken: Conversies"
 
-#: js/components/PageListItems.vue:482
+#: js/components/PageListItems.vue:515
 msgid "Error adding root page"
 msgstr "Fout bij het toevoegen van rootpagina"
 
-#: js/components/PageListItems.vue:547
+#: js/components/PageListItems.vue:536
+msgid "Page moved"
+msgstr "Pagina verplaatst"
+
+#: js/components/PageListItems.vue:616
 msgid "Cache cleared"
 msgstr "Cache gewist"
 
-#: js/components/PageListItems.vue:548
+#: js/components/PageListItems.vue:617
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache gewist voor %{num} pagina."
 msgstr[1] "Cache gewist voor %{num} pagina's."
 
-#: js/components/PageListItems.vue:558
+#: js/components/PageListItems.vue:627
 msgid "Error clearing cache"
 msgstr "Fout bij het wissen van de cache"
 
-#: js/components/PageListItems.vue:630
+#: js/components/PageListItems.vue:700
 msgid "Error trashing page"
 msgstr "Fout bij het verplaatsen van de pagina naar de prullenbak"
 
-#: js/components/PageListItems.vue:724
-msgid "Error fetching pages"
-msgstr "Fout bij het ophalen van pagina's"
-
-#: js/components/PageListItems.vue:805
-msgid "Error inserting page"
-msgstr "Fout bij het invoegen van pagina"
-
-#: js/components/PageListItems.vue:869
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:972
 msgid "Error restoring page"
 msgstr "Fout bij het herstellen van pagina"
 
-#: js/components/PageListItems.vue:879
+#: js/components/PageListItems.vue:827
+msgid "Error fetching pages"
+msgstr "Fout bij het ophalen van pagina's"
+
+#: js/components/PageListItems.vue:908
+msgid "Error inserting page"
+msgstr "Fout bij het invoegen van pagina"
+
+#: js/components/PageListItems.vue:982
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, pad: %{path}, domein: %{domain})"
 
-#: js/components/PageListItems.vue:887
+#: js/components/PageListItems.vue:990
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, pad: %{path})"
 
-#: js/components/PageListItems.vue:977
+#: js/components/PageListItems.vue:1082
 msgid "Error moving page"
 msgstr "Fout bij het verplaatsen van pagina"
 
-#: js/components/PageListItems.vue:1068
+#: js/components/PageListItems.vue:1173
 msgid "Error copying page"
 msgstr "Fout bij het kopiëren van pagina"
 
-#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1178 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "Fout bij het ophalen van pagina"
 
-#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1252 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "Fout bij het publiceren van pagina"
 
-#: js/components/PageListItems.vue:1172
+#: js/components/PageListItems.vue:1277
 msgid "All subpages of these pages will be purged as well."
 msgstr "Alle subpagina's van deze pagina's worden ook definitief verwijderd."
 
-#: js/components/PageListItems.vue:1202
+#: js/components/PageListItems.vue:1307
 msgid "Error purging page"
 msgstr "Fout bij het definitief verwijderen van de pagina"
 
-#: js/components/PageListItems.vue:1335
+#: js/components/PageListItems.vue:1440
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} pagina kon niet worden bijgewerkt"
 msgstr[1] "%{num} pagina's konden niet worden bijgewerkt"
 
-#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
-#: js/views/PageDetail.vue:606
+#: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
+#: js/views/PageDetail.vue:624
 msgid "Error saving page"
 msgstr "Fout bij het opslaan van pagina"
 
-#: js/components/PageListItems.vue:1397
+#: js/components/PageListItems.vue:1502
 msgid "Error searching pages"
 msgstr "Fout bij het zoeken naar pagina's"
 
-#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+#: js/components/PageListItems.vue:1712 js/components/PageListItems.vue:1858
 msgctxt "page status"
 msgid "Enable"
 msgstr "Inschakelen"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+#: js/components/PageListItems.vue:1717 js/components/PageListItems.vue:1863
 msgctxt "page status"
 msgid "Disable"
 msgstr "Uitschakelen"
 
-#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
+#: js/components/PageListItems.vue:1733 js/components/PageListItems.vue:1883
 msgid "Clear cache"
 msgstr "Cache wissen"
 
-#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
+#: js/components/PageListItems.vue:1761 js/components/PageListItems.vue:2063
 msgid "Add page"
 msgstr "Pagina toevoegen"
 
-#: js/components/PageListItems.vue:1680
+#: js/components/PageListItems.vue:1785
 msgid "Reload page tree"
 msgstr "Pagina boom opnieuw laden"
 
-#: js/components/PageListItems.vue:1703
+#: js/components/PageListItems.vue:1809
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Gebruik de pijltjestoetsen om te navigeren. Druk op Alt in combinatie met de "
 "pijltjestoetsen om de volgorde te wijzigen."
 
-#: js/components/PageListItems.vue:1705
+#: js/components/PageListItems.vue:1811
 msgid "Moved to position %{position} of %{total}"
 msgstr "Verplaatst naar positie %{position} van %{total}"
 
-#: js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1813
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "Inspringing verkleind tot niveau %{level}, positie %{position} van %{total}"
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1819
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "Inspringing vergroot tot niveau %{level}, positie %{position} van %{total}"
 
-#: js/components/PageListItems.vue:1733
+#: js/components/PageListItems.vue:1839
 msgid "Toggle child nodes"
 msgstr "Onderliggende knooppunten in-/uitklappen"
 
-#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
-#: js/components/PageListItems.vue:1854
+#: js/components/PageListItems.vue:1910 js/components/PageListItems.vue:1935
+#: js/components/PageListItems.vue:1960
 msgid "Before"
 msgstr "Voor"
 
-#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
-#: js/components/PageListItems.vue:1859
+#: js/components/PageListItems.vue:1915 js/components/PageListItems.vue:1940
+#: js/components/PageListItems.vue:1965
 msgid "Into"
 msgstr "Naar"
 
-#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
-#: js/components/PageListItems.vue:1864
+#: js/components/PageListItems.vue:1920 js/components/PageListItems.vue:1945
+#: js/components/PageListItems.vue:1970
 msgid "After"
 msgstr "Na"
 
-#: js/components/PageListItems.vue:1848
+#: js/components/PageListItems.vue:1954
 msgid "Insert"
 msgstr "Invoegen"
 
-#: js/components/PageListItems.vue:1964
+#: js/components/PageListItems.vue:2081
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Toegangsinstellingen toepassen op %{num} pagina."
@@ -1988,21 +1999,21 @@ msgstr "Nieuwe regel"
 msgid "Recall previous messages"
 msgstr "Eerdere berichten terughalen"
 
-#: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
+#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Niet-opgeslagen wijzigingen"
 
-#: js/components/UnsavedDialog.vue:46
+#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr ""
 "Je hebt nog niet-opgeslagen wijzigingen die verloren gaan als je de pagina "
 "verlaat."
 
-#: js/components/UnsavedDialog.vue:52
+#: js/components/UnsavedDialog.vue:49
 msgid "Discard"
 msgstr "Verwerpen"
 
-#: js/components/UnsavedDialog.vue:59
+#: js/components/UnsavedDialog.vue:58
 msgid "Save & leave"
 msgstr "Opslaan en verlaten"
 
@@ -2094,7 +2105,7 @@ msgstr "Rij verplaatsen"
 msgid "Row actions"
 msgstr "Rijacties"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:190
 msgid "None"
 msgstr "Geen"
 
@@ -2799,7 +2810,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Pictogram"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2869,24 +2880,24 @@ msgid "Error publishing element"
 msgstr "Fout bij het publiceren van element"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:532
+#: js/views/PageDetail.vue:549
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Er zijn ongeldige velden, los de fouten eerst op"
 
-#: js/views/ElementDetail.vue:309
+#: js/views/ElementDetail.vue:311
 msgid "Element saved successfully"
 msgstr "Element succesvol opgeslagen"
 
-#: js/views/ElementDetail.vue:323
+#: js/views/ElementDetail.vue:325
 msgid "Error saving element"
 msgstr "Fout bij opslaan element"
 
-#: js/views/ElementDetail.vue:383 js/views/ElementDetail.vue:403
-#: js/views/ElementDetail.vue:408
+#: js/views/ElementDetail.vue:385 js/views/ElementDetail.vue:405
+#: js/views/ElementDetail.vue:410
 msgid "Element"
 msgstr "Element"
 
-#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:399
+#: js/views/ElementDetail.vue:412 js/views/FileDetail.vue:401
 msgid "Used by"
 msgstr "Gebruikt door"
 
@@ -2958,12 +2969,12 @@ msgstr "Bestand succesvol gepubliceerd"
 msgid "File scheduled for publishing at %{date}"
 msgstr "Bestand gepland voor publicatie op %{date}"
 
-#: js/views/FileDetail.vue:323
+#: js/views/FileDetail.vue:325
 msgid "File saved successfully"
 msgstr "Bestand succesvol opgeslagen"
 
-#: js/views/FileDetail.vue:372 js/views/FileDetail.vue:392
-#: js/views/FileDetail.vue:397
+#: js/views/FileDetail.vue:374 js/views/FileDetail.vue:394
+#: js/views/FileDetail.vue:399
 msgid "File"
 msgstr "Bestand"
 
@@ -3023,28 +3034,28 @@ msgstr "Pagina succesvol gepubliceerd"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagina gepland voor publicatie op %{date}"
 
-#: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
+#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
 msgid "Rate this page and suggest improvements"
 msgstr "Beoordeel deze pagina en stel verbeteringen voor"
 
-#: js/views/PageDetail.vue:584
+#: js/views/PageDetail.vue:602
 msgid "Page saved successfully"
 msgstr "Pagina succesvol opgeslagen"
 
-#: js/views/PageDetail.vue:621
+#: js/views/PageDetail.vue:639
 msgid "No page schema for \"content\" found"
 msgstr "Geen paginaschema voor \"content\" gevonden"
 
-#: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
-#: js/views/PageDetail.vue:839
+#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
+#: js/views/PageDetail.vue:857
 msgid "Page"
 msgstr "Pagina"
 
-#: js/views/PageDetail.vue:797
+#: js/views/PageDetail.vue:815
 msgid "Translate page"
 msgstr "Pagina vertalen"
 
-#: js/views/PageDetail.vue:842
+#: js/views/PageDetail.vue:860
 msgid "Metrics"
 msgstr "Statistieken"
 
@@ -3079,6 +3090,12 @@ msgid ""
 msgstr ""
 "AI kan een pagina en inhoud maken op basis van jouw invoer en deze toevoegen "
 "aan de paginaboom"
+
+#~ msgid "Conflict resolution"
+#~ msgstr "Conflictoplossing"
+
+#~ msgid "Confirm"
+#~ msgstr "Bevestigen"
 
 #~ msgid "Selection is required"
 #~ msgstr "Selectie is vereist"

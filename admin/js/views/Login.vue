@@ -171,7 +171,7 @@ export default {
       </v-card-text>
 
       <v-card-actions>
-        <v-btn type="submit" variant="outlined" :disabled="form != true && !autofilled">
+        <v-btn type="submit" variant="flat" color="primary" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>

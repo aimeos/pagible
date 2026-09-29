@@ -66,7 +66,7 @@ describe('PageDetailMetrics', () => {
 
   it('shows loading indicator initially', () => {
     mountMetrics()
-    cy.get('.v-progress-circular').should('exist')
+    cy.get('.loading-overlay .spinner').should('exist')
   })
 
   it('renders the weekly insights card with emphasis colors', () => {
