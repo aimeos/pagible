@@ -21,6 +21,7 @@ import {
 import { markRaw } from 'vue'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
 import { translationCache, TRANSLATION_CACHE_MAX } from '../ckcache'
+import { minChars, maxChars, required } from '../rules'
 import 'ckeditor5/ckeditor5.css'
 
 const ckPlugins = [
@@ -54,6 +55,12 @@ const ckToolbar = [
   'fullscreen'
 ]
 
+/**
+ * Configuration:
+ * - `max`: int, maximum number of characters allowed
+ * - `min`: int, minimum number of characters required if the field isn't empty
+ * - `required`: boolean, if true, the field must not be empty
+ */
 export default {
   components: {
     Ckeditor
@@ -119,14 +126,9 @@ export default {
 
     rules() {
       return [
-        (v) =>
-          !this.config.min ||
-          +v?.length >= +this.config.min ||
-          this.$gettext(`Minimum length is %{num} characters`, { num: this.config.min }),
-        (v) =>
-          !this.config.max ||
-          +v?.length <= +this.config.max ||
-          this.$gettext(`Maximum length is %{num} characters`, { num: this.config.max })
+        required(this.$gettext, this.config.required),
+        minChars(this.$ngettext, this.config.min),
+        maxChars(this.$ngettext, this.config.max)
       ]
     }
   },

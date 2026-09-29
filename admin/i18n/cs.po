@@ -9,13 +9,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:254
-#: js/components/ElementListItems.vue:293
-#: js/components/ElementListItems.vue:429
-#: js/components/ElementListItems.vue:465
-#: js/components/ElementListItems.vue:505
-#: js/components/ElementListItems.vue:547
-#: js/components/ElementListItems.vue:592 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
+#: js/components/ElementListItems.vue:299
+#: js/components/ElementListItems.vue:435
+#: js/components/ElementListItems.vue:471
+#: js/components/ElementListItems.vue:511
+#: js/components/ElementListItems.vue:553
+#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -24,20 +24,20 @@ msgstr ""
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:243 js/components/FileListItems.vue:288
-#: js/components/FileListItems.vue:424 js/components/FileListItems.vue:457
-#: js/components/FileListItems.vue:494 js/components/FileListItems.vue:536
-#: js/components/FileListItems.vue:581
-#: js/components/PageDetailContentList.vue:369
-#: js/components/PageDetailContentList.vue:463
-#: js/components/PageListItems.vue:449 js/components/PageListItems.vue:521
-#: js/components/PageListItems.vue:618 js/components/PageListItems.vue:711
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:844
-#: js/components/PageListItems.vue:975 js/components/PageListItems.vue:1004
-#: js/components/PageListItems.vue:1136 js/components/PageListItems.vue:1177
-#: js/components/PageListItems.vue:1298 js/components/PageListItems.vue:1376
-#: js/components/PageListItems.vue:1427 js/fields/File.vue:147
-#: js/fields/Images.vue:114 js/fields/Items.vue:209 js/publish.js:39
+#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
+#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
+#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
+#: js/components/FileListItems.vue:587
+#: js/components/PageDetailContentList.vue:412
+#: js/components/PageDetailContentList.vue:506
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
+#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
+#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
+#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
+#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
+#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
+#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
@@ -72,6 +72,110 @@ msgstr "Odpověď se již generuje. Počkejte prosím na dokončení."
 #: js/chat.js:58
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Příliš mnoho požadavků. Chvíli počkejte a zkuste to znovu."
+
+#: js/commands.js:53
+msgid "Open command palette"
+msgstr "Otevřít paletu příkazů"
+
+#: js/commands.js:60
+msgid "Confirm dialog"
+msgstr "Potvrdit dialog"
+
+#: js/commands.js:67
+msgid "Save changes"
+msgstr "Uložit změny"
+
+#: js/commands.js:75
+msgid "Open publish menu"
+msgstr "Otevřít nabídku zveřejnění"
+
+#: js/commands.js:81
+msgid "New page, file or element"
+msgstr "Nová stránka, soubor nebo prvek"
+
+#: js/commands.js:87
+msgid "Search in list"
+msgstr "Hledat v seznamu"
+
+#: js/commands.js:93
+msgid "Previous tab"
+msgstr "Předchozí karta"
+
+#: js/commands.js:99
+msgid "Next tab"
+msgstr "Další karta"
+
+#: js/commands.js:105
+msgid "Show or hide side panel"
+msgstr "Zobrazit nebo skrýt boční panel"
+
+#: js/commands.js:111 js/components/DetailAppBar.vue:168
+msgid "Back to list view"
+msgstr "Zpět na zobrazení seznamu"
+
+#: js/commands.js:118
+msgid "Show keyboard shortcuts"
+msgstr "Zobrazit klávesové zkratky"
+
+#: js/commands.js:124
+msgid "Select focused page, file or element"
+msgstr "Vybrat aktivní stránku, soubor nebo prvek"
+
+#: js/commands.js:130
+msgid "Delete focused page, file or element"
+msgstr "Smazat aktivní stránku, soubor nebo prvek"
+
+#: js/commands.js:137
+msgid "Copy page"
+msgstr "Kopírovat stránku"
+
+#: js/commands.js:144
+msgid "Cut page"
+msgstr "Vyjmout stránku"
+
+#: js/commands.js:151
+msgid "Paste page"
+msgstr "Vložit stránku"
+
+#: js/commands.js:170 js/components/CommandPalette.vue:106
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
+#: js/views/PageList.vue:265 js/views/PageList.vue:282
+msgid "Pages"
+msgstr "Stránky"
+
+#: js/commands.js:171
+msgid "Go to pages"
+msgstr "Přejít na stránky"
+
+#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
+#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "Média"
+
+#: js/commands.js:177
+msgid "Go to media"
+msgstr "Přejít na média"
+
+#: js/commands.js:182 js/components/CommandPalette.vue:108
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
+#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+msgid "Shared elements"
+msgstr "Sdílené prvky"
+
+#: js/commands.js:183
+msgid "Go to shared elements"
+msgstr "Přejít na sdílené prvky"
+
+#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/views/AccessList.vue:252
+msgid "Users"
+msgstr "Uživatelé"
+
+#: js/commands.js:189
+msgid "Go to users"
+msgstr "Přejít na uživatele"
 
 #: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
@@ -119,7 +223,7 @@ msgid "Search"
 msgstr "Hledat"
 
 #: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Uložit"
 
@@ -143,13 +247,13 @@ msgstr "Na míru"
 msgid "Available roles"
 msgstr "Dostupné role"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
-#: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1947
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
+#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Nebyly nalezeny žádné záznamy"
 
-#: js/components/ActionMenu.vue:26
+#: js/components/ActionMenu.vue:26 js/components/CommandPalette.vue:104
 msgid "Actions"
 msgstr "Akce"
 
@@ -172,11 +276,13 @@ msgstr "Filtry"
 #: js/components/AsideList.vue:76 js/components/Fields.vue:326
 #: js/components/Fields.vue:359
 msgid "Reset"
-msgstr "Obnovení"
+msgstr "Resetovat"
 
-#: js/components/AsideMeta.vue:21
-msgid "id"
-msgstr "id"
+#: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+msgid "ID"
+msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
 #: js/fields/File.vue:502
@@ -230,7 +336,7 @@ msgstr "Řešení konfliktů"
 
 #: js/components/ChangesDialog.vue:317
 msgid "Conflicts from %{editor}"
-msgstr "Konflikty z adresáře %{editor}"
+msgstr "Konflikty od %{editor}"
 
 #: js/components/ChangesDialog.vue:320
 msgid "%{count} / %{total}"
@@ -254,11 +360,11 @@ msgstr "Přidáno"
 
 #: js/components/ChangesDialog.vue:441
 msgid "Use theirs"
-msgstr "Použijte jejich"
+msgstr "Použít jejich"
 
 #: js/components/ChangesDialog.vue:447
 msgid "Keep mine"
-msgstr "To si nechám"
+msgstr "Ponechat moje"
 
 #: js/components/ChangesDialog.vue:454
 msgid "Merge both"
@@ -287,11 +393,12 @@ msgstr "Co pro vás mohu udělat?"
 
 #: js/components/ChatDialog.vue:365
 msgid "Thinking ..."
-msgstr ""
+msgstr "Přemýšlím ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:798
-#: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1798 js/fields/Items.vue:373
+#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
+#: js/components/PageDetailContentList.vue:937
+#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopírovat"
 
@@ -302,7 +409,7 @@ msgstr "Poslat zprávu..."
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
 #: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
 #: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:768 js/fields/Items.vue:460
+#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
@@ -317,10 +424,49 @@ msgstr "Zastavit"
 msgid "Send"
 msgstr "Odeslat"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:749
-#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:727
-#: js/components/FileListItems.vue:864 js/components/PageListItems.vue:1651
-#: js/components/PageListItems.vue:1891 js/views/AccessList.vue:278
+#: js/components/CommandPalette.vue:105
+msgid "Go to"
+msgstr "Přejít na"
+
+#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
+#: js/components/PageListItems.vue:1911
+msgid "New"
+msgstr "Nový"
+
+#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
+#: js/components/ShortcutDialog.vue:32
+msgid "Command palette"
+msgstr "Paleta příkazů"
+
+#: js/components/CommandPalette.vue:289
+msgid "Type a command or search pages, files and elements"
+msgstr "Zadejte příkaz nebo hledejte stránky, soubory a prvky"
+
+#: js/components/CommandPalette.vue:290
+msgid "Command or search term"
+msgstr "Příkaz nebo hledaný výraz"
+
+#: js/components/CommandPalette.vue:303
+msgid "Commands"
+msgstr "Příkazy"
+
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+msgid "then"
+msgstr "potom"
+
+#: js/components/CommandPalette.vue:329
+msgid "Search failed, please try again"
+msgstr "Vyhledávání selhalo, zkuste to prosím znovu"
+
+#: js/components/CommandPalette.vue:330
+msgid "No results"
+msgstr "Žádné výsledky"
+
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
+#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
+#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
+#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "Trvale smazat"
 
@@ -334,11 +480,6 @@ msgstr[1] "Následující %{num} položky budou trvale smazány a nelze je obnov
 msgstr[2] ""
 "Následujících %{num} položek bude trvale smazáno a nelze je obnovit:"
 
-#: js/components/ConfirmDialog.vue:47 js/components/ElementListItems.vue:875
-#: js/components/PageListItems.vue:892 js/components/PageListItems.vue:1919
-msgid "New"
-msgstr "Nový"
-
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
 #: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
@@ -348,54 +489,50 @@ msgstr "Zrušit"
 msgid "Confirm"
 msgstr "Potvrdit"
 
-#: js/components/DetailAppBar.vue:129 js/views/AccessList.vue:230
+#: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
 #: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "Nabídka"
 
-#: js/components/DetailAppBar.vue:133
-msgid "Back to list view"
-msgstr "Zpět na zobrazení seznamu"
-
-#: js/components/DetailAppBar.vue:149
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Zobrazit historii"
 
-#: js/components/DetailAppBar.vue:158
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Zobrazit změny po sloučení"
 
-#: js/components/DetailAppBar.vue:181 js/components/DetailAppBar.vue:196
-#: js/components/DetailAppBar.vue:200 js/components/ElementListItems.vue:729
-#: js/components/ElementListItems.vue:824 js/components/FileListItems.vue:707
-#: js/components/FileListItems.vue:834 js/components/PageListItems.vue:1607
-#: js/components/PageListItems.vue:1754
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
+#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
+#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
+#: js/components/PageListItems.vue:1746
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: js/components/DetailAppBar.vue:203
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
-msgstr ""
+msgstr "Zveřejnit a zavřít"
 
-#: js/components/DetailAppBar.vue:208 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Naplánovat"
 
-#: js/components/DetailAppBar.vue:243
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
-msgstr ""
+msgstr "Naplánovat a zavřít"
 
-#: js/components/DetailAppBar.vue:251 js/views/ElementList.vue:236
+#: js/components/DetailAppBar.vue:289 js/views/ElementList.vue:236
 #: js/views/FileList.vue:235 js/views/PageList.vue:273
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "Přepínání bočního menu"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:734
-#: js/components/ElementListItems.vue:839 js/components/FileListItems.vue:712
-#: js/components/FileListItems.vue:846 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1623 js/components/PageListItems.vue:1775
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
+#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
+#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
 msgid "Edit properties"
 msgstr "Upravit vlastnosti"
 
@@ -414,7 +551,7 @@ msgid "Language"
 msgstr "Jazyk"
 
 #: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:269
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "Použít"
 
@@ -433,23 +570,12 @@ msgstr "ano"
 msgid "no"
 msgstr "ne"
 
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:24
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
-msgid "Shared elements"
-msgstr "Sdílené prvky"
-
-#: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
-msgid "ID"
-msgstr "ID"
-
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
-msgstr "ADRESA URL"
+msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:440
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
 msgid "Restricted"
 msgstr "Omezeno"
 
@@ -466,96 +592,96 @@ msgstr "Typ"
 #: js/views/ElementList.vue:124 js/views/FileList.vue:123
 #: js/views/PageList.vue:148
 msgid "Published"
-msgstr "Publikováno"
+msgstr "Zveřejněno"
 
-#: js/components/ElementListItems.vue:319
+#: js/components/ElementListItems.vue:325
 msgid "Error trashing shared element"
 msgstr "Chyba při přesunu sdíleného prvku do koše"
 
-#: js/components/ElementListItems.vue:456
+#: js/components/ElementListItems.vue:462
 msgid "Error restoring shared element"
 msgstr "Chyba při obnovení sdíleného prvku"
 
-#: js/components/ElementListItems.vue:496
+#: js/components/ElementListItems.vue:502
 msgid "Error publishing shared element"
-msgstr "Chyba při publikování sdíleného prvku"
+msgstr "Chyba při zveřejňování sdíleného prvku"
 
-#: js/components/ElementListItems.vue:534
+#: js/components/ElementListItems.vue:540
 msgid "Error purging shared element"
 msgstr "Chyba při trvalém mazání sdíleného prvku"
 
-#: js/components/ElementListItems.vue:585
+#: js/components/ElementListItems.vue:591
 msgid "Error saving shared element"
 msgstr "Chyba při ukládání sdíleného prvku"
 
-#: js/components/ElementListItems.vue:642
+#: js/components/ElementListItems.vue:648
 msgid "Error fetching shared elements"
 msgstr "Chyba při načítání sdílených prvků"
 
-#: js/components/ElementListItems.vue:713 js/components/FileListItems.vue:691
-#: js/components/PageDetailContentList.vue:784
-#: js/components/PageListItems.vue:1591 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
+#: js/components/PageDetailContentList.vue:827
+#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "Přepnout výběr"
 
-#: js/components/ElementListItems.vue:739
-#: js/components/ElementListItems.vue:847 js/components/FileListItems.vue:717
-#: js/components/FileListItems.vue:854
-#: js/components/PageDetailContentList.vue:818
-#: js/components/PageDetailContentList.vue:896
-#: js/components/PageListItems.vue:1641 js/components/PageListItems.vue:1881
-#: js/fields/Items.vue:383 js/fields/Table.vue:213 js/fields/Table.vue:283
+#: js/components/ElementListItems.vue:745
+#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
+#: js/components/FileListItems.vue:865
+#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:947
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
+#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "Smazat"
 
-#: js/components/ElementListItems.vue:744
-#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:722
-#: js/components/FileListItems.vue:859 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1886
+#: js/components/ElementListItems.vue:750
+#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
+#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
+#: js/components/PageListItems.vue:1878
 msgid "Restore"
 msgstr "Obnovit"
 
-#: js/components/ElementListItems.vue:758
-#: js/components/ElementListItems.vue:904
-#: js/components/PageDetailContentList.vue:996
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:500
+#: js/components/ElementListItems.vue:764
+#: js/components/ElementListItems.vue:911
+#: js/components/PageDetailContentList.vue:1047
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "Přidat prvek"
 
-#: js/components/ElementListItems.vue:772 js/components/FileListItems.vue:761
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:141
+#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
+#: js/components/PageDetailContentList.vue:870
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Vyhledávání"
 
-#: js/components/ElementListItems.vue:783 js/components/FileListItems.vue:774
+#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
 msgid "Updated by another user"
 msgstr "Aktualizováno jiným uživatelem"
 
-#: js/components/ElementListItems.vue:789 js/components/FileListItems.vue:780
-#: js/components/PageListItems.vue:1690
+#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
+#: js/components/PageListItems.vue:1686
 msgid "Refresh"
 msgstr "Obnovit"
 
-#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:152
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "Obnovit prvky"
 
-#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:969
+#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
 #: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1942 js/fields/Autocomplete.vue:188
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:164
+#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
+#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
 msgstr "Načítání"
 
 #: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:425 js/fields/Items.vue:431
+#: js/fields/Items.vue:422 js/fields/Items.vue:428
 msgid "Translate"
 msgstr "Přeložit"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:449
+#: js/components/Fields.vue:307 js/fields/Items.vue:446
 msgid "Generate text"
 msgstr "Generování textu"
 
@@ -569,19 +695,19 @@ msgstr "Přepsáno"
 
 #: js/components/FieldsAside.vue:86
 msgid "Mobile"
-msgstr ""
+msgstr "Mobil"
 
 #: js/components/FieldsAside.vue:87
 msgid "Tablet"
-msgstr ""
+msgstr "Tablet"
 
 #: js/components/FieldsAside.vue:88
 msgid "Computer"
-msgstr ""
+msgstr "Počítač"
 
 #: js/components/FieldsAside.vue:88
 msgid "Full width"
-msgstr ""
+msgstr "Plná šířka"
 
 #: js/components/FieldsAside.vue:179
 msgid "Content Element"
@@ -593,24 +719,24 @@ msgstr "Přidat prvek před"
 
 #: js/components/FieldsAside.vue:200
 msgid "Add element after"
-msgstr "Přidání prvku za"
+msgstr "Přidat prvek za"
 
 #: js/components/FieldsAside.vue:208
 msgid "Remove element"
-msgstr "Odstranění prvku"
+msgstr "Odstranit prvek"
 
 #: js/components/FieldsAside.vue:216
 msgid "Responsive preview"
-msgstr ""
+msgstr "Responzivní náhled"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:939
+#: js/components/PageDetailContentList.vue:990
 msgid "Change to"
 msgstr "Změna na"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:383
+#: js/fields/Images.vue:386
 msgid "Edit"
 msgstr "Upravit"
 
@@ -619,9 +745,9 @@ msgstr "Upravit"
 msgid "Remove"
 msgstr "Odstranit"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:273
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:146
+#: js/fields/File.vue:166 js/fields/Images.vue:149
 msgid "Error adding file %{path}"
 msgstr "Chyba při přidávání souboru %{path}"
 
@@ -643,7 +769,7 @@ msgstr "Nový obrázek"
 
 #: js/components/FileAiDialog.vue:267
 msgid "Current images"
-msgstr "Aktuální snímky"
+msgstr "Aktuální obrázky"
 
 #: js/components/FileAiDialog.vue:292
 msgid "Images used"
@@ -661,8 +787,8 @@ msgstr "Zkopírováno do schránky"
 msgid "Error describing file"
 msgstr "Chyba při popisu souboru"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:574
-#: js/fields/File.vue:300 js/fields/Images.vue:296 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
+#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
 msgid "Error saving file"
 msgstr "Chyba při ukládání souboru"
 
@@ -769,21 +895,25 @@ msgstr "Odstranění pozadí"
 #: js/components/FileDetailItemImage.vue:810
 #: js/components/FileDetailItemImage.vue:868
 msgid "Expand image"
-msgstr "Rozbalit obrázek"
+msgstr "Rozšířit obrázek"
 
 #: js/components/FileDetailItemImage.vue:825
+msgctxt "image edge"
 msgid "Top"
 msgstr "Nahoru"
 
 #: js/components/FileDetailItemImage.vue:837
+msgctxt "image edge"
 msgid "Left"
 msgstr "Vlevo"
 
 #: js/components/FileDetailItemImage.vue:847
+msgctxt "image edge"
 msgid "Right"
 msgstr "Vpravo"
 
 #: js/components/FileDetailItemImage.vue:859
+msgctxt "image edge"
 msgid "Bottom"
 msgstr "Spodní část"
 
@@ -813,7 +943,7 @@ msgstr "Vodorovné překlopení"
 
 #: js/components/FileDetailItemImage.vue:953
 msgid "Flip vertically"
-msgstr "Překlopení na výšku"
+msgstr "Svislé překlopení"
 
 #: js/components/FileDetailItemImage.vue:960
 msgid "Convert to monochrome"
@@ -826,7 +956,7 @@ msgstr "Stáhnout"
 #: js/components/FileDetailItemImage.vue:965
 #: js/components/FileDetailItemImage.vue:970
 msgid "Undo"
-msgstr "Zrušit"
+msgstr "Vrátit zpět"
 
 #: js/components/FileDetailItemImage.vue:979
 msgid "Previous edit"
@@ -846,7 +976,7 @@ msgstr "Chyba při ukládání obálky videa"
 
 #: js/components/FileDetailItemVideo.vue:164
 msgid "Error removing video cover"
-msgstr "Chyba při odstraňování krytu videa"
+msgstr "Chyba při odstraňování obálky videa"
 
 #: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
@@ -858,68 +988,57 @@ msgstr "Chyba při nahrávání obálky videa"
 
 #: js/components/FileDetailItemVideo.vue:243
 msgid "Use as cover image"
-msgstr "Použití jako titulní obrázek"
+msgstr "Použít jako titulní obrázek"
 
 #: js/components/FileDetailItemVideo.vue:251
 msgid "Upload cover image"
 msgstr "Nahrát obrázek obálky"
 
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:22
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
-msgid "Pages"
-msgstr "Stránky"
-
 #: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
 msgid "Elements"
 msgstr "Prvky"
 
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:23
-#: js/views/FileList.vue:227 js/views/FileList.vue:244
-msgid "Media"
-msgstr "Média"
-
-#: js/components/FileListItems.vue:314
+#: js/components/FileListItems.vue:320
 msgid "Error trashing file"
 msgstr "Chyba při přesunu souboru do koše"
 
-#: js/components/FileListItems.vue:450
+#: js/components/FileListItems.vue:456
 msgid "Error restoring file"
 msgstr "Chyba při obnovení souboru"
 
-#: js/components/FileListItems.vue:487 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
 msgid "Error publishing file"
-msgstr "Chyba při publikování souboru"
+msgstr "Chyba při zveřejňování souboru"
 
-#: js/components/FileListItems.vue:523
+#: js/components/FileListItems.vue:529
 msgid "Error purging file"
 msgstr "Chyba při trvalém mazání souboru"
 
-#: js/components/FileListItems.vue:620
+#: js/components/FileListItems.vue:626
 msgid "Error fetching files"
 msgstr "Chyba při načítání souborů"
 
-#: js/components/FileListItems.vue:738 js/components/FileListItems.vue:748
-#: js/components/FileListItems.vue:984 js/components/FileListItems.vue:994
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:409
-#: js/fields/Images.vue:433
+#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
+#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
+#: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "Přidat soubory"
 
-#: js/components/FileListItems.vue:748 js/components/FileListItems.vue:950
-#: js/components/FileListItems.vue:994 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
+#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Chránit pomocí přístupu ke stránce"
 
-#: js/components/FileListItems.vue:786
+#: js/components/FileListItems.vue:793
 msgid "Reload files"
 msgstr "Načíst soubory znovu"
 
-#: js/components/FileListItems.vue:795
+#: js/components/FileListItems.vue:802
 msgid "Grid view"
 msgstr "Zobrazení mřížky"
 
-#: js/components/FileListItems.vue:803
+#: js/components/FileListItems.vue:810
 msgid "List view"
 msgstr "Zobrazení seznamu"
 
@@ -935,7 +1054,7 @@ msgstr "Alespoň jeden soubor není typu \"%{mime}*\"."
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Soubor není typu \"%{mime}*\"."
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:416
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
 msgid "Add files from URLs"
 msgstr "Přidávání souborů z adres URL"
 
@@ -952,7 +1071,7 @@ msgid "Enter URL"
 msgstr "Zadejte adresu URL"
 
 #: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:957
+#: js/components/PageDetailContentList.vue:1008
 msgid "Shared element"
 msgstr "Sdílený prvek"
 
@@ -971,9 +1090,9 @@ msgstr "Přesunuto z pozice %{from} do %{to}"
 #: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
-msgstr[0] "Pole %{num} změněno"
-msgstr[1] "%{num} polí změněno"
-msgstr[2] "%{num} polí změněno"
+msgstr[0] "Změněno %{num} pole"
+msgstr[1] "Změněna %{num} pole"
+msgstr[2] "Změněno %{num} polí"
 
 #: js/components/HistoryDialog.vue:77
 msgid "%{selected} of %{total} selected"
@@ -994,37 +1113,37 @@ msgstr "Hodnota"
 #: js/components/HistoryDialog.vue:172
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
-msgstr[0] "Přidán blok %{num}"
-msgstr[1] "Přidáno %{num} bloků"
+msgstr[0] "Přidán %{num} blok"
+msgstr[1] "Přidány %{num} bloky"
 msgstr[2] "Přidáno %{num} bloků"
 
 #: js/components/HistoryDialog.vue:173
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
-msgstr[0] "Blok %{num} odstraněn"
-msgstr[1] "%{num} bloky odstraněny"
-msgstr[2] "%{num} bloky odstraněny"
+msgstr[0] "Odstraněn %{num} blok"
+msgstr[1] "Odstraněny %{num} bloky"
+msgstr[2] "Odstraněno %{num} bloků"
 
 #: js/components/HistoryDialog.vue:174
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
-msgstr[0] "%{num} blok změněn"
-msgstr[1] "%{num} bloků změněno"
-msgstr[2] "%{num} bloků změněno"
+msgstr[0] "Změněn %{num} blok"
+msgstr[1] "Změněny %{num} bloky"
+msgstr[2] "Změněno %{num} bloků"
 
 #: js/components/HistoryDialog.vue:175
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
-msgstr[0] "Blok %{num} byl přesunut"
-msgstr[1] "Přesunuto %{num} bloků"
+msgstr[0] "Přesunut %{num} blok"
+msgstr[1] "Přesunuty %{num} bloky"
 msgstr[2] "Přesunuto %{num} bloků"
 
 #: js/components/HistoryDialog.vue:176
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
-msgstr[0] "%{num} soubor změněn"
-msgstr[1] "%{num} souborů změněno"
-msgstr[2] "%{num} souborů změněno"
+msgstr[0] "Změněn %{num} soubor"
+msgstr[1] "Změněny %{num} soubory"
+msgstr[2] "Změněno %{num} souborů"
 
 #: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
 #: js/components/HistoryDialog.vue:302
@@ -1053,7 +1172,7 @@ msgstr "Naplánováno na %{date}"
 
 #: js/components/HistoryDialog.vue:231
 msgid "Select all"
-msgstr "Vyberte vše"
+msgstr "Vybrat vše"
 
 #: js/components/HistoryDialog.vue:245
 msgid "Block added"
@@ -1065,11 +1184,11 @@ msgstr "Blok odstraněn"
 
 #: js/components/HistoryDialog.vue:266
 msgid "Keep current position"
-msgstr "Udržujte aktuální pozici"
+msgstr "Ponechat aktuální pozici"
 
 #: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
 msgid "Keep current value"
-msgstr "Udržujte aktuální hodnotu"
+msgstr "Ponechat aktuální hodnotu"
 
 #: js/components/HistoryDialog.vue:312
 msgid "Previous version: Latest saved version"
@@ -1130,9 +1249,9 @@ msgstr "Náhled tabulky"
 #: js/components/HistoryField.vue:138
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
-msgstr[0] "Řádek %{num} vynechán"
-msgstr[1] "%{num} řádků vynecháno"
-msgstr[2] "%{num} řádků vynecháno"
+msgstr[0] "Vynechán %{num} řádek"
+msgstr[1] "Vynechány %{num} řádky"
+msgstr[2] "Vynecháno %{num} řádků"
 
 #: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
 msgid "Editor"
@@ -1154,7 +1273,7 @@ msgstr "Nejstarší"
 msgid "Oldest edit"
 msgstr "Nejstarší úprava"
 
-#: js/components/ListSort.vue:35 js/components/PageDetailMetrics.vue:577
+#: js/components/ListSort.vue:35
 msgid "Position"
 msgstr "Pozice"
 
@@ -1170,13 +1289,13 @@ msgstr "Použití"
 msgid "Sort by"
 msgstr "Seřadit podle"
 
-#: js/components/Navigation.vue:25 js/views/AccessList.vue:252
-msgid "Users"
-msgstr "Uživatelé"
-
-#: js/components/Navigation.vue:45
+#: js/components/Navigation.vue:53
 msgid "Panels"
 msgstr "Panely"
+
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+msgid "Keyboard shortcuts"
+msgstr "Klávesové zkratky"
 
 #: js/components/PageAccess.vue:104
 msgid "Error changing page access"
@@ -1190,24 +1309,24 @@ msgstr "Změny přístupu se projeví okamžitě po vypršení platnosti mezipam
 msgid "Public"
 msgstr "Veřejné"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
 msgid "Authenticated users"
 msgstr "Ověření uživatelé"
 
 #: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:443 js/components/PageListItems.vue:1628
-#: js/components/PageListItems.vue:1780 js/components/PageListItems.vue:1969
+#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
+#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Přístup"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:283
+#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Hromadné změny stránek jsou omezeny na 1 000 stránek"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:277
+#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
-msgstr "Aplikujte rekurzivně"
+msgstr "Použít rekurzivně"
 
 #: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:56
 #: js/views/PageList.vue:177
@@ -1297,7 +1416,7 @@ msgstr "Téma"
 
 #: js/components/PageBulkDialog.vue:224
 msgid "Change page type"
-msgstr "Změňte typ stránky"
+msgstr "Změnit typ stránky"
 
 #: js/components/PageBulkDialog.vue:229
 #: js/components/PageDetailItemProps.vue:339
@@ -1306,7 +1425,7 @@ msgstr "Typ stránky"
 
 #: js/components/PageBulkDialog.vue:236
 msgid "Change tag"
-msgstr "Změnit štítek"
+msgstr "Změnit značku"
 
 #: js/components/PageBulkDialog.vue:240
 #: js/components/PageDetailItemProps.vue:350
@@ -1322,132 +1441,134 @@ msgstr "Změnit doménu"
 msgid "Domain"
 msgstr "Doména"
 
-#: js/components/PageDetailContentList.vue:184
-#: js/components/PageDetailContentList.vue:194
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:185
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:690
 msgid "Content element not found"
 msgstr "Prvek obsahu nebyl nalezen"
 
-#: js/components/PageDetailContentList.vue:420
+#: js/components/PageDetailContentList.vue:463
 msgid "Error refining content"
-msgstr "Chybné upřesnění obsahu"
+msgstr "Chyba při upřesňování obsahu"
 
-#: js/components/PageDetailContentList.vue:470
+#: js/components/PageDetailContentList.vue:513
 msgid "Element not found"
 msgstr "Prvek nebyl nalezen"
 
-#: js/components/PageDetailContentList.vue:475
+#: js/components/PageDetailContentList.vue:518
 msgid "Element is already shared"
 msgstr "Prvek je již sdílený"
 
-#: js/components/PageDetailContentList.vue:518
+#: js/components/PageDetailContentList.vue:561
 msgid "Unable to make element shared"
 msgstr "Nelze vytvořit sdílený prvek"
 
-#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:580
 msgid "Not available for this content element"
 msgstr "Pro tento prvek obsahu není k dispozici"
 
-#: js/components/PageDetailContentList.vue:654
+#: js/components/PageDetailContentList.vue:697
 msgid "Element is not shared"
 msgstr "Prvek není sdílený"
 
-#: js/components/PageDetailContentList.vue:733
+#: js/components/PageDetailContentList.vue:776
 msgid "Describe the task you want to perform"
 msgstr "Popište úkol, který chcete provést"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "Skrýt nápovědu"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "Zobrazit nápovědu"
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refining ..."
 msgstr "Vylepšování..."
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refine content based on prompt"
 msgstr "Zpřesnění obsahu na základě výzvy"
 
-#: js/components/PageDetailContentList.vue:776 js/views/ElementList.vue:291
+#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
 #: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "Nápověda"
 
-#: js/components/PageDetailContentList.vue:777
+#: js/components/PageDetailContentList.vue:820
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "Umělá inteligence dokáže přidávat nebo vylepšovat obsah na základě vašich "
 "údajů."
 
-#: js/components/PageDetailContentList.vue:778
+#: js/components/PageDetailContentList.vue:821
 msgid "It can take a long time depending on the task and content size"
 msgstr "Může to trvat dlouho v závislosti na úkolu a velikosti obsahu."
 
-#: js/components/PageDetailContentList.vue:803
-#: js/components/PageDetailContentList.vue:891
-#: js/components/PageListItems.vue:1793 js/fields/Items.vue:378
+#: js/components/PageDetailContentList.vue:846
+#: js/components/PageDetailContentList.vue:942
+#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+msgctxt "clipboard"
 msgid "Cut"
-msgstr "Střih"
+msgstr "Vyjmout"
 
-#: js/components/PageDetailContentList.vue:808
-#: js/components/PageListItems.vue:1806 js/components/PageListItems.vue:1831
+#: js/components/PageDetailContentList.vue:851
+#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
 msgid "Paste"
 msgstr "Vložit"
 
-#: js/components/PageDetailContentList.vue:813
-#: js/components/PageDetailContentList.vue:949
+#: js/components/PageDetailContentList.vue:856
+#: js/components/PageDetailContentList.vue:1000
 msgid "Merge"
-msgstr "Sloučení"
+msgstr "Sloučit"
 
-#: js/components/PageDetailContentList.vue:866 js/fields/Items.vue:348
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
 msgid "Move element"
 msgstr "Přesunout prvek"
 
-#: js/components/PageDetailContentList.vue:904 js/fields/Items.vue:391
+#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
 msgid "Paste before"
 msgstr "Vložit před"
 
-#: js/components/PageDetailContentList.vue:909 js/fields/Items.vue:396
+#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
 msgid "Paste after"
 msgstr "Vložit po"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:401
-#: js/fields/Table.vue:200 js/fields/Table.vue:270
+#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
-msgstr "Vložte před"
+msgstr "Vložit před"
 
-#: js/components/PageDetailContentList.vue:919 js/fields/Items.vue:406
-#: js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
-msgstr "Vložte za"
+msgstr "Vložit za"
 
-#: js/components/PageDetailContentList.vue:929
+#: js/components/PageDetailContentList.vue:980
 msgid "Make shared"
-msgstr "Vytvářejte sdílené"
+msgstr "Nastavit jako sdílený"
 
-#: js/components/PageDetailContentList.vue:934
+#: js/components/PageDetailContentList.vue:985
 msgid "Merge copy"
-msgstr "Sloučení kopií"
+msgstr "Sloučit kopii"
 
-#: js/components/PageDetailContentList.vue:944
+#: js/components/PageDetailContentList.vue:995
+msgctxt "text element"
 msgid "Split"
 msgstr "Rozdělit"
 
-#: js/components/PageDetailEditor.vue:77
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Dvojitým kliknutím upravíte"
 
-#: js/components/PageDetailEditor.vue:260
+#: js/components/PageDetailEditor.vue:266
 msgid "Preview mode"
 msgstr "Režim náhledu"
 
-#: js/components/PageDetailEditor.vue:263
+#: js/components/PageDetailEditor.vue:269
 msgid "Not CMS content"
 msgstr "Ne obsah CMS"
 
@@ -1504,10 +1625,9 @@ msgstr "Prvek již byl přidán"
 
 #: js/components/PageDetailItemSection.vue:185
 msgid "Remove content element"
-msgstr "Odstranění prvku obsahu"
+msgstr "Odstranit prvek obsahu"
 
 #: js/components/PageDetailMetrics.vue:149
-#: js/components/PageDetailMetrics.vue:574
 msgid "Views"
 msgstr "Zobrazení"
 
@@ -1525,6 +1645,7 @@ msgid "Duration"
 msgstr "Doba trvání"
 
 #: js/components/PageDetailMetrics.vue:170
+#: js/components/PageDetailMetrics.vue:574
 msgid "Impressions"
 msgstr "Zobrazení"
 
@@ -1563,7 +1684,7 @@ msgstr "Konverzní poměr Google"
 
 #: js/components/PageDetailMetrics.vue:202
 msgid "Round trip time"
-msgstr "Doba jízdy tam a zpět"
+msgstr "Doba odezvy (RTT)"
 
 #: js/components/PageDetailMetrics.vue:203
 msgid "Time to first byte"
@@ -1571,15 +1692,15 @@ msgstr "Čas do prvního bajtu"
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "First contentful paint"
-msgstr "První obsahová barva"
+msgstr "První vykreslení obsahu"
 
 #: js/components/PageDetailMetrics.vue:205
 msgid "Largest contentful paint"
-msgstr "Největší obsahová barva"
+msgstr "Vykreslení největšího obsahu"
 
 #: js/components/PageDetailMetrics.vue:206
 msgid "Interaction to next paint"
-msgstr "Interakce na další barvu"
+msgstr "Interakce s dalším vykreslením"
 
 #: js/components/PageDetailMetrics.vue:207
 msgid "Cumulative layout shift"
@@ -1625,6 +1746,11 @@ msgstr "Vyhledávání na Googlu: Dotazy"
 msgid "Percent"
 msgstr "Procenta"
 
+#: js/components/PageDetailMetrics.vue:577
+msgctxt "search ranking"
+msgid "Position"
+msgstr "Pozice"
+
 #: js/components/PageDetailMetrics.vue:604
 msgid "Google Search: Impressions & Clicks"
 msgstr "Vyhledávání na Googlu: Zobrazení a kliknutí"
@@ -1633,151 +1759,153 @@ msgstr "Vyhledávání na Googlu: Zobrazení a kliknutí"
 msgid "Google Search: Conversions"
 msgstr "Vyhledávání na Googlu: Konverze"
 
-#: js/components/PageListItems.vue:478
+#: js/components/PageListItems.vue:482
 msgid "Error adding root page"
 msgstr "Chyba při přidávání kořenové stránky"
 
-#: js/components/PageListItems.vue:551
+#: js/components/PageListItems.vue:547
 msgid "Cache cleared"
-msgstr "Cache vymazána"
+msgstr "Mezipaměť vymazána"
 
-#: js/components/PageListItems.vue:552
+#: js/components/PageListItems.vue:548
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Mezipaměť vymazána pro %{num} stránku."
+msgstr[1] "Mezipaměť vymazána pro %{num} stránky."
+msgstr[2] "Mezipaměť vymazána pro %{num} stránek."
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:558
 msgid "Error clearing cache"
 msgstr "Chyba při mazání mezipaměti"
 
-#: js/components/PageListItems.vue:658
+#: js/components/PageListItems.vue:630
 msgid "Error trashing page"
 msgstr "Chyba při přesunu stránky do koše"
 
-#: js/components/PageListItems.vue:752
+#: js/components/PageListItems.vue:724
 msgid "Error fetching pages"
 msgstr "Chyba při načítání stránek"
 
-#: js/components/PageListItems.vue:833
+#: js/components/PageListItems.vue:805
 msgid "Error inserting page"
 msgstr "Chyba při vkládání stránky"
 
-#: js/components/PageListItems.vue:886
+#: js/components/PageListItems.vue:869
 msgid "Error restoring page"
 msgstr "Chyba obnovení stránky"
 
-#: js/components/PageListItems.vue:896
+#: js/components/PageListItems.vue:879
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, adresa: %{path}, doména: %{domain})"
 
-#: js/components/PageListItems.vue:904
+#: js/components/PageListItems.vue:887
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, adresa: %{path})"
 
-#: js/components/PageListItems.vue:994
+#: js/components/PageListItems.vue:977
 msgid "Error moving page"
 msgstr "Chyba při přesunu stránky"
 
-#: js/components/PageListItems.vue:1085
+#: js/components/PageListItems.vue:1068
 msgid "Error copying page"
 msgstr "Chyba při kopírování stránky"
 
-#: js/components/PageListItems.vue:1090 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "Chyba při načítání stránky"
 
-#: js/components/PageListItems.vue:1170 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
 msgid "Error publishing page"
-msgstr "Chyba při publikování stránky"
+msgstr "Chyba při zveřejňování stránky"
 
-#: js/components/PageListItems.vue:1195
+#: js/components/PageListItems.vue:1172
 msgid "All subpages of these pages will be purged as well."
 msgstr "Všechny podstránky těchto stránek budou rovněž trvale smazány."
 
-#: js/components/PageListItems.vue:1225
+#: js/components/PageListItems.vue:1202
 msgid "Error purging page"
 msgstr "Chyba při trvalém mazání stránky"
 
-#: js/components/PageListItems.vue:1358
+#: js/components/PageListItems.vue:1335
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} stránku se nepodařilo aktualizovat"
 msgstr[1] "%{num} stránky se nepodařilo aktualizovat"
 msgstr[2] "%{num} stránek se nepodařilo aktualizovat"
 
-#: js/components/PageListItems.vue:1369 js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
 #: js/views/PageDetail.vue:606
 msgid "Error saving page"
 msgstr "Chyba při ukládání stránky"
 
-#: js/components/PageListItems.vue:1420
+#: js/components/PageListItems.vue:1397
 msgid "Error searching pages"
 msgstr "Chyba při hledání stránek"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1760
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+msgctxt "page status"
 msgid "Enable"
 msgstr "Povolit"
 
-#: js/components/PageListItems.vue:1617 js/components/PageListItems.vue:1765
+#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+msgctxt "page status"
 msgid "Disable"
 msgstr "Zakázat"
 
-#: js/components/PageListItems.vue:1633 js/components/PageListItems.vue:1785
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
 msgid "Clear cache"
 msgstr "Vymazat mezipaměť"
 
-#: js/components/PageListItems.vue:1661 js/components/PageListItems.vue:1954
+#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
 msgid "Add page"
 msgstr "Přidat stránku"
 
-#: js/components/PageListItems.vue:1684
+#: js/components/PageListItems.vue:1680
 msgid "Reload page tree"
 msgstr "Znovu načíst strom stránek"
 
-#: js/components/PageListItems.vue:1711
+#: js/components/PageListItems.vue:1703
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "K pohybu po stránce používejte šipky. K změně pořadí použijte klávesu Alt "
 "spolu se šipkami."
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1705
 msgid "Moved to position %{position} of %{total}"
 msgstr "Přesunuto na pozici %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1715
+#: js/components/PageListItems.vue:1707
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Odsazení zmenšeno na úroveň %{level}, pozice %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1721
+#: js/components/PageListItems.vue:1713
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Odsazeno na úroveň %{level}, pozice %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1733
 msgid "Toggle child nodes"
 msgstr "Přepínání podřízených uzlů"
 
-#: js/components/PageListItems.vue:1812 js/components/PageListItems.vue:1837
-#: js/components/PageListItems.vue:1862
+#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
+#: js/components/PageListItems.vue:1854
 msgid "Before"
 msgstr "Před"
 
-#: js/components/PageListItems.vue:1817 js/components/PageListItems.vue:1842
-#: js/components/PageListItems.vue:1867
+#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
+#: js/components/PageListItems.vue:1859
 msgid "Into"
-msgstr "Na"
+msgstr "Do"
 
-#: js/components/PageListItems.vue:1822 js/components/PageListItems.vue:1847
-#: js/components/PageListItems.vue:1872
+#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
+#: js/components/PageListItems.vue:1864
 msgid "After"
 msgstr "Po"
 
-#: js/components/PageListItems.vue:1856
+#: js/components/PageListItems.vue:1848
 msgid "Insert"
-msgstr "Vložte"
+msgstr "Vložit"
 
-#: js/components/PageListItems.vue:1972
+#: js/components/PageListItems.vue:1964
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Použít nastavení přístupu na %{num} stránku."
@@ -1800,6 +1928,78 @@ msgstr "nezařazené"
 msgid "Error fetching content elements"
 msgstr "Chyba při načítání obsahových prvků"
 
+#: js/components/ShortcutDialog.vue:23
+msgid "General"
+msgstr "Obecné"
+
+#: js/components/ShortcutDialog.vue:28
+msgid "Close dialog or menu"
+msgstr "Zavřít dialog nebo nabídku"
+
+#: js/components/ShortcutDialog.vue:34
+msgid "Move between commands and results"
+msgstr "Přecházet mezi příkazy a výsledky"
+
+#: js/components/ShortcutDialog.vue:35
+msgid "Run command or open result"
+msgstr "Spustit příkaz nebo otevřít výsledek"
+
+#: js/components/ShortcutDialog.vue:36
+msgid "Close command palette"
+msgstr "Zavřít paletu příkazů"
+
+#: js/components/ShortcutDialog.vue:40
+msgid "Lists"
+msgstr "Seznamy"
+
+#: js/components/ShortcutDialog.vue:44
+msgid "Edit views"
+msgstr "Editační zobrazení"
+
+#: js/components/ShortcutDialog.vue:48
+msgid "Page content"
+msgstr "Obsah stránky"
+
+#: js/components/ShortcutDialog.vue:49
+msgid "Move content element up or down"
+msgstr "Posunout prvek obsahu nahoru nebo dolů"
+
+#: js/components/ShortcutDialog.vue:52
+msgid "Page tree"
+msgstr "Strom stránek"
+
+#: js/components/ShortcutDialog.vue:54
+msgid "Move between pages"
+msgstr "Přecházet mezi stránkami"
+
+#: js/components/ShortcutDialog.vue:55
+msgid "Expand page"
+msgstr "Rozbalit stránku"
+
+#: js/components/ShortcutDialog.vue:56
+msgid "Add subpage to focused page"
+msgstr "Přidat podstránku k aktivní stránce"
+
+#: js/components/ShortcutDialog.vue:57
+msgid "Reorder or re-nest page"
+msgstr "Přeuspořádat nebo přesunout stránku"
+
+#: js/components/ShortcutDialog.vue:62
+msgid "AI chat"
+msgstr "AI chat"
+
+#: js/components/ShortcutDialog.vue:64
+msgid "Send message"
+msgstr "Odeslat zprávu"
+
+#: js/components/ShortcutDialog.vue:65
+msgid "New line"
+msgstr "Nový řádek"
+
+#: js/components/ShortcutDialog.vue:66
+msgid "Recall previous messages"
+msgstr "Vyvolat předchozí zprávy"
+
 #: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
 msgid "Unsaved changes"
 msgstr "Neuložené změny"
@@ -1810,7 +2010,7 @@ msgstr "Máte neuložené změny, které se ztratí, pokud stránku opustíte."
 
 #: js/components/UnsavedDialog.vue:52
 msgid "Discard"
-msgstr "Zrušit"
+msgstr "Zahodit"
 
 #: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
@@ -1836,22 +2036,11 @@ msgstr "Uživatelské menu"
 msgid "Logout"
 msgstr "Odhlášení"
 
-#: js/fields/Autocomplete.vue:43 js/fields/Color.vue:20 js/fields/Date.vue:24
-#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
-#: js/fields/Url.vue:75
-msgid "Value is required"
-msgstr "Je vyžadována hodnota"
-
-#: js/fields/Autocomplete.vue:48 js/fields/Images.vue:97
-#: js/fields/Items.vue:121
-msgid "Maximum is %{num} entries"
-msgstr "Maximum je %{num} záznamů"
-
-#: js/fields/Autocomplete.vue:187 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Nejsou k dispozici žádné údaje"
 
-#: js/fields/Color.vue:21
+#: js/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "Hodnota musí být hexadecimální kód barvy"
 
@@ -1863,7 +2052,7 @@ msgstr "Soubor je vyžadován"
 msgid "Add file from URL"
 msgstr "Přidání souboru z adresy URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:426
+#: js/fields/File.vue:456 js/fields/Images.vue:429
 msgid "Create file"
 msgstr "Vytvořit soubor"
 
@@ -1883,725 +2072,745 @@ msgstr "název"
 msgid "description"
 msgstr "popis"
 
-#: js/fields/Images.vue:93 js/fields/Items.vue:124
-msgid "Minimum is %{num} entries"
-msgstr "Minimální počet záznamů je %{num} "
-
-#: js/fields/Images.vue:450
+#: js/fields/Images.vue:453
 msgid "Drop files here"
 msgstr "Sem přetáhněte soubory"
 
 #: js/fields/Map.vue:231
 msgid "Clear location"
-msgstr ""
+msgstr "Odstranit polohu"
 
 #: js/fields/Map.vue:234
 msgid "Click the map to set the location"
-msgstr ""
+msgstr "Kliknutím na mapu nastavíte polohu"
 
-#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37 js/fields/Text.vue:125
-msgid "Minimum length is %{num} characters"
-msgstr "Minimální délka je %{num} znaků"
-
-#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41 js/fields/Text.vue:129
-msgid "Maximum length is %{num} characters"
-msgstr "Maximální délka je %{num} znaků"
-
-#: js/fields/Radio.vue:24
-msgid "Selection is required"
-msgstr "Výběr je nutný"
-
-#: js/fields/String.vue:45
+#: js/fields/String.vue:44
 msgid "Value has invalid format"
 msgstr "Hodnota má neplatný formát"
 
-#: js/fields/Table.vue:73
-msgid "Minimum are %{num} columns"
-msgstr "Minimum jsou sloupce %{num} "
-
-#: js/fields/Table.vue:77
-msgid "Maximum are %{num} columns"
-msgstr "Maximum je %{num} sloupců"
-
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:168
 msgid "Move column"
 msgstr "Přesunout sloupec"
 
-#: js/fields/Table.vue:190
+#: js/fields/Table.vue:185
 msgid "Column actions"
 msgstr "Akce ve sloupcích"
 
-#: js/fields/Table.vue:229
+#: js/fields/Table.vue:224
 msgid "Move row"
 msgstr "Přesunout řádek"
 
-#: js/fields/Table.vue:260
+#: js/fields/Table.vue:255
 msgid "Row actions"
 msgstr "Akce v řádku"
 
-#: js/fields/Url.vue:57 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:165
 msgid "None"
 msgstr "Žádné"
 
-#: js/fields/Url.vue:58
-msgid "Sponsored"
-msgstr ""
-
 #: js/fields/Url.vue:59
-msgid "Nofollow"
-msgstr ""
+msgid "Sponsored"
+msgstr "Sponzorovaný"
 
-#: js/fields/Url.vue:76
+#: js/fields/Url.vue:60
+msgid "Nofollow"
+msgstr "Nofollow"
+
+#: js/fields/Url.vue:77
 msgid "Not a valid URL"
 msgstr "Neplatná adresa URL"
 
-#: js/fields/Url.vue:86
+#: js/fields/Url.vue:87
 msgid "Invalid URL schema configuration"
 msgstr "Nesprávná konfigurace schématu URL"
 
-#: js/fields/Url.vue:164
+#: js/fields/Url.vue:165
 msgid "No pages found"
 msgstr "Žádné stránky nebyly nalezeny"
 
-#: js/fields/Url.vue:176
+#: js/fields/Url.vue:177
 msgid "Link attribute"
-msgstr ""
+msgstr "Atribut odkazu"
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
-msgstr "Zahrnuto se změnami z %{editor}"
+msgstr "Sloučeno se změnami od %{editor}"
 
 #: js/routes.js:126
 msgid "You do not have permission to access %{path}"
-msgstr "Nemáte oprávnění k přístupu %{path}"
+msgstr "Nemáte oprávnění k přístupu k %{path}"
+
+#: js/rules.js:18
+msgid "Value is required"
+msgstr "Je vyžadována hodnota"
+
+#: js/rules.js:23
+msgid "At least %{num} entry is required"
+msgid_plural "At least %{num} entries are required"
+msgstr[0] "Je vyžadován alespoň %{num} záznam"
+msgstr[1] "Jsou vyžadovány alespoň %{num} záznamy"
+msgstr[2] "Je vyžadováno alespoň %{num} záznamů"
+
+#: js/rules.js:30
+msgid "At most %{num} entry is allowed"
+msgid_plural "At most %{num} entries are allowed"
+msgstr[0] "Je povolen nejvýše %{num} záznam"
+msgstr[1] "Jsou povoleny nejvýše %{num} záznamy"
+msgstr[2] "Je povoleno nejvýše %{num} záznamů"
+
+#: js/rules.js:38
+msgid "At least %{num} character is required"
+msgid_plural "At least %{num} characters are required"
+msgstr[0] "Je vyžadován alespoň %{num} znak"
+msgstr[1] "Jsou vyžadovány alespoň %{num} znaky"
+msgstr[2] "Je vyžadováno alespoň %{num} znaků"
+
+#: js/rules.js:48
+msgid "At most %{num} character is allowed"
+msgid_plural "At most %{num} characters are allowed"
+msgstr[0] "Je povolen nejvýše %{num} znak"
+msgstr[1] "Jsou povoleny nejvýše %{num} znaky"
+msgstr[2] "Je povoleno nejvýše %{num} znaků"
+
+#: js/rules.js:55
+msgid "At least %{num} column is required"
+msgid_plural "At least %{num} columns are required"
+msgstr[0] "Je vyžadován alespoň %{num} sloupec"
+msgstr[1] "Jsou vyžadovány alespoň %{num} sloupce"
+msgstr[2] "Je vyžadováno alespoň %{num} sloupců"
+
+#: js/rules.js:62
+msgid "At most %{num} column is allowed"
+msgid_plural "At most %{num} columns are allowed"
+msgstr[0] "Je povolen nejvýše %{num} sloupec"
+msgstr[1] "Jsou povoleny nejvýše %{num} sloupce"
+msgstr[2] "Je povoleno nejvýše %{num} sloupců"
 
 #: js/stores.js:399
 msgid "Failed to load plugin"
 msgstr "Plugin se nepodařilo načíst"
 
-#: js/strings.js:9
+#: js/strings.js:29
 msgctxt "cs"
 msgid "main"
-msgstr "hlavní stránka"
+msgstr "hlavní část"
 
-#: js/strings.js:10
+#: js/strings.js:30
 msgctxt "cs"
 msgid "header"
 msgstr "záhlaví"
 
-#: js/strings.js:11
+#: js/strings.js:31
 msgctxt "cs"
 msgid "footer"
 msgstr "zápatí"
 
-#: js/strings.js:12
+#: js/strings.js:32
 msgctxt "cs"
 msgid "sidebar"
 msgstr "postranní panel"
 
-#: js/strings.js:13
+#: js/strings.js:33
 msgctxt "cs"
 msgid "aside"
-msgstr "stranou"
+msgstr "vedlejší obsah"
 
-#: js/strings.js:16
+#: js/strings.js:36
 msgctxt "sg"
 msgid "basic"
 msgstr "základní"
 
-#: js/strings.js:17
+#: js/strings.js:37
 msgctxt "sg"
 msgid "content"
 msgstr "obsah"
 
-#: js/strings.js:18
+#: js/strings.js:38
 msgctxt "sg"
 msgid "media"
 msgstr "média"
 
-#: js/strings.js:19
+#: js/strings.js:39
 msgctxt "sg"
 msgid "forms"
 msgstr "formuláře"
 
-#: js/strings.js:22
+#: js/strings.js:42
 msgctxt "as"
 msgid "type"
 msgstr "typ"
 
-#: js/strings.js:23
+#: js/strings.js:43
 msgctxt "as"
 msgid "state"
 msgstr "stav"
 
-#: js/strings.js:26
+#: js/strings.js:46
 msgctxt "st"
 msgid "valid"
 msgstr "platné"
 
-#: js/strings.js:27
+#: js/strings.js:47
 msgctxt "st"
 msgid "changed"
 msgstr "změněno"
 
-#: js/strings.js:28
+#: js/strings.js:48
 msgctxt "st"
 msgid "error"
 msgstr "chyba"
 
-#: js/strings.js:31
+#: js/strings.js:51
 msgctxt "st"
 msgid "reference"
 msgstr "odkaz"
 
-#: js/strings.js:32
+#: js/strings.js:52
 msgctxt "st"
 msgid "heading"
-msgstr "záhlaví"
+msgstr "nadpis"
 
-#: js/strings.js:33
+#: js/strings.js:53
 msgctxt "st"
 msgid "text"
 msgstr "text"
 
-#: js/strings.js:34
+#: js/strings.js:54
 msgctxt "st"
 msgid "image-text"
-msgstr "image-text"
+msgstr "obrázek-text"
 
-#: js/strings.js:35
+#: js/strings.js:55
 msgctxt "st"
 msgid "slideshow"
 msgstr "prezentace"
 
-#: js/strings.js:36
+#: js/strings.js:56
 msgctxt "st"
 msgid "code"
 msgstr "kód"
 
-#: js/strings.js:37
+#: js/strings.js:57
 msgctxt "st"
 msgid "table"
 msgstr "tabulka"
 
-#: js/strings.js:38
+#: js/strings.js:58
 msgctxt "st"
 msgid "map"
-msgstr ""
+msgstr "mapa"
 
-#: js/strings.js:39
+#: js/strings.js:59
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:40
+#: js/strings.js:60
 msgctxt "st"
 msgid "image"
 msgstr "obrázek"
 
-#: js/strings.js:41
+#: js/strings.js:61
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:42
+#: js/strings.js:62
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:43
+#: js/strings.js:63
 msgctxt "st"
 msgid "file"
 msgstr "soubor"
 
-#: js/strings.js:44
+#: js/strings.js:64
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:45
+#: js/strings.js:65
 msgctxt "st"
 msgid "CTA"
-msgstr ""
+msgstr "CTA"
 
-#: js/strings.js:46
+#: js/strings.js:66
 msgctxt "st"
 msgid "cards"
 msgstr "Karty"
 
-#: js/strings.js:47
+#: js/strings.js:67
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:48
+#: js/strings.js:68
 msgctxt "st"
 msgid "article"
 msgstr "Článek"
 
-#: js/strings.js:49
+#: js/strings.js:69
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:50
+#: js/strings.js:70
 msgctxt "st"
 msgid "toc"
 msgstr "obsah"
 
-#: js/strings.js:51
+#: js/strings.js:71
 msgctxt "st"
 msgid "contact"
 msgstr "kontakt"
 
-#: js/strings.js:52
+#: js/strings.js:72
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Meta tagy"
 
-#: js/strings.js:53
+#: js/strings.js:73
 msgctxt "st"
 msgid "social-media"
 msgstr "Sociální sítě"
 
-#: js/strings.js:54
+#: js/strings.js:74
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanonická URL"
 
-#: js/strings.js:55
+#: js/strings.js:75
 msgctxt "st"
 msgid "robots"
 msgstr "Vyhledávače"
 
-#: js/strings.js:56
+#: js/strings.js:76
 msgctxt "st"
 msgid "theme"
 msgstr "Vzhled"
 
-#: js/strings.js:57
+#: js/strings.js:77
 msgctxt "st"
 msgid "styles"
 msgstr "styly"
 
-#: js/strings.js:58
+#: js/strings.js:78
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:61
+#: js/strings.js:81
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Nadpis sekce od H1 do H6"
 
-#: js/strings.js:62
+#: js/strings.js:82
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formátovaný text s odstavci, seznamy a odkazy"
 
-#: js/strings.js:63
+#: js/strings.js:83
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Obrázek vedle formátovaného textu"
 
-#: js/strings.js:64
+#: js/strings.js:84
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Zdrojový kód se zvýrazněním syntaxe"
 
-#: js/strings.js:65
+#: js/strings.js:85
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Datová tabulka s volitelným záhlavím řádku nebo sloupce"
 
-#: js/strings.js:66
+#: js/strings.js:86
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktivní mapa s polohou, textem a odkazem"
 
-#: js/strings.js:67
+#: js/strings.js:87
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Vlastní HTML pro vložený obsah a widgety"
 
-#: js/strings.js:68
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Jeden responzivní obrázek"
 
-#: js/strings.js:69
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Střídající se snímky s více obrázky"
 
-#: js/strings.js:70
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Vložené video s ovládáním přehrávání"
 
-#: js/strings.js:71
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Vložený zvuk s ovládáním přehrávání"
 
-#: js/strings.js:72
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Soubor ke stažení, např. dokument PDF"
 
-#: js/strings.js:73
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Velký úvod s nadpisem, textem, tlačítky a pozadím"
 
-#: js/strings.js:74
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Výzva k akci s textem a tlačítky"
 
-#: js/strings.js:75
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Mřížka karet s obrázkem, nadpisem a textem"
 
-#: js/strings.js:76
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Citace zákazníků se jménem, rolí a fotografií"
 
-#: js/strings.js:77
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Úvod článku s galerií obrázků a autorem"
 
-#: js/strings.js:78
+#: js/strings.js:98
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Seznam článků blogu z nadřazené stránky"
 
-#: js/strings.js:79
+#: js/strings.js:99
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Seznam zpráv z nadřazené stránky"
 
-#: js/strings.js:80
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Zvýrazněná podstránka následovaná dalšími podstránkami"
 
-#: js/strings.js:81
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Cenové plány s předplatným nebo jednorázovou platbou"
 
-#: js/strings.js:82
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Často kladené otázky s odpověďmi"
 
-#: js/strings.js:83
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Obsah s odkazy na nadpisy stránky"
 
-#: js/strings.js:84
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Kontaktní formulář s nastavitelnými poli"
 
-#: js/strings.js:87
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "tlačítko"
 
-#: js/strings.js:88
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
-msgstr ""
+msgstr "tlačítka"
 
-#: js/strings.js:89
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "Karty"
 
-#: js/strings.js:90
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "popis"
 
-#: js/strings.js:91
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "soubor"
 
-#: js/strings.js:92
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "soubory"
 
-#: js/strings.js:93
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "Sledování odkazů"
 
-#: js/strings.js:94
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
 msgstr "záhlaví"
 
-#: js/strings.js:95
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "Indexování"
 
-#: js/strings.js:96
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "klíčová slova"
 
-#: js/strings.js:97
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "jazyk"
 
-#: js/strings.js:98
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
-msgstr ""
+msgstr "popisek"
 
-#: js/strings.js:99
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "úroveň"
 
-#: js/strings.js:100
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "limit"
 
-#: js/strings.js:101
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
-msgstr ""
+msgstr "poloha"
 
-#: js/strings.js:102
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "Hlavní obrázek"
 
-#: js/strings.js:103
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "pořadí"
 
-#: js/strings.js:104
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "nadřazená stránka"
 
-#: js/strings.js:105
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "pozice"
 
-#: js/strings.js:106
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "text"
 
-#: js/strings.js:107
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "tabulka"
 
-#: js/strings.js:108
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
 msgstr "název"
 
-#: js/strings.js:109
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:111
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "obrázek"
 
-#: js/strings.js:112
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "obrázky"
 
-#: js/strings.js:113
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "položky"
 
-#: js/strings.js:114
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "úvod"
 
-#: js/strings.js:115
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "okamžitě načíst"
 
-#: js/strings.js:116
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "zdrojový kód"
 
-#: js/strings.js:117
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Role přístupu k frontendu"
 
-#: js/strings.js:118
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Platební ceny"
 
-#: js/strings.js:119
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Platební reference"
 
-#: js/strings.js:120
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Typ platby"
 
-#: js/strings.js:121
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "Měna"
 
-#: js/strings.js:122
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Fakturační interval"
 
-#: js/strings.js:123
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Jednotka ceny"
 
-#: js/strings.js:124
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Cílová stránka nebo odkaz"
 
-#: js/strings.js:125
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
-msgstr ""
+msgstr "Povinná pole"
 
-#: js/strings.js:126
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
-msgstr ""
+msgstr "Volitelná pole"
 
-#: js/strings.js:127
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
-msgstr ""
+msgstr "Text odkazu"
 
-#: js/strings.js:130
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
-#: js/strings.js:131
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
-msgstr ""
+msgstr "Firma"
 
-#: js/strings.js:132
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
-msgstr ""
+msgstr "Telefon"
 
-#: js/strings.js:133
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
-msgstr ""
+msgstr "E-mail"
 
-#: js/strings.js:134
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
-msgstr ""
+msgstr "Předmět"
 
-#: js/strings.js:135
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "Sledovat odkazy"
 
-#: js/strings.js:136
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "Indexovat"
 
-#: js/strings.js:137
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesledovat odkazy"
 
-#: js/strings.js:138
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "Neindexovat"
 
-#: js/strings.js:139
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "Předplatné"
 
-#: js/strings.js:140
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Jednorázová platba"
 
-#: js/strings.js:143
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "Hotovo"
 
-#: js/strings.js:144
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Již existuje"
 
-#: js/strings.js:147
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "Pokročilé"
 
-#: js/strings.js:148
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "Vzhled"
 
-#: js/strings.js:149
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
-msgstr ""
+msgstr "web"
 
-#: js/strings.js:150
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:151
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternativní logo"
 
-#: js/strings.js:152
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "Ikona"
@@ -2641,7 +2850,7 @@ msgstr "Zavřít navigaci"
 #: js/views/FileList.vue:221 js/views/PageList.vue:259
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
-msgstr "Otevřená navigace"
+msgstr "Otevřít navigaci"
 
 #: js/views/AccessList.vue:253
 msgid "Roles"
@@ -2649,7 +2858,7 @@ msgstr "Role"
 
 #: js/views/AccessList.vue:288 js/views/AccessList.vue:333
 msgid "Add access value"
-msgstr "Přidejte hodnotu přístupu"
+msgstr "Přidat hodnotu přístupu"
 
 #: js/views/AccessList.vue:337
 msgid "Access value"
@@ -2669,11 +2878,11 @@ msgstr "Prvek úspěšně zveřejněn"
 
 #: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
-msgstr "Prvek, jehož zveřejnění je naplánováno na %{date}"
+msgstr "Zveřejnění prvku naplánováno na %{date}"
 
 #: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
-msgstr "Chyba při publikování prvku"
+msgstr "Chyba při zveřejňování prvku"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
 #: js/views/PageDetail.vue:532
@@ -2700,7 +2909,7 @@ msgstr "Používá"
 #: js/views/ElementList.vue:121 js/views/FileList.vue:120
 #: js/views/PageList.vue:145
 msgid "publish"
-msgstr "zveřejnit"
+msgstr "zveřejnění"
 
 #: js/views/ElementList.vue:125 js/views/FileList.vue:124
 #: js/views/PageList.vue:149
@@ -2710,7 +2919,7 @@ msgstr "Plánované"
 #: js/views/ElementList.vue:126 js/views/FileList.vue:125
 #: js/views/PageList.vue:150
 msgid "Drafts"
-msgstr "Návrhy"
+msgstr "Koncepty"
 
 #: js/views/ElementList.vue:131 js/views/FileList.vue:130
 #: js/views/PageList.vue:155
@@ -2745,6 +2954,8 @@ msgstr "Stisknutím klávesy Enter otevřete chat"
 #: js/views/ElementList.vue:292
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
+"Umělá inteligence dokáže na základě vašeho zadání vyhledávat a spravovat "
+"sdílené prvky."
 
 #: js/views/ElementList.vue:293 js/views/FileList.vue:292
 #: js/views/PageList.vue:338
@@ -2759,11 +2970,11 @@ msgstr "Došlo k chybě při načítání souboru"
 
 #: js/views/FileDetail.vue:251
 msgid "File published successfully"
-msgstr "Soubor byl úspěšně publikován"
+msgstr "Soubor byl úspěšně zveřejněn"
 
 #: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
-msgstr "Soubor naplánovaný ke zveřejnění na adrese %{date}"
+msgstr "Zveřejnění souboru naplánováno na %{date}"
 
 #: js/views/FileDetail.vue:323
 msgid "File saved successfully"
@@ -2777,6 +2988,8 @@ msgstr "Soubor"
 #: js/views/FileList.vue:291
 msgid "AI can find and manage media files based on your input"
 msgstr ""
+"Umělá inteligence dokáže na základě vašeho zadání vyhledávat a spravovat "
+"mediální soubory."
 
 #: js/views/Login.vue:45
 msgid "Invalid e-mail address"
@@ -2828,7 +3041,7 @@ msgstr "Stránka byla úspěšně zveřejněna"
 
 #: js/views/PageDetail.vue:498
 msgid "Page scheduled for publishing at %{date}"
-msgstr "Stránka plánovaná ke zveřejnění na %{date}"
+msgstr "Zveřejnění stránky naplánováno na %{date}"
 
 #: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
 msgid "Rate this page and suggest improvements"
@@ -2886,6 +3099,57 @@ msgid ""
 msgstr ""
 "Umělá inteligence dokáže vytvořit stránku a obsah na základě vašeho zadání a "
 "přidat je do stromu stránek."
+
+#~ msgid "Selection is required"
+#~ msgstr "Výběr je nutný"
+
+#~ msgid "Minimum is %{num} entries"
+#~ msgstr "Minimální počet záznamů je %{num} "
+
+#~ msgid "Maximum is %{num} entries"
+#~ msgstr "Maximum je %{num} záznamů"
+
+#~ msgid "Minimum length is %{num} characters"
+#~ msgstr "Minimální délka je %{num} znaků"
+
+#~ msgid "Maximum length is %{num} characters"
+#~ msgstr "Maximální délka je %{num} znaků"
+
+#~ msgid "id"
+#~ msgstr "id"
+
+#~ msgid "Copy"
+#~ msgstr "Kopírovat"
+
+#~ msgid "Top"
+#~ msgstr "Nahoru"
+
+#~ msgid "Left"
+#~ msgstr "Vlevo"
+
+#~ msgid "Right"
+#~ msgstr "Vpravo"
+
+#~ msgid "Bottom"
+#~ msgstr "Spodní část"
+
+#~ msgid "Cut"
+#~ msgstr "Vyjmout"
+
+#~ msgid "Split"
+#~ msgstr "Rozdělit"
+
+#~ msgid "Enable"
+#~ msgstr "Povolit"
+
+#~ msgid "Disable"
+#~ msgstr "Zakázat"
+
+#~ msgid "Minimum are %{num} columns"
+#~ msgstr "Minimum je %{num} sloupců"
+
+#~ msgid "Maximum are %{num} columns"
+#~ msgstr "Maximum je %{num} sloupců"
 
 #~ msgid "Error deleting access values"
 #~ msgstr "Chyba při mazání přístupových hodnot"

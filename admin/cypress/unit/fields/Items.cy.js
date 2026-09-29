@@ -236,17 +236,23 @@ describe('Items', () => {
     })
   })
 
-  it('emits error:true when items below default min of 1', () => {
+  it('emits error:false for no items if not required', () => {
     const onError = cy.spy().as('error')
     mountItems({ modelValue: [], config: {}, onError })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true for no items if config.required is set', () => {
+    const onError = cy.spy().as('error')
+    mountItems({ modelValue: [], config: { required: true }, onError })
     cy.get('@error').should('have.been.calledWith', true)
   })
 
-  it('emits error:false when items meet default min of 1', () => {
+  it('emits error:false when required items exist', () => {
     const onError = cy.spy().as('error')
     mountItems({
       modelValue: [{ title: 'Item' }],
-      config: {},
+      config: { required: true },
       onError
     })
     cy.get('@error').should('have.been.calledWith', false)

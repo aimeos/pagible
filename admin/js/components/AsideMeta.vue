@@ -18,7 +18,7 @@ export default {
       const map = {}
 
       if (this.item.id) {
-        map[this.$gettext('id')] = this.item.id
+        map[this.$gettext('ID')] = this.item.id
       }
 
       if (this.item.mime) {

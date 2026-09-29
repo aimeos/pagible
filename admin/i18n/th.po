@@ -9,13 +9,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:254
-#: js/components/ElementListItems.vue:293
-#: js/components/ElementListItems.vue:429
-#: js/components/ElementListItems.vue:465
-#: js/components/ElementListItems.vue:505
-#: js/components/ElementListItems.vue:547
-#: js/components/ElementListItems.vue:592 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
+#: js/components/ElementListItems.vue:299
+#: js/components/ElementListItems.vue:435
+#: js/components/ElementListItems.vue:471
+#: js/components/ElementListItems.vue:511
+#: js/components/ElementListItems.vue:553
+#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -24,20 +24,20 @@ msgstr ""
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:243 js/components/FileListItems.vue:288
-#: js/components/FileListItems.vue:424 js/components/FileListItems.vue:457
-#: js/components/FileListItems.vue:494 js/components/FileListItems.vue:536
-#: js/components/FileListItems.vue:581
-#: js/components/PageDetailContentList.vue:369
-#: js/components/PageDetailContentList.vue:463
-#: js/components/PageListItems.vue:449 js/components/PageListItems.vue:521
-#: js/components/PageListItems.vue:618 js/components/PageListItems.vue:711
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:844
-#: js/components/PageListItems.vue:975 js/components/PageListItems.vue:1004
-#: js/components/PageListItems.vue:1136 js/components/PageListItems.vue:1177
-#: js/components/PageListItems.vue:1298 js/components/PageListItems.vue:1376
-#: js/components/PageListItems.vue:1427 js/fields/File.vue:147
-#: js/fields/Images.vue:114 js/fields/Items.vue:209 js/publish.js:39
+#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
+#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
+#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
+#: js/components/FileListItems.vue:587
+#: js/components/PageDetailContentList.vue:412
+#: js/components/PageDetailContentList.vue:506
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
+#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
+#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
+#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
+#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
+#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
+#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
@@ -55,7 +55,7 @@ msgstr "เกิดข้อผิดพลาดในการแปลข้
 
 #: js/ai.js:153
 msgid "Prompt is required for generating text"
-msgstr "จำเป็นต้องมีข้อความเพื่อสร้างข้อความ"
+msgstr "ต้องระบุพรอมต์เพื่อสร้างข้อความ"
 
 #: js/ai.js:180
 msgid "Error generating text"
@@ -67,11 +67,115 @@ msgstr "ผู้ช่วยแชทไม่พร้อมใช้งาน
 
 #: js/chat.js:56
 msgid "A response is already being generated. Please wait for it to finish."
-msgstr "มีการสร้างคำตอบแล้ว กรุณารอให้เสร็จสิ้น."
+msgstr "กำลังสร้างคำตอบอยู่ กรุณารอให้เสร็จสิ้น"
 
 #: js/chat.js:58
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "คำขอมากเกินไป กรุณารอสักครู่แล้วลองอีกครั้ง"
+
+#: js/commands.js:53
+msgid "Open command palette"
+msgstr "เปิดแผงคำสั่ง"
+
+#: js/commands.js:60
+msgid "Confirm dialog"
+msgstr "ยืนยันกล่องโต้ตอบ"
+
+#: js/commands.js:67
+msgid "Save changes"
+msgstr "บันทึกการเปลี่ยนแปลง"
+
+#: js/commands.js:75
+msgid "Open publish menu"
+msgstr "เปิดเมนูเผยแพร่"
+
+#: js/commands.js:81
+msgid "New page, file or element"
+msgstr "หน้า ไฟล์ หรือองค์ประกอบใหม่"
+
+#: js/commands.js:87
+msgid "Search in list"
+msgstr "ค้นหาในรายการ"
+
+#: js/commands.js:93
+msgid "Previous tab"
+msgstr "แท็บก่อนหน้า"
+
+#: js/commands.js:99
+msgid "Next tab"
+msgstr "แท็บถัดไป"
+
+#: js/commands.js:105
+msgid "Show or hide side panel"
+msgstr "แสดงหรือซ่อนแผงด้านข้าง"
+
+#: js/commands.js:111 js/components/DetailAppBar.vue:168
+msgid "Back to list view"
+msgstr "กลับไปยังมุมมองรายการ"
+
+#: js/commands.js:118
+msgid "Show keyboard shortcuts"
+msgstr "แสดงแป้นพิมพ์ลัด"
+
+#: js/commands.js:124
+msgid "Select focused page, file or element"
+msgstr "เลือกหน้า ไฟล์ หรือองค์ประกอบที่โฟกัสอยู่"
+
+#: js/commands.js:130
+msgid "Delete focused page, file or element"
+msgstr "ลบหน้า ไฟล์ หรือองค์ประกอบที่โฟกัสอยู่"
+
+#: js/commands.js:137
+msgid "Copy page"
+msgstr "คัดลอกหน้า"
+
+#: js/commands.js:144
+msgid "Cut page"
+msgstr "ตัดหน้า"
+
+#: js/commands.js:151
+msgid "Paste page"
+msgstr "วางหน้า"
+
+#: js/commands.js:170 js/components/CommandPalette.vue:106
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
+#: js/views/PageList.vue:265 js/views/PageList.vue:282
+msgid "Pages"
+msgstr "หน้า"
+
+#: js/commands.js:171
+msgid "Go to pages"
+msgstr "ไปที่หน้า"
+
+#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
+#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "สื่อ"
+
+#: js/commands.js:177
+msgid "Go to media"
+msgstr "ไปที่สื่อ"
+
+#: js/commands.js:182 js/components/CommandPalette.vue:108
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
+#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+msgid "Shared elements"
+msgstr "องค์ประกอบที่ใช้ร่วมกัน"
+
+#: js/commands.js:183
+msgid "Go to shared elements"
+msgstr "ไปที่องค์ประกอบที่ใช้ร่วมกัน"
+
+#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/views/AccessList.vue:252
+msgid "Users"
+msgstr "ผู้ใช้"
+
+#: js/commands.js:189
+msgid "Go to users"
+msgstr "ไปที่ผู้ใช้"
 
 #: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
@@ -119,7 +223,7 @@ msgid "Search"
 msgstr "ค้นหา"
 
 #: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "บันทึก"
 
@@ -137,21 +241,21 @@ msgstr "บทบาทด้านหลังระบบที่ได้ร
 
 #: js/components/AccessUsers.vue:500
 msgid "Custom"
-msgstr "ตามสั่ง"
+msgstr "กำหนดเอง"
 
 #: js/components/AccessUsers.vue:506
 msgid "Available roles"
 msgstr "บทบาทที่มีอยู่"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
-#: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1947
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
+#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "ไม่พบรายการ"
 
-#: js/components/ActionMenu.vue:26
+#: js/components/ActionMenu.vue:26 js/components/CommandPalette.vue:104
 msgid "Actions"
-msgstr "การกระทำ"
+msgstr "การดำเนินการ"
 
 #: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
 #: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
@@ -174,9 +278,11 @@ msgstr "ตัวกรอง"
 msgid "Reset"
 msgstr "รีเซ็ต"
 
-#: js/components/AsideMeta.vue:21
-msgid "id"
-msgstr "ไอดี"
+#: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+msgid "ID"
+msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
 #: js/fields/File.vue:502
@@ -187,7 +293,7 @@ msgstr "MIME"
 #: js/views/ElementList.vue:140 js/views/FileList.vue:139
 #: js/views/PageList.vue:182
 msgid "editor"
-msgstr "บรรณาธิการ"
+msgstr "ผู้แก้ไข"
 
 #: js/components/AsideMeta.vue:33
 msgid "created"
@@ -254,11 +360,11 @@ msgstr "เพิ่มแล้ว"
 
 #: js/components/ChangesDialog.vue:441
 msgid "Use theirs"
-msgstr "ใช้ของพวกเขา"
+msgstr "ใช้การเปลี่ยนแปลงของอีกฝ่าย"
 
 #: js/components/ChangesDialog.vue:447
 msgid "Keep mine"
-msgstr "เก็บของฉันไว้"
+msgstr "เก็บการเปลี่ยนแปลงของฉันไว้"
 
 #: js/components/ChangesDialog.vue:454
 msgid "Merge both"
@@ -287,11 +393,12 @@ msgstr "ฉันช่วยอะไรคุณได้บ้าง"
 
 #: js/components/ChatDialog.vue:365
 msgid "Thinking ..."
-msgstr ""
+msgstr "กำลังคิด ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:798
-#: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1798 js/fields/Items.vue:373
+#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
+#: js/components/PageDetailContentList.vue:937
+#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+msgctxt "clipboard"
 msgid "Copy"
 msgstr "คัดลอก"
 
@@ -302,11 +409,11 @@ msgstr "ส่งข้อความ..."
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
 #: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
 #: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:768 js/fields/Items.vue:460
+#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
-msgstr "การออกคำสั่ง"
+msgstr "พิมพ์ด้วยเสียง"
 
 #: js/components/ChatDialog.vue:410 js/components/ChatDialog.vue:411
 msgid "Stop"
@@ -317,10 +424,49 @@ msgstr "หยุด"
 msgid "Send"
 msgstr "ส่ง"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:749
-#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:727
-#: js/components/FileListItems.vue:864 js/components/PageListItems.vue:1651
-#: js/components/PageListItems.vue:1891 js/views/AccessList.vue:278
+#: js/components/CommandPalette.vue:105
+msgid "Go to"
+msgstr "ไปที่"
+
+#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
+#: js/components/PageListItems.vue:1911
+msgid "New"
+msgstr "ใหม่"
+
+#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
+#: js/components/ShortcutDialog.vue:32
+msgid "Command palette"
+msgstr "แผงคำสั่ง"
+
+#: js/components/CommandPalette.vue:289
+msgid "Type a command or search pages, files and elements"
+msgstr "พิมพ์คำสั่งหรือค้นหาหน้า ไฟล์ และองค์ประกอบ"
+
+#: js/components/CommandPalette.vue:290
+msgid "Command or search term"
+msgstr "คำสั่งหรือคำค้นหา"
+
+#: js/components/CommandPalette.vue:303
+msgid "Commands"
+msgstr "คำสั่ง"
+
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+msgid "then"
+msgstr "แล้ว"
+
+#: js/components/CommandPalette.vue:329
+msgid "Search failed, please try again"
+msgstr "การค้นหาล้มเหลว โปรดลองอีกครั้ง"
+
+#: js/components/CommandPalette.vue:330
+msgid "No results"
+msgstr "ไม่พบผลลัพธ์"
+
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
+#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
+#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
+#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "ลบถาวร"
 
@@ -331,11 +477,6 @@ msgid_plural ""
 "restored:"
 msgstr[0] "รายการ %{num} รายการต่อไปนี้จะถูกลบถาวรและไม่สามารถกู้คืนได้:"
 
-#: js/components/ConfirmDialog.vue:47 js/components/ElementListItems.vue:875
-#: js/components/PageListItems.vue:892 js/components/PageListItems.vue:1919
-msgid "New"
-msgstr "ใหม่"
-
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
 #: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
@@ -345,61 +486,57 @@ msgstr "ยกเลิก"
 msgid "Confirm"
 msgstr "ยืนยัน"
 
-#: js/components/DetailAppBar.vue:129 js/views/AccessList.vue:230
+#: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
 #: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "เมนู"
 
-#: js/components/DetailAppBar.vue:133
-msgid "Back to list view"
-msgstr "กลับไปยังมุมมองรายการ"
-
-#: js/components/DetailAppBar.vue:149
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "ดูประวัติ"
 
-#: js/components/DetailAppBar.vue:158
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "ดูการเปลี่ยนแปลงการผสาน"
 
-#: js/components/DetailAppBar.vue:181 js/components/DetailAppBar.vue:196
-#: js/components/DetailAppBar.vue:200 js/components/ElementListItems.vue:729
-#: js/components/ElementListItems.vue:824 js/components/FileListItems.vue:707
-#: js/components/FileListItems.vue:834 js/components/PageListItems.vue:1607
-#: js/components/PageListItems.vue:1754
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
+#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
+#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
+#: js/components/PageListItems.vue:1746
 msgid "Publish"
 msgstr "เผยแพร่"
 
-#: js/components/DetailAppBar.vue:203
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
-msgstr ""
+msgstr "เผยแพร่และปิด"
 
-#: js/components/DetailAppBar.vue:208 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "กำหนดเวลา"
 
-#: js/components/DetailAppBar.vue:243
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
-msgstr ""
+msgstr "กำหนดเวลาและปิด"
 
-#: js/components/DetailAppBar.vue:251 js/views/ElementList.vue:236
+#: js/components/DetailAppBar.vue:289 js/views/ElementList.vue:236
 #: js/views/FileList.vue:235 js/views/PageList.vue:273
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "สลับเมนูด้านข้าง"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:734
-#: js/components/ElementListItems.vue:839 js/components/FileListItems.vue:712
-#: js/components/FileListItems.vue:846 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1623 js/components/PageListItems.vue:1775
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
+#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
+#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
 msgid "Edit properties"
 msgstr "แก้ไขคุณสมบัติ"
 
 #: js/components/EditBulkDialog.vue:63
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
-msgstr[0] "ใช้คุณสมบัติที่เลือกกับรายการ %{num}"
+msgstr[0] "ใช้คุณสมบัติที่เลือกกับ %{num} รายการ"
 
 #: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
 #: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
@@ -409,7 +546,7 @@ msgid "Language"
 msgstr "ภาษา"
 
 #: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:269
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "ใช้"
 
@@ -428,23 +565,12 @@ msgstr "ใช่"
 msgid "no"
 msgstr "ไม่ใช่"
 
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:24
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
-msgid "Shared elements"
-msgstr "องค์ประกอบที่แชร์ร่วมกัน"
-
-#: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
-msgid "ID"
-msgstr "ID"
-
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:440
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
 msgid "Restricted"
 msgstr "ถูกจำกัด"
 
@@ -463,100 +589,100 @@ msgstr "ประเภท"
 msgid "Published"
 msgstr "เผยแพร่แล้ว"
 
-#: js/components/ElementListItems.vue:319
+#: js/components/ElementListItems.vue:325
 msgid "Error trashing shared element"
 msgstr "เกิดข้อผิดพลาดในการย้ายองค์ประกอบที่ใช้ร่วมกันไปยังถังขยะ"
 
-#: js/components/ElementListItems.vue:456
+#: js/components/ElementListItems.vue:462
 msgid "Error restoring shared element"
 msgstr "เกิดข้อผิดพลาดในการกู้คืนองค์ประกอบที่ใช้ร่วมกัน"
 
-#: js/components/ElementListItems.vue:496
+#: js/components/ElementListItems.vue:502
 msgid "Error publishing shared element"
-msgstr "เกิดข้อผิดพลาดในการเผยแพร่ส่วนที่แชร์"
+msgstr "เกิดข้อผิดพลาดในการเผยแพร่องค์ประกอบที่ใช้ร่วมกัน"
 
-#: js/components/ElementListItems.vue:534
+#: js/components/ElementListItems.vue:540
 msgid "Error purging shared element"
 msgstr "เกิดข้อผิดพลาดในการลบองค์ประกอบที่ใช้ร่วมกันถาวร"
 
-#: js/components/ElementListItems.vue:585
+#: js/components/ElementListItems.vue:591
 msgid "Error saving shared element"
 msgstr "เกิดข้อผิดพลาดในการบันทึกองค์ประกอบที่ใช้ร่วมกัน"
 
-#: js/components/ElementListItems.vue:642
+#: js/components/ElementListItems.vue:648
 msgid "Error fetching shared elements"
 msgstr "เกิดข้อผิดพลาดในการดึงองค์ประกอบที่ใช้ร่วมกัน"
 
-#: js/components/ElementListItems.vue:713 js/components/FileListItems.vue:691
-#: js/components/PageDetailContentList.vue:784
-#: js/components/PageListItems.vue:1591 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
+#: js/components/PageDetailContentList.vue:827
+#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "สลับการเลือก"
 
-#: js/components/ElementListItems.vue:739
-#: js/components/ElementListItems.vue:847 js/components/FileListItems.vue:717
-#: js/components/FileListItems.vue:854
-#: js/components/PageDetailContentList.vue:818
-#: js/components/PageDetailContentList.vue:896
-#: js/components/PageListItems.vue:1641 js/components/PageListItems.vue:1881
-#: js/fields/Items.vue:383 js/fields/Table.vue:213 js/fields/Table.vue:283
+#: js/components/ElementListItems.vue:745
+#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
+#: js/components/FileListItems.vue:865
+#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:947
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
+#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "ลบ"
 
-#: js/components/ElementListItems.vue:744
-#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:722
-#: js/components/FileListItems.vue:859 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1886
+#: js/components/ElementListItems.vue:750
+#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
+#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
+#: js/components/PageListItems.vue:1878
 msgid "Restore"
 msgstr "กู้คืน"
 
-#: js/components/ElementListItems.vue:758
-#: js/components/ElementListItems.vue:904
-#: js/components/PageDetailContentList.vue:996
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:500
+#: js/components/ElementListItems.vue:764
+#: js/components/ElementListItems.vue:911
+#: js/components/PageDetailContentList.vue:1047
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "เพิ่มองค์ประกอบ"
 
-#: js/components/ElementListItems.vue:772 js/components/FileListItems.vue:761
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:141
+#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
+#: js/components/PageDetailContentList.vue:870
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "ค้นหา"
 
-#: js/components/ElementListItems.vue:783 js/components/FileListItems.vue:774
+#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
 msgid "Updated by another user"
 msgstr "อัปเดตโดยผู้ใช้รายอื่น"
 
-#: js/components/ElementListItems.vue:789 js/components/FileListItems.vue:780
-#: js/components/PageListItems.vue:1690
+#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
+#: js/components/PageListItems.vue:1686
 msgid "Refresh"
 msgstr "รีเฟรช"
 
-#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:152
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "โหลดองค์ประกอบใหม่"
 
-#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:969
+#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
 #: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1942 js/fields/Autocomplete.vue:188
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:164
+#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
+#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
 msgstr "กำลังโหลด"
 
 #: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:425 js/fields/Items.vue:431
+#: js/fields/Items.vue:422 js/fields/Items.vue:428
 msgid "Translate"
 msgstr "แปล"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:449
+#: js/components/Fields.vue:307 js/fields/Items.vue:446
 msgid "Generate text"
 msgstr "สร้างข้อความ"
 
 #: js/components/Fields.vue:334
 msgid "Updated by other editor"
-msgstr "อัปเดตโดยบรรณาธิการอื่น"
+msgstr "อัปเดตโดยผู้แก้ไขรายอื่น"
 
 #: js/components/Fields.vue:337
 msgid "Overwritten"
@@ -564,19 +690,19 @@ msgstr "เขียนทับแล้ว"
 
 #: js/components/FieldsAside.vue:86
 msgid "Mobile"
-msgstr ""
+msgstr "มือถือ"
 
 #: js/components/FieldsAside.vue:87
 msgid "Tablet"
-msgstr ""
+msgstr "แท็บเล็ต"
 
 #: js/components/FieldsAside.vue:88
 msgid "Computer"
-msgstr ""
+msgstr "คอมพิวเตอร์"
 
 #: js/components/FieldsAside.vue:88
 msgid "Full width"
-msgstr ""
+msgstr "เต็มความกว้าง"
 
 #: js/components/FieldsAside.vue:179
 msgid "Content Element"
@@ -596,16 +722,16 @@ msgstr "ลบองค์ประกอบ"
 
 #: js/components/FieldsAside.vue:216
 msgid "Responsive preview"
-msgstr ""
+msgstr "แสดงตัวอย่างแบบตอบสนอง"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:939
+#: js/components/PageDetailContentList.vue:990
 msgid "Change to"
 msgstr "เปลี่ยนเป็น"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:383
+#: js/fields/Images.vue:386
 msgid "Edit"
 msgstr "แก้ไข"
 
@@ -614,9 +740,9 @@ msgstr "แก้ไข"
 msgid "Remove"
 msgstr "ลบ"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:273
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:146
+#: js/fields/File.vue:166 js/fields/Images.vue:149
 msgid "Error adding file %{path}"
 msgstr "เกิดข้อผิดพลาดในการเพิ่มไฟล์%{path}"
 
@@ -656,8 +782,8 @@ msgstr "คัดลอกไปยังคลิปบอร์ด"
 msgid "Error describing file"
 msgstr "เกิดข้อผิดพลาดในการอธิบายไฟล์"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:574
-#: js/fields/File.vue:300 js/fields/Images.vue:296 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
+#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
 msgid "Error saving file"
 msgstr "เกิดข้อผิดพลาดในการบันทึกไฟล์"
 
@@ -767,18 +893,22 @@ msgid "Expand image"
 msgstr "ขยายภาพ"
 
 #: js/components/FileDetailItemImage.vue:825
+msgctxt "image edge"
 msgid "Top"
 msgstr "ด้านบน"
 
 #: js/components/FileDetailItemImage.vue:837
+msgctxt "image edge"
 msgid "Left"
 msgstr "ซ้าย"
 
 #: js/components/FileDetailItemImage.vue:847
+msgctxt "image edge"
 msgid "Right"
 msgstr "ขวา"
 
 #: js/components/FileDetailItemImage.vue:859
+msgctxt "image edge"
 msgid "Bottom"
 msgstr "ด้านล่าง"
 
@@ -821,7 +951,7 @@ msgstr "ดาวน์โหลด"
 #: js/components/FileDetailItemImage.vue:965
 #: js/components/FileDetailItemImage.vue:970
 msgid "Undo"
-msgstr "ยกเลิก"
+msgstr "เลิกทำ"
 
 #: js/components/FileDetailItemImage.vue:979
 msgid "Previous edit"
@@ -845,7 +975,7 @@ msgstr "เกิดข้อผิดพลาดในการลบปกว
 
 #: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
-msgstr "ไม่เลือกไฟล์"
+msgstr "ไม่ได้เลือกไฟล์"
 
 #: js/components/FileDetailItemVideo.vue:210
 msgid "Error uploading video cover"
@@ -859,62 +989,51 @@ msgstr "ใช้เป็นภาพปก"
 msgid "Upload cover image"
 msgstr "อัปโหลดภาพปก"
 
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:22
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
-msgid "Pages"
-msgstr "หน้า"
-
 #: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
 msgid "Elements"
 msgstr "องค์ประกอบ"
 
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:23
-#: js/views/FileList.vue:227 js/views/FileList.vue:244
-msgid "Media"
-msgstr "สื่อ"
-
-#: js/components/FileListItems.vue:314
+#: js/components/FileListItems.vue:320
 msgid "Error trashing file"
 msgstr "เกิดข้อผิดพลาดในการย้ายไฟล์ไปยังถังขยะ"
 
-#: js/components/FileListItems.vue:450
+#: js/components/FileListItems.vue:456
 msgid "Error restoring file"
 msgstr "เกิดข้อผิดพลาดในการกู้คืนไฟล์"
 
-#: js/components/FileListItems.vue:487 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
 msgid "Error publishing file"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่ไฟล์"
 
-#: js/components/FileListItems.vue:523
+#: js/components/FileListItems.vue:529
 msgid "Error purging file"
 msgstr "เกิดข้อผิดพลาดในการลบไฟล์ถาวร"
 
-#: js/components/FileListItems.vue:620
+#: js/components/FileListItems.vue:626
 msgid "Error fetching files"
 msgstr "เกิดข้อผิดพลาดในการดึงไฟล์"
 
-#: js/components/FileListItems.vue:738 js/components/FileListItems.vue:748
-#: js/components/FileListItems.vue:984 js/components/FileListItems.vue:994
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:409
-#: js/fields/Images.vue:433
+#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
+#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
+#: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "เพิ่มไฟล์"
 
-#: js/components/FileListItems.vue:748 js/components/FileListItems.vue:950
-#: js/components/FileListItems.vue:994 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
+#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "ป้องกันด้วยสิทธิ์เข้าถึงหน้า"
 
-#: js/components/FileListItems.vue:786
+#: js/components/FileListItems.vue:793
 msgid "Reload files"
 msgstr "โหลดไฟล์ใหม่"
 
-#: js/components/FileListItems.vue:795
+#: js/components/FileListItems.vue:802
 msgid "Grid view"
 msgstr "มุมมองตาราง"
 
-#: js/components/FileListItems.vue:803
+#: js/components/FileListItems.vue:810
 msgid "List view"
 msgstr "มุมมองรายการ"
 
@@ -930,7 +1049,7 @@ msgstr "มีไฟล์อย่างน้อยหนึ่งไฟล์
 msgid "The file is not of type \"%{mime}*\""
 msgstr "ไฟล์ไม่ใช่ประเภท \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:416
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
 msgid "Add files from URLs"
 msgstr "เพิ่มไฟล์จาก URL"
 
@@ -947,9 +1066,9 @@ msgid "Enter URL"
 msgstr "ป้อน URL"
 
 #: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:957
+#: js/components/PageDetailContentList.vue:1008
 msgid "Shared element"
-msgstr "องค์ประกอบที่แชร์ร่วมกัน"
+msgstr "องค์ประกอบที่ใช้ร่วมกัน"
 
 #: js/components/HistoryDialog.vue:62
 msgid "Content block"
@@ -966,7 +1085,7 @@ msgstr "ย้ายจากตำแหน่ง %{from} ไปที่ %{to}
 #: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
-msgstr[0] "ฟิลด์ %{num} มีการเปลี่ยนแปลง"
+msgstr[0] "%{num} ฟิลด์มีการเปลี่ยนแปลง"
 
 #: js/components/HistoryDialog.vue:77
 msgid "%{selected} of %{total} selected"
@@ -987,27 +1106,27 @@ msgstr "ค่า"
 #: js/components/HistoryDialog.vue:172
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
-msgstr[0] "เพิ่มบล็อก %{num} แล้ว"
+msgstr[0] "เพิ่ม %{num} บล็อกแล้ว"
 
 #: js/components/HistoryDialog.vue:173
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
-msgstr[0] "นำบล็อก %{num} ออกแล้ว"
+msgstr[0] "นำ %{num} บล็อกออกแล้ว"
 
 #: js/components/HistoryDialog.vue:174
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
-msgstr[0] "เปลี่ยนบล็อก %{num} แล้ว"
+msgstr[0] "เปลี่ยน %{num} บล็อกแล้ว"
 
 #: js/components/HistoryDialog.vue:175
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
-msgstr[0] "ย้ายบล็อก %{num} แล้ว"
+msgstr[0] "ย้าย %{num} บล็อกแล้ว"
 
 #: js/components/HistoryDialog.vue:176
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
-msgstr[0] "ไฟล์ %{num} มีการเปลี่ยนแปลง"
+msgstr[0] "%{num} ไฟล์มีการเปลี่ยนแปลง"
 
 #: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
 #: js/components/HistoryDialog.vue:302
@@ -1016,7 +1135,7 @@ msgstr "ไม่มีการเปลี่ยนแปลง"
 
 #: js/components/HistoryDialog.vue:191
 msgid "History"
-msgstr "ประวัติศาสตร์"
+msgstr "ประวัติ"
 
 #: js/components/HistoryDialog.vue:202
 msgid "Error fetching versions"
@@ -1113,11 +1232,11 @@ msgstr "การแสดงตัวอย่างตาราง"
 #: js/components/HistoryField.vue:138
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
-msgstr[0] "ละเว้นแถว %{num}"
+msgstr[0] "ละเว้น %{num} แถว"
 
 #: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
 msgid "Editor"
-msgstr "บรรณาธิการ"
+msgstr "ผู้แก้ไข"
 
 #: js/components/ListSort.vue:29
 msgid "Latest"
@@ -1135,7 +1254,7 @@ msgstr "เก่าสุด"
 msgid "Oldest edit"
 msgstr "แก้ไขครั้งแรก"
 
-#: js/components/ListSort.vue:35 js/components/PageDetailMetrics.vue:577
+#: js/components/ListSort.vue:35
 msgid "Position"
 msgstr "ตำแหน่ง"
 
@@ -1151,13 +1270,13 @@ msgstr "การใช้งาน"
 msgid "Sort by"
 msgstr "จัดเรียงตาม"
 
-#: js/components/Navigation.vue:25 js/views/AccessList.vue:252
-msgid "Users"
-msgstr "ผู้ใช้"
-
-#: js/components/Navigation.vue:45
+#: js/components/Navigation.vue:53
 msgid "Panels"
 msgstr "แผง"
+
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+msgid "Keyboard shortcuts"
+msgstr "แป้นพิมพ์ลัด"
 
 #: js/components/PageAccess.vue:104
 msgid "Error changing page access"
@@ -1171,22 +1290,22 @@ msgstr "การเปลี่ยนแปลงการเข้าถึง
 msgid "Public"
 msgstr "สาธารณะ"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
 msgid "Authenticated users"
 msgstr "ผู้ใช้ที่ได้รับการรับรองความถูกต้อง"
 
 #: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:443 js/components/PageListItems.vue:1628
-#: js/components/PageListItems.vue:1780 js/components/PageListItems.vue:1969
+#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
+#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "การเข้าถึง"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:283
+#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "การเปลี่ยนแปลงจำนวนมากของหน้าจะถูกจำกัดไว้ที่ 1,000 หน้า"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:277
+#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "ใช้แบบเรียกซ้ำ"
 
@@ -1297,130 +1416,132 @@ msgstr "เปลี่ยนโดเมน"
 msgid "Domain"
 msgstr "โดเมน"
 
-#: js/components/PageDetailContentList.vue:184
-#: js/components/PageDetailContentList.vue:194
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:185
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:690
 msgid "Content element not found"
 msgstr "ไม่พบองค์ประกอบเนื้อหา"
 
-#: js/components/PageDetailContentList.vue:420
+#: js/components/PageDetailContentList.vue:463
 msgid "Error refining content"
 msgstr "ข้อผิดพลาดในการปรับปรุงเนื้อหา"
 
-#: js/components/PageDetailContentList.vue:470
+#: js/components/PageDetailContentList.vue:513
 msgid "Element not found"
 msgstr "ไม่พบองค์ประกอบ"
 
-#: js/components/PageDetailContentList.vue:475
+#: js/components/PageDetailContentList.vue:518
 msgid "Element is already shared"
 msgstr "องค์ประกอบถูกแชร์แล้ว"
 
-#: js/components/PageDetailContentList.vue:518
+#: js/components/PageDetailContentList.vue:561
 msgid "Unable to make element shared"
 msgstr "ไม่สามารถทำให้องค์ประกอบเป็นแบบแชร์ได้"
 
-#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:580
 msgid "Not available for this content element"
-msgstr "ไม่สามารถใช้ได้สำหรับองค์ประกอบเนื้อหา"
+msgstr "ไม่สามารถใช้ได้กับองค์ประกอบเนื้อหานี้"
 
-#: js/components/PageDetailContentList.vue:654
+#: js/components/PageDetailContentList.vue:697
 msgid "Element is not shared"
 msgstr "องค์ประกอบไม่ได้ถูกแชร์"
 
-#: js/components/PageDetailContentList.vue:733
+#: js/components/PageDetailContentList.vue:776
 msgid "Describe the task you want to perform"
 msgstr "อธิบายงานที่คุณต้องการดำเนินการ"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "ซ่อนความช่วยเหลือ"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "แสดงความช่วยเหลือ"
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refining ..."
 msgstr "กำลังปรับปรุง ..."
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refine content based on prompt"
-msgstr "ปรับปรุงเนื้อหาตามคำแนะนำ"
+msgstr "ปรับปรุงเนื้อหาตามพรอมต์"
 
-#: js/components/PageDetailContentList.vue:776 js/views/ElementList.vue:291
+#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
 #: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "ช่วยเหลือ"
 
-#: js/components/PageDetailContentList.vue:777
+#: js/components/PageDetailContentList.vue:820
 msgid "AI can add or improve content based on your input"
 msgstr "AI สามารถเพิ่มหรือปรับปรุงเนื้อหาตามข้อมูลที่คุณให้"
 
-#: js/components/PageDetailContentList.vue:778
+#: js/components/PageDetailContentList.vue:821
 msgid "It can take a long time depending on the task and content size"
 msgstr "อาจใช้เวลาเป็นเวลานานขึ้นอยู่กับงานและขนาดของเนื้อหา"
 
-#: js/components/PageDetailContentList.vue:803
-#: js/components/PageDetailContentList.vue:891
-#: js/components/PageListItems.vue:1793 js/fields/Items.vue:378
+#: js/components/PageDetailContentList.vue:846
+#: js/components/PageDetailContentList.vue:942
+#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+msgctxt "clipboard"
 msgid "Cut"
 msgstr "ตัด"
 
-#: js/components/PageDetailContentList.vue:808
-#: js/components/PageListItems.vue:1806 js/components/PageListItems.vue:1831
+#: js/components/PageDetailContentList.vue:851
+#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
 msgid "Paste"
 msgstr "วาง"
 
-#: js/components/PageDetailContentList.vue:813
-#: js/components/PageDetailContentList.vue:949
+#: js/components/PageDetailContentList.vue:856
+#: js/components/PageDetailContentList.vue:1000
 msgid "Merge"
 msgstr "รวม"
 
-#: js/components/PageDetailContentList.vue:866 js/fields/Items.vue:348
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
 msgid "Move element"
 msgstr "ย้ายองค์ประกอบ"
 
-#: js/components/PageDetailContentList.vue:904 js/fields/Items.vue:391
+#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
 msgid "Paste before"
 msgstr "วางก่อน"
 
-#: js/components/PageDetailContentList.vue:909 js/fields/Items.vue:396
+#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
 msgid "Paste after"
 msgstr "วางหลังจาก"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:401
-#: js/fields/Table.vue:200 js/fields/Table.vue:270
+#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "แทรกก่อน"
 
-#: js/components/PageDetailContentList.vue:919 js/fields/Items.vue:406
-#: js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "แทรกหลังจาก"
 
-#: js/components/PageDetailContentList.vue:929
+#: js/components/PageDetailContentList.vue:980
 msgid "Make shared"
-msgstr "ทำให้เป็นของร่วมกัน"
+msgstr "ตั้งเป็นแบบใช้ร่วมกัน"
 
-#: js/components/PageDetailContentList.vue:934
+#: js/components/PageDetailContentList.vue:985
 msgid "Merge copy"
 msgstr "ผสานสำเนา"
 
-#: js/components/PageDetailContentList.vue:944
+#: js/components/PageDetailContentList.vue:995
+msgctxt "text element"
 msgid "Split"
 msgstr "แยก"
 
-#: js/components/PageDetailEditor.vue:77
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "ดับเบิลคลิกเพื่อแก้ไข"
 
-#: js/components/PageDetailEditor.vue:260
+#: js/components/PageDetailEditor.vue:266
 msgid "Preview mode"
 msgstr "โหมดแสดงตัวอย่าง"
 
-#: js/components/PageDetailEditor.vue:263
+#: js/components/PageDetailEditor.vue:269
 msgid "Not CMS content"
 msgstr "ไม่ใช่เนื้อหา CMS"
 
@@ -1480,7 +1601,6 @@ msgid "Remove content element"
 msgstr "ลบองค์ประกอบเนื้อหา"
 
 #: js/components/PageDetailMetrics.vue:149
-#: js/components/PageDetailMetrics.vue:574
 msgid "Views"
 msgstr "จำนวนการดู"
 
@@ -1498,6 +1618,7 @@ msgid "Duration"
 msgstr "ระยะเวลา"
 
 #: js/components/PageDetailMetrics.vue:170
+#: js/components/PageDetailMetrics.vue:574
 msgid "Impressions"
 msgstr "การแสดงผล"
 
@@ -1528,7 +1649,7 @@ msgstr "การแสดงผลของ Google"
 
 #: js/components/PageDetailMetrics.vue:195
 msgid "Google Clicks"
-msgstr "การคลิกโฆษณาของ Google"
+msgstr "การคลิกของ Google"
 
 #: js/components/PageDetailMetrics.vue:196
 msgid "Google Conversion Rate"
@@ -1536,7 +1657,7 @@ msgstr "อัตราคอนเวอร์ชันของ Google"
 
 #: js/components/PageDetailMetrics.vue:202
 msgid "Round trip time"
-msgstr "เวลาเดินทางไปกลับ"
+msgstr "เวลาไป-กลับของข้อมูล"
 
 #: js/components/PageDetailMetrics.vue:203
 msgid "Time to first byte"
@@ -1544,15 +1665,15 @@ msgstr "เวลาที่ใช้ในการรับไบต์แร
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "First contentful paint"
-msgstr "เฟรมที่มีเนื้อหาหลักครั้งแรก"
+msgstr "การแสดงผลเนื้อหาครั้งแรก"
 
 #: js/components/PageDetailMetrics.vue:205
 msgid "Largest contentful paint"
-msgstr "การวาดภาพที่มีเนื้อหาขนาดใหญ่ที่สุด"
+msgstr "การแสดงผลเนื้อหาที่ใหญ่ที่สุด"
 
 #: js/components/PageDetailMetrics.vue:206
 msgid "Interaction to next paint"
-msgstr "การโต้ตอบเพื่อไปยังการวาดถัดไป"
+msgstr "การโต้ตอบจนถึงการแสดงผลถัดไป"
 
 #: js/components/PageDetailMetrics.vue:207
 msgid "Cumulative layout shift"
@@ -1592,11 +1713,16 @@ msgstr "ความเร็วของหน้าเว็บ"
 
 #: js/components/PageDetailMetrics.vue:568
 msgid "Google Search: Queries"
-msgstr "การค้นหาของ Google: คำถาม"
+msgstr "การค้นหาของ Google: คำค้นหา"
 
 #: js/components/PageDetailMetrics.vue:576
 msgid "Percent"
 msgstr "เปอร์เซ็นต์"
+
+#: js/components/PageDetailMetrics.vue:577
+msgctxt "search ranking"
+msgid "Position"
+msgstr "ตำแหน่ง"
 
 #: js/components/PageDetailMetrics.vue:604
 msgid "Google Search: Impressions & Clicks"
@@ -1606,145 +1732,147 @@ msgstr "การค้นหาของ Google: การแสดงผลแ
 msgid "Google Search: Conversions"
 msgstr "การค้นหาของ Google: คอนเวอร์ชัน"
 
-#: js/components/PageListItems.vue:478
+#: js/components/PageListItems.vue:482
 msgid "Error adding root page"
-msgstr "เกิดข้อผิดพลาดในการเพิ่มหน้าหลัก"
+msgstr "เกิดข้อผิดพลาดในการเพิ่มหน้าราก"
 
-#: js/components/PageListItems.vue:551
+#: js/components/PageListItems.vue:547
 msgid "Cache cleared"
 msgstr "ล้างแคชแล้ว"
 
-#: js/components/PageListItems.vue:552
+#: js/components/PageListItems.vue:548
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] ""
+msgstr[0] "ล้างแคชสำหรับ %{num} หน้าแล้ว"
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:558
 msgid "Error clearing cache"
 msgstr "เกิดข้อผิดพลาดในการล้างแคช"
 
-#: js/components/PageListItems.vue:658
+#: js/components/PageListItems.vue:630
 msgid "Error trashing page"
 msgstr "เกิดข้อผิดพลาดในการย้ายหน้าไปยังถังขยะ"
 
-#: js/components/PageListItems.vue:752
+#: js/components/PageListItems.vue:724
 msgid "Error fetching pages"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้าเว็บ"
 
-#: js/components/PageListItems.vue:833
+#: js/components/PageListItems.vue:805
 msgid "Error inserting page"
 msgstr "เกิดข้อผิดพลาดในการแทรกหน้า"
 
-#: js/components/PageListItems.vue:886
+#: js/components/PageListItems.vue:869
 msgid "Error restoring page"
 msgstr "เกิดข้อผิดพลาดในการกู้คืนหน้า"
 
-#: js/components/PageListItems.vue:896
+#: js/components/PageListItems.vue:879
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, เส้นทาง: %{path}, โดเมน: %{domain})"
 
-#: js/components/PageListItems.vue:904
+#: js/components/PageListItems.vue:887
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, เส้นทาง: %{path})"
 
-#: js/components/PageListItems.vue:994
+#: js/components/PageListItems.vue:977
 msgid "Error moving page"
 msgstr "เกิดข้อผิดพลาดในการย้ายหน้า"
 
-#: js/components/PageListItems.vue:1085
+#: js/components/PageListItems.vue:1068
 msgid "Error copying page"
 msgstr "เกิดข้อผิดพลาดในการคัดลอกหน้า"
 
-#: js/components/PageListItems.vue:1090 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "เกิดข้อผิดพลาดในการดึงหน้า"
 
-#: js/components/PageListItems.vue:1170 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "เกิดข้อผิดพลาดในการเผยแพร่หน้า"
 
-#: js/components/PageListItems.vue:1195
+#: js/components/PageListItems.vue:1172
 msgid "All subpages of these pages will be purged as well."
 msgstr "หน้าย่อยทั้งหมดของหน้าเหล่านี้จะถูกลบถาวรด้วย"
 
-#: js/components/PageListItems.vue:1225
+#: js/components/PageListItems.vue:1202
 msgid "Error purging page"
 msgstr "เกิดข้อผิดพลาดในการลบหน้าถาวร"
 
-#: js/components/PageListItems.vue:1358
+#: js/components/PageListItems.vue:1335
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
-msgstr[0] "ไม่สามารถอัปเดต %{num} เพจได้"
+msgstr[0] "ไม่สามารถอัปเดต %{num} หน้าได้"
 
-#: js/components/PageListItems.vue:1369 js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
 #: js/views/PageDetail.vue:606
 msgid "Error saving page"
 msgstr "เกิดข้อผิดพลาดในการบันทึกหน้า"
 
-#: js/components/PageListItems.vue:1420
+#: js/components/PageListItems.vue:1397
 msgid "Error searching pages"
 msgstr "เกิดข้อผิดพลาดในการค้นหาหน้า"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1760
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+msgctxt "page status"
 msgid "Enable"
 msgstr "เปิดใช้งาน"
 
-#: js/components/PageListItems.vue:1617 js/components/PageListItems.vue:1765
+#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+msgctxt "page status"
 msgid "Disable"
 msgstr "ปิดการใช้งาน"
 
-#: js/components/PageListItems.vue:1633 js/components/PageListItems.vue:1785
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
 msgid "Clear cache"
 msgstr "ล้างแคช"
 
-#: js/components/PageListItems.vue:1661 js/components/PageListItems.vue:1954
+#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
 msgid "Add page"
 msgstr "เพิ่มหน้า"
 
-#: js/components/PageListItems.vue:1684
+#: js/components/PageListItems.vue:1680
 msgid "Reload page tree"
-msgstr "โหลดหน้าเว็บใหม่"
+msgstr "โหลดแผนผังหน้าใหม่"
 
-#: js/components/PageListItems.vue:1711
+#: js/components/PageListItems.vue:1703
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr "ใช้ปุ่มลูกศรเพื่อนำทาง ใช้ปุ่ม Alt พร้อมกับปุ่มลูกศรเพื่อจัดลำดับใหม่"
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1705
 msgid "Moved to position %{position} of %{total}"
 msgstr "ย้ายไปยังตำแหน่ง %{position} ของ %{total}"
 
-#: js/components/PageListItems.vue:1715
+#: js/components/PageListItems.vue:1707
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "ถูกย้ายออกไปยังระดับ %{level} ตำแหน่ง %{position} ของ %{total}"
 
-#: js/components/PageListItems.vue:1721
+#: js/components/PageListItems.vue:1713
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "ย่อหน้าให้อยู่ในระดับ %{level} ตำแหน่ง %{position} ของ %{total}"
 
-#: js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1733
 msgid "Toggle child nodes"
 msgstr "สลับโหนดลูก"
 
-#: js/components/PageListItems.vue:1812 js/components/PageListItems.vue:1837
-#: js/components/PageListItems.vue:1862
+#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
+#: js/components/PageListItems.vue:1854
 msgid "Before"
 msgstr "ก่อนหน้า"
 
-#: js/components/PageListItems.vue:1817 js/components/PageListItems.vue:1842
-#: js/components/PageListItems.vue:1867
+#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
+#: js/components/PageListItems.vue:1859
 msgid "Into"
 msgstr "เข้าสู่"
 
-#: js/components/PageListItems.vue:1822 js/components/PageListItems.vue:1847
-#: js/components/PageListItems.vue:1872
+#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
+#: js/components/PageListItems.vue:1864
 msgid "After"
 msgstr "หลังจาก"
 
-#: js/components/PageListItems.vue:1856
+#: js/components/PageListItems.vue:1848
 msgid "Insert"
 msgstr "แทรก"
 
-#: js/components/PageListItems.vue:1972
+#: js/components/PageListItems.vue:1964
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "ใช้การตั้งค่าการเข้าถึงกับ %{num} หน้า"
@@ -1765,13 +1893,85 @@ msgstr "ไม่ถูกจัดหมวดหมู่"
 msgid "Error fetching content elements"
 msgstr "เกิดข้อผิดพลาดในการดึงองค์ประกอบเนื้อหา"
 
+#: js/components/ShortcutDialog.vue:23
+msgid "General"
+msgstr "ทั่วไป"
+
+#: js/components/ShortcutDialog.vue:28
+msgid "Close dialog or menu"
+msgstr "ปิดกล่องโต้ตอบหรือเมนู"
+
+#: js/components/ShortcutDialog.vue:34
+msgid "Move between commands and results"
+msgstr "เลื่อนระหว่างคำสั่งและผลลัพธ์"
+
+#: js/components/ShortcutDialog.vue:35
+msgid "Run command or open result"
+msgstr "เรียกใช้คำสั่งหรือเปิดผลลัพธ์"
+
+#: js/components/ShortcutDialog.vue:36
+msgid "Close command palette"
+msgstr "ปิดแผงคำสั่ง"
+
+#: js/components/ShortcutDialog.vue:40
+msgid "Lists"
+msgstr "รายการ"
+
+#: js/components/ShortcutDialog.vue:44
+msgid "Edit views"
+msgstr "มุมมองการแก้ไข"
+
+#: js/components/ShortcutDialog.vue:48
+msgid "Page content"
+msgstr "เนื้อหาของหน้า"
+
+#: js/components/ShortcutDialog.vue:49
+msgid "Move content element up or down"
+msgstr "ย้ายองค์ประกอบเนื้อหาขึ้นหรือลง"
+
+#: js/components/ShortcutDialog.vue:52
+msgid "Page tree"
+msgstr "แผนผังหน้า"
+
+#: js/components/ShortcutDialog.vue:54
+msgid "Move between pages"
+msgstr "เลื่อนระหว่างหน้า"
+
+#: js/components/ShortcutDialog.vue:55
+msgid "Expand page"
+msgstr "ขยายหน้า"
+
+#: js/components/ShortcutDialog.vue:56
+msgid "Add subpage to focused page"
+msgstr "เพิ่มหน้าย่อยให้กับหน้าที่โฟกัสอยู่"
+
+#: js/components/ShortcutDialog.vue:57
+msgid "Reorder or re-nest page"
+msgstr "จัดลำดับหรือย้ายระดับของหน้า"
+
+#: js/components/ShortcutDialog.vue:62
+msgid "AI chat"
+msgstr "แชท AI"
+
+#: js/components/ShortcutDialog.vue:64
+msgid "Send message"
+msgstr "ส่งข้อความ"
+
+#: js/components/ShortcutDialog.vue:65
+msgid "New line"
+msgstr "ขึ้นบรรทัดใหม่"
+
+#: js/components/ShortcutDialog.vue:66
+msgid "Recall previous messages"
+msgstr "เรียกข้อความก่อนหน้า"
+
 #: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
 msgid "Unsaved changes"
 msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก"
 
 #: js/components/UnsavedDialog.vue:46
 msgid "You have unsaved changes that will be lost if you leave."
-msgstr "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึกซึ่งจะสูญหายหากคุณออกจากระบบ"
+msgstr "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก ซึ่งจะสูญหายหากคุณออกจากหน้านี้"
 
 #: js/components/UnsavedDialog.vue:52
 msgid "Discard"
@@ -1779,7 +1979,7 @@ msgstr "ทิ้ง"
 
 #: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
-msgstr "บันทึก & ออกจากระบบ"
+msgstr "บันทึกและออก"
 
 #: js/components/User.vue:60
 msgid "Failed to load user"
@@ -1801,34 +2001,23 @@ msgstr "เมนูผู้ใช้"
 msgid "Logout"
 msgstr "ออกจากระบบ"
 
-#: js/fields/Autocomplete.vue:43 js/fields/Color.vue:20 js/fields/Date.vue:24
-#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
-#: js/fields/Url.vue:75
-msgid "Value is required"
-msgstr "จำเป็นต้องมีค่า"
-
-#: js/fields/Autocomplete.vue:48 js/fields/Images.vue:97
-#: js/fields/Items.vue:121
-msgid "Maximum is %{num} entries"
-msgstr "จำนวนสูงสุดคือ%{num} รายการ"
-
-#: js/fields/Autocomplete.vue:187 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "ไม่มีข้อมูล"
 
-#: js/fields/Color.vue:21
+#: js/fields/Color.vue:23
 msgid "Value must be a hex color code"
-msgstr "ค่าต้องเป็นรหัสสีแบบสิบหก"
+msgstr "ค่าต้องเป็นรหัสสีแบบเลขฐานสิบหก"
 
 #: js/fields/File.vue:140
 msgid "File is required"
-msgstr "ไฟล์จำเป็น"
+msgstr "จำเป็นต้องมีไฟล์"
 
 #: js/fields/File.vue:448
 msgid "Add file from URL"
 msgstr "เพิ่มไฟล์จาก URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:426
+#: js/fields/File.vue:456 js/fields/Images.vue:429
 msgid "Create file"
 msgstr "สร้างไฟล์"
 
@@ -1848,91 +2037,65 @@ msgstr "ชื่อ"
 msgid "description"
 msgstr "คำอธิบาย"
 
-#: js/fields/Images.vue:93 js/fields/Items.vue:124
-msgid "Minimum is %{num} entries"
-msgstr "ขั้นต่ำคือ%{num} รายการ"
-
-#: js/fields/Images.vue:450
+#: js/fields/Images.vue:453
 msgid "Drop files here"
 msgstr "วางไฟล์ที่นี่"
 
 #: js/fields/Map.vue:231
 msgid "Clear location"
-msgstr ""
+msgstr "ล้างตำแหน่ง"
 
 #: js/fields/Map.vue:234
 msgid "Click the map to set the location"
-msgstr ""
+msgstr "คลิกที่แผนที่เพื่อกำหนดตำแหน่ง"
 
-#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37 js/fields/Text.vue:125
-msgid "Minimum length is %{num} characters"
-msgstr "ความยาวขั้นต่ำคือ%{num} ตัวอักษร"
-
-#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41 js/fields/Text.vue:129
-msgid "Maximum length is %{num} characters"
-msgstr "ความยาวสูงสุดคือ%{num} ตัวอักษร"
-
-#: js/fields/Radio.vue:24
-msgid "Selection is required"
-msgstr "จำเป็นต้องเลือก"
-
-#: js/fields/String.vue:45
+#: js/fields/String.vue:44
 msgid "Value has invalid format"
 msgstr "ค่ามีรูปแบบไม่ถูกต้อง"
 
-#: js/fields/Table.vue:73
-msgid "Minimum are %{num} columns"
-msgstr "ขั้นต่ำคือ%{num} คอลัมน์"
-
-#: js/fields/Table.vue:77
-msgid "Maximum are %{num} columns"
-msgstr "จำนวนสูงสุดคือ%{num} คอลัมน์"
-
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:168
 msgid "Move column"
 msgstr "ย้ายคอลัมน์"
 
-#: js/fields/Table.vue:190
+#: js/fields/Table.vue:185
 msgid "Column actions"
 msgstr "การดำเนินการคอลัมน์"
 
-#: js/fields/Table.vue:229
+#: js/fields/Table.vue:224
 msgid "Move row"
 msgstr "ย้ายแถว"
 
-#: js/fields/Table.vue:260
+#: js/fields/Table.vue:255
 msgid "Row actions"
-msgstr "การกระทำของแถว"
+msgstr "การดำเนินการแถว"
 
-#: js/fields/Url.vue:57 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:165
 msgid "None"
 msgstr "ไม่มี"
 
-#: js/fields/Url.vue:58
-msgid "Sponsored"
-msgstr ""
-
 #: js/fields/Url.vue:59
+msgid "Sponsored"
+msgstr "ได้รับการสนับสนุน"
+
+#: js/fields/Url.vue:60
 msgid "Nofollow"
-msgstr ""
+msgstr "Nofollow"
 
-#: js/fields/Url.vue:76
+#: js/fields/Url.vue:77
 msgid "Not a valid URL"
-msgstr "ไม่ใช้ URL ที่ถูกต้อง"
+msgstr "ไม่ใช่ URL ที่ถูกต้อง"
 
-#: js/fields/Url.vue:86
+#: js/fields/Url.vue:87
 msgid "Invalid URL schema configuration"
 msgstr "การกำหนดค่าสคีมา URL ไม่ถูกต้อง"
 
-#: js/fields/Url.vue:164
+#: js/fields/Url.vue:165
 msgid "No pages found"
 msgstr "ไม่พบหน้า"
 
-#: js/fields/Url.vue:176
+#: js/fields/Url.vue:177
 msgid "Link attribute"
-msgstr ""
+msgstr "แอตทริบิวต์ลิงก์"
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
@@ -1942,631 +2105,665 @@ msgstr "รวมการเปลี่ยนแปลงจาก %{editor}"
 msgid "You do not have permission to access %{path}"
 msgstr "คุณไม่มีสิทธิ์เข้าถึง%{path}"
 
+#: js/rules.js:18
+msgid "Value is required"
+msgstr "จำเป็นต้องมีค่า"
+
+#: js/rules.js:23
+msgid "At least %{num} entry is required"
+msgid_plural "At least %{num} entries are required"
+msgstr[0] "ต้องมีอย่างน้อย %{num} รายการ"
+
+#: js/rules.js:30
+msgid "At most %{num} entry is allowed"
+msgid_plural "At most %{num} entries are allowed"
+msgstr[0] "อนุญาตสูงสุด %{num} รายการ"
+
+#: js/rules.js:38
+msgid "At least %{num} character is required"
+msgid_plural "At least %{num} characters are required"
+msgstr[0] "ต้องมีอย่างน้อย %{num} ตัวอักษร"
+
+#: js/rules.js:48
+msgid "At most %{num} character is allowed"
+msgid_plural "At most %{num} characters are allowed"
+msgstr[0] "อนุญาตสูงสุด %{num} ตัวอักษร"
+
+#: js/rules.js:55
+msgid "At least %{num} column is required"
+msgid_plural "At least %{num} columns are required"
+msgstr[0] "ต้องมีอย่างน้อย %{num} คอลัมน์"
+
+#: js/rules.js:62
+msgid "At most %{num} column is allowed"
+msgid_plural "At most %{num} columns are allowed"
+msgstr[0] "อนุญาตสูงสุด %{num} คอลัมน์"
+
 #: js/stores.js:399
 msgid "Failed to load plugin"
 msgstr "โหลดปลั๊กอินไม่สำเร็จ"
 
-#: js/strings.js:9
+#: js/strings.js:29
 msgctxt "cs"
 msgid "main"
 msgstr "หลัก"
 
-#: js/strings.js:10
+#: js/strings.js:30
 msgctxt "cs"
 msgid "header"
-msgstr "หัวข้อ"
+msgstr "ส่วนหัว"
 
-#: js/strings.js:11
+#: js/strings.js:31
 msgctxt "cs"
 msgid "footer"
 msgstr "ส่วนท้าย"
 
-#: js/strings.js:12
+#: js/strings.js:32
 msgctxt "cs"
 msgid "sidebar"
 msgstr "แถบด้านข้าง"
 
-#: js/strings.js:13
+#: js/strings.js:33
 msgctxt "cs"
 msgid "aside"
-msgstr "นอกเรื่อง"
+msgstr "ส่วนเสริม"
 
-#: js/strings.js:16
+#: js/strings.js:36
 msgctxt "sg"
 msgid "basic"
 msgstr "พื้นฐาน"
 
-#: js/strings.js:17
+#: js/strings.js:37
 msgctxt "sg"
 msgid "content"
 msgstr "เนื้อหา"
 
-#: js/strings.js:18
+#: js/strings.js:38
 msgctxt "sg"
 msgid "media"
 msgstr "สื่อ"
 
-#: js/strings.js:19
+#: js/strings.js:39
 msgctxt "sg"
 msgid "forms"
 msgstr "แบบฟอร์ม"
 
-#: js/strings.js:22
+#: js/strings.js:42
 msgctxt "as"
 msgid "type"
 msgstr "ประเภท"
 
-#: js/strings.js:23
+#: js/strings.js:43
 msgctxt "as"
 msgid "state"
 msgstr "สถานะ"
 
-#: js/strings.js:26
+#: js/strings.js:46
 msgctxt "st"
 msgid "valid"
 msgstr "ถูกต้อง"
 
-#: js/strings.js:27
+#: js/strings.js:47
 msgctxt "st"
 msgid "changed"
 msgstr "เปลี่ยนแปลง"
 
-#: js/strings.js:28
+#: js/strings.js:48
 msgctxt "st"
 msgid "error"
 msgstr "ข้อผิดพลาด"
 
-#: js/strings.js:31
+#: js/strings.js:51
 msgctxt "st"
 msgid "reference"
 msgstr "อ้างอิง"
 
-#: js/strings.js:32
+#: js/strings.js:52
 msgctxt "st"
 msgid "heading"
 msgstr "หัวข้อ"
 
-#: js/strings.js:33
+#: js/strings.js:53
 msgctxt "st"
 msgid "text"
 msgstr "ข้อความ"
 
-#: js/strings.js:34
+#: js/strings.js:54
 msgctxt "st"
 msgid "image-text"
 msgstr "ภาพข้อความ"
 
-#: js/strings.js:35
+#: js/strings.js:55
 msgctxt "st"
 msgid "slideshow"
 msgstr "สไลด์โชว์"
 
-#: js/strings.js:36
+#: js/strings.js:56
 msgctxt "st"
 msgid "code"
 msgstr "โค้ด"
 
-#: js/strings.js:37
+#: js/strings.js:57
 msgctxt "st"
 msgid "table"
 msgstr "ตาราง"
 
-#: js/strings.js:38
+#: js/strings.js:58
 msgctxt "st"
 msgid "map"
-msgstr ""
+msgstr "แผนที่"
 
-#: js/strings.js:39
+#: js/strings.js:59
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:40
+#: js/strings.js:60
 msgctxt "st"
 msgid "image"
 msgstr "รูปภาพ"
 
-#: js/strings.js:41
+#: js/strings.js:61
 msgctxt "st"
 msgid "video"
 msgstr "วิดีโอ"
 
-#: js/strings.js:42
+#: js/strings.js:62
 msgctxt "st"
 msgid "audio"
 msgstr "เสียง"
 
-#: js/strings.js:43
+#: js/strings.js:63
 msgctxt "st"
 msgid "file"
 msgstr "ไฟล์"
 
-#: js/strings.js:44
+#: js/strings.js:64
 msgctxt "st"
 msgid "hero"
 msgstr "ฮีโร่"
 
-#: js/strings.js:45
+#: js/strings.js:65
 msgctxt "st"
 msgid "CTA"
-msgstr ""
+msgstr "CTA"
 
-#: js/strings.js:46
+#: js/strings.js:66
 msgctxt "st"
 msgid "cards"
 msgstr "การ์ด"
 
-#: js/strings.js:47
+#: js/strings.js:67
 msgctxt "st"
 msgid "blog"
 msgstr "บล็อก"
 
-#: js/strings.js:48
+#: js/strings.js:68
 msgctxt "st"
 msgid "article"
 msgstr "บทความ"
 
-#: js/strings.js:49
+#: js/strings.js:69
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:50
+#: js/strings.js:70
 msgctxt "st"
 msgid "toc"
 msgstr "สารบัญ"
 
-#: js/strings.js:51
+#: js/strings.js:71
 msgctxt "st"
 msgid "contact"
 msgstr "ติดต่อ"
 
-#: js/strings.js:52
+#: js/strings.js:72
 msgctxt "st"
 msgid "meta-tags"
 msgstr "เมตาแท็ก"
 
-#: js/strings.js:53
+#: js/strings.js:73
 msgctxt "st"
 msgid "social-media"
 msgstr "โซเชียลมีเดีย"
 
-#: js/strings.js:54
+#: js/strings.js:74
 msgctxt "st"
 msgid "canonical"
 msgstr "URL หลัก"
 
-#: js/strings.js:55
+#: js/strings.js:75
 msgctxt "st"
 msgid "robots"
 msgstr "เครื่องมือค้นหา"
 
-#: js/strings.js:56
+#: js/strings.js:76
 msgctxt "st"
 msgid "theme"
 msgstr "ธีม"
 
-#: js/strings.js:57
+#: js/strings.js:77
 msgctxt "st"
 msgid "styles"
 msgstr "สไตล์"
 
-#: js/strings.js:58
+#: js/strings.js:78
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:61
+#: js/strings.js:81
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "หัวข้อส่วนตั้งแต่ H1 ถึง H6"
 
-#: js/strings.js:62
+#: js/strings.js:82
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "ข้อความจัดรูปแบบพร้อมย่อหน้า รายการ และลิงก์"
 
-#: js/strings.js:63
+#: js/strings.js:83
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "รูปภาพข้างข้อความจัดรูปแบบ"
 
-#: js/strings.js:64
+#: js/strings.js:84
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "ซอร์สโค้ดพร้อมไฮไลต์ไวยากรณ์"
 
-#: js/strings.js:65
+#: js/strings.js:85
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "ตารางข้อมูลพร้อมแถวหรือคอลัมน์หัวตาราง (ไม่บังคับ)"
 
-#: js/strings.js:66
+#: js/strings.js:86
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "แผนที่แบบโต้ตอบพร้อมตำแหน่ง ข้อความ และลิงก์"
 
-#: js/strings.js:67
+#: js/strings.js:87
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "HTML แบบกำหนดเองสำหรับการฝังและวิดเจ็ต"
 
-#: js/strings.js:68
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "รูปภาพแบบตอบสนองหนึ่งรูป"
 
-#: js/strings.js:69
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "สไลด์หมุนเวียนพร้อมรูปภาพหลายรูป"
 
-#: js/strings.js:70
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "วิดีโอแบบฝังพร้อมปุ่มควบคุมการเล่น"
 
-#: js/strings.js:71
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "เสียงแบบฝังพร้อมปุ่มควบคุมการเล่น"
 
-#: js/strings.js:72
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "ไฟล์สำหรับดาวน์โหลด เช่น เอกสาร PDF"
 
-#: js/strings.js:73
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "ส่วนเปิดขนาดใหญ่พร้อมชื่อเรื่อง ข้อความ ปุ่ม และพื้นหลัง"
 
-#: js/strings.js:74
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "คำกระตุ้นการตัดสินใจพร้อมข้อความและปุ่ม"
 
-#: js/strings.js:75
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "ตารางการ์ดพร้อมรูปภาพ ชื่อเรื่อง และข้อความ"
 
-#: js/strings.js:76
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "คำรับรองจากลูกค้าพร้อมชื่อ ตำแหน่ง และรูปถ่าย"
 
-#: js/strings.js:77
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "บทนำบทความพร้อมแกลเลอรีรูปภาพและผู้เขียน"
 
-#: js/strings.js:78
+#: js/strings.js:98
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "รายการบทความบล็อกจากหน้าหลัก"
 
-#: js/strings.js:79
+#: js/strings.js:99
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "รายการข่าวจากหน้าหลัก"
 
-#: js/strings.js:80
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "หน้าย่อยเด่นตามด้วยหน้าย่อยอื่น ๆ"
 
-#: js/strings.js:81
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "แผนราคาแบบสมัครสมาชิกหรือชำระครั้งเดียว"
 
-#: js/strings.js:82
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "คำถามที่พบบ่อยพร้อมคำตอบ"
 
-#: js/strings.js:83
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "สารบัญพร้อมลิงก์ไปยังหัวข้อของหน้า"
 
-#: js/strings.js:84
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "แบบฟอร์มติดต่อพร้อมช่องที่กำหนดค่าได้"
 
-#: js/strings.js:87
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "ปุ่ม"
 
-#: js/strings.js:88
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
-msgstr ""
+msgstr "ปุ่ม"
 
-#: js/strings.js:89
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "การ์ด"
 
-#: js/strings.js:90
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "คำอธิบาย"
 
-#: js/strings.js:91
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "ไฟล์"
 
-#: js/strings.js:92
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "ไฟล์"
 
-#: js/strings.js:93
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "การติดตามลิงก์"
 
-#: js/strings.js:94
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
-msgstr "หัวข้อ"
+msgstr "ส่วนหัว"
 
-#: js/strings.js:95
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "การจัดทำดัชนี"
 
-#: js/strings.js:96
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "คำสำคัญ"
 
-#: js/strings.js:97
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "ภาษา"
 
-#: js/strings.js:98
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
-msgstr ""
+msgstr "ป้ายกำกับ"
 
-#: js/strings.js:99
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "ระดับ"
 
-#: js/strings.js:100
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "ขีดจำกัด"
 
-#: js/strings.js:101
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
-msgstr ""
+msgstr "ตำแหน่ง"
 
-#: js/strings.js:102
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "รูปหลัก"
 
-#: js/strings.js:103
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "ลำดับ"
 
-#: js/strings.js:104
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "หน้าแม่"
 
-#: js/strings.js:105
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "ตำแหน่ง"
 
-#: js/strings.js:106
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "ข้อความ"
 
-#: js/strings.js:107
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "ตาราง"
 
-#: js/strings.js:108
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
-msgstr "ชื่อ"
+msgstr "ชื่อเรื่อง"
 
-#: js/strings.js:109
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:111
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "รูปภาพ"
 
-#: js/strings.js:112
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "รูปภาพ"
 
-#: js/strings.js:113
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "รายการ"
 
-#: js/strings.js:114
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "บทนำ"
 
-#: js/strings.js:115
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "โหลดทันที"
 
-#: js/strings.js:116
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "ซอร์สโค้ด"
 
-#: js/strings.js:117
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "บทบาทการเข้าถึงส่วนหน้า"
 
-#: js/strings.js:118
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "ราคาการชำระเงิน"
 
-#: js/strings.js:119
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "ข้อมูลอ้างอิงการชำระเงิน"
 
-#: js/strings.js:120
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "ประเภทการชำระเงิน"
 
-#: js/strings.js:121
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "สกุลเงิน"
 
-#: js/strings.js:122
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "รอบการเรียกเก็บเงิน"
 
-#: js/strings.js:123
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "หน่วยราคา"
 
-#: js/strings.js:124
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "หน้าเป้าหมายหรือลิงค์"
 
-#: js/strings.js:125
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
-msgstr ""
+msgstr "ฟิลด์ที่จำเป็น"
 
-#: js/strings.js:126
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
-msgstr ""
+msgstr "ฟิลด์ที่ไม่บังคับ"
 
-#: js/strings.js:127
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
-msgstr ""
+msgstr "ข้อความลิงก์"
 
-#: js/strings.js:130
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
-msgstr ""
+msgstr "ชื่อ"
 
-#: js/strings.js:131
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
-msgstr ""
+msgstr "บริษัท"
 
-#: js/strings.js:132
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
-msgstr ""
+msgstr "โทรศัพท์"
 
-#: js/strings.js:133
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
-msgstr ""
+msgstr "อีเมล"
 
-#: js/strings.js:134
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
-msgstr ""
+msgstr "หัวเรื่อง"
 
-#: js/strings.js:135
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "ติดตามลิงก์"
 
-#: js/strings.js:136
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "จัดทำดัชนี"
 
-#: js/strings.js:137
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "ไม่ติดตามลิงก์"
 
-#: js/strings.js:138
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "ไม่จัดทำดัชนี"
 
-#: js/strings.js:139
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "การสมัครสมาชิก"
 
-#: js/strings.js:140
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "ชำระเงินครั้งเดียว"
 
-#: js/strings.js:143
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "เสร็จแล้ว"
 
-#: js/strings.js:144
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "มีอยู่แล้ว"
 
-#: js/strings.js:147
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "ขั้นสูง"
 
-#: js/strings.js:148
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "ธีม"
 
-#: js/strings.js:149
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
-msgstr ""
+msgstr "เว็บไซต์"
 
-#: js/strings.js:150
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "โลโก้"
 
-#: js/strings.js:151
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "โลโก้สำรอง"
 
-#: js/strings.js:152
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "ไอคอน"
@@ -2616,7 +2813,7 @@ msgstr "เพิ่มค่าการเข้าถึง"
 
 #: js/views/AccessList.vue:337
 msgid "Access value"
-msgstr "มูลค่าการเข้าถึง"
+msgstr "ค่าการเข้าถึง"
 
 #: js/views/AccessList.vue:353
 msgid "Add"
@@ -2628,15 +2825,15 @@ msgstr "เกิดข้อผิดพลาดในการดึงอง
 
 #: js/views/ElementDetail.vue:243
 msgid "Element published successfully"
-msgstr "Element เผยแพร่สำเร็จแล้ว"
+msgstr "เผยแพร่องค์ประกอบสำเร็จแล้ว"
 
 #: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
-msgstr "องค์ประกอบที่กำหนดให้เผยแพร่ที่%{date}"
+msgstr "กำหนดเผยแพร่องค์ประกอบเวลา %{date}"
 
 #: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
-msgstr "เกิดข้อผิดพลาดในการเผยแพร่ส่วนประกอบ"
+msgstr "เกิดข้อผิดพลาดในการเผยแพร่องค์ประกอบ"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
 #: js/views/PageDetail.vue:532
@@ -2673,7 +2870,7 @@ msgstr "กำหนดไว้แล้ว"
 #: js/views/ElementList.vue:126 js/views/FileList.vue:125
 #: js/views/PageList.vue:150
 msgid "Drafts"
-msgstr "ร่าง"
+msgstr "ฉบับร่าง"
 
 #: js/views/ElementList.vue:131 js/views/FileList.vue:130
 #: js/views/PageList.vue:155
@@ -2707,7 +2904,7 @@ msgstr "กด Enter เพื่อเปิดแชท"
 
 #: js/views/ElementList.vue:292
 msgid "AI can find and manage shared elements based on your input"
-msgstr ""
+msgstr "AI สามารถค้นหาและจัดการองค์ประกอบที่ใช้ร่วมกันตามข้อมูลที่คุณให้"
 
 #: js/views/ElementList.vue:293 js/views/FileList.vue:292
 #: js/views/PageList.vue:338
@@ -2724,7 +2921,7 @@ msgstr "ไฟล์ได้รับการเผยแพร่สำเร
 
 #: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
-msgstr "ไฟล์ที่กำหนดให้เผยแพร่เวลา%{date}"
+msgstr "กำหนดเผยแพร่ไฟล์เวลา %{date}"
 
 #: js/views/FileDetail.vue:323
 msgid "File saved successfully"
@@ -2737,7 +2934,7 @@ msgstr "ไฟล์"
 
 #: js/views/FileList.vue:291
 msgid "AI can find and manage media files based on your input"
-msgstr ""
+msgstr "AI สามารถค้นหาและจัดการไฟล์สื่อตามข้อมูลที่คุณให้"
 
 #: js/views/Login.vue:45
 msgid "Invalid e-mail address"
@@ -2800,7 +2997,7 @@ msgstr "หน้าบันทึกสำเร็จแล้ว"
 
 #: js/views/PageDetail.vue:621
 msgid "No page schema for \"content\" found"
-msgstr "ไม่พบสคีมาหน้าสำหรับ \"เนื้อหา\""
+msgstr "ไม่พบสคีมาหน้าสำหรับ \"content\""
 
 #: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
 #: js/views/PageDetail.vue:839
@@ -2837,13 +3034,64 @@ msgstr "แคช"
 
 #: js/views/PageList.vue:313
 msgid "Generate page based on prompt"
-msgstr "สร้างหน้าเพจตามคำแนะนำ"
+msgstr "สร้างหน้าตามพรอมต์"
 
 #: js/views/PageList.vue:331
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI สามารถสร้างหน้าและเนื้อหาตามข้อมูลที่คุณป้อนและเพิ่มลงในโครงสร้างหน้าได้"
+
+#~ msgid "Selection is required"
+#~ msgstr "จำเป็นต้องเลือก"
+
+#~ msgid "Minimum is %{num} entries"
+#~ msgstr "ขั้นต่ำคือ%{num} รายการ"
+
+#~ msgid "Maximum is %{num} entries"
+#~ msgstr "จำนวนสูงสุดคือ%{num} รายการ"
+
+#~ msgid "Minimum length is %{num} characters"
+#~ msgstr "ความยาวขั้นต่ำคือ%{num} ตัวอักษร"
+
+#~ msgid "Maximum length is %{num} characters"
+#~ msgstr "ความยาวสูงสุดคือ%{num} ตัวอักษร"
+
+#~ msgid "id"
+#~ msgstr "ไอดี"
+
+#~ msgid "Copy"
+#~ msgstr "คัดลอก"
+
+#~ msgid "Top"
+#~ msgstr "ด้านบน"
+
+#~ msgid "Left"
+#~ msgstr "ซ้าย"
+
+#~ msgid "Right"
+#~ msgstr "ขวา"
+
+#~ msgid "Bottom"
+#~ msgstr "ด้านล่าง"
+
+#~ msgid "Cut"
+#~ msgstr "ตัด"
+
+#~ msgid "Split"
+#~ msgstr "แยก"
+
+#~ msgid "Enable"
+#~ msgstr "เปิดใช้งาน"
+
+#~ msgid "Disable"
+#~ msgstr "ปิดการใช้งาน"
+
+#~ msgid "Minimum are %{num} columns"
+#~ msgstr "ขั้นต่ำคือ%{num} คอลัมน์"
+
+#~ msgid "Maximum are %{num} columns"
+#~ msgstr "จำนวนสูงสุดคือ%{num} คอลัมน์"
 
 #~ msgid "Error deleting access values"
 #~ msgstr "เกิดข้อผิดพลาดในการลบค่าการเข้าถึง"

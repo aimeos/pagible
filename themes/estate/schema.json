@@ -39,13 +39,13 @@
                 "text": {
                     "type": "markdown",
                     "label": "description",
-                    "min": 1,
+                    "required": true,
                     "max": 500
                 },
                 "location": {
                     "type": "markdown",
                     "label": "Location",
-                    "min": 1
+                    "required": true
                 },
                 "map": {
                     "type": "map",
@@ -214,7 +214,6 @@
                 "area_unit": {
                     "type": "string",
                     "default": "m²",
-                    "min": 1,
                     "max": 16,
                     "required": true,
                     "label": "Area unit"
@@ -266,7 +265,7 @@
                 "features": {
                     "type": "markdown",
                     "label": "Features",
-                    "min": 1
+                    "required": true
                 },
                 "documents": {
                     "type": "items",
@@ -286,8 +285,7 @@
                 "files": {
                     "type": "images",
                     "label": "Gallery",
-                    "required": true,
-                    "min": 1
+                    "required": true
                 }
             }
         },

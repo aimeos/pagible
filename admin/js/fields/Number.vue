@@ -1,6 +1,8 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { required } from '../rules'
+
 /**
  * Configuration:
  * - `max`: number, maximum value allowed in the input field
@@ -30,7 +32,7 @@ export default {
     },
 
     rules() {
-      return [(v) => !this.config.required || !!v || this.$gettext(`Value is required`)]
+      return [required(this.$gettext, this.config.required)]
     }
   },
 

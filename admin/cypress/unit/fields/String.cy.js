@@ -37,6 +37,22 @@ describe('String (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:false when empty with config.min but not required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { min: 5 }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true when empty and config.required is set', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { required: true }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits error:false when value meets config.min', () => {
     const onError = cy.spy().as('error')
     cy.mount(StringField, {
@@ -59,6 +75,14 @@ describe('String (textarea)', () => {
       props: { modelValue: 'EU1', config: { pattern: '^[A-Z]{3}$' }, onError },
     })
     cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('emits error:false when empty with config.pattern but not required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(StringField, {
+      props: { modelValue: '', config: { pattern: '^[A-Z]{3}$' }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
   })
 
   it('emits update:modelValue as the user types', () => {

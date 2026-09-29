@@ -192,7 +192,7 @@ export default {
     max-width="1200"
   >
     <template #toolbar-actions>
-      <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()">
+      <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()" data-confirm>
         {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
       </v-btn>
     </template>

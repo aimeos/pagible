@@ -17,7 +17,7 @@
             "fields": {
                 "title": {
                     "type": "string",
-                    "min": 1
+                    "required": true
                 },
                 "level": {
                     "type": "select",
@@ -58,7 +58,7 @@
             "fields": {
                 "text": {
                     "type": "markdown",
-                    "min": 1
+                    "required": true
                 }
             }
         },
@@ -69,7 +69,7 @@
             "fields": {
                 "text": {
                     "type": "markdown",
-                    "min": 1
+                    "required": true
                 },
                 "file": {
                     "type": "image",
@@ -190,7 +190,7 @@
                 "text": {
                     "type": "plaintext",
                     "label": "source code",
-                    "min": 1
+                    "required": true
                 }
             }
         },
@@ -261,7 +261,7 @@
                 "text": {
                     "type": "html",
                     "label": "source code",
-                    "min": 1
+                    "required": true
                 }
             }
         },
@@ -341,7 +341,7 @@
             "fields": {
                 "title": {
                     "type": "string",
-                    "min": 1
+                    "required": true
                 },
                 "subtitle": {
                     "type": "string"
@@ -395,8 +395,7 @@
             "fields": {
                 "title": {
                     "type": "string",
-                    "required": true,
-                    "min": 1
+                    "required": true
                 },
                 "text": {
                     "type": "markdown"
@@ -404,13 +403,11 @@
                 "buttons": {
                     "type": "items",
                     "required": true,
-                    "min": 1,
                     "max": 3,
                     "item": {
                         "label": {
                             "type": "string",
-                            "required": true,
-                            "min": 1
+                            "required": true
                         },
                         "url": {
                             "type": "url",
@@ -456,10 +453,11 @@
                 },
                 "cards": {
                     "type": "items",
+                    "required": true,
                     "item": {
                         "title": {
                             "type": "string",
-                            "min": 1
+                            "required": true
                         },
                         "file": {
                             "type": "image",
@@ -486,14 +484,15 @@
                 },
                 "items": {
                     "type": "items",
+                    "required": true,
                     "item": {
                         "text": {
                             "type": "markdown",
-                            "min": 1
+                            "required": true
                         },
                         "name": {
                             "type": "string",
-                            "min": 1
+                            "required": true
                         },
                         "role": {
                             "type": "string"
@@ -514,7 +513,7 @@
                 "text": {
                     "type": "text",
                     "label": "introduction",
-                    "min": 1,
+                    "required": true,
                     "max": 1000
                 },
                 "files": {
@@ -727,11 +726,12 @@
                 },
                 "items": {
                     "type": "items",
+                    "required": true,
                     "identity": "id",
                     "item": {
                         "name": {
                             "type": "string",
-                            "min": 1
+                            "required": true
                         },
                         "access": {
                             "type": "autocomplete",
@@ -743,8 +743,8 @@
                         },
                         "prices": {
                             "type": "items",
+                            "required": true,
                             "label": "Payment prices",
-                            "min": 1,
                             "max": 5,
                             "identity": "id",
                             "item": {
@@ -834,14 +834,15 @@
                 },
                 "items": {
                     "type": "items",
+                    "required": true,
                     "item": {
                         "title": {
                             "type": "string",
-                            "min": 1
+                            "required": true
                         },
                         "text": {
                             "type": "markdown",
-                            "min": 1
+                            "required": true
                         }
                     }
                 }
@@ -940,7 +941,7 @@
             "fields": {
                 "description": {
                     "type": "string",
-                    "min": 1,
+                    "required": true,
                     "max": 160
                 },
                 "keywords": {
@@ -955,7 +956,7 @@
             "fields": {
                 "title": {
                     "type": "string",
-                    "min": 1,
+                    "required": true,
                     "max": 60
                 },
                 "description": {
@@ -1018,7 +1019,6 @@
             "fields": {
                 "title": {
                     "type": "string",
-                    "min": 1,
                     "max": 255,
                     "required": true
                 }
@@ -1208,7 +1208,6 @@
                 "text": {
                     "type": "plaintext",
                     "required": true,
-                    "min": 1,
                     "max": 500000
                 }
             }

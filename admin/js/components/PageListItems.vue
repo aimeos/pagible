@@ -44,6 +44,8 @@ import {
   useMessageStore,
   useChangeStore
 } from '../stores'
+import { useListShortcuts } from '../lists'
+import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 import { invalidateList, listFetchPolicy } from '../graphql'
@@ -303,6 +305,8 @@ export default {
   },
 
   setup() {
+    useListShortcuts((vm) => vm.newPage())
+
     const languages = useLanguageStore()
     const messages = useMessageStore()
     const user = useUserStore()
@@ -508,14 +512,6 @@ export default {
       })
     },
 
-    check() {
-      const stat = this.$refs.tree.activeDescendant
-
-      if (stat) {
-        stat._checked = !stat._checked
-      }
-    },
-
     clear(stat = null) {
       if (!this.user.can('cache:clear')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -568,14 +564,6 @@ export default {
       this.clip = { type: 'copy', node: node, stat: stat }
     },
 
-    copyKey() {
-      const stat = this.$refs.tree.activeDescendant
-
-      if (stat) {
-        this.copy(stat, stat.data)
-      }
-    },
-
     create(attr = {}) {
       return Object.assign(
         {
@@ -595,22 +583,6 @@ export default {
       stat.cut = true
 
       this.clip = { type: 'cut', node: node, stat: stat }
-    },
-
-    cutKey() {
-      const stat = this.$refs.tree.activeDescendant
-
-      if (stat) {
-        this.cut(stat, stat.data)
-      }
-    },
-
-    deleteKey() {
-      const stat = this.$refs.tree.activeDescendant
-
-      if (stat) {
-        this.drop(stat)
-      }
     },
 
     drop(stat) {
@@ -837,6 +809,17 @@ export default {
 
     invalidate() {
       invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
+    },
+
+    newPage() {
+      const stat = this.$refs.tree?.activeDescendant
+
+      // add a subpage to the focused page in the tree, otherwise a new root page
+      if (stat && this.filter.view !== 'list' && this.$refs.tree.$el?.contains(document.activeElement)) {
+        this.insert(stat)
+      } else {
+        this.add()
+      }
     },
 
     keep(stat) {
@@ -1092,16 +1075,10 @@ export default {
         })
     },
 
-    pasteKey() {
-      const stat = this.$refs.tree.activeDescendant
-
-      if (!stat || !this.clip) {
-        return
-      }
-
-      if (this.clip.type === 'copy' && !this.embed && this.user.can('page:add')) {
+    pasteKey(stat) {
+      if (this.clip?.type === 'copy' && !this.embed && this.user.can('page:add')) {
         this.paste(stat, 1)
-      } else if (this.clip.type === 'cut' && !this.embed && this.user.can('page:move')) {
+      } else if (this.clip?.type === 'cut' && !this.embed && this.user.can('page:move')) {
         this.move(stat, 1)
       }
     },
@@ -1540,6 +1517,24 @@ export default {
       }
     },
 
+    treeKey(ev) {
+      const stat = this.$refs.tree.activeDescendant
+      const actions = {
+        select: () => (stat._checked = !stat._checked),
+        // like the page menu, don't trash pages again or from embedded lists
+        drop: () => !stat.data?.deleted_at && !this.embed && this.drop(stat),
+        copy: () => this.copy(stat, stat.data),
+        cut: () => this.cut(stat, stat.data),
+        paste: () => this.pasteKey(stat)
+      }
+      const name = stat && command(ev, 'list', 'tree')
+
+      if (actions[name]) {
+        ev.preventDefault() // don't scroll the page or navigate back
+        actions[name]()
+      }
+    },
+
     update(stat, fcn) {
       if (typeof fcn !== 'function') {
         throw new Error('Second paramter must be a function')
@@ -1609,12 +1604,12 @@ export default {
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:save')">
             <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)">{{
-              $gettext('Enable')
+              $pgettext('page status', 'Enable')
             }}</v-btn>
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:save')">
             <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)">{{
-              $gettext('Disable')
+              $pgettext('page status', 'Disable')
             }}</v-btn>
           </v-list-item>
           <v-divider></v-divider>
@@ -1668,6 +1663,7 @@ export default {
 
     <div class="search">
       <v-text-field
+        ref="search"
         v-model="term"
         :label="$gettext('Search for')"
         :prepend-inner-icon="mdiMagnify"
@@ -1700,11 +1696,7 @@ export default {
     @change="change()"
     @keydown.alt="reorder"
     @keydown.right.exact="expand"
-    @keydown.space.exact.prevent="check"
-    @keydown.ctrl.c.exact.prevent="copyKey"
-    @keydown.ctrl.x.exact.prevent="cutKey"
-    @keydown.ctrl.v.exact.prevent="pasteKey"
-    @keydown.delete.exact="deleteKey"
+    @keydown="treeKey"
     :defaultOpen="false"
     :disableDrag="$vuetify.display.smAndDown || !user.can('page:move')"
     :i18n="{
@@ -1757,12 +1749,12 @@ export default {
 
             <v-list-item v-if="!node.deleted_at && user.can('page:save') && !node.status">
               <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">
-                {{ $gettext('Enable') }}
+                {{ $pgettext('page status', 'Enable') }}
               </v-btn>
             </v-list-item>
             <v-list-item v-if="!node.deleted_at && user.can('page:save') && node.status">
               <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">
-                {{ $gettext('Disable') }}
+                {{ $pgettext('page status', 'Disable') }}
               </v-btn>
             </v-list-item>
 
@@ -1790,12 +1782,12 @@ export default {
 
             <v-list-item v-if="user.can('page:move')">
               <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)">{{
-                $gettext('Cut')
+                $pgettext('clipboard', 'Cut')
               }}</v-btn>
             </v-list-item>
             <v-list-item v-if="!embed && user.can('page:add')">
               <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)">{{
-                $gettext('Copy')
+                $pgettext('clipboard', 'Copy')
               }}</v-btn>
             </v-list-item>
 

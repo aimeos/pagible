@@ -24,6 +24,7 @@ import ListSort from './ListSort.vue'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList, listFetchPolicy } from '../graphql'
 import { useUserStore, useMessageStore, useChangeStore, useConfirmStore } from '../stores'
+import { useListKeys, useListShortcuts } from '../lists'
 import { debounce, frozenParse, safeParse } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
@@ -183,12 +184,17 @@ export default {
   },
 
   setup() {
+    useListShortcuts((vm) => vm.user.can('element:add') && (vm.vschemas = true))
+
+    const listKey = useListKeys()
+
     const messages = useMessageStore()
     const user = useUserStore()
     const changes = useChangeStore()
     const confirm = useConfirmStore()
 
     return {
+      listKey,
       user,
       changes,
       confirm,
@@ -766,6 +772,7 @@ export default {
 
     <div class="search">
       <v-text-field
+        ref="search"
         v-model="term"
         :prepend-inner-icon="mdiMagnify"
         variant="underlined"
@@ -802,8 +809,8 @@ export default {
     </div>
   </div>
 
-  <v-list class="items">
-    <v-list-item v-for="item in items" :key="item.id">
+  <v-list class="items" @keydown="listKey">
+    <v-list-item v-for="item in items" :key="item.id" :data-id="item.id">
       <div class="actions">
         <v-checkbox-btn
           :model-value="checked.has(item.id)"

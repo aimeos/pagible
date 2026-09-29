@@ -341,4 +341,30 @@ describe('FileListItems', () => {
       })
     })
   })
+
+  it('toggles the focused file with Space and drops it with Del', () => {
+    const mutate = cy.stub().resolves({ data: { dropFile: [] } })
+    const file = (id, attr = {}) => ({ id, name: id, mime: 'text/plain', path: id + '.txt', previews: {}, ...attr })
+    const press = (selector, key) => cy.get(selector).then(($el) => {
+      const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })
+      $el[0].dispatchEvent(ev)
+      return ev.defaultPrevented
+    })
+
+    mountList({}, { 'file:view': true, 'file:drop': true }, { mutate }).then(({ wrapper }) => {
+      wrapper.findComponent(FileListItems).vm.items = [file('file-1'), file('file-2', { deleted_at: '2026-01-01 00:00:00' })]
+    })
+
+    press('.items [data-id="file-1"] .item-content', ' ').should('equal', true)
+    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')
+
+    press('.items [data-id="file-1"] .item-check input', ' ').should('equal', false) // the checkbox toggles itself
+    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')
+
+    press('.items [data-id="file-2"] .item-content', 'Delete') // already in the trash
+    press('.items [data-id="file-1"] .item-content', 'Delete')
+    cy.wrap(mutate).should('have.been.calledOnce').then(() => {
+      expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['file-1'] })
+    })
+  })
 })

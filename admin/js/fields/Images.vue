@@ -10,6 +10,7 @@ import {
 } from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
 import { createFile, FETCH_FILE_DISKS, RELOCATE_FILE } from '../files'
+import { required, minEntries, maxEntries } from '../rules'
 import { invalidateList } from '../graphql'
 import { useUserStore, useMessageStore, useViewStack } from '../stores'
 import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
@@ -21,6 +22,13 @@ const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDial
 const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
 const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
 
+/**
+ * Configuration:
+ * - `accept`: string, accepted file types for uploads, "image/*" by default
+ * - `max`: int, maximum number of images allowed
+ * - `min`: int, minimum number of images required
+ * - `required`: boolean, if true, at least one image is required
+ */
 export default {
   inheritAttrs: false,
 
@@ -87,14 +95,9 @@ export default {
 
     rules() {
       return [
-        (v) =>
-          !this.config.min ||
-          +v?.length >= +this.config.min ||
-          this.$gettext(`Minimum is %{num} entries`, { num: this.config.min }),
-        (v) =>
-          !this.config.max ||
-          +v?.length <= +this.config.max ||
-          this.$gettext(`Maximum is %{num} entries`, { num: this.config.max })
+        required(this.$gettext, this.config.required),
+        minEntries(this.$ngettext, this.config.min),
+        maxEntries(this.$ngettext, this.config.max)
       ]
     }
   },
