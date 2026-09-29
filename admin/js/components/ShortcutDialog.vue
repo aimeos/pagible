@@ -29,7 +29,7 @@ export default {
           ]
         },
         {
-          title: this.$gettext('Command palette'),
+          title: this.$gettext('Commands'),
           items: [
             { keys: ['↑', '↓'], label: this.$gettext('Move between commands and results') },
             { keys: ['Enter'], label: this.$gettext('Run command or open result') },
@@ -139,7 +139,7 @@ kbd {
   border: 1px solid rgba(var(--v-border-color), 0.38);
   border-bottom-width: 2px;
   border-radius: 4px;
-  background: rgb(var(--v-theme-surface));
+  background: transparent;
   font-family: inherit;
   font-size: 0.8125rem;
   text-align: center;

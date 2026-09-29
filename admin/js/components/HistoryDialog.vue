@@ -5,9 +5,10 @@ import { useSchemaStore } from '../stores'
 import { filechanges, plaintext, restore, sections } from '../history'
 import CmsDialog from './Dialog.vue'
 import HistoryField from './HistoryField.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 export default {
-  components: { CmsDialog, HistoryField },
+  components: { CmsDialog, HistoryField, LoadingSpinner },
 
   props: {
     modelValue: { type: Boolean, required: true },
@@ -196,7 +197,7 @@ export default {
     <v-expansion-panels v-model="opened" class="version-panels" elevation="2">
           <v-timeline side="end" align="start">
             <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
-              <div class="loading" role="status">{{ $gettext('Loading') }}<v-progress-circular indeterminate size="24" /></div>
+              <div class="loading" role="status">{{ $gettext('Loading') }}<LoadingSpinner width="32" height="32" /></div>
             </v-timeline-item>
             <v-timeline-item v-else-if="failed" dot-color="error" size="small" width="100%">
               <div role="alert">{{ $gettext('Error fetching versions') }}</div>

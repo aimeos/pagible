@@ -820,10 +820,10 @@ export default {
 
     <template #actions="{ close }">
       <template v-if="secret">
-        <v-btn variant="outlined" @click="close">{{
+        <v-btn variant="text" @click="close">{{
           $pgettext("webhooks", "Done")
         }}</v-btn>
-        <v-btn color="primary" variant="tonal" @click="copySecret" active>{{
+        <v-btn color="primary" variant="flat" @click="copySecret">{{
           $pgettext("webhooks", "Copy secret")
         }}</v-btn>
       </template>
@@ -845,13 +845,12 @@ export default {
         }}</v-btn>
         <v-btn
           color="primary"
-          variant="tonal"
+          variant="flat"
           :disabled="
             testing || !events.length || (!selected && !validUrl(url))
           "
           :loading="saving && !testing"
           @click="save"
-          active
           >{{ $pgettext("webhooks", "Save") }}</v-btn
         >
       </template>

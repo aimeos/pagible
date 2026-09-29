@@ -325,7 +325,7 @@ export default {
         </template>
         <v-btn
           v-if="isDirty(code)"
-          :title="$gettext('Reset')"
+          :title="$gettext('Revert')"
           @click="resetField(code)"
           :icon="mdiUndoVariant"
           variant="text"
@@ -358,7 +358,7 @@ export default {
       <template v-if="protectTypes.has(toName(field.type))" #label>
         <v-btn
           v-if="isDirty(code)"
-          :title="$gettext('Reset')"
+          :title="$gettext('Revert')"
           @click="resetField(code)"
           :icon="mdiUndoVariant"
           variant="text"

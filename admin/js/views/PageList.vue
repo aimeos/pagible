@@ -299,6 +299,7 @@ export default {
             <v-btn
               @click="help = !help"
               :icon="mdiHelpCircleOutline"
+              class="no-rtl"
               :title="help ? $gettext('Hide help') : $gettext('Show help')"
               :aria-expanded="help"
               aria-controls="page-help"
@@ -341,7 +342,7 @@ export default {
           </ul>
         </div>
 
-        <PageListItems ref="pagelist" @select="open($event)" :filter="filter" />
+        <PageListItems ref="pagelist" @select="open($event)" :filter="filter" :defaults="defaults" />
       </v-sheet>
     </v-container>
   </v-main>

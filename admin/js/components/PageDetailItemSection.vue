@@ -106,6 +106,14 @@ export default {
       }
     },
 
+    showError() {
+      const idx = Object.values(this.entries).findIndex((el) => el._error)
+
+      if (idx >= 0 && !this.panel.includes(idx)) {
+        this.panel.push(idx)
+      }
+    },
+
     shown(el) {
       const valid = this.side.shown('state', 'valid')
       const error = this.side.shown('state', 'error')

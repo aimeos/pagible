@@ -102,6 +102,17 @@ describe('PageDetailContentList', () => {
     cy.get('.v-expansion-panels').should('exist')
   })
 
+  it('opens the first invalid element', () => {
+    mountList({}, { 'page:view': true, 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailContentList).vm
+      vm.content[1]._error = true
+
+      return vm.showError().then(() => {
+        expect(vm.panel).to.include('c2')
+      })
+    })
+  })
+
   it('renders expansion panels for each content element', () => {
     mountList()
     cy.get('.v-expansion-panel').should('have.length', 2)

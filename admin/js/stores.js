@@ -453,24 +453,56 @@ export const useLanguageStore = defineStore('language', {
 /**
  * Store for queued messages to display to the user
  */
+// message actions are kept outside of the queue items because the items are passed as props
+// to the snackbars; only their id is stored in the item as harmless data attribute
+const messageActions = new Map()
+let messageId = 0
+
 export const useMessageStore = defineStore('message', {
   state: () => ({
     queue: []
   }),
 
   actions: {
-    add(msg, type = 'info', timeout = null) {
+    /**
+     * Adds a message to the queue
+     *
+     * @param {String} msg Message text
+     * @param {String} type Message type (info, success, warning, error)
+     * @param {Number|null} timeout Display duration in milliseconds
+     * @param {Object|null} action Optional button as { label, handler }
+     */
+    add(msg, type = 'info', timeout = null, action = null) {
       if (this.queue.length >= 10) {
         console.warn('Message queue overflow, dropping message:', msg)
         return
       }
 
-      this.queue.push({
+      const item = {
         text: msg,
         color: type,
         contentClass: 'text-pre-line',
-        timeout: timeout || (type === 'error' ? 10000 : 3000)
-      })
+        timeout: timeout || (type === 'error' ? 10000 : action ? 8000 : 3000)
+      }
+
+      if (action) {
+        const id = ++messageId
+        messageActions.set(id, action)
+        item['data-action'] = id
+        item.onDismiss = () => messageActions.delete(id)
+      }
+
+      this.queue.push(item)
+    },
+
+    action(id) {
+      return messageActions.get(id) || null
+    },
+
+    run(id) {
+      const action = messageActions.get(id)
+      messageActions.delete(id)
+      action?.handler()
     }
   }
 })

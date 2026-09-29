@@ -546,16 +546,15 @@ function $(e, m, h, g, _, v) {
 		onAfterLeave: m[8] ||= (e) => _.secret = ""
 	}, {
 		actions: f(({ close: a }) => [_.secret ? (l(), i(t, { key: 0 }, [s(x, {
-			variant: "outlined",
+			variant: "text",
 			onClick: a
 		}, {
 			default: f(() => [o(d(e.$pgettext("webhooks", "Done")), 1)]),
 			_: 1
 		}, 8, ["onClick"]), s(x, {
 			color: "primary",
-			variant: "tonal",
-			onClick: v.copySecret,
-			active: ""
+			variant: "flat",
+			onClick: v.copySecret
 		}, {
 			default: f(() => [o(d(e.$pgettext("webhooks", "Copy secret")), 1)]),
 			_: 1
@@ -582,11 +581,10 @@ function $(e, m, h, g, _, v) {
 			}, 8, ["onClick"]),
 			s(x, {
 				color: "primary",
-				variant: "tonal",
+				variant: "flat",
 				disabled: _.testing || !_.events.length || !_.selected && !v.validUrl(_.url),
 				loading: _.saving && !_.testing,
-				onClick: v.save,
-				active: ""
+				onClick: v.save
 			}, {
 				default: f(() => [o(d(e.$pgettext("webhooks", "Save")), 1)]),
 				_: 1

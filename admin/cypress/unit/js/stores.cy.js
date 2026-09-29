@@ -374,6 +374,31 @@ describe('useMessageStore', () => {
     expect(msg.queue).to.have.length(0)
   })
 
+  it('adds a message with an action', () => {
+    const msg = useMessageStore()
+    const handler = cy.stub()
+
+    msg.add('Moved', 'success', null, { label: 'Undo', handler })
+    const id = msg.queue[0]['data-action']
+
+    expect(msg.queue[0].timeout).to.equal(8000)
+    expect(msg.action(id).label).to.equal('Undo')
+
+    msg.run(id)
+    expect(handler).to.have.been.calledOnce
+    expect(msg.action(id)).to.equal(null)
+  })
+
+  it('drops the action when the message is dismissed', () => {
+    const msg = useMessageStore()
+
+    msg.add('Moved', 'success', null, { label: 'Undo', handler() {} })
+    const item = msg.queue[0]
+
+    item.onDismiss()
+    expect(msg.action(item['data-action'])).to.equal(null)
+  })
+
   it('adds a message with default info type and 3000ms timeout', () => {
     const msg = useMessageStore()
     msg.add('Hello')

@@ -14,7 +14,7 @@ import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { setupReload, cleanEcho } from '../echo'
 import { loadVersions, reloadVersion } from '../version'
-import { safeParse } from '../utils'
+import { focusInvalid, safeParse } from '../utils'
 
 const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
 const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
@@ -275,6 +275,8 @@ export default {
           this.$gettext('There are invalid fields, please resolve the errors first'),
           'error'
         )
+        this.tab = 'file'
+        this.$nextTick(() => focusInvalid(this.$refs.form))
         return Promise.resolve(false)
       }
 
@@ -391,7 +393,7 @@ export default {
 
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />
-    <v-form v-else @submit.prevent>
+    <v-form v-else ref="form" @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
         <v-tab value="file" :class="{ changed: dirty, error: error }">{{
           $gettext('File')
