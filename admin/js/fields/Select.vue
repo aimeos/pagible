@@ -1,6 +1,8 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { required } from '../rules'
+
 export default {
   props: {
     modelValue: { type: [String, Array] },
@@ -31,12 +33,7 @@ export default {
     },
 
     rules() {
-      return [
-        (v) =>
-          !this.config.required ||
-          (Array.isArray(v) ? v.length > 0 : !!v) ||
-          this.$gettext(`Value is required`)
-      ]
+      return [required(this.$gettext, this.config.required)]
     }
   },
 

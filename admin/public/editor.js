@@ -16,11 +16,22 @@ if (window.self !== window.top) {
     });
 
 
+    // Forward the save/publish shortcuts to the admin instead of opening the browser's "Save page" dialog
+    window.addEventListener('keydown', e => {
+        if((e.ctrlKey || e.metaKey) && !e.altKey && e.key?.toLowerCase() === 's') {
+            e.preventDefault();
+            e.repeat || window.parent.postMessage(e.shiftKey ? 'publish' : 'save', trustedOrigin || '*');
+        }
+    }, true);
+
+
     /**
      * Messages:
      * 0: unselect element
      * -1: not allowed
      * -2: not cms content
+     * 'save': save shortcut pressed
+     * 'publish': publish shortcut pressed
      */
     document.addEventListener('DOMContentLoaded', () => {
 

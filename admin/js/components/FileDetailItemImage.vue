@@ -822,7 +822,7 @@ export default {
                   v-model="extend.top"
                   variant="outlined"
                   controlVariant="hidden"
-                  :label="$gettext('Top')"
+                  :label="$pgettext('image edge', 'Top')"
                   :max="2000"
                   :min="0"
                 />
@@ -834,7 +834,7 @@ export default {
                   v-model="extend.left"
                   variant="outlined"
                   controlVariant="hidden"
-                  :label="$gettext('Left')"
+                  :label="$pgettext('image edge', 'Left')"
                   :max="2000"
                   :min="0"
                 />
@@ -844,7 +844,7 @@ export default {
                   v-model="extend.right"
                   variant="outlined"
                   controlVariant="hidden"
-                  :label="$gettext('Right')"
+                  :label="$pgettext('image edge', 'Right')"
                   :max="2000"
                   :min="0"
                 />
@@ -856,7 +856,7 @@ export default {
                   v-model="extend.bottom"
                   variant="outlined"
                   controlVariant="hidden"
-                  :label="$gettext('Bottom')"
+                  :label="$pgettext('image edge', 'Bottom')"
                   :max="2000"
                   :min="0"
                 />

@@ -34,6 +34,22 @@ describe('Plaintext (textarea)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:false when empty with config.min but not required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Plaintext, {
+      props: { modelValue: '', config: { min: 5 }, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true when empty and config.required is set', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Plaintext, {
+      props: { modelValue: '', config: { required: true }, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits error:false when value meets config.min', () => {
     const onError = cy.spy().as('error')
     cy.mount(Plaintext, {

@@ -16,6 +16,7 @@ import {
 import { changedState } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList } from '../graphql'
+import { editable } from '../shortcuts'
 import { clone, debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
 import {
@@ -311,6 +312,48 @@ export default {
 
       this.content.splice(idx, 0, entry)
       this.$emit('update:content', this.content)
+    },
+
+    move(ev, el) {
+      const dir = { ArrowUp: -1, ArrowDown: 1 }[ev.key]
+
+      if (
+        !dir ||
+        !ev.altKey ||
+        ev.ctrlKey ||
+        ev.metaKey ||
+        ev.shiftKey ||
+        !this.user.can('page:save') ||
+        editable(ev.target)
+      ) {
+        return
+      }
+
+      ev.preventDefault()
+      ev.stopPropagation()
+
+      const idx = this.content.indexOf(el)
+      let pos = idx + dir
+
+      // skip elements hidden by the search or the side panel filters
+      while (pos >= 0 && pos < this.content.length && !this.shown(this.content[pos])) {
+        pos += dir
+      }
+
+      if (idx === -1 || pos < 0 || pos >= this.content.length) {
+        return
+      }
+
+      this.content.splice(pos, 0, this.content.splice(idx, 1)[0])
+      this.$emit('update:content', this.content)
+
+      this.$nextTick(() => {
+        const key = CSS.escape(String(el.id))
+        const handle = this.$refs.list?.$el?.querySelector(`.content[data-key="${key}"] .item-handle`)
+
+        handle?.scrollIntoView?.({ block: 'nearest' })
+        handle?.focus()
+      })
     },
 
     openSchemas() {
@@ -795,12 +838,12 @@ export default {
           </template>
           <v-list-item v-if="checkedCount">
             <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()">{{
-              $gettext('Copy')
+              $pgettext('clipboard', 'Copy')
             }}</v-btn>
           </v-list-item>
           <v-list-item v-if="checkedCount">
             <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()">{{
-              $gettext('Cut')
+              $pgettext('clipboard', 'Cut')
             }}</v-btn>
           </v-list-item>
           <v-list-item v-if="clipboard.get('page-content')">
@@ -854,7 +897,9 @@ export default {
           <v-expansion-panel
             :key="key"
             :value="key"
+            :data-key="key"
             v-show="shown(el)"
+            @keydown="move($event, el)"
             class="content"
             :class="{
               changed: el._changed,
@@ -863,7 +908,13 @@ export default {
             }"
           >
           <v-expansion-panel-title>
-            <v-btn variant="text" class="item-handle" :aria-label="$gettext('Move element')" icon>
+            <v-btn
+              variant="text"
+              class="item-handle"
+              :aria-label="$gettext('Move element')"
+              aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+              icon
+            >
               <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
               </svg>
@@ -883,12 +934,12 @@ export default {
 
                 <v-list-item v-if="!el._error">
                   <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                    $gettext('Copy')
+                    $pgettext('clipboard', 'Copy')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item v-if="!el._error">
                   <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                    $gettext('Cut')
+                    $pgettext('clipboard', 'Cut')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item>
@@ -941,7 +992,7 @@ export default {
                 </v-list-item>
                 <v-list-item v-if="el.type === 'text'">
                   <v-btn :prepend-icon="mdiSetSplit" variant="text" @click="split(idx)">{{
-                    $gettext('Split')
+                    $pgettext('text element', 'Split')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item v-if="el._checked && checkedCount > 1">

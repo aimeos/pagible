@@ -320,4 +320,53 @@ describe('PageDetailContentList', () => {
       expect(assets['file-1']).to.equal(value['element-1'].files[0])
     })
   })
+
+  it('moves the focused element with Alt+ArrowUp/ArrowDown', () => {
+    const onUpdate = cy.spy().as('update')
+    const alt = (key) => new KeyboardEvent('keydown', { key, altKey: true, bubbles: true, cancelable: true })
+    const order = (keys) => cy.get('.v-expansion-panel.content').should(($els) => {
+      expect([...$els].map((el) => el.dataset.key)).to.deep.equal(keys)
+    })
+
+    mountList({ 'onUpdate:content': onUpdate, content: reactive(contentItems(3)) }, { 'page:save': true })
+
+    cy.get('[data-key="c0"] .item-handle').focus().then(($btn) => {
+      $btn[0].dispatchEvent(alt('ArrowDown'))
+    })
+    order(['c1', 'c0', 'c2'])
+    cy.focused().closest('.content').should('have.attr', 'data-key', 'c0')
+    cy.get('@update').should('have.been.calledOnce')
+
+    cy.focused().then(($btn) => {
+      $btn[0].dispatchEvent(alt('ArrowUp'))
+      $btn[0].dispatchEvent(alt('ArrowUp')) // already the first element
+    })
+    order(['c0', 'c1', 'c2'])
+    cy.get('@update').should('have.been.calledTwice')
+  })
+
+  it('skips hidden elements when moving with Alt+Arrow', () => {
+    const items = contentItems(3)
+    items[1]._hide = true
+
+    mountList({ content: reactive(items) }, { 'page:save': true })
+
+    cy.get('[data-key="c0"] .item-handle').focus().then(($btn) => {
+      $btn[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', altKey: true, bubbles: true, cancelable: true }))
+    })
+    cy.get('.v-expansion-panel.content').should(($els) => {
+      expect([...$els].map((el) => el.dataset.key)).to.deep.equal(['c1', 'c2', 'c0'])
+    })
+  })
+
+  it('does not move elements with Alt+Arrow without page:save permission', () => {
+    mountList({ content: contentItems(2) })
+
+    cy.get('[data-key="c0"] .item-handle').then(($btn) => {
+      const e = new KeyboardEvent('keydown', { key: 'ArrowDown', altKey: true, bubbles: true, cancelable: true })
+      $btn[0].dispatchEvent(e)
+      expect(e.defaultPrevented).to.equal(false)
+    })
+    cy.get('.v-expansion-panel.content').first().should('have.attr', 'data-key', 'c0')
+  })
 })

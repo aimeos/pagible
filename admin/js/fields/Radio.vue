@@ -1,9 +1,17 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { required } from '../rules'
+
+/**
+ * Configuration:
+ * - `default`: string|number, value selected if none is set
+ * - `options`: array, list of objects with `label` and `value` properties
+ * - `required`: boolean, if true, an option must be selected
+ */
 export default {
   props: {
-    modelValue: { type: String },
+    modelValue: { type: [String, Number] },
     config: { type: Object, default: () => {} },
     assets: { type: Object, default: () => {} },
     readonly: { type: Boolean, default: false },
@@ -21,7 +29,7 @@ export default {
     },
 
     rules() {
-      return [(v) => !this.config.required || !!v || this.$gettext(`Selection is required`)]
+      return [required(this.$gettext, this.config.required)]
     }
   },
 

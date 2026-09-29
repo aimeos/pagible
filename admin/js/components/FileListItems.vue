@@ -32,6 +32,7 @@ import {
   useChangeStore,
   useConfirmStore
 } from '../stores'
+import { useListKeys, useListShortcuts } from '../lists'
 import { debounce, fileurl, filesrcset } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
@@ -163,6 +164,10 @@ export default {
   },
 
   setup() {
+    useListShortcuts((vm) => vm.$refs.upload?.click())
+
+    const listKey = useListKeys()
+
     const messages = useMessageStore()
     const user = useUserStore()
     const app = useAppStore()
@@ -171,6 +176,7 @@ export default {
 
     return {
       app,
+      listKey,
       user,
       changes,
       confirm,
@@ -757,6 +763,7 @@ export default {
 
     <div class="search">
       <v-text-field
+        ref="search"
         v-model="term"
         :label="$gettext('Search for')"
         :prepend-inner-icon="mdiMagnify"
@@ -810,8 +817,12 @@ export default {
     </div>
   </div>
 
-  <v-list class="items" :class="{ grid: vgrid, list: !vgrid }">
-    <v-list-item v-for="item in items" :key="item.id">
+  <v-list
+    class="items"
+    :class="{ grid: vgrid, list: !vgrid }"
+    @keydown="listKey"
+  >
+    <v-list-item v-for="item in items" :key="item.id" :data-id="item.id">
       <v-checkbox-btn
         :model-value="checked.has(item.id)"
         @update:model-value="toggleCheck(item)"

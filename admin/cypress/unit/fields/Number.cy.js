@@ -43,6 +43,22 @@ describe('Number', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
+  it('emits error:false when the required value is 0', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Number, {
+      props: { config: { required: true }, modelValue: 0, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('emits error:true when the required value is missing', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Number, {
+      props: { config: { required: true }, modelValue: null, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits update:modelValue when the value changes', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Number, {

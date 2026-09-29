@@ -4,6 +4,7 @@
 import { defineAsyncComponent } from 'vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import { useAppStore, useUserStore, useMessageStore } from '../stores'
+import { trigger } from '../shortcuts'
 import { uid } from '../utils'
 
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
@@ -184,6 +185,11 @@ export default {
       }
 
       switch (msg.data) {
+        // save/publish shortcut pressed inside the preview
+        case 'save':
+        case 'publish':
+          trigger(msg.data)
+          break
         // unselect element
         case 0:
           this.index = null

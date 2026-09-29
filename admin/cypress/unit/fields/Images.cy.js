@@ -245,6 +245,17 @@ describe('Images', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 
+  it('emits error:true when empty and config.required is set', () => {
+    const onError = cy.spy().as('error')
+    mountImages({
+      config: { required: true },
+      modelValue: [],
+      assets: imageAssets,
+      onError,
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
   it('emits error:false when meeting config.min', () => {
     const onError = cy.spy().as('error')
     mountImages({

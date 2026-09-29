@@ -2,8 +2,25 @@
 
 <script>
 import gql from 'graphql-tag'
+import { maxEntries, required } from '../rules'
 import { debounce, safeParse } from '../utils'
 
+/**
+ * Configuration:
+ * - `api-type`: string, "GQL" or "REST" to search entries via the `query` or `url` setting
+ * - `default`: mixed, value used if none is set
+ * - `empty-text`: string, text shown if no entries are found
+ * - `item-title`: string, slash separated path to the label of each entry
+ * - `item-value`: string, slash separated path to the value of each entry
+ * - `list-key`: string, slash separated path to the list of entries in the REST response
+ * - `max`: int, maximum number of entries allowed if multiple values can be selected
+ * - `multiple`: boolean, if true, several entries can be selected
+ * - `options`: array, entries available before searching
+ * - `placeholder`: string, placeholder text for the input field
+ * - `query`: string, GraphQL query where _term_ is replaced by the search term
+ * - `required`: boolean, if true, the field must not be empty
+ * - `url`: string, REST URL where _term_ is replaced by the search term
+ */
 export default {
   props: {
     modelValue: { type: [Object, String, Number, Boolean, null] },
@@ -40,12 +57,8 @@ export default {
 
     rules() {
       return [
-        (v) => !this.config.required || !!v || this.$gettext('Value is required'),
-        (v) =>
-          !Array.isArray(v) ||
-          !this.config.max ||
-          v.length <= this.config.max ||
-          this.$gettext('Maximum is %{num} entries', { num: this.config.max })
+        required(this.$gettext, this.config.required),
+        (v) => !Array.isArray(v) || maxEntries(this.$ngettext, this.config.max)(v)
       ]
     }
   },

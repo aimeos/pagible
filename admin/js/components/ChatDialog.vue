@@ -368,7 +368,7 @@ export default {
             <v-btn
               v-if="m.role === 'assistant' && m.content && !m.streaming"
               :icon="mdiContentCopy"
-              :title="$gettext('Copy')"
+              :title="$pgettext('clipboard', 'Copy')"
               @click="copy(m.content)"
               size="x-small"
               variant="text"

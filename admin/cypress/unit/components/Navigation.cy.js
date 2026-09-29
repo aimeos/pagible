@@ -1,5 +1,6 @@
 import Navigation from '../../../js/components/Navigation.vue'
 import { useUserStore } from '../../../js/stores'
+import { shortcuts } from '../../../js/shortcuts'
 
 describe('Navigation', () => {
   function mountWithPerms(perms = {}) {
@@ -59,6 +60,14 @@ describe('Navigation', () => {
 
   it('shows no links when the user has no permissions', () => {
     mountWithPerms({})
-    cy.get('.v-list-item').should('not.exist')
+    cy.get('.v-list-item a').should('not.exist')
+  })
+
+  it('opens the keyboard shortcut sheet', () => {
+    cy.viewport(1400, 800)
+    mountWithPerms({})
+    cy.then(() => (shortcuts.sheet = false))
+    cy.get('.btn-shortcuts').click()
+    cy.then(() => expect(shortcuts.sheet).to.equal(true))
   })
 })

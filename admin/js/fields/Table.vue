@@ -12,6 +12,7 @@ import {
 } from '@mdi/js'
 import { vDraggable } from 'vue-draggable-plus'
 import ActionMenu from '../components/ActionMenu.vue'
+import { minColumns, maxColumns } from '../rules'
 import { debounce } from '../utils'
 
 export default {
@@ -67,14 +68,8 @@ export default {
 
     rules() {
       return [
-        (v) =>
-          !this.config.min ||
-          +v?.length >= +this.config.min ||
-          this.$gettext(`Minimum are %{num} columns`, { num: this.config.min }),
-        (v) =>
-          !this.config.max ||
-          +v?.length <= +this.config.max ||
-          this.$gettext(`Maximum are %{num} columns`, { num: this.config.max })
+        minColumns(this.$ngettext, this.config.min),
+        maxColumns(this.$ngettext, this.config.max)
       ]
     }
   },

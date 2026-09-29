@@ -50,6 +50,14 @@ describe('Radio', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
+  it('emits error:false when required and the value 0 is selected', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Radio, {
+      props: { config: { required: true }, modelValue: 0, onError },
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
   it('emits update:modelValue when a radio is selected', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Radio, {

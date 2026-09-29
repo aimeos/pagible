@@ -10,13 +10,13 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:254
-#: js/components/ElementListItems.vue:293
-#: js/components/ElementListItems.vue:429
-#: js/components/ElementListItems.vue:465
-#: js/components/ElementListItems.vue:505
-#: js/components/ElementListItems.vue:547
-#: js/components/ElementListItems.vue:592 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
+#: js/components/ElementListItems.vue:299
+#: js/components/ElementListItems.vue:435
+#: js/components/ElementListItems.vue:471
+#: js/components/ElementListItems.vue:511
+#: js/components/ElementListItems.vue:553
+#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -25,26 +25,26 @@ msgstr ""
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:243 js/components/FileListItems.vue:288
-#: js/components/FileListItems.vue:424 js/components/FileListItems.vue:457
-#: js/components/FileListItems.vue:494 js/components/FileListItems.vue:536
-#: js/components/FileListItems.vue:581
-#: js/components/PageDetailContentList.vue:369
-#: js/components/PageDetailContentList.vue:463
-#: js/components/PageListItems.vue:449 js/components/PageListItems.vue:521
-#: js/components/PageListItems.vue:618 js/components/PageListItems.vue:711
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:844
-#: js/components/PageListItems.vue:975 js/components/PageListItems.vue:1004
-#: js/components/PageListItems.vue:1136 js/components/PageListItems.vue:1177
-#: js/components/PageListItems.vue:1298 js/components/PageListItems.vue:1376
-#: js/components/PageListItems.vue:1427 js/fields/File.vue:147
-#: js/fields/Images.vue:114 js/fields/Items.vue:209 js/publish.js:39
+#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
+#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
+#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
+#: js/components/FileListItems.vue:587
+#: js/components/PageDetailContentList.vue:412
+#: js/components/PageDetailContentList.vue:506
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
+#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
+#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
+#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
+#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
+#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
+#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
 #: js/views/PageList.vue:216
 msgid "Permission denied"
-msgstr "Atsisakyta išduoti leidimą"
+msgstr "Neturite leidimo"
 
 #: js/ai.js:68
 msgid "Error transcribing file"
@@ -73,6 +73,110 @@ msgstr "Atsakymas jau generuojamas. Palaukite, kol baigsis."
 #: js/chat.js:58
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Per daug prašymų. Šiek tiek palaukite ir bandykite dar kartą."
+
+#: js/commands.js:53
+msgid "Open command palette"
+msgstr "Atidaryti komandų paletę"
+
+#: js/commands.js:60
+msgid "Confirm dialog"
+msgstr "Patvirtinti dialogą"
+
+#: js/commands.js:67
+msgid "Save changes"
+msgstr "Išsaugoti pakeitimus"
+
+#: js/commands.js:75
+msgid "Open publish menu"
+msgstr "Atidaryti paskelbimo meniu"
+
+#: js/commands.js:81
+msgid "New page, file or element"
+msgstr "Naujas puslapis, failas arba elementas"
+
+#: js/commands.js:87
+msgid "Search in list"
+msgstr "Ieškoti sąraše"
+
+#: js/commands.js:93
+msgid "Previous tab"
+msgstr "Ankstesnis skirtukas"
+
+#: js/commands.js:99
+msgid "Next tab"
+msgstr "Kitas skirtukas"
+
+#: js/commands.js:105
+msgid "Show or hide side panel"
+msgstr "Rodyti arba slėpti šoninį skydelį"
+
+#: js/commands.js:111 js/components/DetailAppBar.vue:168
+msgid "Back to list view"
+msgstr "Grįžti į sąrašo rodinį"
+
+#: js/commands.js:118
+msgid "Show keyboard shortcuts"
+msgstr "Rodyti sparčiuosius klavišus"
+
+#: js/commands.js:124
+msgid "Select focused page, file or element"
+msgstr "Pažymėti aktyvų puslapį, failą arba elementą"
+
+#: js/commands.js:130
+msgid "Delete focused page, file or element"
+msgstr "Ištrinti aktyvų puslapį, failą arba elementą"
+
+#: js/commands.js:137
+msgid "Copy page"
+msgstr "Kopijuoti puslapį"
+
+#: js/commands.js:144
+msgid "Cut page"
+msgstr "Iškirpti puslapį"
+
+#: js/commands.js:151
+msgid "Paste page"
+msgstr "Įklijuoti puslapį"
+
+#: js/commands.js:170 js/components/CommandPalette.vue:106
+#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
+#: js/views/PageList.vue:265 js/views/PageList.vue:282
+msgid "Pages"
+msgstr "Puslapiai"
+
+#: js/commands.js:171
+msgid "Go to pages"
+msgstr "Eiti į puslapius"
+
+#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
+#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "Medija"
+
+#: js/commands.js:177
+msgid "Go to media"
+msgstr "Eiti į mediją"
+
+#: js/commands.js:182 js/components/CommandPalette.vue:108
+#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
+#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+msgid "Shared elements"
+msgstr "Bendri elementai"
+
+#: js/commands.js:183
+msgid "Go to shared elements"
+msgstr "Eiti į bendrus elementus"
+
+#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/views/AccessList.vue:252
+msgid "Users"
+msgstr "Naudotojai"
+
+#: js/commands.js:189
+msgid "Go to users"
+msgstr "Eiti į naudotojus"
 
 #: js/components/AccessUsers.vue:219
 msgid "Access roles updated"
@@ -120,37 +224,37 @@ msgid "Search"
 msgstr "Ieškoti"
 
 #: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
-#: js/components/DetailAppBar.vue:166
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Išsaugoti"
 
 #: js/components/AccessUsers.vue:471
 msgid "Account"
-msgstr "Sąskaita"
+msgstr "Paskyra"
 
 #: js/components/AccessUsers.vue:476 js/components/AccessUsers.vue:483
 msgid "Assigned frontend roles"
-msgstr "Paskirtos vartotojo sąsajos funkcijos"
+msgstr "Priskirti viešosios dalies vaidmenys"
 
 #: js/components/AccessUsers.vue:496
 msgid "Assigned backend roles"
-msgstr "Paskirtos užkulisinės funkcijos"
+msgstr "Priskirti administravimo dalies vaidmenys"
 
 #: js/components/AccessUsers.vue:500
 msgid "Custom"
-msgstr "Pagal užsakymą"
+msgstr "Pasirinktinis"
 
 #: js/components/AccessUsers.vue:506
 msgid "Available roles"
 msgstr "Galimi vaidmenys"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:896
-#: js/components/FileListItems.vue:974 js/components/PageListItems.vue:1947
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
+#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
 #: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Įrašų nerasta"
 
-#: js/components/ActionMenu.vue:26
+#: js/components/ActionMenu.vue:26 js/components/CommandPalette.vue:104
 msgid "Actions"
 msgstr "Veiksmai"
 
@@ -175,9 +279,11 @@ msgstr "Filtrai"
 msgid "Reset"
 msgstr "Iš naujo nustatyti"
 
-#: js/components/AsideMeta.vue:21
-msgid "id"
-msgstr "id"
+#: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+msgid "ID"
+msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
 #: js/fields/File.vue:502
@@ -214,7 +320,7 @@ msgstr "Laukeliai"
 
 #: js/components/ChangesDialog.vue:56
 msgid "Meta tags"
-msgstr "Metagairės"
+msgstr "Metažymos"
 
 #: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:40
 msgid "Configuration"
@@ -255,15 +361,15 @@ msgstr "Pridėta"
 
 #: js/components/ChangesDialog.vue:441
 msgid "Use theirs"
-msgstr "Naudokite jų"
+msgstr "Naudoti jų versiją"
 
 #: js/components/ChangesDialog.vue:447
 msgid "Keep mine"
-msgstr "Palik man"
+msgstr "Palikti mano versiją"
 
 #: js/components/ChangesDialog.vue:454
 msgid "Merge both"
-msgstr "Sujunkite abu"
+msgstr "Sujungti abi"
 
 #: js/components/ChatDialog.vue:265
 msgid "Done"
@@ -271,7 +377,7 @@ msgstr "Atlikta"
 
 #: js/components/ChatDialog.vue:273
 msgid "Sorry, something went wrong."
-msgstr "Atsiprašome, kažkas nutiko."
+msgstr "Atsiprašome, kažkas nepavyko."
 
 #: js/components/ChatDialog.vue:324
 msgid "AI Assistant"
@@ -288,11 +394,12 @@ msgstr "Kuo galiu jums padėti?"
 
 #: js/components/ChatDialog.vue:365
 msgid "Thinking ..."
-msgstr ""
+msgstr "Mąstoma ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:798
-#: js/components/PageDetailContentList.vue:886
-#: js/components/PageListItems.vue:1798 js/fields/Items.vue:373
+#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
+#: js/components/PageDetailContentList.vue:937
+#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopijuoti"
 
@@ -303,11 +410,11 @@ msgstr "Siųsti žinutę..."
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
 #: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
 #: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:768 js/fields/Items.vue:460
+#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
-msgstr "Diktatas"
+msgstr "Diktuoti"
 
 #: js/components/ChatDialog.vue:410 js/components/ChatDialog.vue:411
 msgid "Stop"
@@ -318,10 +425,49 @@ msgstr "Sustabdyti"
 msgid "Send"
 msgstr "Siųsti"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:749
-#: js/components/ElementListItems.vue:857 js/components/FileListItems.vue:727
-#: js/components/FileListItems.vue:864 js/components/PageListItems.vue:1651
-#: js/components/PageListItems.vue:1891 js/views/AccessList.vue:278
+#: js/components/CommandPalette.vue:105
+msgid "Go to"
+msgstr "Eiti į"
+
+#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
+#: js/components/PageListItems.vue:1911
+msgid "New"
+msgstr "Naujas"
+
+#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
+#: js/components/ShortcutDialog.vue:32
+msgid "Command palette"
+msgstr "Komandų paletė"
+
+#: js/components/CommandPalette.vue:289
+msgid "Type a command or search pages, files and elements"
+msgstr "Įveskite komandą arba ieškokite puslapių, failų ir elementų"
+
+#: js/components/CommandPalette.vue:290
+msgid "Command or search term"
+msgstr "Komanda arba paieškos žodis"
+
+#: js/components/CommandPalette.vue:303
+msgid "Commands"
+msgstr "Komandos"
+
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+msgid "then"
+msgstr "tada"
+
+#: js/components/CommandPalette.vue:329
+msgid "Search failed, please try again"
+msgstr "Paieška nepavyko, bandykite dar kartą"
+
+#: js/components/CommandPalette.vue:330
+msgid "No results"
+msgstr "Rezultatų nėra"
+
+#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
+#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
+#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
+#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "Ištrinti visam laikui"
 
@@ -337,11 +483,6 @@ msgstr[1] ""
 msgstr[2] ""
 "Šie %{num} įrašų bus ištrinti visam laikui ir jų nebus galima atkurti:"
 
-#: js/components/ConfirmDialog.vue:47 js/components/ElementListItems.vue:875
-#: js/components/PageListItems.vue:892 js/components/PageListItems.vue:1919
-msgid "New"
-msgstr "Naujas"
-
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
 #: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
@@ -351,54 +492,50 @@ msgstr "Atšaukti"
 msgid "Confirm"
 msgstr "Patvirtinti"
 
-#: js/components/DetailAppBar.vue:129 js/views/AccessList.vue:230
+#: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
 #: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "Meniu"
 
-#: js/components/DetailAppBar.vue:133
-msgid "Back to list view"
-msgstr "Grįžti į sąrašo rodinį"
-
-#: js/components/DetailAppBar.vue:149
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Peržiūrėti istoriją"
 
-#: js/components/DetailAppBar.vue:158
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Peržiūrėti sujungimo pakeitimus"
 
-#: js/components/DetailAppBar.vue:181 js/components/DetailAppBar.vue:196
-#: js/components/DetailAppBar.vue:200 js/components/ElementListItems.vue:729
-#: js/components/ElementListItems.vue:824 js/components/FileListItems.vue:707
-#: js/components/FileListItems.vue:834 js/components/PageListItems.vue:1607
-#: js/components/PageListItems.vue:1754
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
+#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
+#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
+#: js/components/PageListItems.vue:1746
 msgid "Publish"
 msgstr "Paskelbti"
 
-#: js/components/DetailAppBar.vue:203
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
-msgstr ""
+msgstr "Paskelbti ir uždaryti"
 
-#: js/components/DetailAppBar.vue:208 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Planuoti"
 
-#: js/components/DetailAppBar.vue:243
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
-msgstr ""
+msgstr "Planuoti ir uždaryti"
 
-#: js/components/DetailAppBar.vue:251 js/views/ElementList.vue:236
+#: js/components/DetailAppBar.vue:289 js/views/ElementList.vue:236
 #: js/views/FileList.vue:235 js/views/PageList.vue:273
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "Perjungti šoninį meniu"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:734
-#: js/components/ElementListItems.vue:839 js/components/FileListItems.vue:712
-#: js/components/FileListItems.vue:846 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1623 js/components/PageListItems.vue:1775
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
+#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
+#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
 msgid "Edit properties"
 msgstr "Redaguoti ypatybes"
 
@@ -406,7 +543,7 @@ msgstr "Redaguoti ypatybes"
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Taikyti pasirinktas ypatybes %{num} įrašui."
-msgstr[1] "Taikyti pasirinktas ypatybes %{num} įrašų."
+msgstr[1] "Taikyti pasirinktas ypatybes %{num} įrašams."
 msgstr[2] "Taikyti pasirinktas ypatybes %{num} įrašų."
 
 #: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
@@ -417,7 +554,7 @@ msgid "Language"
 msgstr "Kalba"
 
 #: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:269
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "Taikyti"
 
@@ -436,23 +573,12 @@ msgstr "taip"
 msgid "no"
 msgstr "ne"
 
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:24
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
-msgid "Shared elements"
-msgstr "Bendri elementai"
-
-#: js/components/ElementDetailRefs.vue:146
-#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
-#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
-msgid "ID"
-msgstr "ID"
-
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
 msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:440
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
 msgid "Restricted"
 msgstr "Apribota"
 
@@ -471,94 +597,94 @@ msgstr "Tipas"
 msgid "Published"
 msgstr "Paskelbta"
 
-#: js/components/ElementListItems.vue:319
+#: js/components/ElementListItems.vue:325
 msgid "Error trashing shared element"
-msgstr "Klaida perkeliant bendrinamą elementą į šiukšliadėžę"
+msgstr "Klaida perkeliant bendrą elementą į šiukšliadėžę"
 
-#: js/components/ElementListItems.vue:456
+#: js/components/ElementListItems.vue:462
 msgid "Error restoring shared element"
-msgstr "Klaida atkuriant bendrąjį elementą"
+msgstr "Klaida atkuriant bendrą elementą"
 
-#: js/components/ElementListItems.vue:496
+#: js/components/ElementListItems.vue:502
 msgid "Error publishing shared element"
-msgstr "Klaida publikuojant bendrinamąjį elementą"
+msgstr "Klaida skelbiant bendrą elementą"
 
-#: js/components/ElementListItems.vue:534
+#: js/components/ElementListItems.vue:540
 msgid "Error purging shared element"
-msgstr "Klaida visam laikui trinant bendrinamą elementą"
+msgstr "Klaida visam laikui trinant bendrą elementą"
 
-#: js/components/ElementListItems.vue:585
+#: js/components/ElementListItems.vue:591
 msgid "Error saving shared element"
-msgstr "Išsaugant bendrinamą elementą įvyko klaida"
+msgstr "Išsaugant bendrą elementą įvyko klaida"
 
-#: js/components/ElementListItems.vue:642
+#: js/components/ElementListItems.vue:648
 msgid "Error fetching shared elements"
-msgstr "Bendrai naudojamų elementų gavimo klaida"
+msgstr "Klaida gaunant bendrus elementus"
 
-#: js/components/ElementListItems.vue:713 js/components/FileListItems.vue:691
-#: js/components/PageDetailContentList.vue:784
-#: js/components/PageListItems.vue:1591 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
+#: js/components/PageDetailContentList.vue:827
+#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "Perjungti pasirinkimą"
 
-#: js/components/ElementListItems.vue:739
-#: js/components/ElementListItems.vue:847 js/components/FileListItems.vue:717
-#: js/components/FileListItems.vue:854
-#: js/components/PageDetailContentList.vue:818
-#: js/components/PageDetailContentList.vue:896
-#: js/components/PageListItems.vue:1641 js/components/PageListItems.vue:1881
-#: js/fields/Items.vue:383 js/fields/Table.vue:213 js/fields/Table.vue:283
+#: js/components/ElementListItems.vue:745
+#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
+#: js/components/FileListItems.vue:865
+#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:947
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
+#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "Ištrinti"
 
-#: js/components/ElementListItems.vue:744
-#: js/components/ElementListItems.vue:852 js/components/FileListItems.vue:722
-#: js/components/FileListItems.vue:859 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1886
+#: js/components/ElementListItems.vue:750
+#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
+#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
+#: js/components/PageListItems.vue:1878
 msgid "Restore"
 msgstr "Atkurti"
 
-#: js/components/ElementListItems.vue:758
-#: js/components/ElementListItems.vue:904
-#: js/components/PageDetailContentList.vue:996
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:500
+#: js/components/ElementListItems.vue:764
+#: js/components/ElementListItems.vue:911
+#: js/components/PageDetailContentList.vue:1047
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
 msgid "Add element"
 msgstr "Pridėti elementą"
 
-#: js/components/ElementListItems.vue:772 js/components/FileListItems.vue:761
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:135
+#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
+#: js/components/PageDetailContentList.vue:870
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Ieškoti"
 
-#: js/components/ElementListItems.vue:783 js/components/FileListItems.vue:774
+#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
 msgid "Updated by another user"
 msgstr "Atnaujino kitas vartotojas"
 
-#: js/components/ElementListItems.vue:789 js/components/FileListItems.vue:780
-#: js/components/PageListItems.vue:1690
+#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
+#: js/components/PageListItems.vue:1686
 msgid "Refresh"
 msgstr "Atnaujinti"
 
-#: js/components/ElementListItems.vue:795 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
 msgid "Reload elements"
 msgstr "Atnaujinti elementus"
 
-#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:969
+#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
 #: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1942 js/fields/Autocomplete.vue:188
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:164
+#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
+#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
 msgid "Loading"
-msgstr "Pakrovimas"
+msgstr "Įkeliama"
 
 #: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:425 js/fields/Items.vue:431
+#: js/fields/Items.vue:422 js/fields/Items.vue:428
 msgid "Translate"
 msgstr "Išversti"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:449
+#: js/components/Fields.vue:307 js/fields/Items.vue:446
 msgid "Generate text"
 msgstr "Generuoti tekstą"
 
@@ -572,19 +698,19 @@ msgstr "Perrašyta"
 
 #: js/components/FieldsAside.vue:86
 msgid "Mobile"
-msgstr ""
+msgstr "Mobilusis"
 
 #: js/components/FieldsAside.vue:87
 msgid "Tablet"
-msgstr ""
+msgstr "Planšetė"
 
 #: js/components/FieldsAside.vue:88
 msgid "Computer"
-msgstr ""
+msgstr "Kompiuteris"
 
 #: js/components/FieldsAside.vue:88
 msgid "Full width"
-msgstr ""
+msgstr "Visas plotis"
 
 #: js/components/FieldsAside.vue:179
 msgid "Content Element"
@@ -604,16 +730,16 @@ msgstr "Pašalinti elementą"
 
 #: js/components/FieldsAside.vue:216
 msgid "Responsive preview"
-msgstr ""
+msgstr "Prisitaikanti peržiūra"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:939
+#: js/components/PageDetailContentList.vue:990
 msgid "Change to"
 msgstr "Pakeisti į"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:383
+#: js/fields/Images.vue:386
 msgid "Edit"
 msgstr "Redaguoti"
 
@@ -622,9 +748,9 @@ msgstr "Redaguoti"
 msgid "Remove"
 msgstr "Pašalinti"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:273
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:146
+#: js/fields/File.vue:166 js/fields/Images.vue:149
 msgid "Error adding file %{path}"
 msgstr "Klaida pridedant failą %{path}"
 
@@ -658,14 +784,14 @@ msgstr "Pasirinkite vaizdus"
 
 #: js/components/FileDetailItem.vue:112
 msgid "Copied to clipboard"
-msgstr "Įklijuota į iškarpinę"
+msgstr "Nukopijuota į iškarpinę"
 
 #: js/components/FileDetailItem.vue:143
 msgid "Error describing file"
 msgstr "Klaida aprašant failą"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:574
-#: js/fields/File.vue:300 js/fields/Images.vue:296 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
+#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
 msgid "Error saving file"
 msgstr "Klaida išsaugant failą"
 
@@ -699,7 +825,7 @@ msgstr "Transkripcijos"
 
 #: js/components/FileDetailItem.vue:532
 msgid "Transcribe file content"
-msgstr "Perrašykite failo turinį"
+msgstr "Transkribuoti failo turinį"
 
 #: js/components/FileDetailItem.vue:550
 msgid "Transcription (%{lang})"
@@ -775,18 +901,22 @@ msgid "Expand image"
 msgstr "Išplėsti vaizdą"
 
 #: js/components/FileDetailItemImage.vue:825
+msgctxt "image edge"
 msgid "Top"
 msgstr "Viršuje"
 
 #: js/components/FileDetailItemImage.vue:837
+msgctxt "image edge"
 msgid "Left"
 msgstr "Kairėje pusėje"
 
 #: js/components/FileDetailItemImage.vue:847
+msgctxt "image edge"
 msgid "Right"
-msgstr "Dešinė"
+msgstr "Dešinėje"
 
 #: js/components/FileDetailItemImage.vue:859
+msgctxt "image edge"
 msgid "Bottom"
 msgstr "Apačioje"
 
@@ -804,19 +934,19 @@ msgstr "Skalė %{factor}"
 
 #: js/components/FileDetailItemImage.vue:934
 msgid "Rotate counter-clockwise"
-msgstr "Sukite prieš laikrodžio rodyklę"
+msgstr "Pasukti prieš laikrodžio rodyklę"
 
 #: js/components/FileDetailItemImage.vue:940
 msgid "Rotate clockwise"
-msgstr "Sukite pagal laikrodžio rodyklę"
+msgstr "Pasukti pagal laikrodžio rodyklę"
 
 #: js/components/FileDetailItemImage.vue:947
 msgid "Flip horizontally"
-msgstr "Apverskite horizontaliai"
+msgstr "Apversti horizontaliai"
 
 #: js/components/FileDetailItemImage.vue:953
 msgid "Flip vertically"
-msgstr "Apverskite vertikaliai"
+msgstr "Apversti vertikaliai"
 
 #: js/components/FileDetailItemImage.vue:960
 msgid "Convert to monochrome"
@@ -849,7 +979,7 @@ msgstr "Klaida išsaugant vaizdo įrašo viršelį"
 
 #: js/components/FileDetailItemVideo.vue:164
 msgid "Error removing video cover"
-msgstr "Klaida šalinant vaizdo įrašo dangtelį"
+msgstr "Klaida šalinant vaizdo įrašo viršelį"
 
 #: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
@@ -867,62 +997,51 @@ msgstr "Naudoti kaip viršelio paveikslėlį"
 msgid "Upload cover image"
 msgstr "Įkelti viršelio paveikslėlį"
 
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:22
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
-msgid "Pages"
-msgstr "Puslapiai"
-
 #: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
 msgid "Elements"
 msgstr "Elementai"
 
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:23
-#: js/views/FileList.vue:227 js/views/FileList.vue:244
-msgid "Media"
-msgstr "Žiniasklaida"
-
-#: js/components/FileListItems.vue:314
+#: js/components/FileListItems.vue:320
 msgid "Error trashing file"
 msgstr "Klaida perkeliant failą į šiukšliadėžę"
 
-#: js/components/FileListItems.vue:450
+#: js/components/FileListItems.vue:456
 msgid "Error restoring file"
 msgstr "Klaida atkuriant failą"
 
-#: js/components/FileListItems.vue:487 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
 msgid "Error publishing file"
-msgstr "Klaida publikuojant failą"
+msgstr "Klaida skelbiant failą"
 
-#: js/components/FileListItems.vue:523
+#: js/components/FileListItems.vue:529
 msgid "Error purging file"
 msgstr "Klaida visam laikui trinant failą"
 
-#: js/components/FileListItems.vue:620
+#: js/components/FileListItems.vue:626
 msgid "Error fetching files"
 msgstr "Failų gavimo klaida"
 
-#: js/components/FileListItems.vue:738 js/components/FileListItems.vue:748
-#: js/components/FileListItems.vue:984 js/components/FileListItems.vue:994
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:409
-#: js/fields/Images.vue:433
+#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
+#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
+#: js/fields/Images.vue:436
 msgid "Add files"
 msgstr "Pridėti failus"
 
-#: js/components/FileListItems.vue:748 js/components/FileListItems.vue:950
-#: js/components/FileListItems.vue:994 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
+#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Apsaugoti puslapio prieiga"
 
-#: js/components/FileListItems.vue:786
+#: js/components/FileListItems.vue:793
 msgid "Reload files"
 msgstr "Atnaujinti failus"
 
-#: js/components/FileListItems.vue:795
+#: js/components/FileListItems.vue:802
 msgid "Grid view"
-msgstr "Tinklelio vaizdas"
+msgstr "Tinklelio rodinys"
 
-#: js/components/FileListItems.vue:803
+#: js/components/FileListItems.vue:810
 msgid "List view"
 msgstr "Sąrašo rodinys"
 
@@ -938,7 +1057,7 @@ msgstr "Bent vienas failas nėra \"%{mime}*\" tipo."
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Failas nėra \"%{mime}*\" tipo."
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:416
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
 msgid "Add files from URLs"
 msgstr "Failų pridėjimas iš URL adresų"
 
@@ -955,7 +1074,7 @@ msgid "Enter URL"
 msgstr "Įveskite URL adresą"
 
 #: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:957
+#: js/components/PageDetailContentList.vue:1008
 msgid "Shared element"
 msgstr "Bendras elementas"
 
@@ -974,9 +1093,9 @@ msgstr "Perkelta iš pozicijos %{from} į %{to}"
 #: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
-msgstr[0] "%{num} laukas pakeistas"
-msgstr[1] "%{num} laukai pakeisti"
-msgstr[2] "%{num} laukai pakeisti"
+msgstr[0] "Pakeistas %{num} laukas"
+msgstr[1] "Pakeisti %{num} laukai"
+msgstr[2] "Pakeista %{num} laukų"
 
 #: js/components/HistoryDialog.vue:77
 msgid "%{selected} of %{total} selected"
@@ -998,36 +1117,36 @@ msgstr "Vertė"
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "Pridėtas %{num} blokas"
-msgstr[1] "Pridėta %{num} blokų"
+msgstr[1] "Pridėti %{num} blokai"
 msgstr[2] "Pridėta %{num} blokų"
 
 #: js/components/HistoryDialog.vue:173
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
-msgstr[0] "%{num} blokas pašalintas"
+msgstr[0] "Pašalintas %{num} blokas"
 msgstr[1] "Pašalinti %{num} blokai"
-msgstr[2] "Pašalinti %{num} blokai"
+msgstr[2] "Pašalinta %{num} blokų"
 
 #: js/components/HistoryDialog.vue:174
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "Pakeistas %{num} blokas"
-msgstr[1] "%{num} blokai pakeisti"
-msgstr[2] "%{num} blokai pakeisti"
+msgstr[1] "Pakeisti %{num} blokai"
+msgstr[2] "Pakeista %{num} blokų"
 
 #: js/components/HistoryDialog.vue:175
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
-msgstr[0] "%{num} blokas perkeltas"
-msgstr[1] "%{num} blokai perkelti"
-msgstr[2] "%{num} blokai perkelti"
+msgstr[0] "Perkeltas %{num} blokas"
+msgstr[1] "Perkelti %{num} blokai"
+msgstr[2] "Perkelta %{num} blokų"
 
 #: js/components/HistoryDialog.vue:176
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
-msgstr[0] "%{num} failas pakeistas"
-msgstr[1] "%{num} failai pakeisti"
-msgstr[2] "%{num} failai pakeisti"
+msgstr[0] "Pakeistas %{num} failas"
+msgstr[1] "Pakeisti %{num} failai"
+msgstr[2] "Pakeista %{num} failų"
 
 #: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
 #: js/components/HistoryDialog.vue:302
@@ -1056,7 +1175,7 @@ msgstr "Suplanuota %{date}"
 
 #: js/components/HistoryDialog.vue:231
 msgid "Select all"
-msgstr "Pasirinkite viską"
+msgstr "Pasirinkti viską"
 
 #: js/components/HistoryDialog.vue:245
 msgid "Block added"
@@ -1068,7 +1187,7 @@ msgstr "Blokas pašalintas"
 
 #: js/components/HistoryDialog.vue:266
 msgid "Keep current position"
-msgstr "Išlaikykite dabartinę padėtį"
+msgstr "Išlaikyti dabartinę padėtį"
 
 #: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
 msgid "Keep current value"
@@ -1133,9 +1252,9 @@ msgstr "Lentelės peržiūra"
 #: js/components/HistoryField.vue:138
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
-msgstr[0] "%{num} eilutė praleista"
+msgstr[0] "Praleista %{num} eilutė"
 msgstr[1] "Praleistos %{num} eilutės"
-msgstr[2] "Praleistos %{num} eilutės"
+msgstr[2] "Praleista %{num} eilučių"
 
 #: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
 msgid "Editor"
@@ -1157,7 +1276,7 @@ msgstr "Seniausias"
 msgid "Oldest edit"
 msgstr "Pirmą kartą keista"
 
-#: js/components/ListSort.vue:35 js/components/PageDetailMetrics.vue:577
+#: js/components/ListSort.vue:35
 msgid "Position"
 msgstr "Pozicija"
 
@@ -1173,13 +1292,13 @@ msgstr "Naudojimas"
 msgid "Sort by"
 msgstr "Rūšiuoti pagal"
 
-#: js/components/Navigation.vue:25 js/views/AccessList.vue:252
-msgid "Users"
-msgstr "Naudotojai"
-
-#: js/components/Navigation.vue:45
+#: js/components/Navigation.vue:53
 msgid "Panels"
-msgstr "Plokštės"
+msgstr "Skydeliai"
+
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+msgid "Keyboard shortcuts"
+msgstr "Spartieji klavišai"
 
 #: js/components/PageAccess.vue:104
 msgid "Error changing page access"
@@ -1194,22 +1313,22 @@ msgstr ""
 msgid "Public"
 msgstr "Viešas"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
 msgid "Authenticated users"
 msgstr "Autentifikuoti vartotojai"
 
 #: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:443 js/components/PageListItems.vue:1628
-#: js/components/PageListItems.vue:1780 js/components/PageListItems.vue:1969
+#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
+#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Prieiga"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:283
+#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Masiniai puslapių pakeitimai ribojami iki 1 000 puslapių"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:277
+#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "Taikyti rekursyviai"
 
@@ -1266,7 +1385,7 @@ msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Taikyti pasirinktas ypatybes %{num} puslapiui."
 msgstr[1] "Taikyti pasirinktas ypatybes %{num} puslapiams."
-msgstr[2] "Taikyti pasirinktas ypatybes %{num} puslapiams."
+msgstr[2] "Taikyti pasirinktas ypatybes %{num} puslapių."
 
 #: js/components/PageBulkDialog.vue:172
 msgid "Change status"
@@ -1326,132 +1445,132 @@ msgstr "Keisti domeną"
 msgid "Domain"
 msgstr "Domenas"
 
-#: js/components/PageDetailContentList.vue:184
-#: js/components/PageDetailContentList.vue:194
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:185
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:690
 msgid "Content element not found"
 msgstr "Nerastas turinio elementas"
 
-#: js/components/PageDetailContentList.vue:420
+#: js/components/PageDetailContentList.vue:463
 msgid "Error refining content"
 msgstr "Klaida tikslinant turinį"
 
-#: js/components/PageDetailContentList.vue:470
+#: js/components/PageDetailContentList.vue:513
 msgid "Element not found"
 msgstr "Elementas nerastas"
 
-#: js/components/PageDetailContentList.vue:475
-msgid "Element is already shared"
-msgstr "Elementu jau dalijamasi"
-
 #: js/components/PageDetailContentList.vue:518
+msgid "Element is already shared"
+msgstr "Elementas jau yra bendras"
+
+#: js/components/PageDetailContentList.vue:561
 msgid "Unable to make element shared"
-msgstr "Nepavyksta sukurti bendro naudojimo elemento"
+msgstr "Nepavyko padaryti elemento bendru"
 
-#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:580
 msgid "Not available for this content element"
-msgstr "Nėra šio turinio elemento"
+msgstr "Negalima šiam turinio elementui"
 
-#: js/components/PageDetailContentList.vue:654
+#: js/components/PageDetailContentList.vue:697
 msgid "Element is not shared"
-msgstr "Elementu nesidalijama"
+msgstr "Elementas nėra bendras"
 
-#: js/components/PageDetailContentList.vue:733
+#: js/components/PageDetailContentList.vue:776
 msgid "Describe the task you want to perform"
 msgstr "Aprašykite užduotį, kurią norite atlikti"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Hide help"
 msgstr "Paslėpti pagalbą"
 
-#: js/components/PageDetailContentList.vue:747 js/views/ElementList.vue:265
+#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
 #: js/views/FileList.vue:264 js/views/PageList.vue:302
 msgid "Show help"
 msgstr "Rodyti pagalbą"
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refining ..."
 msgstr "Tobulinama..."
 
-#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:802
 msgid "Refine content based on prompt"
-msgstr "Patikslinkite turinį pagal raginimą"
+msgstr "Patikslinti turinį pagal raginimą"
 
-#: js/components/PageDetailContentList.vue:776 js/views/ElementList.vue:291
+#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
 #: js/views/FileList.vue:290 js/views/PageList.vue:328
 msgid "Help"
 msgstr "Pagalba"
 
-#: js/components/PageDetailContentList.vue:777
+#: js/components/PageDetailContentList.vue:820
 msgid "AI can add or improve content based on your input"
-msgstr ""
-"dirbtinis intelektas gali papildyti arba patobulinti turinį pagal jūsų "
-"įvestus duomenis"
+msgstr "AI gali papildyti arba patobulinti turinį pagal jūsų įvestus duomenis"
 
-#: js/components/PageDetailContentList.vue:778
+#: js/components/PageDetailContentList.vue:821
 msgid "It can take a long time depending on the task and content size"
 msgstr "Priklausomai nuo užduoties ir turinio dydžio, tai gali užtrukti ilgai."
 
-#: js/components/PageDetailContentList.vue:803
-#: js/components/PageDetailContentList.vue:891
-#: js/components/PageListItems.vue:1793 js/fields/Items.vue:378
+#: js/components/PageDetailContentList.vue:846
+#: js/components/PageDetailContentList.vue:942
+#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+msgctxt "clipboard"
 msgid "Cut"
 msgstr "Iškirpti"
 
-#: js/components/PageDetailContentList.vue:808
-#: js/components/PageListItems.vue:1806 js/components/PageListItems.vue:1831
+#: js/components/PageDetailContentList.vue:851
+#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
 msgid "Paste"
 msgstr "Įklijuoti"
 
-#: js/components/PageDetailContentList.vue:813
-#: js/components/PageDetailContentList.vue:949
+#: js/components/PageDetailContentList.vue:856
+#: js/components/PageDetailContentList.vue:1000
 msgid "Merge"
 msgstr "Sujungti"
 
-#: js/components/PageDetailContentList.vue:866 js/fields/Items.vue:348
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
 msgid "Move element"
 msgstr "Perkelti elementą"
 
-#: js/components/PageDetailContentList.vue:904 js/fields/Items.vue:391
+#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
 msgid "Paste before"
-msgstr "Įklijuokite prieš"
+msgstr "Įklijuoti prieš"
 
-#: js/components/PageDetailContentList.vue:909 js/fields/Items.vue:396
+#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
 msgid "Paste after"
-msgstr "Įklijuokite po"
+msgstr "Įklijuoti po"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:401
-#: js/fields/Table.vue:200 js/fields/Table.vue:270
+#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
-msgstr "Įterpkite prieš"
+msgstr "Įterpti prieš"
 
-#: js/components/PageDetailContentList.vue:919 js/fields/Items.vue:406
-#: js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
-msgstr "Įterpkite po"
+msgstr "Įterpti po"
 
-#: js/components/PageDetailContentList.vue:929
+#: js/components/PageDetailContentList.vue:980
 msgid "Make shared"
-msgstr "Padaryti bendrinamą"
+msgstr "Padaryti bendru"
 
-#: js/components/PageDetailContentList.vue:934
+#: js/components/PageDetailContentList.vue:985
 msgid "Merge copy"
 msgstr "Sujungti kopiją"
 
-#: js/components/PageDetailContentList.vue:944
+#: js/components/PageDetailContentList.vue:995
+msgctxt "text element"
 msgid "Split"
-msgstr "Splitas"
+msgstr "Padalyti"
 
-#: js/components/PageDetailEditor.vue:77
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Dukart spustelėkite norėdami redaguoti"
 
-#: js/components/PageDetailEditor.vue:260
+#: js/components/PageDetailEditor.vue:266
 msgid "Preview mode"
 msgstr "Peržiūros režimas"
 
-#: js/components/PageDetailEditor.vue:263
+#: js/components/PageDetailEditor.vue:269
 msgid "Not CMS content"
 msgstr "Ne CMS turinys"
 
@@ -1492,7 +1611,7 @@ msgstr "Puslapio pavadinimas"
 
 #: js/components/PageDetailItemProps.vue:283
 msgid "Page name"
-msgstr "Puslapio pavadinimas"
+msgstr "Puslapio vardas"
 
 #: js/components/PageDetailItemProps.vue:298
 msgid "URL path"
@@ -1511,7 +1630,6 @@ msgid "Remove content element"
 msgstr "Pašalinti turinio elementą"
 
 #: js/components/PageDetailMetrics.vue:149
-#: js/components/PageDetailMetrics.vue:574
 msgid "Views"
 msgstr "Peržiūros"
 
@@ -1529,6 +1647,7 @@ msgid "Duration"
 msgstr "Trukmė"
 
 #: js/components/PageDetailMetrics.vue:170
+#: js/components/PageDetailMetrics.vue:574
 msgid "Impressions"
 msgstr "Parodymai"
 
@@ -1567,7 +1686,7 @@ msgstr "\"Google\" konversijų rodiklis"
 
 #: js/components/PageDetailMetrics.vue:202
 msgid "Round trip time"
-msgstr "Kelionės į abi puses laikas"
+msgstr "Užklausos ir atsako laikas"
 
 #: js/components/PageDetailMetrics.vue:203
 msgid "Time to first byte"
@@ -1575,15 +1694,15 @@ msgstr "Laikas iki pirmojo baito"
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "First contentful paint"
-msgstr "Pirmieji turinys dažai"
+msgstr "Pirmasis turinio atvaizdavimas"
 
 #: js/components/PageDetailMetrics.vue:205
 msgid "Largest contentful paint"
-msgstr "Didžiausi turinio dažai"
+msgstr "Didžiausio turinio atvaizdavimas"
 
 #: js/components/PageDetailMetrics.vue:206
 msgid "Interaction to next paint"
-msgstr "Sąveika su kitais dažais"
+msgstr "Sąveika iki kito atvaizdavimo"
 
 #: js/components/PageDetailMetrics.vue:207
 msgid "Cumulative layout shift"
@@ -1629,6 +1748,11 @@ msgstr "Paieška \"Google\": Užklausos"
 msgid "Percent"
 msgstr "Procentai"
 
+#: js/components/PageDetailMetrics.vue:577
+msgctxt "search ranking"
+msgid "Position"
+msgstr "Pozicija"
+
 #: js/components/PageDetailMetrics.vue:604
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google paieška: parodymai ir paspaudimai"
@@ -1637,152 +1761,154 @@ msgstr "Google paieška: parodymai ir paspaudimai"
 msgid "Google Search: Conversions"
 msgstr "Paieška \"Google\": Konversijos"
 
-#: js/components/PageListItems.vue:478
+#: js/components/PageListItems.vue:482
 msgid "Error adding root page"
 msgstr "Klaida pridedant šakninį puslapį"
 
-#: js/components/PageListItems.vue:551
+#: js/components/PageListItems.vue:547
 msgid "Cache cleared"
 msgstr "Talpykla išvalyta"
 
-#: js/components/PageListItems.vue:552
+#: js/components/PageListItems.vue:548
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Talpykla išvalyta %{num} puslapiui."
+msgstr[1] "Talpykla išvalyta %{num} puslapiams."
+msgstr[2] "Talpykla išvalyta %{num} puslapių."
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:558
 msgid "Error clearing cache"
 msgstr "Klaida išvalant talpyklą"
 
-#: js/components/PageListItems.vue:658
+#: js/components/PageListItems.vue:630
 msgid "Error trashing page"
 msgstr "Klaida perkeliant puslapį į šiukšliadėžę"
 
-#: js/components/PageListItems.vue:752
+#: js/components/PageListItems.vue:724
 msgid "Error fetching pages"
-msgstr "Klaida renkant puslapius"
+msgstr "Klaida gaunant puslapius"
 
-#: js/components/PageListItems.vue:833
+#: js/components/PageListItems.vue:805
 msgid "Error inserting page"
 msgstr "Klaida įdedant puslapį"
 
-#: js/components/PageListItems.vue:886
+#: js/components/PageListItems.vue:869
 msgid "Error restoring page"
 msgstr "Klaida atkuriant puslapį"
 
-#: js/components/PageListItems.vue:896
+#: js/components/PageListItems.vue:879
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
-msgstr "%{name} (%{lang}, adresas: %{path}, domenas: %{domain})"
+msgstr "%{name} (%{lang}, kelias: %{path}, domenas: %{domain})"
 
-#: js/components/PageListItems.vue:904
+#: js/components/PageListItems.vue:887
 msgid "%{name} (%{lang}, path: %{path})"
-msgstr "%{name} (%{lang}, nuoroda: %{path})"
+msgstr "%{name} (%{lang}, kelias: %{path})"
 
-#: js/components/PageListItems.vue:994
+#: js/components/PageListItems.vue:977
 msgid "Error moving page"
-msgstr "Klaida perkelti puslapį"
+msgstr "Klaida perkeliant puslapį"
 
-#: js/components/PageListItems.vue:1085
+#: js/components/PageListItems.vue:1068
 msgid "Error copying page"
 msgstr "Klaida kopijuojant puslapį"
 
-#: js/components/PageListItems.vue:1090 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
 msgid "Error fetching page"
-msgstr "Klaida parsisiunčiant puslapį"
+msgstr "Klaida gaunant puslapį"
 
-#: js/components/PageListItems.vue:1170 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
 msgid "Error publishing page"
-msgstr "Klaida publikuojant puslapį"
+msgstr "Klaida skelbiant puslapį"
 
-#: js/components/PageListItems.vue:1195
+#: js/components/PageListItems.vue:1172
 msgid "All subpages of these pages will be purged as well."
 msgstr ""
 "Visi šių puslapių antriniai puslapiai taip pat bus ištrinti visam laikui."
 
-#: js/components/PageListItems.vue:1225
+#: js/components/PageListItems.vue:1202
 msgid "Error purging page"
 msgstr "Klaida visam laikui trinant puslapį"
 
-#: js/components/PageListItems.vue:1358
+#: js/components/PageListItems.vue:1335
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} puslapio nepavyko atnaujinti"
 msgstr[1] "%{num} puslapių nepavyko atnaujinti"
 msgstr[2] "%{num} puslapių nepavyko atnaujinti"
 
-#: js/components/PageListItems.vue:1369 js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
 #: js/views/PageDetail.vue:606
 msgid "Error saving page"
 msgstr "Klaida išsaugant puslapį"
 
-#: js/components/PageListItems.vue:1420
+#: js/components/PageListItems.vue:1397
 msgid "Error searching pages"
 msgstr "Klaida ieškant puslapių"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1760
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+msgctxt "page status"
 msgid "Enable"
 msgstr "Įjungti"
 
-#: js/components/PageListItems.vue:1617 js/components/PageListItems.vue:1765
+#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+msgctxt "page status"
 msgid "Disable"
 msgstr "Išjungti"
 
-#: js/components/PageListItems.vue:1633 js/components/PageListItems.vue:1785
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
 msgid "Clear cache"
 msgstr "Išvalyti talpyklą"
 
-#: js/components/PageListItems.vue:1661 js/components/PageListItems.vue:1954
+#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
 msgid "Add page"
 msgstr "Pridėti puslapį"
 
-#: js/components/PageListItems.vue:1684
+#: js/components/PageListItems.vue:1680
 msgid "Reload page tree"
-msgstr "Perkrauti puslapio medį"
+msgstr "Atnaujinti puslapių medį"
 
-#: js/components/PageListItems.vue:1711
+#: js/components/PageListItems.vue:1703
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Naršykite naudodami rodyklių klavišus. Norėdami pakeisti tvarką, spauskite "
 "„Alt“ ir rodyklių klavišus."
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1705
 msgid "Moved to position %{position} of %{total}"
 msgstr "Perkelta į %{position} vietą iš %{total}"
 
-#: js/components/PageListItems.vue:1715
+#: js/components/PageListItems.vue:1707
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Įtrauka sumažinta iki %{level} lygio, %{position} vieta iš %{total}"
 
-#: js/components/PageListItems.vue:1721
+#: js/components/PageListItems.vue:1713
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Įtrauka padidinta iki %{level} lygio, %{position} vieta iš %{total}"
 
-#: js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1733
 msgid "Toggle child nodes"
 msgstr "Perjungti dukterinius mazgus"
 
-#: js/components/PageListItems.vue:1812 js/components/PageListItems.vue:1837
-#: js/components/PageListItems.vue:1862
+#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
+#: js/components/PageListItems.vue:1854
 msgid "Before"
 msgstr "Prieš"
 
-#: js/components/PageListItems.vue:1817 js/components/PageListItems.vue:1842
-#: js/components/PageListItems.vue:1867
+#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
+#: js/components/PageListItems.vue:1859
 msgid "Into"
 msgstr "Į"
 
-#: js/components/PageListItems.vue:1822 js/components/PageListItems.vue:1847
-#: js/components/PageListItems.vue:1872
+#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
+#: js/components/PageListItems.vue:1864
 msgid "After"
 msgstr "Po"
 
-#: js/components/PageListItems.vue:1856
+#: js/components/PageListItems.vue:1848
 msgid "Insert"
-msgstr "Įdėkite"
+msgstr "Įterpti"
 
-#: js/components/PageListItems.vue:1972
+#: js/components/PageListItems.vue:1964
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Taikyti prieigos nustatymus %{num} puslapiui."
@@ -1804,6 +1930,78 @@ msgstr "neklasifikuojama"
 #: js/components/SchemaItems.vue:113
 msgid "Error fetching content elements"
 msgstr "Klaida gaunant turinio elementus"
+
+#: js/components/ShortcutDialog.vue:23
+msgid "General"
+msgstr "Bendra"
+
+#: js/components/ShortcutDialog.vue:28
+msgid "Close dialog or menu"
+msgstr "Uždaryti dialogą arba meniu"
+
+#: js/components/ShortcutDialog.vue:34
+msgid "Move between commands and results"
+msgstr "Pereiti tarp komandų ir rezultatų"
+
+#: js/components/ShortcutDialog.vue:35
+msgid "Run command or open result"
+msgstr "Vykdyti komandą arba atidaryti rezultatą"
+
+#: js/components/ShortcutDialog.vue:36
+msgid "Close command palette"
+msgstr "Uždaryti komandų paletę"
+
+#: js/components/ShortcutDialog.vue:40
+msgid "Lists"
+msgstr "Sąrašai"
+
+#: js/components/ShortcutDialog.vue:44
+msgid "Edit views"
+msgstr "Redagavimo rodiniai"
+
+#: js/components/ShortcutDialog.vue:48
+msgid "Page content"
+msgstr "Puslapio turinys"
+
+#: js/components/ShortcutDialog.vue:49
+msgid "Move content element up or down"
+msgstr "Perkelti turinio elementą aukštyn arba žemyn"
+
+#: js/components/ShortcutDialog.vue:52
+msgid "Page tree"
+msgstr "Puslapių medis"
+
+#: js/components/ShortcutDialog.vue:54
+msgid "Move between pages"
+msgstr "Pereiti tarp puslapių"
+
+#: js/components/ShortcutDialog.vue:55
+msgid "Expand page"
+msgstr "Išskleisti puslapį"
+
+#: js/components/ShortcutDialog.vue:56
+msgid "Add subpage to focused page"
+msgstr "Pridėti subpuslapį prie aktyvaus puslapio"
+
+#: js/components/ShortcutDialog.vue:57
+msgid "Reorder or re-nest page"
+msgstr "Pertvarkyti arba perkelti puslapį į kitą lygį"
+
+#: js/components/ShortcutDialog.vue:62
+msgid "AI chat"
+msgstr "AI pokalbis"
+
+#: js/components/ShortcutDialog.vue:64
+msgid "Send message"
+msgstr "Siųsti žinutę"
+
+#: js/components/ShortcutDialog.vue:65
+msgid "New line"
+msgstr "Nauja eilutė"
+
+#: js/components/ShortcutDialog.vue:66
+msgid "Recall previous messages"
+msgstr "Grąžinti ankstesnes žinutes"
 
 #: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
 msgid "Unsaved changes"
@@ -1841,22 +2039,11 @@ msgstr "Naudotojo meniu"
 msgid "Logout"
 msgstr "Atsijungimas"
 
-#: js/fields/Autocomplete.vue:43 js/fields/Color.vue:20 js/fields/Date.vue:24
-#: js/fields/Html.vue:19 js/fields/Number.vue:33 js/fields/Select.vue:38
-#: js/fields/Url.vue:75
-msgid "Value is required"
-msgstr "Reikalaujama vertė"
-
-#: js/fields/Autocomplete.vue:48 js/fields/Images.vue:97
-#: js/fields/Items.vue:121
-msgid "Maximum is %{num} entries"
-msgstr "Daugiausia %{num} įrašų"
-
-#: js/fields/Autocomplete.vue:187 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Duomenų nėra"
 
-#: js/fields/Color.vue:21
+#: js/fields/Color.vue:23
 msgid "Value must be a hex color code"
 msgstr "Reikšmė turi būti šešiaženklis spalvos kodas"
 
@@ -1868,7 +2055,7 @@ msgstr "Reikalingas failas"
 msgid "Add file from URL"
 msgstr "Pridėti failą iš URL adreso"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:426
+#: js/fields/File.vue:456 js/fields/Images.vue:429
 msgid "Create file"
 msgstr "Sukurti failą"
 
@@ -1888,91 +2075,65 @@ msgstr "pavadinimas"
 msgid "description"
 msgstr "aprašymas"
 
-#: js/fields/Images.vue:93 js/fields/Items.vue:124
-msgid "Minimum is %{num} entries"
-msgstr "Mažiausia %{num} įrašų"
-
-#: js/fields/Images.vue:450
+#: js/fields/Images.vue:453
 msgid "Drop files here"
 msgstr "Numeskite failus čia"
 
 #: js/fields/Map.vue:231
 msgid "Clear location"
-msgstr ""
+msgstr "Išvalyti vietą"
 
 #: js/fields/Map.vue:234
 msgid "Click the map to set the location"
-msgstr ""
+msgstr "Spustelėkite žemėlapį, kad nustatytumėte vietą"
 
-#: js/fields/Markdown.vue:144 js/fields/Plaintext.vue:35
-#: js/fields/String.vue:37 js/fields/Text.vue:125
-msgid "Minimum length is %{num} characters"
-msgstr "Mažiausias ilgis - %{num} simbolių"
-
-#: js/fields/Markdown.vue:148 js/fields/Plaintext.vue:39
-#: js/fields/String.vue:41 js/fields/Text.vue:129
-msgid "Maximum length is %{num} characters"
-msgstr "Didžiausias ilgis - %{num} simbolių"
-
-#: js/fields/Radio.vue:24
-msgid "Selection is required"
-msgstr "Būtina atranka"
-
-#: js/fields/String.vue:45
+#: js/fields/String.vue:44
 msgid "Value has invalid format"
 msgstr "Vertės formatas netinkamas"
 
-#: js/fields/Table.vue:73
-msgid "Minimum are %{num} columns"
-msgstr "Mažiausiai yra %{num} stulpelių"
-
-#: js/fields/Table.vue:77
-msgid "Maximum are %{num} columns"
-msgstr "Daugiausia yra %{num} stulpelių"
-
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:168
 msgid "Move column"
 msgstr "Perkelti stulpelį"
 
-#: js/fields/Table.vue:190
+#: js/fields/Table.vue:185
 msgid "Column actions"
 msgstr "Veiksmai su stulpeliais"
 
-#: js/fields/Table.vue:229
+#: js/fields/Table.vue:224
 msgid "Move row"
 msgstr "Perkelti eilutę"
 
-#: js/fields/Table.vue:260
+#: js/fields/Table.vue:255
 msgid "Row actions"
 msgstr "Eilutės veiksmai"
 
-#: js/fields/Url.vue:57 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:165
 msgid "None"
 msgstr "Nėra"
 
-#: js/fields/Url.vue:58
-msgid "Sponsored"
-msgstr ""
-
 #: js/fields/Url.vue:59
-msgid "Nofollow"
-msgstr ""
+msgid "Sponsored"
+msgstr "Remiama"
 
-#: js/fields/Url.vue:76
+#: js/fields/Url.vue:60
+msgid "Nofollow"
+msgstr "Nofollow"
+
+#: js/fields/Url.vue:77
 msgid "Not a valid URL"
 msgstr "Netinkamas URL adresas"
 
-#: js/fields/Url.vue:86
+#: js/fields/Url.vue:87
 msgid "Invalid URL schema configuration"
 msgstr "Netinkama URL schemos konfigūracija"
 
-#: js/fields/Url.vue:164
+#: js/fields/Url.vue:165
 msgid "No pages found"
 msgstr "Nerasta puslapių"
 
-#: js/fields/Url.vue:176
+#: js/fields/Url.vue:177
 msgid "Link attribute"
-msgstr ""
+msgstr "Nuorodos atributas"
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
@@ -1982,511 +2143,557 @@ msgstr "Įtraukti pakeitimai iš %{editor}"
 msgid "You do not have permission to access %{path}"
 msgstr "Neturite leidimo prisijungti prie %{path}"
 
+#: js/rules.js:18
+msgid "Value is required"
+msgstr "Vertė privaloma"
+
+#: js/rules.js:23
+msgid "At least %{num} entry is required"
+msgid_plural "At least %{num} entries are required"
+msgstr[0] "Būtinas bent %{num} įrašas"
+msgstr[1] "Būtini bent %{num} įrašai"
+msgstr[2] "Būtina bent %{num} įrašų"
+
+#: js/rules.js:30
+msgid "At most %{num} entry is allowed"
+msgid_plural "At most %{num} entries are allowed"
+msgstr[0] "Leidžiamas daugiausia %{num} įrašas"
+msgstr[1] "Leidžiami daugiausia %{num} įrašai"
+msgstr[2] "Leidžiama daugiausia %{num} įrašų"
+
+#: js/rules.js:38
+msgid "At least %{num} character is required"
+msgid_plural "At least %{num} characters are required"
+msgstr[0] "Būtinas bent %{num} simbolis"
+msgstr[1] "Būtini bent %{num} simboliai"
+msgstr[2] "Būtina bent %{num} simbolių"
+
+#: js/rules.js:48
+msgid "At most %{num} character is allowed"
+msgid_plural "At most %{num} characters are allowed"
+msgstr[0] "Leidžiamas daugiausia %{num} simbolis"
+msgstr[1] "Leidžiami daugiausia %{num} simboliai"
+msgstr[2] "Leidžiama daugiausia %{num} simbolių"
+
+#: js/rules.js:55
+msgid "At least %{num} column is required"
+msgid_plural "At least %{num} columns are required"
+msgstr[0] "Būtinas bent %{num} stulpelis"
+msgstr[1] "Būtini bent %{num} stulpeliai"
+msgstr[2] "Būtina bent %{num} stulpelių"
+
+#: js/rules.js:62
+msgid "At most %{num} column is allowed"
+msgid_plural "At most %{num} columns are allowed"
+msgstr[0] "Leidžiamas daugiausia %{num} stulpelis"
+msgstr[1] "Leidžiami daugiausia %{num} stulpeliai"
+msgstr[2] "Leidžiama daugiausia %{num} stulpelių"
+
 #: js/stores.js:399
 msgid "Failed to load plugin"
 msgstr "Nepavyko įkelti papildinio"
 
-#: js/strings.js:9
+#: js/strings.js:29
 msgctxt "cs"
 msgid "main"
 msgstr "Pagrindinis"
 
-#: js/strings.js:10
+#: js/strings.js:30
 msgctxt "cs"
 msgid "header"
 msgstr "antraštė"
 
-#: js/strings.js:11
+#: js/strings.js:31
 msgctxt "cs"
 msgid "footer"
 msgstr "poraštė"
 
-#: js/strings.js:12
+#: js/strings.js:32
 msgctxt "cs"
 msgid "sidebar"
 msgstr "šoninė juosta"
 
-#: js/strings.js:13
+#: js/strings.js:33
 msgctxt "cs"
 msgid "aside"
-msgstr "į šalį"
+msgstr "šoninis blokas"
 
-#: js/strings.js:16
+#: js/strings.js:36
 msgctxt "sg"
 msgid "basic"
 msgstr "pagrindinis"
 
-#: js/strings.js:17
+#: js/strings.js:37
 msgctxt "sg"
 msgid "content"
 msgstr "turinys"
 
-#: js/strings.js:18
+#: js/strings.js:38
 msgctxt "sg"
 msgid "media"
 msgstr "medija"
 
-#: js/strings.js:19
+#: js/strings.js:39
 msgctxt "sg"
 msgid "forms"
 msgstr "formos"
 
-#: js/strings.js:22
+#: js/strings.js:42
 msgctxt "as"
 msgid "type"
 msgstr "tipas"
 
-#: js/strings.js:23
+#: js/strings.js:43
 msgctxt "as"
 msgid "state"
 msgstr "būsena"
 
-#: js/strings.js:26
+#: js/strings.js:46
 msgctxt "st"
 msgid "valid"
 msgstr "galioja"
 
-#: js/strings.js:27
+#: js/strings.js:47
 msgctxt "st"
 msgid "changed"
 msgstr "pakeistas"
 
-#: js/strings.js:28
+#: js/strings.js:48
 msgctxt "st"
 msgid "error"
 msgstr "klaida"
 
-#: js/strings.js:31
+#: js/strings.js:51
 msgctxt "st"
 msgid "reference"
 msgstr "nuoroda"
 
-#: js/strings.js:32
+#: js/strings.js:52
 msgctxt "st"
 msgid "heading"
 msgstr "antraštė"
 
-#: js/strings.js:33
+#: js/strings.js:53
 msgctxt "st"
 msgid "text"
 msgstr "tekstas"
 
-#: js/strings.js:34
+#: js/strings.js:54
 msgctxt "st"
 msgid "image-text"
 msgstr "vaizdas-tekstas"
 
-#: js/strings.js:35
+#: js/strings.js:55
 msgctxt "st"
 msgid "slideshow"
 msgstr "skaidrių demonstravimas"
 
-#: js/strings.js:36
+#: js/strings.js:56
 msgctxt "st"
 msgid "code"
 msgstr "kodas"
 
-#: js/strings.js:37
+#: js/strings.js:57
 msgctxt "st"
 msgid "table"
 msgstr "lentelė"
 
-#: js/strings.js:38
+#: js/strings.js:58
 msgctxt "st"
 msgid "map"
-msgstr ""
+msgstr "žemėlapis"
 
-#: js/strings.js:39
+#: js/strings.js:59
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:40
+#: js/strings.js:60
 msgctxt "st"
 msgid "image"
 msgstr "vaizdas"
 
-#: js/strings.js:41
+#: js/strings.js:61
 msgctxt "st"
 msgid "video"
 msgstr "vaizdo įrašas"
 
-#: js/strings.js:42
+#: js/strings.js:62
 msgctxt "st"
 msgid "audio"
 msgstr "garso įrašas"
 
-#: js/strings.js:43
+#: js/strings.js:63
 msgctxt "st"
 msgid "file"
 msgstr "failas"
 
-#: js/strings.js:44
+#: js/strings.js:64
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:45
+#: js/strings.js:65
 msgctxt "st"
 msgid "CTA"
-msgstr ""
+msgstr "CTA"
 
-#: js/strings.js:46
+#: js/strings.js:66
 msgctxt "st"
 msgid "cards"
 msgstr "Kortelės"
 
-#: js/strings.js:47
+#: js/strings.js:67
 msgctxt "st"
 msgid "blog"
 msgstr "Blogas"
 
-#: js/strings.js:48
+#: js/strings.js:68
 msgctxt "st"
 msgid "article"
 msgstr "Straipsnis"
 
-#: js/strings.js:49
+#: js/strings.js:69
 msgctxt "st"
 msgid "questions"
 msgstr "DUK"
 
-#: js/strings.js:50
+#: js/strings.js:70
 msgctxt "st"
 msgid "toc"
 msgstr "turinys"
 
-#: js/strings.js:51
+#: js/strings.js:71
 msgctxt "st"
 msgid "contact"
 msgstr "Kontaktai"
 
-#: js/strings.js:52
+#: js/strings.js:72
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metažymos"
 
-#: js/strings.js:53
+#: js/strings.js:73
 msgctxt "st"
 msgid "social-media"
 msgstr "Socialiniai tinklai"
 
-#: js/strings.js:54
+#: js/strings.js:74
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanoninis URL"
 
-#: js/strings.js:55
+#: js/strings.js:75
 msgctxt "st"
 msgid "robots"
 msgstr "Paieškos sistemos"
 
-#: js/strings.js:56
+#: js/strings.js:76
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:57
+#: js/strings.js:77
 msgctxt "st"
 msgid "styles"
 msgstr "stiliai"
 
-#: js/strings.js:58
+#: js/strings.js:78
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:61
+#: js/strings.js:81
 msgctxt "fn"
 msgid "button"
 msgstr "Mygtukas"
 
-#: js/strings.js:62
+#: js/strings.js:82
 msgctxt "fn"
 msgid "buttons"
-msgstr ""
+msgstr "mygtukai"
 
-#: js/strings.js:63
+#: js/strings.js:83
 msgctxt "fn"
 msgid "cards"
 msgstr "Kortelės"
 
-#: js/strings.js:64
+#: js/strings.js:84
 msgctxt "fn"
 msgid "description"
 msgstr "aprašymas"
 
-#: js/strings.js:65
+#: js/strings.js:85
 msgctxt "fn"
 msgid "file"
 msgstr "failas"
 
-#: js/strings.js:66
+#: js/strings.js:86
 msgctxt "fn"
 msgid "files"
 msgstr "failai"
 
-#: js/strings.js:67
+#: js/strings.js:87
 msgctxt "fn"
 msgid "follow"
 msgstr "Nuorodų sekimas"
 
-#: js/strings.js:68
+#: js/strings.js:88
 msgctxt "fn"
 msgid "header"
 msgstr "antraštė"
 
-#: js/strings.js:69
+#: js/strings.js:89
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksavimas"
 
-#: js/strings.js:70
+#: js/strings.js:90
 msgctxt "fn"
 msgid "keywords"
 msgstr "raktažodžiai"
 
-#: js/strings.js:71
+#: js/strings.js:91
 msgctxt "fn"
 msgid "language"
 msgstr "kalba"
 
-#: js/strings.js:72
+#: js/strings.js:92
 msgctxt "fn"
 msgid "label"
-msgstr ""
+msgstr "etiketė"
 
-#: js/strings.js:73
+#: js/strings.js:93
 msgctxt "fn"
 msgid "level"
 msgstr "lygis"
 
-#: js/strings.js:74
+#: js/strings.js:94
 msgctxt "fn"
 msgid "limit"
 msgstr "riba"
 
-#: js/strings.js:75
+#: js/strings.js:95
 msgctxt "fn"
 msgid "location"
-msgstr ""
+msgstr "vieta"
 
-#: js/strings.js:76
+#: js/strings.js:96
 msgctxt "fn"
 msgid "main"
 msgstr "Pagr. vaizdas"
 
-#: js/strings.js:77
+#: js/strings.js:97
 msgctxt "fn"
 msgid "order"
 msgstr "tvarka"
 
-#: js/strings.js:78
+#: js/strings.js:98
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Pirminis puslapis"
 
-#: js/strings.js:79
+#: js/strings.js:99
 msgctxt "fn"
 msgid "position"
 msgstr "pozicija"
 
-#: js/strings.js:80
+#: js/strings.js:100
 msgctxt "fn"
 msgid "text"
 msgstr "tekstas"
 
-#: js/strings.js:81
+#: js/strings.js:101
 msgctxt "fn"
 msgid "table"
 msgstr "lentelė"
 
-#: js/strings.js:82
+#: js/strings.js:102
 msgctxt "fn"
 msgid "title"
 msgstr "pavadinimas"
 
-#: js/strings.js:83
+#: js/strings.js:103
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:85
+#: js/strings.js:105
 msgctxt "fn"
 msgid "image"
 msgstr "vaizdas"
 
-#: js/strings.js:86
+#: js/strings.js:106
 msgctxt "fn"
 msgid "images"
 msgstr "vaizdai"
 
-#: js/strings.js:87
+#: js/strings.js:107
 msgctxt "fn"
 msgid "items"
-msgstr "prekės"
+msgstr "punktai"
 
-#: js/strings.js:88
+#: js/strings.js:108
 msgctxt "fn"
 msgid "introduction"
 msgstr "įvadas"
 
-#: js/strings.js:89
+#: js/strings.js:109
 msgctxt "fn"
 msgid "load immediately"
 msgstr "nedelsiant įkelti"
 
-#: js/strings.js:90
+#: js/strings.js:110
 msgctxt "fn"
 msgid "source code"
 msgstr "šaltinio kodas"
 
-#: js/strings.js:91
+#: js/strings.js:111
 msgctxt "fn"
 msgid "Frontend access role"
-msgstr "Sąsajos prieigos vaidmuo"
+msgstr "Viešosios dalies prieigos vaidmuo"
 
-#: js/strings.js:92
+#: js/strings.js:112
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Mokėjimo kainos"
 
-#: js/strings.js:93
+#: js/strings.js:113
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Mokėjimo nuoroda"
 
-#: js/strings.js:94
+#: js/strings.js:114
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Mokėjimo tipas"
 
-#: js/strings.js:95
+#: js/strings.js:115
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valiuta"
 
-#: js/strings.js:96
+#: js/strings.js:116
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Atsiskaitymo intervalas"
 
-#: js/strings.js:97
+#: js/strings.js:117
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Kainos vienetas"
 
-#: js/strings.js:98
+#: js/strings.js:118
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Tikslinis puslapis arba nuoroda"
 
-#: js/strings.js:99
+#: js/strings.js:119
 msgctxt "fn"
 msgid "Mandatory fields"
-msgstr ""
+msgstr "Privalomi laukeliai"
 
-#: js/strings.js:100
+#: js/strings.js:120
 msgctxt "fn"
 msgid "Optional fields"
-msgstr ""
+msgstr "Neprivalomi laukeliai"
 
-#: js/strings.js:101
+#: js/strings.js:121
 msgctxt "fn"
 msgid "Link label"
-msgstr ""
+msgstr "Nuorodos tekstas"
 
-#: js/strings.js:104
+#: js/strings.js:124
 msgctxt "op"
 msgid "Name"
-msgstr ""
+msgstr "Vardas"
 
-#: js/strings.js:105
+#: js/strings.js:125
 msgctxt "op"
 msgid "Company"
-msgstr ""
+msgstr "Įmonė"
 
-#: js/strings.js:106
+#: js/strings.js:126
 msgctxt "op"
 msgid "Telephone"
-msgstr ""
+msgstr "Telefonas"
 
-#: js/strings.js:107
+#: js/strings.js:127
 msgctxt "op"
 msgid "E-Mail"
-msgstr ""
+msgstr "El. paštas"
 
-#: js/strings.js:108
+#: js/strings.js:128
 msgctxt "op"
 msgid "Subject"
-msgstr ""
+msgstr "Tema"
 
-#: js/strings.js:109
+#: js/strings.js:129
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekti nuorodas"
 
-#: js/strings.js:110
+#: js/strings.js:130
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksuoti"
 
-#: js/strings.js:111
+#: js/strings.js:131
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekti nuorodų"
 
-#: js/strings.js:112
+#: js/strings.js:132
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksuoti"
 
-#: js/strings.js:113
+#: js/strings.js:133
 msgctxt "op"
 msgid "Subscription"
 msgstr "Prenumerata"
 
-#: js/strings.js:114
+#: js/strings.js:134
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienkartinis mokėjimas"
 
-#: js/strings.js:117
+#: js/strings.js:137
 msgctxt "ai"
 msgid "Done"
 msgstr "Atlikta"
 
-#: js/strings.js:118
+#: js/strings.js:138
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau yra"
 
-#: js/strings.js:121
+#: js/strings.js:141
 msgctxt "sg"
 msgid "expert"
 msgstr "Išplėstiniai"
 
-#: js/strings.js:122
+#: js/strings.js:142
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:123
+#: js/strings.js:143
 msgctxt "st"
 msgid "website"
-msgstr ""
+msgstr "svetainė"
 
-#: js/strings.js:124
+#: js/strings.js:144
 msgctxt "st"
 msgid "logo"
 msgstr "Logotipas"
 
-#: js/strings.js:125
+#: js/strings.js:145
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatyvus logotipas"
 
-#: js/strings.js:126
+#: js/strings.js:146
 msgctxt "st"
 msgid "icon"
 msgstr "Piktograma"
@@ -2526,7 +2733,7 @@ msgstr "Uždaryti navigaciją"
 #: js/views/FileList.vue:221 js/views/PageList.vue:259
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
-msgstr "Atvira navigacija"
+msgstr "Atidaryti navigaciją"
 
 #: js/views/AccessList.vue:253
 msgid "Roles"
@@ -2534,7 +2741,7 @@ msgstr "Vaidmenys"
 
 #: js/views/AccessList.vue:288 js/views/AccessList.vue:333
 msgid "Add access value"
-msgstr "Pridėkite prieigos vertę"
+msgstr "Pridėti prieigos vertę"
 
 #: js/views/AccessList.vue:337
 msgid "Access value"
@@ -2546,7 +2753,7 @@ msgstr "Pridėti"
 
 #: js/views/ElementDetail.vue:205
 msgid "Error fetching element"
-msgstr "Klaida renkant elementą"
+msgstr "Klaida gaunant elementą"
 
 #: js/views/ElementDetail.vue:243
 msgid "Element published successfully"
@@ -2554,11 +2761,11 @@ msgstr "Elementas sėkmingai paskelbtas"
 
 #: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
-msgstr "Elementas, kurį planuojama paskelbti %{date}"
+msgstr "Elementas suplanuotas paskelbti %{date}"
 
 #: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
-msgstr "Klaida skelbti elementą"
+msgstr "Klaida skelbiant elementą"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
 #: js/views/PageDetail.vue:532
@@ -2615,7 +2822,7 @@ msgstr "Tik šiukšliadėžėje"
 #: js/views/ElementList.vue:143 js/views/FileList.vue:142
 #: js/views/PageList.vue:185
 msgid "Edited by me"
-msgstr "Redagavo aš"
+msgstr "Redaguota mano"
 
 #: js/views/ElementList.vue:148 js/views/FileList.vue:147
 #: js/views/PageList.vue:190
@@ -2630,17 +2837,18 @@ msgstr "Paspauskite Enter, kad atidarytumėte pokalbį"
 #: js/views/ElementList.vue:292
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
+"AI gali rasti ir tvarkyti bendrus elementus pagal jūsų įvestus duomenis"
 
 #: js/views/ElementList.vue:293 js/views/FileList.vue:292
 #: js/views/PageList.vue:338
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
-"Paspauskite Enter arba rodyklę, kad atidarytumėte DI asistentą ir "
+"Paspauskite Enter arba rodyklę, kad atidarytumėte AI asistentą ir "
 "patobulintumėte turinį pokalbyje"
 
 #: js/views/FileDetail.vue:191
 msgid "Error fetching file"
-msgstr "Klaida atsisiunčiant failą"
+msgstr "Klaida gaunant failą"
 
 #: js/views/FileDetail.vue:251
 msgid "File published successfully"
@@ -2648,7 +2856,7 @@ msgstr "Failas paskelbtas sėkmingai"
 
 #: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
-msgstr "Planuojama paskelbti failą adresu %{date}"
+msgstr "Failas suplanuotas paskelbti %{date}"
 
 #: js/views/FileDetail.vue:323
 msgid "File saved successfully"
@@ -2661,7 +2869,7 @@ msgstr "Failas"
 
 #: js/views/FileList.vue:291
 msgid "AI can find and manage media files based on your input"
-msgstr ""
+msgstr "AI gali rasti ir tvarkyti medijos failus pagal jūsų įvestus duomenis"
 
 #: js/views/Login.vue:45
 msgid "Invalid e-mail address"
@@ -2713,7 +2921,7 @@ msgstr "Puslapis sėkmingai paskelbtas"
 
 #: js/views/PageDetail.vue:498
 msgid "Page scheduled for publishing at %{date}"
-msgstr "Puslapį planuojama skelbti adresu %{date}"
+msgstr "Puslapis suplanuotas paskelbti %{date}"
 
 #: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
 msgid "Rate this page and suggest improvements"
@@ -2771,6 +2979,57 @@ msgid ""
 msgstr ""
 "AI gali sukurti puslapį ir turinį pagal jūsų įvestį ir pridėti jį prie "
 "puslapio medžio."
+
+#~ msgid "Selection is required"
+#~ msgstr "Būtina pasirinkti"
+
+#~ msgid "Minimum is %{num} entries"
+#~ msgstr "Mažiausia %{num} įrašų"
+
+#~ msgid "Maximum is %{num} entries"
+#~ msgstr "Daugiausia %{num} įrašų"
+
+#~ msgid "Minimum length is %{num} characters"
+#~ msgstr "Mažiausias ilgis - %{num} simbolių"
+
+#~ msgid "Maximum length is %{num} characters"
+#~ msgstr "Didžiausias ilgis - %{num} simbolių"
+
+#~ msgid "id"
+#~ msgstr "id"
+
+#~ msgid "Copy"
+#~ msgstr "Kopijuoti"
+
+#~ msgid "Top"
+#~ msgstr "Viršuje"
+
+#~ msgid "Left"
+#~ msgstr "Kairėje pusėje"
+
+#~ msgid "Right"
+#~ msgstr "Dešinėje"
+
+#~ msgid "Bottom"
+#~ msgstr "Apačioje"
+
+#~ msgid "Cut"
+#~ msgstr "Iškirpti"
+
+#~ msgid "Split"
+#~ msgstr "Padalyti"
+
+#~ msgid "Enable"
+#~ msgstr "Įjungti"
+
+#~ msgid "Disable"
+#~ msgstr "Išjungti"
+
+#~ msgid "Minimum are %{num} columns"
+#~ msgstr "Mažiausiai yra %{num} stulpelių"
+
+#~ msgid "Maximum are %{num} columns"
+#~ msgstr "Daugiausia yra %{num} stulpelių"
 
 #~ msgid "Error deleting access values"
 #~ msgstr "Ištrinant prieigos vertes įvyko klaida"

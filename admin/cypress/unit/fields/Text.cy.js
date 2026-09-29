@@ -68,9 +68,15 @@ describe('Text (CKEditor)', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
-  it('validates empty string against min', () => {
+  it('accepts an empty string with min if not required', () => {
     const onError = cy.spy().as('error')
-    mountText({ config: { min: 1, default: '' }, onError })
+    mountText({ config: { min: 5, default: '' }, onError })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('rejects an empty string if required', () => {
+    const onError = cy.spy().as('error')
+    mountText({ config: { required: true, default: '' }, onError })
     cy.get('@error').should('have.been.calledWith', true)
   })
 })
