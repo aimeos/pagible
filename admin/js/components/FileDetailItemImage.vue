@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import ActionMenu from './ActionMenu.vue'
+import CmsDialog from './Dialog.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { fileurl, toBlob } from '../utils'
 import {
@@ -61,7 +62,7 @@ const UPSCALE_IMAGE = gql`
 `
 
 export default {
-  components: { ActionMenu },
+  components: { ActionMenu, CmsDialog },
 
   props: {
     item: { type: Object, required: true },
@@ -733,51 +734,40 @@ export default {
         class="btn-erase no-rtl"
       />
 
-      <v-dialog
+      <template
         v-if="(selected && user.can('image:inpaint')) || (!selected && user.can('image:repaint'))"
-        v-model="menu['paint']"
-        transition="scale-transition"
-        max-width="600"
-        scrollable
       >
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :loading="loading['image:inpaint'] || loading['image:repaint']"
-            :title="$gettext('Edit image')"
-            :icon="mdiImageEdit"
-            class="no-rtl"
-          />
-        </template>
+        <v-btn
+          @click="menu['paint'] = true"
+          :loading="loading['image:inpaint'] || loading['image:repaint']"
+          :title="$gettext('Edit image')"
+          :icon="mdiImageEdit"
+          class="no-rtl"
+        />
 
-        <v-card>
-          <v-toolbar density="compact">
-            <v-toolbar-title>{{ $gettext('Edit image') }}</v-toolbar-title>
-            <v-btn
-              :icon="mdiClose"
-              :aria-label="$gettext('Close')"
-              @click="menu['paint'] = false"
-            />
-          </v-toolbar>
+        <CmsDialog
+          v-model="menu['paint']"
+          :title="$gettext('Edit image')"
+          transition="scale-transition"
+          max-width="600"
+        >
+          <v-textarea
+            v-model="edittext"
+            :label="$gettext('Describe the changes')"
+            :hint="$gettext('Describe what should be changed in the image, e.g. make the sky blue')"
+            variant="underlined"
+            autofocus
+            clearable
+            auto-grow
+          ></v-textarea>
 
-          <v-card-text>
-            <v-textarea
-              v-model="edittext"
-              :label="$gettext('Describe the changes')"
-              variant="underlined"
-              autofocus
-              clearable
-              auto-grow
-            ></v-textarea>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn variant="outlined" :disabled="!edittext" @click="painted">{{
+          <template #actions>
+            <v-btn variant="flat" color="primary" :disabled="!edittext" @click="painted">{{
               $gettext('Edit image')
             }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          </template>
+        </CmsDialog>
+      </template>
 
       <v-btn
         v-if="user.can('image:isolate')"
@@ -788,87 +778,80 @@ export default {
         class="btn-remove-bg no-rtl"
       />
 
-      <v-dialog
-        v-if="user.can('image:uncrop')"
-        v-model="menu['uncrop']"
-        transition="scale-transition"
-        max-width="300"
-        scrollable
-      >
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :loading="loading['image:uncrop']"
-            :title="$gettext('Expand image')"
-            :icon="mdiArrowExpandAll"
-            class="btn-expand no-rtl"
-          />
-        </template>
+      <template v-if="user.can('image:uncrop')">
+        <v-btn
+          @click="menu['uncrop'] = true"
+          :loading="loading['image:uncrop']"
+          :title="$gettext('Expand image')"
+          :icon="mdiArrowExpandAll"
+          class="btn-expand no-rtl"
+        />
 
-        <v-card class="uncrop">
-          <v-toolbar density="compact">
-            <v-toolbar-title>{{ $gettext('Expand image') }}</v-toolbar-title>
-            <v-btn
-              :icon="mdiClose"
-              :aria-label="$gettext('Close')"
-              @click="menu['uncrop'] = false"
-            />
-          </v-toolbar>
+        <CmsDialog
+          v-model="menu['uncrop']"
+          :title="$gettext('Expand image')"
+          content-class="uncrop"
+          transition="scale-transition"
+          max-width="300"
+        >
+          <v-row class="single">
+            <v-col cols="6">
+              <v-number-input
+                v-model="extend.top"
+                variant="outlined"
+                controlVariant="hidden"
+                :label="$pgettext('image edge', 'Top')"
+                :hint="$gettext('Number of pixels added at this side of the image')"
+                :max="2000"
+                :min="0"
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <v-number-input
+                v-model="extend.left"
+                variant="outlined"
+                controlVariant="hidden"
+                :label="$pgettext('image edge', 'Left')"
+                :hint="$gettext('Number of pixels added at this side of the image')"
+                :max="2000"
+                :min="0"
+              />
+            </v-col>
+            <v-col cols="6">
+              <v-number-input
+                v-model="extend.right"
+                variant="outlined"
+                controlVariant="hidden"
+                :label="$pgettext('image edge', 'Right')"
+                :hint="$gettext('Number of pixels added at this side of the image')"
+                :max="2000"
+                :min="0"
+              />
+            </v-col>
+          </v-row>
+          <v-row class="single">
+            <v-col cols="6">
+              <v-number-input
+                v-model="extend.bottom"
+                variant="outlined"
+                controlVariant="hidden"
+                :label="$pgettext('image edge', 'Bottom')"
+                :hint="$gettext('Number of pixels added at this side of the image')"
+                :max="2000"
+                :min="0"
+              />
+            </v-col>
+          </v-row>
 
-          <v-card-text>
-            <v-row class="single">
-              <v-col cols="6">
-                <v-number-input
-                  v-model="extend.top"
-                  variant="outlined"
-                  controlVariant="hidden"
-                  :label="$pgettext('image edge', 'Top')"
-                  :max="2000"
-                  :min="0"
-                />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="6">
-                <v-number-input
-                  v-model="extend.left"
-                  variant="outlined"
-                  controlVariant="hidden"
-                  :label="$pgettext('image edge', 'Left')"
-                  :max="2000"
-                  :min="0"
-                />
-              </v-col>
-              <v-col cols="6">
-                <v-number-input
-                  v-model="extend.right"
-                  variant="outlined"
-                  controlVariant="hidden"
-                  :label="$pgettext('image edge', 'Right')"
-                  :max="2000"
-                  :min="0"
-                />
-              </v-col>
-            </v-row>
-            <v-row class="single">
-              <v-col cols="6">
-                <v-number-input
-                  v-model="extend.bottom"
-                  variant="outlined"
-                  controlVariant="hidden"
-                  :label="$pgettext('image edge', 'Bottom')"
-                  :max="2000"
-                  :min="0"
-                />
-              </v-col>
-            </v-row>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn variant="outlined" @click="uncropped">{{ $gettext('Expand image') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          <template #actions>
+            <v-btn variant="flat" color="primary" @click="uncropped">{{
+              $gettext('Expand image')
+            }}</v-btn>
+          </template>
+        </CmsDialog>
+      </template>
 
       <ActionMenu
         v-if="user.can('image:upscale')"
@@ -1035,17 +1018,11 @@ export default {
   backdrop-filter: blur(8px);
 }
 
-.uncrop .single,
-.v-card.uncrop .v-card-actions {
+.uncrop .single {
   justify-content: center;
 }
 
 .uncrop .v-number-input :deep(.v-field__input) {
   text-align: center;
-}
-
-.v-dialog .v-card-actions .v-btn {
-  display: block;
-  margin: auto;
 }
 </style>

@@ -157,6 +157,40 @@ class JsonSchemaTest extends CoreTestAbstract
     }
 
 
+    public function testHintDescription() : void
+    {
+        Schema::source( fn() => [
+            'test' => [
+                'content' => [
+                    'teaser' => [
+                        'fields' => [
+                            'title' => ['type' => 'string', 'hint' => 'Short headline'],
+                            'body' => ['type' => 'markdown', 'hint' => 'Main text.'],
+                            'empty' => ['type' => 'string', 'hint' => ' '],
+                        ],
+                    ],
+                ],
+            ],
+        ] );
+
+        try
+        {
+            foreach( [false, true] as $strict )
+            {
+                $fields = $this->fields( JsonSchema::build( strict: $strict ), 'test::teaser' );
+
+                $this->assertSame( 'Short headline', $fields['title']['description'] );
+                $this->assertSame( 'Main text. Markdown formatted text', $fields['body']['description'] );
+                $this->assertArrayNotHasKey( 'description', $fields['empty'] );
+            }
+        }
+        finally
+        {
+            Schema::source( null );
+        }
+    }
+
+
     public function testRequiredNotEmpty() : void
     {
         Schema::source( fn() => [

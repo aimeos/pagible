@@ -4,9 +4,10 @@
 import { filepairs, lineRows, tableRows, words } from '../history'
 import { fileurl, filesrcset } from '../utils'
 import CmsDialog from './Dialog.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 export default {
-  components: { CmsDialog },
+  components: { CmsDialog, LoadingSpinner },
 
   props: {
     field: { type: Object, required: true },
@@ -93,7 +94,7 @@ export default {
                   :srcset="filesrcset(row[position])" :src="fileurl(row[position], Object.values(row[position].previews || {})[0] ?? row[position].path)"
                   :alt="name(row[position])" height="150" draggable="false" loading="lazy"
                 >
-                  <template #placeholder><div class="media-loading" role="status"><v-progress-circular indeterminate size="24" aria-hidden="true" />{{ $gettext('Loading preview') }}</div></template>
+                  <template #placeholder><div class="media-loading" role="status"><LoadingSpinner width="24" height="24" />{{ $gettext('Loading preview') }}</div></template>
                   <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
                 </v-img>
                 <div v-else class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div>
@@ -120,7 +121,7 @@ export default {
             {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('New value') }} · {{ name(preview.file) }}
           </p>
           <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh">
-            <template #placeholder><div class="media-loading" role="status"><v-progress-circular indeterminate size="24" aria-hidden="true" />{{ $gettext('Loading preview') }}</div></template>
+            <template #placeholder><div class="media-loading" role="status"><LoadingSpinner width="24" height="24" />{{ $gettext('Loading preview') }}</div></template>
             <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
           </v-img>
           <div v-else class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div>

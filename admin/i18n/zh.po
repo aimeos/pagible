@@ -9,38 +9,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
-#: js/components/ElementListItems.vue:299
-#: js/components/ElementListItems.vue:435
-#: js/components/ElementListItems.vue:471
-#: js/components/ElementListItems.vue:511
-#: js/components/ElementListItems.vue:553
-#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:292
+#: js/components/ElementListItems.vue:331
+#: js/components/ElementListItems.vue:477
+#: js/components/ElementListItems.vue:517
+#: js/components/ElementListItems.vue:557
+#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
-#: js/components/FileDetailItemImage.vue:386
+#: js/components/FileDetailItemImage.vue:387
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
-#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
-#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
-#: js/components/FileListItems.vue:587
+#: js/components/FileListItems.vue:281 js/components/FileListItems.vue:326
+#: js/components/FileListItems.vue:472 js/components/FileListItems.vue:509
+#: js/components/FileListItems.vue:546 js/components/FileListItems.vue:588
+#: js/components/FileListItems.vue:633
 #: js/components/PageDetailContentList.vue:412
 #: js/components/PageDetailContentList.vue:506
-#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
-#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
-#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
-#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
-#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
-#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
-#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
-#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
+#: js/components/PageListItems.vue:486 js/components/PageListItems.vue:586
+#: js/components/PageListItems.vue:659 js/components/PageListItems.vue:786
+#: js/components/PageListItems.vue:857 js/components/PageListItems.vue:930
+#: js/components/PageListItems.vue:1063 js/components/PageListItems.vue:1092
+#: js/components/PageListItems.vue:1218 js/components/PageListItems.vue:1259
+#: js/components/PageListItems.vue:1380 js/components/PageListItems.vue:1458
+#: js/components/PageListItems.vue:1509 js/fields/File.vue:147
+#: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
+#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "权限被拒绝"
@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "请求太多。请稍等片刻，然后重试。"
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "打开命令面板"
+msgid "Open commands"
+msgstr "打开命令"
 
 #: js/commands.js:60
 msgid "Confirm dialog"
@@ -148,8 +148,8 @@ msgid "Go to pages"
 msgstr "转到页面"
 
 #: js/commands.js:176 js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
+#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "媒体"
@@ -235,20 +235,28 @@ msgstr "账户"
 msgid "Assigned frontend roles"
 msgstr "已分配的前端角色"
 
-#: js/components/AccessUsers.vue:496
+#: js/components/AccessUsers.vue:484
+msgid "Roles granting access to restricted pages"
+msgstr "授予访问受限页面权限的角色"
+
+#: js/components/AccessUsers.vue:497
 msgid "Assigned backend roles"
 msgstr "已分配的后端角色"
 
-#: js/components/AccessUsers.vue:500
+#: js/components/AccessUsers.vue:501
 msgid "Custom"
 msgstr "自定义"
 
-#: js/components/AccessUsers.vue:506
+#: js/components/AccessUsers.vue:507
 msgid "Available roles"
 msgstr "可用角色"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
-#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
+#: js/components/AccessUsers.vue:508
+msgid "Roles defining what the user can do in the admin panel"
+msgstr "定义用户在管理面板中可执行操作的角色"
+
+#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "未找到条目"
@@ -257,11 +265,8 @@ msgstr "未找到条目"
 msgid "Actions"
 msgstr "操作"
 
-#: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
-#: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
-#: js/components/Dialog.vue:46 js/components/FieldsAside.vue:186
-#: js/components/FileDetailItemImage.vue:758
-#: js/components/FileDetailItemImage.vue:813 js/components/UnsavedDialog.vue:40
+#: js/components/ActionMenu.vue:61 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:186
 msgid "Close"
 msgstr "关闭"
 
@@ -273,8 +278,8 @@ msgstr "已使用的元素"
 msgid "Filters"
 msgstr "筛选器"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:326
-#: js/components/Fields.vue:359
+#: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
+#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
 msgid "Reset"
 msgstr "重置"
 
@@ -308,96 +313,93 @@ msgid "deleted"
 msgstr "删除"
 
 #: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
-#: js/components/HistoryDialog.vue:39
+#: js/components/HistoryDialog.vue:40
 msgid "Meta data"
 msgstr "元数据"
 
-#: js/components/ChangesDialog.vue:54 js/components/ChangesDialog.vue:55
-#: js/components/HistoryDialog.vue:39
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:40
 msgid "Fields"
 msgstr "字段"
 
-#: js/components/ChangesDialog.vue:56
+#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "元标签"
 
-#: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:40
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:41
 msgid "Configuration"
 msgstr "配置"
 
-#: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
-#: js/views/PageDetail.vue:832
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
+#: js/views/PageDetail.vue:850
 msgid "Content"
 msgstr "内容"
 
-#: js/components/ChangesDialog.vue:313
-msgid "Conflict resolution"
-msgstr "冲突解决"
-
-#: js/components/ChangesDialog.vue:317
+#: js/components/ChangesDialog.vue:320
 msgid "Conflicts from %{editor}"
 msgstr "来自 %{editor} 的冲突"
 
-#: js/components/ChangesDialog.vue:320
+#: js/components/ChangesDialog.vue:326
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:344 js/components/FieldsAside.vue:256
+#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
+#: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr "还原"
 
-#: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
+#: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
 msgid "Changes"
 msgstr "变更"
 
-#: js/components/ChangesDialog.vue:396
+#: js/components/ChangesDialog.vue:400
 msgid "Removed"
 msgstr "已删除"
 
-#: js/components/ChangesDialog.vue:403
+#: js/components/ChangesDialog.vue:407
 msgid "Added"
 msgstr "已添加"
 
-#: js/components/ChangesDialog.vue:441
+#: js/components/ChangesDialog.vue:445
 msgid "Use theirs"
 msgstr "使用对方的更改"
 
-#: js/components/ChangesDialog.vue:447
+#: js/components/ChangesDialog.vue:451
 msgid "Keep mine"
 msgstr "保留我的更改"
 
-#: js/components/ChangesDialog.vue:454
+#: js/components/ChangesDialog.vue:458
 msgid "Merge both"
 msgstr "合并两者"
 
-#: js/components/ChatDialog.vue:265
+#: js/components/ChatDialog.vue:270
 msgid "Done"
 msgstr "完成"
 
-#: js/components/ChatDialog.vue:273
+#: js/components/ChatDialog.vue:280
 msgid "Sorry, something went wrong."
 msgstr "抱歉，出了点问题。"
 
-#: js/components/ChatDialog.vue:324
+#: js/components/ChatDialog.vue:327
 msgid "AI Assistant"
 msgstr "人工智能助手"
 
-#: js/components/ChatDialog.vue:328 js/components/ChatDialog.vue:329
+#: js/components/ChatDialog.vue:335 js/components/ChatDialog.vue:336
 msgid "New chat"
 msgstr "新聊天"
 
-#: js/components/ChatDialog.vue:348 js/views/ElementList.vue:251
+#: js/components/ChatDialog.vue:347 js/views/ElementList.vue:251
 #: js/views/FileList.vue:250 js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr "我能为您做些什么？"
 
-#: js/components/ChatDialog.vue:365
+#: js/components/ChatDialog.vue:364
 msgid "Thinking ..."
 msgstr "思考中 ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
-#: js/components/PageDetailContentList.vue:937
-#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+#: js/components/ChatDialog.vue:370 js/components/PageDetailContentList.vue:857
+#: js/components/PageDetailContentList.vue:953
+#: js/components/PageListItems.vue:1896 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "复制"
@@ -407,11 +409,11 @@ msgid "Send a message ..."
 msgstr "发送消息..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
-#: js/views/ElementList.vue:283 js/views/FileList.vue:282
-#: js/views/PageList.vue:320
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
+#: js/components/FileDetailItem.vue:485
+#: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
+#: js/views/ElementList.vue:284 js/views/FileList.vue:283
+#: js/views/PageList.vue:321
 msgid "Dictate"
 msgstr "口述"
 
@@ -420,7 +422,7 @@ msgid "Stop"
 msgstr "停止"
 
 #: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
-#: js/views/ElementList.vue:276 js/views/FileList.vue:275
+#: js/views/ElementList.vue:277 js/views/FileList.vue:276
 msgid "Send"
 msgstr "发送"
 
@@ -429,15 +431,15 @@ msgid "Go to"
 msgstr "转到"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
-#: js/components/PageListItems.vue:1911
+#: js/components/ElementListItems.vue:928 js/components/PageListItems.vue:978
+#: js/components/PageListItems.vue:2017
 msgid "New"
 msgstr "新"
 
-#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
-#: js/components/ShortcutDialog.vue:32
-msgid "Command palette"
-msgstr "命令面板"
+#: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+msgid "Commands"
+msgstr "命令"
 
 #: js/components/CommandPalette.vue:289
 msgid "Type a command or search pages, files and elements"
@@ -446,10 +448,6 @@ msgstr "输入命令或搜索页面、文件和元素"
 #: js/components/CommandPalette.vue:290
 msgid "Command or search term"
 msgstr "命令或搜索词"
-
-#: js/components/CommandPalette.vue:303
-msgid "Commands"
-msgstr "命令"
 
 #: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
 msgid "then"
@@ -463,10 +461,11 @@ msgstr "搜索失败，请重试"
 msgid "No results"
 msgstr "无结果"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
-#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
-#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ElementListItems.vue:801
+#: js/components/ElementListItems.vue:910 js/components/FileListItems.vue:779
+#: js/components/FileListItems.vue:921 js/components/PageListItems.vue:1751
+#: js/components/PageListItems.vue:1989 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "永久删除"
 
@@ -477,14 +476,10 @@ msgid_plural ""
 "restored:"
 msgstr[0] "以下 %{num} 个条目将被永久删除且无法恢复："
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
+#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "取消"
-
-#: js/components/ConfirmDialog.vue:57
-msgid "Confirm"
-msgstr "确认"
 
 #: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
@@ -501,10 +496,10 @@ msgid "View merge changes"
 msgstr "查看合并更改"
 
 #: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
-#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
-#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
-#: js/components/PageListItems.vue:1746
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:781
+#: js/components/ElementListItems.vue:877 js/components/FileListItems.vue:759
+#: js/components/FileListItems.vue:891 js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1852
 msgid "Publish"
 msgstr "发布"
 
@@ -526,10 +521,10 @@ msgstr "定时发布并关闭"
 msgid "Toggle side menu"
 msgstr "切换侧边菜单"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
-#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
-#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:786
+#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:764
+#: js/components/FileListItems.vue:903 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1723 js/components/PageListItems.vue:1873
 msgid "Edit properties"
 msgstr "编辑属性"
 
@@ -538,15 +533,19 @@ msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "将选定的属性应用于 %{num} 条目。"
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:205
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
+#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:259
 msgid "Language"
 msgstr "语言"
 
-#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:270
+#: js/components/EditBulkDialog.vue:77
+msgid "Language of the content"
+msgstr "内容的语言"
+
+#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:277
 msgid "Apply"
 msgstr "应用"
 
@@ -556,6 +555,14 @@ msgstr "应用"
 #: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "名称"
+
+#: js/components/ElementDetailItem.vue:76
+msgid "Name to find the shared element in the element list"
+msgstr "用于在元素列表中查找共享元素的名称"
+
+#: js/components/ElementDetailItem.vue:90
+msgid "Language of the element content, choose none if used in all languages"
+msgstr "元素内容的语言，若在所有语言中使用请选择无"
 
 #: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
@@ -570,7 +577,7 @@ msgid "URL"
 msgstr "网址"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:180 js/components/PageListItems.vue:477
 msgid "Restricted"
 msgstr "受限"
 
@@ -589,102 +596,118 @@ msgstr "类型"
 msgid "Published"
 msgstr "已发布"
 
-#: js/components/ElementListItems.vue:325
+#: js/components/ElementListItems.vue:356 js/components/FileListItems.vue:351
+#: js/components/PageListItems.vue:729
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "已将 %{num} 个条目移至回收站"
+
+#: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:948
+#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
+#: js/components/PageListItems.vue:708
+msgid "Undo"
+msgstr "撤消"
+
+#: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
 msgstr "将共享元素移至回收站时出错"
 
-#: js/components/ElementListItems.vue:462
+#: js/components/ElementListItems.vue:508
 msgid "Error restoring shared element"
 msgstr "恢复共享元素出错"
 
-#: js/components/ElementListItems.vue:502
+#: js/components/ElementListItems.vue:548
 msgid "Error publishing shared element"
 msgstr "发布共享元素出错"
 
-#: js/components/ElementListItems.vue:540
+#: js/components/ElementListItems.vue:586
 msgid "Error purging shared element"
 msgstr "永久删除共享元素时出错"
 
-#: js/components/ElementListItems.vue:591
+#: js/components/ElementListItems.vue:637
 msgid "Error saving shared element"
 msgstr "保存共享元素时出错"
 
-#: js/components/ElementListItems.vue:648
+#: js/components/ElementListItems.vue:694
 msgid "Error fetching shared elements"
 msgstr "获取共享元素时出错"
 
-#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:765 js/components/FileListItems.vue:743
+#: js/components/PageDetailContentList.vue:843
+#: js/components/PageListItems.vue:1691 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "切换选项"
 
-#: js/components/ElementListItems.vue:745
-#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
-#: js/components/FileListItems.vue:865
-#: js/components/PageDetailContentList.vue:861
-#: js/components/PageDetailContentList.vue:947
-#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
-#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/ElementListItems.vue:791
+#: js/components/ElementListItems.vue:900 js/components/FileListItems.vue:769
+#: js/components/FileListItems.vue:911 js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1979
 msgid "Delete"
 msgstr "删除"
 
-#: js/components/ElementListItems.vue:750
-#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
-#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
-#: js/components/PageListItems.vue:1878
+#: js/components/ElementListItems.vue:796
+#: js/components/ElementListItems.vue:905 js/components/FileListItems.vue:774
+#: js/components/FileListItems.vue:916 js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1984
 msgid "Restore"
 msgstr "恢复"
 
-#: js/components/ElementListItems.vue:764
-#: js/components/ElementListItems.vue:911
-#: js/components/PageDetailContentList.vue:1047
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
+#: js/components/ElementListItems.vue:810
+#: js/components/ElementListItems.vue:968
+#: js/components/PageDetailContentList.vue:1063
+#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:510
 msgid "Add element"
 msgstr "添加元素"
 
-#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
-#: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
+#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:814
+#: js/components/PageDetailContentList.vue:886
+#: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "搜索"
 
-#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
+#: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
 msgid "Updated by another user"
 msgstr "由其他用户更新"
 
-#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
-#: js/components/PageListItems.vue:1686
+#: js/components/ElementListItems.vue:842 js/components/FileListItems.vue:833
+#: js/components/PageListItems.vue:1791
 msgid "Refresh"
 msgstr "刷新"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
+#: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "重新加载元素"
 
-#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
-#: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
+#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "加载中"
 
-#: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:422 js/fields/Items.vue:428
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/PageListItems.vue:2056
+msgid "No entries yet"
+msgstr "暂无条目"
+
+#: js/components/Fields.vue:284 js/components/Fields.vue:290
+#: js/fields/Items.vue:427 js/fields/Items.vue:433
 msgid "Translate"
 msgstr "翻译"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:446
+#: js/components/Fields.vue:309 js/fields/Items.vue:451
 msgid "Generate text"
 msgstr "生成文本"
 
-#: js/components/Fields.vue:334
+#: js/components/Fields.vue:336
 msgid "Updated by other editor"
 msgstr "由其他编辑更新"
 
-#: js/components/Fields.vue:337
+#: js/components/Fields.vue:339
 msgid "Overwritten"
 msgstr "已被覆盖"
 
@@ -725,24 +748,27 @@ msgid "Responsive preview"
 msgstr "响应式预览"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:990
+#: js/components/PageDetailContentList.vue:1006
 msgid "Change to"
 msgstr "改为"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:386
+#: js/fields/Images.vue:387
 msgid "Edit"
 msgstr "编辑"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
-#: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/PageDetailContentList.vue:877
+#: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
+#: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "移除"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:149
+#: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "添加文件出错%{path}"
 
@@ -758,19 +784,23 @@ msgstr "创建图像"
 msgid "Describe the image content"
 msgstr "描述图像内容"
 
-#: js/components/FileAiDialog.vue:263
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr "描述要生成图片的主题、风格和颜色"
+
+#: js/components/FileAiDialog.vue:264
 msgid "New image"
 msgstr "新图片"
 
-#: js/components/FileAiDialog.vue:267
+#: js/components/FileAiDialog.vue:268
 msgid "Current images"
 msgstr "当前图像"
 
-#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr "使用的图片"
 
-#: js/components/FileAiDialog.vue:309
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr "选择图像"
 
@@ -782,8 +812,8 @@ msgstr "已复制到剪贴板"
 msgid "Error describing file"
 msgstr "描述文件时出错"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
-#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:626
+#: js/fields/File.vue:300 js/fields/Images.vue:300 js/views/FileDetail.vue:337
 msgid "Error saving file"
 msgstr "保存文件出错"
 
@@ -791,173 +821,196 @@ msgstr "保存文件出错"
 msgid "Transcription is only available for audio and video files"
 msgstr "转录仅适用于音频和视频文件"
 
-#: js/components/FileDetailItem.vue:414
+#: js/components/FileDetailItem.vue:392
+msgid "Name to find the file in the media list"
+msgstr "用于在媒体列表中查找文件的名称"
+
+#: js/components/FileDetailItem.vue:406
+msgid "Language of the file content, choose none if used in all languages"
+msgstr "文件内容的语言，若在所有语言中使用请选择无"
+
+#: js/components/FileDetailItem.vue:416
 msgid "Copy URL"
 msgstr "复制链接"
 
-#: js/components/FileDetailItem.vue:457
+#: js/components/FileDetailItem.vue:459
 msgid "Descriptions"
 msgstr "说明"
 
-#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
 msgid "Translate text"
 msgstr "翻译文本"
 
-#: js/components/FileDetailItem.vue:473
+#: js/components/FileDetailItem.vue:475
 msgid "Generate description"
 msgstr "生成说明"
 
-#: js/components/FileDetailItem.vue:500
+#: js/components/FileDetailItem.vue:502
 msgid "Description (%{lang})"
 msgstr "说明 (%{lang})"
 
-#: js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:503
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr "供屏幕阅读器和搜索引擎使用的替代文本，同时也用作说明文字"
+
+#: js/components/FileDetailItem.vue:519
 msgid "Transcriptions"
 msgstr "转录"
 
-#: js/components/FileDetailItem.vue:532
+#: js/components/FileDetailItem.vue:535
 msgid "Transcribe file content"
 msgstr "转录文件内容"
 
-#: js/components/FileDetailItem.vue:550
+#: js/components/FileDetailItem.vue:553
 msgid "Transcription (%{lang})"
 msgstr "转录 (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:222
+#: js/components/FileDetailItem.vue:554
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
+msgstr "WebVTT 格式的语音文本，显示为字幕和文字记录"
+
+#: js/components/FileDetailItemImage.vue:223
 msgid "Error erasing image part"
 msgstr "图像部分擦除错误"
 
-#: js/components/FileDetailItemImage.vue:329
+#: js/components/FileDetailItemImage.vue:330
 msgid "Error editing image part"
 msgstr "编辑图像部分出错"
 
-#: js/components/FileDetailItemImage.vue:351
+#: js/components/FileDetailItemImage.vue:352
 msgid "Error removing background"
 msgstr "删除背景出错"
 
-#: js/components/FileDetailItemImage.vue:457
+#: js/components/FileDetailItemImage.vue:458
 msgid "Error editing image"
 msgstr "图像编辑错误"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:545
 msgid "Error uncropping image"
 msgstr "扩展图像时出错"
 
-#: js/components/FileDetailItemImage.vue:589
+#: js/components/FileDetailItemImage.vue:590
 msgid "Error upscaling image"
 msgstr "提升图像分辨率时出错"
 
-#: js/components/FileDetailItemImage.vue:646
-#: js/components/FileDetailItemImage.vue:651
+#: js/components/FileDetailItemImage.vue:647
+#: js/components/FileDetailItemImage.vue:652
 msgid "Select area"
 msgstr "选择区域"
 
-#: js/components/FileDetailItemImage.vue:663
+#: js/components/FileDetailItemImage.vue:664
 msgid "Original ratio"
 msgstr "原始比率"
 
-#: js/components/FileDetailItemImage.vue:672
+#: js/components/FileDetailItemImage.vue:673
 msgid "No ratio"
 msgstr "无比率"
 
-#: js/components/FileDetailItemImage.vue:677
+#: js/components/FileDetailItemImage.vue:678
 msgid "Square"
 msgstr "方形"
 
-#: js/components/FileDetailItemImage.vue:721
+#: js/components/FileDetailItemImage.vue:722
 msgid "Crop selected area"
 msgstr "裁剪所选区域"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:732
 msgid "Erase selected area"
 msgstr "擦除选定区域"
 
-#: js/components/FileDetailItemImage.vue:747
-#: js/components/FileDetailItemImage.vue:755
-#: js/components/FileDetailItemImage.vue:776
+#: js/components/FileDetailItemImage.vue:743
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:766
 msgid "Edit image"
 msgstr "编辑图片"
 
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe the changes"
 msgstr "描述变化"
 
-#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:757
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr "描述图片中需要更改的内容，例如将天空改为蓝色"
+
+#: js/components/FileDetailItemImage.vue:775
 msgid "Remove background"
 msgstr "移除背景"
 
-#: js/components/FileDetailItemImage.vue:802
-#: js/components/FileDetailItemImage.vue:810
-#: js/components/FileDetailItemImage.vue:868
+#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:792
+#: js/components/FileDetailItemImage.vue:850
 msgid "Expand image"
 msgstr "扩展图像"
 
-#: js/components/FileDetailItemImage.vue:825
+#: js/components/FileDetailItemImage.vue:803
 msgctxt "image edge"
 msgid "Top"
 msgstr "顶部"
 
-#: js/components/FileDetailItemImage.vue:837
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:817
+#: js/components/FileDetailItemImage.vue:828
+#: js/components/FileDetailItemImage.vue:841
+msgid "Number of pixels added at this side of the image"
+msgstr "在图片这一侧添加的像素数"
+
+#: js/components/FileDetailItemImage.vue:816
 msgctxt "image edge"
 msgid "Left"
 msgstr "左侧"
 
-#: js/components/FileDetailItemImage.vue:847
+#: js/components/FileDetailItemImage.vue:827
 msgctxt "image edge"
 msgid "Right"
 msgstr "右侧"
 
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:840
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "底部"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:882
+#: js/components/FileDetailItemImage.vue:858
+#: js/components/FileDetailItemImage.vue:865
 msgid "Upscale image"
 msgstr "提升图像分辨率"
 
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
-#: js/components/FileDetailItemImage.vue:915
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:888
+#: js/components/FileDetailItemImage.vue:898
+#: js/components/FileDetailItemImage.vue:908
 msgid "Scale %{factor}"
 msgstr "放大 %{factor}"
 
-#: js/components/FileDetailItemImage.vue:934
+#: js/components/FileDetailItemImage.vue:917
 msgid "Rotate counter-clockwise"
 msgstr "逆时针旋转"
 
-#: js/components/FileDetailItemImage.vue:940
+#: js/components/FileDetailItemImage.vue:923
 msgid "Rotate clockwise"
 msgstr "顺时针旋转"
 
-#: js/components/FileDetailItemImage.vue:947
+#: js/components/FileDetailItemImage.vue:930
 msgid "Flip horizontally"
 msgstr "水平翻转"
 
-#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileDetailItemImage.vue:936
 msgid "Flip vertically"
 msgstr "垂直翻转"
 
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:943
 msgid "Convert to monochrome"
 msgstr "转换为单色"
 
-#: js/components/FileDetailItemImage.vue:963
+#: js/components/FileDetailItemImage.vue:946
 msgid "Download"
 msgstr "下载"
 
-#: js/components/FileDetailItemImage.vue:965
-#: js/components/FileDetailItemImage.vue:970
-msgid "Undo"
-msgstr "撤消"
-
-#: js/components/FileDetailItemImage.vue:979
+#: js/components/FileDetailItemImage.vue:962
 msgid "Previous edit"
 msgstr "上次编辑"
 
-#: js/components/FileDetailItemImage.vue:984
+#: js/components/FileDetailItemImage.vue:967
 msgid "Original"
 msgstr "原始版本"
 
@@ -993,49 +1046,53 @@ msgstr "上传封面图片"
 msgid "Elements"
 msgstr "元素"
 
-#: js/components/FileListItems.vue:320
+#: js/components/FileListItems.vue:362
 msgid "Error trashing file"
 msgstr "将文件移至回收站时出错"
 
-#: js/components/FileListItems.vue:456
+#: js/components/FileListItems.vue:502
 msgid "Error restoring file"
 msgstr "恢复文件出错"
 
-#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:539 js/views/FileDetail.vue:253
 msgid "Error publishing file"
 msgstr "发布文件出错"
 
-#: js/components/FileListItems.vue:529
+#: js/components/FileListItems.vue:575
 msgid "Error purging file"
 msgstr "永久删除文件时出错"
 
-#: js/components/FileListItems.vue:626
+#: js/components/FileListItems.vue:672
 msgid "Error fetching files"
 msgstr "获取文件时出错"
 
-#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
-#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
-#: js/fields/Images.vue:436
+#: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
+#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
+#: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "添加文件"
 
-#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
-#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
+#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "使用页面访问权限保护"
 
-#: js/components/FileListItems.vue:793
+#: js/components/FileListItems.vue:839
 msgid "Reload files"
 msgstr "重新加载文件"
 
-#: js/components/FileListItems.vue:802
+#: js/components/FileListItems.vue:848
 msgid "Grid view"
 msgstr "网格视图"
 
-#: js/components/FileListItems.vue:810
+#: js/components/FileListItems.vue:856
 msgid "List view"
 msgstr "列表视图"
+
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr "只有获准查看包含该文件的页面的访客才能下载该文件"
 
 #: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
@@ -1049,7 +1106,7 @@ msgstr "至少有一个文件的类型不是 \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "文件类型不是 \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr "从 URL 添加文件"
 
@@ -1061,180 +1118,188 @@ msgstr "添加文件"
 msgid "Enter one URL per line"
 msgstr "每行输入一个 URL"
 
-#: js/components/FileUrlDialog.vue:225
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr "文件将从这些网址下载并添加到媒体列表"
+
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
 msgstr "输入 URL"
 
-#: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:1008
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
+msgstr "文件将从该网址下载并添加到媒体列表"
+
+#: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
+#: js/components/PageDetailContentList.vue:1024
 msgid "Shared element"
 msgstr "共享元素"
 
-#: js/components/HistoryDialog.vue:62
+#: js/components/HistoryDialog.vue:63
 msgid "Content block"
 msgstr "内容块"
 
-#: js/components/HistoryDialog.vue:67
+#: js/components/HistoryDialog.vue:68
 msgid "Group: %{group} · Position %{num}"
 msgstr "组：%{group} · 位置 %{num}"
 
-#: js/components/HistoryDialog.vue:75
+#: js/components/HistoryDialog.vue:76
 msgid "Moved from position %{from} to %{to}"
 msgstr "从位置 %{from} 移动到 %{to}"
 
-#: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
+#: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} 字段已更改"
 
-#: js/components/HistoryDialog.vue:77
+#: js/components/HistoryDialog.vue:78
 msgid "%{selected} of %{total} selected"
 msgstr "已选择 %{selected} 项，共 %{total} 项"
 
-#: js/components/HistoryDialog.vue:84
+#: js/components/HistoryDialog.vue:85
 msgid "Unknown date"
 msgstr "日期未知"
 
-#: js/components/HistoryDialog.vue:123
+#: js/components/HistoryDialog.vue:124
 msgid "Block position"
 msgstr "内容块位置"
 
-#: js/components/HistoryDialog.vue:128
+#: js/components/HistoryDialog.vue:129
 msgid "Value"
 msgstr "值"
 
-#: js/components/HistoryDialog.vue:172
+#: js/components/HistoryDialog.vue:173
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "添加了 %{num} 块"
 
-#: js/components/HistoryDialog.vue:173
+#: js/components/HistoryDialog.vue:174
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} 块已移除"
 
-#: js/components/HistoryDialog.vue:174
+#: js/components/HistoryDialog.vue:175
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} 块已更改"
 
-#: js/components/HistoryDialog.vue:175
+#: js/components/HistoryDialog.vue:176
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} 块已移动"
 
-#: js/components/HistoryDialog.vue:176
+#: js/components/HistoryDialog.vue:177
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} 文件已更改"
 
-#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
-#: js/components/HistoryDialog.vue:302
+#: js/components/HistoryDialog.vue:178 js/components/HistoryDialog.vue:207
+#: js/components/HistoryDialog.vue:303
 msgid "No changes"
 msgstr "无变化"
 
-#: js/components/HistoryDialog.vue:191
+#: js/components/HistoryDialog.vue:192
 msgid "History"
 msgstr "历史"
 
-#: js/components/HistoryDialog.vue:202
+#: js/components/HistoryDialog.vue:203
 msgid "Error fetching versions"
 msgstr "获取版本时出错"
 
-#: js/components/HistoryDialog.vue:203
+#: js/components/HistoryDialog.vue:204
 msgid "Retry"
 msgstr "重试"
 
-#: js/components/HistoryDialog.vue:217
+#: js/components/HistoryDialog.vue:218
 msgid "Current changes"
 msgstr "当前更改"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Scheduled for %{date}"
 msgstr "计划于 %{date}"
 
-#: js/components/HistoryDialog.vue:231
+#: js/components/HistoryDialog.vue:232
 msgid "Select all"
 msgstr "选择全部"
 
-#: js/components/HistoryDialog.vue:245
+#: js/components/HistoryDialog.vue:246
 msgid "Block added"
 msgstr "已添加内容块"
 
-#: js/components/HistoryDialog.vue:246
+#: js/components/HistoryDialog.vue:247
 msgid "Block removed"
 msgstr "已移除内容块"
 
-#: js/components/HistoryDialog.vue:266
+#: js/components/HistoryDialog.vue:267
 msgid "Keep current position"
 msgstr "保持当前位置"
 
-#: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
+#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
 msgid "Keep current value"
 msgstr "保留当前值"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: Latest saved version"
 msgstr "上一版本：最新保存的版本"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: %{date}"
 msgstr "上一版本：%{date}"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:314
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "%{total} 项中已选择 %{selected} 项用于撤销"
 
-#: js/components/HistoryDialog.vue:316
+#: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
 msgstr "撤销所选更改"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "Restore previous version"
 msgstr "恢复上一个版本"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "Previous value"
 msgstr "先前值"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "New value"
 msgstr "新值"
 
-#: js/components/HistoryField.vue:90
+#: js/components/HistoryField.vue:91
 msgid "Enlarge %{name}"
 msgstr "放大 %{name}"
 
-#: js/components/HistoryField.vue:96 js/components/HistoryField.vue:123
+#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:124
 msgid "Loading preview"
 msgstr "加载预览"
 
-#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:99
-#: js/components/HistoryField.vue:104 js/components/HistoryField.vue:124
-#: js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:100
+#: js/components/HistoryField.vue:105 js/components/HistoryField.vue:125
+#: js/components/HistoryField.vue:127
 msgid "Preview unavailable"
 msgstr "预览不可用"
 
-#: js/components/HistoryField.vue:113
+#: js/components/HistoryField.vue:114
 msgid "Image preview"
 msgstr "图片预览"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Close preview"
 msgstr "关闭预览"
 
-#: js/components/HistoryField.vue:134
+#: js/components/HistoryField.vue:135
 msgid "Table preview"
 msgstr "表格预览"
 
-#: js/components/HistoryField.vue:138
+#: js/components/HistoryField.vue:139
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} 行省略"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
+#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
 msgid "Editor"
 msgstr "编辑"
 
@@ -1286,26 +1351,36 @@ msgstr "更改页面访问权限时出错"
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "访问更改在缓存过期后立即生效"
 
-#: js/components/PageAccess.vue:173
+#: js/components/PageAccess.vue:174
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr "公开页面对所有人可见，其他页面仅对已登录用户或具有所选角色的用户可见"
+
+#: js/components/PageAccess.vue:178
 msgid "Public"
 msgstr "公开"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
+#: js/components/PageAccess.vue:179 js/components/PageListItems.vue:481
 msgid "Authenticated users"
 msgstr "经过身份验证的用户"
 
-#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
-#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
+#: js/components/PageAccess.vue:187 js/components/PageDetailItem.vue:116
+#: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
+#: js/components/PageListItems.vue:1878 js/components/PageListItems.vue:2078
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "访问权限"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
+#: js/components/PageAccess.vue:188
+msgid "Only visitors with one of these roles can view the page"
+msgstr "只有拥有其中一个角色的访问者才能查看该页面"
+
+#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "页面批量更改限制为 1,000 页"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
 msgid "Apply recursively"
 msgstr "递归应用"
 
@@ -1367,58 +1442,95 @@ msgstr "更改状态"
 msgid "Status"
 msgstr "状态"
 
-#: js/components/PageBulkDialog.vue:186
+#: js/components/PageBulkDialog.vue:178
+#: js/components/PageDetailItemProps.vue:245
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr "已禁用的页面处于离线状态，隐藏的页面仍在线但不会显示在导航中"
+
+#: js/components/PageBulkDialog.vue:187
 msgid "Change cache time"
 msgstr "更改缓存时间"
 
-#: js/components/PageBulkDialog.vue:191
-#: js/components/PageDetailItemProps.vue:361
+#: js/components/PageBulkDialog.vue:192
+#: js/components/PageDetailItemProps.vue:370
 msgid "Cache time"
 msgstr "缓存时间"
 
-#: js/components/PageBulkDialog.vue:200
+#: js/components/PageBulkDialog.vue:193
+#: js/components/PageDetailItemProps.vue:371
+msgid "How long the generated page is cached before it is created again"
+msgstr "生成的页面在重新创建之前的缓存时长"
+
+#: js/components/PageBulkDialog.vue:202
 msgid "Change language"
 msgstr "更改语言"
 
-#: js/components/PageBulkDialog.vue:212
+#: js/components/PageBulkDialog.vue:208
+#: js/components/PageDetailItemProps.vue:260
+msgid "Language of the page content"
+msgstr "页面内容的语言"
+
+#: js/components/PageBulkDialog.vue:215
 msgid "Change theme"
 msgstr "更改主题"
 
-#: js/components/PageBulkDialog.vue:217
-#: js/components/PageDetailItemProps.vue:330
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:336
 msgid "Theme"
 msgstr "主题"
 
-#: js/components/PageBulkDialog.vue:224
+#: js/components/PageBulkDialog.vue:221
+#: js/components/PageDetailItemProps.vue:337
+msgid "Design used to display the page"
+msgstr "用于显示页面的设计"
+
+#: js/components/PageBulkDialog.vue:228
 msgid "Change page type"
 msgstr "更改页面类型"
 
-#: js/components/PageBulkDialog.vue:229
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageBulkDialog.vue:233
+#: js/components/PageDetailItemProps.vue:346
 msgid "Page type"
 msgstr "页面类型"
 
-#: js/components/PageBulkDialog.vue:236
+#: js/components/PageBulkDialog.vue:234
+#: js/components/PageDetailItemProps.vue:347
+msgid "Template of the theme which defines the page layout"
+msgstr "定义页面布局的主题模板"
+
+#: js/components/PageBulkDialog.vue:241
 msgid "Change tag"
 msgstr "更改标签"
 
-#: js/components/PageBulkDialog.vue:240
-#: js/components/PageDetailItemProps.vue:350
+#: js/components/PageBulkDialog.vue:245
+#: js/components/PageDetailItemProps.vue:358
 msgid "Page tag"
 msgstr "页面标签"
 
-#: js/components/PageBulkDialog.vue:249
+#: js/components/PageBulkDialog.vue:246
+#: js/components/PageDetailItemProps.vue:359
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr "用于在模板中查找页面的内部标识符，例如 blog"
+
+#: js/components/PageBulkDialog.vue:255
 msgid "Change domain"
 msgstr "更改域名"
 
-#: js/components/PageBulkDialog.vue:254
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:260
+#: js/components/PageDetailItemProps.vue:320
 msgid "Domain"
 msgstr "域名"
 
+#: js/components/PageBulkDialog.vue:261
+#: js/components/PageDetailItemProps.vue:321
+msgid "Domain the page is available at, e.g. example.com"
+msgstr "页面可访问的域名，例如 example.com"
+
 #: js/components/PageDetailContentList.vue:185
 #: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:690
+#: js/components/PageDetailContentList.vue:705
 msgid "Content element not found"
 msgstr "未找到内容元素"
 
@@ -1438,97 +1550,97 @@ msgstr "元素已共享"
 msgid "Unable to make element shared"
 msgstr "无法共享元素"
 
-#: js/components/PageDetailContentList.vue:580
+#: js/components/PageDetailContentList.vue:595
 msgid "Not available for this content element"
 msgstr "此内容元素不可用"
 
-#: js/components/PageDetailContentList.vue:697
+#: js/components/PageDetailContentList.vue:712
 msgid "Element is not shared"
 msgstr "元素未共享"
 
-#: js/components/PageDetailContentList.vue:776
+#: js/components/PageDetailContentList.vue:791
 msgid "Describe the task you want to perform"
 msgstr "描述您要执行的任务"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Hide help"
 msgstr "隐藏帮助"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Show help"
 msgstr "显示帮助"
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
 msgstr "正在优化..."
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
 msgstr "根据提示完善内容"
 
-#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
-#: js/views/FileList.vue:290 js/views/PageList.vue:328
+#: js/components/PageDetailContentList.vue:835 js/views/ElementList.vue:292
+#: js/views/FileList.vue:291 js/views/PageList.vue:329
 msgid "Help"
 msgstr "帮助"
 
-#: js/components/PageDetailContentList.vue:820
+#: js/components/PageDetailContentList.vue:836
 msgid "AI can add or improve content based on your input"
 msgstr "人工智能可根据您的输入添加或改进内容"
 
-#: js/components/PageDetailContentList.vue:821
+#: js/components/PageDetailContentList.vue:837
 msgid "It can take a long time depending on the task and content size"
 msgstr "根据任务和内容大小，可能需要较长时间"
 
-#: js/components/PageDetailContentList.vue:846
-#: js/components/PageDetailContentList.vue:942
-#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+#: js/components/PageDetailContentList.vue:862
+#: js/components/PageDetailContentList.vue:958
+#: js/components/PageListItems.vue:1891 js/fields/Items.vue:380
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "剪切"
 
-#: js/components/PageDetailContentList.vue:851
-#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
+#: js/components/PageDetailContentList.vue:867
+#: js/components/PageListItems.vue:1904 js/components/PageListItems.vue:1929
 msgid "Paste"
 msgstr "粘贴"
 
-#: js/components/PageDetailContentList.vue:856
-#: js/components/PageDetailContentList.vue:1000
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:1016
 msgid "Merge"
 msgstr "合并"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:350
 msgid "Move element"
 msgstr "移动元素"
 
-#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:971 js/fields/Items.vue:393
 msgid "Paste before"
 msgstr "粘贴到前面"
 
-#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:976 js/fields/Items.vue:398
 msgid "Paste after"
 msgstr "粘贴到后面"
 
-#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:981 js/fields/Items.vue:403
 #: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "在前面插入"
 
-#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:986 js/fields/Items.vue:408
 #: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "在后面插入"
 
-#: js/components/PageDetailContentList.vue:980
+#: js/components/PageDetailContentList.vue:996
 msgid "Make shared"
 msgstr "设为共享"
 
-#: js/components/PageDetailContentList.vue:985
+#: js/components/PageDetailContentList.vue:1001
 msgid "Merge copy"
 msgstr "合并副本"
 
-#: js/components/PageDetailContentList.vue:995
+#: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "分割"
@@ -1545,15 +1657,15 @@ msgstr "预览模式"
 msgid "Not CMS content"
 msgstr "非内容管理系统内容"
 
-#: js/components/PageDetailItem.vue:81
+#: js/components/PageDetailItem.vue:95
 msgid "Detail"
 msgstr "详细信息"
 
-#: js/components/PageDetailItem.vue:88
+#: js/components/PageDetailItem.vue:102
 msgid "Meta"
 msgstr "元数据"
 
-#: js/components/PageDetailItem.vue:95
+#: js/components/PageDetailItem.vue:109
 msgid "Config"
 msgstr "配置"
 
@@ -1576,303 +1688,323 @@ msgstr "URL 无效"
 msgid "The path is already in use by another page"
 msgstr "该路径已被其他页面使用"
 
-#: js/components/PageDetailItemProps.vue:272
+#: js/components/PageDetailItemProps.vue:274
 msgid "Page title"
 msgstr "页面标题"
 
-#: js/components/PageDetailItemProps.vue:283
+#: js/components/PageDetailItemProps.vue:275
+msgid "Shown in the browser tab and search results"
+msgstr "显示在浏览器标签页和搜索结果中"
+
+#: js/components/PageDetailItemProps.vue:286
 msgid "Page name"
 msgstr "页面名称"
 
-#: js/components/PageDetailItemProps.vue:298
+#: js/components/PageDetailItemProps.vue:287
+msgid "Short name shown in the navigation menus"
+msgstr "显示在导航菜单中的简短名称"
+
+#: js/components/PageDetailItemProps.vue:302
 msgid "URL path"
 msgstr "URL 路径"
 
-#: js/components/PageDetailItemProps.vue:377
+#: js/components/PageDetailItemProps.vue:303
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "页面网址中域名之后的部分，例如 about-us"
+
+#: js/components/PageDetailItemProps.vue:387
 msgid "Redirect URL"
 msgstr "重定向 URL"
+
+#: js/components/PageDetailItemProps.vue:388
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr "访问者将被转到该网址，而不会看到页面"
 
 #: js/components/PageDetailItemSection.vue:60
 msgid "The element has already been added"
 msgstr "已添加元素"
 
-#: js/components/PageDetailItemSection.vue:185
+#: js/components/PageDetailItemSection.vue:193
 msgid "Remove content element"
 msgstr "删除内容元素"
 
-#: js/components/PageDetailMetrics.vue:149
+#: js/components/PageDetailMetrics.vue:151
 msgid "Views"
 msgstr "浏览量"
 
-#: js/components/PageDetailMetrics.vue:150
+#: js/components/PageDetailMetrics.vue:152
 msgid "Visits"
 msgstr "访问次数"
 
-#: js/components/PageDetailMetrics.vue:151
-#: js/components/PageDetailMetrics.vue:192
+#: js/components/PageDetailMetrics.vue:153
+#: js/components/PageDetailMetrics.vue:194
 msgid "Conversions"
 msgstr "转化次数"
 
-#: js/components/PageDetailMetrics.vue:160
+#: js/components/PageDetailMetrics.vue:162
 msgid "Duration"
 msgstr "持续时间"
 
-#: js/components/PageDetailMetrics.vue:170
-#: js/components/PageDetailMetrics.vue:574
+#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:576
 msgid "Impressions"
 msgstr "展示次数"
 
-#: js/components/PageDetailMetrics.vue:171
-#: js/components/PageDetailMetrics.vue:575
+#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:577
 msgid "Clicks"
 msgstr "点击次数"
 
-#: js/components/PageDetailMetrics.vue:180
+#: js/components/PageDetailMetrics.vue:182
 msgid "Percentage"
 msgstr "百分比"
 
-#: js/components/PageDetailMetrics.vue:189
+#: js/components/PageDetailMetrics.vue:191
 msgid "Page Views"
 msgstr "页面浏览量"
 
-#: js/components/PageDetailMetrics.vue:190
+#: js/components/PageDetailMetrics.vue:192
 msgid "Page Visits"
 msgstr "页面访问量"
 
-#: js/components/PageDetailMetrics.vue:193
+#: js/components/PageDetailMetrics.vue:195
 msgid "Visit Duration (minutes)"
 msgstr "访问时间（分钟）"
 
-#: js/components/PageDetailMetrics.vue:194
+#: js/components/PageDetailMetrics.vue:196
 msgid "Google Impressions"
 msgstr "Google 展示次数"
 
-#: js/components/PageDetailMetrics.vue:195
+#: js/components/PageDetailMetrics.vue:197
 msgid "Google Clicks"
 msgstr "Google 点击次数"
 
-#: js/components/PageDetailMetrics.vue:196
+#: js/components/PageDetailMetrics.vue:198
 msgid "Google Conversion Rate"
 msgstr "Google 转化率"
 
-#: js/components/PageDetailMetrics.vue:202
+#: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
 msgstr "往返时间"
 
-#: js/components/PageDetailMetrics.vue:203
+#: js/components/PageDetailMetrics.vue:205
 msgid "Time to first byte"
 msgstr "到第一个字节的时间"
 
-#: js/components/PageDetailMetrics.vue:204
+#: js/components/PageDetailMetrics.vue:206
 msgid "First contentful paint"
 msgstr "首次内容绘制"
 
-#: js/components/PageDetailMetrics.vue:205
+#: js/components/PageDetailMetrics.vue:207
 msgid "Largest contentful paint"
 msgstr "最大内容绘制"
 
-#: js/components/PageDetailMetrics.vue:206
+#: js/components/PageDetailMetrics.vue:208
 msgid "Interaction to next paint"
 msgstr "与下一次绘制的交互"
 
-#: js/components/PageDetailMetrics.vue:207
+#: js/components/PageDetailMetrics.vue:209
 msgid "Cumulative layout shift"
 msgstr "累积布局偏移"
 
-#: js/components/PageDetailMetrics.vue:401
+#: js/components/PageDetailMetrics.vue:403
 msgid "Page metrics"
 msgstr "页面指标"
 
-#: js/components/PageDetailMetrics.vue:407
+#: js/components/PageDetailMetrics.vue:409
 msgid "Days"
 msgstr "天数"
 
-#: js/components/PageDetailMetrics.vue:434
+#: js/components/PageDetailMetrics.vue:436
 msgid "Weekly Insights"
 msgstr "每周洞察"
 
-#: js/components/PageDetailMetrics.vue:463
+#: js/components/PageDetailMetrics.vue:465
 msgid "Views & Visits"
 msgstr "浏览量和访问量"
 
-#: js/components/PageDetailMetrics.vue:472
+#: js/components/PageDetailMetrics.vue:474
 msgid "Visit Durations (minutes)"
 msgstr "访问时长（分钟）"
 
-#: js/components/PageDetailMetrics.vue:484
+#: js/components/PageDetailMetrics.vue:486
 msgid "Referrers"
 msgstr "引荐来源"
 
-#: js/components/PageDetailMetrics.vue:527
+#: js/components/PageDetailMetrics.vue:529
 msgid "Countries"
 msgstr "国家"
 
-#: js/components/PageDetailMetrics.vue:543
+#: js/components/PageDetailMetrics.vue:545
 msgid "Page Speed"
 msgstr "网页速度"
 
-#: js/components/PageDetailMetrics.vue:568
+#: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
 msgstr "谷歌搜索：查询"
 
-#: js/components/PageDetailMetrics.vue:576
+#: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
 msgstr "百分比"
 
-#: js/components/PageDetailMetrics.vue:577
+#: js/components/PageDetailMetrics.vue:579
 msgctxt "search ranking"
 msgid "Position"
 msgstr "排名"
 
-#: js/components/PageDetailMetrics.vue:604
+#: js/components/PageDetailMetrics.vue:606
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google 搜索：展示次数和点击次数"
 
-#: js/components/PageDetailMetrics.vue:613
+#: js/components/PageDetailMetrics.vue:615
 msgid "Google Search: Conversions"
 msgstr "Google 搜索：转化次数"
 
-#: js/components/PageListItems.vue:482
+#: js/components/PageListItems.vue:515
 msgid "Error adding root page"
 msgstr "添加根页面时出错"
 
-#: js/components/PageListItems.vue:547
+#: js/components/PageListItems.vue:536
+msgid "Page moved"
+msgstr "页面已移动"
+
+#: js/components/PageListItems.vue:616
 msgid "Cache cleared"
 msgstr "缓存已清除"
 
-#: js/components/PageListItems.vue:548
+#: js/components/PageListItems.vue:617
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "已清除 %{num} 个页面的缓存。"
 
-#: js/components/PageListItems.vue:558
+#: js/components/PageListItems.vue:627
 msgid "Error clearing cache"
 msgstr "清除缓存时出错"
 
-#: js/components/PageListItems.vue:630
+#: js/components/PageListItems.vue:700
 msgid "Error trashing page"
 msgstr "将页面移至回收站时出错"
 
-#: js/components/PageListItems.vue:724
-msgid "Error fetching pages"
-msgstr "获取网页出错"
-
-#: js/components/PageListItems.vue:805
-msgid "Error inserting page"
-msgstr "插入页面出错"
-
-#: js/components/PageListItems.vue:869
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:972
 msgid "Error restoring page"
 msgstr "恢复页面时出错"
 
-#: js/components/PageListItems.vue:879
+#: js/components/PageListItems.vue:827
+msgid "Error fetching pages"
+msgstr "获取网页出错"
+
+#: js/components/PageListItems.vue:908
+msgid "Error inserting page"
+msgstr "插入页面出错"
+
+#: js/components/PageListItems.vue:982
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}，路径：%{path}，域名：%{domain})"
 
-#: js/components/PageListItems.vue:887
+#: js/components/PageListItems.vue:990
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}，路径：%{path})"
 
-#: js/components/PageListItems.vue:977
+#: js/components/PageListItems.vue:1082
 msgid "Error moving page"
 msgstr "页面移动错误"
 
-#: js/components/PageListItems.vue:1068
+#: js/components/PageListItems.vue:1173
 msgid "Error copying page"
 msgstr "复制页面出错"
 
-#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1178 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "获取页面出错"
 
-#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1252 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "发布页面出错"
 
-#: js/components/PageListItems.vue:1172
+#: js/components/PageListItems.vue:1277
 msgid "All subpages of these pages will be purged as well."
 msgstr "这些页面的所有子页面也将被永久删除。"
 
-#: js/components/PageListItems.vue:1202
+#: js/components/PageListItems.vue:1307
 msgid "Error purging page"
 msgstr "永久删除页面时出错"
 
-#: js/components/PageListItems.vue:1335
+#: js/components/PageListItems.vue:1440
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} 页无法更新"
 
-#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
-#: js/views/PageDetail.vue:606
+#: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
+#: js/views/PageDetail.vue:624
 msgid "Error saving page"
 msgstr "保存页面出错"
 
-#: js/components/PageListItems.vue:1397
+#: js/components/PageListItems.vue:1502
 msgid "Error searching pages"
 msgstr "搜索页面出错"
 
-#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+#: js/components/PageListItems.vue:1712 js/components/PageListItems.vue:1858
 msgctxt "page status"
 msgid "Enable"
 msgstr "启用"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+#: js/components/PageListItems.vue:1717 js/components/PageListItems.vue:1863
 msgctxt "page status"
 msgid "Disable"
 msgstr "禁用"
 
-#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
+#: js/components/PageListItems.vue:1733 js/components/PageListItems.vue:1883
 msgid "Clear cache"
 msgstr "清除缓存"
 
-#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
+#: js/components/PageListItems.vue:1761 js/components/PageListItems.vue:2063
 msgid "Add page"
 msgstr "添加页面"
 
-#: js/components/PageListItems.vue:1680
+#: js/components/PageListItems.vue:1785
 msgid "Reload page tree"
 msgstr "重新加载页面树"
 
-#: js/components/PageListItems.vue:1703
+#: js/components/PageListItems.vue:1809
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr "使用方向键进行导航。按住 Alt 键并配合方向键可重新排序。"
 
-#: js/components/PageListItems.vue:1705
+#: js/components/PageListItems.vue:1811
 msgid "Moved to position %{position} of %{total}"
 msgstr "已移至第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1813
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "已减少缩进至第 %{level} 级，位于第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1819
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "已增加缩进至第 %{level} 级，位于第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1733
+#: js/components/PageListItems.vue:1839
 msgid "Toggle child nodes"
 msgstr "切换子节点"
 
-#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
-#: js/components/PageListItems.vue:1854
+#: js/components/PageListItems.vue:1910 js/components/PageListItems.vue:1935
+#: js/components/PageListItems.vue:1960
 msgid "Before"
 msgstr "之前"
 
-#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
-#: js/components/PageListItems.vue:1859
+#: js/components/PageListItems.vue:1915 js/components/PageListItems.vue:1940
+#: js/components/PageListItems.vue:1965
 msgid "Into"
 msgstr "进入"
 
-#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
-#: js/components/PageListItems.vue:1864
+#: js/components/PageListItems.vue:1920 js/components/PageListItems.vue:1945
+#: js/components/PageListItems.vue:1970
 msgid "After"
 msgstr "之后"
 
-#: js/components/PageListItems.vue:1848
+#: js/components/PageListItems.vue:1954
 msgid "Insert"
 msgstr "插入"
 
-#: js/components/PageListItems.vue:1964
+#: js/components/PageListItems.vue:2081
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "将访问设置应用到 %{num} 个页面。"
@@ -2021,19 +2153,19 @@ msgstr "换行"
 msgid "Recall previous messages"
 msgstr "调出之前的消息"
 
-#: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
+#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "未保存的更改"
 
-#: js/components/UnsavedDialog.vue:46
+#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "您有未保存的更改，如果现在退出，这些更改将会丢失。"
 
-#: js/components/UnsavedDialog.vue:52
+#: js/components/UnsavedDialog.vue:49
 msgid "Discard"
 msgstr "放弃"
 
-#: js/components/UnsavedDialog.vue:59
+#: js/components/UnsavedDialog.vue:58
 msgid "Save & leave"
 msgstr "保存并退出"
 
@@ -2053,7 +2185,7 @@ msgstr "切换语言"
 msgid "User menu"
 msgstr "用户菜单"
 
-#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "无数据"
 
@@ -2069,7 +2201,7 @@ msgstr "需要文件"
 msgid "Add file from URL"
 msgstr "从 URL 添加文件"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:429
+#: js/fields/File.vue:456 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "创建文件"
 
@@ -2089,19 +2221,19 @@ msgstr "名称"
 msgid "description"
 msgstr "描述"
 
-#: js/fields/Images.vue:453
+#: js/fields/Images.vue:454
 msgid "Drop files here"
 msgstr "将文件拖放到此处"
 
-#: js/fields/Map.vue:231
+#: js/fields/Map.vue:232
 msgid "Clear location"
 msgstr "清除位置"
 
-#: js/fields/Map.vue:234
+#: js/fields/Map.vue:235
 msgid "Click the map to set the location"
 msgstr "点击地图以设置位置"
 
-#: js/fields/String.vue:44
+#: js/fields/String.vue:45
 msgid "Value has invalid format"
 msgstr "值的格式无效"
 
@@ -2121,31 +2253,31 @@ msgstr "移动行"
 msgid "Row actions"
 msgstr "行操作"
 
-#: js/fields/Url.vue:58 js/utils.js:184
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "无"
 
-#: js/fields/Url.vue:59
+#: js/fields/Url.vue:60
 msgid "Sponsored"
 msgstr "赞助"
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:61
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:77
+#: js/fields/Url.vue:78
 msgid "Not a valid URL"
 msgstr "不是有效的 URL"
 
-#: js/fields/Url.vue:87
+#: js/fields/Url.vue:88
 msgid "Invalid URL schema configuration"
 msgstr "URL 模式配置无效"
 
-#: js/fields/Url.vue:165
+#: js/fields/Url.vue:167
 msgid "No pages found"
 msgstr "未找到页面"
 
-#: js/fields/Url.vue:177
+#: js/fields/Url.vue:179
 msgid "Link attribute"
 msgstr "链接属性"
 
@@ -2195,632 +2327,1641 @@ msgstr[0] "最多允许 %{num} 列"
 msgid "Failed to load plugin"
 msgstr "加载插件失败"
 
-#: js/strings.js:29
+#: js/strings.js:30
 msgctxt "cs"
 msgid "main"
 msgstr "主要"
 
-#: js/strings.js:30
+#: js/strings.js:31
 msgctxt "cs"
 msgid "header"
 msgstr "页眉"
 
-#: js/strings.js:31
+#: js/strings.js:32
 msgctxt "cs"
 msgid "footer"
 msgstr "页脚"
 
-#: js/strings.js:32
+#: js/strings.js:33
 msgctxt "cs"
 msgid "sidebar"
 msgstr "侧栏"
 
-#: js/strings.js:33
+#: js/strings.js:34
 msgctxt "cs"
 msgid "aside"
 msgstr "附注"
 
-#: js/strings.js:36
+#: js/strings.js:37
 msgctxt "sg"
 msgid "basic"
 msgstr "基本"
 
-#: js/strings.js:37
+#: js/strings.js:38
 msgctxt "sg"
 msgid "content"
 msgstr "内容"
 
-#: js/strings.js:38
+#: js/strings.js:39
 msgctxt "sg"
 msgid "media"
 msgstr "媒体"
 
-#: js/strings.js:39
+#: js/strings.js:40
 msgctxt "sg"
 msgid "forms"
 msgstr "表单"
 
-#: js/strings.js:42
+#: js/strings.js:43
 msgctxt "as"
 msgid "type"
 msgstr "类型"
 
-#: js/strings.js:43
+#: js/strings.js:44
 msgctxt "as"
 msgid "state"
 msgstr "状态"
 
-#: js/strings.js:46
+#: js/strings.js:47
 msgctxt "st"
 msgid "valid"
 msgstr "有效"
 
-#: js/strings.js:47
+#: js/strings.js:48
 msgctxt "st"
 msgid "changed"
 msgstr "已更改"
 
-#: js/strings.js:48
+#: js/strings.js:49
 msgctxt "st"
 msgid "error"
 msgstr "错误"
 
-#: js/strings.js:51
+#: js/strings.js:52
 msgctxt "st"
 msgid "reference"
 msgstr "引用"
 
-#: js/strings.js:52
+#: js/strings.js:53
 msgctxt "st"
 msgid "heading"
 msgstr "标题"
 
-#: js/strings.js:53
+#: js/strings.js:54
 msgctxt "st"
 msgid "text"
 msgstr "文本"
 
-#: js/strings.js:54
+#: js/strings.js:55
 msgctxt "st"
 msgid "image-text"
 msgstr "图像文本"
 
-#: js/strings.js:55
+#: js/strings.js:56
 msgctxt "st"
 msgid "slideshow"
 msgstr "幻灯片"
 
-#: js/strings.js:56
+#: js/strings.js:57
 msgctxt "st"
 msgid "code"
 msgstr "代码"
 
-#: js/strings.js:57
+#: js/strings.js:58
 msgctxt "st"
 msgid "table"
 msgstr "表格"
 
-#: js/strings.js:58
+#: js/strings.js:59
 msgctxt "st"
 msgid "map"
 msgstr "地图"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "st"
 msgid "html"
 msgstr "HTML"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "image"
 msgstr "图像"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "video"
 msgstr "视频"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "audio"
 msgstr "音频"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "file"
 msgstr "文件"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "hero"
 msgstr "首屏"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "CTA"
 msgstr "行动号召"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "cards"
 msgstr "卡片"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "blog"
 msgstr "博客"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "article"
 msgstr "文章"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "toc"
 msgstr "目录"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "contact"
 msgstr "联系"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "meta-tags"
 msgstr "元标签"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "social-media"
 msgstr "社交媒体"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "canonical"
 msgstr "规范网址"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "robots"
 msgstr "搜索引擎"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "theme"
 msgstr "主题"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "styles"
 msgstr "样式"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
+#: js/strings.js:80
+msgctxt "st"
+msgid "heros"
+msgstr "首屏列表"
+
 #: js/strings.js:81
+msgctxt "st"
+msgid "news"
+msgstr "新闻"
+
+#: js/strings.js:82
+msgctxt "st"
+msgid "pricing"
+msgstr "价格方案"
+
+#: js/strings.js:83
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#: js/strings.js:84
+msgctxt "st"
+msgid "security"
+msgstr "安全"
+
+#: js/strings.js:85
+msgctxt "st"
+msgid "testimonial"
+msgstr "客户评价"
+
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "H1 至 H6 的章节标题"
 
-#: js/strings.js:82
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "包含段落、列表和链接的格式化文本"
 
-#: js/strings.js:83
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "格式化文本旁的图片"
 
-#: js/strings.js:84
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "带语法高亮的源代码"
 
-#: js/strings.js:85
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "带可选标题行或标题列的数据表格"
 
-#: js/strings.js:86
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "包含位置、文本和链接的交互式地图"
 
-#: js/strings.js:87
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "用于嵌入内容和小组件的自定义 HTML"
 
-#: js/strings.js:88
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "单张响应式图片"
 
-#: js/strings.js:89
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "多张图片轮播的幻灯片"
 
-#: js/strings.js:90
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "带播放控件的嵌入视频"
 
-#: js/strings.js:91
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "带播放控件的嵌入音频"
 
-#: js/strings.js:92
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "可下载的文件，例如 PDF 文档"
 
-#: js/strings.js:93
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "带标题、文本、按钮和背景的大型引言"
 
-#: js/strings.js:94
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "带文本和按钮的行动号召"
 
-#: js/strings.js:95
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "包含图片、标题和文本的卡片网格"
 
-#: js/strings.js:96
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "包含姓名、职位和照片的客户评价"
 
-#: js/strings.js:97
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "带图片库和作者的文章引言"
 
-#: js/strings.js:98
+#: js/strings.js:105
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "父页面的博客文章列表"
 
-#: js/strings.js:99
+#: js/strings.js:106
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "父页面的新闻列表"
 
-#: js/strings.js:100
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "精选子页面及其后的其他子页面"
 
-#: js/strings.js:101
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "订阅或一次性付款的价格方案"
 
-#: js/strings.js:102
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "常见问题及解答"
 
-#: js/strings.js:103
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "链接到页面标题的目录"
 
-#: js/strings.js:104
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "字段可配置的联系表单"
 
-#: js/strings.js:107
+#: js/strings.js:114
 msgctxt "fn"
 msgid "button"
 msgstr "按钮"
 
-#: js/strings.js:108
+#: js/strings.js:115
 msgctxt "fn"
 msgid "buttons"
 msgstr "按钮"
 
-#: js/strings.js:109
+#: js/strings.js:116
 msgctxt "fn"
 msgid "cards"
 msgstr "卡片"
 
-#: js/strings.js:110
+#: js/strings.js:117
 msgctxt "fn"
 msgid "description"
 msgstr "描述"
 
-#: js/strings.js:111
+#: js/strings.js:118
 msgctxt "fn"
 msgid "file"
 msgstr "文件"
 
-#: js/strings.js:112
+#: js/strings.js:119
 msgctxt "fn"
 msgid "files"
 msgstr "文件"
 
-#: js/strings.js:113
+#: js/strings.js:120
 msgctxt "fn"
 msgid "follow"
 msgstr "跟踪链接"
 
-#: js/strings.js:114
+#: js/strings.js:121
 msgctxt "fn"
 msgid "header"
 msgstr "页眉"
 
-#: js/strings.js:115
+#: js/strings.js:122
 msgctxt "fn"
 msgid "index"
 msgstr "索引"
 
-#: js/strings.js:116
+#: js/strings.js:123
 msgctxt "fn"
 msgid "keywords"
 msgstr "关键词"
 
-#: js/strings.js:117
+#: js/strings.js:124
 msgctxt "fn"
 msgid "language"
 msgstr "语言"
 
-#: js/strings.js:118
+#: js/strings.js:125
 msgctxt "fn"
 msgid "label"
 msgstr "标签"
 
-#: js/strings.js:119
+#: js/strings.js:126
 msgctxt "fn"
 msgid "level"
 msgstr "级别"
 
-#: js/strings.js:120
+#: js/strings.js:127
 msgctxt "fn"
 msgid "limit"
 msgstr "限制"
 
-#: js/strings.js:121
+#: js/strings.js:128
 msgctxt "fn"
 msgid "location"
 msgstr "位置"
 
-#: js/strings.js:122
+#: js/strings.js:129
 msgctxt "fn"
 msgid "main"
 msgstr "主图"
 
-#: js/strings.js:123
+#: js/strings.js:130
 msgctxt "fn"
 msgid "order"
 msgstr "顺序"
 
-#: js/strings.js:124
+#: js/strings.js:131
 msgctxt "fn"
 msgid "parent-page"
 msgstr "父页面"
 
-#: js/strings.js:125
+#: js/strings.js:132
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: js/strings.js:126
+#: js/strings.js:133
 msgctxt "fn"
 msgid "text"
 msgstr "文本"
 
-#: js/strings.js:127
+#: js/strings.js:134
 msgctxt "fn"
 msgid "table"
 msgstr "表格"
 
-#: js/strings.js:128
+#: js/strings.js:135
 msgctxt "fn"
 msgid "title"
 msgstr "标题"
 
-#: js/strings.js:129
+#: js/strings.js:136
 msgctxt "fn"
 msgid "url"
 msgstr "网址"
 
-#: js/strings.js:131
+#: js/strings.js:138
 msgctxt "fn"
 msgid "image"
 msgstr "图像"
 
-#: js/strings.js:132
+#: js/strings.js:139
 msgctxt "fn"
 msgid "images"
 msgstr "图像"
 
-#: js/strings.js:133
+#: js/strings.js:140
 msgctxt "fn"
 msgid "items"
 msgstr "条目"
 
-#: js/strings.js:134
+#: js/strings.js:141
 msgctxt "fn"
 msgid "introduction"
 msgstr "导言"
 
-#: js/strings.js:135
+#: js/strings.js:142
 msgctxt "fn"
 msgid "load immediately"
 msgstr "立即加载"
 
-#: js/strings.js:136
+#: js/strings.js:143
 msgctxt "fn"
 msgid "source code"
 msgstr "源代码"
 
-#: js/strings.js:137
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "前端访问角色"
 
-#: js/strings.js:138
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "支付价格"
 
-#: js/strings.js:139
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "支付参考"
 
-#: js/strings.js:140
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "支付类型"
 
-#: js/strings.js:141
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Currency"
 msgstr "货币"
 
-#: js/strings.js:142
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "计费周期"
 
-#: js/strings.js:143
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Price unit"
 msgstr "价格单位"
 
-#: js/strings.js:144
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "目标页面或链接"
 
-#: js/strings.js:145
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "必填字段"
 
-#: js/strings.js:146
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "选填字段"
 
-#: js/strings.js:147
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Link label"
 msgstr "链接文字"
 
-#: js/strings.js:150
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "联系网址"
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Contact email"
+msgstr "联系邮箱"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Description"
+msgstr "说明"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "显示价格"
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Gallery"
+msgstr "图库"
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "强调文字"
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "突出显示"
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Language"
+msgstr "语言"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Payment type"
+msgstr "付款类型"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "首选语言"
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "副标题"
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "致谢"
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "amount"
+msgstr "金额"
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "background"
+msgstr "背景"
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "background animation"
+msgstr "背景动画"
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "button-alternative"
+msgstr "备用按钮"
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "canonical"
+msgstr "规范网址"
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "columns"
+msgstr "列数"
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "encryption"
+msgstr "加密"
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "expires"
+msgstr "过期时间"
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "features"
+msgstr "功能"
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "hiring"
+msgstr "招聘信息"
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "layout"
+msgstr "布局"
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "name"
+msgstr "名称"
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "policy"
+msgstr "政策"
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "ratio"
+msgstr "比例"
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "role"
+msgstr "职位"
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "subtitle"
+msgstr "副标题"
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "url-alternative"
+msgstr "备用网址"
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "文本字体"
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "标题字体"
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "文本颜色"
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "背景色"
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "选中颜色"
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "对比色"
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "对比悬停颜色"
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "对比文本颜色"
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "主要颜色"
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "主要背景"
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "主要悬停颜色"
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "主要悬停背景"
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "次要颜色"
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "次要背景"
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "次要悬停颜色"
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "次要悬停背景"
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "圆角半径"
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "面包屑分隔符"
+
+#: js/strings.js:206
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "标题文本"
+
+#: js/strings.js:207
+msgctxt "fh"
+msgid ""
+"Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "一级是页面主标题，更高级别用于构成下方各部分"
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "包含段落、列表和链接的格式化文本"
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "图片旁显示的格式化文本"
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "文本旁显示的图片"
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "图片相对于文本的位置"
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "图片与文本的宽度比例"
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "用于语法高亮的编程语言"
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "带语法高亮显示的源代码"
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "表格上方显示的可选标题"
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "将第一行、第一列或两者都用作表头"
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Table data as comma separated values, one row per line"
+msgstr "以逗号分隔的表格数据，每行一条记录"
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "地图上方显示的可选标题"
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "地图旁显示的说明，例如地址或路线"
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "搜索地点或点击地图设置位置"
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "在地图服务中打开该位置的链接文本"
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "原样插入页面的HTML代码，例如用于嵌入内容和小组件"
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "以内容区域全宽显示的图片"
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "如果图片显示在页面顶部可见区域，则立即加载，不延迟"
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "幻灯片上方显示的可选标题"
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "依次显示的图片，拖动可调整顺序"
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid ""
+"Load the first image without delay if it is visible at the top of the page"
+msgstr "如果第一张图片显示在页面顶部可见区域，则立即加载，不延迟"
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "在页面中播放的视频文件"
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "在页面中播放的音频文件"
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "提供下载的文件"
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "页面的主标题"
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "标题上方显示的短行文字"
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "标题下方显示的引言"
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr "主按钮链接到的页面或链接"
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr "主按钮的文本"
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr "第二个按钮链接到的页面或链接"
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr "第二个按钮的文本"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "文本背后显示的图片"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "背景图片的动画效果"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "文本旁显示的图片"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "吸引访客注意的标题"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "激励访客采取行动的文本"
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "引导访客进入下一步的按钮"
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "按钮的文本"
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "按钮链接到的页面或链接"
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "卡片上方显示的可选标题"
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "每行的卡片数量，\"auto\"会根据屏幕宽度自动调整"
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "网格中显示的卡片"
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "卡片的标题"
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "卡片顶部显示的图片"
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "卡片的文本"
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "卡片链接到的页面或链接"
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "引言上方显示的可选标题"
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "客户或合作伙伴的评价"
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "该人物的评价内容"
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "该人物的姓名"
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "该人物的职位或所属公司"
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "该人物的照片"
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "页面标题下方显示的文章引言"
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "文章的图片，第一张将用作预览图"
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "文章作者的姓名"
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "指向作者个人主页的链接"
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "列表上方显示的可选标题"
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "将页面显示为卡片或紧凑列表"
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "要列出其子页面的页面"
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "所列页面的排序方式"
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "一次显示的最大页面数"
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "将更多子页面显示为卡片或紧凑列表"
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "价格方案上方显示的可选标题"
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "标题下方显示的简短文本"
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "并排显示的价格方案"
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "价格方案的名称"
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "付款后授予客户以访问受保护页面的角色"
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "该方案的价格，例如按月和按年"
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "定期订阅或一次性付款"
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "两次付款之间的天数，例如按月为30"
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "三位字母的ISO货币代码，例如EUR或USD"
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "支付服务商使用的价格ID或金额"
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "向访客显示的格式化价格，例如€9.99"
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "未设置格式化价格时显示的数字价格"
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "价格后显示的文本，例如per month"
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "价格方案的简短说明"
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "方案中包含的功能列表"
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "相较于其他方案突出显示此方案"
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "突出方案上显示的简短标签，例如Popular"
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "问题上方显示的可选标题"
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "以可展开列表形式显示的问题和答案"
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "访客提出的问题"
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "该问题的答案"
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "目录上方显示的可选标题"
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "联系表单上方显示的可选标题"
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Form fields visitors must fill out"
+msgstr "访客必须填写的表单字段"
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Form fields visitors can fill out"
+msgstr "访客可以选择填写的表单字段"
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid ""
+"Summary of the page shown in search results, 150 to 160 characters "
+"recommended"
+msgstr "搜索结果中显示的页面摘要，建议150到160个字符"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "描述页面的逗号分隔关键词列表"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "页面在社交媒体分享时显示的标题"
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "页面在社交媒体分享时显示的摘要"
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "页面在社交媒体分享时显示的预览图"
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "相同内容在多个地址可用时的原始URL"
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "允许或阻止搜索引擎收录此页面"
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "允许或阻止搜索引擎跟踪此页面上的链接"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "浏览器标签页和搜索结果中显示的网站名称"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "页面页眉中显示的徽标"
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "用于深色背景的徽标版本"
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "浏览器标签页和书签中显示的小方形图片"
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "用于文本的逗号分隔字体列表"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Default text color"
+msgstr "默认文本颜色"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "页面的背景颜色"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "选中文本的背景颜色"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "与背景对比强烈的元素颜色"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "悬停或聚焦元素时的对比颜色"
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "使用对比颜色元素上的文本颜色"
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "用于链接和按钮的主要品牌颜色"
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "主要按钮和高亮的背景颜色"
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "悬停或聚焦元素时的主要颜色"
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "悬停或聚焦元素时的主要背景颜色"
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "用于次要链接和按钮的附加颜色"
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "次要按钮的背景颜色"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "悬停或聚焦元素时的次要颜色"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "悬停或聚焦元素时的次要背景颜色"
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "以CSS长度指定的圆角，例如0.25rem，直角则为0"
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "面包屑链接之间显示的字符"
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "联系安全团队的HTTPS链接，例如一个表单"
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "用于报告安全问题的电子邮件地址"
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "安全信息被视为过期的日期"
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "加密消息公钥的HTTPS链接"
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "感谢安全研究人员的页面的HTTPS链接"
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "安全报告使用的逗号分隔语言代码，例如en, de"
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "发布security.txt文件的HTTPS网址"
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "安全与披露政策的HTTPS链接"
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "安全相关职位空缺的HTTPS链接"
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "CSAF提供方元数据的HTTPS链接"
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "为网络爬虫添加到robots.txt文件中的附加规则"
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "添加到所有页面的自定义CSS代码"
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "添加到所有页面的自定义JavaScript代码"
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "用于标题的逗号分隔字体列表"
+
+#: js/strings.js:339
 msgctxt "op"
 msgid "Name"
 msgstr "姓名"
 
-#: js/strings.js:151
+#: js/strings.js:340
 msgctxt "op"
 msgid "Company"
 msgstr "公司"
 
-#: js/strings.js:152
+#: js/strings.js:341
 msgctxt "op"
 msgid "Telephone"
 msgstr "电话"
 
-#: js/strings.js:153
+#: js/strings.js:342
 msgctxt "op"
 msgid "E-Mail"
 msgstr "电子邮件"
 
-#: js/strings.js:154
+#: js/strings.js:343
 msgctxt "op"
 msgid "Subject"
 msgstr "主题"
 
-#: js/strings.js:155
+#: js/strings.js:344
 msgctxt "op"
 msgid "Follow"
 msgstr "跟踪链接"
 
-#: js/strings.js:156
+#: js/strings.js:345
 msgctxt "op"
 msgid "Index"
 msgstr "允许索引"
 
-#: js/strings.js:157
+#: js/strings.js:346
 msgctxt "op"
 msgid "No follow"
 msgstr "不跟踪链接"
 
-#: js/strings.js:158
+#: js/strings.js:347
 msgctxt "op"
 msgid "No index"
 msgstr "禁止索引"
 
-#: js/strings.js:159
+#: js/strings.js:348
 msgctxt "op"
 msgid "Subscription"
 msgstr "订阅"
 
-#: js/strings.js:160
+#: js/strings.js:349
 msgctxt "op"
 msgid "One-time payment"
 msgstr "一次性付款"
 
-#: js/strings.js:163
+#: js/strings.js:350
+msgctxt "op"
+msgid "Auto"
+msgstr "自动"
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "Cards"
+msgstr "卡片"
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Default"
+msgstr "默认"
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "End"
+msgstr "末尾"
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "First column"
+msgstr "第一列"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "First row"
+msgstr "第一行"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "First row and column"
+msgstr "第一行和第一列"
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "Grid end"
+msgstr "网格末尾"
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "Grid start"
+msgstr "网格起始"
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "Latest"
+msgstr "最新"
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "List"
+msgstr "列表"
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "None"
+msgstr "无"
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Oldest"
+msgstr "最早"
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Position"
+msgstr "位置"
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "Start"
+msgstr "起始"
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "Zoom"
+msgstr "缩放"
+
+#: js/strings.js:368
 msgctxt "ai"
 msgid "Done"
 msgstr "已完成"
 
-#: js/strings.js:164
+#: js/strings.js:369
 msgctxt "ai"
 msgid "Already exists"
 msgstr "已经存在"
 
-#: js/strings.js:167
+#: js/strings.js:372
 msgctxt "sg"
 msgid "expert"
 msgstr "高级"
 
-#: js/strings.js:168
+#: js/strings.js:373
 msgctxt "sg"
 msgid "theme"
 msgstr "主题"
 
-#: js/strings.js:169
+#: js/strings.js:374
 msgctxt "st"
 msgid "website"
 msgstr "网站"
 
-#: js/strings.js:170
+#: js/strings.js:375
 msgctxt "st"
 msgid "logo"
 msgstr "徽标"
 
-#: js/strings.js:171
+#: js/strings.js:376
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "备用徽标"
 
-#: js/strings.js:172
+#: js/strings.js:377
 msgctxt "st"
 msgid "icon"
 msgstr "图标"
 
-#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2867,7 +4008,11 @@ msgstr "添加访问值"
 msgid "Access value"
 msgstr "访问值"
 
-#: js/views/AccessList.vue:353
+#: js/views/AccessList.vue:338
+msgid "Role name which can be assigned to pages and users"
+msgstr "可分配给页面和用户的角色名称"
+
+#: js/views/AccessList.vue:354
 msgid "Add"
 msgstr "添加"
 
@@ -2888,24 +4033,24 @@ msgid "Error publishing element"
 msgstr "发布元素出错"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:532
+#: js/views/PageDetail.vue:549
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "有无效字段，请先解决错误"
 
-#: js/views/ElementDetail.vue:309
+#: js/views/ElementDetail.vue:311
 msgid "Element saved successfully"
 msgstr "成功保存元素"
 
-#: js/views/ElementDetail.vue:323
+#: js/views/ElementDetail.vue:325
 msgid "Error saving element"
 msgstr "保存元素出错"
 
-#: js/views/ElementDetail.vue:383 js/views/ElementDetail.vue:403
-#: js/views/ElementDetail.vue:408
+#: js/views/ElementDetail.vue:385 js/views/ElementDetail.vue:405
+#: js/views/ElementDetail.vue:410
 msgid "Element"
 msgstr "元素"
 
-#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:399
+#: js/views/ElementDetail.vue:412 js/views/FileDetail.vue:401
 msgid "Used by"
 msgstr "使用位置"
 
@@ -2954,12 +4099,12 @@ msgstr "语言"
 msgid "Press Enter to open the chat"
 msgstr "按 Enter 键打开聊天"
 
-#: js/views/ElementList.vue:292
+#: js/views/ElementList.vue:293
 msgid "AI can find and manage shared elements based on your input"
 msgstr "人工智能可根据您的输入查找和管理共享元素"
 
-#: js/views/ElementList.vue:293 js/views/FileList.vue:292
-#: js/views/PageList.vue:338
+#: js/views/ElementList.vue:294 js/views/FileList.vue:293
+#: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "按 Enter 键或箭头打开 AI 助手，并在聊天中完善内容"
 
@@ -2975,16 +4120,16 @@ msgstr "文件已成功发布"
 msgid "File scheduled for publishing at %{date}"
 msgstr "文件计划于 %{date} 发布"
 
-#: js/views/FileDetail.vue:323
+#: js/views/FileDetail.vue:325
 msgid "File saved successfully"
 msgstr "文件已成功保存"
 
-#: js/views/FileDetail.vue:372 js/views/FileDetail.vue:392
-#: js/views/FileDetail.vue:397
+#: js/views/FileDetail.vue:374 js/views/FileDetail.vue:394
+#: js/views/FileDetail.vue:399
 msgid "File"
 msgstr "文件"
 
-#: js/views/FileList.vue:291
+#: js/views/FileList.vue:292
 msgid "AI can find and manage media files based on your input"
 msgstr "人工智能可根据您的输入查找和管理媒体文件"
 
@@ -3020,28 +4165,28 @@ msgstr "页面已成功发布"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "页面计划于 %{date} 发布"
 
-#: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
+#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
 msgid "Rate this page and suggest improvements"
 msgstr "评估此页面并提出改进建议"
 
-#: js/views/PageDetail.vue:584
+#: js/views/PageDetail.vue:602
 msgid "Page saved successfully"
 msgstr "页面保存成功"
 
-#: js/views/PageDetail.vue:621
+#: js/views/PageDetail.vue:639
 msgid "No page schema for \"content\" found"
 msgstr "未找到 \"content\" 的页面模式"
 
-#: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
-#: js/views/PageDetail.vue:839
+#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
+#: js/views/PageDetail.vue:857
 msgid "Page"
 msgstr "页面"
 
-#: js/views/PageDetail.vue:797
+#: js/views/PageDetail.vue:815
 msgid "Translate page"
 msgstr "翻译页面"
 
-#: js/views/PageDetail.vue:842
+#: js/views/PageDetail.vue:860
 msgid "Metrics"
 msgstr "指标"
 
@@ -3065,15 +4210,27 @@ msgstr "隐藏"
 msgid "cache"
 msgstr "缓存"
 
-#: js/views/PageList.vue:313
+#: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
 msgstr "根据提示生成页面"
 
-#: js/views/PageList.vue:331
+#: js/views/PageList.vue:332
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "人工智能可以根据您的输入创建页面和内容，并将其添加到页面树中"
+
+#~ msgid "Open command palette"
+#~ msgstr "打开命令面板"
+
+#~ msgid "Conflict resolution"
+#~ msgstr "冲突解决"
+
+#~ msgid "Command palette"
+#~ msgstr "命令面板"
+
+#~ msgid "Confirm"
+#~ msgstr "确认"
 
 #~ msgid "Selection is required"
 #~ msgstr "必须选择"

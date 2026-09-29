@@ -102,7 +102,17 @@ export default {
     <ShortcutDialog />
     <UnsavedDialog />
     <ReloginDialog v-if="user.me" />
-    <v-snackbar-queue v-model="messages.queue"></v-snackbar-queue>
+    <v-snackbar-queue v-model="messages.queue">
+      <template #actions="{ item, props }">
+        <v-btn
+          v-if="messages.action(item['data-action'])"
+          @click="messages.run(item['data-action']); props.onClick()"
+          class="btn-message-action"
+          variant="text"
+          >{{ messages.action(item['data-action']).label }}</v-btn
+        >
+      </template>
+    </v-snackbar-queue>
     <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">
       {{ messages.queue[messages.queue.length - 1]?.text }}
     </div>

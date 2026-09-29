@@ -16,7 +16,8 @@ import {
   mdiLock,
   mdiPlusLock,
   mdiRefresh,
-  mdiPencil
+  mdiPencil,
+  mdiCloseCircleOutline
 } from '@mdi/js'
 import ActionMenu from './ActionMenu.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
@@ -137,6 +138,7 @@ export default {
   props: {
     grid: { type: Boolean, default: false },
     embed: { type: Boolean, default: false },
+    defaults: { type: Object, default: null },
     filter: { type: Object, default: () => ({}) }
   },
 
@@ -195,6 +197,7 @@ export default {
       mdiPlusLock,
       mdiRefresh,
       mdiPencil,
+      mdiCloseCircleOutline,
       sortOptions: SORT_OPTIONS,
       debounce,
       fileurl,
@@ -230,6 +233,19 @@ export default {
   },
 
   computed: {
+    filtered() {
+      if (this.term || !this.defaults) {
+        return true
+      }
+
+      return Object.keys({ ...this.filter, ...this.defaults }).some((key) => {
+        return (
+          key !== 'view' &&
+          JSON.stringify(this.filter[key] ?? null) !== JSON.stringify(this.defaults[key] ?? null)
+        )
+      })
+    },
+
     canTrash() {
       return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
     },
@@ -244,6 +260,22 @@ export default {
   },
 
   methods: {
+    resetFilter() {
+      this.term = ''
+
+      if (this.defaults) {
+        const filter = {}
+
+        for (const key in this.filter) {
+          if (key !== 'view') {
+            filter[key] = this.defaults[key] ?? null
+          }
+        }
+
+        Object.assign(this.filter, filter)
+      }
+    },
+
     add(ev, disk = 'public') {
       if (this.embed || !this.user.can('file:add')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
@@ -315,6 +347,16 @@ export default {
 
           this.invalidate()
           this.search()
+          this.messages.add(
+            this.$ngettext('Moved to trash', '%{num} entries moved to trash', list.length, {
+              num: list.length
+            }),
+            'success',
+            null,
+            this.user.can('file:keep')
+              ? { label: this.$gettext('Undo'), handler: () => this.keep(list) }
+              : null
+          )
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error trashing file') + ':\n' + error, 'error')
@@ -431,7 +473,11 @@ export default {
         return
       }
 
-      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
+      const list = Array.isArray(item)
+        ? item
+        : item
+          ? [item]
+          : this.items.filter((item) => this.checked.has(item.id))
 
       if (!list.length) {
         return
@@ -982,7 +1028,18 @@ export default {
   </p>
 
   <p v-if="!loading && !items.length" class="notfound">
-    {{ $gettext('No entries found') }}
+    <template v-if="filtered">
+      {{ $gettext('No entries found') }}
+      <v-btn
+        v-if="term || defaults"
+        class="btn-reset-filter"
+        variant="text"
+        :prepend-icon="mdiCloseCircleOutline"
+        @click="resetFilter()"
+        >{{ $gettext('Reset') }}</v-btn
+      >
+    </template>
+    <template v-else>{{ $gettext('No entries yet') }}</template>
   </p>
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>

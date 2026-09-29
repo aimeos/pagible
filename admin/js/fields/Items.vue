@@ -3,6 +3,7 @@
 <script>
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `identity`: string, generated property name identifying each item
  * - `max`: int, maximum number of entries allowed
  * - `min`: int, minimum number of entries required
@@ -28,7 +29,7 @@ import VirtualList from 'vue-virtual-sortable'
 import { required, minEntries, maxEntries } from '../rules'
 import ActionMenu from '../components/ActionMenu.vue'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
-import { fieldTypes, protectTypes } from '../fieldtypes'
+import { fieldTypes, hintTypes, protectTypes } from '../fieldtypes'
 import { clone, itemTitle, txlocales, uid } from '../utils'
 import { key, reveal, scrollParent } from '../virtual'
 
@@ -88,6 +89,7 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiViewGridPlus,
+      hintTypes,
       protectTypes,
       txlocales
     }
@@ -280,6 +282,9 @@ export default {
         this.config.item?.[code]?.placeholder
           ? 'hint text: ' + this.config.item?.[code]?.placeholder
           : null,
+        this.config.item?.[code]?.hint
+          ? 'field description: ' + this.config.item?.[code]?.hint
+          : null,
         'context information as JSON: ' + JSON.stringify(this.items[idx])
       ]
       const prompt =
@@ -377,7 +382,7 @@ export default {
               </v-list-item>
               <v-list-item>
                 <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                  $gettext('Delete')
+                  $gettext('Remove')
                 }}</v-btn>
               </v-list-item>
 
@@ -474,6 +479,14 @@ export default {
               :config="field"
               :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
             ></component>
+            <div
+              v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"
+              class="v-input__details hint"
+            >
+              <div class="v-messages">
+                <div class="v-messages__message">{{ $pgettext('fh', field.hint) }}</div>
+              </div>
+            </div>
           </div>
         </v-expansion-panel-text>
         </v-expansion-panel>

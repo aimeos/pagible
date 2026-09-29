@@ -56,6 +56,7 @@ export default {
 
 <template>
   <v-select
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
     :readonly="readonly"

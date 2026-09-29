@@ -26,6 +26,7 @@ const markerIcon = () => L.divIcon({
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `default`: object, default location with latitude, longitude and zoom
  * - `required`: boolean, if true, a location is required
  * - `zoom`: int, default OpenStreetMap zoom level (1-19)

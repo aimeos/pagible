@@ -169,7 +169,12 @@ export default {
   <v-container class="page-access">
     <p class="hint">{{ $gettext('Access changes take effect immediately after cache expiry') }}</p>
 
-    <v-radio-group v-model="mode" :disabled="saving" @update:model-value="select">
+    <v-radio-group
+      v-model="mode"
+      :hint="$gettext('Public pages are visible to everyone, others only to logged in users or users with the selected roles')"
+      :disabled="saving"
+      @update:model-value="select"
+    >
       <v-radio value="public" :label="$gettext('Public')" />
       <v-radio value="authenticated" :label="$gettext('Authenticated users')" />
       <v-radio value="restricted" :label="$gettext('Restricted')" />
@@ -180,6 +185,7 @@ export default {
       v-model="values"
       :items="items"
       :label="$gettext('Access')"
+      :hint="$gettext('Only visitors with one of these roles can view the page')"
       :loading="loading"
       :disabled="saving"
       variant="underlined"

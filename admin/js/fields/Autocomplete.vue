@@ -7,6 +7,7 @@ import { debounce, safeParse } from '../utils'
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `api-type`: string, "GQL" or "REST" to search entries via the `query` or `url` setting
  * - `default`: mixed, value used if none is set
  * - `empty-text`: string, text shown if no entries are found
@@ -189,6 +190,7 @@ export default {
 
 <template>
   <v-autocomplete
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
     :items="list"

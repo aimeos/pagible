@@ -192,7 +192,7 @@ export default {
     max-width="1200"
   >
     <template #toolbar-actions>
-      <v-btn v-if="Object.keys(items).length" variant="outlined" @click="add()" data-confirm>
+      <v-btn v-if="Object.keys(items).length" variant="flat" color="primary" @click="add()" data-confirm>
         {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
       </v-btn>
     </template>
@@ -207,6 +207,7 @@ export default {
       :error-messages="errors"
       :append-inner-icon="input ? mdiCheck : ''"
       :placeholder="$gettext('Enter one URL per line')"
+      :hint="$gettext('Files are downloaded from these URLs and added to the media list')"
       variant="outlined"
       autofocus
       auto-grow
@@ -223,6 +224,7 @@ export default {
       :error-messages="errors"
       :append-inner-icon="input ? mdiCheck : ''"
       :placeholder="$gettext('Enter URL')"
+      :hint="$gettext('The file is downloaded from this URL and added to the media list')"
       variant="outlined"
       maxlength="255"
       counter="255"

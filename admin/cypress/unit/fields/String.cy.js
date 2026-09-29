@@ -24,6 +24,11 @@ describe('String (textarea)', () => {
     cy.get('.v-counter').should('exist')
   })
 
+  it('always shows the hint from config', () => {
+    cy.mount(StringField, { props: { config: { hint: 'Short summary' } } })
+    cy.get('.v-messages__message').should('be.visible').and('contain', 'Short summary')
+  })
+
   it('applies a custom CSS class from config', () => {
     cy.mount(StringField, { props: { config: { class: 'custom-cls' } } })
     cy.get('.custom-cls').should('exist')

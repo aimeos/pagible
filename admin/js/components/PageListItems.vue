@@ -25,7 +25,8 @@ import {
   mdiCached,
   mdiLock,
   mdiKeyVariant,
-  mdiPencil
+  mdiPencil,
+  mdiCloseCircleOutline
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
@@ -274,6 +275,7 @@ export default {
 
   props: {
     embed: { type: Boolean, default: false },
+    defaults: { type: Object, default: null },
     filter: { type: Object, default: () => ({}) }
   },
 
@@ -300,6 +302,7 @@ export default {
       echoCleanup: null,
       echoPromise: null,
       loadId: 0,
+      origin: null,
       outdated: false
     }
   },
@@ -344,6 +347,7 @@ export default {
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
+      mdiCloseCircleOutline,
       sortOptions: SORT_OPTIONS,
       debounce
     }
@@ -396,6 +400,19 @@ export default {
   },
 
   computed: {
+    filtered() {
+      if (this.term || !this.defaults) {
+        return true
+      }
+
+      return Object.keys({ ...this.filter, ...this.defaults }).some((key) => {
+        return (
+          key !== 'view' &&
+          JSON.stringify(this.filter[key] ?? null) !== JSON.stringify(this.defaults[key] ?? null)
+        )
+      })
+    },
+
     canTrash() {
       return (
         this.isChecked &&
@@ -416,6 +433,22 @@ export default {
   },
 
   methods: {
+    resetFilter() {
+      this.term = ''
+
+      if (this.defaults) {
+        const filter = {}
+
+        for (const key in this.filter) {
+          if (key !== 'view') {
+            filter[key] = this.defaults[key] ?? null
+          }
+        }
+
+        Object.assign(this.filter, filter)
+      }
+    },
+
     accessApplied(access, descendants = false) {
       const stats = this.$refs.tree?.statsFlat || []
       const ids = new Set(this.accessIds)
@@ -484,6 +517,34 @@ export default {
         })
     },
 
+    position(stat) {
+      const siblings = this.$refs.tree.getSiblings(stat)
+      const next = siblings[siblings.indexOf(stat) + 1]
+
+      return {
+        id: stat.data.id,
+        parent: stat.parent?.data.id || null,
+        ref: next?.data.id || null
+      }
+    },
+
+    moved(origin) {
+      if (!origin) {
+        return
+      }
+
+      this.messages.add(this.$gettext('Page moved'), 'success', null, {
+        label: this.$gettext('Undo'),
+        handler: () => {
+          this.movePage(origin.id, origin.parent, origin.ref).then((success) => {
+            if (success) {
+              this.reload(false)
+            }
+          })
+        }
+      })
+    },
+
     updateHas(stat, delta) {
       // optimistically adjust the immediate parent's descendant count (`has`); only feeds the
       // "apply recursively (N)" hint, so grandparents stay approximate until the next reload
@@ -495,6 +556,9 @@ export default {
     change() {
       if (!dragContext?.targetInfo) return
 
+      const origin = this.origin
+      this.origin = null
+
       const parent = dragContext.targetInfo.parent
       const siblings = dragContext.targetInfo.siblings
       const ref = siblings[dragContext.targetInfo.indexBeforeDrop + 1] || null
@@ -503,12 +567,17 @@ export default {
         dragContext.startInfo.dragNode.data.id,
         parent ? parent.data.id : null,
         ref ? ref.data.id : null
-      ).then(() => {
+      ).then((success) => {
+        if (!success) {
+          return
+        }
+
         const srcparent = dragContext.startInfo.parent
         const moved = (dragContext.startInfo.dragNode.data.has || 0) + 1
 
         this.updateHas(srcparent, -moved)
         this.updateHas(parent, moved)
+        this.moved(origin)
       })
     },
 
@@ -625,11 +694,45 @@ export default {
           }
 
           this.invalidate()
+          this.trashed(list.map((item) => item.data.id))
         })
         .catch((error) => {
           this.messages.add(this.$gettext('Error trashing page') + ':\n' + error, 'error')
           this.$log(`PageList::drop(): Error trashing page`, list, error)
         })
+    },
+
+    trashed(ids) {
+      const action = this.user.can('page:keep')
+        ? {
+            label: this.$gettext('Undo'),
+            handler: () => {
+              this.$apollo
+                .mutate({ mutation: KEEP_PAGE, variables: { id: ids } })
+                .then((result) => {
+                  if (result.errors) {
+                    throw result.errors
+                  }
+
+                  this.invalidate()
+                  this.reload(false)
+                })
+                .catch((error) => {
+                  this.messages.add(this.$gettext('Error restoring page') + ':\n' + error, 'error')
+                  this.$log(`PageList::trashed(): Error restoring page`, ids, error)
+                })
+            }
+          }
+        : null
+
+      this.messages.add(
+        this.$ngettext('Moved to trash', '%{num} entries moved to trash', ids.length, {
+          num: ids.length
+        }),
+        'success',
+        null,
+        action
+      )
     },
 
     checkedAncestor(stat, checked) {
@@ -836,8 +939,6 @@ export default {
       const list = stats.filter((stat) => {
         return stats.indexOf(stat.parent) === -1
       })
-      const deleted_at = stat.data.deleted_at || null
-
       if (!list.length) {
         return
       }
@@ -855,6 +956,8 @@ export default {
           }
 
           for (const item of list) {
+            const deleted_at = item.data.deleted_at || null
+
             this.update(item, (item) => {
               if (deleted_at >= item.data.deleted_at) {
                 item.data.deleted_at = null
@@ -911,6 +1014,7 @@ export default {
 
     move(stat, idx = null) {
       const clip = this.clip
+      const origin = this.position(clip.stat)
       const siblings = this.$refs.tree.getSiblings(stat)
       const parent = idx !== null ? stat.parent : stat
       const pos = siblings.indexOf(stat)
@@ -948,6 +1052,7 @@ export default {
 
         this.updateHas(oldparent, -moved)
         this.updateHas(parent, moved)
+        this.moved(origin)
 
         return true
       })
@@ -1694,6 +1799,7 @@ export default {
     ref="tree"
     v-model="items"
     @change="change()"
+    @before-drag-start="origin = position($event)"
     @keydown.alt="reorder"
     @keydown.right.exact="expand"
     @keydown="treeKey"
@@ -1936,7 +2042,18 @@ export default {
   </p>
 
   <p v-if="!loading && !items.length" class="notfound">
-    {{ $gettext('No entries found') }}
+    <template v-if="filtered">
+      {{ $gettext('No entries found') }}
+      <v-btn
+        v-if="term || defaults"
+        class="btn-reset-filter"
+        variant="text"
+        :prepend-icon="mdiCloseCircleOutline"
+        @click="resetFilter()"
+        >{{ $gettext('Reset') }}</v-btn
+      >
+    </template>
+    <template v-else>{{ $gettext('No entries yet') }}</template>
   </p>
 
   <div v-if="!this.embed && this.user.can('page:add')" class="btn-group">

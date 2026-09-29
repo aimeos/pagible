@@ -186,9 +186,9 @@ describe('File List', () => {
 
   // ---- Loading & empty state ----
 
-  it('shows "No entries found" when file list is empty', () => {
+  it('shows "No entries yet" when file list is empty', () => {
     visitFiles([])
-    cy.get('.file-list').should('contain', 'No entries found')
+    cy.get('.file-list').should('contain', 'No entries yet')
   })
 
   it('shows file items when files are returned', () => {

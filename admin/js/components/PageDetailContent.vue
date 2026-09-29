@@ -113,6 +113,22 @@ export default {
         : this.$refs.content?.reset()
     },
 
+    async showError() {
+      const section = Object.keys(this.errors).find((key) => this.errors[key])
+
+      if (!section) {
+        return
+      }
+
+      if (Array.isArray(this.$refs.content)) {
+        this.tab = section
+        await this.$nextTick()
+        await this.$refs.content.find((ref) => ref.section === section)?.showError()
+      } else {
+        await this.$refs.content?.showError()
+      }
+    },
+
     update(section, list) {
       const sections = this.sections
       sections[section] = list

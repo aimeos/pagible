@@ -39,25 +39,30 @@
                 "text": {
                     "type": "markdown",
                     "label": "description",
+                    "hint": "Detailed description of the property",
                     "required": true,
                     "max": 500
                 },
                 "location": {
                     "type": "markdown",
                     "label": "Location",
+                    "hint": "Description of the neighborhood and surroundings",
                     "required": true
                 },
                 "map": {
                     "type": "map",
+                    "hint": "Search for the address or click on the map to set the location",
                     "zoom": 16
                 },
                 "reference": {
                     "type": "string",
-                    "label": "Reference"
+                    "label": "Reference",
+                    "hint": "Internal reference number of the property"
                 },
                 "property_type": {
                     "type": "select",
                     "label": "Type",
+                    "hint": "Kind of property",
                     "required": true,
                     "options": [
                         {
@@ -109,6 +114,7 @@
                 "offer_type": {
                     "type": "select",
                     "label": "Offer type",
+                    "hint": "Property offered for sale or for rent",
                     "default": "sale",
                     "required": true,
                     "options": [
@@ -124,17 +130,20 @@
                 },
                 "address": {
                     "type": "string",
-                    "label": "Address"
+                    "label": "Address",
+                    "hint": "Street and house number"
                 },
                 "zip_code": {
                     "type": "string",
-                    "label": "Post code"
+                    "label": "Post code",
+                    "hint": "Postal code of the property"
                 },
                 "price": {
                     "type": "number",
                     "min": 0,
                     "required": true,
-                    "label": "Price"
+                    "label": "Price",
+                    "hint": "Purchase price or rent of the property"
                 },
                 "currency": {
                     "type": "string",
@@ -145,11 +154,13 @@
                     "placeholder": "EUR",
                     "uppercase": true,
                     "required": true,
-                    "label": "Currency"
+                    "label": "Currency",
+                    "hint": "Three letter ISO currency code, e.g. EUR or USD"
                 },
                 "price_period": {
                     "type": "select",
                     "label": "Price period (rent only)",
+                    "hint": "Time period the rent is charged for",
                     "options": [
                         {
                             "value": "month",
@@ -168,6 +179,7 @@
                 "status": {
                     "type": "select",
                     "label": "Status",
+                    "hint": "Current availability of the property",
                     "default": "available",
                     "required": true,
                     "options": [
@@ -191,58 +203,69 @@
                 },
                 "available_from": {
                     "type": "date",
-                    "label": "Available from"
+                    "label": "Available from",
+                    "hint": "Date from which the property is available"
                 },
                 "district": {
                     "type": "string",
-                    "label": "District"
+                    "label": "District",
+                    "hint": "District or neighborhood of the city"
                 },
                 "city": {
-                    "type": "string"
+                    "type": "string",
+                    "hint": "City the property is located in"
                 },
                 "country": {
                     "type": "string",
-                    "label": "Country"
+                    "label": "Country",
+                    "hint": "Country the property is located in"
                 },
                 "area": {
                     "type": "number",
                     "min": 1,
                     "step": 0.01,
                     "required": true,
-                    "label": "Area"
+                    "label": "Area",
+                    "hint": "Total area of the property"
                 },
                 "area_unit": {
                     "type": "string",
                     "default": "m²",
                     "max": 16,
                     "required": true,
-                    "label": "Area unit"
+                    "label": "Area unit",
+                    "hint": "Unit of all area values, e.g. m² or sq ft"
                 },
                 "living_area": {
                     "type": "number",
                     "min": 0,
                     "step": 0.01,
-                    "label": "Living area"
+                    "label": "Living area",
+                    "hint": "Usable living space"
                 },
                 "plot_area": {
                     "type": "number",
                     "min": 0,
                     "step": 0.01,
-                    "label": "Plot area"
+                    "label": "Plot area",
+                    "hint": "Size of the land"
                 },
                 "rooms": {
                     "type": "number",
                     "min": 0,
                     "step": 0.5,
-                    "label": "Rooms"
+                    "label": "Rooms",
+                    "hint": "Total number of rooms"
                 },
                 "bedrooms": {
                     "type": "number",
+                    "hint": "Number of bedrooms",
                     "min": 0,
                     "step": 1
                 },
                 "bathrooms": {
                     "type": "number",
+                    "hint": "Number of bathrooms",
                     "min": 0,
                     "step": 1
                 },
@@ -250,11 +273,13 @@
                     "type": "number",
                     "min": 1000,
                     "max": 9999,
-                    "label": "Year built"
+                    "label": "Year built",
+                    "hint": "Year of construction"
                 },
                 "values": {
                     "type": "table",
                     "label": "Optional values",
+                    "hint": "Additional details as name and value pairs",
                     "default": [
                         [
                             "",
@@ -265,19 +290,23 @@
                 "features": {
                     "type": "markdown",
                     "label": "Features",
+                    "hint": "List of the features and equipment",
                     "required": true
                 },
                 "documents": {
                     "type": "items",
                     "label": "Documents",
+                    "hint": "Downloadable documents like floor plans or energy certificates",
                     "item": {
                         "title": {
                             "type": "string",
-                            "label": "Document title"
+                            "label": "Document title",
+                            "hint": "Name of the document shown to visitors"
                         },
                         "file": {
                             "type": "file",
                             "label": "Document",
+                            "hint": "File offered for download",
                             "required": true
                         }
                     }
@@ -285,6 +314,7 @@
                 "files": {
                     "type": "images",
                     "label": "Gallery",
+                    "hint": "Photos of the property, the first one is used as preview image",
                     "required": true
                 }
             }
@@ -295,10 +325,12 @@
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 4h18v2H3V4M3 10h18v2H3v-2M3 16h18v2H3v-2M5 20h14v2H5v-2M5 2h14v2H5V2M9 6h6v2H9V6M9 12h6v2H9v-2M9 18h6v2H9v-2M5 4v16h14V4H5z\" /></svg>",
             "fields": {
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "hint": "Optional headline shown above the list"
                 },
                 "layout": {
                     "type": "select",
+                    "hint": "Display the properties as cards or as a compact list",
                     "default": "cards",
                     "options": [
                         {
@@ -314,10 +346,12 @@
                 "filters": {
                     "type": "boolean",
                     "label": "Show filters",
+                    "hint": "Allow visitors to filter the properties",
                     "default": true
                 },
                 "parent-page": {
                     "type": "autocomplete",
+                    "hint": "Page whose property subpages are listed",
                     "api-type": "GQL",
                     "query": "query{pages(filter:{title: _term_}){\n  data {\n    id\n    title\n    latest {\n      data\n    }\n  }\n}}",
                     "list-key": "pages/data",
@@ -326,6 +360,7 @@
                 },
                 "order": {
                     "type": "select",
+                    "hint": "Sort order of the listed properties",
                     "options": [
                         {
                             "value": "_lft",
@@ -343,6 +378,7 @@
                 },
                 "limit": {
                     "type": "number",
+                    "hint": "Maximum number of properties shown at once",
                     "min": 1,
                     "max": 100,
                     "default": 6
@@ -361,74 +397,92 @@
             "fields": {
                 "--pico-font-family-sans-serif": {
                     "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
                     "default": "'Helvetica Neue', Helvetica, Arial, sans-serif"
                 },
                 "--pico-font-family-display": {
                     "type": "string",
+                    "hint": "Comma separated list of fonts used for headlines",
                     "default": "'Helvetica Neue', Helvetica, Arial, sans-serif"
                 },
                 "--pico-color": {
                     "type": "color",
+                    "hint": "Default text color",
                     "default": "#242424"
                 },
                 "--pico-background-color": {
                     "type": "color",
+                    "hint": "Background color of the pages",
                     "default": "#FFFFFF"
                 },
                 "--pico-text-selection-color": {
                     "type": "color",
+                    "hint": "Background color of selected text",
                     "default": "#B5122B22"
                 },
                 "--pico-contrast": {
                     "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
                     "default": "#242424"
                 },
                 "--pico-contrast-hover": {
                     "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
                     "default": "#000000"
                 },
                 "--pico-contrast-inverse": {
                     "type": "color",
+                    "hint": "Text color on elements using the contrast color",
                     "default": "#FFFFFF"
                 },
                 "--pico-primary": {
                     "type": "color",
+                    "hint": "Main brand color used for links and buttons",
                     "default": "#B5122B"
                 },
                 "--pico-primary-background": {
                     "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
                     "default": "#B5122B0F"
                 },
                 "--pico-primary-hover": {
                     "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
                     "default": "#8F0D22"
                 },
                 "--pico-primary-hover-background": {
                     "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
                     "default": "#8F0D220F"
                 },
                 "--pico-secondary": {
                     "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
                     "default": "#242424"
                 },
                 "--pico-secondary-background": {
                     "type": "color",
+                    "hint": "Background color of secondary buttons",
                     "default": "#2424240F"
                 },
                 "--pico-secondary-hover": {
                     "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
                     "default": "#000000"
                 },
                 "--pico-secondary-hover-background": {
                     "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
                     "default": "#0000000F"
                 },
                 "--pico-border-radius": {
                     "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners",
                     "default": "0"
                 },
                 "--pico-nav-breadcrumb-divider": {
                     "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
                     "default": "—"
                 }
             }

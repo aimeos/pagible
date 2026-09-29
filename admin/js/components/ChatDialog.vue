@@ -6,7 +6,6 @@ import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 import {
   mdiBroom,
-  mdiClose,
   mdiContentCopy,
   mdiCreation,
   mdiMicrophone,
@@ -16,6 +15,7 @@ import {
 } from '@mdi/js'
 import { useUserStore } from '../stores'
 import { chat } from '../chat'
+import CmsDialog from './Dialog.vue'
 
 // GFM (tables, task lists, strikethrough) with single newlines as <br> to match chat expectations.
 // A dedicated instance avoids mutating marked's global options; DOMPurify sanitizes the output.
@@ -23,6 +23,10 @@ const md = new Marked({ gfm: true, breaks: true })
 
 export default {
   name: 'ChatDialog',
+
+  components: {
+    CmsDialog
+  },
 
   props: {
     context: { type: String, default: '' },
@@ -51,7 +55,6 @@ export default {
     return {
       user,
       mdiBroom,
-      mdiClose,
       mdiContentCopy,
       mdiCreation,
       mdiMicrophone,
@@ -238,7 +241,9 @@ export default {
             const end = assistant.content.lastIndexOf('\n\n')
 
             if (end >= assistant.scanned) {
-              if ((assistant.content.slice(assistant.scanned, end).match(/^```/gm) || []).length % 2) {
+              if (
+                (assistant.content.slice(assistant.scanned, end).match(/^```/gm) || []).length % 2
+              ) {
                 assistant.fenceOpen = !assistant.fenceOpen
               }
               assistant.scanned = end
@@ -270,7 +275,9 @@ export default {
           if (!assistant.content) {
             // Errors flagged `shown` carry a translated, user-facing message (lock / rate-limit /
             // unavailable); show it verbatim. Everything else gets the generic fallback.
-            assistant.content = error?.shown ? error.message : this.$gettext('Sorry, something went wrong.')
+            assistant.content = error?.shown
+              ? error.message
+              : this.$gettext('Sorry, something went wrong.')
           }
         })
         .finally(() => {
@@ -315,69 +322,62 @@ export default {
 </script>
 
 <template>
-  <v-dialog v-model="open" :max-width="720" class="chat-dialog">
-    <v-card class="chat" :elevation="4">
-      <v-toolbar density="comfortable" :elevation="0" class="chat-toolbar">
-        <v-avatar color="primary" variant="tonal" size="36" class="ms-4 me-2">
-          <v-icon :icon="mdiCreation" size="18" />
+  <CmsDialog
+    v-model="open"
+    :title="$gettext('AI Assistant')"
+    :max-width="720"
+    content-class="chat-body d-flex flex-column"
+    class="chat-dialog"
+  >
+    <template #toolbar-actions>
+      <v-btn
+        :icon="mdiBroom"
+        :title="$gettext('New chat')"
+        :aria-label="$gettext('New chat')"
+        :disabled="busy || !messages.length"
+        @click="clear()"
+      />
+    </template>
+
+    <div ref="list" class="chat-messages scroll" role="log" aria-live="polite">
+      <div v-if="!messages.length" class="chat-empty">
+        <v-avatar color="primary" variant="tonal" size="72" class="chat-empty-icon">
+          <v-icon :icon="mdiCreation" size="36" />
         </v-avatar>
-        <v-toolbar-title>{{ $gettext('AI Assistant') }}</v-toolbar-title>
-        <v-spacer />
-        <v-btn
-          :icon="mdiBroom"
-          :title="$gettext('New chat')"
-          :aria-label="$gettext('New chat')"
-          :disabled="busy || !messages.length"
-          @click="clear()"
-          variant="text"
-        />
-        <v-btn
-          :icon="mdiClose"
-          :title="$gettext('Close')"
-          :aria-label="$gettext('Close')"
-          @click="open = false"
-          variant="text"
-        />
-      </v-toolbar>
-
-      <div ref="list" class="chat-messages scroll" role="log" aria-live="polite">
-        <div v-if="!messages.length" class="chat-empty">
-          <v-avatar color="primary" variant="tonal" size="72" class="chat-empty-icon">
-            <v-icon :icon="mdiCreation" size="36" />
-          </v-avatar>
-          <p>{{ $gettext( 'What shall I do for you?' ) }}</p>
-        </div>
-
-        <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
-          <div class="chat-bubble" :class="{ error: m.error }">
-            <!-- Each completed block is rendered once into m.blocks and appended as its own element,
-                 so neither DOMPurify nor the DOM re-processes earlier blocks. The open trailing block
-                 (m.pending) is rendered live as markdown too - so single-newline content with no
-                 blank-line boundary still formats while streaming instead of showing raw markdown
-                 until the block closes. marked tolerates partial syntax, so the commit is seamless -->
-            <template v-if="m.role === 'assistant'">
-              <div v-for="(b, j) in m.blocks" :key="j" class="chat-md" v-html="b"></div>
-              <div v-if="m.streaming && m.pending" class="chat-md" v-html="render(m.pending)"></div>
-            </template>
-            <div v-else class="chat-text">{{ m.content }}</div>
-            <span v-if="m.streaming && !m.content" class="chat-typing" role="status">
-              <span></span><span></span><span></span>
-              <span class="chat-sr">{{ $gettext('Thinking ...') }}</span>
-            </span>
-            <span v-else-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>
-            <v-btn
-              v-if="m.role === 'assistant' && m.content && !m.streaming"
-              :icon="mdiContentCopy"
-              :title="$pgettext('clipboard', 'Copy')"
-              @click="copy(m.content)"
-              size="x-small"
-              variant="text"
-              class="chat-copy"
-            />
-          </div>
-        </div>
+        <p>{{ $gettext('What shall I do for you?') }}</p>
       </div>
 
+      <div v-for="m in messages" :key="m.id" class="chat-row" :class="m.role">
+        <div class="chat-bubble" :class="{ error: m.error }">
+          <!-- Each completed block is rendered once into m.blocks and appended as its own element,
+               so neither DOMPurify nor the DOM re-processes earlier blocks. The open trailing block
+               (m.pending) is rendered live as markdown too - so single-newline content with no
+               blank-line boundary still formats while streaming instead of showing raw markdown
+               until the block closes. marked tolerates partial syntax, so the commit is seamless -->
+          <template v-if="m.role === 'assistant'">
+            <div v-for="(b, j) in m.blocks" :key="j" class="chat-md" v-html="b"></div>
+            <div v-if="m.streaming && m.pending" class="chat-md" v-html="render(m.pending)"></div>
+          </template>
+          <div v-else class="chat-text">{{ m.content }}</div>
+          <span v-if="m.streaming && !m.content" class="chat-typing" role="status">
+            <span></span><span></span><span></span>
+            <span class="chat-sr">{{ $gettext('Thinking ...') }}</span>
+          </span>
+          <span v-else-if="m.streaming" class="chat-cursor" aria-hidden="true"></span>
+          <v-btn
+            v-if="m.role === 'assistant' && m.content && !m.streaming"
+            :icon="mdiContentCopy"
+            :title="$pgettext('clipboard', 'Copy')"
+            @click="copy(m.content)"
+            size="x-small"
+            variant="text"
+            class="chat-copy"
+          />
+        </div>
+      </div>
+    </div>
+
+    <template #footer>
       <div class="chat-input">
         <v-textarea
           v-model="input"
@@ -428,24 +428,15 @@ export default {
           </template>
         </v-textarea>
       </div>
-    </v-card>
-  </v-dialog>
+    </template>
+  </CmsDialog>
 </template>
 
 <style scoped>
-.chat {
-  display: flex;
-  flex-direction: column;
-  height: 80vh;
-  max-height: 80vh;
-}
-
-.chat-toolbar {
-  flex: 0 0 auto;
-}
-
 .chat-messages {
   flex: 1 1 auto;
+  min-height: 0;
+  height: calc(80vh - 132px);
   overflow-y: auto;
   padding: 20px;
   background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.06), transparent 120px);
@@ -708,12 +699,8 @@ export default {
 }
 
 @media (max-width: 599px) {
-  .chat {
-    height: 88vh;
-    max-height: 88vh;
-  }
-
   .chat-messages {
+    height: calc(88vh - 124px);
     padding: 16px 12px;
   }
 
@@ -728,5 +715,12 @@ export default {
 
 .dictating {
   color: rgb(var(--v-theme-error));
+}
+</style>
+
+<style>
+/* Unscoped: the body element belongs to CmsDialog, whose scoped padding wins over layered utilities */
+.v-card-text.dialog-body.chat-body {
+  padding: 0;
 }
 </style>

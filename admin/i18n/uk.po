@@ -10,38 +10,38 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:260
-#: js/components/ElementListItems.vue:299
-#: js/components/ElementListItems.vue:435
-#: js/components/ElementListItems.vue:471
-#: js/components/ElementListItems.vue:511
-#: js/components/ElementListItems.vue:553
-#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:292
+#: js/components/ElementListItems.vue:331
+#: js/components/ElementListItems.vue:477
+#: js/components/ElementListItems.vue:517
+#: js/components/ElementListItems.vue:557
+#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
-#: js/components/FileDetailItemImage.vue:386
+#: js/components/FileDetailItemImage.vue:387
 #: js/components/FileDetailItemVideo.vue:68
 #: js/components/FileDetailItemVideo.vue:136
 #: js/components/FileDetailItemVideo.vue:174
-#: js/components/FileListItems.vue:249 js/components/FileListItems.vue:294
-#: js/components/FileListItems.vue:430 js/components/FileListItems.vue:463
-#: js/components/FileListItems.vue:500 js/components/FileListItems.vue:542
-#: js/components/FileListItems.vue:587
+#: js/components/FileListItems.vue:281 js/components/FileListItems.vue:326
+#: js/components/FileListItems.vue:472 js/components/FileListItems.vue:509
+#: js/components/FileListItems.vue:546 js/components/FileListItems.vue:588
+#: js/components/FileListItems.vue:633
 #: js/components/PageDetailContentList.vue:412
 #: js/components/PageDetailContentList.vue:506
-#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:517
-#: js/components/PageListItems.vue:590 js/components/PageListItems.vue:683
-#: js/components/PageListItems.vue:754 js/components/PageListItems.vue:827
-#: js/components/PageListItems.vue:958 js/components/PageListItems.vue:987
-#: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
-#: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
-#: js/components/PageListItems.vue:1404 js/fields/File.vue:147
-#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
+#: js/components/PageListItems.vue:486 js/components/PageListItems.vue:586
+#: js/components/PageListItems.vue:659 js/components/PageListItems.vue:786
+#: js/components/PageListItems.vue:857 js/components/PageListItems.vue:930
+#: js/components/PageListItems.vue:1063 js/components/PageListItems.vue:1092
+#: js/components/PageListItems.vue:1218 js/components/PageListItems.vue:1259
+#: js/components/PageListItems.vue:1380 js/components/PageListItems.vue:1458
+#: js/components/PageListItems.vue:1509 js/fields/File.vue:147
+#: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
+#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "У дозволі відмовлено"
@@ -76,8 +76,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "Забагато запитів. Будь ласка, зачекайте трохи і спробуйте ще раз."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Відкрити палітру команд"
+msgid "Open commands"
+msgstr "Відкрити команди"
 
 #: js/commands.js:60
 msgid "Confirm dialog"
@@ -150,8 +150,8 @@ msgid "Go to pages"
 msgstr "Перейти до сторінок"
 
 #: js/commands.js:176 js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:297
-#: js/components/HistoryDialog.vue:299 js/components/Navigation.vue:31
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
+#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "Медіа"
@@ -237,20 +237,28 @@ msgstr "Обліковий запис"
 msgid "Assigned frontend roles"
 msgstr "Призначені ролі фронтенду"
 
-#: js/components/AccessUsers.vue:496
+#: js/components/AccessUsers.vue:484
+msgid "Roles granting access to restricted pages"
+msgstr "Ролі, що надають доступ до обмежених сторінок"
+
+#: js/components/AccessUsers.vue:497
 msgid "Assigned backend roles"
 msgstr "Призначені ролі бекенду"
 
-#: js/components/AccessUsers.vue:500
+#: js/components/AccessUsers.vue:501
 msgid "Custom"
 msgstr "Власна"
 
-#: js/components/AccessUsers.vue:506
+#: js/components/AccessUsers.vue:507
 msgid "Available roles"
 msgstr "Доступні ролі"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
-#: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
+#: js/components/AccessUsers.vue:508
+msgid "Roles defining what the user can do in the admin panel"
+msgstr "Ролі, що визначають, що може робити користувач у панелі адміністратора"
+
+#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Не знайдено жодного запису"
@@ -259,11 +267,8 @@ msgstr "Не знайдено жодного запису"
 msgid "Actions"
 msgstr "Дії"
 
-#: js/components/ActionMenu.vue:61 js/components/ChangesDialog.vue:322
-#: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
-#: js/components/Dialog.vue:46 js/components/FieldsAside.vue:186
-#: js/components/FileDetailItemImage.vue:758
-#: js/components/FileDetailItemImage.vue:813 js/components/UnsavedDialog.vue:40
+#: js/components/ActionMenu.vue:61 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:186
 msgid "Close"
 msgstr "Закрити"
 
@@ -275,8 +280,8 @@ msgstr "Використані елементи"
 msgid "Filters"
 msgstr "Фільтри"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:326
-#: js/components/Fields.vue:359
+#: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
+#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
 msgid "Reset"
 msgstr "Скинути"
 
@@ -310,96 +315,93 @@ msgid "deleted"
 msgstr "видалено"
 
 #: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
-#: js/components/HistoryDialog.vue:39
+#: js/components/HistoryDialog.vue:40
 msgid "Meta data"
 msgstr "Метадані"
 
-#: js/components/ChangesDialog.vue:54 js/components/ChangesDialog.vue:55
-#: js/components/HistoryDialog.vue:39
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:40
 msgid "Fields"
 msgstr "Поля"
 
-#: js/components/ChangesDialog.vue:56
+#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Метатеги"
 
-#: js/components/ChangesDialog.vue:57 js/components/HistoryDialog.vue:40
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:41
 msgid "Configuration"
 msgstr "Налаштування"
 
-#: js/components/ChangesDialog.vue:58 js/components/HistoryDialog.vue:40
-#: js/views/PageDetail.vue:832
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
+#: js/views/PageDetail.vue:850
 msgid "Content"
 msgstr "Вміст"
 
-#: js/components/ChangesDialog.vue:313
-msgid "Conflict resolution"
-msgstr "Вирішення конфліктів"
-
-#: js/components/ChangesDialog.vue:317
+#: js/components/ChangesDialog.vue:320
 msgid "Conflicts from %{editor}"
 msgstr "Конфлікти від %{editor}"
 
-#: js/components/ChangesDialog.vue:320
+#: js/components/ChangesDialog.vue:326
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:344 js/components/FieldsAside.vue:256
+#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
+#: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr "Повернути зміни"
 
-#: js/components/ChangesDialog.vue:347 js/components/ChangesDialog.vue:374
+#: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
 msgid "Changes"
 msgstr "Зміни"
 
-#: js/components/ChangesDialog.vue:396
+#: js/components/ChangesDialog.vue:400
 msgid "Removed"
 msgstr "Видалено"
 
-#: js/components/ChangesDialog.vue:403
+#: js/components/ChangesDialog.vue:407
 msgid "Added"
 msgstr "Додано"
 
-#: js/components/ChangesDialog.vue:441
+#: js/components/ChangesDialog.vue:445
 msgid "Use theirs"
 msgstr "Використати їхні"
 
-#: js/components/ChangesDialog.vue:447
+#: js/components/ChangesDialog.vue:451
 msgid "Keep mine"
 msgstr "Залишити моє"
 
-#: js/components/ChangesDialog.vue:454
+#: js/components/ChangesDialog.vue:458
 msgid "Merge both"
 msgstr "Об'єднати обидва"
 
-#: js/components/ChatDialog.vue:265
+#: js/components/ChatDialog.vue:270
 msgid "Done"
 msgstr "Готово"
 
-#: js/components/ChatDialog.vue:273
+#: js/components/ChatDialog.vue:280
 msgid "Sorry, something went wrong."
 msgstr "Вибачте, щось пішло не так."
 
-#: js/components/ChatDialog.vue:324
+#: js/components/ChatDialog.vue:327
 msgid "AI Assistant"
 msgstr "ШІ помічник"
 
-#: js/components/ChatDialog.vue:328 js/components/ChatDialog.vue:329
+#: js/components/ChatDialog.vue:335 js/components/ChatDialog.vue:336
 msgid "New chat"
 msgstr "Новий чат"
 
-#: js/components/ChatDialog.vue:348 js/views/ElementList.vue:251
+#: js/components/ChatDialog.vue:347 js/views/ElementList.vue:251
 #: js/views/FileList.vue:250 js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr "Що я можу для вас зробити?"
 
-#: js/components/ChatDialog.vue:365
+#: js/components/ChatDialog.vue:364
 msgid "Thinking ..."
 msgstr "Думаю ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
-#: js/components/PageDetailContentList.vue:937
-#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+#: js/components/ChatDialog.vue:370 js/components/PageDetailContentList.vue:857
+#: js/components/PageDetailContentList.vue:953
+#: js/components/PageListItems.vue:1896 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Копіювати"
@@ -409,11 +411,11 @@ msgid "Send a message ..."
 msgstr "Надіслати повідомлення..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
-#: js/views/ElementList.vue:283 js/views/FileList.vue:282
-#: js/views/PageList.vue:320
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
+#: js/components/FileDetailItem.vue:485
+#: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
+#: js/views/ElementList.vue:284 js/views/FileList.vue:283
+#: js/views/PageList.vue:321
 msgid "Dictate"
 msgstr "Диктувати"
 
@@ -422,7 +424,7 @@ msgid "Stop"
 msgstr "Стоп"
 
 #: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
-#: js/views/ElementList.vue:276 js/views/FileList.vue:275
+#: js/views/ElementList.vue:277 js/views/FileList.vue:276
 msgid "Send"
 msgstr "Надіслати"
 
@@ -431,15 +433,15 @@ msgid "Go to"
 msgstr "Перейти до"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:882 js/components/PageListItems.vue:875
-#: js/components/PageListItems.vue:1911
+#: js/components/ElementListItems.vue:928 js/components/PageListItems.vue:978
+#: js/components/PageListItems.vue:2017
 msgid "New"
 msgstr "Новий"
 
-#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
-#: js/components/ShortcutDialog.vue:32
-msgid "Command palette"
-msgstr "Палітра команд"
+#: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+msgid "Commands"
+msgstr "Команди"
 
 #: js/components/CommandPalette.vue:289
 msgid "Type a command or search pages, files and elements"
@@ -448,10 +450,6 @@ msgstr "Введіть команду або шукайте сторінки, ф
 #: js/components/CommandPalette.vue:290
 msgid "Command or search term"
 msgstr "Команда або пошуковий запит"
-
-#: js/components/CommandPalette.vue:303
-msgid "Commands"
-msgstr "Команди"
 
 #: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
 msgid "then"
@@ -465,10 +463,11 @@ msgstr "Помилка пошуку, спробуйте ще раз"
 msgid "No results"
 msgstr "Нічого не знайдено"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ElementListItems.vue:755
-#: js/components/ElementListItems.vue:864 js/components/FileListItems.vue:733
-#: js/components/FileListItems.vue:875 js/components/PageListItems.vue:1646
-#: js/components/PageListItems.vue:1883 js/views/AccessList.vue:278
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ElementListItems.vue:801
+#: js/components/ElementListItems.vue:910 js/components/FileListItems.vue:779
+#: js/components/FileListItems.vue:921 js/components/PageListItems.vue:1751
+#: js/components/PageListItems.vue:1989 js/views/AccessList.vue:278
 msgid "Purge"
 msgstr "Видалити назавжди"
 
@@ -484,14 +483,10 @@ msgstr[1] ""
 msgstr[2] ""
 "Наступні %{num} записів буде видалено назавжди без можливості відновлення:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
+#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "Скасувати"
-
-#: js/components/ConfirmDialog.vue:57
-msgid "Confirm"
-msgstr "Підтвердити"
 
 #: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
 #: js/views/ElementList.vue:218 js/views/FileList.vue:217
@@ -508,10 +503,10 @@ msgid "View merge changes"
 msgstr "Переглянути зміни після злиття"
 
 #: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:735
-#: js/components/ElementListItems.vue:831 js/components/FileListItems.vue:713
-#: js/components/FileListItems.vue:845 js/components/PageListItems.vue:1602
-#: js/components/PageListItems.vue:1746
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:781
+#: js/components/ElementListItems.vue:877 js/components/FileListItems.vue:759
+#: js/components/FileListItems.vue:891 js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1852
 msgid "Publish"
 msgstr "Опублікувати"
 
@@ -533,10 +528,10 @@ msgstr "Запланувати й закрити"
 msgid "Toggle side menu"
 msgstr "Перемикання бічного меню"
 
-#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:740
-#: js/components/ElementListItems.vue:846 js/components/FileListItems.vue:718
-#: js/components/FileListItems.vue:857 js/components/PageBulkDialog.vue:155
-#: js/components/PageListItems.vue:1618 js/components/PageListItems.vue:1767
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:786
+#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:764
+#: js/components/FileListItems.vue:903 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1723 js/components/PageListItems.vue:1873
 msgid "Edit properties"
 msgstr "Редагувати властивості"
 
@@ -547,15 +542,19 @@ msgstr[0] "Застосувати вибрані властивості до %{n
 msgstr[1] "Застосувати вибрані властивості до %{num} записів."
 msgstr[2] "Застосувати вибрані властивості до %{num} записів."
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:205
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
+#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:259
 msgid "Language"
 msgstr "Мова"
 
-#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:270
+#: js/components/EditBulkDialog.vue:77
+msgid "Language of the content"
+msgstr "Мова вмісту"
+
+#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:277
 msgid "Apply"
 msgstr "Застосувати"
 
@@ -565,6 +564,15 @@ msgstr "Застосувати"
 #: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "Назва"
+
+#: js/components/ElementDetailItem.vue:76
+msgid "Name to find the shared element in the element list"
+msgstr "Назва для пошуку спільного елемента у списку елементів"
+
+#: js/components/ElementDetailItem.vue:90
+msgid "Language of the element content, choose none if used in all languages"
+msgstr ""
+"Мова вмісту елемента; виберіть «Немає», якщо використовується для всіх мов"
 
 #: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
@@ -579,7 +587,7 @@ msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:180 js/components/PageListItems.vue:477
 msgid "Restricted"
 msgstr "Обмежений"
 
@@ -598,102 +606,120 @@ msgstr "Тип"
 msgid "Published"
 msgstr "Опубліковано"
 
-#: js/components/ElementListItems.vue:325
+#: js/components/ElementListItems.vue:356 js/components/FileListItems.vue:351
+#: js/components/PageListItems.vue:729
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "%{num} запис переміщено до кошика"
+msgstr[1] "%{num} записи переміщено до кошика"
+msgstr[2] "%{num} записів переміщено до кошика"
+
+#: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:948
+#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
+#: js/components/PageListItems.vue:708
+msgid "Undo"
+msgstr "Відмінити"
+
+#: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
 msgstr "Помилка під час переміщення спільного елемента в кошик"
 
-#: js/components/ElementListItems.vue:462
+#: js/components/ElementListItems.vue:508
 msgid "Error restoring shared element"
 msgstr "Помилка відновлення спільного елемента"
 
-#: js/components/ElementListItems.vue:502
+#: js/components/ElementListItems.vue:548
 msgid "Error publishing shared element"
 msgstr "Помилка публікації спільного елемента"
 
-#: js/components/ElementListItems.vue:540
+#: js/components/ElementListItems.vue:586
 msgid "Error purging shared element"
 msgstr "Помилка під час остаточного видалення спільного елемента"
 
-#: js/components/ElementListItems.vue:591
+#: js/components/ElementListItems.vue:637
 msgid "Error saving shared element"
 msgstr "Помилка збереження спільного елемента"
 
-#: js/components/ElementListItems.vue:648
+#: js/components/ElementListItems.vue:694
 msgid "Error fetching shared elements"
 msgstr "Помилка при отриманні спільних елементів"
 
-#: js/components/ElementListItems.vue:719 js/components/FileListItems.vue:697
-#: js/components/PageDetailContentList.vue:827
-#: js/components/PageListItems.vue:1586 js/views/AccessList.vue:273
+#: js/components/ElementListItems.vue:765 js/components/FileListItems.vue:743
+#: js/components/PageDetailContentList.vue:843
+#: js/components/PageListItems.vue:1691 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
 msgstr "Увімкнути/вимкнути вибір"
 
-#: js/components/ElementListItems.vue:745
-#: js/components/ElementListItems.vue:854 js/components/FileListItems.vue:723
-#: js/components/FileListItems.vue:865
-#: js/components/PageDetailContentList.vue:861
-#: js/components/PageDetailContentList.vue:947
-#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
-#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/components/ElementListItems.vue:791
+#: js/components/ElementListItems.vue:900 js/components/FileListItems.vue:769
+#: js/components/FileListItems.vue:911 js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1979
 msgid "Delete"
 msgstr "Видалити"
 
-#: js/components/ElementListItems.vue:750
-#: js/components/ElementListItems.vue:859 js/components/FileListItems.vue:728
-#: js/components/FileListItems.vue:870 js/components/PageListItems.vue:1641
-#: js/components/PageListItems.vue:1878
+#: js/components/ElementListItems.vue:796
+#: js/components/ElementListItems.vue:905 js/components/FileListItems.vue:774
+#: js/components/FileListItems.vue:916 js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1984
 msgid "Restore"
 msgstr "Відновити"
 
-#: js/components/ElementListItems.vue:764
-#: js/components/ElementListItems.vue:911
-#: js/components/PageDetailContentList.vue:1047
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
+#: js/components/ElementListItems.vue:810
+#: js/components/ElementListItems.vue:968
+#: js/components/PageDetailContentList.vue:1063
+#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:510
 msgid "Add element"
 msgstr "Додати елемент"
 
-#: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
-#: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
+#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:814
+#: js/components/PageDetailContentList.vue:886
+#: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Шукати"
 
-#: js/components/ElementListItems.vue:790 js/components/FileListItems.vue:781
+#: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
 msgid "Updated by another user"
 msgstr "Оновлено іншим користувачем"
 
-#: js/components/ElementListItems.vue:796 js/components/FileListItems.vue:787
-#: js/components/PageListItems.vue:1686
+#: js/components/ElementListItems.vue:842 js/components/FileListItems.vue:833
+#: js/components/PageListItems.vue:1791
 msgid "Refresh"
 msgstr "Оновити"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
+#: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "Оновити елементи"
 
-#: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
-#: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
+#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "Завантаження"
 
-#: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:422 js/fields/Items.vue:428
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/PageListItems.vue:2056
+msgid "No entries yet"
+msgstr "Записів поки немає"
+
+#: js/components/Fields.vue:284 js/components/Fields.vue:290
+#: js/fields/Items.vue:427 js/fields/Items.vue:433
 msgid "Translate"
 msgstr "Перекласти"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:446
+#: js/components/Fields.vue:309 js/fields/Items.vue:451
 msgid "Generate text"
 msgstr "Згенерувати текст"
 
-#: js/components/Fields.vue:334
+#: js/components/Fields.vue:336
 msgid "Updated by other editor"
 msgstr "Оновлено іншим редактором"
 
-#: js/components/Fields.vue:337
+#: js/components/Fields.vue:339
 msgid "Overwritten"
 msgstr "Перезаписано"
 
@@ -734,24 +760,27 @@ msgid "Responsive preview"
 msgstr "Адаптивний попередній перегляд"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:990
+#: js/components/PageDetailContentList.vue:1006
 msgid "Change to"
 msgstr "Змінити на"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:386
+#: js/fields/Images.vue:387
 msgid "Edit"
 msgstr "Редагувати"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
-#: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/PageDetailContentList.vue:877
+#: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
+#: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "Видалити"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
+#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:149
+#: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "Помилка додавання файлу %{path}"
 
@@ -767,19 +796,23 @@ msgstr "Створити зображення"
 msgid "Describe the image content"
 msgstr "Опишіть вміст зображення"
 
-#: js/components/FileAiDialog.vue:263
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr "Опишіть сюжет, стиль і кольори зображення, яке потрібно згенерувати"
+
+#: js/components/FileAiDialog.vue:264
 msgid "New image"
 msgstr "Нове зображення"
 
-#: js/components/FileAiDialog.vue:267
+#: js/components/FileAiDialog.vue:268
 msgid "Current images"
 msgstr "Поточні зображення"
 
-#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr "Використані зображення"
 
-#: js/components/FileAiDialog.vue:309
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr "Виберіть зображення"
 
@@ -791,8 +824,8 @@ msgstr "Скопійовано в буфер обміну"
 msgid "Error describing file"
 msgstr "Помилка при описі файлу"
 
-#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
-#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:626
+#: js/fields/File.vue:300 js/fields/Images.vue:300 js/views/FileDetail.vue:337
 msgid "Error saving file"
 msgstr "Помилка збереження файлу"
 
@@ -800,173 +833,201 @@ msgstr "Помилка збереження файлу"
 msgid "Transcription is only available for audio and video files"
 msgstr "Транскрипція доступна лише для аудіо- та відеофайлів"
 
-#: js/components/FileDetailItem.vue:414
+#: js/components/FileDetailItem.vue:392
+msgid "Name to find the file in the media list"
+msgstr "Назва для пошуку файлу у списку медіа"
+
+#: js/components/FileDetailItem.vue:406
+msgid "Language of the file content, choose none if used in all languages"
+msgstr ""
+"Мова вмісту файлу; виберіть «Немає», якщо використовується для всіх мов"
+
+#: js/components/FileDetailItem.vue:416
 msgid "Copy URL"
 msgstr "Скопіювати URL-адресу"
 
-#: js/components/FileDetailItem.vue:457
+#: js/components/FileDetailItem.vue:459
 msgid "Descriptions"
 msgstr "Описи"
 
-#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
 msgid "Translate text"
 msgstr "Перекласти текст"
 
-#: js/components/FileDetailItem.vue:473
+#: js/components/FileDetailItem.vue:475
 msgid "Generate description"
 msgstr "Створити опис"
 
-#: js/components/FileDetailItem.vue:500
+#: js/components/FileDetailItem.vue:502
 msgid "Description (%{lang})"
 msgstr "Опис (%{lang})"
 
-#: js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:503
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"Альтернативний текст для програм читання з екрана та пошукових систем, також "
+"використовується як підпис"
+
+#: js/components/FileDetailItem.vue:519
 msgid "Transcriptions"
 msgstr "Транскрипції"
 
-#: js/components/FileDetailItem.vue:532
+#: js/components/FileDetailItem.vue:535
 msgid "Transcribe file content"
 msgstr "Транскрибувати вміст файлу"
 
-#: js/components/FileDetailItem.vue:550
+#: js/components/FileDetailItem.vue:553
 msgid "Transcription (%{lang})"
 msgstr "Транскрипція (%{lang})"
 
-#: js/components/FileDetailItemImage.vue:222
+#: js/components/FileDetailItem.vue:554
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
+msgstr ""
+"Озвучений текст у форматі WebVTT, показується як субтитри та транскрипт"
+
+#: js/components/FileDetailItemImage.vue:223
 msgid "Error erasing image part"
 msgstr "Помилка стирання частини зображення"
 
-#: js/components/FileDetailItemImage.vue:329
+#: js/components/FileDetailItemImage.vue:330
 msgid "Error editing image part"
 msgstr "Помилка редагування частини зображення"
 
-#: js/components/FileDetailItemImage.vue:351
+#: js/components/FileDetailItemImage.vue:352
 msgid "Error removing background"
 msgstr "Помилка видалення фону"
 
-#: js/components/FileDetailItemImage.vue:457
+#: js/components/FileDetailItemImage.vue:458
 msgid "Error editing image"
 msgstr "Помилка редагування зображення"
 
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:545
 msgid "Error uncropping image"
 msgstr "Помилка під час розширення зображення"
 
-#: js/components/FileDetailItemImage.vue:589
+#: js/components/FileDetailItemImage.vue:590
 msgid "Error upscaling image"
 msgstr "Помилка під час підвищення роздільної здатності зображення"
 
-#: js/components/FileDetailItemImage.vue:646
-#: js/components/FileDetailItemImage.vue:651
+#: js/components/FileDetailItemImage.vue:647
+#: js/components/FileDetailItemImage.vue:652
 msgid "Select area"
 msgstr "Виберіть область"
 
-#: js/components/FileDetailItemImage.vue:663
+#: js/components/FileDetailItemImage.vue:664
 msgid "Original ratio"
 msgstr "Початкове співвідношення"
 
-#: js/components/FileDetailItemImage.vue:672
+#: js/components/FileDetailItemImage.vue:673
 msgid "No ratio"
 msgstr "Без співвідношення"
 
-#: js/components/FileDetailItemImage.vue:677
+#: js/components/FileDetailItemImage.vue:678
 msgid "Square"
 msgstr "Квадрат"
 
-#: js/components/FileDetailItemImage.vue:721
+#: js/components/FileDetailItemImage.vue:722
 msgid "Crop selected area"
 msgstr "Обрізати вибрану ділянку"
 
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:732
 msgid "Erase selected area"
 msgstr "Видалити виділену область"
 
-#: js/components/FileDetailItemImage.vue:747
-#: js/components/FileDetailItemImage.vue:755
-#: js/components/FileDetailItemImage.vue:776
+#: js/components/FileDetailItemImage.vue:743
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:766
 msgid "Edit image"
 msgstr "Редагувати зображення"
 
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe the changes"
 msgstr "Опишіть зміни"
 
-#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:757
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr ""
+"Опишіть, що потрібно змінити на зображенні, наприклад, зробити небо синім"
+
+#: js/components/FileDetailItemImage.vue:775
 msgid "Remove background"
 msgstr "Видалити фон"
 
-#: js/components/FileDetailItemImage.vue:802
-#: js/components/FileDetailItemImage.vue:810
-#: js/components/FileDetailItemImage.vue:868
+#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:792
+#: js/components/FileDetailItemImage.vue:850
 msgid "Expand image"
 msgstr "Розширити зображення"
 
-#: js/components/FileDetailItemImage.vue:825
+#: js/components/FileDetailItemImage.vue:803
 msgctxt "image edge"
 msgid "Top"
 msgstr "Зверху"
 
-#: js/components/FileDetailItemImage.vue:837
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:817
+#: js/components/FileDetailItemImage.vue:828
+#: js/components/FileDetailItemImage.vue:841
+msgid "Number of pixels added at this side of the image"
+msgstr "Кількість пікселів, доданих з цього боку зображення"
+
+#: js/components/FileDetailItemImage.vue:816
 msgctxt "image edge"
 msgid "Left"
 msgstr "Ліворуч"
 
-#: js/components/FileDetailItemImage.vue:847
+#: js/components/FileDetailItemImage.vue:827
 msgctxt "image edge"
 msgid "Right"
 msgstr "Праворуч"
 
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:840
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Знизу"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:882
+#: js/components/FileDetailItemImage.vue:858
+#: js/components/FileDetailItemImage.vue:865
 msgid "Upscale image"
 msgstr "Підвищити роздільну здатність зображення"
 
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
-#: js/components/FileDetailItemImage.vue:915
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:888
+#: js/components/FileDetailItemImage.vue:898
+#: js/components/FileDetailItemImage.vue:908
 msgid "Scale %{factor}"
 msgstr "Масштаб %{factor}"
 
-#: js/components/FileDetailItemImage.vue:934
+#: js/components/FileDetailItemImage.vue:917
 msgid "Rotate counter-clockwise"
 msgstr "Повернути проти годинникової стрілки"
 
-#: js/components/FileDetailItemImage.vue:940
+#: js/components/FileDetailItemImage.vue:923
 msgid "Rotate clockwise"
 msgstr "Повернути за годинниковою стрілкою"
 
-#: js/components/FileDetailItemImage.vue:947
+#: js/components/FileDetailItemImage.vue:930
 msgid "Flip horizontally"
 msgstr "Віддзеркалити по горизонталі"
 
-#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileDetailItemImage.vue:936
 msgid "Flip vertically"
 msgstr "Віддзеркалити по вертикалі"
 
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:943
 msgid "Convert to monochrome"
 msgstr "Перетворити на чорно-біле зображення"
 
-#: js/components/FileDetailItemImage.vue:963
+#: js/components/FileDetailItemImage.vue:946
 msgid "Download"
 msgstr "Завантажити"
 
-#: js/components/FileDetailItemImage.vue:965
-#: js/components/FileDetailItemImage.vue:970
-msgid "Undo"
-msgstr "Відмінити"
-
-#: js/components/FileDetailItemImage.vue:979
+#: js/components/FileDetailItemImage.vue:962
 msgid "Previous edit"
 msgstr "Попереднє редагування"
 
-#: js/components/FileDetailItemImage.vue:984
+#: js/components/FileDetailItemImage.vue:967
 msgid "Original"
 msgstr "Оригінал"
 
@@ -1002,49 +1063,55 @@ msgstr "Завантажити зображення обкладинки"
 msgid "Elements"
 msgstr "Елементи"
 
-#: js/components/FileListItems.vue:320
+#: js/components/FileListItems.vue:362
 msgid "Error trashing file"
 msgstr "Помилка під час переміщення файлу в кошик"
 
-#: js/components/FileListItems.vue:456
+#: js/components/FileListItems.vue:502
 msgid "Error restoring file"
 msgstr "Помилка при відновленні файлу"
 
-#: js/components/FileListItems.vue:493 js/views/FileDetail.vue:253
+#: js/components/FileListItems.vue:539 js/views/FileDetail.vue:253
 msgid "Error publishing file"
 msgstr "Помилка публікації файлу"
 
-#: js/components/FileListItems.vue:529
+#: js/components/FileListItems.vue:575
 msgid "Error purging file"
 msgstr "Помилка під час остаточного видалення файлу"
 
-#: js/components/FileListItems.vue:626
+#: js/components/FileListItems.vue:672
 msgid "Error fetching files"
 msgstr "Помилка при завантаженні файлів"
 
-#: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
-#: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
-#: js/fields/Images.vue:436
+#: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
+#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
+#: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "Додати файли"
 
-#: js/components/FileListItems.vue:754 js/components/FileListItems.vue:961
-#: js/components/FileListItems.vue:1005 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
+#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Захистити за допомогою доступу до сторінки"
 
-#: js/components/FileListItems.vue:793
+#: js/components/FileListItems.vue:839
 msgid "Reload files"
 msgstr "Оновити файли"
 
-#: js/components/FileListItems.vue:802
+#: js/components/FileListItems.vue:848
 msgid "Grid view"
 msgstr "Вигляд у вигляді сітки"
 
-#: js/components/FileListItems.vue:810
+#: js/components/FileListItems.vue:856
 msgid "List view"
 msgstr "Перегляд списку"
+
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr ""
+"Завантажити файл можуть лише відвідувачі, яким дозволено переглядати "
+"сторінку з цим файлом"
 
 #: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
@@ -1058,7 +1125,7 @@ msgstr "Принаймні один файл не має типу \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Файл не має типу \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr "Додавання файлів з URL-адрес"
 
@@ -1070,194 +1137,202 @@ msgstr "Додати файл"
 msgid "Enter one URL per line"
 msgstr "Введіть одну URL-адресу в рядку"
 
-#: js/components/FileUrlDialog.vue:225
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr "Файли завантажуються за цими URL-адресами та додаються до списку медіа"
+
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
 msgstr "Введіть URL-адресу"
 
-#: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
-#: js/components/PageDetailContentList.vue:1008
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
+msgstr "Файл завантажується за цією URL-адресою та додається до списку медіа"
+
+#: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
+#: js/components/PageDetailContentList.vue:1024
 msgid "Shared element"
 msgstr "Спільний елемент"
 
-#: js/components/HistoryDialog.vue:62
+#: js/components/HistoryDialog.vue:63
 msgid "Content block"
 msgstr "Контентний блок"
 
-#: js/components/HistoryDialog.vue:67
+#: js/components/HistoryDialog.vue:68
 msgid "Group: %{group} · Position %{num}"
 msgstr "Група: %{group} · Позиція %{num}"
 
-#: js/components/HistoryDialog.vue:75
+#: js/components/HistoryDialog.vue:76
 msgid "Moved from position %{from} to %{to}"
 msgstr "Переміщено з позиції %{from} на %{to}"
 
-#: js/components/HistoryDialog.vue:76 js/components/HistoryDialog.vue:165
+#: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "Змінено %{num} поле"
 msgstr[1] "Змінено %{num} поля"
 msgstr[2] "Змінено %{num} полів"
 
-#: js/components/HistoryDialog.vue:77
+#: js/components/HistoryDialog.vue:78
 msgid "%{selected} of %{total} selected"
 msgstr "Вибрано %{selected} із %{total}"
 
-#: js/components/HistoryDialog.vue:84
+#: js/components/HistoryDialog.vue:85
 msgid "Unknown date"
 msgstr "Невідома дата"
 
-#: js/components/HistoryDialog.vue:123
+#: js/components/HistoryDialog.vue:124
 msgid "Block position"
 msgstr "Позиція блоку"
 
-#: js/components/HistoryDialog.vue:128
+#: js/components/HistoryDialog.vue:129
 msgid "Value"
 msgstr "Значення"
 
-#: js/components/HistoryDialog.vue:172
+#: js/components/HistoryDialog.vue:173
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "Додано %{num} блок"
 msgstr[1] "Додано %{num} блоки"
 msgstr[2] "Додано %{num} блоків"
 
-#: js/components/HistoryDialog.vue:173
+#: js/components/HistoryDialog.vue:174
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "Видалено %{num} блок"
 msgstr[1] "Видалено %{num} блоки"
 msgstr[2] "Видалено %{num} блоків"
 
-#: js/components/HistoryDialog.vue:174
+#: js/components/HistoryDialog.vue:175
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "Змінено %{num} блок"
 msgstr[1] "Змінено %{num} блоки"
 msgstr[2] "Змінено %{num} блоків"
 
-#: js/components/HistoryDialog.vue:175
+#: js/components/HistoryDialog.vue:176
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "Переміщено %{num} блок"
 msgstr[1] "Переміщено %{num} блоки"
 msgstr[2] "Переміщено %{num} блоків"
 
-#: js/components/HistoryDialog.vue:176
+#: js/components/HistoryDialog.vue:177
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "Змінено %{num} файл"
 msgstr[1] "Змінено %{num} файли"
 msgstr[2] "Змінено %{num} файлів"
 
-#: js/components/HistoryDialog.vue:177 js/components/HistoryDialog.vue:206
-#: js/components/HistoryDialog.vue:302
+#: js/components/HistoryDialog.vue:178 js/components/HistoryDialog.vue:207
+#: js/components/HistoryDialog.vue:303
 msgid "No changes"
 msgstr "Без змін"
 
-#: js/components/HistoryDialog.vue:191
+#: js/components/HistoryDialog.vue:192
 msgid "History"
 msgstr "Історія"
 
-#: js/components/HistoryDialog.vue:202
+#: js/components/HistoryDialog.vue:203
 msgid "Error fetching versions"
 msgstr "Помилка отримання версій"
 
-#: js/components/HistoryDialog.vue:203
+#: js/components/HistoryDialog.vue:204
 msgid "Retry"
 msgstr "Повторіть спробу"
 
-#: js/components/HistoryDialog.vue:217
+#: js/components/HistoryDialog.vue:218
 msgid "Current changes"
 msgstr "Поточні зміни"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Scheduled for %{date}"
 msgstr "Заплановано на %{date}"
 
-#: js/components/HistoryDialog.vue:231
+#: js/components/HistoryDialog.vue:232
 msgid "Select all"
 msgstr "Вибрати все"
 
-#: js/components/HistoryDialog.vue:245
+#: js/components/HistoryDialog.vue:246
 msgid "Block added"
 msgstr "Блок додано"
 
-#: js/components/HistoryDialog.vue:246
+#: js/components/HistoryDialog.vue:247
 msgid "Block removed"
 msgstr "Блок видалено"
 
-#: js/components/HistoryDialog.vue:266
+#: js/components/HistoryDialog.vue:267
 msgid "Keep current position"
 msgstr "Зберегти поточне положення"
 
-#: js/components/HistoryDialog.vue:266 js/components/HistoryDialog.vue:286
+#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
 msgid "Keep current value"
 msgstr "Зберегти поточне значення"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: Latest saved version"
 msgstr "Попередня версія: Остання збережена версія"
 
-#: js/components/HistoryDialog.vue:312
+#: js/components/HistoryDialog.vue:313
 msgid "Previous version: %{date}"
 msgstr "Попередня версія: %{date}"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:314
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Для повернення вибрано %{selected} із %{total}"
 
-#: js/components/HistoryDialog.vue:316
+#: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
 msgstr "Скасувати вибрані зміни"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "Restore previous version"
 msgstr "Відновити попередню версію"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "Previous value"
 msgstr "Попереднє значення"
 
-#: js/components/HistoryField.vue:84 js/components/HistoryField.vue:120
-#: js/components/HistoryField.vue:132 js/components/HistoryField.vue:152
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
 msgid "New value"
 msgstr "Нове значення"
 
-#: js/components/HistoryField.vue:90
+#: js/components/HistoryField.vue:91
 msgid "Enlarge %{name}"
 msgstr "Збільшити %{name}"
 
-#: js/components/HistoryField.vue:96 js/components/HistoryField.vue:123
+#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:124
 msgid "Loading preview"
 msgstr "Завантаження попереднього перегляду"
 
-#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:99
-#: js/components/HistoryField.vue:104 js/components/HistoryField.vue:124
-#: js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:100
+#: js/components/HistoryField.vue:105 js/components/HistoryField.vue:125
+#: js/components/HistoryField.vue:127
 msgid "Preview unavailable"
 msgstr "Попередній перегляд недоступний"
 
-#: js/components/HistoryField.vue:113
+#: js/components/HistoryField.vue:114
 msgid "Image preview"
 msgstr "Попередній перегляд зображення"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Close preview"
 msgstr "Закрити попередній перегляд"
 
-#: js/components/HistoryField.vue:134
+#: js/components/HistoryField.vue:135
 msgid "Table preview"
 msgstr "Попередній перегляд таблиці"
 
-#: js/components/HistoryField.vue:138
+#: js/components/HistoryField.vue:139
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "Пропущено %{num} рядок"
 msgstr[1] "Пропущено %{num} рядки"
 msgstr[2] "Пропущено %{num} рядків"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:825
+#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
 msgid "Editor"
 msgstr "Редактор"
 
@@ -1310,26 +1385,38 @@ msgid "Access changes take effect immediately after cache expiry"
 msgstr ""
 "Зміни доступу набувають чинності відразу після закінчення терміну дії кешу"
 
-#: js/components/PageAccess.vue:173
+#: js/components/PageAccess.vue:174
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"Публічні сторінки видно всім, інші — лише авторизованим користувачам або "
+"користувачам з вибраними ролями"
+
+#: js/components/PageAccess.vue:178
 msgid "Public"
 msgstr "Публічний"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
+#: js/components/PageAccess.vue:179 js/components/PageListItems.vue:481
 msgid "Authenticated users"
 msgstr "Автентифіковані користувачі"
 
-#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
-#: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
-#: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
+#: js/components/PageAccess.vue:187 js/components/PageDetailItem.vue:116
+#: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
+#: js/components/PageListItems.vue:1878 js/components/PageListItems.vue:2078
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Доступ"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
+#: js/components/PageAccess.vue:188
+msgid "Only visitors with one of these roles can view the page"
+msgstr "Переглядати сторінку можуть лише відвідувачі з однією з цих ролей"
+
+#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Масові зміни сторінок обмежені 1000 сторінками"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
 msgid "Apply recursively"
 msgstr "Застосувати рекурсивно"
 
@@ -1397,58 +1484,100 @@ msgstr "Змінити статус"
 msgid "Status"
 msgstr "Статус"
 
-#: js/components/PageBulkDialog.vue:186
+#: js/components/PageBulkDialog.vue:178
+#: js/components/PageDetailItemProps.vue:245
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"Вимкнені сторінки недоступні, приховані сторінки доступні, але не "
+"показуються в навігації"
+
+#: js/components/PageBulkDialog.vue:187
 msgid "Change cache time"
 msgstr "Змінити час кешу"
 
-#: js/components/PageBulkDialog.vue:191
-#: js/components/PageDetailItemProps.vue:361
+#: js/components/PageBulkDialog.vue:192
+#: js/components/PageDetailItemProps.vue:370
 msgid "Cache time"
 msgstr "Час кешування"
 
-#: js/components/PageBulkDialog.vue:200
+#: js/components/PageBulkDialog.vue:193
+#: js/components/PageDetailItemProps.vue:371
+msgid "How long the generated page is cached before it is created again"
+msgstr ""
+"Як довго згенерована сторінка зберігається в кеші, перш ніж буде створена "
+"знову"
+
+#: js/components/PageBulkDialog.vue:202
 msgid "Change language"
 msgstr "Змінити мову"
 
-#: js/components/PageBulkDialog.vue:212
+#: js/components/PageBulkDialog.vue:208
+#: js/components/PageDetailItemProps.vue:260
+msgid "Language of the page content"
+msgstr "Мова вмісту сторінки"
+
+#: js/components/PageBulkDialog.vue:215
 msgid "Change theme"
 msgstr "Змінити тему"
 
-#: js/components/PageBulkDialog.vue:217
-#: js/components/PageDetailItemProps.vue:330
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:336
 msgid "Theme"
 msgstr "Тема"
 
-#: js/components/PageBulkDialog.vue:224
+#: js/components/PageBulkDialog.vue:221
+#: js/components/PageDetailItemProps.vue:337
+msgid "Design used to display the page"
+msgstr "Тема, яка використовується для відображення сторінки"
+
+#: js/components/PageBulkDialog.vue:228
 msgid "Change page type"
 msgstr "Змінити тип сторінки"
 
-#: js/components/PageBulkDialog.vue:229
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageBulkDialog.vue:233
+#: js/components/PageDetailItemProps.vue:346
 msgid "Page type"
 msgstr "Тип сторінки"
 
-#: js/components/PageBulkDialog.vue:236
+#: js/components/PageBulkDialog.vue:234
+#: js/components/PageDetailItemProps.vue:347
+msgid "Template of the theme which defines the page layout"
+msgstr "Шаблон теми, який визначає макет сторінки"
+
+#: js/components/PageBulkDialog.vue:241
 msgid "Change tag"
 msgstr "Змінити тег"
 
-#: js/components/PageBulkDialog.vue:240
-#: js/components/PageDetailItemProps.vue:350
+#: js/components/PageBulkDialog.vue:245
+#: js/components/PageDetailItemProps.vue:358
 msgid "Page tag"
 msgstr "Тег сторінки"
 
-#: js/components/PageBulkDialog.vue:249
+#: js/components/PageBulkDialog.vue:246
+#: js/components/PageDetailItemProps.vue:359
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr ""
+"Внутрішній ідентифікатор для пошуку сторінки в шаблонах, наприклад blog"
+
+#: js/components/PageBulkDialog.vue:255
 msgid "Change domain"
 msgstr "Змінити домен"
 
-#: js/components/PageBulkDialog.vue:254
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:260
+#: js/components/PageDetailItemProps.vue:320
 msgid "Domain"
 msgstr "Домен"
 
+#: js/components/PageBulkDialog.vue:261
+#: js/components/PageDetailItemProps.vue:321
+msgid "Domain the page is available at, e.g. example.com"
+msgstr "Домен, на якому доступна сторінка, наприклад example.com"
+
 #: js/components/PageDetailContentList.vue:185
 #: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:690
+#: js/components/PageDetailContentList.vue:705
 msgid "Content element not found"
 msgstr "Елемент вмісту не знайдено"
 
@@ -1468,97 +1597,97 @@ msgstr "Елемент вже є спільним"
 msgid "Unable to make element shared"
 msgstr "Не вдалося зробити елемент спільним"
 
-#: js/components/PageDetailContentList.vue:580
+#: js/components/PageDetailContentList.vue:595
 msgid "Not available for this content element"
 msgstr "Недоступно для цього елемента вмісту"
 
-#: js/components/PageDetailContentList.vue:697
+#: js/components/PageDetailContentList.vue:712
 msgid "Element is not shared"
 msgstr "Елемент не є спільним"
 
-#: js/components/PageDetailContentList.vue:776
+#: js/components/PageDetailContentList.vue:791
 msgid "Describe the task you want to perform"
 msgstr "Опишіть завдання, яке ви хочете виконати"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Hide help"
 msgstr "Приховати допомогу"
 
-#: js/components/PageDetailContentList.vue:790 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Show help"
 msgstr "Показати допомогу"
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
 msgstr "Удосконалення..."
 
-#: js/components/PageDetailContentList.vue:802
+#: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
 msgstr "Удосконалити вміст на основі підказки"
 
-#: js/components/PageDetailContentList.vue:819 js/views/ElementList.vue:291
-#: js/views/FileList.vue:290 js/views/PageList.vue:328
+#: js/components/PageDetailContentList.vue:835 js/views/ElementList.vue:292
+#: js/views/FileList.vue:291 js/views/PageList.vue:329
 msgid "Help"
 msgstr "Допомога"
 
-#: js/components/PageDetailContentList.vue:820
+#: js/components/PageDetailContentList.vue:836
 msgid "AI can add or improve content based on your input"
 msgstr "ШІ може додавати або покращувати контент на основі ваших даних"
 
-#: js/components/PageDetailContentList.vue:821
+#: js/components/PageDetailContentList.vue:837
 msgid "It can take a long time depending on the task and content size"
 msgstr "Це може зайняти багато часу, залежно від завдання та розміру контенту"
 
-#: js/components/PageDetailContentList.vue:846
-#: js/components/PageDetailContentList.vue:942
-#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+#: js/components/PageDetailContentList.vue:862
+#: js/components/PageDetailContentList.vue:958
+#: js/components/PageListItems.vue:1891 js/fields/Items.vue:380
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Вирізати"
 
-#: js/components/PageDetailContentList.vue:851
-#: js/components/PageListItems.vue:1798 js/components/PageListItems.vue:1823
+#: js/components/PageDetailContentList.vue:867
+#: js/components/PageListItems.vue:1904 js/components/PageListItems.vue:1929
 msgid "Paste"
 msgstr "Вставити"
 
-#: js/components/PageDetailContentList.vue:856
-#: js/components/PageDetailContentList.vue:1000
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:1016
 msgid "Merge"
 msgstr "Об'єднати"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:350
 msgid "Move element"
 msgstr "Перемістити елемент"
 
-#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:971 js/fields/Items.vue:393
 msgid "Paste before"
 msgstr "Вставити перед"
 
-#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:976 js/fields/Items.vue:398
 msgid "Paste after"
 msgstr "Вставити після"
 
-#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:981 js/fields/Items.vue:403
 #: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "Вставити перед"
 
-#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:986 js/fields/Items.vue:408
 #: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "Вставити після"
 
-#: js/components/PageDetailContentList.vue:980
+#: js/components/PageDetailContentList.vue:996
 msgid "Make shared"
 msgstr "Зробити спільним"
 
-#: js/components/PageDetailContentList.vue:985
+#: js/components/PageDetailContentList.vue:1001
 msgid "Merge copy"
 msgstr "Об'єднати копію"
 
-#: js/components/PageDetailContentList.vue:995
+#: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "Розділити"
@@ -1575,15 +1704,15 @@ msgstr "Режим попереднього перегляду"
 msgid "Not CMS content"
 msgstr "Не вміст CMS"
 
-#: js/components/PageDetailItem.vue:81
+#: js/components/PageDetailItem.vue:95
 msgid "Detail"
 msgstr "Детальна інформація"
 
-#: js/components/PageDetailItem.vue:88
+#: js/components/PageDetailItem.vue:102
 msgid "Meta"
 msgstr "Метадані"
 
-#: js/components/PageDetailItem.vue:95
+#: js/components/PageDetailItem.vue:109
 msgid "Config"
 msgstr "Конфігурація"
 
@@ -1606,309 +1735,330 @@ msgstr "URL-адреса не є дійсною"
 msgid "The path is already in use by another page"
 msgstr "Шлях вже використовується іншою сторінкою"
 
-#: js/components/PageDetailItemProps.vue:272
+#: js/components/PageDetailItemProps.vue:274
 msgid "Page title"
 msgstr "Назва сторінки"
 
-#: js/components/PageDetailItemProps.vue:283
+#: js/components/PageDetailItemProps.vue:275
+msgid "Shown in the browser tab and search results"
+msgstr "Показується на вкладці браузера та в результатах пошуку"
+
+#: js/components/PageDetailItemProps.vue:286
 msgid "Page name"
 msgstr "Назва сторінки"
 
-#: js/components/PageDetailItemProps.vue:298
+#: js/components/PageDetailItemProps.vue:287
+msgid "Short name shown in the navigation menus"
+msgstr "Коротка назва, що показується в меню навігації"
+
+#: js/components/PageDetailItemProps.vue:302
 msgid "URL path"
 msgstr "Шлях до URL-адреси"
 
-#: js/components/PageDetailItemProps.vue:377
+#: js/components/PageDetailItemProps.vue:303
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "Частина URL-адреси сторінки після домену, наприклад about-us"
+
+#: js/components/PageDetailItemProps.vue:387
 msgid "Redirect URL"
 msgstr "Перенаправлення URL-адреси"
+
+#: js/components/PageDetailItemProps.vue:388
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr ""
+"Відвідувачів перенаправляють на цю URL-адресу замість перегляду сторінки"
 
 #: js/components/PageDetailItemSection.vue:60
 msgid "The element has already been added"
 msgstr "Елемент вже додано"
 
-#: js/components/PageDetailItemSection.vue:185
+#: js/components/PageDetailItemSection.vue:193
 msgid "Remove content element"
 msgstr "Видалити елемент вмісту"
 
-#: js/components/PageDetailMetrics.vue:149
+#: js/components/PageDetailMetrics.vue:151
 msgid "Views"
 msgstr "Перегляди"
 
-#: js/components/PageDetailMetrics.vue:150
+#: js/components/PageDetailMetrics.vue:152
 msgid "Visits"
 msgstr "Візити"
 
-#: js/components/PageDetailMetrics.vue:151
-#: js/components/PageDetailMetrics.vue:192
+#: js/components/PageDetailMetrics.vue:153
+#: js/components/PageDetailMetrics.vue:194
 msgid "Conversions"
 msgstr "Конверсії"
 
-#: js/components/PageDetailMetrics.vue:160
+#: js/components/PageDetailMetrics.vue:162
 msgid "Duration"
 msgstr "Тривалість"
 
-#: js/components/PageDetailMetrics.vue:170
-#: js/components/PageDetailMetrics.vue:574
+#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:576
 msgid "Impressions"
 msgstr "Покази"
 
-#: js/components/PageDetailMetrics.vue:171
-#: js/components/PageDetailMetrics.vue:575
+#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:577
 msgid "Clicks"
 msgstr "Кліки"
 
-#: js/components/PageDetailMetrics.vue:180
+#: js/components/PageDetailMetrics.vue:182
 msgid "Percentage"
 msgstr "Відсоток"
 
-#: js/components/PageDetailMetrics.vue:189
+#: js/components/PageDetailMetrics.vue:191
 msgid "Page Views"
 msgstr "Перегляди сторінок"
 
-#: js/components/PageDetailMetrics.vue:190
+#: js/components/PageDetailMetrics.vue:192
 msgid "Page Visits"
 msgstr "Відвідування сторінки"
 
-#: js/components/PageDetailMetrics.vue:193
+#: js/components/PageDetailMetrics.vue:195
 msgid "Visit Duration (minutes)"
 msgstr "Тривалість візиту (хвилини)"
 
-#: js/components/PageDetailMetrics.vue:194
+#: js/components/PageDetailMetrics.vue:196
 msgid "Google Impressions"
 msgstr "Покази Google"
 
-#: js/components/PageDetailMetrics.vue:195
+#: js/components/PageDetailMetrics.vue:197
 msgid "Google Clicks"
 msgstr "Кліки в Google"
 
-#: js/components/PageDetailMetrics.vue:196
+#: js/components/PageDetailMetrics.vue:198
 msgid "Google Conversion Rate"
 msgstr "Коефіцієнт конверсії Google"
 
-#: js/components/PageDetailMetrics.vue:202
+#: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
 msgstr "Час приймання-передавання (RTT)"
 
-#: js/components/PageDetailMetrics.vue:203
+#: js/components/PageDetailMetrics.vue:205
 msgid "Time to first byte"
 msgstr "Час до першого байта"
 
-#: js/components/PageDetailMetrics.vue:204
+#: js/components/PageDetailMetrics.vue:206
 msgid "First contentful paint"
 msgstr "Перше відображення вмісту"
 
-#: js/components/PageDetailMetrics.vue:205
+#: js/components/PageDetailMetrics.vue:207
 msgid "Largest contentful paint"
 msgstr "Відображення найбільшого вмісту"
 
-#: js/components/PageDetailMetrics.vue:206
+#: js/components/PageDetailMetrics.vue:208
 msgid "Interaction to next paint"
 msgstr "Взаємодія до наступного відображення"
 
-#: js/components/PageDetailMetrics.vue:207
+#: js/components/PageDetailMetrics.vue:209
 msgid "Cumulative layout shift"
 msgstr "Сукупне зміщення макета"
 
-#: js/components/PageDetailMetrics.vue:401
+#: js/components/PageDetailMetrics.vue:403
 msgid "Page metrics"
 msgstr "Метрика сторінки"
 
-#: js/components/PageDetailMetrics.vue:407
+#: js/components/PageDetailMetrics.vue:409
 msgid "Days"
 msgstr "Дні"
 
-#: js/components/PageDetailMetrics.vue:434
+#: js/components/PageDetailMetrics.vue:436
 msgid "Weekly Insights"
 msgstr "Щотижневі інсайти"
 
-#: js/components/PageDetailMetrics.vue:463
+#: js/components/PageDetailMetrics.vue:465
 msgid "Views & Visits"
 msgstr "Перегляди та відвідування"
 
-#: js/components/PageDetailMetrics.vue:472
+#: js/components/PageDetailMetrics.vue:474
 msgid "Visit Durations (minutes)"
 msgstr "Тривалість візиту (хвилини)"
 
-#: js/components/PageDetailMetrics.vue:484
+#: js/components/PageDetailMetrics.vue:486
 msgid "Referrers"
 msgstr "Джерела переходів"
 
-#: js/components/PageDetailMetrics.vue:527
+#: js/components/PageDetailMetrics.vue:529
 msgid "Countries"
 msgstr "Країни"
 
-#: js/components/PageDetailMetrics.vue:543
+#: js/components/PageDetailMetrics.vue:545
 msgid "Page Speed"
 msgstr "Швидкість сторінки"
 
-#: js/components/PageDetailMetrics.vue:568
+#: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
 msgstr "Пошук Google: Запити"
 
-#: js/components/PageDetailMetrics.vue:576
+#: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
 msgstr "Відсоток"
 
-#: js/components/PageDetailMetrics.vue:577
+#: js/components/PageDetailMetrics.vue:579
 msgctxt "search ranking"
 msgid "Position"
 msgstr "Позиція"
 
-#: js/components/PageDetailMetrics.vue:604
+#: js/components/PageDetailMetrics.vue:606
 msgid "Google Search: Impressions & Clicks"
 msgstr "Пошук Google: покази та кліки"
 
-#: js/components/PageDetailMetrics.vue:613
+#: js/components/PageDetailMetrics.vue:615
 msgid "Google Search: Conversions"
 msgstr "Пошук Google: Конверсії"
 
-#: js/components/PageListItems.vue:482
+#: js/components/PageListItems.vue:515
 msgid "Error adding root page"
 msgstr "Помилка додавання кореневої сторінки"
 
-#: js/components/PageListItems.vue:547
+#: js/components/PageListItems.vue:536
+msgid "Page moved"
+msgstr "Сторінку переміщено"
+
+#: js/components/PageListItems.vue:616
 msgid "Cache cleared"
 msgstr "Кеш очищено"
 
-#: js/components/PageListItems.vue:548
+#: js/components/PageListItems.vue:617
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Кеш очищено для %{num} сторінки."
 msgstr[1] "Кеш очищено для %{num} сторінок."
 msgstr[2] "Кеш очищено для %{num} сторінок."
 
-#: js/components/PageListItems.vue:558
+#: js/components/PageListItems.vue:627
 msgid "Error clearing cache"
 msgstr "Помилка очищення кешу"
 
-#: js/components/PageListItems.vue:630
+#: js/components/PageListItems.vue:700
 msgid "Error trashing page"
 msgstr "Помилка під час переміщення сторінки в кошик"
 
-#: js/components/PageListItems.vue:724
-msgid "Error fetching pages"
-msgstr "Помилка при завантаженні сторінок"
-
-#: js/components/PageListItems.vue:805
-msgid "Error inserting page"
-msgstr "Помилка вставки сторінки"
-
-#: js/components/PageListItems.vue:869
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:972
 msgid "Error restoring page"
 msgstr "Помилка відновлення сторінки"
 
-#: js/components/PageListItems.vue:879
+#: js/components/PageListItems.vue:827
+msgid "Error fetching pages"
+msgstr "Помилка при завантаженні сторінок"
+
+#: js/components/PageListItems.vue:908
+msgid "Error inserting page"
+msgstr "Помилка вставки сторінки"
+
+#: js/components/PageListItems.vue:982
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 msgstr "%{name} (%{lang}, шлях: %{path}, домен: %{domain})"
 
-#: js/components/PageListItems.vue:887
+#: js/components/PageListItems.vue:990
 msgid "%{name} (%{lang}, path: %{path})"
 msgstr "%{name} (%{lang}, шлях: %{path})"
 
-#: js/components/PageListItems.vue:977
+#: js/components/PageListItems.vue:1082
 msgid "Error moving page"
 msgstr "Помилка переміщення сторінки"
 
-#: js/components/PageListItems.vue:1068
+#: js/components/PageListItems.vue:1173
 msgid "Error copying page"
 msgstr "Помилка копіювання сторінки"
 
-#: js/components/PageListItems.vue:1073 js/views/PageDetail.vue:281
+#: js/components/PageListItems.vue:1178 js/views/PageDetail.vue:281
 msgid "Error fetching page"
 msgstr "Помилка при завантаженні сторінки"
 
-#: js/components/PageListItems.vue:1147 js/views/PageDetail.vue:499
+#: js/components/PageListItems.vue:1252 js/views/PageDetail.vue:499
 msgid "Error publishing page"
 msgstr "Помилка публікації сторінки"
 
-#: js/components/PageListItems.vue:1172
+#: js/components/PageListItems.vue:1277
 msgid "All subpages of these pages will be purged as well."
 msgstr "Усі підсторінки цих сторінок також буде видалено назавжди."
 
-#: js/components/PageListItems.vue:1202
+#: js/components/PageListItems.vue:1307
 msgid "Error purging page"
 msgstr "Помилка під час остаточного видалення сторінки"
 
-#: js/components/PageListItems.vue:1335
+#: js/components/PageListItems.vue:1440
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "Не вдалося оновити %{num} сторінку"
 msgstr[1] "Не вдалося оновити %{num} сторінки"
 msgstr[2] "Не вдалося оновити %{num} сторінок"
 
-#: js/components/PageListItems.vue:1346 js/components/PageListItems.vue:1444
-#: js/views/PageDetail.vue:606
+#: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
+#: js/views/PageDetail.vue:624
 msgid "Error saving page"
 msgstr "Помилка збереження сторінки"
 
-#: js/components/PageListItems.vue:1397
+#: js/components/PageListItems.vue:1502
 msgid "Error searching pages"
 msgstr "Помилка пошуку сторінок"
 
-#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1752
+#: js/components/PageListItems.vue:1712 js/components/PageListItems.vue:1858
 msgctxt "page status"
 msgid "Enable"
 msgstr "Увімкнути"
 
-#: js/components/PageListItems.vue:1612 js/components/PageListItems.vue:1757
+#: js/components/PageListItems.vue:1717 js/components/PageListItems.vue:1863
 msgctxt "page status"
 msgid "Disable"
 msgstr "Вимкнути"
 
-#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1777
+#: js/components/PageListItems.vue:1733 js/components/PageListItems.vue:1883
 msgid "Clear cache"
 msgstr "Очистити кеш"
 
-#: js/components/PageListItems.vue:1656 js/components/PageListItems.vue:1946
+#: js/components/PageListItems.vue:1761 js/components/PageListItems.vue:2063
 msgid "Add page"
 msgstr "Додати сторінку"
 
-#: js/components/PageListItems.vue:1680
+#: js/components/PageListItems.vue:1785
 msgid "Reload page tree"
 msgstr "Перезавантажити дерево сторінок"
 
-#: js/components/PageListItems.vue:1703
+#: js/components/PageListItems.vue:1809
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Для навігації використовуйте клавіші зі стрілками. Для зміни порядку "
 "натискайте Alt разом із клавішами зі стрілками."
 
-#: js/components/PageListItems.vue:1705
+#: js/components/PageListItems.vue:1811
 msgid "Moved to position %{position} of %{total}"
 msgstr "Переміщено на позицію %{position} з %{total}"
 
-#: js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1813
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Зменшено відступ до рівня %{level}, позиція %{position} з %{total}"
 
-#: js/components/PageListItems.vue:1713
+#: js/components/PageListItems.vue:1819
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Збільшено відступ до рівня %{level}, позиція %{position} з %{total}"
 
-#: js/components/PageListItems.vue:1733
+#: js/components/PageListItems.vue:1839
 msgid "Toggle child nodes"
 msgstr "Перемикання дочірніх вузлів"
 
-#: js/components/PageListItems.vue:1804 js/components/PageListItems.vue:1829
-#: js/components/PageListItems.vue:1854
+#: js/components/PageListItems.vue:1910 js/components/PageListItems.vue:1935
+#: js/components/PageListItems.vue:1960
 msgid "Before"
 msgstr "Перед"
 
-#: js/components/PageListItems.vue:1809 js/components/PageListItems.vue:1834
-#: js/components/PageListItems.vue:1859
+#: js/components/PageListItems.vue:1915 js/components/PageListItems.vue:1940
+#: js/components/PageListItems.vue:1965
 msgid "Into"
 msgstr "Всередину"
 
-#: js/components/PageListItems.vue:1814 js/components/PageListItems.vue:1839
-#: js/components/PageListItems.vue:1864
+#: js/components/PageListItems.vue:1920 js/components/PageListItems.vue:1945
+#: js/components/PageListItems.vue:1970
 msgid "After"
 msgstr "Після"
 
-#: js/components/PageListItems.vue:1848
+#: js/components/PageListItems.vue:1954
 msgid "Insert"
 msgstr "Вставити"
 
-#: js/components/PageListItems.vue:1964
+#: js/components/PageListItems.vue:2081
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Застосувати налаштування доступу до %{num} сторінки."
@@ -2062,19 +2212,19 @@ msgstr "Новий рядок"
 msgid "Recall previous messages"
 msgstr "Повернути попередні повідомлення"
 
-#: js/components/UnsavedDialog.vue:32 js/components/UnsavedDialog.vue:38
+#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Незбережені зміни"
 
-#: js/components/UnsavedDialog.vue:46
+#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "У вас є незбережені зміни, які будуть втрачені, якщо ви вийдете."
 
-#: js/components/UnsavedDialog.vue:52
+#: js/components/UnsavedDialog.vue:49
 msgid "Discard"
 msgstr "Відкинути"
 
-#: js/components/UnsavedDialog.vue:59
+#: js/components/UnsavedDialog.vue:58
 msgid "Save & leave"
 msgstr "Зберегти та вийти"
 
@@ -2094,7 +2244,7 @@ msgstr "Перемкнути мову"
 msgid "User menu"
 msgstr "Меню користувача"
 
-#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Дані відсутні"
 
@@ -2110,7 +2260,7 @@ msgstr "Файл обов'язковий"
 msgid "Add file from URL"
 msgstr "Додати файл з URL-адреси"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:429
+#: js/fields/File.vue:456 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "Створити файл"
 
@@ -2130,19 +2280,19 @@ msgstr "назва"
 msgid "description"
 msgstr "опис"
 
-#: js/fields/Images.vue:453
+#: js/fields/Images.vue:454
 msgid "Drop files here"
 msgstr "Перетягніть файли сюди"
 
-#: js/fields/Map.vue:231
+#: js/fields/Map.vue:232
 msgid "Clear location"
 msgstr "Очистити місцезнаходження"
 
-#: js/fields/Map.vue:234
+#: js/fields/Map.vue:235
 msgid "Click the map to set the location"
 msgstr "Натисніть на карту, щоб задати місцезнаходження"
 
-#: js/fields/String.vue:44
+#: js/fields/String.vue:45
 msgid "Value has invalid format"
 msgstr "Значення має недійсний формат"
 
@@ -2162,31 +2312,31 @@ msgstr "Перемістити рядок"
 msgid "Row actions"
 msgstr "Дії з рядками"
 
-#: js/fields/Url.vue:58 js/utils.js:184
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "Немає"
 
-#: js/fields/Url.vue:59
+#: js/fields/Url.vue:60
 msgid "Sponsored"
 msgstr "Спонсорське"
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:61
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:77
+#: js/fields/Url.vue:78
 msgid "Not a valid URL"
 msgstr "Невірна URL-адреса"
 
-#: js/fields/Url.vue:87
+#: js/fields/Url.vue:88
 msgid "Invalid URL schema configuration"
 msgstr "Неправильна конфігурація схеми URL-адрес"
 
-#: js/fields/Url.vue:165
+#: js/fields/Url.vue:167
 msgid "No pages found"
 msgstr "Сторінок не знайдено"
 
-#: js/fields/Url.vue:177
+#: js/fields/Url.vue:179
 msgid "Link attribute"
 msgstr "Атрибут посилання"
 
@@ -2248,632 +2398,1672 @@ msgstr[2] "Дозволено щонайбільше %{num} стовпців"
 msgid "Failed to load plugin"
 msgstr "Не вдалося завантажити плагін"
 
-#: js/strings.js:29
+#: js/strings.js:30
 msgctxt "cs"
 msgid "main"
 msgstr "головний"
 
-#: js/strings.js:30
+#: js/strings.js:31
 msgctxt "cs"
 msgid "header"
 msgstr "шапка"
 
-#: js/strings.js:31
+#: js/strings.js:32
 msgctxt "cs"
 msgid "footer"
 msgstr "нижній колонтитул"
 
-#: js/strings.js:32
+#: js/strings.js:33
 msgctxt "cs"
 msgid "sidebar"
 msgstr "бічна панель"
 
-#: js/strings.js:33
+#: js/strings.js:34
 msgctxt "cs"
 msgid "aside"
 msgstr "додатковий вміст"
 
-#: js/strings.js:36
+#: js/strings.js:37
 msgctxt "sg"
 msgid "basic"
 msgstr "основний"
 
-#: js/strings.js:37
+#: js/strings.js:38
 msgctxt "sg"
 msgid "content"
 msgstr "вміст"
 
-#: js/strings.js:38
+#: js/strings.js:39
 msgctxt "sg"
 msgid "media"
 msgstr "медіа"
 
-#: js/strings.js:39
+#: js/strings.js:40
 msgctxt "sg"
 msgid "forms"
 msgstr "форми"
 
-#: js/strings.js:42
+#: js/strings.js:43
 msgctxt "as"
 msgid "type"
 msgstr "тип"
 
-#: js/strings.js:43
+#: js/strings.js:44
 msgctxt "as"
 msgid "state"
 msgstr "стан"
 
-#: js/strings.js:46
+#: js/strings.js:47
 msgctxt "st"
 msgid "valid"
 msgstr "дійсний"
 
-#: js/strings.js:47
+#: js/strings.js:48
 msgctxt "st"
 msgid "changed"
 msgstr "змінено"
 
-#: js/strings.js:48
+#: js/strings.js:49
 msgctxt "st"
 msgid "error"
 msgstr "помилка"
 
-#: js/strings.js:51
+#: js/strings.js:52
 msgctxt "st"
 msgid "reference"
 msgstr "посилання"
 
-#: js/strings.js:52
+#: js/strings.js:53
 msgctxt "st"
 msgid "heading"
 msgstr "заголовок"
 
-#: js/strings.js:53
+#: js/strings.js:54
 msgctxt "st"
 msgid "text"
 msgstr "текст"
 
-#: js/strings.js:54
+#: js/strings.js:55
 msgctxt "st"
 msgid "image-text"
 msgstr "зображення-текст"
 
-#: js/strings.js:55
+#: js/strings.js:56
 msgctxt "st"
 msgid "slideshow"
 msgstr "слайд-шоу"
 
-#: js/strings.js:56
+#: js/strings.js:57
 msgctxt "st"
 msgid "code"
 msgstr "код"
 
-#: js/strings.js:57
+#: js/strings.js:58
 msgctxt "st"
 msgid "table"
 msgstr "таблиця"
 
-#: js/strings.js:58
+#: js/strings.js:59
 msgctxt "st"
 msgid "map"
 msgstr "карта"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "image"
 msgstr "зображення"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "video"
 msgstr "відео"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "audio"
 msgstr "аудіо"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "file"
 msgstr "файл"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "cards"
 msgstr "Картки"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "blog"
 msgstr "Блог"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "article"
 msgstr "Стаття"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "toc"
 msgstr "Зміст"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "contact"
 msgstr "контакт"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Метатеги"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "social-media"
 msgstr "Соціальні мережі"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "canonical"
 msgstr "Канонічна URL-адреса"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "robots"
 msgstr "Пошукові системи"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "theme"
 msgstr "Тема оформлення"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "styles"
 msgstr "стилі"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
+#: js/strings.js:80
+msgctxt "st"
+msgid "heros"
+msgstr "Heros"
+
 #: js/strings.js:81
+msgctxt "st"
+msgid "news"
+msgstr "Новини"
+
+#: js/strings.js:82
+msgctxt "st"
+msgid "pricing"
+msgstr "Тарифи"
+
+#: js/strings.js:83
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#: js/strings.js:84
+msgctxt "st"
+msgid "security"
+msgstr "Безпека"
+
+#: js/strings.js:85
+msgctxt "st"
+msgid "testimonial"
+msgstr "Відгук"
+
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Заголовок розділу від H1 до H6"
 
-#: js/strings.js:82
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Форматований текст з абзацами, списками та посиланнями"
 
-#: js/strings.js:83
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Зображення поруч із форматованим текстом"
 
-#: js/strings.js:84
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Вихідний код із підсвічуванням синтаксису"
 
-#: js/strings.js:85
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Таблиця даних з необов'язковим рядком або стовпцем заголовка"
 
-#: js/strings.js:86
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Інтерактивна карта з розташуванням, текстом і посиланням"
 
-#: js/strings.js:87
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Власний HTML для вбудовувань і віджетів"
 
-#: js/strings.js:88
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Одне адаптивне зображення"
 
-#: js/strings.js:89
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Змінні слайди з кількома зображеннями"
 
-#: js/strings.js:90
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Вбудоване відео з елементами керування"
 
-#: js/strings.js:91
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Вбудоване аудіо з елементами керування"
 
-#: js/strings.js:92
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Файл для завантаження, наприклад PDF-документ"
 
-#: js/strings.js:93
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Великий вступ із заголовком, текстом, кнопками та фоном"
 
-#: js/strings.js:94
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Заклик до дії з текстом і кнопками"
 
-#: js/strings.js:95
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Сітка карток із зображенням, заголовком і текстом"
 
-#: js/strings.js:96
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Відгуки клієнтів з ім'ям, посадою та фото"
 
-#: js/strings.js:97
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Вступ статті з галереєю зображень і автором"
 
-#: js/strings.js:98
+#: js/strings.js:105
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Список статей блогу з батьківської сторінки"
 
-#: js/strings.js:99
+#: js/strings.js:106
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Список новин з батьківської сторінки"
 
-#: js/strings.js:100
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Виділена підсторінка, за якою йдуть інші підсторінки"
 
-#: js/strings.js:101
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Тарифні плани з підпискою або разовою оплатою"
 
-#: js/strings.js:102
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Поширені запитання з відповідями"
 
-#: js/strings.js:103
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Зміст із посиланнями на заголовки сторінки"
 
-#: js/strings.js:104
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Контактна форма з налаштовуваними полями"
 
-#: js/strings.js:107
+#: js/strings.js:114
 msgctxt "fn"
 msgid "button"
 msgstr "кнопка"
 
-#: js/strings.js:108
+#: js/strings.js:115
 msgctxt "fn"
 msgid "buttons"
 msgstr "кнопки"
 
-#: js/strings.js:109
+#: js/strings.js:116
 msgctxt "fn"
 msgid "cards"
 msgstr "Картки"
 
-#: js/strings.js:110
+#: js/strings.js:117
 msgctxt "fn"
 msgid "description"
 msgstr "опис"
 
-#: js/strings.js:111
+#: js/strings.js:118
 msgctxt "fn"
 msgid "file"
 msgstr "файл"
 
-#: js/strings.js:112
+#: js/strings.js:119
 msgctxt "fn"
 msgid "files"
 msgstr "файли"
 
-#: js/strings.js:113
+#: js/strings.js:120
 msgctxt "fn"
 msgid "follow"
 msgstr "Перехід за посиланнями"
 
-#: js/strings.js:114
+#: js/strings.js:121
 msgctxt "fn"
 msgid "header"
 msgstr "заголовок"
 
-#: js/strings.js:115
+#: js/strings.js:122
 msgctxt "fn"
 msgid "index"
 msgstr "Індексування"
 
-#: js/strings.js:116
+#: js/strings.js:123
 msgctxt "fn"
 msgid "keywords"
 msgstr "ключові слова"
 
-#: js/strings.js:117
+#: js/strings.js:124
 msgctxt "fn"
 msgid "language"
 msgstr "мова"
 
-#: js/strings.js:118
+#: js/strings.js:125
 msgctxt "fn"
 msgid "label"
 msgstr "підпис"
 
-#: js/strings.js:119
+#: js/strings.js:126
 msgctxt "fn"
 msgid "level"
 msgstr "рівень"
 
-#: js/strings.js:120
+#: js/strings.js:127
 msgctxt "fn"
 msgid "limit"
 msgstr "ліміт"
 
-#: js/strings.js:121
+#: js/strings.js:128
 msgctxt "fn"
 msgid "location"
 msgstr "місцезнаходження"
 
-#: js/strings.js:122
+#: js/strings.js:129
 msgctxt "fn"
 msgid "main"
 msgstr "Основне зображення"
 
-#: js/strings.js:123
+#: js/strings.js:130
 msgctxt "fn"
 msgid "order"
 msgstr "порядок"
 
-#: js/strings.js:124
+#: js/strings.js:131
 msgctxt "fn"
 msgid "parent-page"
 msgstr "батьківська сторінка"
 
-#: js/strings.js:125
+#: js/strings.js:132
 msgctxt "fn"
 msgid "position"
 msgstr "позиція"
 
-#: js/strings.js:126
+#: js/strings.js:133
 msgctxt "fn"
 msgid "text"
 msgstr "текст"
 
-#: js/strings.js:127
+#: js/strings.js:134
 msgctxt "fn"
 msgid "table"
 msgstr "таблиця"
 
-#: js/strings.js:128
+#: js/strings.js:135
 msgctxt "fn"
 msgid "title"
 msgstr "назва"
 
-#: js/strings.js:129
+#: js/strings.js:136
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:131
+#: js/strings.js:138
 msgctxt "fn"
 msgid "image"
 msgstr "зображення"
 
-#: js/strings.js:132
+#: js/strings.js:139
 msgctxt "fn"
 msgid "images"
 msgstr "зображення"
 
-#: js/strings.js:133
+#: js/strings.js:140
 msgctxt "fn"
 msgid "items"
 msgstr "пункти"
 
-#: js/strings.js:134
+#: js/strings.js:141
 msgctxt "fn"
 msgid "introduction"
 msgstr "вступ"
 
-#: js/strings.js:135
+#: js/strings.js:142
 msgctxt "fn"
 msgid "load immediately"
 msgstr "завантажити негайно"
 
-#: js/strings.js:136
+#: js/strings.js:143
 msgctxt "fn"
 msgid "source code"
 msgstr "вихідний код"
 
-#: js/strings.js:137
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Роль доступу до фронтенду"
 
-#: js/strings.js:138
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Ціни оплати"
 
-#: js/strings.js:139
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Посилання платежу"
 
-#: js/strings.js:140
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Тип платежу"
 
-#: js/strings.js:141
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Currency"
 msgstr "Валюта"
 
-#: js/strings.js:142
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Інтервал виставлення рахунків"
 
-#: js/strings.js:143
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Одиниця ціни"
 
-#: js/strings.js:144
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Цільова сторінка або посилання"
 
-#: js/strings.js:145
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "Обов'язкові поля"
 
-#: js/strings.js:146
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "Необов'язкові поля"
 
-#: js/strings.js:147
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Link label"
 msgstr "Текст посилання"
 
-#: js/strings.js:150
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "Контактний URL"
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Contact email"
+msgstr "Контактний email"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Description"
+msgstr "Опис"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "Показана ціна"
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Gallery"
+msgstr "Галерея"
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "Текст позначки"
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "Виділений"
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Language"
+msgstr "Мова"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Payment type"
+msgstr "Тип оплати"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "Бажані мови"
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "Підзаголовок"
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "Подяки"
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "amount"
+msgstr "Сума"
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "background"
+msgstr "Фон"
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "background animation"
+msgstr "Анімація фону"
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "button-alternative"
+msgstr "Альтернативна кнопка"
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "canonical"
+msgstr "Канонічний URL"
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "columns"
+msgstr "Стовпці"
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "encryption"
+msgstr "Шифрування"
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "expires"
+msgstr "Закінчується"
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "features"
+msgstr "Особливості"
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "hiring"
+msgstr "Вакансії"
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "layout"
+msgstr "Макет"
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "name"
+msgstr "Назва"
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "policy"
+msgstr "Політика"
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "ratio"
+msgstr "Співвідношення"
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "role"
+msgstr "Посада"
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "subtitle"
+msgstr "Підзаголовок"
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "url-alternative"
+msgstr "Альтернативний URL"
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "Шрифт тексту"
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "Шрифт заголовків"
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "Колір тексту"
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "Колір фону"
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "Колір виділення"
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "Контрастний колір"
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "Контрастний колір при наведенні"
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "Колір тексту на контрасті"
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "Основний колір"
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "Основний фон"
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "Основний колір при наведенні"
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "Основний фон при наведенні"
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "Другорядний колір"
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "Другорядний фон"
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "Другорядний колір при наведенні"
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "Другорядний фон при наведенні"
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "Радіус кутів"
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "Роздільник хлібних крихт"
+
+#: js/strings.js:206
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "Текст заголовка"
+
+#: js/strings.js:207
+msgctxt "fh"
+msgid ""
+"Level 1 is the main page headline, higher levels structure the sections below"
+msgstr ""
+"Рівень 1 — це головний заголовок сторінки, вищі рівні структурують розділи "
+"нижче"
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Форматований текст з абзацами, списками та посиланнями"
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "Форматований текст, що відображається поруч із зображенням"
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "Зображення, що відображається поруч із текстом"
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "Положення зображення відносно тексту"
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "Співвідношення ширини зображення і тексту"
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "Мова програмування, що використовується для підсвічування синтаксису"
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "Вихідний код, що відображається з підсвічуванням синтаксису"
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "Необов'язковий підпис, що відображається над таблицею"
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr ""
+"Використовувати перший рядок, перший стовпець або обидва як заголовки таблиці"
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Table data as comma separated values, one row per line"
+msgstr ""
+"Дані таблиці у вигляді значень через кому — один рядок таблиці на кожен "
+"новий рядок тексту"
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "Необов'язковий заголовок, що відображається над картою"
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "Опис, що відображається поруч із картою, наприклад адреса або маршрут"
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "Знайдіть місце або клацніть на карті, щоб встановити розташування"
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "Текст посилання, що відкриває розташування в картографічному сервісі"
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr ""
+"HTML-код, що вставляється на сторінку як є, наприклад для вбудовувань і "
+"віджетів"
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "Зображення, що відображається на всю ширину області вмісту"
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr ""
+"Завантажувати зображення без затримки, якщо воно видно у верхній частині "
+"сторінки"
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "Необов'язковий заголовок, що відображається над слайдшоу"
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr ""
+"Зображення, що показуються одне за одним, перетягніть для зміни порядку"
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid ""
+"Load the first image without delay if it is visible at the top of the page"
+msgstr ""
+"Завантажувати перше зображення без затримки, якщо воно видно у верхній "
+"частині сторінки"
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "Відеофайл, що відтворюється на сторінці"
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "Аудіофайл, що відтворюється на сторінці"
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "Файл, доступний для завантаження"
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "Головний заголовок сторінки"
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "Короткий рядок, що відображається над заголовком"
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "Вступ, що відображається під заголовком"
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr "Сторінка або посилання, до якого веде основна кнопка"
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr "Текст основної кнопки"
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr "Сторінка або посилання, до якого веде друга кнопка"
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr "Текст другої кнопки"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "Зображення, що відображається позаду тексту"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "Анімаційний ефект фонового зображення"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "Зображення, що відображаються поруч із текстом"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "Заголовок, що привертає увагу відвідувачів"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "Текст, що спонукає відвідувачів до дії"
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "Кнопки, що ведуть відвідувачів до наступного кроку"
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "Текст кнопки"
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "Сторінка або посилання, до якого веде кнопка"
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "Необов'язковий заголовок, що відображається над картками"
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "Кількість карток у рядку, \"auto\" адаптується до ширини екрана"
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "Картки, що відображаються в сітці"
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "Заголовок картки"
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "Зображення, що відображається у верхній частині картки"
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "Текст картки"
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "Сторінка або посилання, до якого веде картка"
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "Необов'язковий заголовок, що відображається над відгуками"
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "Відгуки клієнтів або партнерів"
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "Відгук людини"
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "Ім'я людини"
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "Посада або компанія людини"
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "Фото людини"
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "Вступ статті, що відображається під заголовком сторінки"
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr ""
+"Зображення статті, перше використовується як зображення попереднього "
+"перегляду"
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "Ім'я автора статті"
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "Посилання на сторінку профілю автора"
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "Необов'язковий заголовок, що відображається над списком"
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "Відображати сторінки як картки або як компактний список"
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "Сторінка, підсторінки якої виводяться у списку"
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "Порядок сортування сторінок у списку"
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "Максимальна кількість сторінок, що показуються одночасно"
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "Відображати інші підсторінки як картки або як компактний список"
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "Необов'язковий заголовок, що відображається над тарифними планами"
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "Короткий текст, що відображається під заголовком"
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "Тарифні плани, що відображаються поруч один з одним"
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "Назва тарифного плану"
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr ""
+"Роль, що надається клієнтам після оплати для доступу до захищених сторінок"
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "Ціни плану, наприклад щомісячна та щорічна"
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "Періодична підписка або разовий платіж"
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "Кількість днів між двома платежами, наприклад 30 для щомісячної оплати"
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "Трилітерний ISO-код валюти, наприклад EUR або USD"
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "ID ціни або сума, що використовується платіжним провайдером"
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "Форматована ціна, що відображається відвідувачам, наприклад €9.99"
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "Числова ціна, що відображається, якщо не задано форматовану ціну"
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "Текст, що відображається після ціни, наприклад на місяць"
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "Короткий опис тарифного плану"
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "Список функцій, що входять до плану"
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "Виділити цей план серед інших"
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr ""
+"Короткий ярлик, що відображається на виділеному плані, наприклад Популярний"
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "Необов'язковий заголовок, що відображається над запитаннями"
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "Питання та відповіді, що відображаються у вигляді розкривного списку"
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "Питання, що задається відвідувачами"
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "Відповідь на запитання"
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "Необов'язковий заголовок, що відображається над змістом"
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "Необов'язковий заголовок, що відображається над контактною формою"
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Form fields visitors must fill out"
+msgstr "Поля форми, які відвідувачі повинні заповнити"
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Form fields visitors can fill out"
+msgstr "Поля форми, які відвідувачі можуть заповнити"
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid ""
+"Summary of the page shown in search results, 150 to 160 characters "
+"recommended"
+msgstr ""
+"Короткий опис сторінки, що відображається в результатах пошуку, "
+"рекомендовано 150–160 символів"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "Список ключових слів через кому, що описують сторінку"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr ""
+"Заголовок, що відображається під час публікації сторінки в соціальних мережах"
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr ""
+"Короткий опис, що відображається під час публікації сторінки в соціальних "
+"мережах"
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr ""
+"Зображення попереднього перегляду, що відображається під час публікації "
+"сторінки в соціальних мережах"
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "Оригінальний URL, якщо той самий вміст доступний за кількома адресами"
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "Дозволити або заборонити пошуковим системам індексувати цю сторінку"
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr ""
+"Дозволити або заборонити пошуковим системам переходити за посиланнями на цій "
+"сторінці"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr ""
+"Назва сайту, що відображається у вкладці браузера та результатах пошуку"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "Логотип, що відображається в шапці сторінки"
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "Варіант логотипа для темного фону"
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr ""
+"Маленьке квадратне зображення, що відображається у вкладках браузера та "
+"закладках"
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "Список шрифтів через кому, що використовуються для тексту"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Default text color"
+msgstr "Колір тексту за замовчуванням"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "Колір фону сторінок"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "Колір фону виділеного тексту"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "Колір елементів із сильним контрастом до фону"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "Контрастний колір при наведенні або фокусуванні на елементі"
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "Колір тексту на елементах, що використовують контрастний колір"
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "Основний фірмовий колір, що використовується для посилань і кнопок"
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "Колір фону основних кнопок і акцентів"
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "Основний колір при наведенні або фокусуванні на елементі"
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "Основний колір фону при наведенні або фокусуванні на елементі"
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "Додатковий колір для менш важливих посилань і кнопок"
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "Колір фону другорядних кнопок"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "Другорядний колір при наведенні або фокусуванні на елементі"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "Другорядний колір фону при наведенні або фокусуванні на елементі"
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr ""
+"Заокруглення кутів як значення довжини CSS, наприклад 0.25rem або 0 для "
+"гострих кутів"
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "Символ, що відображається між посиланнями хлібних крихт"
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "HTTPS-посилання для зв'язку з командою безпеки, наприклад форма"
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "Адреса електронної пошти для повідомлення про проблеми безпеки"
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "Дата, після якої інформація про безпеку вважається застарілою"
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "HTTPS-посилання на відкритий ключ для зашифрованих повідомлень"
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "HTTPS-посилання на сторінку подяки дослідникам безпеки"
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "Коди мов через кому для звітів про безпеку, наприклад en, de"
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "HTTPS-адреса, за якою опубліковано файл security.txt"
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "HTTPS-посилання на політику безпеки та розкриття інформації"
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "HTTPS-посилання на відкриті вакансії, пов'язані з безпекою"
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "HTTPS-посилання на метадані постачальника CSAF"
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr ""
+"Додаткові правила, що додаються до файлу robots.txt для пошукових роботів"
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "Користувацький CSS-код, що додається до всіх сторінок"
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "Користувацький JavaScript-код, що додається до всіх сторінок"
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "Список шрифтів через кому, що використовуються для заголовків"
+
+#: js/strings.js:339
 msgctxt "op"
 msgid "Name"
 msgstr "Ім'я"
 
-#: js/strings.js:151
+#: js/strings.js:340
 msgctxt "op"
 msgid "Company"
 msgstr "Компанія"
 
-#: js/strings.js:152
+#: js/strings.js:341
 msgctxt "op"
 msgid "Telephone"
 msgstr "Телефон"
 
-#: js/strings.js:153
+#: js/strings.js:342
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Електронна пошта"
 
-#: js/strings.js:154
+#: js/strings.js:343
 msgctxt "op"
 msgid "Subject"
 msgstr "Тема"
 
-#: js/strings.js:155
+#: js/strings.js:344
 msgctxt "op"
 msgid "Follow"
 msgstr "Переходити за посиланнями"
 
-#: js/strings.js:156
+#: js/strings.js:345
 msgctxt "op"
 msgid "Index"
 msgstr "Індексувати"
 
-#: js/strings.js:157
+#: js/strings.js:346
 msgctxt "op"
 msgid "No follow"
 msgstr "Не переходити за посиланнями"
 
-#: js/strings.js:158
+#: js/strings.js:347
 msgctxt "op"
 msgid "No index"
 msgstr "Не індексувати"
 
-#: js/strings.js:159
+#: js/strings.js:348
 msgctxt "op"
 msgid "Subscription"
 msgstr "Підписка"
 
-#: js/strings.js:160
+#: js/strings.js:349
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Одноразовий платіж"
 
-#: js/strings.js:163
+#: js/strings.js:350
+msgctxt "op"
+msgid "Auto"
+msgstr "Авто"
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "Cards"
+msgstr "Картки"
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Default"
+msgstr "За замовчуванням"
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "End"
+msgstr "Кінець"
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "First column"
+msgstr "Перший стовпець"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "First row"
+msgstr "Перший рядок"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "First row and column"
+msgstr "Перший рядок і стовпець"
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "Grid end"
+msgstr "Сітка в кінці"
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "Grid start"
+msgstr "Сітка на початку"
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "Latest"
+msgstr "Найновіші"
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "List"
+msgstr "Список"
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "None"
+msgstr "Немає"
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Oldest"
+msgstr "Найстаріші"
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Position"
+msgstr "Позиція"
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "Start"
+msgstr "Початок"
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "Zoom"
+msgstr "Збільшення"
+
+#: js/strings.js:368
 msgctxt "ai"
 msgid "Done"
 msgstr "Готово"
 
-#: js/strings.js:164
+#: js/strings.js:369
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Вже існує"
 
-#: js/strings.js:167
+#: js/strings.js:372
 msgctxt "sg"
 msgid "expert"
 msgstr "Розширені"
 
-#: js/strings.js:168
+#: js/strings.js:373
 msgctxt "sg"
 msgid "theme"
 msgstr "Тема оформлення"
 
-#: js/strings.js:169
+#: js/strings.js:374
 msgctxt "st"
 msgid "website"
 msgstr "вебсайт"
 
-#: js/strings.js:170
+#: js/strings.js:375
 msgctxt "st"
 msgid "logo"
 msgstr "Логотип"
 
-#: js/strings.js:171
+#: js/strings.js:376
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Альтернативний логотип"
 
-#: js/strings.js:172
+#: js/strings.js:377
 msgctxt "st"
 msgid "icon"
 msgstr "Значок"
 
-#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2922,7 +4112,11 @@ msgstr "Додати значення доступу"
 msgid "Access value"
 msgstr "Значення доступу"
 
-#: js/views/AccessList.vue:353
+#: js/views/AccessList.vue:338
+msgid "Role name which can be assigned to pages and users"
+msgstr "Назва ролі, яку можна призначити сторінкам і користувачам"
+
+#: js/views/AccessList.vue:354
 msgid "Add"
 msgstr "Додати"
 
@@ -2943,24 +4137,24 @@ msgid "Error publishing element"
 msgstr "Помилка під час публікації елемента"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:532
+#: js/views/PageDetail.vue:549
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Є невірні поля, будь ласка, спочатку виправте помилки"
 
-#: js/views/ElementDetail.vue:309
+#: js/views/ElementDetail.vue:311
 msgid "Element saved successfully"
 msgstr "Елемент успішно збережено"
 
-#: js/views/ElementDetail.vue:323
+#: js/views/ElementDetail.vue:325
 msgid "Error saving element"
 msgstr "Помилка під час збереження елемента"
 
-#: js/views/ElementDetail.vue:383 js/views/ElementDetail.vue:403
-#: js/views/ElementDetail.vue:408
+#: js/views/ElementDetail.vue:385 js/views/ElementDetail.vue:405
+#: js/views/ElementDetail.vue:410
 msgid "Element"
 msgstr "Елемент"
 
-#: js/views/ElementDetail.vue:410 js/views/FileDetail.vue:399
+#: js/views/ElementDetail.vue:412 js/views/FileDetail.vue:401
 msgid "Used by"
 msgstr "Використовується"
 
@@ -3009,13 +4203,13 @@ msgstr "мови"
 msgid "Press Enter to open the chat"
 msgstr "Натисніть Enter, щоб відкрити чат"
 
-#: js/views/ElementList.vue:292
+#: js/views/ElementList.vue:293
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 "ШІ може знаходити спільні елементи та керувати ними на основі ваших даних"
 
-#: js/views/ElementList.vue:293 js/views/FileList.vue:292
-#: js/views/PageList.vue:338
+#: js/views/ElementList.vue:294 js/views/FileList.vue:293
+#: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Натисніть Enter або стрілку, щоб відкрити ШІ-асистента й удосконалити вміст "
@@ -3033,16 +4227,16 @@ msgstr "Файл успішно опубліковано"
 msgid "File scheduled for publishing at %{date}"
 msgstr "Публікацію файлу заплановано на %{date}"
 
-#: js/views/FileDetail.vue:323
+#: js/views/FileDetail.vue:325
 msgid "File saved successfully"
 msgstr "Файл успішно збережено"
 
-#: js/views/FileDetail.vue:372 js/views/FileDetail.vue:392
-#: js/views/FileDetail.vue:397
+#: js/views/FileDetail.vue:374 js/views/FileDetail.vue:394
+#: js/views/FileDetail.vue:399
 msgid "File"
 msgstr "Файл"
 
-#: js/views/FileList.vue:291
+#: js/views/FileList.vue:292
 msgid "AI can find and manage media files based on your input"
 msgstr "ШІ може знаходити медіафайли та керувати ними на основі ваших даних"
 
@@ -3078,28 +4272,28 @@ msgstr "Сторінку успішно опубліковано"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Публікацію сторінки заплановано на %{date}"
 
-#: js/views/PageDetail.vue:518 js/views/PageDetail.vue:792
+#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
 msgid "Rate this page and suggest improvements"
 msgstr "Оцініть цю сторінку та запропонуйте покращення"
 
-#: js/views/PageDetail.vue:584
+#: js/views/PageDetail.vue:602
 msgid "Page saved successfully"
 msgstr "Сторінку успішно збережено"
 
-#: js/views/PageDetail.vue:621
+#: js/views/PageDetail.vue:639
 msgid "No page schema for \"content\" found"
 msgstr "Схему сторінки для \"content\" не знайдено"
 
-#: js/views/PageDetail.vue:769 js/views/PageDetail.vue:820
-#: js/views/PageDetail.vue:839
+#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
+#: js/views/PageDetail.vue:857
 msgid "Page"
 msgstr "Сторінка"
 
-#: js/views/PageDetail.vue:797
+#: js/views/PageDetail.vue:815
 msgid "Translate page"
 msgstr "Перекласти сторінку"
 
-#: js/views/PageDetail.vue:842
+#: js/views/PageDetail.vue:860
 msgid "Metrics"
 msgstr "Метрики"
 
@@ -3123,17 +4317,29 @@ msgstr "Приховано"
 msgid "cache"
 msgstr "кеш"
 
-#: js/views/PageList.vue:313
+#: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
 msgstr "Згенерувати сторінку на основі запиту"
 
-#: js/views/PageList.vue:331
+#: js/views/PageList.vue:332
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr ""
 "ШІ може створити сторінку та контент на основі ваших даних і додати їх до "
 "дерева сторінок"
+
+#~ msgid "Open command palette"
+#~ msgstr "Відкрити палітру команд"
+
+#~ msgid "Conflict resolution"
+#~ msgstr "Вирішення конфліктів"
+
+#~ msgid "Command palette"
+#~ msgstr "Палітра команд"
+
+#~ msgid "Confirm"
+#~ msgstr "Підтвердити"
 
 #~ msgid "Selection is required"
 #~ msgstr "Потрібно зробити вибір"

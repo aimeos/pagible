@@ -214,9 +214,9 @@ describe('Page List', () => {
 
   // ---- Loading & empty state ----
 
-  it('shows "No entries found" when page list is empty', () => {
+  it('shows "No entries yet" when page list is empty', () => {
     visitPages([])
-    cy.get('.page-list').should('contain', 'No entries found')
+    cy.get('.page-list').should('contain', 'No entries yet')
   })
 
   it('shows page items when pages are returned', () => {

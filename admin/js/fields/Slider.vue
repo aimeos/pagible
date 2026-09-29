@@ -16,6 +16,7 @@ export default {
 
 <template>
   <v-slider
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :thumb-label="true"
     :step="config.step ?? 1"
     :max="config.max ?? 100"

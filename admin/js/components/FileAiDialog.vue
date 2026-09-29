@@ -254,12 +254,13 @@ export default {
     <v-textarea
       v-model="chat"
       :label="$gettext('Describe the image content')"
+      :hint="$gettext('Describe the subject, style and colors of the image to generate')"
       variant="underlined"
       autofocus
       clearable
     ></v-textarea>
 
-    <v-btn :loading="loading" :disabled="!chat" @click="create()" variant="outlined" class="create" data-confirm>
+    <v-btn :loading="loading" :disabled="!chat" @click="create()" variant="flat" color="primary" class="create" data-confirm>
       {{ $gettext('New image') }}
     </v-btn>
 

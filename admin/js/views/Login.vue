@@ -230,10 +230,10 @@ export default {
       </v-card-text>
 
       <v-card-actions>
-        <v-btn v-if="urllogin" type="submit" variant="outlined">
+        <v-btn v-if="urllogin" type="submit" variant="flat" color="primary">
           {{ $gettext('Sign in') }}
         </v-btn>
-        <v-btn v-else type="submit" variant="outlined" :disabled="form != true && !autofilled">
+        <v-btn v-else type="submit" variant="flat" color="primary" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>

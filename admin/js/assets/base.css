@@ -354,6 +354,12 @@ input:-webkit-autofill:focus {
   font-weight: 600;
 }
 
+/* Dialog/menu containers receive programmatic focus on open, no ring needed */
+.v-overlay__content:focus,
+.v-overlay__content:focus-visible {
+  outline: none;
+}
+
 /* Visible, on-brand keyboard focus inside dialogs */
 .v-dialog .v-btn:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
@@ -558,9 +564,20 @@ input:-webkit-autofill:focus {
   color: rgb(var(--v-theme-on-primary)) !important;
 }
 
-.v-selection-control.draft .v-selection-control__input {
-  background-color: rgba(var(--v-theme-warning), 0.16);
-  box-shadow: inset 0 0 0 1.5px rgba(var(--v-theme-warning), 0.5);
+/* Draft marker: glowing status dot on the checkbox corner */
+.v-selection-control.draft .v-selection-control__input::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  inset-inline-end: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.55), transparent 60%), rgb(var(--v-theme-warning));
+  box-shadow:
+    0 0 0 2px rgb(var(--v-theme-surface)),
+    0 0 8px 1px rgba(var(--v-theme-warning), 0.55);
+  pointer-events: none;
 }
 
 .publish-at {

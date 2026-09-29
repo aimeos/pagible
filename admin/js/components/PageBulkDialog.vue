@@ -175,10 +175,11 @@ export default {
           :modelValue="values.status"
           @update:modelValue="set('status', $event)"
           :label="$gettext('Status')"
+          :hint="$gettext('Disabled pages are offline, hidden pages are online but not shown in the navigation')"
           variant="underlined"
           item-title="val"
           item-value="key"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -189,10 +190,11 @@ export default {
           :modelValue="values.cache"
           @update:modelValue="set('cache', $event)"
           :label="$gettext('Cache time')"
+          :hint="$gettext('How long the generated page is cached before it is created again')"
           variant="underlined"
           item-title="val"
           item-value="key"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -203,8 +205,9 @@ export default {
           :modelValue="values.lang"
           @update:modelValue="set('lang', $event)"
           :label="$gettext('Language')"
+          :hint="$gettext('Language of the page content')"
           variant="underlined"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -215,8 +218,9 @@ export default {
           :modelValue="values.theme"
           @update:modelValue="set('theme', $event)"
           :label="$gettext('Theme')"
+          :hint="$gettext('Design used to display the page')"
           variant="underlined"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -227,8 +231,9 @@ export default {
           :modelValue="values.type"
           @update:modelValue="set('type', $event)"
           :label="$gettext('Page type')"
+          :hint="$gettext('Template of the theme which defines the page layout')"
           variant="underlined"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -238,10 +243,11 @@ export default {
           :modelValue="values.tag"
           @update:modelValue="set('tag', $event)"
           :label="$gettext('Page tag')"
+          :hint="$gettext('Internal identifier to find the page in templates, e.g. blog')"
           variant="underlined"
           maxlength="30"
           counter="30"
-          hide-details
+          hide-details="auto"
         />
       </div>
 
@@ -252,6 +258,7 @@ export default {
           :modelValue="values.domain"
           @update:modelValue="set('domain', $event)"
           :label="$gettext('Domain')"
+          :hint="$gettext('Domain the page is available at, e.g. example.com')"
           variant="underlined"
           maxlength="255"
           counter="255"

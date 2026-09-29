@@ -277,7 +277,7 @@ export default {
   <CmsDialog
     :model-value="shortcuts.palette"
     @update:model-value="shortcuts.palette = $event"
-    :title="$gettext('Command palette')"
+    :title="$gettext('Commands')"
     :card-loading="searching ? 'primary' : false"
     content-class="command-palette-body"
     class="command-palette"
@@ -406,6 +406,7 @@ export default {
   border: 1px solid rgba(var(--v-border-color), 0.38);
   border-bottom-width: 2px;
   border-radius: 4px;
+  background: transparent;
   font-family: inherit;
   font-size: 0.75rem;
   text-align: center;
