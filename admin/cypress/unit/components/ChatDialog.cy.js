@@ -50,6 +50,11 @@ describe('ChatDialog', () => {
     cy.contains('.chat-empty', 'What shall I do for you?').should('exist')
   })
 
+  it('removes the dialog body padding', () => {
+    mountDialog()
+    cy.get('.dialog-body.chat-body').should('have.css', 'padding', '0px')
+  })
+
   it('shows AI and user messages without avatars on opposite sides', () => {
     mountDialog()
     cy.then(() => {
