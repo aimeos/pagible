@@ -32,33 +32,33 @@ msgctxt "webhooks"
 msgid "Status"
 msgstr "상태"
 
-#: src/views/WebhookList.vue:186
+#: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
 msgstr "모두"
 
-#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
-#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
 msgctxt "webhooks"
 msgid "Active"
 msgstr "활성"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "비활성"
 
-#: src/views/WebhookList.vue:249
+#: src/views/WebhookList.vue:250
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "웹후크를 가져오는 중 오류가 발생했습니다"
 
-#: src/views/WebhookList.vue:313
+#: src/views/WebhookList.vue:314
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "웹후크를 저장하는 중 오류가 발생했습니다"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:319
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -67,218 +67,242 @@ msgstr ""
 "이 웹후크의 비밀 키를 갱신하시겠습니까? 수신자를 새 비밀 키로 업데이트해야 합"
 "니다."
 
-#: src/views/WebhookList.vue:337
+#: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "웹후크 비밀 키를 갱신하는 중 오류가 발생했습니다"
 
-#: src/views/WebhookList.vue:357
+#: src/views/WebhookList.vue:358
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "테스트 이벤트가 전송되었습니다"
 
-#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "테스트 이벤트에 실패했습니다"
 
-#: src/views/WebhookList.vue:411
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "웹후크를 영구 삭제하는 중 오류가 발생했습니다"
 
-#: src/views/WebhookList.vue:419
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "비밀 키를 복사했습니다"
 
-#: src/views/WebhookList.vue:424
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "비밀 키를 복사할 수 없습니다"
 
-#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
 msgstr "없음"
 
-#: src/views/WebhookList.vue:446
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "연결에 실패했습니다"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "액세스 거부됨"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "비밀 키를 복호화할 수 없습니다. 갱신하세요"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "서버 구성에 의해 차단됨"
 
-#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "유효한 URL이 아닙니다."
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "큐를 사용할 수 없음"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "호스트를 찾을 수 없습니다"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "응답이 너무 큽니다"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:455
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "요청 시간이 초과되었습니다"
 
-#: src/views/WebhookList.vue:459
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "리디렉션은 따르지 않습니다"
 
-#: src/views/WebhookList.vue:460
+#: src/views/WebhookList.vue:461
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "전송에 실패했습니다"
 
-#: src/views/WebhookList.vue:522
+#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "게시된 콘텐츠가 변경되면 서명된 알림을 보냅니다."
 
-#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "선택 상태 전환"
 
-#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "영구 삭제"
 
-#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
-#: src/views/WebhookList.vue:740
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "웹후크 추가"
 
-#: src/views/WebhookList.vue:584
+#: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "검색"
 
-#: src/views/WebhookList.vue:593
+#: src/views/WebhookList.vue:594
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "새로고침"
 
-#: src/views/WebhookList.vue:634
+#: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "편집"
 
-#: src/views/WebhookList.vue:644
+#: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "갱신"
 
-#: src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "마지막 성공"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:692
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "최근 오류"
 
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:699
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "일시 중지 기한"
 
-#: src/views/WebhookList.vue:708
+#: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "로드 중"
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "항목을 찾을 수 없습니다."
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:716
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "설정된 웹후크가 없습니다."
 
-#: src/views/WebhookList.vue:737
+#: src/views/WebhookList.vue:738
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "웹후크 비밀 키"
 
-#: src/views/WebhookList.vue:739
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "웹후크 편집"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "이 비밀 키를 지금 복사하세요. 다시 표시되지 않습니다."
 
-#: src/views/WebhookList.vue:778
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr "비활성 웹후크는 이벤트를 받지 않으며 대기 중인 전송은 삭제됩니다"
+
+#: src/views/WebhookList.vue:780
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS 엔드포인트 URL"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "서명된 이벤트를 수신하는 주소이며, 이후에는 변경할 수 없습니다"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Events"
 msgstr "이벤트"
 
-#: src/views/WebhookList.vue:809
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr "웹후크로 전송되는 이벤트이며, 제거된 이벤트의 대기 중인 전송은 취소됩니다"
+
+#: src/views/WebhookList.vue:813
 msgctxt "webhooks"
 msgid "Name"
 msgstr "이름"
 
-#: src/views/WebhookList.vue:819
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr "동일한 엔드포인트를 가진 웹후크를 구분하기 위한 선택적 이름이며, 모든 웹후크 편집자에게 표시됩니다"
+
+#: src/views/WebhookList.vue:824
 msgctxt "webhooks"
 msgid "Done"
 msgstr "완료"
 
-#: src/views/WebhookList.vue:822
+#: src/views/WebhookList.vue:827
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "비밀 키 복사"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:841
 msgctxt "webhooks"
 msgid "Test"
 msgstr "테스트"
 
-#: src/views/WebhookList.vue:839
+#: src/views/WebhookList.vue:844
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "취소"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:855
 msgctxt "webhooks"
 msgid "Save"
 msgstr "저장"

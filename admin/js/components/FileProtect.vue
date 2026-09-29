@@ -61,12 +61,20 @@ export default {
         hide-details
       />
     </label>
+    <div v-if="!readonly && user.can('file:relocate')" class="v-input__details protect-hint">
+      <div class="v-messages">
+        <div class="v-messages__message">
+          {{ $gettext('Only visitors allowed to view the page using the file can download it') }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .field-protect {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   text-transform: capitalize;
@@ -110,5 +118,15 @@ export default {
 .protect-control {
   flex: 0 0 40px;
   width: 40px;
+}
+
+.protect-hint {
+  flex: 1 1 100%;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.field-protect:not(:has(.protect:focus-within)) .protect-hint {
+  display: none;
 }
 </style>

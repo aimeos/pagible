@@ -74,8 +74,9 @@ export default {
       :modelValue="lang"
       @update:modelValue="lang = $event"
       :label="$gettext('Language')"
+      :hint="$gettext('Language of the content')"
       variant="underlined"
-      hide-details
+      hide-details="auto"
     />
 
     <template #actions>

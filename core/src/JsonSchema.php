@@ -386,6 +386,12 @@ class JsonSchema
             $schema['pattern'] = (string) $field['pattern'];
         }
 
+        if( is_string( $field['hint'] ?? null ) && ( $hint = trim( $field['hint'] ) ) !== '' ) {
+            $schema['description'] = isset( $schema['description'] )
+                ? rtrim( $hint, '.' ) . '. ' . $schema['description']
+                : $hint;
+        }
+
         if( $strict )
         {
             if( array_key_exists( 'default', $field ) ) {

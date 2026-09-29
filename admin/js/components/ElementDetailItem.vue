@@ -73,6 +73,7 @@ export default {
             @update:modelValue="update('name', $event)"
             variant="underlined"
             :label="$gettext('Name')"
+            :hint="$gettext('Name to find the shared element in the element list')"
             counter="255"
             maxlength="255"
           ></v-text-field>
@@ -86,6 +87,7 @@ export default {
             @update:modelValue="update('lang', $event)"
             variant="underlined"
             :label="$gettext('Language')"
+            :hint="$gettext('Language of the element content, choose none if used in all languages')"
           ></v-select>
         </v-col>
       </v-row>

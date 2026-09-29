@@ -6,7 +6,7 @@ import { markRaw } from 'vue'
 import ActionMenu from './ActionMenu.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
-import { fieldTypes, protectTypes } from '../fieldtypes'
+import { fieldTypes, hintTypes, protectTypes } from '../fieldtypes'
 import { hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
@@ -61,6 +61,7 @@ export default {
       mdiMicrophoneOutline,
       mdiMicrophone,
       mdiUndoVariant,
+      hintTypes,
       protectTypes,
       txlocales
     }
@@ -229,6 +230,7 @@ export default {
         this.fields[code].min ? 'minimum characters: ' + this.fields[code].min : null,
         this.fields[code].max ? 'maximum characters: ' + this.fields[code].max : null,
         this.fields[code].placeholder ? 'hint text: ' + this.fields[code].placeholder : null,
+        this.fields[code].hint ? 'field description: ' + this.fields[code].hint : null,
         'context information as JSON: ' + JSON.stringify(this.data)
       ]
 
@@ -363,6 +365,14 @@ export default {
         />
       </template>
     </component>
+    <div
+      v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"
+      class="v-input__details hint"
+    >
+      <div class="v-messages">
+        <div class="v-messages__message">{{ $pgettext('fh', field.hint) }}</div>
+      </div>
+    </div>
   </div>
 </template>
 

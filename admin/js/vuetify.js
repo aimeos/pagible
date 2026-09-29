@@ -37,6 +37,7 @@ export async function switchLocale(code) {
 const vuetify = createVuetify({
   components: { VDialog, VMenu },
   defaults: {
+    global: { persistentHint: true },
     VDialog: { transition: 'cms-dialog' }
   },
   display: {

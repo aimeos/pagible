@@ -764,6 +764,7 @@ export default {
             <v-textarea
               v-model="edittext"
               :label="$gettext('Describe the changes')"
+              :hint="$gettext('Describe what should be changed in the image, e.g. make the sky blue')"
               variant="underlined"
               autofocus
               clearable
@@ -823,6 +824,7 @@ export default {
                   variant="outlined"
                   controlVariant="hidden"
                   :label="$pgettext('image edge', 'Top')"
+                  :hint="$gettext('Number of pixels added at this side of the image')"
                   :max="2000"
                   :min="0"
                 />
@@ -835,6 +837,7 @@ export default {
                   variant="outlined"
                   controlVariant="hidden"
                   :label="$pgettext('image edge', 'Left')"
+                  :hint="$gettext('Number of pixels added at this side of the image')"
                   :max="2000"
                   :min="0"
                 />
@@ -845,6 +848,7 @@ export default {
                   variant="outlined"
                   controlVariant="hidden"
                   :label="$pgettext('image edge', 'Right')"
+                  :hint="$gettext('Number of pixels added at this side of the image')"
                   :max="2000"
                   :min="0"
                 />
@@ -857,6 +861,7 @@ export default {
                   variant="outlined"
                   controlVariant="hidden"
                   :label="$pgettext('image edge', 'Bottom')"
+                  :hint="$gettext('Number of pixels added at this side of the image')"
                   :max="2000"
                   :min="0"
                 />

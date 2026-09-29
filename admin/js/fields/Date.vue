@@ -44,6 +44,7 @@ export default {
 
 <template>
   <v-date-input
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
     :readonly="readonly"

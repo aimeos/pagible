@@ -207,6 +207,7 @@ export default {
       :error-messages="errors"
       :append-inner-icon="input ? mdiCheck : ''"
       :placeholder="$gettext('Enter one URL per line')"
+      :hint="$gettext('Files are downloaded from these URLs and added to the media list')"
       variant="outlined"
       autofocus
       auto-grow
@@ -223,6 +224,7 @@ export default {
       :error-messages="errors"
       :append-inner-icon="input ? mdiCheck : ''"
       :placeholder="$gettext('Enter URL')"
+      :hint="$gettext('The file is downloaded from this URL and added to the media list')"
       variant="outlined"
       maxlength="255"
       counter="255"

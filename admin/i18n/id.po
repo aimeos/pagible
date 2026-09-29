@@ -15,7 +15,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:471
 #: js/components/ElementListItems.vue:511
 #: js/components/ElementListItems.vue:553
-#: js/components/ElementListItems.vue:598 js/components/Fields.vue:118
+#: js/components/ElementListItems.vue:598 js/components/Fields.vue:119
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -37,7 +37,7 @@ msgstr ""
 #: js/components/PageListItems.vue:1113 js/components/PageListItems.vue:1154
 #: js/components/PageListItems.vue:1275 js/components/PageListItems.vue:1353
 #: js/components/PageListItems.vue:1404 js/fields/File.vue:147
-#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
+#: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:526 js/views/PageDetail.vue:616
@@ -235,19 +235,27 @@ msgstr "Akun"
 msgid "Assigned frontend roles"
 msgstr "Peran frontend yang ditetapkan"
 
-#: js/components/AccessUsers.vue:496
+#: js/components/AccessUsers.vue:484
+msgid "Roles granting access to restricted pages"
+msgstr "Peran yang memberikan akses ke halaman terbatas"
+
+#: js/components/AccessUsers.vue:497
 msgid "Assigned backend roles"
 msgstr "Peran backend yang ditetapkan"
 
-#: js/components/AccessUsers.vue:500
+#: js/components/AccessUsers.vue:501
 msgid "Custom"
 msgstr "Kustom"
 
-#: js/components/AccessUsers.vue:506
+#: js/components/AccessUsers.vue:507
 msgid "Available roles"
 msgstr "Peran yang tersedia"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
+#: js/components/AccessUsers.vue:508
+msgid "Roles defining what the user can do in the admin panel"
+msgstr "Peran yang menentukan apa yang dapat dilakukan pengguna di panel admin"
+
+#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:903
 #: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
@@ -261,7 +269,7 @@ msgstr "Tindakan"
 #: js/components/ChatDialog.vue:336 js/components/ChatDialog.vue:337
 #: js/components/Dialog.vue:46 js/components/FieldsAside.vue:186
 #: js/components/FileDetailItemImage.vue:758
-#: js/components/FileDetailItemImage.vue:813 js/components/UnsavedDialog.vue:40
+#: js/components/FileDetailItemImage.vue:814 js/components/UnsavedDialog.vue:40
 msgid "Close"
 msgstr "Tutup"
 
@@ -273,8 +281,8 @@ msgstr "Elemen yang digunakan"
 msgid "Filters"
 msgstr "Filter"
 
-#: js/components/AsideList.vue:76 js/components/Fields.vue:326
-#: js/components/Fields.vue:359
+#: js/components/AsideList.vue:76 js/components/Fields.vue:328
+#: js/components/Fields.vue:361
 msgid "Reset"
 msgstr "Atur ulang"
 
@@ -397,7 +405,7 @@ msgstr "Berpikir ..."
 
 #: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:841
 #: js/components/PageDetailContentList.vue:937
-#: js/components/PageListItems.vue:1790 js/fields/Items.vue:370
+#: js/components/PageListItems.vue:1790 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Salin"
@@ -407,9 +415,9 @@ msgid "Send a message ..."
 msgstr "Kirim pesan..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:457
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
+#: js/components/FileDetailItem.vue:485
+#: js/components/PageDetailContentList.vue:811 js/fields/Items.vue:462
 #: js/views/ElementList.vue:283 js/views/FileList.vue:282
 #: js/views/PageList.vue:320
 msgid "Dictate"
@@ -479,7 +487,7 @@ msgstr[0] ""
 "%{num} entri berikut akan dihapus permanen dan tidak dapat dipulihkan:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:640
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "Batal"
 
@@ -539,15 +547,19 @@ msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Terapkan properti yang dipilih ke %{num} entri."
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:205
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
+#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:259
 msgid "Language"
 msgstr "Bahasa"
 
-#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:270
+#: js/components/EditBulkDialog.vue:77
+msgid "Language of the content"
+msgstr "Bahasa konten"
+
+#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:209
+#: js/components/PageBulkDialog.vue:277
 msgid "Apply"
 msgstr "Terapkan"
 
@@ -557,6 +569,14 @@ msgstr "Terapkan"
 #: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "Nama"
+
+#: js/components/ElementDetailItem.vue:76
+msgid "Name to find the shared element in the element list"
+msgstr "Nama untuk menemukan elemen bersama dalam daftar elemen"
+
+#: js/components/ElementDetailItem.vue:90
+msgid "Language of the element content, choose none if used in all languages"
+msgstr "Bahasa konten elemen, pilih tidak ada jika digunakan di semua bahasa"
 
 #: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
@@ -571,7 +591,7 @@ msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:444
+#: js/components/PageAccess.vue:181 js/components/PageListItems.vue:444
 msgid "Restricted"
 msgstr "Terbatas"
 
@@ -627,7 +647,7 @@ msgstr "Aktifkan/nonaktifkan pilihan"
 #: js/components/PageDetailContentList.vue:861
 #: js/components/PageDetailContentList.vue:947
 #: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1873
-#: js/fields/Items.vue:380 js/fields/Table.vue:208 js/fields/Table.vue:278
+#: js/fields/Items.vue:385 js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Delete"
 msgstr "Hapus"
 
@@ -641,7 +661,7 @@ msgstr "Pulihkan"
 #: js/components/ElementListItems.vue:764
 #: js/components/ElementListItems.vue:911
 #: js/components/PageDetailContentList.vue:1047
-#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:497
+#: js/components/PageDetailItemSection.vue:212 js/fields/Items.vue:510
 msgid "Add element"
 msgstr "Tambahkan elemen"
 
@@ -667,25 +687,25 @@ msgstr "Muat ulang elemen"
 
 #: js/components/ElementListItems.vue:899 js/components/FileListItems.vue:980
 #: js/components/HistoryDialog.vue:199 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:201
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
+#: js/components/PageListItems.vue:1934 js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "Memuat"
 
-#: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:422 js/fields/Items.vue:428
+#: js/components/Fields.vue:284 js/components/Fields.vue:290
+#: js/fields/Items.vue:427 js/fields/Items.vue:433
 msgid "Translate"
 msgstr "Terjemahkan"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:446
+#: js/components/Fields.vue:309 js/fields/Items.vue:451
 msgid "Generate text"
 msgstr "Hasilkan teks"
 
-#: js/components/Fields.vue:334
+#: js/components/Fields.vue:336
 msgid "Updated by other editor"
 msgstr "Diedit oleh editor lain"
 
-#: js/components/Fields.vue:337
+#: js/components/Fields.vue:339
 msgid "Overwritten"
 msgstr "Tertimpa"
 
@@ -732,18 +752,18 @@ msgstr "Ubah ke"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:386
+#: js/fields/Images.vue:387
 msgid "Edit"
 msgstr "Sunting"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
-#: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
 msgid "Remove"
 msgstr "Hapus"
 
 #: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:279
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:149
+#: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "Kesalahan saat menambahkan file %{path}"
 
@@ -759,19 +779,23 @@ msgstr "Buat gambar"
 msgid "Describe the image content"
 msgstr "Jelaskan konten gambar"
 
-#: js/components/FileAiDialog.vue:263
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr "Jelaskan subjek, gaya, dan warna gambar yang akan dibuat"
+
+#: js/components/FileAiDialog.vue:264
 msgid "New image"
 msgstr "Gambar baru"
 
-#: js/components/FileAiDialog.vue:267
+#: js/components/FileAiDialog.vue:268
 msgid "Current images"
 msgstr "Gambar saat ini"
 
-#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr "Gambar yang digunakan"
 
-#: js/components/FileAiDialog.vue:309
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr "Pilih gambar"
 
@@ -784,7 +808,7 @@ msgid "Error describing file"
 msgstr "Kesalahan dalam mendeskripsikan file"
 
 #: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:580
-#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:335
+#: js/fields/File.vue:300 js/fields/Images.vue:300 js/views/FileDetail.vue:335
 msgid "Error saving file"
 msgstr "Kesalahan menyimpan file"
 
@@ -792,37 +816,57 @@ msgstr "Kesalahan menyimpan file"
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripsi hanya tersedia untuk file audio dan video"
 
-#: js/components/FileDetailItem.vue:414
+#: js/components/FileDetailItem.vue:392
+msgid "Name to find the file in the media list"
+msgstr "Nama untuk menemukan file dalam daftar media"
+
+#: js/components/FileDetailItem.vue:406
+msgid "Language of the file content, choose none if used in all languages"
+msgstr "Bahasa konten file, pilih tidak ada jika digunakan di semua bahasa"
+
+#: js/components/FileDetailItem.vue:416
 msgid "Copy URL"
 msgstr "Salin URL"
 
-#: js/components/FileDetailItem.vue:457
+#: js/components/FileDetailItem.vue:459
 msgid "Descriptions"
 msgstr "Deskripsi"
 
-#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
 msgid "Translate text"
 msgstr "Terjemahkan teks"
 
-#: js/components/FileDetailItem.vue:473
+#: js/components/FileDetailItem.vue:475
 msgid "Generate description"
 msgstr "Hasilkan deskripsi"
 
-#: js/components/FileDetailItem.vue:500
+#: js/components/FileDetailItem.vue:502
 msgid "Description (%{lang})"
 msgstr "Deskripsi (%{lang})"
 
-#: js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:503
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"Teks alternatif untuk pembaca layar dan mesin pencari, juga digunakan "
+"sebagai keterangan"
+
+#: js/components/FileDetailItem.vue:519
 msgid "Transcriptions"
 msgstr "Transkripsi"
 
-#: js/components/FileDetailItem.vue:532
+#: js/components/FileDetailItem.vue:535
 msgid "Transcribe file content"
 msgstr "Transkripsikan konten file"
 
-#: js/components/FileDetailItem.vue:550
+#: js/components/FileDetailItem.vue:553
 msgid "Transcription (%{lang})"
 msgstr "Transkripsi (%{lang})"
+
+#: js/components/FileDetailItem.vue:554
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
+msgstr ""
+"Teks ucapan dalam format WebVTT, ditampilkan sebagai subtitle dan transkrip"
 
 #: js/components/FileDetailItemImage.vue:222
 msgid "Error erasing image part"
@@ -875,7 +919,7 @@ msgstr "Hapus area yang dipilih"
 
 #: js/components/FileDetailItemImage.vue:747
 #: js/components/FileDetailItemImage.vue:755
-#: js/components/FileDetailItemImage.vue:776
+#: js/components/FileDetailItemImage.vue:777
 msgid "Edit image"
 msgstr "Edit gambar"
 
@@ -883,82 +927,94 @@ msgstr "Edit gambar"
 msgid "Describe the changes"
 msgstr "Jelaskan perubahannya"
 
-#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:767
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr ""
+"Jelaskan apa yang harus diubah pada gambar, misalnya buat langit menjadi biru"
+
+#: js/components/FileDetailItemImage.vue:786
 msgid "Remove background"
 msgstr "Hapus latar belakang"
 
-#: js/components/FileDetailItemImage.vue:802
-#: js/components/FileDetailItemImage.vue:810
-#: js/components/FileDetailItemImage.vue:868
+#: js/components/FileDetailItemImage.vue:803
+#: js/components/FileDetailItemImage.vue:811
+#: js/components/FileDetailItemImage.vue:873
 msgid "Expand image"
 msgstr "Perluas gambar"
 
-#: js/components/FileDetailItemImage.vue:825
+#: js/components/FileDetailItemImage.vue:826
 msgctxt "image edge"
 msgid "Top"
 msgstr "Atas"
 
-#: js/components/FileDetailItemImage.vue:837
+#: js/components/FileDetailItemImage.vue:827
+#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:851
+#: js/components/FileDetailItemImage.vue:864
+msgid "Number of pixels added at this side of the image"
+msgstr "Jumlah piksel yang ditambahkan pada sisi gambar ini"
+
+#: js/components/FileDetailItemImage.vue:839
 msgctxt "image edge"
 msgid "Left"
 msgstr "Kiri"
 
-#: js/components/FileDetailItemImage.vue:847
+#: js/components/FileDetailItemImage.vue:850
 msgctxt "image edge"
 msgid "Right"
 msgstr "Kanan"
 
-#: js/components/FileDetailItemImage.vue:859
+#: js/components/FileDetailItemImage.vue:863
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Bawah"
 
-#: js/components/FileDetailItemImage.vue:875
-#: js/components/FileDetailItemImage.vue:882
+#: js/components/FileDetailItemImage.vue:880
+#: js/components/FileDetailItemImage.vue:887
 msgid "Upscale image"
 msgstr "Tingkatkan resolusi gambar"
 
-#: js/components/FileDetailItemImage.vue:895
-#: js/components/FileDetailItemImage.vue:905
-#: js/components/FileDetailItemImage.vue:915
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:900
+#: js/components/FileDetailItemImage.vue:910
+#: js/components/FileDetailItemImage.vue:920
+#: js/components/FileDetailItemImage.vue:930
 msgid "Scale %{factor}"
 msgstr "Skala %{factor}"
 
-#: js/components/FileDetailItemImage.vue:934
+#: js/components/FileDetailItemImage.vue:939
 msgid "Rotate counter-clockwise"
 msgstr "Putar berlawanan arah jarum jam"
 
-#: js/components/FileDetailItemImage.vue:940
+#: js/components/FileDetailItemImage.vue:945
 msgid "Rotate clockwise"
 msgstr "Putar searah jarum jam"
 
-#: js/components/FileDetailItemImage.vue:947
+#: js/components/FileDetailItemImage.vue:952
 msgid "Flip horizontally"
 msgstr "Balik secara horizontal"
 
-#: js/components/FileDetailItemImage.vue:953
+#: js/components/FileDetailItemImage.vue:958
 msgid "Flip vertically"
 msgstr "Balik secara vertikal"
 
-#: js/components/FileDetailItemImage.vue:960
+#: js/components/FileDetailItemImage.vue:965
 msgid "Convert to monochrome"
 msgstr "Ubah menjadi monokrom"
 
-#: js/components/FileDetailItemImage.vue:963
+#: js/components/FileDetailItemImage.vue:968
 msgid "Download"
 msgstr "Unduh"
 
-#: js/components/FileDetailItemImage.vue:965
 #: js/components/FileDetailItemImage.vue:970
+#: js/components/FileDetailItemImage.vue:975
 msgid "Undo"
 msgstr "Urungkan"
 
-#: js/components/FileDetailItemImage.vue:979
+#: js/components/FileDetailItemImage.vue:984
 msgid "Previous edit"
 msgstr "Suntingan sebelumnya"
 
-#: js/components/FileDetailItemImage.vue:984
+#: js/components/FileDetailItemImage.vue:989
 msgid "Original"
 msgstr "Asli"
 
@@ -1016,8 +1072,8 @@ msgstr "Kesalahan mengambil file"
 
 #: js/components/FileListItems.vue:744 js/components/FileListItems.vue:754
 #: js/components/FileListItems.vue:995 js/components/FileListItems.vue:1005
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
-#: js/fields/Images.vue:436
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
+#: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "Tambahkan file"
 
@@ -1038,6 +1094,10 @@ msgstr "Tampilan kisi"
 msgid "List view"
 msgstr "Tampilan daftar"
 
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr "Hanya pengunjung yang diizinkan melihat halaman yang menggunakan berkas tersebut yang dapat mengunduhnya"
+
 #: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
 msgstr "Setidaknya satu URL memiliki panjang lebih dari 255 karakter"
@@ -1050,7 +1110,7 @@ msgstr "Setidaknya satu file tidak bertipe \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "File tersebut bukan dari jenis \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr "Tambahkan file dari URL"
 
@@ -1062,9 +1122,17 @@ msgstr "Tambahkan file"
 msgid "Enter one URL per line"
 msgstr "Masukkan satu URL per baris"
 
-#: js/components/FileUrlDialog.vue:225
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr "File diunduh dari URL ini dan ditambahkan ke daftar media"
+
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
 msgstr "Masukkan URL"
+
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
+msgstr "File diunduh dari URL ini dan ditambahkan ke daftar media"
 
 #: js/components/HistoryDialog.vue:61 js/components/HistoryDialog.vue:127
 #: js/components/PageDetailContentList.vue:1008
@@ -1287,26 +1355,37 @@ msgstr "Terjadi kesalahan saat mengubah akses halaman"
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "Perubahan akses berlaku segera setelah masa berlaku cache habis"
 
-#: js/components/PageAccess.vue:173
+#: js/components/PageAccess.vue:174
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr "Halaman publik terlihat oleh semua orang, halaman lainnya hanya untuk pengguna yang masuk atau pengguna dengan peran yang dipilih"
+
+#: js/components/PageAccess.vue:179
 msgid "Public"
 msgstr "Publik"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:448
+#: js/components/PageAccess.vue:180 js/components/PageListItems.vue:448
 msgid "Authenticated users"
 msgstr "Pengguna yang diautentikasi"
 
-#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:102
+#: js/components/PageAccess.vue:188 js/components/PageDetailItem.vue:102
 #: js/components/PageListItems.vue:447 js/components/PageListItems.vue:1623
 #: js/components/PageListItems.vue:1772 js/components/PageListItems.vue:1961
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "Akses"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
+#: js/components/PageAccess.vue:189
+msgid "Only visitors with one of these roles can view the page"
+msgstr ""
+"Hanya pengunjung dengan salah satu peran ini yang dapat melihat halaman"
+
+#: js/components/PageAccess.vue:199 js/components/PageBulkDialog.vue:291
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Perubahan massal halaman dibatasi hingga 1.000 halaman"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
+#: js/components/PageAccess.vue:218 js/components/PageBulkDialog.vue:285
 msgid "Apply recursively"
 msgstr "Terapkan secara rekursif"
 
@@ -1368,54 +1447,95 @@ msgstr "Ubah status"
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageBulkDialog.vue:186
+#: js/components/PageBulkDialog.vue:178
+#: js/components/PageDetailItemProps.vue:245
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"Halaman yang dinonaktifkan bersifat offline, halaman tersembunyi bersifat "
+"online tetapi tidak ditampilkan dalam navigasi"
+
+#: js/components/PageBulkDialog.vue:187
 msgid "Change cache time"
 msgstr "Ubah waktu cache"
 
-#: js/components/PageBulkDialog.vue:191
-#: js/components/PageDetailItemProps.vue:361
+#: js/components/PageBulkDialog.vue:192
+#: js/components/PageDetailItemProps.vue:370
 msgid "Cache time"
 msgstr "Waktu cache"
 
-#: js/components/PageBulkDialog.vue:200
+#: js/components/PageBulkDialog.vue:193
+#: js/components/PageDetailItemProps.vue:371
+msgid "How long the generated page is cached before it is created again"
+msgstr ""
+"Berapa lama halaman yang dihasilkan disimpan dalam cache sebelum dibuat ulang"
+
+#: js/components/PageBulkDialog.vue:202
 msgid "Change language"
 msgstr "Ganti bahasa"
 
-#: js/components/PageBulkDialog.vue:212
+#: js/components/PageBulkDialog.vue:208
+#: js/components/PageDetailItemProps.vue:260
+msgid "Language of the page content"
+msgstr "Bahasa konten halaman"
+
+#: js/components/PageBulkDialog.vue:215
 msgid "Change theme"
 msgstr "Ubah tema"
 
-#: js/components/PageBulkDialog.vue:217
-#: js/components/PageDetailItemProps.vue:330
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:336
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageBulkDialog.vue:224
+#: js/components/PageBulkDialog.vue:221
+#: js/components/PageDetailItemProps.vue:337
+msgid "Design used to display the page"
+msgstr "Desain yang digunakan untuk menampilkan halaman"
+
+#: js/components/PageBulkDialog.vue:228
 msgid "Change page type"
 msgstr "Ubah jenis halaman"
 
-#: js/components/PageBulkDialog.vue:229
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageBulkDialog.vue:233
+#: js/components/PageDetailItemProps.vue:346
 msgid "Page type"
 msgstr "Jenis halaman"
 
-#: js/components/PageBulkDialog.vue:236
+#: js/components/PageBulkDialog.vue:234
+#: js/components/PageDetailItemProps.vue:347
+msgid "Template of the theme which defines the page layout"
+msgstr "Template tema yang menentukan tata letak halaman"
+
+#: js/components/PageBulkDialog.vue:241
 msgid "Change tag"
 msgstr "Ubah tag"
 
-#: js/components/PageBulkDialog.vue:240
-#: js/components/PageDetailItemProps.vue:350
+#: js/components/PageBulkDialog.vue:245
+#: js/components/PageDetailItemProps.vue:358
 msgid "Page tag"
 msgstr "Tag halaman"
 
-#: js/components/PageBulkDialog.vue:249
+#: js/components/PageBulkDialog.vue:246
+#: js/components/PageDetailItemProps.vue:359
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr ""
+"Pengenal internal untuk menemukan halaman dalam template, misalnya blog"
+
+#: js/components/PageBulkDialog.vue:255
 msgid "Change domain"
 msgstr "Ubah domain"
 
-#: js/components/PageBulkDialog.vue:254
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:260
+#: js/components/PageDetailItemProps.vue:320
 msgid "Domain"
 msgstr "Domain"
+
+#: js/components/PageBulkDialog.vue:261
+#: js/components/PageDetailItemProps.vue:321
+msgid "Domain the page is available at, e.g. example.com"
+msgstr "Domain tempat halaman tersedia, misalnya example.com"
 
 #: js/components/PageDetailContentList.vue:185
 #: js/components/PageDetailContentList.vue:195
@@ -1484,7 +1604,7 @@ msgstr "Ini bisa memakan waktu lama, tergantung pada tugas dan ukuran konten"
 
 #: js/components/PageDetailContentList.vue:846
 #: js/components/PageDetailContentList.vue:942
-#: js/components/PageListItems.vue:1785 js/fields/Items.vue:375
+#: js/components/PageListItems.vue:1785 js/fields/Items.vue:380
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Potong"
@@ -1499,24 +1619,24 @@ msgstr "Tempel"
 msgid "Merge"
 msgstr "Gabungkan"
 
-#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:914 js/fields/Items.vue:350
 msgid "Move element"
 msgstr "Pindahkan elemen"
 
-#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:955 js/fields/Items.vue:393
 msgid "Paste before"
 msgstr "Tempel sebelum"
 
-#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:960 js/fields/Items.vue:398
 msgid "Paste after"
 msgstr "Tempel setelah"
 
-#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:965 js/fields/Items.vue:403
 #: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "Sisipkan sebelum"
 
-#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:408
 #: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "Sisipkan setelah"
@@ -1577,21 +1697,37 @@ msgstr "URL tidak valid"
 msgid "The path is already in use by another page"
 msgstr "Jalur sudah digunakan oleh halaman lain"
 
-#: js/components/PageDetailItemProps.vue:272
+#: js/components/PageDetailItemProps.vue:274
 msgid "Page title"
 msgstr "Judul halaman"
 
-#: js/components/PageDetailItemProps.vue:283
+#: js/components/PageDetailItemProps.vue:275
+msgid "Shown in the browser tab and search results"
+msgstr "Ditampilkan di tab browser dan hasil pencarian"
+
+#: js/components/PageDetailItemProps.vue:286
 msgid "Page name"
 msgstr "Nama halaman"
 
-#: js/components/PageDetailItemProps.vue:298
+#: js/components/PageDetailItemProps.vue:287
+msgid "Short name shown in the navigation menus"
+msgstr "Nama singkat yang ditampilkan di menu navigasi"
+
+#: js/components/PageDetailItemProps.vue:302
 msgid "URL path"
 msgstr "Jalur URL"
 
-#: js/components/PageDetailItemProps.vue:377
+#: js/components/PageDetailItemProps.vue:303
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "Bagian dari URL halaman setelah domain, misalnya about-us"
+
+#: js/components/PageDetailItemProps.vue:387
 msgid "Redirect URL"
 msgstr "URL pengalihan"
+
+#: js/components/PageDetailItemProps.vue:388
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr "Pengunjung dialihkan ke URL ini alih-alih melihat halaman"
 
 #: js/components/PageDetailItemSection.vue:60
 msgid "The element has already been added"
@@ -2005,7 +2141,7 @@ msgstr "Menu pengguna"
 msgid "Logout"
 msgstr "Keluar"
 
-#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Tidak ada data yang tersedia"
 
@@ -2021,7 +2157,7 @@ msgstr "Diperlukan file"
 msgid "Add file from URL"
 msgstr "Tambahkan file dari URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:429
+#: js/fields/File.vue:456 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "Buat file"
 
@@ -2041,19 +2177,19 @@ msgstr "nama"
 msgid "description"
 msgstr "Deskripsi"
 
-#: js/fields/Images.vue:453
+#: js/fields/Images.vue:454
 msgid "Drop files here"
 msgstr "Letakkan file di sini"
 
-#: js/fields/Map.vue:231
+#: js/fields/Map.vue:232
 msgid "Clear location"
 msgstr "Hapus lokasi"
 
-#: js/fields/Map.vue:234
+#: js/fields/Map.vue:235
 msgid "Click the map to set the location"
 msgstr "Klik peta untuk menetapkan lokasi"
 
-#: js/fields/String.vue:44
+#: js/fields/String.vue:45
 msgid "Value has invalid format"
 msgstr "Nilai memiliki format yang tidak valid"
 
@@ -2073,31 +2209,31 @@ msgstr "Pindahkan baris"
 msgid "Row actions"
 msgstr "Tindakan baris"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:59 js/utils.js:165
 msgid "None"
 msgstr "Tidak ada"
 
-#: js/fields/Url.vue:59
+#: js/fields/Url.vue:60
 msgid "Sponsored"
 msgstr "Bersponsor"
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:61
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:77
+#: js/fields/Url.vue:78
 msgid "Not a valid URL"
 msgstr "Bukan URL yang valid"
 
-#: js/fields/Url.vue:87
+#: js/fields/Url.vue:88
 msgid "Invalid URL schema configuration"
 msgstr "Konfigurasi skema URL tidak valid"
 
-#: js/fields/Url.vue:165
+#: js/fields/Url.vue:167
 msgid "No pages found"
 msgstr "Tidak ada halaman yang ditemukan"
 
-#: js/fields/Url.vue:177
+#: js/fields/Url.vue:179
 msgid "Link attribute"
 msgstr "Atribut tautan"
 
@@ -2147,627 +2283,1659 @@ msgstr[0] "Maksimal %{num} kolom diperbolehkan"
 msgid "Failed to load plugin"
 msgstr "Gagal memuat plugin"
 
-#: js/strings.js:29
+#: js/strings.js:30
 msgctxt "cs"
 msgid "main"
 msgstr "utama"
 
-#: js/strings.js:30
+#: js/strings.js:31
 msgctxt "cs"
 msgid "header"
 msgstr "header"
 
-#: js/strings.js:31
+#: js/strings.js:32
 msgctxt "cs"
 msgid "footer"
 msgstr "footer"
 
-#: js/strings.js:32
+#: js/strings.js:33
 msgctxt "cs"
 msgid "sidebar"
 msgstr "sidebar"
 
-#: js/strings.js:33
+#: js/strings.js:34
 msgctxt "cs"
 msgid "aside"
 msgstr "samping"
 
-#: js/strings.js:36
+#: js/strings.js:37
 msgctxt "sg"
 msgid "basic"
 msgstr "dasar"
 
-#: js/strings.js:37
+#: js/strings.js:38
 msgctxt "sg"
 msgid "content"
 msgstr "konten"
 
-#: js/strings.js:38
+#: js/strings.js:39
 msgctxt "sg"
 msgid "media"
 msgstr "media"
 
-#: js/strings.js:39
+#: js/strings.js:40
 msgctxt "sg"
 msgid "forms"
 msgstr "formulir"
 
-#: js/strings.js:42
+#: js/strings.js:43
 msgctxt "as"
 msgid "type"
 msgstr "Jenis"
 
-#: js/strings.js:43
+#: js/strings.js:44
 msgctxt "as"
 msgid "state"
 msgstr "status"
 
-#: js/strings.js:46
+#: js/strings.js:47
 msgctxt "st"
 msgid "valid"
 msgstr "valid"
 
-#: js/strings.js:47
+#: js/strings.js:48
 msgctxt "st"
 msgid "changed"
 msgstr "berubah"
 
-#: js/strings.js:48
+#: js/strings.js:49
 msgctxt "st"
 msgid "error"
 msgstr "kesalahan"
 
-#: js/strings.js:51
+#: js/strings.js:52
 msgctxt "st"
 msgid "reference"
 msgstr "referensi"
 
-#: js/strings.js:52
+#: js/strings.js:53
 msgctxt "st"
 msgid "heading"
 msgstr "judul"
 
-#: js/strings.js:53
+#: js/strings.js:54
 msgctxt "st"
 msgid "text"
 msgstr "teks"
 
-#: js/strings.js:54
+#: js/strings.js:55
 msgctxt "st"
 msgid "image-text"
 msgstr "gambar-teks"
 
-#: js/strings.js:55
+#: js/strings.js:56
 msgctxt "st"
 msgid "slideshow"
 msgstr "tayangan slide"
 
-#: js/strings.js:56
+#: js/strings.js:57
 msgctxt "st"
 msgid "code"
 msgstr "kode"
 
-#: js/strings.js:57
+#: js/strings.js:58
 msgctxt "st"
 msgid "table"
 msgstr "tabel"
 
-#: js/strings.js:58
+#: js/strings.js:59
 msgctxt "st"
 msgid "map"
 msgstr "peta"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "image"
 msgstr "gambar"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "file"
 msgstr "file"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "cards"
 msgstr "Kartu"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "article"
 msgstr "Artikel"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "toc"
 msgstr "daftar isi"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "contact"
 msgstr "kontak"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Tag meta"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "social-media"
 msgstr "Media sosial"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "canonical"
 msgstr "URL kanonis"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "robots"
 msgstr "Mesin pencari"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "styles"
 msgstr "gaya"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
+#: js/strings.js:80
+msgctxt "st"
+msgid "heros"
+msgstr "Heros"
+
 #: js/strings.js:81
+msgctxt "st"
+msgid "news"
+msgstr "Berita"
+
+#: js/strings.js:82
+msgctxt "st"
+msgid "pricing"
+msgstr "Harga"
+
+#: js/strings.js:83
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#: js/strings.js:84
+msgctxt "st"
+msgid "security"
+msgstr "Keamanan"
+
+#: js/strings.js:85
+msgctxt "st"
+msgid "testimonial"
+msgstr "Testimoni"
+
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Judul bagian dari H1 hingga H6"
 
-#: js/strings.js:82
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Teks berformat dengan paragraf, daftar, dan tautan"
 
-#: js/strings.js:83
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Gambar di samping teks berformat"
 
-#: js/strings.js:84
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Kode sumber dengan penyorotan sintaks"
 
-#: js/strings.js:85
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Tabel data dengan baris atau kolom judul opsional"
 
-#: js/strings.js:86
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Peta interaktif dengan lokasi, teks, dan tautan"
 
-#: js/strings.js:87
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "HTML khusus untuk sematan dan widget"
 
-#: js/strings.js:88
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Satu gambar responsif"
 
-#: js/strings.js:89
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Slide bergantian dengan beberapa gambar"
 
-#: js/strings.js:90
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Video tersemat dengan kontrol pemutar"
 
-#: js/strings.js:91
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Audio tersemat dengan kontrol pemutar"
 
-#: js/strings.js:92
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "File yang dapat diunduh seperti dokumen PDF"
 
-#: js/strings.js:93
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Pembuka besar dengan judul, teks, tombol, dan latar belakang"
 
-#: js/strings.js:94
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Ajakan bertindak dengan teks dan tombol"
 
-#: js/strings.js:95
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Kisi kartu dengan gambar, judul, dan teks"
 
-#: js/strings.js:96
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Kutipan pelanggan dengan nama, jabatan, dan foto"
 
-#: js/strings.js:97
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Pengantar artikel dengan galeri gambar dan penulis"
 
-#: js/strings.js:98
+#: js/strings.js:105
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Daftar artikel blog dari halaman induk"
 
-#: js/strings.js:99
+#: js/strings.js:106
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Daftar berita dari halaman induk"
 
-#: js/strings.js:100
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Subhalaman unggulan diikuti subhalaman lainnya"
 
-#: js/strings.js:101
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Paket harga dengan langganan atau pembayaran sekali"
 
-#: js/strings.js:102
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Pertanyaan umum beserta jawabannya"
 
-#: js/strings.js:103
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Daftar isi dengan tautan ke judul halaman"
 
-#: js/strings.js:104
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Formulir kontak dengan kolom yang dapat dikonfigurasi"
 
-#: js/strings.js:107
+#: js/strings.js:114
 msgctxt "fn"
 msgid "button"
 msgstr "tombol"
 
-#: js/strings.js:108
+#: js/strings.js:115
 msgctxt "fn"
 msgid "buttons"
 msgstr "tombol"
 
-#: js/strings.js:109
+#: js/strings.js:116
 msgctxt "fn"
 msgid "cards"
 msgstr "Kartu"
 
-#: js/strings.js:110
+#: js/strings.js:117
 msgctxt "fn"
 msgid "description"
 msgstr "Deskripsi"
 
-#: js/strings.js:111
+#: js/strings.js:118
 msgctxt "fn"
 msgid "file"
 msgstr "file"
 
-#: js/strings.js:112
+#: js/strings.js:119
 msgctxt "fn"
 msgid "files"
 msgstr "file"
 
-#: js/strings.js:113
+#: js/strings.js:120
 msgctxt "fn"
 msgid "follow"
 msgstr "Mengikuti tautan"
 
-#: js/strings.js:114
+#: js/strings.js:121
 msgctxt "fn"
 msgid "header"
 msgstr "header"
 
-#: js/strings.js:115
+#: js/strings.js:122
 msgctxt "fn"
 msgid "index"
 msgstr "Pengindeksan"
 
-#: js/strings.js:116
+#: js/strings.js:123
 msgctxt "fn"
 msgid "keywords"
 msgstr "kata kunci"
 
-#: js/strings.js:117
+#: js/strings.js:124
 msgctxt "fn"
 msgid "language"
 msgstr "bahasa"
 
-#: js/strings.js:118
+#: js/strings.js:125
 msgctxt "fn"
 msgid "label"
 msgstr "label"
 
-#: js/strings.js:119
+#: js/strings.js:126
 msgctxt "fn"
 msgid "level"
 msgstr "tingkat"
 
-#: js/strings.js:120
+#: js/strings.js:127
 msgctxt "fn"
 msgid "limit"
 msgstr "batas"
 
-#: js/strings.js:121
+#: js/strings.js:128
 msgctxt "fn"
 msgid "location"
 msgstr "lokasi"
 
-#: js/strings.js:122
+#: js/strings.js:129
 msgctxt "fn"
 msgid "main"
 msgstr "Gambar utama"
 
-#: js/strings.js:123
+#: js/strings.js:130
 msgctxt "fn"
 msgid "order"
 msgstr "urutan"
 
-#: js/strings.js:124
+#: js/strings.js:131
 msgctxt "fn"
 msgid "parent-page"
 msgstr "halaman induk"
 
-#: js/strings.js:125
+#: js/strings.js:132
 msgctxt "fn"
 msgid "position"
 msgstr "posisi"
 
-#: js/strings.js:126
+#: js/strings.js:133
 msgctxt "fn"
 msgid "text"
 msgstr "teks"
 
-#: js/strings.js:127
+#: js/strings.js:134
 msgctxt "fn"
 msgid "table"
 msgstr "tabel"
 
-#: js/strings.js:128
+#: js/strings.js:135
 msgctxt "fn"
 msgid "title"
 msgstr "judul"
 
-#: js/strings.js:129
+#: js/strings.js:136
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:131
+#: js/strings.js:138
 msgctxt "fn"
 msgid "image"
 msgstr "gambar"
 
-#: js/strings.js:132
+#: js/strings.js:139
 msgctxt "fn"
 msgid "images"
 msgstr "gambar"
 
-#: js/strings.js:133
+#: js/strings.js:140
 msgctxt "fn"
 msgid "items"
 msgstr "item"
 
-#: js/strings.js:134
+#: js/strings.js:141
 msgctxt "fn"
 msgid "introduction"
 msgstr "pengantar"
 
-#: js/strings.js:135
+#: js/strings.js:142
 msgctxt "fn"
 msgid "load immediately"
 msgstr "muat segera"
 
-#: js/strings.js:136
+#: js/strings.js:143
 msgctxt "fn"
 msgid "source code"
 msgstr "kode sumber"
 
-#: js/strings.js:137
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Peran akses frontend"
 
-#: js/strings.js:138
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Harga pembayaran"
 
-#: js/strings.js:139
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Referensi pembayaran"
 
-#: js/strings.js:140
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Jenis pembayaran"
 
-#: js/strings.js:141
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Currency"
 msgstr "Mata uang"
 
-#: js/strings.js:142
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Interval penagihan"
 
-#: js/strings.js:143
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Satuan harga"
 
-#: js/strings.js:144
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Halaman atau tautan target"
 
-#: js/strings.js:145
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "Kolom wajib"
 
-#: js/strings.js:146
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "Kolom opsional"
 
-#: js/strings.js:147
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Link label"
 msgstr "Teks tautan"
 
-#: js/strings.js:150
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "URL kontak"
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Contact email"
+msgstr "Email kontak"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Description"
+msgstr "Deskripsi"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "Harga yang ditampilkan"
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Gallery"
+msgstr "Galeri"
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "Teks sorotan"
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "Disorot"
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Language"
+msgstr "Bahasa"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Payment type"
+msgstr "Jenis pembayaran"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "Bahasa pilihan"
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "Subjudul"
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "Penghargaan"
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "amount"
+msgstr "Jumlah"
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "background"
+msgstr "Latar belakang"
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "background animation"
+msgstr "Animasi latar belakang"
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "button-alternative"
+msgstr "Tombol alternatif"
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "canonical"
+msgstr "URL kanonis"
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "columns"
+msgstr "Kolom"
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "encryption"
+msgstr "Enkripsi"
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "expires"
+msgstr "Tanggal kedaluwarsa"
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "features"
+msgstr "Fitur"
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "hiring"
+msgstr "Lowongan kerja"
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "layout"
+msgstr "Tata letak"
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "name"
+msgstr "Nama"
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "policy"
+msgstr "Kebijakan"
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "ratio"
+msgstr "Rasio"
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "role"
+msgstr "Jabatan"
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "subtitle"
+msgstr "Subjudul"
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "url-alternative"
+msgstr "URL alternatif"
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "Font teks"
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "Font judul"
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "Warna teks"
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "Warna latar belakang"
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "Warna seleksi"
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "Warna kontras"
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "Warna kontras saat diarahkan"
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "Warna teks kontras"
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "Warna utama"
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "Latar belakang utama"
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "Warna hover utama"
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "Latar belakang hover utama"
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "Warna sekunder"
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "Latar belakang sekunder"
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "Warna hover sekunder"
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "Latar belakang hover sekunder"
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "Radius sudut"
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "Pemisah breadcrumb"
+
+#: js/strings.js:206
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "Teks judul"
+
+#: js/strings.js:207
+msgctxt "fh"
+msgid ""
+"Level 1 is the main page headline, higher levels structure the sections below"
+msgstr ""
+"Level 1 adalah judul utama halaman, level yang lebih tinggi menyusun bagian-"
+"bagian di bawahnya"
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Teks berformat dengan paragraf, daftar, dan tautan"
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "Teks berformat yang ditampilkan di samping gambar"
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "Gambar yang ditampilkan di samping teks"
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "Posisi gambar relatif terhadap teks"
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "Rasio lebar antara gambar dan teks"
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "Bahasa pemrograman yang digunakan untuk penyorotan sintaks"
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "Kode sumber yang ditampilkan dengan penyorotan sintaks"
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "Keterangan opsional yang ditampilkan di atas tabel"
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr ""
+"Gunakan baris pertama, kolom pertama, atau keduanya sebagai header tabel"
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Table data as comma separated values, one row per line"
+msgstr "Data tabel berupa nilai yang dipisahkan koma, satu baris per baris"
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "Judul opsional yang ditampilkan di atas peta"
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr ""
+"Deskripsi yang ditampilkan di samping peta, misalnya alamat atau petunjuk "
+"arah"
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "Cari tempat atau klik pada peta untuk menetapkan lokasi"
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "Teks tautan yang membuka lokasi di layanan peta"
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr ""
+"Kode HTML yang disisipkan ke halaman apa adanya, misalnya untuk sematan dan "
+"widget"
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "Gambar yang ditampilkan dengan lebar penuh area konten"
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "Muat gambar tanpa penundaan jika terlihat di bagian atas halaman"
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "Judul opsional yang ditampilkan di atas tampilan slide"
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "Gambar yang ditampilkan satu demi satu, seret untuk mengubah urutan"
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid ""
+"Load the first image without delay if it is visible at the top of the page"
+msgstr ""
+"Muat gambar pertama tanpa penundaan jika terlihat di bagian atas halaman"
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "File video yang diputar di halaman"
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "File audio yang diputar di halaman"
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "File yang ditawarkan untuk diunduh"
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "Judul utama halaman"
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "Baris pendek yang ditampilkan di atas judul"
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "Pengantar yang ditampilkan di bawah judul"
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr "Halaman atau tautan tujuan tombol utama"
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr "Teks tombol utama"
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr "Halaman atau tautan tujuan tombol kedua"
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr "Teks tombol kedua"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "Gambar yang ditampilkan di belakang teks"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "Efek animasi gambar latar belakang"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "Gambar yang ditampilkan di samping teks"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "Judul yang menarik perhatian pengunjung"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "Teks yang memotivasi pengunjung untuk bertindak"
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "Tombol yang mengarahkan pengunjung ke langkah berikutnya"
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "Teks tombol"
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "Halaman atau tautan tujuan tombol"
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "Judul opsional yang ditampilkan di atas kartu"
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "Jumlah kartu per baris, \"auto\" menyesuaikan dengan lebar layar"
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "Kartu yang ditampilkan dalam grid"
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "Judul kartu"
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "Gambar yang ditampilkan di bagian atas kartu"
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "Teks kartu"
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "Halaman atau tautan tujuan kartu"
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "Judul opsional yang ditampilkan di atas kutipan"
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "Kutipan dari pelanggan atau mitra"
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "Kutipan dari orang tersebut"
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "Nama orang tersebut"
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "Jabatan atau perusahaan orang tersebut"
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "Foto orang tersebut"
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "Pengantar artikel yang ditampilkan di bawah judul halaman"
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "Gambar artikel, yang pertama digunakan sebagai gambar pratinjau"
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "Nama penulis artikel"
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "Tautan ke halaman profil penulis"
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "Judul opsional yang ditampilkan di atas daftar"
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "Tampilkan halaman sebagai kartu atau sebagai daftar ringkas"
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "Halaman yang subhalamannya didaftar"
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "Urutan pengurutan halaman yang ditampilkan"
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "Jumlah maksimum halaman yang ditampilkan sekaligus"
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "Tampilkan subhalaman lainnya sebagai kartu atau sebagai daftar ringkas"
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "Judul opsional yang ditampilkan di atas paket harga"
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "Teks pendek yang ditampilkan di bawah judul"
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "Paket harga yang ditampilkan berdampingan"
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "Nama paket harga"
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr ""
+"Peran yang diberikan kepada pelanggan setelah pembayaran untuk mengakses "
+"halaman terproteksi"
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "Harga paket, misalnya bulanan dan tahunan"
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "Langganan berulang atau pembayaran satu kali"
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "Jumlah hari antara dua pembayaran, misalnya 30 untuk bulanan"
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "Kode mata uang ISO tiga huruf, misalnya EUR atau USD"
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "ID harga atau jumlah yang digunakan oleh penyedia pembayaran"
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "Harga berformat yang ditampilkan kepada pengunjung, misalnya €9.99"
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "Harga numerik yang ditampilkan jika harga berformat tidak diatur"
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "Teks yang ditampilkan setelah harga, misalnya per bulan"
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "Deskripsi singkat paket harga"
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "Daftar fitur yang termasuk dalam paket"
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "Tonjolkan paket ini dibandingkan dengan yang lain"
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr ""
+"Label pendek yang ditampilkan pada paket yang disorot, misalnya Populer"
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "Judul opsional yang ditampilkan di atas pertanyaan"
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr ""
+"Pertanyaan dan jawaban yang ditampilkan sebagai daftar yang dapat diperluas"
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "Pertanyaan yang diajukan oleh pengunjung"
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "Jawaban atas pertanyaan"
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "Judul opsional yang ditampilkan di atas daftar isi"
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "Judul opsional yang ditampilkan di atas formulir kontak"
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Form fields visitors must fill out"
+msgstr "Kolom formulir yang wajib diisi pengunjung"
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Form fields visitors can fill out"
+msgstr "Kolom formulir yang dapat diisi pengunjung"
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid ""
+"Summary of the page shown in search results, 150 to 160 characters "
+"recommended"
+msgstr ""
+"Ringkasan halaman yang ditampilkan di hasil pencarian, disarankan 150 hingga "
+"160 karakter"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "Daftar kata kunci yang dipisahkan koma yang menjelaskan halaman"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "Judul yang ditampilkan saat halaman dibagikan di media sosial"
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "Ringkasan yang ditampilkan saat halaman dibagikan di media sosial"
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr ""
+"Gambar pratinjau yang ditampilkan saat halaman dibagikan di media sosial"
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "URL asli jika konten yang sama tersedia di beberapa alamat"
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "Izinkan atau cegah mesin pencari mencantumkan halaman ini"
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "Izinkan atau cegah mesin pencari mengikuti tautan di halaman ini"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "Nama situs web yang ditampilkan di tab peramban dan hasil pencarian"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "Logo yang ditampilkan di header halaman"
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "Varian logo yang digunakan untuk latar belakang gelap"
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "Gambar persegi kecil yang ditampilkan di tab peramban dan markah"
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "Daftar font yang dipisahkan koma yang digunakan untuk teks"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Default text color"
+msgstr "Warna teks default"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "Warna latar belakang halaman"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "Warna latar belakang teks yang dipilih"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "Warna elemen dengan kontras kuat terhadap latar belakang"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "Warna kontras saat mengarahkan kursor atau memberi fokus pada elemen"
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "Warna teks pada elemen yang menggunakan warna kontras"
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "Warna merek utama yang digunakan untuk tautan dan tombol"
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "Warna latar belakang tombol utama dan sorotan"
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "Warna utama saat mengarahkan kursor atau memberi fokus pada elemen"
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr ""
+"Warna latar belakang utama saat mengarahkan kursor atau memberi fokus pada "
+"elemen"
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr ""
+"Warna tambahan yang digunakan untuk tautan dan tombol yang kurang penting"
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "Warna latar belakang tombol sekunder"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "Warna sekunder saat mengarahkan kursor atau memberi fokus pada elemen"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr ""
+"Warna latar belakang sekunder saat mengarahkan kursor atau memberi fokus "
+"pada elemen"
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr ""
+"Kelengkungan sudut sebagai panjang CSS, misalnya 0.25rem atau 0 untuk sudut "
+"tajam"
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "Karakter yang ditampilkan di antara tautan breadcrumb"
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "Tautan HTTPS untuk menghubungi tim keamanan, misalnya sebuah formulir"
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "Alamat e-mail untuk melaporkan masalah keamanan"
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "Tanggal setelah mana informasi keamanan dianggap sudah usang"
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "Tautan HTTPS ke kunci publik untuk pesan terenkripsi"
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "Tautan HTTPS ke halaman ucapan terima kasih untuk peneliti keamanan"
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr ""
+"Kode bahasa yang dipisahkan koma untuk laporan keamanan, misalnya en, de"
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "URL HTTPS tempat file security.txt dipublikasikan"
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "Tautan HTTPS ke kebijakan keamanan dan pengungkapan"
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "Tautan HTTPS untuk membuka lowongan terkait keamanan"
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "Tautan HTTPS ke metadata penyedia CSAF"
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "Aturan tambahan yang ditambahkan ke file robots.txt untuk perayap web"
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "Kode CSS khusus yang ditambahkan ke semua halaman"
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "Kode JavaScript khusus yang ditambahkan ke semua halaman"
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "Daftar font yang dipisahkan koma yang digunakan untuk judul"
+
+#: js/strings.js:339
 msgctxt "op"
 msgid "Name"
 msgstr "Nama"
 
-#: js/strings.js:151
+#: js/strings.js:340
 msgctxt "op"
 msgid "Company"
 msgstr "Perusahaan"
 
-#: js/strings.js:152
+#: js/strings.js:341
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telepon"
 
-#: js/strings.js:153
+#: js/strings.js:342
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Email"
 
-#: js/strings.js:154
+#: js/strings.js:343
 msgctxt "op"
 msgid "Subject"
 msgstr "Subjek"
 
-#: js/strings.js:155
+#: js/strings.js:344
 msgctxt "op"
 msgid "Follow"
 msgstr "Ikuti tautan"
 
-#: js/strings.js:156
+#: js/strings.js:345
 msgctxt "op"
 msgid "Index"
 msgstr "Indeks"
 
-#: js/strings.js:157
+#: js/strings.js:346
 msgctxt "op"
 msgid "No follow"
 msgstr "Jangan ikuti tautan"
 
-#: js/strings.js:158
+#: js/strings.js:347
 msgctxt "op"
 msgid "No index"
 msgstr "Jangan indeks"
 
-#: js/strings.js:159
+#: js/strings.js:348
 msgctxt "op"
 msgid "Subscription"
 msgstr "Langganan"
 
-#: js/strings.js:160
+#: js/strings.js:349
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pembayaran satu kali"
 
-#: js/strings.js:163
+#: js/strings.js:350
+msgctxt "op"
+msgid "Auto"
+msgstr "Otomatis"
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "Cards"
+msgstr "Kartu"
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Default"
+msgstr "Bawaan"
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "End"
+msgstr "Akhir"
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "First column"
+msgstr "Kolom pertama"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "First row"
+msgstr "Baris pertama"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "First row and column"
+msgstr "Baris dan kolom pertama"
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "Grid end"
+msgstr "Akhir grid"
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "Grid start"
+msgstr "Awal grid"
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "Latest"
+msgstr "Terbaru"
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "List"
+msgstr "Daftar"
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "None"
+msgstr "Tidak ada"
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Oldest"
+msgstr "Tertua"
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Position"
+msgstr "Posisi"
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "Start"
+msgstr "Awal"
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "Zoom"
+msgstr "Perbesar"
+
+#: js/strings.js:368
 msgctxt "ai"
 msgid "Done"
 msgstr "Selesai"
 
-#: js/strings.js:164
+#: js/strings.js:369
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Sudah ada"
 
-#: js/strings.js:167
+#: js/strings.js:372
 msgctxt "sg"
 msgid "expert"
 msgstr "Lanjutan"
 
-#: js/strings.js:168
+#: js/strings.js:373
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:169
+#: js/strings.js:374
 msgctxt "st"
 msgid "website"
 msgstr "situs web"
 
-#: js/strings.js:170
+#: js/strings.js:375
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:171
+#: js/strings.js:376
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Logo alternatif"
 
-#: js/strings.js:172
+#: js/strings.js:377
 msgctxt "st"
 msgid "icon"
 msgstr "Ikon"
@@ -2821,7 +3989,11 @@ msgstr "Tambahkan nilai akses"
 msgid "Access value"
 msgstr "Nilai akses"
 
-#: js/views/AccessList.vue:353
+#: js/views/AccessList.vue:338
+msgid "Role name which can be assigned to pages and users"
+msgstr "Nama peran yang dapat diberikan ke halaman dan pengguna"
+
+#: js/views/AccessList.vue:354
 msgid "Add"
 msgstr "Tambahkan"
 
