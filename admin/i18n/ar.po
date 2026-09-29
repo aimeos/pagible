@@ -62,15 +62,15 @@ msgstr "مطلوب موجه لتوليد النص"
 msgid "Error generating text"
 msgstr "خطأ في إنشاء النص"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "مساعد الدردشة غير متوفر."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "يتم بالفعل إنشاء استجابة. يرجى الانتظار حتى تنتهي."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "طلبات كثيرة جدًا. الرجاء الانتظار لحظة وحاول مرة أخرى."
 
@@ -1620,8 +1620,8 @@ msgstr "التكوين"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "الحقل مطلوب"
 
@@ -1959,6 +1959,65 @@ msgstr[3] "تطبيق إعدادات الوصول على %{num} صفحات."
 msgstr[4] "تطبيق إعدادات الوصول على %{num} صفحة."
 msgstr[5] "تطبيق إعدادات الوصول على %{num} صفحة."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "لم تقم بتسجيل الدخول بعد"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "فشل تسجيل الدخول"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "انتهت الجلسة"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"يرجى تسجيل الدخول مرة أخرى في علامة التبويب الجديدة ثم العودة إلى هنا "
+"للمتابعة. سيتم الاحتفاظ بتغييراتك غير المحفوظة."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"يرجى تسجيل الدخول مرة أخرى للمتابعة. سيتم الاحتفاظ بتغييراتك غير المحفوظة."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "تسجيل الدخول"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "البريد الإلكتروني"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "إخفاء كلمة المرور"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "إظهار كلمة المرور"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "متابعة"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "تسجيل الدخول"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "عناصر المحتوى"
@@ -2079,10 +2138,6 @@ msgstr "تبديل اللغة"
 msgid "User menu"
 msgstr "قائمة المستخدم"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "تسجيل الخروج"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "لا توجد بيانات متاحة"
@@ -2151,7 +2206,7 @@ msgstr "نقل الصف"
 msgid "Row actions"
 msgstr "إجراءات الصفوف"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "لا يوجد"
 
@@ -2251,7 +2306,7 @@ msgstr[3] "يُسمح بـ %{num} أعمدة كحد أقصى"
 msgstr[4] "يُسمح بـ %{num} عمودًا كحد أقصى"
 msgstr[5] "يُسمح بـ %{num} عمود كحد أقصى"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "فشل تحميل البرنامج المساعد"
 
@@ -2880,7 +2935,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "الأيقونة"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -3053,41 +3108,21 @@ msgid "AI can find and manage media files based on your input"
 msgstr ""
 "يمكن للذكاء الاصطناعي العثور على ملفات الوسائط وإدارتها بناءً على مدخلاتك"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "عنوان بريد إلكتروني غير صالح"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "ليس محرر CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "تم رفض الدخول"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "البريد الإلكتروني"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "كلمة المرور"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "إخفاء كلمة المرور"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "إظهار كلمة المرور"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "خطأ"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "تسجيل الدخول"
 
 #: js/views/PageDetail.vue:198
 msgid ""

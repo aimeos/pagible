@@ -20,6 +20,10 @@ export const urlcsrf = dataset.urlcsrf || '/cmsapi/csrf'
 // `??` not `||`: the layout emits an empty string when the cms.chat route is absent (feature off),
 // which must stay empty rather than fall back to a path that would 404; only a missing attribute defaults.
 export const urlchat = dataset.urlchat ?? '/cmsapi/chat'
+// Login page of the application for installs signing in without password (e.g. single sign-on)
+export const urllogin = dataset.urllogin || ''
+// Session lifetime in minutes to detect an expired session before the next request fails (0 = off)
+export const sessionlifetime = parseInt(dataset.sessionlifetime) || 0
 
 // Strip prototype-polluting keys from the server-rendered bootstrap data.
 export const locales = safeParse(dataset.locales, ['en'])

@@ -5,6 +5,7 @@ import {
   cleanEcho,
   eventPatch,
   listEcho,
+  resubscribe,
   resync,
   setupEcho,
   PATCH_ACTIONS,
@@ -189,6 +190,26 @@ describe('resync()', () => {
     resync([a, b])
 
     expect(calls).to.deep.equal([['b', null, RECONNECT]])
+  })
+})
+
+describe('resubscribe()', () => {
+  it('subscribes again to the channels whose authorization failed', () => {
+    const pusher = {
+      allChannels: () => [
+        { name: 'private-cms.page', subscribed: true },
+        { name: 'private-cms.file', subscribed: false },
+      ],
+      subscribe: cy.stub(),
+    }
+
+    resubscribe({ connector: { pusher } })
+
+    expect(pusher.subscribe).to.have.been.calledOnceWith('private-cms.file')
+  })
+
+  it('does nothing without a connection', () => {
+    expect(() => resubscribe(null)).not.to.throw()
   })
 })
 

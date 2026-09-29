@@ -447,6 +447,101 @@ describe('Page Detail', () => {
     waitForSavePage()
   })
 
+  // ---- Session expiry ----
+
+  /**
+   * Simulates an expired session on top of setupIntercept(): requests are rejected with
+   * 419 like Laravel does for an expired CSRF token until cmsLogin is sent with "secret".
+   * Handlers that don't reply fall through to the intercept registered by setupIntercept().
+   */
+  function expireSession() {
+    const session = { expired: true, logins: [], saves: 0 }
+
+    cy.intercept('GET', '**/cmsapi/csrf*', { statusCode: 200, body: { token: 'renewed' } })
+    cy.intercept('POST', '/graphql', (req) => {
+      const ops = Array.isArray(req.body) ? req.body : [req.body]
+      const login = ops.find((op) => (op.query || '').includes('cmsLogin'))
+
+      if (login) {
+        session.logins.push(login.variables)
+        session.expired = login.variables?.password !== 'secret'
+
+        if (session.expired) {
+          const error = { errors: [{ message: 'Invalid credentials' }] }
+          req.reply(Array.isArray(req.body) ? [error] : error)
+        }
+        return
+      }
+
+      if (ops.some((op) => (op.query || '').includes('savePage'))) {
+        session.saves++
+      }
+
+      if (session.expired) {
+        req.reply({ statusCode: 419, body: { message: 'CSRF token mismatch.' } })
+      }
+    })
+
+    return session
+  }
+
+  it('asks to sign in again when the session expired and saves the changes afterwards', () => {
+    visitPageDetail({}, { published: true })
+    detailView().find('.v-tab').contains('Page').click()
+    detailView().find('input[maxlength="30"]').first().clear().type('Updated Name')
+
+    const session = expireSession()
+    detailView().find('.menu-save').should('not.be.disabled').click()
+
+    cy.contains('.v-dialog:visible', 'Session expired').should('be.visible')
+    cy.get('.v-dialog:visible input[readonly]').should('have.value', 'admin@example.com')
+
+    cy.get('.v-dialog:visible input[type=password]').type('wrong{enter}')
+    cy.contains('.v-dialog:visible .v-alert', 'Invalid credentials').should('be.visible')
+    cy.wrap(session).its('saves').should('eq', 1)
+
+    cy.get('.v-dialog:visible input[type=password]').clear().type('secret{enter}')
+    cy.contains('.v-dialog', 'Session expired').should('not.exist')
+
+    // the rejected save is sent again with the renewed session and the edits are kept
+    cy.wrap(session).its('saves').should('eq', 2)
+    cy.wrap(session)
+      .its('logins')
+      .should('deep.equal', [
+        { email: 'admin@example.com', password: 'wrong' },
+        { email: 'admin@example.com', password: 'secret' },
+      ])
+    detailView().find('input[maxlength="30"]').first().should('have.value', 'Updated Name')
+    cy.url().should('include', '/pages/')
+  })
+
+  it('sends the AI chat prompt again after signing in again', () => {
+    visitPageDetail()
+
+    const session = expireSession()
+    let prompts = 0
+
+    cy.intercept('POST', '**/cmsapi/chat', (req) => {
+      prompts++
+      req.reply(
+        session.expired
+          ? { statusCode: 419, body: 'CSRF token mismatch.' }
+          : { statusCode: 200, headers: { 'content-type': 'text/plain' }, body: 'The page review is ready.' }
+      )
+    })
+
+    detailView().find('.btn-review-page').click()
+    cy.contains('.v-dialog:visible', 'Session expired').should('be.visible')
+    // the chat dialog below focuses itself when its transition ends, wait until both are open
+    cy.get('.v-overlay__content').should(($el) => {
+      $el.each((i, el) => expect(el.getAnimations()).to.have.length(0))
+    })
+    cy.get('.v-dialog:visible input[type=password]').should('have.focus').type('secret{enter}')
+
+    cy.contains('The page review is ready.').should('be.visible')
+    cy.then(() => expect(prompts).to.eq(2))
+  })
+
   // ---- Publish ----
 
   it('clicking publish fires pubPage mutation for unpublished page', () => {

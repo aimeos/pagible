@@ -77,6 +77,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Login page
+    |--------------------------------------------------------------------------
+    |
+    | URL of the login page of the application if users don't sign in with
+    | their e-mail and password, e.g. when using single sign-on. If the
+    | session expires while editing, the admin panel opens this page in a new
+    | tab instead of asking for the password and continues afterwards.
+    | The "_url_" placeholder is replaced by the URL of the admin panel,
+    | e.g. "https://example.com/login?redirect=_url_", so the login page can
+    | return there after the user signed in.
+    |
+    */
+    'login' => env( 'CMS_ADMIN_LOGIN' ),
+
+    /*
+    |--------------------------------------------------------------------------
     | Proxy settings
     |--------------------------------------------------------------------------
     |

@@ -62,15 +62,15 @@ msgstr "Promptul este necesar pentru generarea textului"
 msgid "Error generating text"
 msgstr "Eroare în generarea textului"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Asistentul de chat nu este disponibil."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Se generează deja un răspuns. Vă rugăm să așteptați să se termine."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr ""
 "Prea multe cereri. Vă rugăm să așteptați un moment și să încercați din nou."
@@ -1594,8 +1594,8 @@ msgstr "Configurare"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Câmpul este obligatoriu"
 
@@ -1921,6 +1921,66 @@ msgstr[0] "Aplicați setările de acces la %{num} pagină."
 msgstr[1] "Aplicați setările de acces la %{num} pagini."
 msgstr[2] "Aplicați setările de acces la %{num} de pagini."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Nu v-ați autentificat încă"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Autentificare eșuată"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Sesiunea a expirat"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Ieșire"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Vă rugăm să vă autentificați din nou în fila nouă și să reveniți aici pentru "
+"a continua. Modificările nesalvate sunt păstrate."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Vă rugăm să vă autentificați din nou pentru a continua. Modificările "
+"nesalvate sunt păstrate."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Autentificare"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "E-mail"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Parolă"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Ascunde parola"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Afișează parola"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Continuă"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Autentificare"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Elemente de conținut"
@@ -2041,10 +2101,6 @@ msgstr "Schimbă limba"
 msgid "User menu"
 msgstr "Meniu utilizator"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Ieșire"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Nu există date disponibile"
@@ -2113,7 +2169,7 @@ msgstr "Mută rândul"
 msgid "Row actions"
 msgstr "Acțiuni pe rând"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "Niciuna"
 
@@ -2195,7 +2251,7 @@ msgstr[0] "Este permisă cel mult %{num} coloană"
 msgstr[1] "Sunt permise cel mult %{num} coloane"
 msgstr[2] "Sunt permise cel mult %{num} de coloane"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Nu s-a încărcat pluginul"
 
@@ -2824,7 +2880,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Pictogramă"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -3000,41 +3056,21 @@ msgstr ""
 "Inteligența artificială poate găsi și gestiona fișierele media pe baza "
 "informațiilor furnizate de dvs."
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Adresă de e-mail invalidă"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Nu este un editor CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Acces refuzat"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "E-mail"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Parolă"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Ascunde parola"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Afișează parola"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Eroare"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Autentificare"
 
 #: js/views/PageDetail.vue:198
 msgid ""

@@ -62,15 +62,15 @@ msgstr "Za generiranje besedila je potreben poziv"
 msgid "Error generating text"
 msgstr "Napaka pri generiranju besedila"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Pomočnik za klepet ni na voljo."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Odgovor se že ustvarja. Počakajte, da se konča."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Preveč zahtev. Počakajte trenutek in poskusite znova."
 
@@ -1600,8 +1600,8 @@ msgstr "Konfiguracija"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Polje je obvezno"
 
@@ -1929,6 +1929,66 @@ msgstr[1] "Uporabi nastavitve dostopa za %{num} strani."
 msgstr[2] "Uporabi nastavitve dostopa za %{num} strani."
 msgstr[3] "Uporabi nastavitve dostopa za %{num} strani."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Še niste prijavljeni"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Prijava ni uspela"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Seja je potekla"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Odjava"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Znova se prijavite v novem zavihku in se vrnite sem za nadaljevanje. Vaše "
+"neshranjene spremembe so ohranjene."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Za nadaljevanje se znova prijavite. Vaše neshranjene spremembe ostanejo "
+"ohranjene."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Prijava"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "E-naslov"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Geslo"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Skrij geslo"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Pokaži geslo"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Nadaljuj"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Prijava"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Elementi vsebine"
@@ -2049,10 +2109,6 @@ msgstr "Preklop jezika"
 msgid "User menu"
 msgstr "Uporabniški meni"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Odjava"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Podatki niso na voljo"
@@ -2121,7 +2177,7 @@ msgstr "Premakni vrstico"
 msgid "Row actions"
 msgstr "Dejanja v vrstici"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "Brez"
 
@@ -2209,7 +2265,7 @@ msgstr[1] "Dovoljena sta največ %{num} stolpca"
 msgstr[2] "Dovoljeni so največ %{num} stolpci"
 msgstr[3] "Dovoljenih je največ %{num} stolpcev"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Vtičnika ni bilo mogoče naložiti"
 
@@ -2838,7 +2894,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Ikona"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -3014,41 +3070,21 @@ msgstr ""
 "Umetna inteligenca lahko na podlagi vaših podatkov poišče in upravlja "
 "medijske datoteke."
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Nepravilen e-poštni naslov"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Ni urednik sistema CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Dostop zavrnjen"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "E-naslov"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Geslo"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Skrij geslo"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Pokaži geslo"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Napaka"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Prijava"
 
 #: js/views/PageDetail.vue:198
 msgid ""

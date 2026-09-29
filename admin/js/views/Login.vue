@@ -2,10 +2,20 @@
 
 <script>
 import router from '../routes'
+import { urllogin } from '../config'
 import { useUserStore, useMessageStore } from '../stores'
+import { browser, loginUrl } from '../utils'
 import { mdiEyeOff, mdiEye, mdiAlertOctagon } from '@mdi/js'
 
+// Stops redirecting to the single sign-on page if it didn't sign in the user within that time
+const SSO_RETRY = 60000
+
 export default {
+  props: {
+    // Login page of the application if users don't sign in with a password (cms.admin.login)
+    urllogin: { type: String, default: urllogin }
+  },
+
   data: () => ({
     creds: {
       email: '',
@@ -62,6 +72,10 @@ export default {
         router.replace(this.next())
       })
       .catch((err) => {
+        if (this.urllogin) {
+          return this.sso(true)
+        }
+
         this.login = true
       })
   },
@@ -109,6 +123,43 @@ export default {
         })
     },
 
+    /**
+     * Redirects to the login page of the application for single sign-on
+     *
+     * Without a click, it's only done when the admin panel is opened, not after the user
+     * logged out, and not again if the last redirect didn't sign in the user to avoid loops.
+     *
+     * @param {Boolean} auto TRUE if not requested by the user
+     */
+    sso(auto = false) {
+      const now = Date.now()
+      let last = 0
+
+      try {
+        last = parseInt(sessionStorage.getItem('cms-sso')) || 0
+      } catch {
+        // storage not available, e.g. in private mode
+      }
+
+      if (auto && (window.history.state?.back || now - last < SSO_RETRY)) {
+        if (!window.history.state?.back) {
+          this.error = this.$gettext('Login failed')
+        }
+
+        this.login = true
+        return
+      }
+
+      try {
+        sessionStorage.setItem('cms-sso', String(now))
+      } catch {
+        // storage not available, e.g. in private mode
+      }
+
+      const back = new URL(router.resolve(this.user.intended() || '/').href, window.location.origin)
+      browser.assign(loginUrl(this.urllogin, back.href))
+    },
+
     next() {
       const url =
         this.user.intended() ||
@@ -131,47 +182,58 @@ export default {
 </script>
 
 <template>
-  <v-form ref="form" class="login" :class="{ show: login }" v-model="form" @submit.prevent="cmslogin()">
+  <v-form
+    ref="form"
+    class="login"
+    :class="{ show: login }"
+    v-model="form"
+    @submit.prevent="urllogin ? sso() : cmslogin()"
+  >
     <v-card :loading="loading" :elevation="2" :class="{ error: error }">
       <template v-slot:title><h1>PagibleAI CMS</h1></template>
 
       <v-card-text>
-        <v-text-field
-          v-model="creds.email"
-          :label="$gettext('E-Mail')"
-          :rules="emailRules"
-          autocomplete="username"
-          variant="underlined"
-          validate-on="blur"
-          autofocus
-        />
-        <v-text-field
-          v-model="creds.password"
-          :type="show ? `text` : `password`"
-          :label="$gettext('Password')"
-          :rules="passwordRules"
-          :placeholder="autofilled ? '********' : undefined"
-          :persistent-placeholder="autofilled"
-          autocomplete="current-password"
-          variant="underlined"
-        >
-          <template v-slot:append-inner>
-            <v-btn
-              @click="toggleShow"
-              :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
-              :icon="show ? mdiEyeOff : mdiEye"
-              density="compact"
-              variant="text"
-            />
-          </template>
-        </v-text-field>
+        <template v-if="!urllogin">
+          <v-text-field
+            v-model="creds.email"
+            :label="$gettext('E-Mail')"
+            :rules="emailRules"
+            autocomplete="username"
+            variant="underlined"
+            validate-on="blur"
+            autofocus
+          />
+          <v-text-field
+            v-model="creds.password"
+            :type="show ? `text` : `password`"
+            :label="$gettext('Password')"
+            :rules="passwordRules"
+            :placeholder="autofilled ? '********' : undefined"
+            :persistent-placeholder="autofilled"
+            autocomplete="current-password"
+            variant="underlined"
+          >
+            <template v-slot:append-inner>
+              <v-btn
+                @click="toggleShow"
+                :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
+                :icon="show ? mdiEyeOff : mdiEye"
+                density="compact"
+                variant="text"
+              />
+            </template>
+          </v-text-field>
+        </template>
         <v-alert v-show="error" color="error" :icon="mdiAlertOctagon">
           {{ $gettext('Error') + ': ' + error }}
         </v-alert>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn type="submit" variant="outlined" :disabled="form != true && !autofilled">
+        <v-btn v-if="urllogin" type="submit" variant="outlined">
+          {{ $gettext('Sign in') }}
+        </v-btn>
+        <v-btn v-else type="submit" variant="outlined" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>

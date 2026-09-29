@@ -61,17 +61,17 @@ msgstr "L'invite est nécessaire pour générer du texte"
 msgid "Error generating text"
 msgstr "Erreur de génération de texte"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "L'assistant de chat n'est pas disponible."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr ""
 "Une réponse est déjà en cours de génération. Veuillez attendre qu’elle soit "
 "terminée."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Trop de demandes. Veuillez patienter un moment et réessayer."
 
@@ -1582,8 +1582,8 @@ msgstr "Config"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Le champ est obligatoire"
 
@@ -1907,6 +1907,66 @@ msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Appliquer les paramètres d’accès à %{num} page."
 msgstr[1] "Appliquer les paramètres d’accès à %{num} pages."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Vous n'êtes pas encore connecté"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Échec de la connexion"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Session expirée"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Veuillez vous reconnecter dans le nouvel onglet puis revenir ici pour "
+"continuer. Vos modifications non enregistrées sont conservées."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Veuillez vous reconnecter pour continuer. Vos modifications non enregistrées "
+"sont conservées."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "Courrier électronique"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Mot de passe"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Masquer le mot de passe"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Afficher le mot de passe"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Continuer"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Connexion"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Éléments de contenu"
@@ -2029,10 +2089,6 @@ msgstr "Changer de langue"
 msgid "User menu"
 msgstr "Menu utilisateur"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Déconnexion"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Pas de données disponibles"
@@ -2101,7 +2157,7 @@ msgstr "Déplacer la ligne"
 msgid "Row actions"
 msgstr "Actions sur les lignes"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "Aucun"
 
@@ -2177,7 +2233,7 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Au plus %{num} colonne est autorisée"
 msgstr[1] "Au plus %{num} colonnes sont autorisées"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Échec du chargement du plugin"
 
@@ -2806,7 +2862,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Icône"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2980,41 +3036,21 @@ msgid "AI can find and manage media files based on your input"
 msgstr ""
 "L'IA peut trouver et gérer des fichiers médias en fonction de vos données"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Adresse électronique invalide"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Pas un éditeur de CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Accès refusé"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "Courrier électronique"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Mot de passe"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Masquer le mot de passe"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Afficher le mot de passe"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Erreur"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Connexion"
 
 #: js/views/PageDetail.vue:198
 msgid ""

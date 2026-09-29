@@ -61,15 +61,15 @@ msgstr "텍스트 생성 시 프롬프트가 필요합니다."
 msgid "Error generating text"
 msgstr "텍스트 생성 오류"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "채팅 도우미를 사용할 수 없습니다."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "응답이 이미 생성되고 있습니다. 완료될 때까지 기다려 주십시오."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "요청이 너무 많습니다. 잠시 후에 다시 시도해 주세요."
 
@@ -1559,8 +1559,8 @@ msgstr "구성"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "필드 필수 입력"
 
@@ -1879,6 +1879,64 @@ msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "%{num} 페이지에 액세스 설정을 적용합니다."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "아직 로그인하지 않았습니다"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "로그인 실패"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "세션이 만료되었습니다"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "로그아웃"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"새 탭에서 다시 로그인한 후 여기로 돌아와 계속하세요. 저장하지 않은 변경 사항"
+"은 유지됩니다."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr "계속하려면 다시 로그인하세요. 저장되지 않은 변경 사항은 유지됩니다."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "로그인"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "이메일"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "비밀번호"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "비밀번호 숨기기"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "비밀번호 표시"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "계속"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "로그인"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "콘텐츠 요소"
@@ -2001,10 +2059,6 @@ msgstr "언어 전환"
 msgid "User menu"
 msgstr "사용자 메뉴"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "로그아웃"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "사용 가능한 데이터 없음"
@@ -2073,7 +2127,7 @@ msgstr "행 이동"
 msgid "Row actions"
 msgstr "행 작업"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "없음"
 
@@ -2143,7 +2197,7 @@ msgid "At most %{num} column is allowed"
 msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "최대 %{num}개 열까지 허용됩니다"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "플러그인을 로드하지 못했습니다."
 
@@ -2772,7 +2826,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "아이콘"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2942,41 +2996,21 @@ msgstr "파일"
 msgid "AI can find and manage media files based on your input"
 msgstr "AI는 사용자의 입력에 따라 미디어 파일을 찾고 관리할 수 있습니다."
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "잘못된 이메일 주소"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "CMS 편집자가 아닙니다."
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "액세스 거부됨"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "이메일"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "비밀번호"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "비밀번호 숨기기"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "비밀번호 표시"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "오류"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "로그인"
 
 #: js/views/PageDetail.vue:198
 msgid ""

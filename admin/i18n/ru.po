@@ -62,15 +62,15 @@ msgstr "Для генерации текста требуется запрос"
 msgid "Error generating text"
 msgstr "Ошибка при генерации текста"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Чат-помощник недоступен."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Ответ уже формируется. Пожалуйста, подождите, пока он закончится."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr ""
 "Слишком много запросов. Пожалуйста, подождите немного и повторите попытку."
@@ -1593,8 +1593,8 @@ msgstr "Конфигурация"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Поле обязательно для заполнения"
 
@@ -1919,6 +1919,66 @@ msgstr[0] "Применить настройки доступа к %{num} стр
 msgstr[1] "Применить настройки доступа к %{num} страницам."
 msgstr[2] "Применить настройки доступа к %{num} страницам."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Вы ещё не вошли в систему"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Не удалось войти"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Сеанс истёк"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Выход из системы"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Пожалуйста, войдите снова в новой вкладке и вернитесь сюда, чтобы "
+"продолжить. Несохранённые изменения сохраняются."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Пожалуйста, войдите снова, чтобы продолжить. Несохранённые изменения будут "
+"сохранены."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Войти"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "Электронная почта"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Пароль"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Скрыть пароль"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Показать пароль"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Продолжить"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Вход в систему"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Элементы содержимого"
@@ -2040,10 +2100,6 @@ msgstr "Переключение языка"
 msgid "User menu"
 msgstr "Меню пользователя"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Выход из системы"
-
 #: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
 msgid "No data available"
 msgstr "Нет данных"
@@ -2112,7 +2168,7 @@ msgstr "Переместить строку"
 msgid "Row actions"
 msgstr "Действия со строками"
 
-#: js/fields/Url.vue:58 js/utils.js:165
+#: js/fields/Url.vue:58 js/utils.js:184
 msgid "None"
 msgstr "Нет"
 
@@ -2194,7 +2250,7 @@ msgstr[0] "Допускается максимум %{num} столбец"
 msgstr[1] "Допускается максимум %{num} столбца"
 msgstr[2] "Допускается максимум %{num} столбцов"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Не удалось загрузить плагин"
 
@@ -2823,7 +2879,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Значок"
 
-#: js/utils.js:215 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:234 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -2996,41 +3052,21 @@ msgstr "Файл"
 msgid "AI can find and manage media files based on your input"
 msgstr "ИИ может находить медиафайлы и управлять ими на основе ваших данных"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Неверный адрес электронной почты"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Не редактор CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Доступ запрещен"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "Электронная почта"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Пароль"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Скрыть пароль"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Показать пароль"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Ошибка"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Вход в систему"
 
 #: js/views/PageDetail.vue:198
 msgid ""

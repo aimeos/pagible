@@ -102,6 +102,21 @@ export async function disconnect() {
 }
 
 /**
+ * Subscribes again to the private channels whose authorization failed, e.g. after a reconnect
+ * while the session was expired, and lets the subscribers reload the events they missed.
+ */
+export function resubscribe(echo = echoInstance) {
+  const pusher = echo?.connector?.pusher
+  const failed = (pusher?.allChannels?.() || []).filter((channel) => !channel.subscribed)
+
+  failed.forEach((channel) => pusher.subscribe(channel.name))
+
+  if (failed.length) {
+    resync()
+  }
+}
+
+/**
  * Current socket id of the open websocket connection, or '' when not connected.
  * Sent as the X-Socket-ID header so the server can exclude this tab via toOthers().
  */

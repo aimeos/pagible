@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import { defineAsyncComponent, h, markRaw, reactive, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient, clearUploadLink } from './graphql'
-import { disconnect } from './echo'
+import { disconnect, resubscribe } from './echo'
 import gettext from './i18n'
 import { safeParse, sanitize } from './json'
 import {
@@ -17,6 +17,7 @@ import {
   urlcsrf,
   urlfile,
   multidomain,
+  sessionlifetime,
   locales as appLocales,
   plugins
 } from './config'
@@ -90,8 +91,59 @@ export const useAppStore = defineStore('app', {
   })
 })
 
+// Tells the other admin tabs that the user signed in so they can continue with the new session
+const authChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('cms-auth') : null
+
+// Pending requests waiting for the user to sign in again after the session expired
+let reauthWaiting = []
+let reauthListener = null
+// Checks the session after it would have expired without further requests
+let sessionTimer = null
+
+function reauthListen(fn) {
+  if (reauthListener) {
+    window.removeEventListener('focus', reauthListener)
+  }
+
+  reauthListener = fn
+  window.addEventListener('focus', reauthListener)
+
+  if (authChannel) {
+    authChannel.onmessage = reauthListener
+  }
+}
+
+function reauthSettle(ok) {
+  if (reauthListener) {
+    window.removeEventListener('focus', reauthListener)
+    reauthListener = null
+
+    if (authChannel) {
+      authChannel.onmessage = null
+    }
+  }
+
+  const waiting = reauthWaiting
+  reauthWaiting = []
+  waiting.forEach(({ resolve, reject }) => (ok ? resolve() : reject(new Error('Unauthenticated'))))
+}
+
+function csrf() {
+  return fetch(urlcsrf, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    credentials: 'same-origin'
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error(`CSRF endpoint returned ${response.status}`)
+    }
+    return response.json()
+  })
+}
+
 export const useUserStore = defineStore('user', {
   state: () => ({
+    expired: false,
     me: null,
     session: 0,
     urlintended: null,
@@ -114,6 +166,12 @@ export const useUserStore = defineStore('user', {
     },
 
     async clear() {
+      this.expired = false
+      reauthSettle(false)
+
+      clearTimeout(sessionTimer)
+      sessionTimer = null
+
       clearTimeout(this.saveTimer)
       this.saveTimer = null
 
@@ -206,16 +264,7 @@ export const useUserStore = defineStore('user', {
     },
 
     login(email, password) {
-      return fetch(urlcsrf, {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        credentials: 'same-origin'
-      }).then((response) => {
-        if (!response.ok) {
-          throw new Error(`CSRF endpoint returned ${response.status}`)
-        }
-        return response.json()
-      }).then(() => {
+      return csrf().then(() => {
         return apolloClient.mutate({
           mutation: LOGIN,
           variables: {
@@ -236,7 +285,12 @@ export const useUserStore = defineStore('user', {
           // Invalidate kept-alive views while the login route is still active, before the next
           // authenticated route is rendered.
           this.session++
-          return this.clear().then(() => this.isAuthenticated(true)).then(() => this.me)
+          return this.clear()
+            .then(() => this.isAuthenticated(true))
+            .then(() => {
+              authChannel?.postMessage('login')
+              return this.me
+            })
         }).catch((error) => {
           this.me = false
           throw error
@@ -257,6 +311,138 @@ export const useUserStore = defineStore('user', {
         this.me = null
         return this.clear()
       })
+    },
+
+    /**
+     * Waits until the expired session is renewed by relogin()/resume() or given up by expire()
+     *
+     * The session can also be renewed in another tab, which is checked when this tab gets
+     * the focus again or the other tab reports a login.
+     *
+     * @returns {Promise} Resolved after the user signed in again, rejected otherwise
+     */
+    reauth() {
+      this.expired = true
+      reauthListen(() => this.resume().catch(() => {}))
+
+      return new Promise((resolve, reject) => reauthWaiting.push({ resolve, reject }))
+    },
+
+    /**
+     * Signs in the current user again without resetting the open views and retries
+     * the requests which failed because the session expired
+     *
+     * @param {String} password Password of the current user
+     */
+    relogin(password) {
+      return csrf().then(() => {
+        return apolloClient.mutate({
+          mutation: LOGIN,
+          variables: { email: this.me?.email, password },
+          context: { relogin: true }
+        })
+      }).then((response) => {
+        if (response.errors) {
+          throw response.errors
+        }
+
+        return this.resume()
+      }).then((resumed) => {
+        // not resumed but no longer expired: another tab renewed the session meanwhile
+        if (!resumed && this.expired) {
+          throw new Error(gettext.$gettext('Login failed'))
+        }
+
+        authChannel?.postMessage('login')
+      })
+    },
+
+    /**
+     * Continues with the current session if the same user is signed in again
+     *
+     * @returns {Promise<Boolean>} TRUE if the waiting requests are retried, FALSE if still expired
+     */
+    resume() {
+      if (!this.expired) {
+        return Promise.resolve(false)
+      }
+
+      const email = this.me?.email
+
+      return apolloClient.query({
+        query: FETCH_ME,
+        fetchPolicy: 'network-only',
+        context: { relogin: true }
+      }).then((response) => {
+        const me = response.data?.me
+
+        if (!this.expired || !me || me.email !== email) {
+          return false
+        }
+
+        this.me.permission = safeParse(me.permission)
+        this.me.token = me.token
+        this.applyProxyToken()
+        this.expired = false
+
+        reauthSettle(true)
+        resubscribe()
+
+        return true
+      })
+    },
+
+    /**
+     * Checks if the session is still valid and asks the user to sign in again if not
+     *
+     * Opens the re-login dialog before the next save fails instead of after it.
+     *
+     * @returns {Promise<Boolean>} TRUE if the session is valid, FALSE if expired
+     */
+    check() {
+      if (!this.me || this.expired) {
+        return Promise.resolve(!this.expired)
+      }
+
+      const email = this.me.email
+
+      return apolloClient.query({
+        query: FETCH_ME,
+        fetchPolicy: 'network-only',
+        context: { relogin: true }
+      }).then((response) => {
+        return response.data?.me?.email === email
+      }, (error) => {
+        // offline or server errors don't mean the session expired
+        return ![401, 419].includes(error?.networkError?.statusCode)
+      }).then((valid) => {
+        if (!valid && this.me && !this.expired) {
+          this.reauth().catch(() => {})
+        }
+
+        return valid
+      })
+    },
+
+    /**
+     * Notes the session was used, which extends its lifetime on the server
+     */
+    touch() {
+      if (!sessionlifetime) {
+        return
+      }
+
+      clearTimeout(sessionTimer)
+      // a bit later so the server has surely expired the session before it's checked
+      sessionTimer = setTimeout(() => this.check(), sessionlifetime * 60000 + 5000)
+    },
+
+    /**
+     * Gives up the expired session, rejects the waiting requests and resets the state
+     */
+    async expire() {
+      this.me = false
+      await this.clear()
     },
 
     async user() {

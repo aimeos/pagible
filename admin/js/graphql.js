@@ -65,19 +65,39 @@ export function graphqlFetch(input, init) {
       throw graphqlError(response)
     }
 
+    // each request extends the session, so check it again after it would expire without one
+    useUserStore().touch()
+
     return response
   })
 }
 
-export function handleError({ errors, networkError }) {
-  const unauthorized = networkError?.statusCode === 419 || errors?.some((err) =>
+export function handleError({ graphQLErrors, networkError, operation, forward }) {
+  const unauthorized = [401, 419].includes(networkError?.statusCode) || graphQLErrors?.some((err) =>
+    err.message === 'Unauthenticated.' ||
     err.extensions?.code === 'UNAUTHENTICATED' ||
     err.extensions?.http?.status === 401
   )
 
-  if (!unauthorized) return
+  if (!unauthorized || operation?.getContext().relogin) return
 
-  useUserStore().me = false
+  const user = useUserStore()
+
+  // Session expired while editing: keep the open views and retry the request after
+  // the user signed in again instead of dropping all unsaved changes
+  if (user.me && forward) {
+    return new Observable((observer) => {
+      let sub = null
+
+      user.reauth()
+        .then(() => { sub = forward(operation).subscribe(observer) })
+        .catch(() => observer.error(networkError || new Error(graphQLErrors?.[0]?.message || 'Unauthenticated')))
+
+      return () => sub?.unsubscribe()
+    })
+  }
+
+  user.me = false
   apolloClient.clearStore().catch((error) => console.error('Failed to clear Apollo cache', error))
   router.push({ name: 'login' })
 }
