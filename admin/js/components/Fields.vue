@@ -377,10 +377,6 @@ export default {
 </template>
 
 <style scoped>
-.item:not(:focus-within) .hint {
-  display: none;
-}
-
 .item {
   margin: 24px 0;
   padding-inline-start: 8px;

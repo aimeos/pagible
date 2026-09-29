@@ -147,6 +147,7 @@ Cypress.Commands.add('mount', (Component, options = {}) => {
     directives,
     icons: { defaultSet: 'mdi' },
     defaults: {
+      global: { persistentHint: true },
       VDialog: { scrollStrategy: 'none' },
       VMenu: { scrollStrategy: 'none' },
       VNavigationDrawer: { disableResizeWatcher: true },

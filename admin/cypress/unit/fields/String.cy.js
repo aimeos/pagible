@@ -24,10 +24,8 @@ describe('String (textarea)', () => {
     cy.get('.v-counter').should('exist')
   })
 
-  it('shows the hint from config only on focus', () => {
+  it('always shows the hint from config', () => {
     cy.mount(StringField, { props: { config: { hint: 'Short summary' } } })
-    cy.contains('Short summary').should('not.exist')
-    cy.get('textarea').first().focus()
     cy.get('.v-messages__message').should('be.visible').and('contain', 'Short summary')
   })
 

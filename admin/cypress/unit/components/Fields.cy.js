@@ -143,13 +143,7 @@ describe('Fields', () => {
     })
     cy.get('.item .v-messages__message').should('have.length', 1)
       .and('contain', 'Main content of the page')
-      .and('not.be.visible')
-  })
-
-  it('shows the fallback hint while the field has focus', () => {
-    mountFields({ fields: { body: { type: 'text', label: 'Body text', hint: 'Main content' } } })
-    cy.get('.field-text').focus()
-    cy.get('.item .v-messages__message').should('be.visible').and('contain', 'Main content')
+      .and('be.visible')
   })
 
   it('hides the label for hidden field type', () => {

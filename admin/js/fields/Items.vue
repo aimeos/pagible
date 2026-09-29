@@ -516,10 +516,6 @@ export default {
 </template>
 
 <style scoped>
-.field:not(:focus-within) .hint {
-  display: none;
-}
-
 .v-expansion-panel.v-expansion-panel--active.item {
   border: 1px solid rgb(var(--v-theme-border-light, var(--v-border-color)));
 }

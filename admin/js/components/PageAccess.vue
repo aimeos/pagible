@@ -172,7 +172,6 @@ export default {
     <v-radio-group
       v-model="mode"
       :hint="$gettext('Public pages are visible to everyone, others only to logged in users or users with the selected roles')"
-      persistent-hint
       :disabled="saving"
       @update:model-value="select"
     >
