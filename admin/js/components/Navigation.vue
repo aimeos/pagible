@@ -80,7 +80,7 @@ export default {
             @click="shortcuts.palette = true"
           >
             <v-icon :icon="mdiConsoleLine" class="icon" />
-            {{ $gettext('Command palette') }}
+            {{ $gettext('Commands') }}
             <kbd class="hint" aria-hidden="true">{{ hint('palette') }}</kbd>
           </button>
         </v-list-item>
@@ -119,6 +119,8 @@ export default {
 }
 
 button.router-link {
+  background: transparent;
+  border: none;
   cursor: pointer;
   font: inherit;
   text-align: start;
@@ -130,6 +132,7 @@ button.router-link {
   padding: 0 6px;
   border: 1px solid rgba(var(--v-border-color), 0.38);
   border-radius: 4px;
+  background: transparent;
   font-family: inherit;
   font-size: 0.75rem;
   opacity: 0.7;

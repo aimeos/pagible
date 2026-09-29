@@ -77,8 +77,8 @@ msgstr ""
 "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Befehlspalette öffnen"
+msgid "Open commands"
+msgstr "Befehle öffnen"
 
 #: js/commands.js:60
 msgid "Confirm dialog"

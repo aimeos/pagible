@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "요청이 너무 많습니다. 잠시 후에 다시 시도해 주세요."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "명령 팔레트 열기"
+msgid "Open commands"
+msgstr "명령 열기"
 
 #: js/commands.js:60
 msgid "Confirm dialog"

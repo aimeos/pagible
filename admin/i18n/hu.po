@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "Túl sok kérés. Kérjük, várjon egy pillanatot, és próbálja újra."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Parancspaletta megnyitása"
+msgid "Open commands"
+msgstr "Parancsok megnyitása"
 
 #: js/commands.js:60
 msgid "Confirm dialog"

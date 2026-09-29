@@ -50,7 +50,7 @@ export const commands = {
     icon: mdiConsoleLine,
     mod: true,
     key: ['k'],
-    label: () => gettext.$gettext('Open command palette')
+    label: () => gettext.$gettext('Open commands')
   },
   confirm: {
     scope: 'global',

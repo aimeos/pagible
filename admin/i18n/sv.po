@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "För många förfrågningar. Vänta ett ögonblick och försök igen."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Öppna kommandopaletten"
+msgid "Open commands"
+msgstr "Öppna kommandon"
 
 #: js/commands.js:60
 msgid "Confirm dialog"

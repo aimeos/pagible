@@ -88,7 +88,7 @@ describe('CommandPalette', () => {
       cy.then(off)
     })
     cy.contains('.palette-item', 'Search in list').should('not.exist')
-    cy.contains('.palette-item', 'Open command palette').should('not.exist')
+    cy.contains('.palette-item', 'Open commands').should('not.exist')
     cy.contains('.palette-item', 'Confirm dialog').should('not.exist')
   })
 

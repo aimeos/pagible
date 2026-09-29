@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "Príliš veľa žiadostí. Chvíľu počkajte a skúste to znova."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Otvoriť paletu príkazov"
+msgid "Open commands"
+msgstr "Otvoriť príkazy"
 
 #: js/commands.js:60
 msgid "Confirm dialog"

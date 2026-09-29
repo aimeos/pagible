@@ -90,7 +90,7 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr ""
 
 #: js/commands.js:53
-msgid "Open command palette"
+msgid "Open commands"
 msgstr ""
 
 #: js/commands.js:60

@@ -74,8 +74,8 @@ msgid "Too many requests. Please wait a moment and try again."
 msgstr "Liiga palju taotlusi. Palun oodake veidi ja proovige uuesti."
 
 #: js/commands.js:53
-msgid "Open command palette"
-msgstr "Ava käsupalett"
+msgid "Open commands"
+msgstr "Ava käsud"
 
 #: js/commands.js:60
 msgid "Confirm dialog"
