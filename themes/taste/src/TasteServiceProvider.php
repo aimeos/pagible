@@ -15,6 +15,10 @@ class TasteServiceProvider extends Provider
         Schema::register( $basedir, 'taste' );
         View::addNamespace( 'taste', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'taste', '/vendor/cms/taste/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/taste' )], 'cms-theme' );
     }
 }
