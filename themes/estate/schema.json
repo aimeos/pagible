@@ -33,6 +33,7 @@
     "content": {
         "property": {
             "group": "estate",
+            "description": "Real estate listing with details, map and documents",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M4 8V6h2v2h12V6h2v2h1.75c.69 0 1.25.56 1.25 1.25V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.25C2 8.56 2.56 8 3.25 8H4m2 3.75V18h12V11.75M6 7.5v3.5h12V7.5H6Zm11.25 3.75v-1h-1v1h1Zm-2 0v-1h-1v1h1Zm-2 0v-1h-1v1h1Zm-2 0v-1h-1v1h1Z\" /></svg>",
             "fields": {
                 "text": {
@@ -290,6 +291,7 @@
         },
         "properties": {
             "group": "estate",
+            "description": "List of real estate listings with filters",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 4h18v2H3V4M3 10h18v2H3v-2M3 16h18v2H3v-2M5 20h14v2H5v-2M5 2h14v2H5V2M9 6h6v2H9V6M9 12h6v2H9v-2M9 18h6v2H9v-2M5 4v16h14V4H5z\" /></svg>",
             "fields": {
                 "title": {

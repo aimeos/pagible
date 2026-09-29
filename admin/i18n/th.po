@@ -249,7 +249,7 @@ msgstr "บทบาทที่มีอยู่"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
 #: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "ไม่พบรายการ"
 
@@ -646,7 +646,7 @@ msgstr "เพิ่มองค์ประกอบ"
 
 #: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
 #: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "ค้นหา"
@@ -660,7 +660,7 @@ msgstr "อัปเดตโดยผู้ใช้รายอื่น"
 msgid "Refresh"
 msgstr "รีเฟรช"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "โหลดองค์ประกอบใหม่"
 
@@ -1885,11 +1885,11 @@ msgstr "องค์ประกอบเนื้อหา"
 msgid "New elements"
 msgstr "องค์ประกอบใหม่"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "ไม่ถูกจัดหมวดหมู่"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "เกิดข้อผิดพลาดในการดึงองค์ประกอบเนื้อหา"
 
@@ -2354,296 +2354,416 @@ msgid "javascript"
 msgstr "javascript"
 
 #: js/strings.js:81
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "หัวข้อส่วนตั้งแต่ H1 ถึง H6"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "ข้อความจัดรูปแบบพร้อมย่อหน้า รายการ และลิงก์"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "รูปภาพข้างข้อความจัดรูปแบบ"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "ซอร์สโค้ดพร้อมไฮไลต์ไวยากรณ์"
+
+#: js/strings.js:85
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "ตารางข้อมูลพร้อมแถวหรือคอลัมน์หัวตาราง (ไม่บังคับ)"
+
+#: js/strings.js:86
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "แผนที่แบบโต้ตอบพร้อมตำแหน่ง ข้อความ และลิงก์"
+
+#: js/strings.js:87
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML แบบกำหนดเองสำหรับการฝังและวิดเจ็ต"
+
+#: js/strings.js:88
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "รูปภาพแบบตอบสนองหนึ่งรูป"
+
+#: js/strings.js:89
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "สไลด์หมุนเวียนพร้อมรูปภาพหลายรูป"
+
+#: js/strings.js:90
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "วิดีโอแบบฝังพร้อมปุ่มควบคุมการเล่น"
+
+#: js/strings.js:91
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "เสียงแบบฝังพร้อมปุ่มควบคุมการเล่น"
+
+#: js/strings.js:92
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "ไฟล์สำหรับดาวน์โหลด เช่น เอกสาร PDF"
+
+#: js/strings.js:93
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "ส่วนเปิดขนาดใหญ่พร้อมชื่อเรื่อง ข้อความ ปุ่ม และพื้นหลัง"
+
+#: js/strings.js:94
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "คำกระตุ้นการตัดสินใจพร้อมข้อความและปุ่ม"
+
+#: js/strings.js:95
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "ตารางการ์ดพร้อมรูปภาพ ชื่อเรื่อง และข้อความ"
+
+#: js/strings.js:96
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "คำรับรองจากลูกค้าพร้อมชื่อ ตำแหน่ง และรูปถ่าย"
+
+#: js/strings.js:97
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "บทนำบทความพร้อมแกลเลอรีรูปภาพและผู้เขียน"
+
+#: js/strings.js:98
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "รายการบทความบล็อกจากหน้าหลัก"
+
+#: js/strings.js:99
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "รายการข่าวจากหน้าหลัก"
+
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "หน้าย่อยเด่นตามด้วยหน้าย่อยอื่น ๆ"
+
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "แผนราคาแบบสมัครสมาชิกหรือชำระครั้งเดียว"
+
+#: js/strings.js:102
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "คำถามที่พบบ่อยพร้อมคำตอบ"
+
+#: js/strings.js:103
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "สารบัญพร้อมลิงก์ไปยังหัวข้อของหน้า"
+
+#: js/strings.js:104
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "แบบฟอร์มติดต่อพร้อมช่องที่กำหนดค่าได้"
+
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "ปุ่ม"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
 msgstr "ปุ่ม"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "การ์ด"
 
-#: js/strings.js:84
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "คำอธิบาย"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "ไฟล์"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "ไฟล์"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "การติดตามลิงก์"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
 msgstr "ส่วนหัว"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "การจัดทำดัชนี"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "คำสำคัญ"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "ภาษา"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
 msgstr "ป้ายกำกับ"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "ระดับ"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "ขีดจำกัด"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
 msgstr "ตำแหน่ง"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "รูปหลัก"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "ลำดับ"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "หน้าแม่"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "ตำแหน่ง"
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "ข้อความ"
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "ตาราง"
 
-#: js/strings.js:102
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
 msgstr "ชื่อเรื่อง"
 
-#: js/strings.js:103
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "รูปภาพ"
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "รูปภาพ"
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "รายการ"
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "บทนำ"
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "โหลดทันที"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "ซอร์สโค้ด"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "บทบาทการเข้าถึงส่วนหน้า"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "ราคาการชำระเงิน"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "ข้อมูลอ้างอิงการชำระเงิน"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "ประเภทการชำระเงิน"
 
-#: js/strings.js:115
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "สกุลเงิน"
 
-#: js/strings.js:116
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "รอบการเรียกเก็บเงิน"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "หน่วยราคา"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "หน้าเป้าหมายหรือลิงค์"
 
-#: js/strings.js:119
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "ฟิลด์ที่จำเป็น"
 
-#: js/strings.js:120
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "ฟิลด์ที่ไม่บังคับ"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
 msgstr "ข้อความลิงก์"
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
 msgstr "ชื่อ"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
 msgstr "บริษัท"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
 msgstr "โทรศัพท์"
 
-#: js/strings.js:127
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
 msgstr "อีเมล"
 
-#: js/strings.js:128
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
 msgstr "หัวเรื่อง"
 
-#: js/strings.js:129
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "ติดตามลิงก์"
 
-#: js/strings.js:130
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "จัดทำดัชนี"
 
-#: js/strings.js:131
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "ไม่ติดตามลิงก์"
 
-#: js/strings.js:132
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "ไม่จัดทำดัชนี"
 
-#: js/strings.js:133
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "การสมัครสมาชิก"
 
-#: js/strings.js:134
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "ชำระเงินครั้งเดียว"
 
-#: js/strings.js:137
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "เสร็จแล้ว"
 
-#: js/strings.js:138
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "มีอยู่แล้ว"
 
-#: js/strings.js:141
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "ขั้นสูง"
 
-#: js/strings.js:142
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "ธีม"
 
-#: js/strings.js:143
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
 msgstr "เว็บไซต์"
 
-#: js/strings.js:144
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "โลโก้"
 
-#: js/strings.js:145
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "โลโก้สำรอง"
 
-#: js/strings.js:146
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "ไอคอน"

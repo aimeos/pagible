@@ -249,7 +249,7 @@ msgstr "사용 가능한 역할"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
 #: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "항목을 찾을 수 없습니다."
 
@@ -646,7 +646,7 @@ msgstr "요소 추가"
 
 #: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
 #: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "검색"
@@ -660,7 +660,7 @@ msgstr "다른 사용자가 업데이트함"
 msgid "Refresh"
 msgstr "새로고침"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "요소 다시 불러오기"
 
@@ -1887,11 +1887,11 @@ msgstr "콘텐츠 요소"
 msgid "New elements"
 msgstr "새 요소"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "분류되지 않음"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "콘텐츠 요소를 가져오는 중 오류가 발생했습니다"
 
@@ -2358,296 +2358,416 @@ msgid "javascript"
 msgstr "자바스크립트"
 
 #: js/strings.js:81
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "H1부터 H6까지의 섹션 제목"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "단락, 목록, 링크가 포함된 서식 텍스트"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "서식 텍스트 옆의 이미지"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "구문 강조가 적용된 소스 코드"
+
+#: js/strings.js:85
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "선택적 머리글 행 또는 열이 있는 데이터 표"
+
+#: js/strings.js:86
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "위치, 텍스트, 링크가 있는 대화형 지도"
+
+#: js/strings.js:87
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "임베드와 위젯을 위한 사용자 정의 HTML"
+
+#: js/strings.js:88
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "단일 반응형 이미지"
+
+#: js/strings.js:89
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "여러 이미지로 전환되는 슬라이드"
+
+#: js/strings.js:90
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "재생 컨트롤이 있는 임베드 동영상"
+
+#: js/strings.js:91
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "재생 컨트롤이 있는 임베드 오디오"
+
+#: js/strings.js:92
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "PDF 문서 등 다운로드 가능한 파일"
+
+#: js/strings.js:93
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "제목, 텍스트, 버튼, 배경이 있는 큰 소개 영역"
+
+#: js/strings.js:94
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "텍스트와 버튼으로 구성된 행동 유도"
+
+#: js/strings.js:95
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "이미지, 제목, 텍스트가 있는 카드 그리드"
+
+#: js/strings.js:96
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "이름, 직함, 사진이 있는 고객 후기"
+
+#: js/strings.js:97
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "이미지 갤러리와 작성자가 있는 기사 소개"
+
+#: js/strings.js:98
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "상위 페이지의 블로그 글 목록"
+
+#: js/strings.js:99
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "상위 페이지의 뉴스 목록"
+
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "추천 하위 페이지와 이어지는 하위 페이지"
+
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "구독 또는 일회성 결제 요금제"
+
+#: js/strings.js:102
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "자주 묻는 질문과 답변"
+
+#: js/strings.js:103
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "페이지 제목으로 연결되는 목차"
+
+#: js/strings.js:104
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "필드를 설정할 수 있는 문의 양식"
+
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "버튼"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
 msgstr "버튼"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "카드"
 
-#: js/strings.js:84
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "설명"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "파일"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "파일"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "링크 따라가기"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
 msgstr "헤더"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "색인"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "키워드"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "언어"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
 msgstr "레이블"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "레벨"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "제한"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
 msgstr "위치"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "대표 이미지"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "순서"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "부모 페이지"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "위치"
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "텍스트"
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "테이블"
 
-#: js/strings.js:102
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
 msgstr "제목"
 
-#: js/strings.js:103
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "이미지"
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "이미지"
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "항목"
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "소개"
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "즉시 로드"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "소스 코드"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "프런트엔드 접근 역할"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "결제 가격"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "결제 참조"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "결제 유형"
 
-#: js/strings.js:115
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "통화"
 
-#: js/strings.js:116
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "청구 주기"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "가격 단위"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "대상 페이지 또는 링크"
 
-#: js/strings.js:119
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "필수 필드"
 
-#: js/strings.js:120
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "선택 필드"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
 msgstr "링크 레이블"
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
 msgstr "이름"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
 msgstr "회사"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
 msgstr "전화"
 
-#: js/strings.js:127
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
 msgstr "이메일"
 
-#: js/strings.js:128
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
 msgstr "제목"
 
-#: js/strings.js:129
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "링크 따라가기"
 
-#: js/strings.js:130
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "색인 허용"
 
-#: js/strings.js:131
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "링크 따라가지 않기"
 
-#: js/strings.js:132
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "색인 안 함"
 
-#: js/strings.js:133
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "구독"
 
-#: js/strings.js:134
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "일회성 결제"
 
-#: js/strings.js:137
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "완료"
 
-#: js/strings.js:138
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "이미 존재"
 
-#: js/strings.js:141
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "고급"
 
-#: js/strings.js:142
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "테마"
 
-#: js/strings.js:143
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
 msgstr "웹사이트"
 
-#: js/strings.js:144
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "로고"
 
-#: js/strings.js:145
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "대체 로고"
 
-#: js/strings.js:146
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "아이콘"

@@ -249,7 +249,7 @@ msgstr "利用可能なロール"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
 #: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "エントリーが見つかりません"
 
@@ -646,7 +646,7 @@ msgstr "要素を追加する"
 
 #: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
 #: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "検索"
@@ -660,7 +660,7 @@ msgstr "別のユーザーによって更新されました"
 msgid "Refresh"
 msgstr "リフレッシュ"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "要素を再読み込み"
 
@@ -1888,11 +1888,11 @@ msgstr "コンテンツ要素"
 msgid "New elements"
 msgstr "新しい要素"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "未分類"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "コンテンツ要素の取得中にエラーが発生しました"
 
@@ -2358,296 +2358,416 @@ msgid "javascript"
 msgstr "JavaScript"
 
 #: js/strings.js:81
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "H1〜H6のセクション見出し"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "段落、リスト、リンクを含む書式付きテキスト"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "書式付きテキストの横に配置する画像"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "シンタックスハイライト付きのソースコード"
+
+#: js/strings.js:85
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "任意の見出し行または列を持つデータテーブル"
+
+#: js/strings.js:86
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "場所、テキスト、リンク付きのインタラクティブマップ"
+
+#: js/strings.js:87
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "埋め込みやウィジェット用のカスタムHTML"
+
+#: js/strings.js:88
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "単一のレスポンシブ画像"
+
+#: js/strings.js:89
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "複数の画像を切り替えるスライドショー"
+
+#: js/strings.js:90
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "再生コントロール付きの埋め込み動画"
+
+#: js/strings.js:91
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "再生コントロール付きの埋め込み音声"
+
+#: js/strings.js:92
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "PDF文書などのダウンロード可能なファイル"
+
+#: js/strings.js:93
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "タイトル、テキスト、ボタン、背景を備えた大きな導入部"
+
+#: js/strings.js:94
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "テキストとボタンによる行動喚起"
+
+#: js/strings.js:95
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "画像、タイトル、テキストを含むカードのグリッド"
+
+#: js/strings.js:96
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "名前、役職、写真付きのお客様の声"
+
+#: js/strings.js:97
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "画像ギャラリーと著者付きの記事の導入部"
+
+#: js/strings.js:98
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "親ページのブログ記事一覧"
+
+#: js/strings.js:99
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "親ページのニュース一覧"
+
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "注目のサブページとそれに続くサブページ"
+
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "サブスクリプションまたは一回払いの料金プラン"
+
+#: js/strings.js:102
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "よくある質問と回答"
+
+#: js/strings.js:103
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "ページ見出しへのリンク付き目次"
+
+#: js/strings.js:104
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "項目を設定できるお問い合わせフォーム"
+
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "ボタン"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
 msgstr "ボタン"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "カード"
 
-#: js/strings.js:84
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "説明"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "ファイル"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "ファイル"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "リンクの追跡"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
 msgstr "ヘッダー"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "インデックス"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "キーワード"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "言語"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
 msgstr "ラベル"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "レベル"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "制限"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
 msgstr "位置"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "メイン画像"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "順序"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "親ページ"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "テキスト"
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "テーブル"
 
-#: js/strings.js:102
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
 msgstr "タイトル"
 
-#: js/strings.js:103
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "画像"
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "画像"
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "項目"
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "イントロダクション"
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "即時ロード"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "ソースコード"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "フロントエンドアクセスロール"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "支払い価格"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "支払い参照"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "支払い種別"
 
-#: js/strings.js:115
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "通貨"
 
-#: js/strings.js:116
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "請求間隔"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "価格単位"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "対象のページまたはリンク"
 
-#: js/strings.js:119
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "必須フィールド"
 
-#: js/strings.js:120
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "任意フィールド"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
 msgstr "リンクラベル"
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
 msgstr "名前"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
 msgstr "会社"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
 msgstr "電話"
 
-#: js/strings.js:127
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Eメール"
 
-#: js/strings.js:128
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
 msgstr "件名"
 
-#: js/strings.js:129
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "リンクをたどる"
 
-#: js/strings.js:130
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "インデックスする"
 
-#: js/strings.js:131
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "リンクをたどらない"
 
-#: js/strings.js:132
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "インデックスしない"
 
-#: js/strings.js:133
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "サブスクリプション"
 
-#: js/strings.js:134
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "1回払い"
 
-#: js/strings.js:137
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "完了"
 
-#: js/strings.js:138
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "すでに存在します"
 
-#: js/strings.js:141
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "上級者向け"
 
-#: js/strings.js:142
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "テーマ"
 
-#: js/strings.js:143
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
 msgstr "ウェブサイト"
 
-#: js/strings.js:144
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "ロゴ"
 
-#: js/strings.js:145
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "代替ロゴ"
 
-#: js/strings.js:146
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "アイコン"

@@ -249,7 +249,7 @@ msgstr "Ruoli disponibili"
 
 #: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:903
 #: js/components/FileListItems.vue:985 js/components/PageListItems.vue:1939
-#: js/components/SchemaItems.vue:183 js/views/AccessList.vue:324
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Nessuna voce trovata"
 
@@ -652,7 +652,7 @@ msgstr "Aggiungi elemento"
 
 #: js/components/ElementListItems.vue:779 js/components/FileListItems.vue:768
 #: js/components/PageDetailContentList.vue:870
-#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:135
+#: js/components/PageListItems.vue:1668 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
 msgstr "Ricerca di"
@@ -666,7 +666,7 @@ msgstr "Aggiornato da un altro utente"
 msgid "Refresh"
 msgstr "Aggiorna"
 
-#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:146
+#: js/components/ElementListItems.vue:802 js/components/SchemaItems.vue:152
 msgid "Reload elements"
 msgstr "Aggiorna gli elementi"
 
@@ -1915,11 +1915,11 @@ msgstr "Elementi di contenuto"
 msgid "New elements"
 msgstr "Nuovi elementi"
 
-#: js/components/SchemaItems.vue:100
+#: js/components/SchemaItems.vue:106
 msgid "uncategorized"
 msgstr "non classificato"
 
-#: js/components/SchemaItems.vue:113
+#: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "Errore durante il recupero degli elementi di contenuto"
 
@@ -2390,296 +2390,416 @@ msgid "javascript"
 msgstr "javascript"
 
 #: js/strings.js:81
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "Titolo di sezione da H1 a H6"
+
+#: js/strings.js:82
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Testo formattato con paragrafi, elenchi e link"
+
+#: js/strings.js:83
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "Immagine accanto a testo formattato"
+
+#: js/strings.js:84
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "Codice sorgente con evidenziazione della sintassi"
+
+#: js/strings.js:85
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "Tabella dati con riga o colonna di intestazione opzionale"
+
+#: js/strings.js:86
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "Mappa interattiva con posizione, testo e link"
+
+#: js/strings.js:87
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML personalizzato per incorporamenti e widget"
+
+#: js/strings.js:88
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "Singola immagine responsive"
+
+#: js/strings.js:89
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "Diapositive a rotazione con più immagini"
+
+#: js/strings.js:90
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "Video incorporato con controlli di riproduzione"
+
+#: js/strings.js:91
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "Audio incorporato con controlli di riproduzione"
+
+#: js/strings.js:92
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "File scaricabile come un documento PDF"
+
+#: js/strings.js:93
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "Ampia introduzione con titolo, testo, pulsanti e sfondo"
+
+#: js/strings.js:94
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "Invito all'azione con testo e pulsanti"
+
+#: js/strings.js:95
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "Griglia di schede con immagine, titolo e testo"
+
+#: js/strings.js:96
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "Citazioni di clienti con nome, ruolo e foto"
+
+#: js/strings.js:97
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "Introduzione dell'articolo con galleria di immagini e autore"
+
+#: js/strings.js:98
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "Elenco di articoli del blog da una pagina padre"
+
+#: js/strings.js:99
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "Elenco di notizie da una pagina padre"
+
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "Sottopagina in evidenza seguita da altre sottopagine"
+
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "Piani tariffari con abbonamenti o pagamenti una tantum"
+
+#: js/strings.js:102
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "Domande frequenti con risposte"
+
+#: js/strings.js:103
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "Indice con link ai titoli della pagina"
+
+#: js/strings.js:104
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "Modulo di contatto con campi configurabili"
+
+#: js/strings.js:107
 msgctxt "fn"
 msgid "button"
 msgstr "pulsante"
 
-#: js/strings.js:82
+#: js/strings.js:108
 msgctxt "fn"
 msgid "buttons"
 msgstr "pulsanti"
 
-#: js/strings.js:83
+#: js/strings.js:109
 msgctxt "fn"
 msgid "cards"
 msgstr "Schede"
 
-#: js/strings.js:84
+#: js/strings.js:110
 msgctxt "fn"
 msgid "description"
 msgstr "descrizione"
 
-#: js/strings.js:85
+#: js/strings.js:111
 msgctxt "fn"
 msgid "file"
 msgstr "file"
 
-#: js/strings.js:86
+#: js/strings.js:112
 msgctxt "fn"
 msgid "files"
 msgstr "file"
 
-#: js/strings.js:87
+#: js/strings.js:113
 msgctxt "fn"
 msgid "follow"
 msgstr "Link da seguire"
 
-#: js/strings.js:88
+#: js/strings.js:114
 msgctxt "fn"
 msgid "header"
 msgstr "intestazione"
 
-#: js/strings.js:89
+#: js/strings.js:115
 msgctxt "fn"
 msgid "index"
 msgstr "Indicizzazione"
 
-#: js/strings.js:90
+#: js/strings.js:116
 msgctxt "fn"
 msgid "keywords"
 msgstr "parole chiave"
 
-#: js/strings.js:91
+#: js/strings.js:117
 msgctxt "fn"
 msgid "language"
 msgstr "lingua"
 
-#: js/strings.js:92
+#: js/strings.js:118
 msgctxt "fn"
 msgid "label"
 msgstr "etichetta"
 
-#: js/strings.js:93
+#: js/strings.js:119
 msgctxt "fn"
 msgid "level"
 msgstr "livello"
 
-#: js/strings.js:94
+#: js/strings.js:120
 msgctxt "fn"
 msgid "limit"
 msgstr "limite"
 
-#: js/strings.js:95
+#: js/strings.js:121
 msgctxt "fn"
 msgid "location"
 msgstr "posizione"
 
-#: js/strings.js:96
+#: js/strings.js:122
 msgctxt "fn"
 msgid "main"
 msgstr "Immagine principale"
 
-#: js/strings.js:97
+#: js/strings.js:123
 msgctxt "fn"
 msgid "order"
 msgstr "ordine"
 
-#: js/strings.js:98
+#: js/strings.js:124
 msgctxt "fn"
 msgid "parent-page"
 msgstr "pagina padre"
 
-#: js/strings.js:99
+#: js/strings.js:125
 msgctxt "fn"
 msgid "position"
 msgstr "posizione"
 
-#: js/strings.js:100
+#: js/strings.js:126
 msgctxt "fn"
 msgid "text"
 msgstr "testo"
 
-#: js/strings.js:101
+#: js/strings.js:127
 msgctxt "fn"
 msgid "table"
 msgstr "tabella"
 
-#: js/strings.js:102
+#: js/strings.js:128
 msgctxt "fn"
 msgid "title"
 msgstr "titolo"
 
-#: js/strings.js:103
+#: js/strings.js:129
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:105
+#: js/strings.js:131
 msgctxt "fn"
 msgid "image"
 msgstr "immagine"
 
-#: js/strings.js:106
+#: js/strings.js:132
 msgctxt "fn"
 msgid "images"
 msgstr "immagini"
 
-#: js/strings.js:107
+#: js/strings.js:133
 msgctxt "fn"
 msgid "items"
 msgstr "voci"
 
-#: js/strings.js:108
+#: js/strings.js:134
 msgctxt "fn"
 msgid "introduction"
 msgstr "introduzione"
 
-#: js/strings.js:109
+#: js/strings.js:135
 msgctxt "fn"
 msgid "load immediately"
 msgstr "caricare immediatamente"
 
-#: js/strings.js:110
+#: js/strings.js:136
 msgctxt "fn"
 msgid "source code"
 msgstr "codice sorgente"
 
-#: js/strings.js:111
+#: js/strings.js:137
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Ruolo di accesso al frontend"
 
-#: js/strings.js:112
+#: js/strings.js:138
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Prezzi di pagamento"
 
-#: js/strings.js:113
+#: js/strings.js:139
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Riferimento pagamento"
 
-#: js/strings.js:114
+#: js/strings.js:140
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "Tipo di pagamento"
 
-#: js/strings.js:115
+#: js/strings.js:141
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valuta"
 
-#: js/strings.js:116
+#: js/strings.js:142
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Intervallo di fatturazione"
 
-#: js/strings.js:117
+#: js/strings.js:143
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Unità di prezzo"
 
-#: js/strings.js:118
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Pagina o collegamento di destinazione"
 
-#: js/strings.js:119
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "Campi obbligatori"
 
-#: js/strings.js:120
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "Campi facoltativi"
 
-#: js/strings.js:121
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Link label"
 msgstr "Testo del link"
 
-#: js/strings.js:124
+#: js/strings.js:150
 msgctxt "op"
 msgid "Name"
 msgstr "Nome"
 
-#: js/strings.js:125
+#: js/strings.js:151
 msgctxt "op"
 msgid "Company"
 msgstr "Azienda"
 
-#: js/strings.js:126
+#: js/strings.js:152
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefono"
 
-#: js/strings.js:127
+#: js/strings.js:153
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Posta elettronica"
 
-#: js/strings.js:128
+#: js/strings.js:154
 msgctxt "op"
 msgid "Subject"
 msgstr "Oggetto"
 
-#: js/strings.js:129
+#: js/strings.js:155
 msgctxt "op"
 msgid "Follow"
 msgstr "Segui i link"
 
-#: js/strings.js:130
+#: js/strings.js:156
 msgctxt "op"
 msgid "Index"
 msgstr "Indicizza"
 
-#: js/strings.js:131
+#: js/strings.js:157
 msgctxt "op"
 msgid "No follow"
 msgstr "Non seguire i link"
 
-#: js/strings.js:132
+#: js/strings.js:158
 msgctxt "op"
 msgid "No index"
 msgstr "Non indicizzare"
 
-#: js/strings.js:133
+#: js/strings.js:159
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abbonamento"
 
-#: js/strings.js:134
+#: js/strings.js:160
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pagamento una tantum"
 
-#: js/strings.js:137
+#: js/strings.js:163
 msgctxt "ai"
 msgid "Done"
 msgstr "Fatto"
 
-#: js/strings.js:138
+#: js/strings.js:164
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Esiste già"
 
-#: js/strings.js:141
+#: js/strings.js:167
 msgctxt "sg"
 msgid "expert"
 msgstr "Avanzato"
 
-#: js/strings.js:142
+#: js/strings.js:168
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:143
+#: js/strings.js:169
 msgctxt "st"
 msgid "website"
 msgstr "sito web"
 
-#: js/strings.js:144
+#: js/strings.js:170
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:145
+#: js/strings.js:171
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Logo alternativo"
 
-#: js/strings.js:146
+#: js/strings.js:172
 msgctxt "st"
 msgid "icon"
 msgstr "Icona"
