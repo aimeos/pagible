@@ -261,6 +261,7 @@ export default {
             <v-btn
               @click="help = !help"
               :icon="mdiHelpCircleOutline"
+              class="no-rtl"
               :title="help ? $gettext('Hide help') : $gettext('Show help')"
               :aria-expanded="help"
               aria-controls="file-help"

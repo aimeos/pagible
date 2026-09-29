@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer.nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
+  <v-navigation-drawer v-model="drawer.nav" class="nav" location="start" mobile-breakpoint="lg" :aria-label="$gettext('Panels')">
     <v-list>
       <template v-for="panel in builtins" :key="panel.permission">
         <v-list-item v-if="user.can(panel.permission)" rounded="lg">
@@ -102,13 +102,13 @@ export default {
 </template>
 
 <style scoped>
-.v-navigation-drawer--left {
+.v-navigation-drawer.nav {
   background-color: rgb(var(--v-theme-background));
   border: none;
   color: rgb(var(--v-theme-on-background));
 }
 
-.v-navigation-drawer--left .v-list {
+.v-navigation-drawer.nav .v-list {
   background-color: transparent;
   color: rgb(var(--v-theme-on-background));
 }
@@ -157,12 +157,12 @@ a.router-link:visited {
   padding: 8px;
 }
 
-.v-navigation-drawer--left .v-list-item {
+.v-navigation-drawer.nav .v-list-item {
   position: relative;
   transition: background-color 0.15s ease;
 }
 
-.v-navigation-drawer--left .v-list-item:hover {
+.v-navigation-drawer.nav .v-list-item:hover {
   background-color: rgba(var(--v-theme-on-background), 0.06);
 }
 
