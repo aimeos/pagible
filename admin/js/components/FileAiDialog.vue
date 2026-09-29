@@ -254,6 +254,7 @@ export default {
     <v-textarea
       v-model="chat"
       :label="$gettext('Describe the image content')"
+      :hint="$gettext('Describe the subject, style and colors of the image to generate')"
       variant="underlined"
       autofocus
       clearable

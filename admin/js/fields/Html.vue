@@ -5,6 +5,7 @@ import { minChars, maxChars, required } from '../rules'
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `max`: int, maximum number of characters allowed
  * - `min`: int, minimum number of characters required if the field isn't empty
  * - `placeholder`: string, placeholder text for the input field
@@ -50,6 +51,7 @@ export default {
 
 <template>
   <v-textarea
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :rules="rules"
     :readonly="readonly"
     :placeholder="config.placeholder || ''"

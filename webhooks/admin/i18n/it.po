@@ -34,33 +34,33 @@ msgctxt "webhooks"
 msgid "Status"
 msgstr "Stato"
 
-#: src/views/WebhookList.vue:186
+#: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
 msgstr "Tutti"
 
-#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
-#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Attivo"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Inattivo"
 
-#: src/views/WebhookList.vue:249
+#: src/views/WebhookList.vue:250
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Errore durante il recupero dei webhook"
 
-#: src/views/WebhookList.vue:313
+#: src/views/WebhookList.vue:314
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Errore durante il salvataggio del webhook"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:319
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -69,218 +69,242 @@ msgstr ""
 "Rinnovare il segreto di questo webhook? I destinatari devono essere "
 "aggiornati con il nuovo segreto."
 
-#: src/views/WebhookList.vue:337
+#: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Errore durante il rinnovo del segreto del webhook"
 
-#: src/views/WebhookList.vue:357
+#: src/views/WebhookList.vue:358
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Evento di prova consegnato"
 
-#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Evento di prova non riuscito"
 
-#: src/views/WebhookList.vue:411
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Errore durante l’eliminazione definitiva del webhook"
 
-#: src/views/WebhookList.vue:419
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Segreto copiato"
 
-#: src/views/WebhookList.vue:424
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Impossibile copiare il segreto"
 
-#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
 msgstr "Nessuno"
 
-#: src/views/WebhookList.vue:446
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Connessione non riuscita"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Impossibile decifrare il segreto, rinnovalo"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Bloccato dalla configurazione del server"
 
-#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "URL non valido"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Coda non disponibile"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Host non trovato"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Risposta troppo grande"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:455
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Timeout della richiesta"
 
-#: src/views/WebhookList.vue:459
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "I reindirizzamenti non vengono seguiti"
 
-#: src/views/WebhookList.vue:460
+#: src/views/WebhookList.vue:461
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Consegna non riuscita"
 
-#: src/views/WebhookList.vue:522
+#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Invia notifiche firmate quando il contenuto pubblicato cambia."
 
-#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Attiva/disattiva selezione"
 
-#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Elimina definitivamente"
 
-#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
-#: src/views/WebhookList.vue:740
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Aggiungi webhook"
 
-#: src/views/WebhookList.vue:584
+#: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Ricerca di"
 
-#: src/views/WebhookList.vue:593
+#: src/views/WebhookList.vue:594
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Aggiorna"
 
-#: src/views/WebhookList.vue:634
+#: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Modifica"
 
-#: src/views/WebhookList.vue:644
+#: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Rinnova"
 
-#: src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Ultimo successo"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:692
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Ultimo errore"
 
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:699
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "In pausa fino al"
 
-#: src/views/WebhookList.vue:708
+#: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Caricamento"
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Nessuna voce trovata"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:716
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Nessun webhook configurato."
 
-#: src/views/WebhookList.vue:737
+#: src/views/WebhookList.vue:738
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Segreto del webhook"
 
-#: src/views/WebhookList.vue:739
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Modifica webhook"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Copia subito questo segreto. Non verrà mostrato di nuovo."
 
-#: src/views/WebhookList.vue:778
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr "I webhook inattivi non ricevono eventi e le loro consegne in coda vengono eliminate"
+
+#: src/views/WebhookList.vue:780
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL dell’endpoint HTTPS"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "Indirizzo che riceve gli eventi firmati, non può essere modificato in seguito"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Eventi"
 
-#: src/views/WebhookList.vue:809
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr "Eventi inviati al webhook, le consegne in coda degli eventi rimossi vengono annullate"
+
+#: src/views/WebhookList.vue:813
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Nome"
 
-#: src/views/WebhookList.vue:819
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr "Nome facoltativo per distinguere i webhook con lo stesso endpoint, visibile a tutti gli editor dei webhook"
+
+#: src/views/WebhookList.vue:824
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Fatto"
 
-#: src/views/WebhookList.vue:822
+#: src/views/WebhookList.vue:827
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copia segreto"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:841
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Prova"
 
-#: src/views/WebhookList.vue:839
+#: src/views/WebhookList.vue:844
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Annullamento"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:855
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Salva"

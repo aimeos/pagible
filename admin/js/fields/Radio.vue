@@ -5,6 +5,7 @@ import { required } from '../rules'
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `default`: string|number, value selected if none is set
  * - `options`: array, list of objects with `label` and `value` properties
  * - `required`: boolean, if true, an option must be selected
@@ -50,6 +51,7 @@ export default {
 
 <template>
   <v-radio-group
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
     :readonly="readonly"

@@ -12,7 +12,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:557
 #: js/components/ElementListItems.vue:599
 #: js/components/ElementListItems.vue:644
-#: js/components/Fields.vue:118
+#: js/components/Fields.vue:119
 #: js/components/FileAiDialog.vue:142
 #: js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195
@@ -47,8 +47,8 @@ msgstr ""
 #: js/components/PageListItems.vue:1458
 #: js/components/PageListItems.vue:1509
 #: js/fields/File.vue:147
-#: js/fields/Images.vue:117
-#: js/fields/Items.vue:206
+#: js/fields/Images.vue:118
+#: js/fields/Items.vue:208
 #: js/publish.js:39
 #: js/version.js:6
 #: js/views/ElementDetail.vue:261
@@ -268,19 +268,27 @@ msgstr ""
 msgid "Assigned frontend roles"
 msgstr ""
 
-#: js/components/AccessUsers.vue:496
+#: js/components/AccessUsers.vue:484
+msgid "Roles granting access to restricted pages"
+msgstr ""
+
+#: js/components/AccessUsers.vue:497
 msgid "Assigned backend roles"
 msgstr ""
 
-#: js/components/AccessUsers.vue:500
+#: js/components/AccessUsers.vue:501
 msgid "Custom"
 msgstr ""
 
-#: js/components/AccessUsers.vue:506
+#: js/components/AccessUsers.vue:507
 msgid "Available roles"
 msgstr ""
 
-#: js/components/AccessUsers.vue:518
+#: js/components/AccessUsers.vue:508
+msgid "Roles defining what the user can do in the admin panel"
+msgstr ""
+
+#: js/components/AccessUsers.vue:520
 #: js/components/ElementListItems.vue:950
 #: js/components/FileListItems.vue:1032
 #: js/components/PageListItems.vue:2046
@@ -295,8 +303,6 @@ msgid "Actions"
 msgstr ""
 
 #: js/components/ActionMenu.vue:61
-#: js/components/ChatDialog.vue:336
-#: js/components/ChatDialog.vue:337
 #: js/components/Dialog.vue:46
 #: js/components/FieldsAside.vue:186
 msgid "Close"
@@ -389,8 +395,8 @@ msgid "%{count} / %{total}"
 msgstr ""
 
 #: js/components/ChangesDialog.vue:348
-#: js/components/Fields.vue:326
-#: js/components/Fields.vue:359
+#: js/components/Fields.vue:328
+#: js/components/Fields.vue:361
 #: js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr ""
@@ -420,39 +426,39 @@ msgstr ""
 msgid "Merge both"
 msgstr ""
 
-#: js/components/ChatDialog.vue:265
+#: js/components/ChatDialog.vue:270
 msgid "Done"
 msgstr ""
 
-#: js/components/ChatDialog.vue:273
+#: js/components/ChatDialog.vue:280
 msgid "Sorry, something went wrong."
 msgstr ""
 
-#: js/components/ChatDialog.vue:324
+#: js/components/ChatDialog.vue:327
 msgid "AI Assistant"
 msgstr ""
 
-#: js/components/ChatDialog.vue:328
-#: js/components/ChatDialog.vue:329
+#: js/components/ChatDialog.vue:335
+#: js/components/ChatDialog.vue:336
 msgid "New chat"
 msgstr ""
 
-#: js/components/ChatDialog.vue:348
+#: js/components/ChatDialog.vue:347
 #: js/views/ElementList.vue:251
 #: js/views/FileList.vue:250
 #: js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr ""
 
-#: js/components/ChatDialog.vue:365
+#: js/components/ChatDialog.vue:364
 msgid "Thinking ..."
 msgstr ""
 
-#: js/components/ChatDialog.vue:371
-#: js/components/PageDetailContentList.vue:856
-#: js/components/PageDetailContentList.vue:952
+#: js/components/ChatDialog.vue:370
+#: js/components/PageDetailContentList.vue:857
+#: js/components/PageDetailContentList.vue:953
 #: js/components/PageListItems.vue:1896
-#: js/fields/Items.vue:370
+#: js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Copy"
 msgstr ""
@@ -463,14 +469,14 @@ msgstr ""
 
 #: js/components/ChatDialog.vue:399
 #: js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:319
+#: js/components/Fields.vue:321
 #: js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:826
-#: js/fields/Items.vue:457
-#: js/views/ElementList.vue:283
-#: js/views/FileList.vue:282
-#: js/views/PageList.vue:320
+#: js/components/FileDetailItem.vue:485
+#: js/components/PageDetailContentList.vue:827
+#: js/fields/Items.vue:462
+#: js/views/ElementList.vue:284
+#: js/views/FileList.vue:283
+#: js/views/PageList.vue:321
 msgid "Dictate"
 msgstr ""
 
@@ -481,8 +487,8 @@ msgstr ""
 
 #: js/components/ChatDialog.vue:420
 #: js/components/ChatDialog.vue:421
-#: js/views/ElementList.vue:276
-#: js/views/FileList.vue:275
+#: js/views/ElementList.vue:277
+#: js/views/FileList.vue:276
 msgid "Send"
 msgstr ""
 
@@ -499,9 +505,10 @@ msgid "New"
 msgstr ""
 
 #: js/components/CommandPalette.vue:280
+#: js/components/CommandPalette.vue:303
 #: js/components/Navigation.vue:83
 #: js/components/ShortcutDialog.vue:32
-msgid "Command palette"
+msgid "Commands"
 msgstr ""
 
 #: js/components/CommandPalette.vue:289
@@ -510,10 +517,6 @@ msgstr ""
 
 #: js/components/CommandPalette.vue:290
 msgid "Command or search term"
-msgstr ""
-
-#: js/components/CommandPalette.vue:303
-msgid "Commands"
 msgstr ""
 
 #: js/components/CommandPalette.vue:322
@@ -550,7 +553,7 @@ msgstr[1] ""
 #: js/components/ConfirmDialog.vue:55
 #: js/components/FileDetailItemImage.vue:641
 #: js/components/UnsavedDialog.vue:55
-#: js/views/AccessList.vue:345
+#: js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr ""
 
@@ -622,17 +625,21 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: js/components/EditBulkDialog.vue:76
-#: js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:404
+#: js/components/ElementDetailItem.vue:89
+#: js/components/FileDetailItem.vue:405
 #: js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:205
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:259
 msgid "Language"
 msgstr ""
 
-#: js/components/EditBulkDialog.vue:83
-#: js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:270
+#: js/components/EditBulkDialog.vue:77
+msgid "Language of the content"
+msgstr ""
+
+#: js/components/EditBulkDialog.vue:84
+#: js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:277
 msgid "Apply"
 msgstr ""
 
@@ -643,6 +650,14 @@ msgstr ""
 #: js/components/FileDetailRefs.vue:182
 #: js/components/ListSort.vue:32
 msgid "Name"
+msgstr ""
+
+#: js/components/ElementDetailItem.vue:76
+msgid "Name to find the shared element in the element list"
+msgstr ""
+
+#: js/components/ElementDetailItem.vue:90
+msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 
 #: js/components/ElementDetailRefs.vue:63
@@ -662,7 +677,7 @@ msgstr ""
 
 #: js/components/ElementDetailRefs.vue:160
 #: js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175
+#: js/components/PageAccess.vue:180
 #: js/components/PageListItems.vue:477
 msgid "Restricted"
 msgstr ""
@@ -696,8 +711,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: js/components/ElementListItems.vue:362
-#: js/components/FileDetailItemImage.vue:943
 #: js/components/FileDetailItemImage.vue:948
+#: js/components/FileDetailItemImage.vue:953
 #: js/components/FileListItems.vue:357
 #: js/components/PageListItems.vue:537
 #: js/components/PageListItems.vue:708
@@ -730,7 +745,7 @@ msgstr ""
 
 #: js/components/ElementListItems.vue:765
 #: js/components/FileListItems.vue:743
-#: js/components/PageDetailContentList.vue:842
+#: js/components/PageDetailContentList.vue:843
 #: js/components/PageListItems.vue:1691
 #: js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
@@ -757,15 +772,15 @@ msgstr ""
 
 #: js/components/ElementListItems.vue:810
 #: js/components/ElementListItems.vue:968
-#: js/components/PageDetailContentList.vue:1062
+#: js/components/PageDetailContentList.vue:1063
 #: js/components/PageDetailItemSection.vue:220
-#: js/fields/Items.vue:497
+#: js/fields/Items.vue:510
 msgid "Add element"
 msgstr ""
 
 #: js/components/ElementListItems.vue:825
 #: js/components/FileListItems.vue:814
-#: js/components/PageDetailContentList.vue:885
+#: js/components/PageDetailContentList.vue:886
 #: js/components/PageListItems.vue:1773
 #: js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
@@ -793,9 +808,9 @@ msgstr ""
 #: js/components/HistoryDialog.vue:200
 #: js/components/ListSkeleton.vue:13
 #: js/components/PageListItems.vue:2040
-#: js/fields/Autocomplete.vue:201
-#: js/fields/Combobox.vue:27
-#: js/fields/Url.vue:165
+#: js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28
+#: js/fields/Url.vue:167
 msgid "Loading"
 msgstr ""
 
@@ -805,23 +820,23 @@ msgstr ""
 msgid "No entries yet"
 msgstr ""
 
-#: js/components/Fields.vue:282
-#: js/components/Fields.vue:288
-#: js/fields/Items.vue:422
-#: js/fields/Items.vue:428
+#: js/components/Fields.vue:284
+#: js/components/Fields.vue:290
+#: js/fields/Items.vue:427
+#: js/fields/Items.vue:433
 msgid "Translate"
 msgstr ""
 
-#: js/components/Fields.vue:307
-#: js/fields/Items.vue:446
+#: js/components/Fields.vue:309
+#: js/fields/Items.vue:451
 msgid "Generate text"
 msgstr ""
 
-#: js/components/Fields.vue:334
+#: js/components/Fields.vue:336
 msgid "Updated by other editor"
 msgstr ""
 
-#: js/components/Fields.vue:337
+#: js/components/Fields.vue:339
 msgid "Overwritten"
 msgstr ""
 
@@ -862,7 +877,7 @@ msgid "Responsive preview"
 msgstr ""
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:1005
+#: js/components/PageDetailContentList.vue:1006
 msgid "Change to"
 msgstr ""
 
@@ -871,17 +886,17 @@ msgstr ""
 #: js/fields/File.vue:377
 #: js/fields/File.vue:416
 #: js/fields/File.vue:417
-#: js/fields/Images.vue:386
+#: js/fields/Images.vue:387
 msgid "Edit"
 msgstr ""
 
 #: js/components/FileActionMenu.vue:41
-#: js/components/FileAiDialog.vue:272
-#: js/components/FileAiDialog.vue:299
-#: js/components/FileUrlDialog.vue:237
-#: js/components/PageDetailContentList.vue:876
-#: js/components/PageDetailContentList.vue:962
-#: js/fields/Items.vue:380
+#: js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300
+#: js/components/FileUrlDialog.vue:239
+#: js/components/PageDetailContentList.vue:877
+#: js/components/PageDetailContentList.vue:963
+#: js/fields/Items.vue:385
 #: js/fields/Table.vue:208
 #: js/fields/Table.vue:278
 msgid "Remove"
@@ -892,7 +907,7 @@ msgstr ""
 #: js/components/FileUrlDialog.vue:60
 #: js/components/FileUrlDialog.vue:163
 #: js/fields/File.vue:166
-#: js/fields/Images.vue:149
+#: js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr ""
 
@@ -908,19 +923,23 @@ msgstr ""
 msgid "Describe the image content"
 msgstr ""
 
-#: js/components/FileAiDialog.vue:263
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr ""
+
+#: js/components/FileAiDialog.vue:264
 msgid "New image"
 msgstr ""
 
-#: js/components/FileAiDialog.vue:267
+#: js/components/FileAiDialog.vue:268
 msgid "Current images"
 msgstr ""
 
-#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr ""
 
-#: js/components/FileAiDialog.vue:309
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr ""
 
@@ -935,7 +954,7 @@ msgstr ""
 #: js/components/FileDetailItem.vue:223
 #: js/components/FileListItems.vue:626
 #: js/fields/File.vue:300
-#: js/fields/Images.vue:299
+#: js/fields/Images.vue:300
 #: js/views/FileDetail.vue:337
 msgid "Error saving file"
 msgstr ""
@@ -944,37 +963,53 @@ msgstr ""
 msgid "Transcription is only available for audio and video files"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:414
+#: js/components/FileDetailItem.vue:392
+msgid "Name to find the file in the media list"
+msgstr ""
+
+#: js/components/FileDetailItem.vue:406
+msgid "Language of the file content, choose none if used in all languages"
+msgstr ""
+
+#: js/components/FileDetailItem.vue:416
 msgid "Copy URL"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:457
+#: js/components/FileDetailItem.vue:459
 msgid "Descriptions"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:465
-#: js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:467
+#: js/components/FileDetailItem.vue:527
 msgid "Translate text"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:473
+#: js/components/FileDetailItem.vue:475
 msgid "Generate description"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:500
+#: js/components/FileDetailItem.vue:502
 msgid "Description (%{lang})"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:503
+msgid "Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+
+#: js/components/FileDetailItem.vue:519
 msgid "Transcriptions"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:532
+#: js/components/FileDetailItem.vue:535
 msgid "Transcribe file content"
 msgstr ""
 
-#: js/components/FileDetailItem.vue:550
+#: js/components/FileDetailItem.vue:553
 msgid "Transcription (%{lang})"
+msgstr ""
+
+#: js/components/FileDetailItem.vue:554
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 
 #: js/components/FileDetailItemImage.vue:223
@@ -1028,7 +1063,7 @@ msgstr ""
 
 #: js/components/FileDetailItemImage.vue:743
 #: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:766
 msgid "Edit image"
 msgstr ""
 
@@ -1036,77 +1071,88 @@ msgstr ""
 msgid "Describe the changes"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:774
+#: js/components/FileDetailItemImage.vue:757
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr ""
+
+#: js/components/FileDetailItemImage.vue:775
 msgid "Remove background"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:784
-#: js/components/FileDetailItemImage.vue:791
-#: js/components/FileDetailItemImage.vue:845
+#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:792
+#: js/components/FileDetailItemImage.vue:850
 msgid "Expand image"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:803
 msgctxt "image edge"
 msgid "Top"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:817
+#: js/components/FileDetailItemImage.vue:828
+#: js/components/FileDetailItemImage.vue:841
+msgid "Number of pixels added at this side of the image"
+msgstr ""
+
+#: js/components/FileDetailItemImage.vue:816
 msgctxt "image edge"
 msgid "Left"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:827
 msgctxt "image edge"
 msgid "Right"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:836
+#: js/components/FileDetailItemImage.vue:840
 msgctxt "image edge"
 msgid "Bottom"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:853
-#: js/components/FileDetailItemImage.vue:860
+#: js/components/FileDetailItemImage.vue:858
+#: js/components/FileDetailItemImage.vue:865
 msgid "Upscale image"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:873
-#: js/components/FileDetailItemImage.vue:883
-#: js/components/FileDetailItemImage.vue:893
-#: js/components/FileDetailItemImage.vue:903
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:888
+#: js/components/FileDetailItemImage.vue:898
+#: js/components/FileDetailItemImage.vue:908
 msgid "Scale %{factor}"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:912
+#: js/components/FileDetailItemImage.vue:917
 msgid "Rotate counter-clockwise"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:918
+#: js/components/FileDetailItemImage.vue:923
 msgid "Rotate clockwise"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:930
 msgid "Flip horizontally"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:931
+#: js/components/FileDetailItemImage.vue:936
 msgid "Flip vertically"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:943
 msgid "Convert to monochrome"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:941
+#: js/components/FileDetailItemImage.vue:946
 msgid "Download"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:957
+#: js/components/FileDetailItemImage.vue:962
 msgid "Previous edit"
 msgstr ""
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:967
 msgid "Original"
 msgstr ""
 
@@ -1169,8 +1215,8 @@ msgstr ""
 #: js/components/FileListItems.vue:1052
 #: js/components/FileListItems.vue:1062
 #: js/components/FileUrlDialog.vue:196
-#: js/fields/Images.vue:412
-#: js/fields/Images.vue:436
+#: js/fields/Images.vue:413
+#: js/fields/Images.vue:437
 msgid "Add files"
 msgstr ""
 
@@ -1193,6 +1239,10 @@ msgstr ""
 msgid "List view"
 msgstr ""
 
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr ""
+
 #: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
 msgstr ""
@@ -1206,7 +1256,7 @@ msgid "The file is not of type \"%{mime}*\""
 msgstr ""
 
 #: js/components/FileUrlDialog.vue:188
-#: js/fields/Images.vue:419
+#: js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr ""
 
@@ -1219,13 +1269,21 @@ msgstr ""
 msgid "Enter one URL per line"
 msgstr ""
 
-#: js/components/FileUrlDialog.vue:225
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr ""
+
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
+msgstr ""
+
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
 msgstr ""
 
 #: js/components/HistoryDialog.vue:62
 #: js/components/HistoryDialog.vue:128
-#: js/components/PageDetailContentList.vue:1023
+#: js/components/PageDetailContentList.vue:1024
 msgid "Shared element"
 msgstr ""
 
@@ -1465,16 +1523,20 @@ msgstr ""
 msgid "Access changes take effect immediately after cache expiry"
 msgstr ""
 
-#: js/components/PageAccess.vue:173
+#: js/components/PageAccess.vue:174
+msgid "Public pages are visible to everyone, others only to logged in users or users with the selected roles"
+msgstr ""
+
+#: js/components/PageAccess.vue:178
 msgid "Public"
 msgstr ""
 
-#: js/components/PageAccess.vue:174
+#: js/components/PageAccess.vue:179
 #: js/components/PageListItems.vue:481
 msgid "Authenticated users"
 msgstr ""
 
-#: js/components/PageAccess.vue:182
+#: js/components/PageAccess.vue:187
 #: js/components/PageDetailItem.vue:116
 #: js/components/PageListItems.vue:480
 #: js/components/PageListItems.vue:1728
@@ -1485,13 +1547,17 @@ msgstr ""
 msgid "Access"
 msgstr ""
 
-#: js/components/PageAccess.vue:192
-#: js/components/PageBulkDialog.vue:284
+#: js/components/PageAccess.vue:188
+msgid "Only visitors with one of these roles can view the page"
+msgstr ""
+
+#: js/components/PageAccess.vue:198
+#: js/components/PageBulkDialog.vue:291
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr ""
 
-#: js/components/PageAccess.vue:211
-#: js/components/PageBulkDialog.vue:278
+#: js/components/PageAccess.vue:217
+#: js/components/PageBulkDialog.vue:285
 msgid "Apply recursively"
 msgstr ""
 
@@ -1566,53 +1632,88 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:186
+#: js/components/PageBulkDialog.vue:178
+#: js/components/PageDetailItemProps.vue:245
+msgid "Disabled pages are offline, hidden pages are online but not shown in the navigation"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:187
 msgid "Change cache time"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:191
-#: js/components/PageDetailItemProps.vue:361
+#: js/components/PageBulkDialog.vue:192
+#: js/components/PageDetailItemProps.vue:370
 msgid "Cache time"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:200
+#: js/components/PageBulkDialog.vue:193
+#: js/components/PageDetailItemProps.vue:371
+msgid "How long the generated page is cached before it is created again"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:202
 msgid "Change language"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:212
+#: js/components/PageBulkDialog.vue:208
+#: js/components/PageDetailItemProps.vue:260
+msgid "Language of the page content"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:215
 msgid "Change theme"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:217
-#: js/components/PageDetailItemProps.vue:330
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:336
 msgid "Theme"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:224
+#: js/components/PageBulkDialog.vue:221
+#: js/components/PageDetailItemProps.vue:337
+msgid "Design used to display the page"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:228
 msgid "Change page type"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:229
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageBulkDialog.vue:233
+#: js/components/PageDetailItemProps.vue:346
 msgid "Page type"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:236
+#: js/components/PageBulkDialog.vue:234
+#: js/components/PageDetailItemProps.vue:347
+msgid "Template of the theme which defines the page layout"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:241
 msgid "Change tag"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:240
-#: js/components/PageDetailItemProps.vue:350
+#: js/components/PageBulkDialog.vue:245
+#: js/components/PageDetailItemProps.vue:358
 msgid "Page tag"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:249
+#: js/components/PageBulkDialog.vue:246
+#: js/components/PageDetailItemProps.vue:359
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:255
 msgid "Change domain"
 msgstr ""
 
-#: js/components/PageBulkDialog.vue:254
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:260
+#: js/components/PageDetailItemProps.vue:320
 msgid "Domain"
+msgstr ""
+
+#: js/components/PageBulkDialog.vue:261
+#: js/components/PageDetailItemProps.vue:321
+msgid "Domain the page is available at, e.g. example.com"
 msgstr ""
 
 #: js/components/PageDetailContentList.vue:185
@@ -1649,100 +1750,100 @@ msgstr ""
 msgid "Describe the task you want to perform"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:805
-#: js/views/ElementList.vue:265
-#: js/views/FileList.vue:264
-#: js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806
+#: js/views/ElementList.vue:266
+#: js/views/FileList.vue:265
+#: js/views/PageList.vue:303
 msgid "Hide help"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:805
-#: js/views/ElementList.vue:265
-#: js/views/FileList.vue:264
-#: js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806
+#: js/views/ElementList.vue:266
+#: js/views/FileList.vue:265
+#: js/views/PageList.vue:303
 msgid "Show help"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:817
+#: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:817
+#: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:834
-#: js/views/ElementList.vue:291
-#: js/views/FileList.vue:290
-#: js/views/PageList.vue:328
+#: js/components/PageDetailContentList.vue:835
+#: js/views/ElementList.vue:292
+#: js/views/FileList.vue:291
+#: js/views/PageList.vue:329
 msgid "Help"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:835
+#: js/components/PageDetailContentList.vue:836
 msgid "AI can add or improve content based on your input"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:836
+#: js/components/PageDetailContentList.vue:837
 msgid "It can take a long time depending on the task and content size"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:861
-#: js/components/PageDetailContentList.vue:957
+#: js/components/PageDetailContentList.vue:862
+#: js/components/PageDetailContentList.vue:958
 #: js/components/PageListItems.vue:1891
-#: js/fields/Items.vue:375
+#: js/fields/Items.vue:380
 msgctxt "clipboard"
 msgid "Cut"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:866
+#: js/components/PageDetailContentList.vue:867
 #: js/components/PageListItems.vue:1904
 #: js/components/PageListItems.vue:1929
 msgid "Paste"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:871
-#: js/components/PageDetailContentList.vue:1015
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:1016
 msgid "Merge"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:929
-#: js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:930
+#: js/fields/Items.vue:350
 msgid "Move element"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:970
-#: js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:971
+#: js/fields/Items.vue:393
 msgid "Paste before"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:975
-#: js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:976
+#: js/fields/Items.vue:398
 msgid "Paste after"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:980
-#: js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:981
+#: js/fields/Items.vue:403
 #: js/fields/Table.vue:195
 #: js/fields/Table.vue:265
 msgid "Insert before"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:985
-#: js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:986
+#: js/fields/Items.vue:408
 #: js/fields/Table.vue:203
 #: js/fields/Table.vue:273
 msgid "Insert after"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:995
+#: js/components/PageDetailContentList.vue:996
 msgid "Make shared"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:1000
+#: js/components/PageDetailContentList.vue:1001
 msgid "Merge copy"
 msgstr ""
 
-#: js/components/PageDetailContentList.vue:1010
+#: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr ""
@@ -1791,20 +1892,36 @@ msgstr ""
 msgid "The path is already in use by another page"
 msgstr ""
 
-#: js/components/PageDetailItemProps.vue:272
+#: js/components/PageDetailItemProps.vue:274
 msgid "Page title"
 msgstr ""
 
-#: js/components/PageDetailItemProps.vue:283
+#: js/components/PageDetailItemProps.vue:275
+msgid "Shown in the browser tab and search results"
+msgstr ""
+
+#: js/components/PageDetailItemProps.vue:286
 msgid "Page name"
 msgstr ""
 
-#: js/components/PageDetailItemProps.vue:298
+#: js/components/PageDetailItemProps.vue:287
+msgid "Short name shown in the navigation menus"
+msgstr ""
+
+#: js/components/PageDetailItemProps.vue:302
 msgid "URL path"
 msgstr ""
 
-#: js/components/PageDetailItemProps.vue:377
+#: js/components/PageDetailItemProps.vue:303
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr ""
+
+#: js/components/PageDetailItemProps.vue:387
 msgid "Redirect URL"
+msgstr ""
+
+#: js/components/PageDetailItemProps.vue:388
+msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr ""
 
 #: js/components/PageDetailItemSection.vue:60
@@ -2235,8 +2352,8 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: js/fields/Autocomplete.vue:200
-#: js/fields/Combobox.vue:26
+#: js/fields/Autocomplete.vue:202
+#: js/fields/Combobox.vue:27
 #: js/version.js:48
 msgid "No data available"
 msgstr ""
@@ -2254,7 +2371,7 @@ msgid "Add file from URL"
 msgstr ""
 
 #: js/fields/File.vue:456
-#: js/fields/Images.vue:429
+#: js/fields/Images.vue:430
 msgid "Create file"
 msgstr ""
 
@@ -2274,19 +2391,19 @@ msgstr ""
 msgid "description"
 msgstr ""
 
-#: js/fields/Images.vue:453
+#: js/fields/Images.vue:454
 msgid "Drop files here"
 msgstr ""
 
-#: js/fields/Map.vue:231
+#: js/fields/Map.vue:232
 msgid "Clear location"
 msgstr ""
 
-#: js/fields/Map.vue:234
+#: js/fields/Map.vue:235
 msgid "Click the map to set the location"
 msgstr ""
 
-#: js/fields/String.vue:44
+#: js/fields/String.vue:45
 msgid "Value has invalid format"
 msgstr ""
 
@@ -2306,32 +2423,32 @@ msgstr ""
 msgid "Row actions"
 msgstr ""
 
-#: js/fields/Url.vue:58
+#: js/fields/Url.vue:59
 #: js/utils.js:190
 msgid "None"
 msgstr ""
 
-#: js/fields/Url.vue:59
+#: js/fields/Url.vue:60
 msgid "Sponsored"
 msgstr ""
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:61
 msgid "Nofollow"
 msgstr ""
 
-#: js/fields/Url.vue:77
+#: js/fields/Url.vue:78
 msgid "Not a valid URL"
 msgstr ""
 
-#: js/fields/Url.vue:87
+#: js/fields/Url.vue:88
 msgid "Invalid URL schema configuration"
 msgstr ""
 
-#: js/fields/Url.vue:165
+#: js/fields/Url.vue:167
 msgid "No pages found"
 msgstr ""
 
-#: js/fields/Url.vue:177
+#: js/fields/Url.vue:179
 msgid "Link attribute"
 msgstr ""
 
@@ -2387,627 +2504,1632 @@ msgstr[1] ""
 msgid "Failed to load plugin"
 msgstr ""
 
-#: js/strings.js:29
-msgctxt "cs"
-msgid "main"
-msgstr ""
-
 #: js/strings.js:30
 msgctxt "cs"
-msgid "header"
+msgid "main"
 msgstr ""
 
 #: js/strings.js:31
 msgctxt "cs"
-msgid "footer"
+msgid "header"
 msgstr ""
 
 #: js/strings.js:32
 msgctxt "cs"
-msgid "sidebar"
+msgid "footer"
 msgstr ""
 
 #: js/strings.js:33
 msgctxt "cs"
-msgid "aside"
+msgid "sidebar"
 msgstr ""
 
-#: js/strings.js:36
-msgctxt "sg"
-msgid "basic"
+#: js/strings.js:34
+msgctxt "cs"
+msgid "aside"
 msgstr ""
 
 #: js/strings.js:37
 msgctxt "sg"
-msgid "content"
+msgid "basic"
 msgstr ""
 
 #: js/strings.js:38
 msgctxt "sg"
-msgid "media"
+msgid "content"
 msgstr ""
 
 #: js/strings.js:39
 msgctxt "sg"
-msgid "forms"
+msgid "media"
 msgstr ""
 
-#: js/strings.js:42
-msgctxt "as"
-msgid "type"
+#: js/strings.js:40
+msgctxt "sg"
+msgid "forms"
 msgstr ""
 
 #: js/strings.js:43
 msgctxt "as"
-msgid "state"
+msgid "type"
 msgstr ""
 
-#: js/strings.js:46
-msgctxt "st"
-msgid "valid"
+#: js/strings.js:44
+msgctxt "as"
+msgid "state"
 msgstr ""
 
 #: js/strings.js:47
 msgctxt "st"
-msgid "changed"
+msgid "valid"
 msgstr ""
 
 #: js/strings.js:48
 msgctxt "st"
-msgid "error"
+msgid "changed"
 msgstr ""
 
-#: js/strings.js:51
+#: js/strings.js:49
 msgctxt "st"
-msgid "reference"
+msgid "error"
 msgstr ""
 
 #: js/strings.js:52
 msgctxt "st"
-msgid "heading"
+msgid "reference"
 msgstr ""
 
 #: js/strings.js:53
 msgctxt "st"
-msgid "text"
+msgid "heading"
 msgstr ""
 
 #: js/strings.js:54
 msgctxt "st"
-msgid "image-text"
+msgid "text"
 msgstr ""
 
 #: js/strings.js:55
 msgctxt "st"
-msgid "slideshow"
+msgid "image-text"
 msgstr ""
 
 #: js/strings.js:56
 msgctxt "st"
-msgid "code"
+msgid "slideshow"
 msgstr ""
 
 #: js/strings.js:57
 msgctxt "st"
-msgid "table"
+msgid "code"
 msgstr ""
 
 #: js/strings.js:58
 msgctxt "st"
-msgid "map"
+msgid "table"
 msgstr ""
 
 #: js/strings.js:59
 msgctxt "st"
-msgid "html"
+msgid "map"
 msgstr ""
 
 #: js/strings.js:60
 msgctxt "st"
-msgid "image"
+msgid "html"
 msgstr ""
 
 #: js/strings.js:61
 msgctxt "st"
-msgid "video"
+msgid "image"
 msgstr ""
 
 #: js/strings.js:62
 msgctxt "st"
-msgid "audio"
+msgid "video"
 msgstr ""
 
 #: js/strings.js:63
 msgctxt "st"
-msgid "file"
+msgid "audio"
 msgstr ""
 
 #: js/strings.js:64
 msgctxt "st"
-msgid "hero"
+msgid "file"
 msgstr ""
 
 #: js/strings.js:65
 msgctxt "st"
-msgid "CTA"
+msgid "hero"
 msgstr ""
 
 #: js/strings.js:66
 msgctxt "st"
-msgid "cards"
+msgid "CTA"
 msgstr ""
 
 #: js/strings.js:67
 msgctxt "st"
-msgid "blog"
+msgid "cards"
 msgstr ""
 
 #: js/strings.js:68
 msgctxt "st"
-msgid "article"
+msgid "blog"
 msgstr ""
 
 #: js/strings.js:69
 msgctxt "st"
-msgid "questions"
+msgid "article"
 msgstr ""
 
 #: js/strings.js:70
 msgctxt "st"
-msgid "toc"
+msgid "questions"
 msgstr ""
 
 #: js/strings.js:71
 msgctxt "st"
-msgid "contact"
+msgid "toc"
 msgstr ""
 
 #: js/strings.js:72
 msgctxt "st"
-msgid "meta-tags"
+msgid "contact"
 msgstr ""
 
 #: js/strings.js:73
 msgctxt "st"
-msgid "social-media"
+msgid "meta-tags"
 msgstr ""
 
 #: js/strings.js:74
 msgctxt "st"
-msgid "canonical"
+msgid "social-media"
 msgstr ""
 
 #: js/strings.js:75
 msgctxt "st"
-msgid "robots"
+msgid "canonical"
 msgstr ""
 
 #: js/strings.js:76
 msgctxt "st"
-msgid "theme"
+msgid "robots"
 msgstr ""
 
 #: js/strings.js:77
 msgctxt "st"
-msgid "styles"
+msgid "theme"
 msgstr ""
 
 #: js/strings.js:78
 msgctxt "st"
+msgid "styles"
+msgstr ""
+
+#: js/strings.js:79
+msgctxt "st"
 msgid "javascript"
 msgstr ""
 
+#: js/strings.js:80
+msgctxt "st"
+msgid "heros"
+msgstr ""
+
 #: js/strings.js:81
-msgctxt "sd"
-msgid "Section headline from H1 to H6"
+msgctxt "st"
+msgid "news"
 msgstr ""
 
 #: js/strings.js:82
-msgctxt "sd"
-msgid "Formatted text with paragraphs, lists and links"
+msgctxt "st"
+msgid "pricing"
 msgstr ""
 
 #: js/strings.js:83
-msgctxt "sd"
-msgid "Image next to formatted text"
+msgctxt "st"
+msgid "robots.txt"
 msgstr ""
 
 #: js/strings.js:84
-msgctxt "sd"
-msgid "Source code with syntax highlighting"
+msgctxt "st"
+msgid "security"
 msgstr ""
 
 #: js/strings.js:85
-msgctxt "sd"
-msgid "Data table with optional header row or column"
-msgstr ""
-
-#: js/strings.js:86
-msgctxt "sd"
-msgid "Interactive map with location, text and link"
-msgstr ""
-
-#: js/strings.js:87
-msgctxt "sd"
-msgid "Custom HTML markup for embeds and widgets"
+msgctxt "st"
+msgid "testimonial"
 msgstr ""
 
 #: js/strings.js:88
 msgctxt "sd"
-msgid "Single responsive image"
+msgid "Section headline from H1 to H6"
 msgstr ""
 
 #: js/strings.js:89
 msgctxt "sd"
-msgid "Rotating slides with multiple images"
+msgid "Formatted text with paragraphs, lists and links"
 msgstr ""
 
 #: js/strings.js:90
 msgctxt "sd"
-msgid "Embedded video with player controls"
+msgid "Image next to formatted text"
 msgstr ""
 
 #: js/strings.js:91
 msgctxt "sd"
-msgid "Embedded audio with player controls"
+msgid "Source code with syntax highlighting"
 msgstr ""
 
 #: js/strings.js:92
 msgctxt "sd"
-msgid "Downloadable file such as a PDF document"
+msgid "Data table with optional header row or column"
 msgstr ""
 
 #: js/strings.js:93
 msgctxt "sd"
-msgid "Large introduction with title, text, buttons and background"
+msgid "Interactive map with location, text and link"
 msgstr ""
 
 #: js/strings.js:94
 msgctxt "sd"
-msgid "Call to action with text and buttons"
+msgid "Custom HTML markup for embeds and widgets"
 msgstr ""
 
 #: js/strings.js:95
 msgctxt "sd"
-msgid "Grid of cards with image, title and text"
+msgid "Single responsive image"
 msgstr ""
 
 #: js/strings.js:96
 msgctxt "sd"
-msgid "Customer quotes with name, role and photo"
+msgid "Rotating slides with multiple images"
 msgstr ""
 
 #: js/strings.js:97
 msgctxt "sd"
-msgid "Article introduction with image gallery and author"
+msgid "Embedded video with player controls"
 msgstr ""
 
 #: js/strings.js:98
 msgctxt "sd"
-msgid "List of blog articles from a parent page"
+msgid "Embedded audio with player controls"
 msgstr ""
 
 #: js/strings.js:99
 msgctxt "sd"
-msgid "List of news articles from a parent page"
+msgid "Downloadable file such as a PDF document"
 msgstr ""
 
 #: js/strings.js:100
 msgctxt "sd"
-msgid "Featured subpage followed by further subpages"
+msgid "Large introduction with title, text, buttons and background"
 msgstr ""
 
 #: js/strings.js:101
 msgctxt "sd"
-msgid "Price plans with subscriptions or one-time payments"
+msgid "Call to action with text and buttons"
 msgstr ""
 
 #: js/strings.js:102
 msgctxt "sd"
-msgid "Frequently asked questions with answers"
+msgid "Grid of cards with image, title and text"
 msgstr ""
 
 #: js/strings.js:103
 msgctxt "sd"
-msgid "Table of contents linking to page headings"
+msgid "Customer quotes with name, role and photo"
 msgstr ""
 
 #: js/strings.js:104
 msgctxt "sd"
-msgid "Contact form with configurable fields"
+msgid "Article introduction with image gallery and author"
+msgstr ""
+
+#: js/strings.js:105
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr ""
+
+#: js/strings.js:106
+msgctxt "sd"
+msgid "List of news articles from a parent page"
 msgstr ""
 
 #: js/strings.js:107
-msgctxt "fn"
-msgid "button"
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
 msgstr ""
 
 #: js/strings.js:108
-msgctxt "fn"
-msgid "buttons"
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
 msgstr ""
 
 #: js/strings.js:109
-msgctxt "fn"
-msgid "cards"
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
 msgstr ""
 
 #: js/strings.js:110
-msgctxt "fn"
-msgid "description"
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
 msgstr ""
 
 #: js/strings.js:111
-msgctxt "fn"
-msgid "file"
-msgstr ""
-
-#: js/strings.js:112
-msgctxt "fn"
-msgid "files"
-msgstr ""
-
-#: js/strings.js:113
-msgctxt "fn"
-msgid "follow"
+msgctxt "sd"
+msgid "Contact form with configurable fields"
 msgstr ""
 
 #: js/strings.js:114
 msgctxt "fn"
-msgid "header"
+msgid "button"
 msgstr ""
 
 #: js/strings.js:115
 msgctxt "fn"
-msgid "index"
+msgid "buttons"
 msgstr ""
 
 #: js/strings.js:116
 msgctxt "fn"
-msgid "keywords"
+msgid "cards"
 msgstr ""
 
 #: js/strings.js:117
 msgctxt "fn"
-msgid "language"
+msgid "description"
 msgstr ""
 
 #: js/strings.js:118
 msgctxt "fn"
-msgid "label"
+msgid "file"
 msgstr ""
 
 #: js/strings.js:119
 msgctxt "fn"
-msgid "level"
+msgid "files"
 msgstr ""
 
 #: js/strings.js:120
 msgctxt "fn"
-msgid "limit"
+msgid "follow"
 msgstr ""
 
 #: js/strings.js:121
 msgctxt "fn"
-msgid "location"
+msgid "header"
 msgstr ""
 
 #: js/strings.js:122
 msgctxt "fn"
-msgid "main"
+msgid "index"
 msgstr ""
 
 #: js/strings.js:123
 msgctxt "fn"
-msgid "order"
+msgid "keywords"
 msgstr ""
 
 #: js/strings.js:124
 msgctxt "fn"
-msgid "parent-page"
+msgid "language"
 msgstr ""
 
 #: js/strings.js:125
 msgctxt "fn"
-msgid "position"
+msgid "label"
 msgstr ""
 
 #: js/strings.js:126
 msgctxt "fn"
-msgid "text"
+msgid "level"
 msgstr ""
 
 #: js/strings.js:127
 msgctxt "fn"
-msgid "table"
+msgid "limit"
 msgstr ""
 
 #: js/strings.js:128
 msgctxt "fn"
-msgid "title"
+msgid "location"
 msgstr ""
 
 #: js/strings.js:129
 msgctxt "fn"
-msgid "url"
+msgid "main"
+msgstr ""
+
+#: js/strings.js:130
+msgctxt "fn"
+msgid "order"
 msgstr ""
 
 #: js/strings.js:131
 msgctxt "fn"
-msgid "image"
+msgid "parent-page"
 msgstr ""
 
 #: js/strings.js:132
 msgctxt "fn"
-msgid "images"
+msgid "position"
 msgstr ""
 
 #: js/strings.js:133
 msgctxt "fn"
-msgid "items"
+msgid "text"
 msgstr ""
 
 #: js/strings.js:134
 msgctxt "fn"
-msgid "introduction"
+msgid "table"
 msgstr ""
 
 #: js/strings.js:135
 msgctxt "fn"
-msgid "load immediately"
+msgid "title"
 msgstr ""
 
 #: js/strings.js:136
 msgctxt "fn"
-msgid "source code"
-msgstr ""
-
-#: js/strings.js:137
-msgctxt "fn"
-msgid "Frontend access role"
+msgid "url"
 msgstr ""
 
 #: js/strings.js:138
 msgctxt "fn"
-msgid "Payment prices"
+msgid "image"
 msgstr ""
 
 #: js/strings.js:139
 msgctxt "fn"
-msgid "Payment reference"
+msgid "images"
 msgstr ""
 
 #: js/strings.js:140
 msgctxt "fn"
-msgid "Payment kind"
+msgid "items"
 msgstr ""
 
 #: js/strings.js:141
 msgctxt "fn"
-msgid "Currency"
+msgid "introduction"
 msgstr ""
 
 #: js/strings.js:142
 msgctxt "fn"
-msgid "Billing interval"
+msgid "load immediately"
 msgstr ""
 
 #: js/strings.js:143
 msgctxt "fn"
-msgid "Price unit"
+msgid "source code"
 msgstr ""
 
 #: js/strings.js:144
 msgctxt "fn"
-msgid "Target page or link"
+msgid "Frontend access role"
 msgstr ""
 
 #: js/strings.js:145
 msgctxt "fn"
-msgid "Mandatory fields"
+msgid "Payment prices"
 msgstr ""
 
 #: js/strings.js:146
 msgctxt "fn"
-msgid "Optional fields"
+msgid "Payment reference"
 msgstr ""
 
 #: js/strings.js:147
 msgctxt "fn"
-msgid "Link label"
+msgid "Payment kind"
+msgstr ""
+
+#: js/strings.js:148
+msgctxt "fn"
+msgid "Currency"
+msgstr ""
+
+#: js/strings.js:149
+msgctxt "fn"
+msgid "Billing interval"
 msgstr ""
 
 #: js/strings.js:150
+msgctxt "fn"
+msgid "Price unit"
+msgstr ""
+
+#: js/strings.js:151
+msgctxt "fn"
+msgid "Target page or link"
+msgstr ""
+
+#: js/strings.js:152
+msgctxt "fn"
+msgid "Mandatory fields"
+msgstr ""
+
+#: js/strings.js:153
+msgctxt "fn"
+msgid "Optional fields"
+msgstr ""
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Link label"
+msgstr ""
+
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Contact URL"
+msgstr ""
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Contact email"
+msgstr ""
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Description"
+msgstr ""
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Displayed price"
+msgstr ""
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Gallery"
+msgstr ""
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Highlight text"
+msgstr ""
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Highlighted"
+msgstr ""
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Language"
+msgstr ""
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Payment type"
+msgstr ""
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr ""
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Subtitle"
+msgstr ""
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr ""
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "amount"
+msgstr ""
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "background"
+msgstr ""
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "background animation"
+msgstr ""
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "button-alternative"
+msgstr ""
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "canonical"
+msgstr ""
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "columns"
+msgstr ""
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "csaf"
+msgstr ""
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "encryption"
+msgstr ""
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "expires"
+msgstr ""
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "features"
+msgstr ""
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "hiring"
+msgstr ""
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "layout"
+msgstr ""
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "name"
+msgstr ""
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "policy"
+msgstr ""
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "ratio"
+msgstr ""
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "role"
+msgstr ""
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "subtitle"
+msgstr ""
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "url-alternative"
+msgstr ""
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr ""
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr ""
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-color"
+msgstr ""
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr ""
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr ""
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr ""
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr ""
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr ""
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr ""
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr ""
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr ""
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr ""
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr ""
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr ""
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr ""
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr ""
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr ""
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr ""
+
+#: js/strings.js:206
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr ""
+
+#: js/strings.js:207
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr ""
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr ""
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr ""
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr ""
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr ""
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr ""
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr ""
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr ""
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr ""
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr ""
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Table data as comma separated values, one row per line"
+msgstr ""
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr ""
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr ""
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr ""
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr ""
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr ""
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr ""
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr ""
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr ""
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr ""
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr ""
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr ""
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr ""
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "File offered for download"
+msgstr ""
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr ""
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr ""
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr ""
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr ""
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr ""
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr ""
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr ""
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr ""
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr ""
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr ""
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr ""
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr ""
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr ""
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text of the button"
+msgstr ""
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr ""
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr ""
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr ""
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr ""
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr ""
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr ""
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Text of the card"
+msgstr ""
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr ""
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr ""
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr ""
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr ""
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Name of the person"
+msgstr ""
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr ""
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr ""
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr ""
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr ""
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr ""
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr ""
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr ""
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr ""
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr ""
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr ""
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr ""
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr ""
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr ""
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr ""
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr ""
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr ""
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr ""
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr ""
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr ""
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr ""
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr ""
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr ""
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr ""
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr ""
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr ""
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr ""
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr ""
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr ""
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr ""
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr ""
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr ""
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr ""
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr ""
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr ""
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr ""
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Form fields visitors must fill out"
+msgstr ""
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Form fields visitors can fill out"
+msgstr ""
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr ""
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr ""
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr ""
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr ""
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr ""
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr ""
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr ""
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr ""
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr ""
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr ""
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr ""
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr ""
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr ""
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Default text color"
+msgstr ""
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr ""
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr ""
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr ""
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr ""
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr ""
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr ""
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr ""
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr ""
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr ""
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr ""
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr ""
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr ""
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr ""
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr ""
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr ""
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr ""
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr ""
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr ""
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr ""
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr ""
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr ""
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr ""
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr ""
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr ""
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr ""
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr ""
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr ""
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr ""
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr ""
+
+#: js/strings.js:339
 msgctxt "op"
 msgid "Name"
 msgstr ""
 
-#: js/strings.js:151
+#: js/strings.js:340
 msgctxt "op"
 msgid "Company"
 msgstr ""
 
-#: js/strings.js:152
+#: js/strings.js:341
 msgctxt "op"
 msgid "Telephone"
 msgstr ""
 
-#: js/strings.js:153
+#: js/strings.js:342
 msgctxt "op"
 msgid "E-Mail"
 msgstr ""
 
-#: js/strings.js:154
+#: js/strings.js:343
 msgctxt "op"
 msgid "Subject"
 msgstr ""
 
-#: js/strings.js:155
+#: js/strings.js:344
 msgctxt "op"
 msgid "Follow"
 msgstr ""
 
-#: js/strings.js:156
+#: js/strings.js:345
 msgctxt "op"
 msgid "Index"
 msgstr ""
 
-#: js/strings.js:157
+#: js/strings.js:346
 msgctxt "op"
 msgid "No follow"
 msgstr ""
 
-#: js/strings.js:158
+#: js/strings.js:347
 msgctxt "op"
 msgid "No index"
 msgstr ""
 
-#: js/strings.js:159
+#: js/strings.js:348
 msgctxt "op"
 msgid "Subscription"
 msgstr ""
 
-#: js/strings.js:160
+#: js/strings.js:349
 msgctxt "op"
 msgid "One-time payment"
 msgstr ""
 
-#: js/strings.js:163
+#: js/strings.js:350
+msgctxt "op"
+msgid "Auto"
+msgstr ""
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "Cards"
+msgstr ""
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Default"
+msgstr ""
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "End"
+msgstr ""
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "First column"
+msgstr ""
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "First row"
+msgstr ""
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "First row and column"
+msgstr ""
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "Grid end"
+msgstr ""
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "Grid start"
+msgstr ""
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "Latest"
+msgstr ""
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "List"
+msgstr ""
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "None"
+msgstr ""
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Oldest"
+msgstr ""
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Position"
+msgstr ""
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "Start"
+msgstr ""
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "Zoom"
+msgstr ""
+
+#: js/strings.js:368
 msgctxt "ai"
 msgid "Done"
 msgstr ""
 
-#: js/strings.js:164
+#: js/strings.js:369
 msgctxt "ai"
 msgid "Already exists"
 msgstr ""
 
-#: js/strings.js:167
+#: js/strings.js:372
 msgctxt "sg"
 msgid "expert"
 msgstr ""
 
-#: js/strings.js:168
+#: js/strings.js:373
 msgctxt "sg"
 msgid "theme"
 msgstr ""
 
-#: js/strings.js:169
+#: js/strings.js:374
 msgctxt "st"
 msgid "website"
 msgstr ""
 
-#: js/strings.js:170
+#: js/strings.js:375
 msgctxt "st"
 msgid "logo"
 msgstr ""
 
-#: js/strings.js:171
+#: js/strings.js:376
 msgctxt "st"
 msgid "logo-alternative"
 msgstr ""
 
-#: js/strings.js:172
+#: js/strings.js:377
 msgctxt "st"
 msgid "icon"
 msgstr ""
@@ -3068,7 +4190,11 @@ msgstr ""
 msgid "Access value"
 msgstr ""
 
-#: js/views/AccessList.vue:353
+#: js/views/AccessList.vue:338
+msgid "Role name which can be assigned to pages and users"
+msgstr ""
+
+#: js/views/AccessList.vue:354
 msgid "Add"
 msgstr ""
 
@@ -3167,13 +4293,13 @@ msgstr ""
 msgid "Press Enter to open the chat"
 msgstr ""
 
-#: js/views/ElementList.vue:292
+#: js/views/ElementList.vue:293
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 
-#: js/views/ElementList.vue:293
-#: js/views/FileList.vue:292
-#: js/views/PageList.vue:338
+#: js/views/ElementList.vue:294
+#: js/views/FileList.vue:293
+#: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 
@@ -3199,7 +4325,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: js/views/FileList.vue:291
+#: js/views/FileList.vue:292
 msgid "AI can find and manage media files based on your input"
 msgstr ""
 
@@ -3298,10 +4424,10 @@ msgstr ""
 msgid "cache"
 msgstr ""
 
-#: js/views/PageList.vue:313
+#: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
 msgstr ""
 
-#: js/views/PageList.vue:331
+#: js/views/PageList.vue:332
 msgid "AI can create a page and content based on your input and add it to the page tree"
 msgstr ""

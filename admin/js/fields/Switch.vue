@@ -16,6 +16,7 @@ export default {
 
 <template>
   <v-switch
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :false-value="config.off ?? false"
     :true-value="config.on ?? true"
     :readonly="readonly"

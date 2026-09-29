@@ -28,3 +28,9 @@ export const fieldTypes = new Set(Object.keys(fieldComponents))
 
 /** Field components supporting private file storage controlled by page access. */
 export const protectTypes = new Set(['Audio', 'File', 'Image', 'Images', 'Media', 'Video'])
+
+/** Field components rendering the `hint` config option themselves as Vuetify input hint. */
+export const hintTypes = new Set([
+  'Autocomplete', 'Checkbox', 'Color', 'Combobox', 'Date', 'Html', 'Number', 'Plaintext',
+  'Radio', 'Range', 'Select', 'Slider', 'String', 'Switch', 'Url'
+])

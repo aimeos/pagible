@@ -42,6 +42,7 @@ export default {
 
 <template>
   <v-color-input
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :rules="rules"
     :clearable="!readonly"
     :disabled="readonly"

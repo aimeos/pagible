@@ -15,7 +15,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:517
 #: js/components/ElementListItems.vue:557
 #: js/components/ElementListItems.vue:599
-#: js/components/ElementListItems.vue:644 js/components/Fields.vue:118
+#: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
 #: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
@@ -37,7 +37,7 @@ msgstr ""
 #: js/components/PageListItems.vue:1218 js/components/PageListItems.vue:1259
 #: js/components/PageListItems.vue:1380 js/components/PageListItems.vue:1458
 #: js/components/PageListItems.vue:1509 js/fields/File.vue:147
-#: js/fields/Images.vue:117 js/fields/Items.vue:206 js/publish.js:39
+#: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
 #: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
@@ -235,19 +235,27 @@ msgstr "アカウント"
 msgid "Assigned frontend roles"
 msgstr "割り当てられたフロントエンドの役割"
 
-#: js/components/AccessUsers.vue:496
+#: js/components/AccessUsers.vue:484
+msgid "Roles granting access to restricted pages"
+msgstr "制限されたページへのアクセスを許可するロール"
+
+#: js/components/AccessUsers.vue:497
 msgid "Assigned backend roles"
 msgstr "割り当てられたバックエンドの役割"
 
-#: js/components/AccessUsers.vue:500
+#: js/components/AccessUsers.vue:501
 msgid "Custom"
 msgstr "カスタム"
 
-#: js/components/AccessUsers.vue:506
+#: js/components/AccessUsers.vue:507
 msgid "Available roles"
 msgstr "利用可能なロール"
 
-#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/AccessUsers.vue:508
+msgid "Roles defining what the user can do in the admin panel"
+msgstr "管理パネルでユーザーができることを定義するロール"
+
+#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
 #: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
@@ -257,8 +265,7 @@ msgstr "エントリーが見つかりません"
 msgid "Actions"
 msgstr "操作"
 
-#: js/components/ActionMenu.vue:61 js/components/ChatDialog.vue:336
-#: js/components/ChatDialog.vue:337 js/components/Dialog.vue:46
+#: js/components/ActionMenu.vue:61 js/components/Dialog.vue:46
 #: js/components/FieldsAside.vue:186
 msgid "Close"
 msgstr "閉じる"
@@ -336,8 +343,8 @@ msgstr "%{editor} からの競合"
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:326
-#: js/components/Fields.vue:359 js/components/FieldsAside.vue:256
+#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
+#: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
 msgid "Revert"
 msgstr "元に戻す"
 
@@ -365,34 +372,34 @@ msgstr "自分の変更を保持"
 msgid "Merge both"
 msgstr "両方を結合する"
 
-#: js/components/ChatDialog.vue:265
+#: js/components/ChatDialog.vue:270
 msgid "Done"
 msgstr "完了"
 
-#: js/components/ChatDialog.vue:273
+#: js/components/ChatDialog.vue:280
 msgid "Sorry, something went wrong."
 msgstr "申し訳ありませんが、問題が発生しました。"
 
-#: js/components/ChatDialog.vue:324
+#: js/components/ChatDialog.vue:327
 msgid "AI Assistant"
 msgstr "AIアシスタント"
 
-#: js/components/ChatDialog.vue:328 js/components/ChatDialog.vue:329
+#: js/components/ChatDialog.vue:335 js/components/ChatDialog.vue:336
 msgid "New chat"
 msgstr "新しいチャット"
 
-#: js/components/ChatDialog.vue:348 js/views/ElementList.vue:251
+#: js/components/ChatDialog.vue:347 js/views/ElementList.vue:251
 #: js/views/FileList.vue:250 js/views/PageList.vue:288
 msgid "What shall I do for you?"
 msgstr "何をお手伝いしましょうか？"
 
-#: js/components/ChatDialog.vue:365
+#: js/components/ChatDialog.vue:364
 msgid "Thinking ..."
 msgstr "考え中 ..."
 
-#: js/components/ChatDialog.vue:371 js/components/PageDetailContentList.vue:856
-#: js/components/PageDetailContentList.vue:952
-#: js/components/PageListItems.vue:1896 js/fields/Items.vue:370
+#: js/components/ChatDialog.vue:370 js/components/PageDetailContentList.vue:857
+#: js/components/PageDetailContentList.vue:953
+#: js/components/PageListItems.vue:1896 js/fields/Items.vue:375
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "コピー"
@@ -402,11 +409,11 @@ msgid "Send a message ..."
 msgstr "メッセージを送信してください..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:319 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:483
-#: js/components/PageDetailContentList.vue:826 js/fields/Items.vue:457
-#: js/views/ElementList.vue:283 js/views/FileList.vue:282
-#: js/views/PageList.vue:320
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
+#: js/components/FileDetailItem.vue:485
+#: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
+#: js/views/ElementList.vue:284 js/views/FileList.vue:283
+#: js/views/PageList.vue:321
 msgid "Dictate"
 msgstr "ディクテーション"
 
@@ -415,7 +422,7 @@ msgid "Stop"
 msgstr "停止"
 
 #: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
-#: js/views/ElementList.vue:276 js/views/FileList.vue:275
+#: js/views/ElementList.vue:277 js/views/FileList.vue:276
 msgid "Send"
 msgstr "送信"
 
@@ -429,10 +436,10 @@ msgstr "移動"
 msgid "New"
 msgstr "新規"
 
-#: js/components/CommandPalette.vue:280 js/components/Navigation.vue:83
-#: js/components/ShortcutDialog.vue:32
-msgid "Command palette"
-msgstr "コマンドパレット"
+#: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+msgid "Commands"
+msgstr "コマンド"
 
 #: js/components/CommandPalette.vue:289
 msgid "Type a command or search pages, files and elements"
@@ -441,10 +448,6 @@ msgstr "コマンドを入力、またはページ、ファイル、要素を検
 #: js/components/CommandPalette.vue:290
 msgid "Command or search term"
 msgstr "コマンドまたは検索語"
-
-#: js/components/CommandPalette.vue:303
-msgid "Commands"
-msgstr "コマンド"
 
 #: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
 msgid "then"
@@ -474,7 +477,7 @@ msgid_plural ""
 msgstr[0] "次の%{num}件の項目は完全に削除され、復元できません："
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
-#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:345
+#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -530,15 +533,19 @@ msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "選択したプロパティを %{num} エントリに適用します。"
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
-#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:205
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
+#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:259
 msgid "Language"
 msgstr "言語"
 
-#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:202
-#: js/components/PageBulkDialog.vue:270
+#: js/components/EditBulkDialog.vue:77
+msgid "Language of the content"
+msgstr "コンテンツの言語"
+
+#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:277
 msgid "Apply"
 msgstr "適用"
 
@@ -548,6 +555,14 @@ msgstr "適用"
 #: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "名称"
+
+#: js/components/ElementDetailItem.vue:76
+msgid "Name to find the shared element in the element list"
+msgstr "要素リストで共有要素を見つけるための名前"
+
+#: js/components/ElementDetailItem.vue:90
+msgid "Language of the element content, choose none if used in all languages"
+msgstr "要素のコンテンツの言語。すべての言語で使用する場合は「なし」を選択"
 
 #: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
 msgid "yes"
@@ -562,7 +577,7 @@ msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:477
+#: js/components/PageAccess.vue:180 js/components/PageListItems.vue:477
 msgid "Restricted"
 msgstr "制限付き"
 
@@ -588,8 +603,8 @@ msgid_plural "%{num} entries moved to trash"
 msgstr[0] "%{num} 件をゴミ箱に移動しました"
 
 #: js/components/ElementListItems.vue:362
-#: js/components/FileDetailItemImage.vue:943
 #: js/components/FileDetailItemImage.vue:948
+#: js/components/FileDetailItemImage.vue:953
 #: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
 #: js/components/PageListItems.vue:708
 msgid "Undo"
@@ -620,7 +635,7 @@ msgid "Error fetching shared elements"
 msgstr "共有要素の取得エラー"
 
 #: js/components/ElementListItems.vue:765 js/components/FileListItems.vue:743
-#: js/components/PageDetailContentList.vue:842
+#: js/components/PageDetailContentList.vue:843
 #: js/components/PageListItems.vue:1691 js/views/AccessList.vue:273
 #: js/views/AccessList.vue:317
 msgid "Toggle selection"
@@ -642,13 +657,13 @@ msgstr "復元"
 
 #: js/components/ElementListItems.vue:810
 #: js/components/ElementListItems.vue:968
-#: js/components/PageDetailContentList.vue:1062
-#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:497
+#: js/components/PageDetailContentList.vue:1063
+#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:510
 msgid "Add element"
 msgstr "要素を追加する"
 
 #: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:814
-#: js/components/PageDetailContentList.vue:885
+#: js/components/PageDetailContentList.vue:886
 #: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
@@ -669,8 +684,8 @@ msgstr "要素を再読み込み"
 
 #: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
-#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:201
-#: js/fields/Combobox.vue:27 js/fields/Url.vue:165
+#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "読み込み中"
 
@@ -679,20 +694,20 @@ msgstr "読み込み中"
 msgid "No entries yet"
 msgstr "まだエントリがありません"
 
-#: js/components/Fields.vue:282 js/components/Fields.vue:288
-#: js/fields/Items.vue:422 js/fields/Items.vue:428
+#: js/components/Fields.vue:284 js/components/Fields.vue:290
+#: js/fields/Items.vue:427 js/fields/Items.vue:433
 msgid "Translate"
 msgstr "翻訳する"
 
-#: js/components/Fields.vue:307 js/fields/Items.vue:446
+#: js/components/Fields.vue:309 js/fields/Items.vue:451
 msgid "Generate text"
 msgstr "テキストの生成"
 
-#: js/components/Fields.vue:334
+#: js/components/Fields.vue:336
 msgid "Updated by other editor"
 msgstr "別の編集者によって更新されました"
 
-#: js/components/Fields.vue:337
+#: js/components/Fields.vue:339
 msgid "Overwritten"
 msgstr "上書きされました"
 
@@ -733,27 +748,27 @@ msgid "Responsive preview"
 msgstr "レスポンシブプレビュー"
 
 #: js/components/FieldsAside.vue:248
-#: js/components/PageDetailContentList.vue:1005
+#: js/components/PageDetailContentList.vue:1006
 msgid "Change to"
 msgstr "変更先"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
 #: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
-#: js/fields/Images.vue:386
+#: js/fields/Images.vue:387
 msgid "Edit"
 msgstr "編集"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:272
-#: js/components/FileAiDialog.vue:299 js/components/FileUrlDialog.vue:237
-#: js/components/PageDetailContentList.vue:876
-#: js/components/PageDetailContentList.vue:962 js/fields/Items.vue:380
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
+#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/PageDetailContentList.vue:877
+#: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
 #: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "削除"
 
 #: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
-#: js/fields/File.vue:166 js/fields/Images.vue:149
+#: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "ファイル追加エラー%{path}"
 
@@ -769,19 +784,23 @@ msgstr "画像を作成"
 msgid "Describe the image content"
 msgstr "画像の内容を説明する"
 
-#: js/components/FileAiDialog.vue:263
+#: js/components/FileAiDialog.vue:257
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr "生成する画像の被写体、スタイル、色を記述してください"
+
+#: js/components/FileAiDialog.vue:264
 msgid "New image"
 msgstr "新しい画像"
 
-#: js/components/FileAiDialog.vue:267
+#: js/components/FileAiDialog.vue:268
 msgid "Current images"
 msgstr "現在の画像"
 
-#: js/components/FileAiDialog.vue:292
+#: js/components/FileAiDialog.vue:293
 msgid "Images used"
 msgstr "使用画像"
 
-#: js/components/FileAiDialog.vue:309
+#: js/components/FileAiDialog.vue:310
 msgid "Select images"
 msgstr "画像を選択"
 
@@ -794,7 +813,7 @@ msgid "Error describing file"
 msgstr "ファイルの説明エラー"
 
 #: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:626
-#: js/fields/File.vue:300 js/fields/Images.vue:299 js/views/FileDetail.vue:337
+#: js/fields/File.vue:300 js/fields/Images.vue:300 js/views/FileDetail.vue:337
 msgid "Error saving file"
 msgstr "ファイル保存エラー"
 
@@ -802,37 +821,56 @@ msgstr "ファイル保存エラー"
 msgid "Transcription is only available for audio and video files"
 msgstr "文字起こしはオーディオファイルとビデオファイルでのみ利用できます。"
 
-#: js/components/FileDetailItem.vue:414
+#: js/components/FileDetailItem.vue:392
+msgid "Name to find the file in the media list"
+msgstr "メディアリストでファイルを見つけるための名前"
+
+#: js/components/FileDetailItem.vue:406
+msgid "Language of the file content, choose none if used in all languages"
+msgstr "ファイルのコンテンツの言語。すべての言語で使用する場合は「なし」を選択"
+
+#: js/components/FileDetailItem.vue:416
 msgid "Copy URL"
 msgstr "URLをコピー"
 
-#: js/components/FileDetailItem.vue:457
+#: js/components/FileDetailItem.vue:459
 msgid "Descriptions"
 msgstr "説明"
 
-#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
 msgid "Translate text"
 msgstr "テキストを翻訳する"
 
-#: js/components/FileDetailItem.vue:473
+#: js/components/FileDetailItem.vue:475
 msgid "Generate description"
 msgstr "説明文の作成"
 
-#: js/components/FileDetailItem.vue:500
+#: js/components/FileDetailItem.vue:502
 msgid "Description (%{lang})"
 msgstr "説明 (%{lang})"
 
-#: js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:503
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"スクリーンリーダーや検索エンジン向けの代替テキスト。キャプションとしても使用"
+"されます"
+
+#: js/components/FileDetailItem.vue:519
 msgid "Transcriptions"
 msgstr "文字起こし"
 
-#: js/components/FileDetailItem.vue:532
+#: js/components/FileDetailItem.vue:535
 msgid "Transcribe file content"
 msgstr "ファイルの内容を文字起こし"
 
-#: js/components/FileDetailItem.vue:550
+#: js/components/FileDetailItem.vue:553
 msgid "Transcription (%{lang})"
 msgstr "文字起こし (%{lang})"
+
+#: js/components/FileDetailItem.vue:554
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
+msgstr "WebVTT形式の音声テキスト。字幕とトランスクリプトとして表示されます"
 
 #: js/components/FileDetailItemImage.vue:223
 msgid "Error erasing image part"
@@ -885,7 +923,7 @@ msgstr "選択領域の消去"
 
 #: js/components/FileDetailItemImage.vue:743
 #: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:766
 msgid "Edit image"
 msgstr "画像を編集する"
 
@@ -893,77 +931,88 @@ msgstr "画像を編集する"
 msgid "Describe the changes"
 msgstr "変化について説明する"
 
-#: js/components/FileDetailItemImage.vue:774
+#: js/components/FileDetailItemImage.vue:757
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr "画像で変更する内容を記述してください。例: 空を青くする"
+
+#: js/components/FileDetailItemImage.vue:775
 msgid "Remove background"
 msgstr "背景を取り除く"
 
-#: js/components/FileDetailItemImage.vue:784
-#: js/components/FileDetailItemImage.vue:791
-#: js/components/FileDetailItemImage.vue:845
+#: js/components/FileDetailItemImage.vue:785
+#: js/components/FileDetailItemImage.vue:792
+#: js/components/FileDetailItemImage.vue:850
 msgid "Expand image"
 msgstr "画像を拡張"
 
-#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:803
 msgctxt "image edge"
 msgid "Top"
 msgstr "上"
 
-#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:804
+#: js/components/FileDetailItemImage.vue:817
+#: js/components/FileDetailItemImage.vue:828
+#: js/components/FileDetailItemImage.vue:841
+msgid "Number of pixels added at this side of the image"
+msgstr "画像のこの辺に追加するピクセル数"
+
+#: js/components/FileDetailItemImage.vue:816
 msgctxt "image edge"
 msgid "Left"
 msgstr "左"
 
-#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:827
 msgctxt "image edge"
 msgid "Right"
 msgstr "右"
 
-#: js/components/FileDetailItemImage.vue:836
+#: js/components/FileDetailItemImage.vue:840
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "下"
 
-#: js/components/FileDetailItemImage.vue:853
-#: js/components/FileDetailItemImage.vue:860
+#: js/components/FileDetailItemImage.vue:858
+#: js/components/FileDetailItemImage.vue:865
 msgid "Upscale image"
 msgstr "画像を高解像度化"
 
-#: js/components/FileDetailItemImage.vue:873
-#: js/components/FileDetailItemImage.vue:883
-#: js/components/FileDetailItemImage.vue:893
-#: js/components/FileDetailItemImage.vue:903
+#: js/components/FileDetailItemImage.vue:878
+#: js/components/FileDetailItemImage.vue:888
+#: js/components/FileDetailItemImage.vue:898
+#: js/components/FileDetailItemImage.vue:908
 msgid "Scale %{factor}"
 msgstr "スケール%{factor}"
 
-#: js/components/FileDetailItemImage.vue:912
+#: js/components/FileDetailItemImage.vue:917
 msgid "Rotate counter-clockwise"
 msgstr "反時計回りに回転"
 
-#: js/components/FileDetailItemImage.vue:918
+#: js/components/FileDetailItemImage.vue:923
 msgid "Rotate clockwise"
 msgstr "時計回りに回転させる"
 
-#: js/components/FileDetailItemImage.vue:925
+#: js/components/FileDetailItemImage.vue:930
 msgid "Flip horizontally"
 msgstr "水平に反転"
 
-#: js/components/FileDetailItemImage.vue:931
+#: js/components/FileDetailItemImage.vue:936
 msgid "Flip vertically"
 msgstr "垂直に反転"
 
-#: js/components/FileDetailItemImage.vue:938
+#: js/components/FileDetailItemImage.vue:943
 msgid "Convert to monochrome"
 msgstr "モノクロに変換する"
 
-#: js/components/FileDetailItemImage.vue:941
+#: js/components/FileDetailItemImage.vue:946
 msgid "Download"
 msgstr "ダウンロード"
 
-#: js/components/FileDetailItemImage.vue:957
+#: js/components/FileDetailItemImage.vue:962
 msgid "Previous edit"
 msgstr "前回の編集"
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:967
 msgid "Original"
 msgstr "オリジナル"
 
@@ -1021,8 +1070,8 @@ msgstr "ファイル取得エラー"
 
 #: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
 #: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
-#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:412
-#: js/fields/Images.vue:436
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
+#: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "ファイルの追加"
 
@@ -1043,6 +1092,10 @@ msgstr "グリッドビュー"
 msgid "List view"
 msgstr "一覧表示"
 
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr "ファイルを含むページの閲覧が許可された訪問者のみがダウンロードできます"
+
 #: js/components/FileUrlDialog.vue:116
 msgid "At least one URL is longer than 255 characters"
 msgstr "少なくとも1つのURLが255文字を超えています"
@@ -1055,7 +1108,7 @@ msgstr "少なくとも1つのファイルが \"%{mime}*\" 型ではありませ
 msgid "The file is not of type \"%{mime}*\""
 msgstr "ファイルのタイプが \"%{mime}*\" ではありません。"
 
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:419
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr "URLからファイルを追加する"
 
@@ -1067,12 +1120,21 @@ msgstr "ファイルを追加する"
 msgid "Enter one URL per line"
 msgstr "1行に1つのURLを入力"
 
-#: js/components/FileUrlDialog.vue:225
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr ""
+"これらのURLからファイルがダウンロードされ、メディアリストに追加されます"
+
+#: js/components/FileUrlDialog.vue:226
 msgid "Enter URL"
 msgstr "URLを入力"
 
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
+msgstr "このURLからファイルがダウンロードされ、メディアリストに追加されます"
+
 #: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
-#: js/components/PageDetailContentList.vue:1023
+#: js/components/PageDetailContentList.vue:1024
 msgid "Shared element"
 msgstr "共有要素"
 
@@ -1292,26 +1354,38 @@ msgstr "ページアクセス変更時のエラー"
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "アクセスの変更はキャッシュの有効期限が切れた直後に有効になります"
 
-#: js/components/PageAccess.vue:173
+#: js/components/PageAccess.vue:174
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"公開ページは全員に表示され、それ以外はログインユーザーまたは選択したロールを"
+"持つユーザーにのみ表示されます"
+
+#: js/components/PageAccess.vue:178
 msgid "Public"
 msgstr "公開"
 
-#: js/components/PageAccess.vue:174 js/components/PageListItems.vue:481
+#: js/components/PageAccess.vue:179 js/components/PageListItems.vue:481
 msgid "Authenticated users"
 msgstr "認証されたユーザー"
 
-#: js/components/PageAccess.vue:182 js/components/PageDetailItem.vue:116
+#: js/components/PageAccess.vue:187 js/components/PageDetailItem.vue:116
 #: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
 #: js/components/PageListItems.vue:1878 js/components/PageListItems.vue:2078
 #: js/views/AccessList.vue:239 js/views/AccessList.vue:248
 msgid "Access"
 msgstr "アクセス"
 
-#: js/components/PageAccess.vue:192 js/components/PageBulkDialog.vue:284
+#: js/components/PageAccess.vue:188
+msgid "Only visitors with one of these roles can view the page"
+msgstr "これらのロールのいずれかを持つ訪問者のみがページを閲覧できます"
+
+#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "ページの一括変更は 1,000 ページに制限されています"
 
-#: js/components/PageAccess.vue:211 js/components/PageBulkDialog.vue:278
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
 msgid "Apply recursively"
 msgstr "再帰的に適用する"
 
@@ -1373,54 +1447,93 @@ msgstr "ステータス変更"
 msgid "Status"
 msgstr "ステータス"
 
-#: js/components/PageBulkDialog.vue:186
+#: js/components/PageBulkDialog.vue:178
+#: js/components/PageDetailItemProps.vue:245
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"無効なページはオフラインになり、非表示のページはオンラインのままナビゲーショ"
+"ンには表示されません"
+
+#: js/components/PageBulkDialog.vue:187
 msgid "Change cache time"
 msgstr "キャッシュ時間を変更する"
 
-#: js/components/PageBulkDialog.vue:191
-#: js/components/PageDetailItemProps.vue:361
+#: js/components/PageBulkDialog.vue:192
+#: js/components/PageDetailItemProps.vue:370
 msgid "Cache time"
 msgstr "キャッシュタイム"
 
-#: js/components/PageBulkDialog.vue:200
+#: js/components/PageBulkDialog.vue:193
+#: js/components/PageDetailItemProps.vue:371
+msgid "How long the generated page is cached before it is created again"
+msgstr "生成されたページが再作成されるまでキャッシュされる時間"
+
+#: js/components/PageBulkDialog.vue:202
 msgid "Change language"
 msgstr "言語を変更する"
 
-#: js/components/PageBulkDialog.vue:212
+#: js/components/PageBulkDialog.vue:208
+#: js/components/PageDetailItemProps.vue:260
+msgid "Language of the page content"
+msgstr "ページコンテンツの言語"
+
+#: js/components/PageBulkDialog.vue:215
 msgid "Change theme"
 msgstr "テーマの変更"
 
-#: js/components/PageBulkDialog.vue:217
-#: js/components/PageDetailItemProps.vue:330
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:336
 msgid "Theme"
 msgstr "テーマ"
 
-#: js/components/PageBulkDialog.vue:224
+#: js/components/PageBulkDialog.vue:221
+#: js/components/PageDetailItemProps.vue:337
+msgid "Design used to display the page"
+msgstr "ページの表示に使用するデザイン"
+
+#: js/components/PageBulkDialog.vue:228
 msgid "Change page type"
 msgstr "ページの種類を変更する"
 
-#: js/components/PageBulkDialog.vue:229
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageBulkDialog.vue:233
+#: js/components/PageDetailItemProps.vue:346
 msgid "Page type"
 msgstr "ページタイプ"
 
-#: js/components/PageBulkDialog.vue:236
+#: js/components/PageBulkDialog.vue:234
+#: js/components/PageDetailItemProps.vue:347
+msgid "Template of the theme which defines the page layout"
+msgstr "ページレイアウトを定義するテーマのテンプレート"
+
+#: js/components/PageBulkDialog.vue:241
 msgid "Change tag"
 msgstr "タグを変更する"
 
-#: js/components/PageBulkDialog.vue:240
-#: js/components/PageDetailItemProps.vue:350
+#: js/components/PageBulkDialog.vue:245
+#: js/components/PageDetailItemProps.vue:358
 msgid "Page tag"
 msgstr "ページタグ"
 
-#: js/components/PageBulkDialog.vue:249
+#: js/components/PageBulkDialog.vue:246
+#: js/components/PageDetailItemProps.vue:359
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr "テンプレート内でページを見つけるための内部識別子。例: blog"
+
+#: js/components/PageBulkDialog.vue:255
 msgid "Change domain"
 msgstr "ドメインを変更する"
 
-#: js/components/PageBulkDialog.vue:254
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:260
+#: js/components/PageDetailItemProps.vue:320
 msgid "Domain"
 msgstr "ドメイン"
+
+#: js/components/PageBulkDialog.vue:261
+#: js/components/PageDetailItemProps.vue:321
+msgid "Domain the page is available at, e.g. example.com"
+msgstr "ページが公開されるドメイン。例: example.com"
 
 #: js/components/PageDetailContentList.vue:185
 #: js/components/PageDetailContentList.vue:195
@@ -1456,85 +1569,85 @@ msgstr "要素は共有されていません"
 msgid "Describe the task you want to perform"
 msgstr "実行したいタスクを記述してください"
 
-#: js/components/PageDetailContentList.vue:805 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Hide help"
 msgstr "ヘルプを隠す"
 
-#: js/components/PageDetailContentList.vue:805 js/views/ElementList.vue:265
-#: js/views/FileList.vue:264 js/views/PageList.vue:302
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
 msgid "Show help"
 msgstr "ヘルプを表示"
 
-#: js/components/PageDetailContentList.vue:817
+#: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
 msgstr "調整中..."
 
-#: js/components/PageDetailContentList.vue:817
+#: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
 msgstr "プロンプトに基づいてコンテンツを改善"
 
-#: js/components/PageDetailContentList.vue:834 js/views/ElementList.vue:291
-#: js/views/FileList.vue:290 js/views/PageList.vue:328
+#: js/components/PageDetailContentList.vue:835 js/views/ElementList.vue:292
+#: js/views/FileList.vue:291 js/views/PageList.vue:329
 msgid "Help"
 msgstr "ヘルプ"
 
-#: js/components/PageDetailContentList.vue:835
+#: js/components/PageDetailContentList.vue:836
 msgid "AI can add or improve content based on your input"
 msgstr "AIは入力内容に基づいてコンテンツを追加・改善できます"
 
-#: js/components/PageDetailContentList.vue:836
+#: js/components/PageDetailContentList.vue:837
 msgid "It can take a long time depending on the task and content size"
 msgstr "タスクやコンテンツのサイズによっては、長い時間がかかることがあります。"
 
-#: js/components/PageDetailContentList.vue:861
-#: js/components/PageDetailContentList.vue:957
-#: js/components/PageListItems.vue:1891 js/fields/Items.vue:375
+#: js/components/PageDetailContentList.vue:862
+#: js/components/PageDetailContentList.vue:958
+#: js/components/PageListItems.vue:1891 js/fields/Items.vue:380
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "カット"
 
-#: js/components/PageDetailContentList.vue:866
+#: js/components/PageDetailContentList.vue:867
 #: js/components/PageListItems.vue:1904 js/components/PageListItems.vue:1929
 msgid "Paste"
 msgstr "ペースト"
 
-#: js/components/PageDetailContentList.vue:871
-#: js/components/PageDetailContentList.vue:1015
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:1016
 msgid "Merge"
 msgstr "マージ"
 
-#: js/components/PageDetailContentList.vue:929 js/fields/Items.vue:345
+#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:350
 msgid "Move element"
 msgstr "要素を移動"
 
-#: js/components/PageDetailContentList.vue:970 js/fields/Items.vue:388
+#: js/components/PageDetailContentList.vue:971 js/fields/Items.vue:393
 msgid "Paste before"
 msgstr "前に貼り付け"
 
-#: js/components/PageDetailContentList.vue:975 js/fields/Items.vue:393
+#: js/components/PageDetailContentList.vue:976 js/fields/Items.vue:398
 msgid "Paste after"
 msgstr "後に貼り付け"
 
-#: js/components/PageDetailContentList.vue:980 js/fields/Items.vue:398
+#: js/components/PageDetailContentList.vue:981 js/fields/Items.vue:403
 #: js/fields/Table.vue:195 js/fields/Table.vue:265
 msgid "Insert before"
 msgstr "前に挿入"
 
-#: js/components/PageDetailContentList.vue:985 js/fields/Items.vue:403
+#: js/components/PageDetailContentList.vue:986 js/fields/Items.vue:408
 #: js/fields/Table.vue:203 js/fields/Table.vue:273
 msgid "Insert after"
 msgstr "後に挿入"
 
-#: js/components/PageDetailContentList.vue:995
+#: js/components/PageDetailContentList.vue:996
 msgid "Make shared"
 msgstr "共有する"
 
-#: js/components/PageDetailContentList.vue:1000
+#: js/components/PageDetailContentList.vue:1001
 msgid "Merge copy"
 msgstr "コピーのマージ"
 
-#: js/components/PageDetailContentList.vue:1010
+#: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "分割"
@@ -1582,21 +1695,37 @@ msgstr "URL が無効です。"
 msgid "The path is already in use by another page"
 msgstr "そのパスはすでに別のページで使用されています。"
 
-#: js/components/PageDetailItemProps.vue:272
+#: js/components/PageDetailItemProps.vue:274
 msgid "Page title"
 msgstr "ページタイトル"
 
-#: js/components/PageDetailItemProps.vue:283
+#: js/components/PageDetailItemProps.vue:275
+msgid "Shown in the browser tab and search results"
+msgstr "ブラウザのタブと検索結果に表示されます"
+
+#: js/components/PageDetailItemProps.vue:286
 msgid "Page name"
 msgstr "ページ名"
 
-#: js/components/PageDetailItemProps.vue:298
+#: js/components/PageDetailItemProps.vue:287
+msgid "Short name shown in the navigation menus"
+msgstr "ナビゲーションメニューに表示される短い名前"
+
+#: js/components/PageDetailItemProps.vue:302
 msgid "URL path"
 msgstr "URLパス"
 
-#: js/components/PageDetailItemProps.vue:377
+#: js/components/PageDetailItemProps.vue:303
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "ドメインの後に続くページURLの部分。例: about-us"
+
+#: js/components/PageDetailItemProps.vue:387
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
+
+#: js/components/PageDetailItemProps.vue:388
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr "訪問者はページを見る代わりにこのURLに転送されます"
 
 #: js/components/PageDetailItemSection.vue:60
 msgid "The element has already been added"
@@ -2015,7 +2144,7 @@ msgstr "ユーザーメニュー"
 msgid "Logout"
 msgstr "ログアウト"
 
-#: js/fields/Autocomplete.vue:200 js/fields/Combobox.vue:26 js/version.js:48
+#: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "データなし"
 
@@ -2031,7 +2160,7 @@ msgstr "ファイルが必要"
 msgid "Add file from URL"
 msgstr "URLからファイルを追加"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:429
+#: js/fields/File.vue:456 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "ファイル作成"
 
@@ -2051,19 +2180,19 @@ msgstr "名称"
 msgid "description"
 msgstr "説明"
 
-#: js/fields/Images.vue:453
+#: js/fields/Images.vue:454
 msgid "Drop files here"
 msgstr "ここにファイルをドロップします"
 
-#: js/fields/Map.vue:231
+#: js/fields/Map.vue:232
 msgid "Clear location"
 msgstr "位置をクリア"
 
-#: js/fields/Map.vue:234
+#: js/fields/Map.vue:235
 msgid "Click the map to set the location"
 msgstr "地図をクリックして位置を設定してください"
 
-#: js/fields/String.vue:44
+#: js/fields/String.vue:45
 msgid "Value has invalid format"
 msgstr "値の形式が無効です"
 
@@ -2083,31 +2212,31 @@ msgstr "行を移動"
 msgid "Row actions"
 msgstr "行操作"
 
-#: js/fields/Url.vue:58 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:190
 msgid "None"
 msgstr "なし"
 
-#: js/fields/Url.vue:59
+#: js/fields/Url.vue:60
 msgid "Sponsored"
 msgstr "スポンサー"
 
-#: js/fields/Url.vue:60
+#: js/fields/Url.vue:61
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:77
+#: js/fields/Url.vue:78
 msgid "Not a valid URL"
 msgstr "有効なURLではありません"
 
-#: js/fields/Url.vue:87
+#: js/fields/Url.vue:88
 msgid "Invalid URL schema configuration"
 msgstr "無効なURLスキーマ設定"
 
-#: js/fields/Url.vue:165
+#: js/fields/Url.vue:167
 msgid "No pages found"
 msgstr "該当するページはありません"
 
-#: js/fields/Url.vue:177
+#: js/fields/Url.vue:179
 msgid "Link attribute"
 msgstr "リンク属性"
 
@@ -2157,627 +2286,1636 @@ msgstr[0] "最大 %{num} 列までです"
 msgid "Failed to load plugin"
 msgstr "プラグインのロードに失敗しました"
 
-#: js/strings.js:29
+#: js/strings.js:30
 msgctxt "cs"
 msgid "main"
 msgstr "メイン"
 
-#: js/strings.js:30
+#: js/strings.js:31
 msgctxt "cs"
 msgid "header"
 msgstr "ヘッダー"
 
-#: js/strings.js:31
+#: js/strings.js:32
 msgctxt "cs"
 msgid "footer"
 msgstr "フッター"
 
-#: js/strings.js:32
+#: js/strings.js:33
 msgctxt "cs"
 msgid "sidebar"
 msgstr "サイドバー"
 
-#: js/strings.js:33
+#: js/strings.js:34
 msgctxt "cs"
 msgid "aside"
 msgstr "補足"
 
-#: js/strings.js:36
+#: js/strings.js:37
 msgctxt "sg"
 msgid "basic"
 msgstr "ベーシック"
 
-#: js/strings.js:37
+#: js/strings.js:38
 msgctxt "sg"
 msgid "content"
 msgstr "内容"
 
-#: js/strings.js:38
+#: js/strings.js:39
 msgctxt "sg"
 msgid "media"
 msgstr "メディア"
 
-#: js/strings.js:39
+#: js/strings.js:40
 msgctxt "sg"
 msgid "forms"
 msgstr "フォーム"
 
-#: js/strings.js:42
+#: js/strings.js:43
 msgctxt "as"
 msgid "type"
 msgstr "タイプ"
 
-#: js/strings.js:43
+#: js/strings.js:44
 msgctxt "as"
 msgid "state"
 msgstr "状態"
 
-#: js/strings.js:46
+#: js/strings.js:47
 msgctxt "st"
 msgid "valid"
 msgstr "有効"
 
-#: js/strings.js:47
+#: js/strings.js:48
 msgctxt "st"
 msgid "changed"
 msgstr "変更済み"
 
-#: js/strings.js:48
+#: js/strings.js:49
 msgctxt "st"
 msgid "error"
 msgstr "エラー"
 
-#: js/strings.js:51
+#: js/strings.js:52
 msgctxt "st"
 msgid "reference"
 msgstr "参照"
 
-#: js/strings.js:52
+#: js/strings.js:53
 msgctxt "st"
 msgid "heading"
 msgstr "見出し"
 
-#: js/strings.js:53
+#: js/strings.js:54
 msgctxt "st"
 msgid "text"
 msgstr "テキスト"
 
-#: js/strings.js:54
+#: js/strings.js:55
 msgctxt "st"
 msgid "image-text"
 msgstr "画像テキスト"
 
-#: js/strings.js:55
+#: js/strings.js:56
 msgctxt "st"
 msgid "slideshow"
 msgstr "スライドショー"
 
-#: js/strings.js:56
+#: js/strings.js:57
 msgctxt "st"
 msgid "code"
 msgstr "コード"
 
-#: js/strings.js:57
+#: js/strings.js:58
 msgctxt "st"
 msgid "table"
 msgstr "テーブル"
 
-#: js/strings.js:58
+#: js/strings.js:59
 msgctxt "st"
 msgid "map"
 msgstr "地図"
 
-#: js/strings.js:59
+#: js/strings.js:60
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "image"
 msgstr "画像"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "video"
 msgstr "ビデオ"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "audio"
 msgstr "オーディオ"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "file"
 msgstr "ファイル"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "hero"
 msgstr "ヒーロー"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "cards"
 msgstr "カード"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "blog"
 msgstr "ブログ"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "article"
 msgstr "記事"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "toc"
 msgstr "目次"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "contact"
 msgstr "お問い合わせ"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "meta-tags"
 msgstr "メタタグ"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "social-media"
 msgstr "ソーシャルメディア"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "canonical"
 msgstr "正規 URL"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "robots"
 msgstr "検索エンジン"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "theme"
 msgstr "テーマ"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "styles"
 msgstr "スタイル"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "javascript"
 msgstr "JavaScript"
 
+#: js/strings.js:80
+msgctxt "st"
+msgid "heros"
+msgstr "ヒーローズ"
+
 #: js/strings.js:81
+msgctxt "st"
+msgid "news"
+msgstr "ニュース"
+
+#: js/strings.js:82
+msgctxt "st"
+msgid "pricing"
+msgstr "料金プラン"
+
+#: js/strings.js:83
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#: js/strings.js:84
+msgctxt "st"
+msgid "security"
+msgstr "セキュリティ"
+
+#: js/strings.js:85
+msgctxt "st"
+msgid "testimonial"
+msgstr "お客様の声"
+
+#: js/strings.js:88
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "H1〜H6のセクション見出し"
 
-#: js/strings.js:82
+#: js/strings.js:89
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "段落、リスト、リンクを含む書式付きテキスト"
 
-#: js/strings.js:83
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "書式付きテキストの横に配置する画像"
 
-#: js/strings.js:84
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "シンタックスハイライト付きのソースコード"
 
-#: js/strings.js:85
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "任意の見出し行または列を持つデータテーブル"
 
-#: js/strings.js:86
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "場所、テキスト、リンク付きのインタラクティブマップ"
 
-#: js/strings.js:87
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "埋め込みやウィジェット用のカスタムHTML"
 
-#: js/strings.js:88
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "単一のレスポンシブ画像"
 
-#: js/strings.js:89
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "複数の画像を切り替えるスライドショー"
 
-#: js/strings.js:90
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "再生コントロール付きの埋め込み動画"
 
-#: js/strings.js:91
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "再生コントロール付きの埋め込み音声"
 
-#: js/strings.js:92
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "PDF文書などのダウンロード可能なファイル"
 
-#: js/strings.js:93
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "タイトル、テキスト、ボタン、背景を備えた大きな導入部"
 
-#: js/strings.js:94
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "テキストとボタンによる行動喚起"
 
-#: js/strings.js:95
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "画像、タイトル、テキストを含むカードのグリッド"
 
-#: js/strings.js:96
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "名前、役職、写真付きのお客様の声"
 
-#: js/strings.js:97
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "画像ギャラリーと著者付きの記事の導入部"
 
-#: js/strings.js:98
+#: js/strings.js:105
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "親ページのブログ記事一覧"
 
-#: js/strings.js:99
+#: js/strings.js:106
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "親ページのニュース一覧"
 
-#: js/strings.js:100
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "注目のサブページとそれに続くサブページ"
 
-#: js/strings.js:101
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "サブスクリプションまたは一回払いの料金プラン"
 
-#: js/strings.js:102
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "よくある質問と回答"
 
-#: js/strings.js:103
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "ページ見出しへのリンク付き目次"
 
-#: js/strings.js:104
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "項目を設定できるお問い合わせフォーム"
 
-#: js/strings.js:107
+#: js/strings.js:114
 msgctxt "fn"
 msgid "button"
 msgstr "ボタン"
 
-#: js/strings.js:108
+#: js/strings.js:115
 msgctxt "fn"
 msgid "buttons"
 msgstr "ボタン"
 
-#: js/strings.js:109
+#: js/strings.js:116
 msgctxt "fn"
 msgid "cards"
 msgstr "カード"
 
-#: js/strings.js:110
+#: js/strings.js:117
 msgctxt "fn"
 msgid "description"
 msgstr "説明"
 
-#: js/strings.js:111
+#: js/strings.js:118
 msgctxt "fn"
 msgid "file"
 msgstr "ファイル"
 
-#: js/strings.js:112
+#: js/strings.js:119
 msgctxt "fn"
 msgid "files"
 msgstr "ファイル"
 
-#: js/strings.js:113
+#: js/strings.js:120
 msgctxt "fn"
 msgid "follow"
 msgstr "リンクの追跡"
 
-#: js/strings.js:114
+#: js/strings.js:121
 msgctxt "fn"
 msgid "header"
 msgstr "ヘッダー"
 
-#: js/strings.js:115
+#: js/strings.js:122
 msgctxt "fn"
 msgid "index"
 msgstr "インデックス"
 
-#: js/strings.js:116
+#: js/strings.js:123
 msgctxt "fn"
 msgid "keywords"
 msgstr "キーワード"
 
-#: js/strings.js:117
+#: js/strings.js:124
 msgctxt "fn"
 msgid "language"
 msgstr "言語"
 
-#: js/strings.js:118
+#: js/strings.js:125
 msgctxt "fn"
 msgid "label"
 msgstr "ラベル"
 
-#: js/strings.js:119
+#: js/strings.js:126
 msgctxt "fn"
 msgid "level"
 msgstr "レベル"
 
-#: js/strings.js:120
+#: js/strings.js:127
 msgctxt "fn"
 msgid "limit"
 msgstr "制限"
 
-#: js/strings.js:121
+#: js/strings.js:128
 msgctxt "fn"
 msgid "location"
 msgstr "位置"
 
-#: js/strings.js:122
+#: js/strings.js:129
 msgctxt "fn"
 msgid "main"
 msgstr "メイン画像"
 
-#: js/strings.js:123
+#: js/strings.js:130
 msgctxt "fn"
 msgid "order"
 msgstr "順序"
 
-#: js/strings.js:124
+#: js/strings.js:131
 msgctxt "fn"
 msgid "parent-page"
 msgstr "親ページ"
 
-#: js/strings.js:125
+#: js/strings.js:132
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: js/strings.js:126
+#: js/strings.js:133
 msgctxt "fn"
 msgid "text"
 msgstr "テキスト"
 
-#: js/strings.js:127
+#: js/strings.js:134
 msgctxt "fn"
 msgid "table"
 msgstr "テーブル"
 
-#: js/strings.js:128
+#: js/strings.js:135
 msgctxt "fn"
 msgid "title"
 msgstr "タイトル"
 
-#: js/strings.js:129
+#: js/strings.js:136
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:131
+#: js/strings.js:138
 msgctxt "fn"
 msgid "image"
 msgstr "画像"
 
-#: js/strings.js:132
+#: js/strings.js:139
 msgctxt "fn"
 msgid "images"
 msgstr "画像"
 
-#: js/strings.js:133
+#: js/strings.js:140
 msgctxt "fn"
 msgid "items"
 msgstr "項目"
 
-#: js/strings.js:134
+#: js/strings.js:141
 msgctxt "fn"
 msgid "introduction"
 msgstr "イントロダクション"
 
-#: js/strings.js:135
+#: js/strings.js:142
 msgctxt "fn"
 msgid "load immediately"
 msgstr "即時ロード"
 
-#: js/strings.js:136
+#: js/strings.js:143
 msgctxt "fn"
 msgid "source code"
 msgstr "ソースコード"
 
-#: js/strings.js:137
+#: js/strings.js:144
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "フロントエンドアクセスロール"
 
-#: js/strings.js:138
+#: js/strings.js:145
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "支払い価格"
 
-#: js/strings.js:139
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "支払い参照"
 
-#: js/strings.js:140
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment kind"
 msgstr "支払い種別"
 
-#: js/strings.js:141
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Currency"
 msgstr "通貨"
 
-#: js/strings.js:142
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "請求間隔"
 
-#: js/strings.js:143
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Price unit"
 msgstr "価格単位"
 
-#: js/strings.js:144
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "対象のページまたはリンク"
 
-#: js/strings.js:145
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Mandatory fields"
 msgstr "必須フィールド"
 
-#: js/strings.js:146
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Optional fields"
 msgstr "任意フィールド"
 
-#: js/strings.js:147
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Link label"
 msgstr "リンクラベル"
 
-#: js/strings.js:150
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "連絡先URL"
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Contact email"
+msgstr "連絡先メール"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Description"
+msgstr "説明"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "表示価格"
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Gallery"
+msgstr "ギャラリー"
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "強調テキスト"
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "強調表示"
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Language"
+msgstr "言語"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Payment type"
+msgstr "支払いタイプ"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "優先言語"
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "サブタイトル"
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "謝辞"
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "amount"
+msgstr "金額"
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "background"
+msgstr "背景"
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "background animation"
+msgstr "背景アニメーション"
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "button-alternative"
+msgstr "代替ボタン"
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "canonical"
+msgstr "正規URL"
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "columns"
+msgstr "列数"
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "encryption"
+msgstr "暗号化"
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "expires"
+msgstr "有効期限"
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "features"
+msgstr "機能"
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "hiring"
+msgstr "採用情報"
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "layout"
+msgstr "レイアウト"
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "name"
+msgstr "名前"
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "policy"
+msgstr "ポリシー"
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "ratio"
+msgstr "比率"
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "role"
+msgstr "役職"
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "subtitle"
+msgstr "サブタイトル"
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "url-alternative"
+msgstr "代替URL"
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "テキストフォント"
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "見出しフォント"
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "文字色"
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "背景色"
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "選択色"
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "コントラストカラー"
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "コントラストホバーカラー"
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "コントラスト文字色"
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "プライマリカラー"
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "プライマリ背景"
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "プライマリホバーカラー"
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "プライマリホバー背景"
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "セカンダリカラー"
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "セカンダリ背景"
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "セカンダリホバーカラー"
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "セカンダリホバー背景"
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "角丸の半径"
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "パンくず区切り文字"
+
+#: js/strings.js:206
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "見出しのテキスト"
+
+#: js/strings.js:207
+msgctxt "fh"
+msgid ""
+"Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "レベル1はページのメイン見出し、それ以降のレベルで下位セクションを構成"
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "段落、リスト、リンクを含む書式付きテキスト"
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "画像の横に表示される書式付きテキスト"
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "テキストの横に表示される画像"
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "テキストに対する画像の位置"
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "画像とテキストの幅の比率"
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "シンタックスハイライトに使用するプログラミング言語"
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "シンタックスハイライト付きで表示されるソースコード"
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "テーブルの上に表示される任意のキャプション"
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "最初の行、最初の列、またはその両方をテーブルヘッダーとして使用"
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Table data as comma separated values, one row per line"
+msgstr "カンマ区切りのテーブルデータ、1行につき1レコード"
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "地図の上に表示される任意の見出し"
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "地図の横に表示される説明（住所や道順など）"
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "場所を検索するか、地図をクリックして位置を設定"
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "地図サービスで位置を開くリンクのテキスト"
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "ページにそのまま挿入されるHTMLコード（埋め込みやウィジェット用など）"
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "コンテンツ領域の全幅で表示される画像"
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "ページ上部に表示される場合、画像を遅延なく読み込む"
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "スライドショーの上に表示される任意の見出し"
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "順番に表示される画像、ドラッグで順序を変更"
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid ""
+"Load the first image without delay if it is visible at the top of the page"
+msgstr "ページ上部に表示される場合、最初の画像を遅延なく読み込む"
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "ページ内で再生される動画ファイル"
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "ページ内で再生される音声ファイル"
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "ダウンロード用に提供されるファイル"
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "ページのメイン見出し"
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "見出しの上に表示される短い一文"
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "見出しの下に表示される導入文"
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr "メインボタンのリンク先のページまたはリンク"
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr "メインボタンのテキスト"
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr "2番目のボタンのリンク先のページまたはリンク"
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr "2番目のボタンのテキスト"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "テキストの背後に表示される画像"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "背景画像のアニメーション効果"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "テキストの横に表示される画像"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "訪問者の注意を引く見出し"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "訪問者に行動を促すテキスト"
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "訪問者を次のステップへ導くボタン"
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "ボタンのテキスト"
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "ボタンのリンク先のページまたはリンク"
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "カードの上に表示される任意の見出し"
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "1行あたりのカード数、「auto」で画面幅に応じて自動調整"
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "グリッドに表示されるカード"
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "カードの見出し"
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "カードの上部に表示される画像"
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "カードのテキスト"
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "カードのリンク先のページまたはリンク"
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "引用の上に表示される任意の見出し"
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "顧客またはパートナーからの引用"
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "本人による引用"
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "本人の名前"
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "本人の役職または所属企業"
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "本人の写真"
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "ページタイトルの下に表示される記事の導入文"
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "記事の画像、最初の1枚がプレビュー画像として使用される"
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "記事の著者名"
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "著者のプロフィールページへのリンク"
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "リストの上に表示される任意の見出し"
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "ページをカードまたはコンパクトなリストとして表示"
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "サブページの一覧を表示する親ページ"
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "表示するページの並び順"
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "一度に表示するページの最大数"
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "さらに続くサブページをカードまたはコンパクトなリストとして表示"
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "料金プランの上に表示される任意の見出し"
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "見出しの下に表示される短いテキスト"
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "並べて表示される料金プラン"
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "料金プランの名前"
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "支払い後に顧客へ付与される、保護ページへのアクセス権を持つロール"
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "プランの価格（例：月額と年額）"
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "定期購読または一回払い"
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "2回の支払いの間隔日数（例：月額なら30）"
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "3文字のISO通貨コード（例：EURまたはUSD）"
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "決済プロバイダーが使用する価格IDまたは金額"
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "訪問者に表示される書式付き価格（例：€9.99）"
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "書式付き価格が未設定の場合に表示される数値価格"
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "価格の後に表示されるテキスト（例：per month）"
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "料金プランの短い説明"
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "プランに含まれる機能のリスト"
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "このプランを他のプランより強調表示"
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "強調表示されたプランに表示される短いラベル（例：Popular）"
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "質問の上に表示される任意の見出し"
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "開閉式リストとして表示される質問と回答"
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "訪問者からの質問"
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "質問への回答"
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "目次の上に表示される任意の見出し"
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "お問い合わせフォームの上に表示される任意の見出し"
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Form fields visitors must fill out"
+msgstr "訪問者が入力必須のフォーム項目"
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Form fields visitors can fill out"
+msgstr "訪問者が任意で入力できるフォーム項目"
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid ""
+"Summary of the page shown in search results, 150 to 160 characters "
+"recommended"
+msgstr "検索結果に表示されるページの概要（150〜160文字を推奨）"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "ページを説明するカンマ区切りのキーワードリスト"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示されるタイトル"
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示される概要"
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示されるプレビュー画像"
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "同じコンテンツが複数のアドレスで利用できる場合の元のURL"
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "検索エンジンによるこのページのインデックス登録を許可または禁止"
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "検索エンジンによるこのページ内リンクの追跡を許可または禁止"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "ブラウザのタブと検索結果に表示されるウェブサイト名"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "ページヘッダーに表示されるロゴ"
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "暗い背景用のロゴバリエーション"
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "ブラウザのタブとブックマークに表示される小さな正方形の画像"
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "テキストに使用するカンマ区切りのフォントリスト"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Default text color"
+msgstr "デフォルトのテキスト色"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "ページの背景色"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "選択したテキストの背景色"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "背景とのコントラストが強い要素の色"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のコントラスト色"
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "コントラスト色を使用する要素のテキスト色"
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "リンクとボタンに使用するメインのブランドカラー"
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "プライマリボタンとハイライトの背景色"
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のプライマリカラー"
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のプライマリ背景色"
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "重要度の低いリンクとボタンに使用する追加カラー"
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "セカンダリボタンの背景色"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のセカンダリカラー"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のセカンダリ背景色"
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "CSSの長さで指定する角の丸み（例：0.25rem、直角の場合は0）"
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "パンくずリンクの間に表示される文字"
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "セキュリティチームへの連絡用HTTPSリンク（フォームなど）"
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "セキュリティ問題を報告するためのメールアドレス"
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "セキュリティ情報が古いとみなされる日付"
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "暗号化メッセージ用の公開鍵へのHTTPSリンク"
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "セキュリティ研究者に感謝するページへのHTTPSリンク"
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "セキュリティ報告に使用するカンマ区切りの言語コード（例：en, de）"
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "security.txtファイルが公開されているHTTPS URL"
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "セキュリティおよび情報開示ポリシーへのHTTPSリンク"
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "セキュリティ関連の求人ページへのHTTPSリンク"
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "CSAFプロバイダーメタデータへのHTTPSリンク"
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "ウェブクローラー向けにrobots.txtファイルへ追加するルール"
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "すべてのページに追加するカスタムCSSコード"
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "すべてのページに追加するカスタムJavaScriptコード"
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "見出しに使用するカンマ区切りのフォントリスト"
+
+#: js/strings.js:339
 msgctxt "op"
 msgid "Name"
 msgstr "名前"
 
-#: js/strings.js:151
+#: js/strings.js:340
 msgctxt "op"
 msgid "Company"
 msgstr "会社"
 
-#: js/strings.js:152
+#: js/strings.js:341
 msgctxt "op"
 msgid "Telephone"
 msgstr "電話"
 
-#: js/strings.js:153
+#: js/strings.js:342
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Eメール"
 
-#: js/strings.js:154
+#: js/strings.js:343
 msgctxt "op"
 msgid "Subject"
 msgstr "件名"
 
-#: js/strings.js:155
+#: js/strings.js:344
 msgctxt "op"
 msgid "Follow"
 msgstr "リンクをたどる"
 
-#: js/strings.js:156
+#: js/strings.js:345
 msgctxt "op"
 msgid "Index"
 msgstr "インデックスする"
 
-#: js/strings.js:157
+#: js/strings.js:346
 msgctxt "op"
 msgid "No follow"
 msgstr "リンクをたどらない"
 
-#: js/strings.js:158
+#: js/strings.js:347
 msgctxt "op"
 msgid "No index"
 msgstr "インデックスしない"
 
-#: js/strings.js:159
+#: js/strings.js:348
 msgctxt "op"
 msgid "Subscription"
 msgstr "サブスクリプション"
 
-#: js/strings.js:160
+#: js/strings.js:349
 msgctxt "op"
 msgid "One-time payment"
 msgstr "1回払い"
 
-#: js/strings.js:163
+#: js/strings.js:350
+msgctxt "op"
+msgid "Auto"
+msgstr "自動"
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "Cards"
+msgstr "カード"
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Default"
+msgstr "デフォルト"
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "End"
+msgstr "末尾"
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "First column"
+msgstr "最初の列"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "First row"
+msgstr "最初の行"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "First row and column"
+msgstr "最初の行と列"
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "Grid end"
+msgstr "グリッド末尾"
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "Grid start"
+msgstr "グリッド先頭"
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "Latest"
+msgstr "新しい順"
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "List"
+msgstr "リスト"
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "None"
+msgstr "なし"
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Oldest"
+msgstr "古い順"
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Position"
+msgstr "位置"
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "Start"
+msgstr "先頭"
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "Zoom"
+msgstr "ズーム"
+
+#: js/strings.js:368
 msgctxt "ai"
 msgid "Done"
 msgstr "完了"
 
-#: js/strings.js:164
+#: js/strings.js:369
 msgctxt "ai"
 msgid "Already exists"
 msgstr "すでに存在します"
 
-#: js/strings.js:167
+#: js/strings.js:372
 msgctxt "sg"
 msgid "expert"
 msgstr "上級者向け"
 
-#: js/strings.js:168
+#: js/strings.js:373
 msgctxt "sg"
 msgid "theme"
 msgstr "テーマ"
 
-#: js/strings.js:169
+#: js/strings.js:374
 msgctxt "st"
 msgid "website"
 msgstr "ウェブサイト"
 
-#: js/strings.js:170
+#: js/strings.js:375
 msgctxt "st"
 msgid "logo"
 msgstr "ロゴ"
 
-#: js/strings.js:171
+#: js/strings.js:376
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "代替ロゴ"
 
-#: js/strings.js:172
+#: js/strings.js:377
 msgctxt "st"
 msgid "icon"
 msgstr "アイコン"
@@ -2830,7 +3968,11 @@ msgstr "アクセス値の追加"
 msgid "Access value"
 msgstr "アクセス値"
 
-#: js/views/AccessList.vue:353
+#: js/views/AccessList.vue:338
+msgid "Role name which can be assigned to pages and users"
+msgstr "ページやユーザーに割り当てられるロール名"
+
+#: js/views/AccessList.vue:354
 msgid "Add"
 msgstr "追加"
 
@@ -2917,12 +4059,12 @@ msgstr "言語"
 msgid "Press Enter to open the chat"
 msgstr "Enterキーを押してチャットを開きます"
 
-#: js/views/ElementList.vue:292
+#: js/views/ElementList.vue:293
 msgid "AI can find and manage shared elements based on your input"
 msgstr "AIは入力内容に基づいて共有要素を検索・管理できます"
 
-#: js/views/ElementList.vue:293 js/views/FileList.vue:292
-#: js/views/PageList.vue:338
+#: js/views/ElementList.vue:294 js/views/FileList.vue:293
+#: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Enterキーまたは矢印を押してAIアシスタントを開き、チャットでコンテンツを調整し"
@@ -2949,7 +4091,7 @@ msgstr "ファイルの保存に成功"
 msgid "File"
 msgstr "ファイル"
 
-#: js/views/FileList.vue:291
+#: js/views/FileList.vue:292
 msgid "AI can find and manage media files based on your input"
 msgstr "AIは入力内容に基づいてメディアファイルを検索・管理できます"
 
@@ -3050,11 +4192,11 @@ msgstr "非表示"
 msgid "cache"
 msgstr "キャッシュ"
 
-#: js/views/PageList.vue:313
+#: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
 msgstr "プロンプトに基づいてページを生成する"
 
-#: js/views/PageList.vue:331
+#: js/views/PageList.vue:332
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
@@ -3062,8 +4204,14 @@ msgstr ""
 "AIは、あなたの入力に基づいてページとコンテンツを作成し、ページツリーに追加す"
 "ることができます。"
 
+#~ msgid "Open command palette"
+#~ msgstr "コマンドパレットを開く"
+
 #~ msgid "Conflict resolution"
 #~ msgstr "競合の解決"
+
+#~ msgid "Command palette"
+#~ msgstr "コマンドパレット"
 
 #~ msgid "Confirm"
 #~ msgstr "確認"

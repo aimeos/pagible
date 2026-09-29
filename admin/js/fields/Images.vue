@@ -24,6 +24,7 @@ const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.v
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `accept`: string, accepted file types for uploads, "image/*" by default
  * - `max`: int, maximum number of images allowed
  * - `min`: int, minimum number of images required

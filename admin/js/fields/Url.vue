@@ -3,6 +3,7 @@
 <script>
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `absolute`: boolean, if true, relative paths and fragment/query links are rejected
  * - `allowed`: array of strings, allowed URL schemas (e.g., ['http', 'https'])
  * - `placeholder`: string, placeholder text for the input field
@@ -156,6 +157,7 @@ export default {
   <div class="url-field" :class="{ external }">
     <div class="url-row">
       <v-combobox
+        :hint="config.hint && $pgettext('fh', config.hint)"
         :error="hasError"
         :rules="rules"
         :items="pages"
