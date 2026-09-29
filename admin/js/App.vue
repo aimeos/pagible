@@ -4,6 +4,7 @@
 import CommandPalette from './components/CommandPalette.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 import ShortcutDialog from './components/ShortcutDialog.vue'
+import ReloginDialog from './components/ReloginDialog.vue'
 import UnsavedDialog from './components/UnsavedDialog.vue'
 import { cleanEcho, setupEcho } from './echo'
 import { invalidateList } from './graphql'
@@ -13,7 +14,7 @@ import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './st
 const CONTENT_TYPES = ['page', 'element', 'file']
 
 export default {
-  components: { CommandPalette, ConfirmDialog, ShortcutDialog, UnsavedDialog },
+  components: { CommandPalette, ConfirmDialog, ReloginDialog, ShortcutDialog, UnsavedDialog },
 
   data: () => ({
     destroyed: true,
@@ -100,6 +101,7 @@ export default {
     <ConfirmDialog />
     <ShortcutDialog />
     <UnsavedDialog />
+    <ReloginDialog v-if="user.me" />
     <v-snackbar-queue v-model="messages.queue">
       <template #actions="{ item, props }">
         <v-btn

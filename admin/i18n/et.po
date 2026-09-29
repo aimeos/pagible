@@ -61,15 +61,15 @@ msgstr "Teksti genereerimiseks on vaja viipa"
 msgid "Error generating text"
 msgstr "Teksti genereerimise viga"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Vestlusassistent pole saadaval."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Vastus on juba genereerimisel. Palun oodake, kuni see lõpeb."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Liiga palju taotlusi. Palun oodake veidi ja proovige uuesti."
 
@@ -1695,8 +1695,8 @@ msgstr "Seadistus"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Väli on nõutav"
 
@@ -2038,6 +2038,65 @@ msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Rakenda juurdepääsuseaded %{num} leheküljele."
 msgstr[1] "Rakenda juurdepääsuseaded %{num} leheküljele."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Te pole veel sisse logitud"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Sisselogimine ebaõnnestus"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Seanss aegus"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Väljalogimine"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Logige uuel vahelehel uuesti sisse ja naaske jätkamiseks siia. Teie "
+"salvestamata muudatused säilivad."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Jätkamiseks logige uuesti sisse. Teie salvestamata muudatused säilivad."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Logi sisse"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "E-post"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Parool"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Peida parool"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Näita parooli"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Jätka"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Logi sisse"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Sisuelemendid"
@@ -2158,10 +2217,6 @@ msgstr "Vaheta keelt"
 msgid "User menu"
 msgstr "Kasutaja menüü"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Väljalogimine"
-
 #: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Andmed puuduvad"
@@ -2230,7 +2285,7 @@ msgstr "Teisalda rida"
 msgid "Row actions"
 msgstr "Ridade toimingud"
 
-#: js/fields/Url.vue:59 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "Puudub"
 
@@ -2306,7 +2361,7 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Lubatud on kuni %{num} veerg"
 msgstr[1] "Lubatud on kuni %{num} veergu"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Plugina laadimine ebaõnnestus"
 
@@ -3950,7 +4005,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Ikoon"
 
-#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -4127,41 +4182,21 @@ msgstr "Fail"
 msgid "AI can find and manage media files based on your input"
 msgstr "Tehisintellekt saab teie sisendi põhjal meediafaile leida ja hallata"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Vale e-posti aadress"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Ei ole CMS toimetaja"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Juurdepääs keelatud"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "E-post"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Parool"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Peida parool"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Näita parooli"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Viga"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Logi sisse"
 
 #: js/views/PageDetail.vue:198
 msgid ""

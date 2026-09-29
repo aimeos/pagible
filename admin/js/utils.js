@@ -19,6 +19,13 @@ export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MI
 
 export const PAGE_BULK_LIMIT = 1000
 
+// Wraps the browser navigation so it can be replaced in tests
+export const browser = {
+  assign(url) {
+    window.location.assign(url)
+  }
+}
+
 /**
  * Deep clones a value, unwrapping reactive proxies at every level. structuredClone()
  * alone fails on nested proxies (e.g. from spreading reactive objects).
@@ -182,6 +189,18 @@ export function itemTitle(data) {
  */
 let localesCache = null
 let localesCacheKey = null
+
+/**
+ * Returns the URL of the login page of the application for single sign-on
+ *
+ * @param {String} template Login page URL (cms.admin.login), may contain the "_url_" placeholder
+ * @param {String} back URL the login page should return to afterwards
+ * @returns {String} Login page URL
+ */
+export function loginUrl(template, back = window.location.href) {
+  return template.replace('_url_', encodeURIComponent(back))
+}
+
 
 export function locales(none = false) {
   const languages = useLanguageStore()

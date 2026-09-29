@@ -43,7 +43,7 @@ class AdminControllerTest extends AdminTestAbstract
 
     public function testIndex()
     {
-        config( ['cms.multidomain' => true] );
+        config( ['cms.multidomain' => true, 'cms.admin.login' => 'https://sso.example.com/login', 'session.lifetime' => 30] );
         Route::domain( '{domain}' )->get( 'cmsapi/csrf', fn() => '' )->name( 'cms.api.csrf' );
         Route::getRoutes()->refreshNameLookups();
         app( 'url' )->setRoutes( Route::getRoutes() );
@@ -63,6 +63,8 @@ class AdminControllerTest extends AdminTestAbstract
 
             $response->assertStatus( 200 );
             $response->assertSee( 'data-urlcsrf="http://localhost/cmsapi/csrf', false );
+            $response->assertSee( 'data-urllogin="https://sso.example.com/login"', false );
+            $response->assertSee( 'data-sessionlifetime="30"', false );
 
             $csp = $response->headers->get( 'Content-Security-Policy' );
             $this->assertNotNull( $csp );
@@ -73,6 +75,7 @@ class AdminControllerTest extends AdminTestAbstract
             $this->assertStringContainsString( "media-src 'self' data: blob: http: https:;", $csp );
             $this->assertStringContainsString( 'nonce-', $csp );
         } finally {
+            config( ['cms.multidomain' => false, 'cms.admin.login' => null, 'session.lifetime' => 120] );
             @unlink( $manifestPath );
             @rmdir( $manifestDir );
             @rmdir( dirname( $manifestDir ) );

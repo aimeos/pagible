@@ -61,15 +61,15 @@ msgstr "テキスト生成にはプロンプトが必要"
 msgid "Error generating text"
 msgstr "テキスト生成エラー"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "チャットアシスタントは利用できません。"
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "応答を生成中です。完了するまでお待ちください。"
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "リクエストが多すぎます。しばらく待ってから、もう一度試してください。"
 
@@ -1678,8 +1678,8 @@ msgstr "コンフィグ"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "この項目は必須です"
 
@@ -2019,6 +2019,64 @@ msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "%{num} ページにアクセス設定を適用します。"
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "まだサインインしていません"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "ログインに失敗しました"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "セッションの有効期限が切れました"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "ログアウト"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"新しいタブで再度サインインし、ここに戻って続行してください。保存されていない"
+"変更は保持されます。"
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr "続行するには再度サインインしてください。未保存の変更は保持されます。"
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "サインイン"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "Eメール"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "パスワード"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "パスワードを非表示にする"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "パスワードを表示"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "続行"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "ログイン"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "コンテンツ要素"
@@ -2140,10 +2198,6 @@ msgstr "言語を切り替える"
 msgid "User menu"
 msgstr "ユーザーメニュー"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "ログアウト"
-
 #: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "データなし"
@@ -2212,7 +2266,7 @@ msgstr "行を移動"
 msgid "Row actions"
 msgstr "行操作"
 
-#: js/fields/Url.vue:59 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "なし"
 
@@ -2282,7 +2336,7 @@ msgid "At most %{num} column is allowed"
 msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "最大 %{num} 列までです"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "プラグインのロードに失敗しました"
 
@@ -3920,7 +3974,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "アイコン"
 
-#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -4095,41 +4149,21 @@ msgstr "ファイル"
 msgid "AI can find and manage media files based on your input"
 msgstr "AIは入力内容に基づいてメディアファイルを検索・管理できます"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "無効な電子メールアドレス"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "CMS編集者ではありません"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "アクセス拒否"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "Eメール"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "パスワード"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "パスワードを非表示にする"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "パスワードを表示"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "エラー"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "ログイン"
 
 #: js/views/PageDetail.vue:198
 msgid ""

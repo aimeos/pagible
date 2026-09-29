@@ -6,6 +6,7 @@
 // because that module's transcribe/translate/write go through GraphQL/Apollo, not fetch streaming.
 import gettext from './i18n'
 import { postHeaders } from './utils'
+import { useUserStore } from './stores'
 import { urlchat } from './config'
 
 /**
@@ -39,13 +40,29 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
 
   try {
     // postHeaders() forwards Laravel's XSRF-TOKEN cookie so the guarded POST passes CSRF
-    const response = await fetch(urlchat, {
-      method: 'POST',
-      headers: postHeaders('text/plain'),
-      credentials: 'include',
-      signal: signal,
-      body: JSON.stringify({ prompt: prompt, messages: history, context: context })
-    })
+    const send = () =>
+      fetch(urlchat, {
+        method: 'POST',
+        headers: postHeaders('text/plain'),
+        credentials: 'include',
+        signal: signal,
+        body: JSON.stringify({ prompt: prompt, messages: history, context: context })
+      })
+
+    let response = await send()
+    const user = useUserStore()
+
+    // Session expired: the request was rejected before streaming, so it's safe to send it again
+    // (with the renewed XSRF token) after the user signed in again in the re-login dialog
+    if ((response.status === 401 || response.status === 419) && user.me) {
+      await user.reauth()
+      response = await send()
+    }
+
+    if (response.ok) {
+      // the chat request extends the session like GraphQL requests do
+      user.touch()
+    }
 
     if (!response.ok) {
       // Two distinct "busy" cases the caller shows verbatim in the bubble: 409 = the per-user

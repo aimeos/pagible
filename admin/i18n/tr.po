@@ -61,15 +61,15 @@ msgstr "Metin oluşturmak için istem gereklidir"
 msgid "Error generating text"
 msgstr "Metin oluştururken hata oluştu"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Sohbet asistanı kullanılamıyor."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Zaten bir yanıt oluşturuluyor. Lütfen bitmesini bekleyin."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Çok fazla istek var. Lütfen biraz bekleyip tekrar deneyin."
 
@@ -1703,8 +1703,8 @@ msgstr "Konfigürasyon"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Alan zorunludur"
 
@@ -2050,6 +2050,66 @@ msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "%{num} sayfaya erişim ayarlarını uygula."
 msgstr[1] "%{num} sayfaya erişim ayarlarını uygula."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Henüz oturum açmadınız"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Giriş başarısız"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Oturumun süresi doldu"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Oturumu Kapat"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Lütfen yeni sekmede tekrar oturum açın ve devam etmek için buraya dönün. "
+"Kaydedilmemiş değişiklikleriniz korunur."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Devam etmek için lütfen tekrar oturum açın. Kaydedilmemiş değişiklikleriniz "
+"korunur."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Oturum aç"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "E-Posta"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Şifre"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Şifreyi gizle"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Şifreyi göster"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Devam et"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Giriş"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "İçerik öğeleri"
@@ -2172,10 +2232,6 @@ msgstr "Dili değiştir"
 msgid "User menu"
 msgstr "Kullanıcı menüsü"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Oturumu Kapat"
-
 #: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Veri mevcut değil"
@@ -2244,7 +2300,7 @@ msgstr "Satırı taşı"
 msgid "Row actions"
 msgstr "Satır işlemleri"
 
-#: js/fields/Url.vue:59 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "Hiçbiri"
 
@@ -2320,7 +2376,7 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "En fazla %{num} sütuna izin verilir"
 msgstr[1] "En fazla %{num} sütuna izin verilir"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Eklenti yüklenemedi"
 
@@ -3973,7 +4029,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Simge"
 
-#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -4151,41 +4207,21 @@ msgid "AI can find and manage media files based on your input"
 msgstr ""
 "Yapay zeka, girdilerinize göre medya dosyalarını bulabilir ve yönetebilir"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Geçersiz e-posta adresi"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "CMS editörü değil"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Erişim reddedildi"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "E-Posta"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Şifre"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Şifreyi gizle"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Şifreyi göster"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Hata"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Giriş"
 
 #: js/views/PageDetail.vue:198
 msgid ""

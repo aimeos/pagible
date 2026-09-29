@@ -61,15 +61,15 @@ msgstr "Prompt er nødvendig for at generere tekst"
 msgid "Error generating text"
 msgstr "Fejl ved generering af tekst"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Chatassistenten er ikke tilgængelig."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Der genereres allerede et svar. Vent venligst på, at det er færdigt."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "For mange anmodninger. Vent et øjeblik, og prøv igen."
 
@@ -1691,8 +1691,8 @@ msgstr "Konfig"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Feltet er påkrævet"
 
@@ -2034,6 +2034,65 @@ msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Anvend adgangsindstillingerne på %{num} side."
 msgstr[1] "Anvend adgangsindstillingerne på %{num} sider."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Du er endnu ikke logget ind"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Login mislykkedes"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Sessionen er udløbet"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Log ud"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Log ind igen i den nye fane, og vend tilbage hertil for at fortsætte. Dine "
+"ikke-gemte ændringer bevares."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Log venligst ind igen for at fortsætte. Dine ikke-gemte ændringer bevares."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Log ind"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "E-mail"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Adgangskode"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Skjul adgangskode"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Vis adgangskode"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Fortsæt"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Log ind"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Indholdselementer"
@@ -2154,10 +2213,6 @@ msgstr "Skift sprog"
 msgid "User menu"
 msgstr "Brugermenu"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Log ud"
-
 #: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Ingen tilgængelige data"
@@ -2226,7 +2281,7 @@ msgstr "Flyt række"
 msgid "Row actions"
 msgstr "Rækkehandlinger"
 
-#: js/fields/Url.vue:59 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "Ingen"
 
@@ -2302,7 +2357,7 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Højst %{num} kolonne er tilladt"
 msgstr[1] "Højst %{num} kolonner er tilladt"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Kunne ikke indlæse plugin"
 
@@ -3949,7 +4004,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Ikon"
 
-#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -4125,41 +4180,21 @@ msgstr "Fil"
 msgid "AI can find and manage media files based on your input"
 msgstr "AI kan finde og administrere mediefiler baseret på dit input"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Ugyldig e-mailadresse"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Ikke en CMS-redaktør"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Adgang nægtet"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "E-mail"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Adgangskode"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Skjul adgangskode"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Vis adgangskode"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Fejl"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Log ind"
 
 #: js/views/PageDetail.vue:198
 msgid ""

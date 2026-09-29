@@ -1,6 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import router from '../../../js/routes'
 import { useUserStore } from '../../../js/stores'
+import { Observable } from '@apollo/client/core'
 import { apolloClient, graphqlFetch, handleError, invalidateList, listFetchPolicy, retry } from '../../../js/graphql'
 
 describe('handleError()', () => {
@@ -20,6 +21,72 @@ describe('handleError()', () => {
     expect(user.me).to.equal(false)
     cy.get('@clearStore').should('have.been.calledOnce')
     cy.get('@routerPush').should('have.been.calledOnceWith', { name: 'login' })
+  })
+
+  it('retries the request after the user signed in again', () => {
+    const user = useUserStore()
+    user.me = { email: 'editor@example.com' }
+
+    const operation = { getContext: () => ({}) }
+    const forward = cy.stub().returns(Observable.of({ data: { ok: true } }))
+    const push = cy.stub(router, 'push').resolves()
+    let resolve = null
+    cy.stub(user, 'reauth').returns(new Promise((res) => { resolve = res }))
+
+    const observable = handleError({ graphQLErrors: [{ message: 'Unauthenticated.' }], operation, forward })
+
+    return new Promise((done, fail) => {
+      observable.subscribe({
+        next: (result) => {
+          expect(result).to.deep.equal({ data: { ok: true } })
+          expect(forward).to.have.been.calledOnceWith(operation)
+          expect(push).not.to.have.been.called
+          done()
+        },
+        error: fail
+      })
+      expect(forward).not.to.have.been.called
+      resolve()
+    })
+  })
+
+  it('fails the request if the user gives up signing in again', () => {
+    const user = useUserStore()
+    user.me = { email: 'editor@example.com' }
+
+    const forward = cy.stub()
+    cy.stub(user, 'reauth').rejects(new Error('Unauthenticated'))
+
+    const observable = handleError({
+      networkError: { statusCode: 419 },
+      operation: { getContext: () => ({}) },
+      forward
+    })
+
+    return new Promise((done) => {
+      observable.subscribe({
+        error: (error) => {
+          expect(error.statusCode).to.equal(419)
+          expect(forward).not.to.have.been.called
+          done()
+        }
+      })
+    })
+  })
+
+  it('ignores errors of the re-login requests', () => {
+    const user = useUserStore()
+    user.me = { email: 'editor@example.com' }
+    const reauth = cy.stub(user, 'reauth')
+
+    const result = handleError({
+      graphQLErrors: [{ message: 'Unauthenticated.' }],
+      operation: { getContext: () => ({ relogin: true }) },
+      forward: cy.stub()
+    })
+
+    expect(result).to.equal(undefined)
+    expect(reauth).not.to.have.been.called
   })
 })
 

@@ -207,6 +207,172 @@ describe('useUserStore', () => {
     })
   })
 
+  describe('relogin()', () => {
+    it('renews the session without resetting the state and releases waiting requests', () => {
+      cy.stub(window, 'fetch').resolves({ ok: true, json: () => Promise.resolve({}) })
+      const mutate = cy.stub(apolloClient, 'mutate').resolves({ data: { cmsLogin: { id: 'user-1' } } })
+      cy.stub(apolloClient, 'query').resolves({
+        data: { me: { email: 'editor@example.com', permission: '{"page:save":true}', settings: '{}', token: '' } }
+      })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: { page: { sort: 'name' } } }
+      const clear = cy.stub(user, 'clear').resolves()
+      const waiting = user.reauth()
+
+      expect(user.expired).to.equal(true)
+
+      return user.relogin('secret').then(() => waiting).then(() => {
+        expect(user.expired).to.equal(false)
+        expect(clear).not.to.have.been.called
+        expect(user.me.permission).to.deep.equal({ 'page:save': true })
+        expect(user.me.settings).to.deep.equal({ page: { sort: 'name' } })
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({ email: 'editor@example.com', password: 'secret' })
+        expect(mutate.firstCall.args[0].context).to.deep.equal({ relogin: true })
+      })
+    })
+
+    it('keeps the dialog open if the login fails', () => {
+      cy.stub(window, 'fetch').resolves({ ok: true, json: () => Promise.resolve({}) })
+      cy.stub(apolloClient, 'mutate').rejects(new Error('Invalid credentials'))
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+      user.reauth().catch(() => {})
+
+      return user.relogin('wrong').then(
+        () => { throw new Error('relogin unexpectedly resolved') },
+        (error) => {
+          expect(error.message).to.equal('Invalid credentials')
+          expect(user.expired).to.equal(true)
+        }
+      )
+    })
+  })
+
+  describe('check()', () => {
+    afterEach(() => useUserStore().clear())
+
+    it('asks to sign in again if the session expired', () => {
+      cy.stub(apolloClient, 'query').rejects({ networkError: { statusCode: 419 } })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+
+      return user.check().then((valid) => {
+        expect(valid).to.equal(false)
+        expect(user.expired).to.equal(true)
+      })
+    })
+
+    it('asks to sign in again if nobody is signed in anymore', () => {
+      cy.stub(apolloClient, 'query').resolves({ data: { me: null } })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+
+      return user.check().then((valid) => {
+        expect(valid).to.equal(false)
+        expect(user.expired).to.equal(true)
+      })
+    })
+
+    it('keeps the session if it is still valid', () => {
+      cy.stub(apolloClient, 'query').resolves({ data: { me: { email: 'editor@example.com' } } })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+
+      return user.check().then((valid) => {
+        expect(valid).to.equal(true)
+        expect(user.expired).to.equal(false)
+      })
+    })
+
+    it('ignores network failures', () => {
+      cy.stub(apolloClient, 'query').rejects({ networkError: { statusCode: 503 } })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+
+      return user.check().then((valid) => {
+        expect(valid).to.equal(true)
+        expect(user.expired).to.equal(false)
+      })
+    })
+
+    it('does nothing if nobody is signed in', () => {
+      const query = cy.stub(apolloClient, 'query')
+
+      return useUserStore().check().then(() => {
+        expect(query).not.to.have.been.called
+      })
+    })
+  })
+
+  describe('resume()', () => {
+    // release the module-level re-login listeners and waiting requests between tests
+    afterEach(() => useUserStore().clear())
+
+    it('continues when the same user signed in again in another tab', () => {
+      cy.stub(apolloClient, 'query').resolves({
+        data: { me: { email: 'editor@example.com', permission: '{}', settings: '{}', token: '' } }
+      })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+      const waiting = user.reauth()
+
+      window.dispatchEvent(new Event('focus'))
+
+      return waiting.then(() => {
+        expect(user.expired).to.equal(false)
+      })
+    })
+
+    it('stays expired if another user signed in', () => {
+      cy.stub(apolloClient, 'query').resolves({
+        data: { me: { email: 'other@example.com', permission: '{}', settings: '{}', token: '' } }
+      })
+
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+      user.reauth().catch(() => {})
+
+      return user.resume().then((resumed) => {
+        expect(resumed).to.equal(false)
+        expect(user.expired).to.equal(true)
+      })
+    })
+
+    it('does nothing while the session is valid', () => {
+      const query = cy.stub(apolloClient, 'query')
+      const user = useUserStore()
+
+      return user.resume().then((resumed) => {
+        expect(resumed).to.equal(false)
+        expect(query).not.to.have.been.called
+      })
+    })
+  })
+
+  describe('expire()', () => {
+    it('rejects waiting requests and resets the state', () => {
+      const user = useUserStore()
+      user.me = { email: 'editor@example.com', permission: {}, settings: {} }
+      cy.stub(apolloClient, 'clearStore').resolves()
+      const waiting = user.reauth()
+
+      return user.expire().then(() => waiting).then(
+        () => { throw new Error('waiting request unexpectedly resolved') },
+        () => {
+          expect(user.me).to.equal(false)
+          expect(user.expired).to.equal(false)
+        }
+      )
+    })
+  })
+
   describe('saveData()', () => {
     it('creates settings structure when missing', () => {
       const user = useUserStore()

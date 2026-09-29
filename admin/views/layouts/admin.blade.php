@@ -43,6 +43,8 @@
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"
       data-multidomain="{{ (int) config('cms.multidomain', false) }}"
+      data-urllogin="{{ config('cms.admin.login', '') }}"
+      data-sessionlifetime="{{ config('session.expire_on_close') ? 0 : (int) config('session.lifetime', 120) }}"
       data-plugins="{{ json_encode(\Aimeos\Cms\Plugin::all()) }}"
       @if(config('cms.broadcast'))
         data-reverb="{{ json_encode([

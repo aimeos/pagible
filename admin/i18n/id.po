@@ -61,15 +61,15 @@ msgstr "Prompt diperlukan untuk menghasilkan teks"
 msgid "Error generating text"
 msgstr "Kesalahan menghasilkan teks"
 
-#: js/chat.js:33
+#: js/chat.js:34
 msgid "The chat assistant is not available."
 msgstr "Asisten obrolan tidak tersedia."
 
-#: js/chat.js:56
+#: js/chat.js:73
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Sebuah respons sedang dibuat. Mohon tunggu hingga selesai."
 
-#: js/chat.js:58
+#: js/chat.js:75
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Terlalu banyak permintaan. Harap tunggu sebentar dan coba lagi."
 
@@ -1685,8 +1685,8 @@ msgstr "Konfigurasi"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
-#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:44
-#: js/views/Login.vue:47
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "Bidang harus diisi"
 
@@ -2025,6 +2025,66 @@ msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Terapkan pengaturan akses ke %{num} halaman."
 
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "Anda belum masuk"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "Login gagal"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "Sesi berakhir"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "Keluar"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Silakan masuk lagi di tab baru dan kembali ke sini untuk melanjutkan. "
+"Perubahan yang belum disimpan tetap dipertahankan."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr ""
+"Silakan masuk lagi untuk melanjutkan. Perubahan Anda yang belum disimpan "
+"tetap tersimpan."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+msgid "Sign in"
+msgstr "Masuk"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "Email"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "Kata sandi"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "Sembunyikan kata sandi"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "Tampilkan kata sandi"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "Lanjutkan"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+msgid "Login"
+msgstr "Masuk"
+
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
 msgstr "Elemen konten"
@@ -2146,10 +2206,6 @@ msgstr "Ganti bahasa"
 msgid "User menu"
 msgstr "Menu pengguna"
 
-#: js/components/User.vue:134
-msgid "Logout"
-msgstr "Keluar"
-
 #: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
 msgid "No data available"
 msgstr "Tidak ada data yang tersedia"
@@ -2218,7 +2274,7 @@ msgstr "Pindahkan baris"
 msgid "Row actions"
 msgstr "Tindakan baris"
 
-#: js/fields/Url.vue:59 js/utils.js:190
+#: js/fields/Url.vue:59 js/utils.js:209
 msgid "None"
 msgstr "Tidak ada"
 
@@ -2288,7 +2344,7 @@ msgid "At most %{num} column is allowed"
 msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Maksimal %{num} kolom diperbolehkan"
 
-#: js/stores.js:399
+#: js/stores.js:585
 msgid "Failed to load plugin"
 msgstr "Gagal memuat plugin"
 
@@ -3949,7 +4005,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Ikon"
 
-#: js/utils.js:240 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
 #: js/views/ElementList.vue:142 js/views/FileList.vue:122
 #: js/views/FileList.vue:132 js/views/FileList.vue:141
 #: js/views/PageList.vue:147 js/views/PageList.vue:157
@@ -4126,41 +4182,21 @@ msgstr "File"
 msgid "AI can find and manage media files based on your input"
 msgstr "AI dapat menemukan dan mengelola file media berdasarkan masukan Anda"
 
-#: js/views/Login.vue:45
+#: js/views/Login.vue:55
 msgid "Invalid e-mail address"
 msgstr "Alamat email tidak valid"
 
-#: js/views/Login.vue:101
+#: js/views/Login.vue:115
 msgid "Not a CMS editor"
 msgstr "Bukan editor CMS"
 
-#: js/views/Login.vue:120
+#: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Akses ditolak"
 
-#: js/views/Login.vue:141
-msgid "E-Mail"
-msgstr "Email"
-
-#: js/views/Login.vue:151
-msgid "Password"
-msgstr "Kata sandi"
-
-#: js/views/Login.vue:161
-msgid "Hide password"
-msgstr "Sembunyikan kata sandi"
-
-#: js/views/Login.vue:161
-msgid "Show password"
-msgstr "Tampilkan kata sandi"
-
-#: js/views/Login.vue:169
+#: js/views/Login.vue:228
 msgid "Error"
 msgstr "Kesalahan"
-
-#: js/views/Login.vue:175
-msgid "Login"
-msgstr "Masuk"
 
 #: js/views/PageDetail.vue:198
 msgid ""
