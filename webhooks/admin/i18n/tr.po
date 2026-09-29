@@ -34,33 +34,33 @@ msgctxt "webhooks"
 msgid "Status"
 msgstr "Durum"
 
-#: src/views/WebhookList.vue:186
+#: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
 msgstr "Tümü"
 
-#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
-#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Etkin"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Devre dışı"
 
-#: src/views/WebhookList.vue:249
+#: src/views/WebhookList.vue:250
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Webhook'lar alınırken hata oluştu"
 
-#: src/views/WebhookList.vue:313
+#: src/views/WebhookList.vue:314
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Webhook kaydedilirken hata oluştu"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:319
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -69,218 +69,242 @@ msgstr ""
 "Bu webhook'un gizli anahtarı yenilensin mi? Alıcıların yeni gizli anahtarla "
 "güncellenmesi gerekir."
 
-#: src/views/WebhookList.vue:337
+#: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Webhook gizli anahtarı yenilenirken hata oluştu"
 
-#: src/views/WebhookList.vue:357
+#: src/views/WebhookList.vue:358
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Test olayı teslim edildi"
 
-#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Test olayı başarısız oldu"
 
-#: src/views/WebhookList.vue:411
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Webhook kalıcı olarak silinirken hata oluştu"
 
-#: src/views/WebhookList.vue:419
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Gizli anahtar kopyalandı"
 
-#: src/views/WebhookList.vue:424
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Gizli anahtar kopyalanamadı"
 
-#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
 msgstr "Hiçbiri"
 
-#: src/views/WebhookList.vue:446
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Bağlantı başarısız oldu"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Erişim reddedildi"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Gizli anahtarın şifresi çözülemiyor, yenileyin"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Sunucu yapılandırması tarafından engellendi"
 
-#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Geçerli bir URL değil"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Kuyruk kullanılamıyor"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Ana makine bulunamadı"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Yanıt çok büyük"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:455
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "İstek zaman aşımına uğradı"
 
-#: src/views/WebhookList.vue:459
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Yönlendirmeler izlenmez"
 
-#: src/views/WebhookList.vue:460
+#: src/views/WebhookList.vue:461
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Teslimat başarısız oldu"
 
-#: src/views/WebhookList.vue:522
+#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Yayımlanan içerik değiştiğinde imzalı bildirimler gönderin."
 
-#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Seçimi değiştir"
 
-#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Kalıcı olarak sil"
 
-#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
-#: src/views/WebhookList.vue:740
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Webhook ekle"
 
-#: src/views/WebhookList.vue:584
+#: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Aramak için"
 
-#: src/views/WebhookList.vue:593
+#: src/views/WebhookList.vue:594
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Yenile"
 
-#: src/views/WebhookList.vue:634
+#: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Düzenle"
 
-#: src/views/WebhookList.vue:644
+#: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Yenile"
 
-#: src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Son başarı"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:692
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Son hata"
 
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:699
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Şu tarihe kadar duraklatıldı"
 
-#: src/views/WebhookList.vue:708
+#: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Yükleniyor"
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Giriş bulunamadı"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:716
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Yapılandırılmış webhook yok."
 
-#: src/views/WebhookList.vue:737
+#: src/views/WebhookList.vue:738
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhook gizli anahtarı"
 
-#: src/views/WebhookList.vue:739
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Webhook'u düzenle"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Bu gizli anahtarı şimdi kopyalayın. Bir daha gösterilmeyecektir."
 
-#: src/views/WebhookList.vue:778
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr "Devre dışı webhook'lar hiçbir olay almaz ve kuyruktaki teslimatları iptal edilir"
+
+#: src/views/WebhookList.vue:780
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS uç noktası URL'si"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "İmzalı olayları alan adres, daha sonra değiştirilemez"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Olaylar"
 
-#: src/views/WebhookList.vue:809
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr "Webhook'a gönderilen olaylar, kaldırılan olayların kuyruktaki teslimatları iptal edilir"
+
+#: src/views/WebhookList.vue:813
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Ad"
 
-#: src/views/WebhookList.vue:819
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr "Aynı uç noktaya sahip webhook'ları ayırt etmek için isteğe bağlı ad, tüm webhook düzenleyicilerine görünür"
+
+#: src/views/WebhookList.vue:824
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Bitti"
 
-#: src/views/WebhookList.vue:822
+#: src/views/WebhookList.vue:827
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Gizli anahtarı kopyala"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:841
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Test et"
 
-#: src/views/WebhookList.vue:839
+#: src/views/WebhookList.vue:844
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "İptal"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:855
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Kaydet"

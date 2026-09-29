@@ -768,8 +768,9 @@ export default {
         <v-switch
           v-model="status"
           :aria-label="$pgettext('webhooks', 'Active')"
+          :hint="$pgettext('webhooks', 'Inactive webhooks receive no events and their queued deliveries are dropped')"
           color="primary"
-          hide-details
+          hide-details="auto"
           inset
         />
       </div>
@@ -777,6 +778,7 @@ export default {
         v-if="!selected"
         v-model="url"
         :label="$pgettext('webhooks', 'HTTPS endpoint URL')"
+        :hint="$pgettext('webhooks', 'Address receiving the signed events, it cannot be changed later')"
         :rules="[
           (value) =>
             validUrl(value) || $pgettext('webhooks', 'Not a valid URL'),
@@ -801,6 +803,7 @@ export default {
         v-model="events"
         :items="names"
         :label="$pgettext('webhooks', 'Events')"
+        :hint="$pgettext('webhooks', 'Events sent to the webhook, queued deliveries of removed events are cancelled')"
         variant="underlined"
         multiple
         chips
@@ -808,6 +811,7 @@ export default {
       <v-text-field
         v-model="name"
         :label="$pgettext('webhooks', 'Name')"
+        :hint="$pgettext('webhooks', 'Optional name to tell webhooks with the same endpoint apart, visible to all webhook editors')"
         class="webhook-name"
         variant="underlined"
         maxlength="100"

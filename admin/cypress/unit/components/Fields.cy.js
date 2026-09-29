@@ -4,7 +4,7 @@ import { useUserStore } from '../../../js/stores'
 
 const stubs = {
   String: { render() { return h('div', { class: 'field-string' }) } },
-  Text: { render() { return h('div', { class: 'field-text' }) } },
+  Text: { render() { return h('input', { class: 'field-text' }) } },
   File: { props: ['label'], render() { return h('div', { class: 'field-file' }, this.label) } },
   Images: { props: ['label'], render() { return h('div', { class: 'field-images' }, this.label) } },
   Hidden: { render() { return h('div', { class: 'field-hidden' }) } },
@@ -131,6 +131,25 @@ describe('Fields', () => {
       expect(assets['1'].disk).to.equal('private')
       expect(assets['2'].disk).to.equal('private')
     })
+  })
+
+  it('renders a hint below fields not rendering it themselves', () => {
+    mountFields({
+      fields: {
+        title: { type: 'string', label: 'Title', hint: 'Shown by the input' },
+        body: { type: 'text', label: 'Body text', hint: 'Main content of the page' },
+        secret: { type: 'hidden', hint: 'Never shown' },
+      },
+    })
+    cy.get('.item .v-messages__message').should('have.length', 1)
+      .and('contain', 'Main content of the page')
+      .and('not.be.visible')
+  })
+
+  it('shows the fallback hint while the field has focus', () => {
+    mountFields({ fields: { body: { type: 'text', label: 'Body text', hint: 'Main content' } } })
+    cy.get('.field-text').focus()
+    cy.get('.item .v-messages__message').should('be.visible').and('contain', 'Main content')
   })
 
   it('hides the label for hidden field type', () => {

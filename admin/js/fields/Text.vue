@@ -57,6 +57,7 @@ const ckToolbar = [
 
 /**
  * Configuration:
+ * - `hint`: string, description shown below the field while it has focus
  * - `max`: int, maximum number of characters allowed
  * - `min`: int, minimum number of characters required if the field isn't empty
  * - `required`: boolean, if true, the field must not be empty

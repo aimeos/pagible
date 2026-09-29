@@ -481,13 +481,14 @@ export default {
           :loading="rolesLoading || savingAccess"
           :disabled="savingAccess"
           :label="$gettext('Assigned frontend roles')"
+          :hint="$gettext('Roles granting access to restricted pages')"
           variant="underlined"
           multiple
           chips
           closable-chips
           clearable
           hide-selected
-          hide-details
+          hide-details="auto"
           @update:model-value="changeAccessDraft"
         />
       </section>
@@ -504,12 +505,13 @@ export default {
           :loading="savingPermissions"
           :disabled="savingPermissions || isCurrentUser"
           :label="$gettext('Available roles')"
+          :hint="$gettext('Roles defining what the user can do in the admin panel')"
           variant="underlined"
           multiple
           chips
           closable-chips
           clearable
-          hide-details
+          hide-details="auto"
           @update:model-value="changePermissionRoleDraft"
         />
       </section>

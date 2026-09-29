@@ -33,33 +33,33 @@ msgctxt "webhooks"
 msgid "Status"
 msgstr "Tila"
 
-#: src/views/WebhookList.vue:186
+#: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
 msgstr "Kaikki"
 
-#: src/views/WebhookList.vue:191 src/views/WebhookList.vue:681
-#: src/views/WebhookList.vue:765 src/views/WebhookList.vue:769
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktiivinen"
 
-#: src/views/WebhookList.vue:196 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Ei aktiivinen"
 
-#: src/views/WebhookList.vue:249
+#: src/views/WebhookList.vue:250
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Virhe webhookien noutamisessa"
 
-#: src/views/WebhookList.vue:313
+#: src/views/WebhookList.vue:314
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Virhe webhookin tallentamisessa"
 
-#: src/views/WebhookList.vue:318
+#: src/views/WebhookList.vue:319
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -68,218 +68,242 @@ msgstr ""
 "Vaihdetaanko tämän webhookin salaisuus? Vastaanottajat on päivitettävä "
 "käyttämään uutta salaisuutta."
 
-#: src/views/WebhookList.vue:337
+#: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Virhe webhookin salaisuuden vaihtamisessa"
 
-#: src/views/WebhookList.vue:357
+#: src/views/WebhookList.vue:358
 msgctxt "webhooks"
 msgid "Test event delivered"
 msgstr "Testitapahtuma toimitettu"
 
-#: src/views/WebhookList.vue:363 src/views/WebhookList.vue:370
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Testitapahtuma epäonnistui"
 
-#: src/views/WebhookList.vue:411
+#: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Virhe webhookin pysyvässä poistamisessa"
 
-#: src/views/WebhookList.vue:419
+#: src/views/WebhookList.vue:420
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Salaisuus kopioitu"
 
-#: src/views/WebhookList.vue:424
+#: src/views/WebhookList.vue:425
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Salaisuuden kopiointi epäonnistui"
 
-#: src/views/WebhookList.vue:433 src/views/WebhookList.vue:468
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
 msgstr "Ei ole"
 
-#: src/views/WebhookList.vue:446
+#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Yhteys epäonnistui"
 
-#: src/views/WebhookList.vue:447
+#: src/views/WebhookList.vue:448
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Pääsy evätty"
 
-#: src/views/WebhookList.vue:448
+#: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Salaisuuden salausta ei voi purkaa, vaihda se"
 
-#: src/views/WebhookList.vue:449
+#: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
 msgstr "Palvelimen asetukset estivät"
 
-#: src/views/WebhookList.vue:450 src/views/WebhookList.vue:781
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Ei kelvollinen URL-osoite"
 
-#: src/views/WebhookList.vue:451
+#: src/views/WebhookList.vue:452
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Jono ei ole käytettävissä"
 
-#: src/views/WebhookList.vue:452
+#: src/views/WebhookList.vue:453
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Isäntää ei löytynyt"
 
-#: src/views/WebhookList.vue:453
+#: src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Vastaus on liian suuri"
 
-#: src/views/WebhookList.vue:454
+#: src/views/WebhookList.vue:455
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Pyyntö aikakatkaistiin"
 
-#: src/views/WebhookList.vue:459
+#: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Uudelleenohjauksia ei seurata"
 
-#: src/views/WebhookList.vue:460
+#: src/views/WebhookList.vue:461
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Toimitus epäonnistui"
 
-#: src/views/WebhookList.vue:522
+#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Lähetä allekirjoitettuja ilmoituksia, kun julkaistu sisältö muuttuu."
 
-#: src/views/WebhookList.vue:543 src/views/WebhookList.vue:617
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Vaihda valintaa"
 
-#: src/views/WebhookList.vue:562 src/views/WebhookList.vue:654
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Poista pysyvästi"
 
-#: src/views/WebhookList.vue:570 src/views/WebhookList.vue:721
-#: src/views/WebhookList.vue:740
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Lisää webhook"
 
-#: src/views/WebhookList.vue:584
+#: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Etsi"
 
-#: src/views/WebhookList.vue:593
+#: src/views/WebhookList.vue:594
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Päivitä"
 
-#: src/views/WebhookList.vue:634
+#: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Muokkaa"
 
-#: src/views/WebhookList.vue:644
+#: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Vaihda"
 
-#: src/views/WebhookList.vue:687
+#: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
 msgstr "Viimeisin onnistuminen"
 
-#: src/views/WebhookList.vue:691
+#: src/views/WebhookList.vue:692
 msgctxt "webhooks"
 msgid "Last error"
 msgstr "Viimeisin virhe"
 
-#: src/views/WebhookList.vue:698
+#: src/views/WebhookList.vue:699
 msgctxt "webhooks"
 msgid "Paused until"
 msgstr "Keskeytetty asti"
 
-#: src/views/WebhookList.vue:708
+#: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Ladataan"
 
-#: src/views/WebhookList.vue:714
+#: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Merkintöjä ei löytynyt"
 
-#: src/views/WebhookList.vue:715
+#: src/views/WebhookList.vue:716
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Webhookeja ei ole määritetty."
 
-#: src/views/WebhookList.vue:737
+#: src/views/WebhookList.vue:738
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhookin salaisuus"
 
-#: src/views/WebhookList.vue:739
+#: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Muokkaa webhookia"
 
-#: src/views/WebhookList.vue:749
+#: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Kopioi tämä salaisuus nyt. Sitä ei näytetä uudelleen."
 
-#: src/views/WebhookList.vue:778
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr "Ei-aktiiviset webhookit eivät vastaanota tapahtumia, ja niiden jonossa olevat toimitukset hylätään"
+
+#: src/views/WebhookList.vue:780
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS-päätepisteen URL-osoite"
 
-#: src/views/WebhookList.vue:802
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "Osoite, joka vastaanottaa allekirjoitetut tapahtumat, sitä ei voi muuttaa myöhemmin"
+
+#: src/views/WebhookList.vue:805
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Tapahtumat"
 
-#: src/views/WebhookList.vue:809
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr "Webhookiin lähetetyt tapahtumat, poistettujen tapahtumien jonossa olevat toimitukset peruutetaan"
+
+#: src/views/WebhookList.vue:813
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Nimi"
 
-#: src/views/WebhookList.vue:819
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr "Valinnainen nimi, jolla erottaa saman päätepisteen webhookit toisistaan, näkyy kaikille webhookien muokkaajille"
+
+#: src/views/WebhookList.vue:824
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Valmis"
 
-#: src/views/WebhookList.vue:822
+#: src/views/WebhookList.vue:827
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopioi salaisuus"
 
-#: src/views/WebhookList.vue:836
+#: src/views/WebhookList.vue:841
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testaa"
 
-#: src/views/WebhookList.vue:839
+#: src/views/WebhookList.vue:844
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: src/views/WebhookList.vue:850
+#: src/views/WebhookList.vue:855
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Tallenna"

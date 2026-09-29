@@ -22,26 +22,31 @@
             "fields": {
                 "name": {
                     "type": "string",
+                    "hint": "Name of the restaurant",
                     "required": true
                 },
                 "street-address": {
                     "type": "string",
                     "label": "Street address",
+                    "hint": "Street and house number",
                     "required": true
                 },
                 "postal-code": {
                     "type": "string",
                     "label": "Postal code",
+                    "hint": "Postal code of the restaurant",
                     "required": true
                 },
                 "locality": {
                     "type": "string",
                     "label": "City",
+                    "hint": "City the restaurant is located in",
                     "required": true
                 },
                 "country": {
                     "type": "string",
                     "label": "Country code",
+                    "hint": "Two letter ISO country code, e.g. DE or US",
                     "default": "DE",
                     "min": 2,
                     "max": 2,
@@ -51,28 +56,34 @@
                 "cuisine": {
                     "type": "string",
                     "label": "Cuisines",
+                    "hint": "Comma separated list of the cuisines served, e.g. Italian, Vegan",
                     "required": true
                 },
                 "menu": {
                     "type": "url",
                     "label": "Menu page",
+                    "hint": "Page or link to the menu",
                     "required": true
                 },
                 "price-range": {
                     "type": "string",
                     "label": "Price range",
+                    "hint": "Price level of the restaurant, e.g. $$ or €€",
                     "required": true
                 },
                 "telephone": {
-                    "type": "string"
+                    "type": "string",
+                    "hint": "Phone number for reservations in international format"
                 },
                 "hours": {
                     "type": "items",
                     "label": "Opening hours",
+                    "hint": "Opening hours for each day of the week",
                     "identity": "id",
                     "item": {
                         "day": {
                             "type": "select",
+                            "hint": "Day of the week",
                             "options": [
                                 {"value": "Monday", "label": "Monday"},
                                 {"value": "Tuesday", "label": "Tuesday"},
@@ -85,10 +96,12 @@
                         },
                         "opens": {
                             "type": "string",
+                            "hint": "Opening time in 24 hour format, e.g. 11:30",
                             "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
                         },
                         "closes": {
                             "type": "string",
+                            "hint": "Closing time in 24 hour format, e.g. 22:00",
                             "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
                         }
                     }
@@ -101,70 +114,87 @@
             "fields": {
                 "--pico-font-family-sans-serif": {
                     "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
                     "default": "ui-rounded, 'Avenir Next', 'Segoe UI', sans-serif"
                 },
                 "--pico-color": {
                     "type": "color",
+                    "hint": "Default text color",
                     "default": "#E7EEF5"
                 },
                 "--pico-background-color": {
                     "type": "color",
+                    "hint": "Background color of the pages",
                     "default": "#090D14"
                 },
                 "--pico-text-selection-color": {
                     "type": "color",
+                    "hint": "Background color of selected text",
                     "default": "#FF6B7A4D"
                 },
                 "--pico-contrast": {
                     "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
                     "default": "#F7FAFC"
                 },
                 "--pico-contrast-hover": {
                     "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
                     "default": "#FFFFFF"
                 },
                 "--pico-contrast-inverse": {
                     "type": "color",
+                    "hint": "Text color on elements using the contrast color",
                     "default": "#F7FAFC"
                 },
                 "--pico-primary": {
                     "type": "color",
+                    "hint": "Main brand color used for links and buttons",
                     "default": "#FF6B7A"
                 },
                 "--pico-primary-background": {
                     "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
                     "default": "#FF6B7A1F"
                 },
                 "--pico-primary-hover": {
                     "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
                     "default": "#FF93A0"
                 },
                 "--pico-primary-hover-background": {
                     "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
                     "default": "#FF93A026"
                 },
                 "--pico-secondary": {
                     "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
                     "default": "#39D6B4"
                 },
                 "--pico-secondary-background": {
                     "type": "color",
+                    "hint": "Background color of secondary buttons",
                     "default": "#39D6B41F"
                 },
                 "--pico-secondary-hover": {
                     "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
                     "default": "#70E8CF"
                 },
                 "--pico-secondary-hover-background": {
                     "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
                     "default": "#70E8CF26"
                 },
                 "--pico-border-radius": {
                     "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners",
                     "default": "1rem"
                 },
                 "--pico-nav-breadcrumb-divider": {
                     "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
                     "default": "/"
                 }
             }

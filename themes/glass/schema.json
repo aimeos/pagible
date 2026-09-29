@@ -31,70 +31,87 @@
             "fields": {
                 "--pico-font-family-sans-serif": {
                     "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
                     "default": "ui-sans-serif, sans-serif"
                 },
                 "--pico-color": {
                     "type": "color",
+                    "hint": "Default text color",
                     "default": "#E2E8F0"
                 },
                 "--pico-background-color": {
                     "type": "color",
+                    "hint": "Background color of the pages",
                     "default": "#060A12"
                 },
                 "--pico-text-selection-color": {
                     "type": "color",
+                    "hint": "Background color of selected text",
                     "default": "#8AFFC433"
                 },
                 "--pico-contrast": {
                     "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
                     "default": "#F8FAFC"
                 },
                 "--pico-contrast-hover": {
                     "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
                     "default": "#FFFFFF"
                 },
                 "--pico-contrast-inverse": {
                     "type": "color",
+                    "hint": "Text color on elements using the contrast color",
                     "default": "#060A12"
                 },
                 "--pico-primary": {
                     "type": "color",
+                    "hint": "Main brand color used for links and buttons",
                     "default": "#8AFFC4"
                 },
                 "--pico-primary-background": {
                     "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
                     "default": "#8AFFC450"
                 },
                 "--pico-primary-hover": {
                     "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
                     "default": "#B8FFD9"
                 },
                 "--pico-primary-hover-background": {
                     "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
                     "default": "#B8FFD91A"
                 },
                 "--pico-secondary": {
                     "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
                     "default": "#6366F1"
                 },
                 "--pico-secondary-background": {
                     "type": "color",
+                    "hint": "Background color of secondary buttons",
                     "default": "#6366F150"
                 },
                 "--pico-secondary-hover": {
                     "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
                     "default": "#818CF8"
                 },
                 "--pico-secondary-hover-background": {
                     "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
                     "default": "#818CF81A"
                 },
                 "--pico-border-radius": {
                     "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners",
                     "default": "1.25rem"
                 },
                 "--pico-nav-breadcrumb-divider": {
                     "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
                     "default": "/"
                 }
             }

@@ -15,6 +15,7 @@ export default {
 
 <template>
   <v-combobox
+    :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
     :items="list"
