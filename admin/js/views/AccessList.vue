@@ -334,8 +334,7 @@ export default {
       <v-text-field
         ref="value"
         v-model="value"
-        :label="$gettext('Access value')"
-        :hint="$gettext('Role name which can be assigned to pages and users')"
+        :label="$gettext('Access value') + ' ‒ ' + $gettext('Role name which can be assigned to pages and users')"
         maxlength="100"
         counter
         autofocus
