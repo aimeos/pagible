@@ -107,7 +107,7 @@ export default {
     },
 
     label(item) {
-      return this.$pgettext('st', item.label || item.type)
+      return this.$pgettext('st', item.label || item.type).replace('::', ' ')
     },
 
     reload() {

@@ -689,7 +689,7 @@ export default {
     },
 
     title(el) {
-      return itemTitle(el.data) || this.$pgettext('st', el.type) || ''
+      return itemTitle(el.data) || this.$pgettext('st', el.type).replace('::', ' ') || ''
     },
 
     toggle() {
@@ -1029,7 +1029,7 @@ export default {
             <div class="element-title">
               {{ el.type === 'reference' ? elements[el.refid]?.name : title(el) }}
             </div>
-            <div class="element-type">{{ $pgettext('st', el.type) }}</div>
+            <div class="element-type">{{ $pgettext('st', el.type).replace('::', ' ') }}</div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <Fields

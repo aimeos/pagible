@@ -81,7 +81,7 @@ export default {
           @click="toggle(key, code)"
           rounded="lg"
         >
-          <span class="name">{{ $pgettext('st', code) }}</span>
+          <span class="name">{{ $pgettext('st', code).replace('::', ' ') }}</span>
           <span class="value">{{ value }}</span>
         </v-list-item>
       </v-list-group>
