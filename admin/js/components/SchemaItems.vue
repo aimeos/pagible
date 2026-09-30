@@ -198,7 +198,7 @@ export default {
 <style scoped>
 .schemas {
   display: flex;
-  border: 1px solid rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.32);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 8px;
   overflow: hidden;
 }

@@ -17,6 +17,7 @@ return [
             'colors' => [
                 'background' => '#1E293B',
                 'surface' => '#FFFFFF',
+                'surface-light' => '#EEF2F6',
                 'emphasis' => '#F5F6FB',
                 'on-emphasis' => '#1E1B4B',
                 'primary' => '#1D4ED8',
@@ -47,6 +48,7 @@ return [
             'colors' => [
                 'background' => '#0F172A',
                 'surface' => '#141E33',
+                'surface-light' => '#323A42',
                 'emphasis' => '#2B3A59',
                 'on-emphasis' => '#EEF0FF',
                 'primary' => '#60A5FA',

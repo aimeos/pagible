@@ -147,7 +147,7 @@ body {
 /* Slide animation */
 .slide-stack-enter-active,
 .slide-stack-leave-active {
-  box-shadow: -24px 0 48px -16px rgba(var(--v-theme-background), 0.45);
+  box-shadow: -24px 0 48px -16px rgba(var(--v-shadow-color), 0.45);
 }
 
 .slide-stack-enter-active {
@@ -178,5 +178,14 @@ button:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: 2px;
+}
+
+/* Primary lacks contrast on the dark background, use the lighter nav accent there */
+.v-app-bar :focus-visible,
+.v-navigation-drawer.nav :focus-visible,
+.detail-tabs :focus-visible,
+.menu-content :focus-visible,
+.toolbar :focus-visible {
+  outline-color: rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));
 }
 </style>

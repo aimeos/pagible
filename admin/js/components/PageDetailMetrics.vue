@@ -77,7 +77,6 @@ export default {
     clicks: [],
     visits: [],
     views: [],
-    colors: {},
     querypage: 1
   }),
 
@@ -87,8 +86,6 @@ export default {
   },
 
   created() {
-    const theme = this.$vuetify.theme
-    this.colors = theme.themes[theme.name]?.colors
     this.dateFormatter = new Intl.DateTimeFormat(this.$vuetify.locale.current, {
       day: 'numeric',
       month: 'numeric'
@@ -112,22 +109,25 @@ export default {
     this.referrers = null
     this.queries = null
     this.pagespeed = null
-    this.colors = null
   },
 
   computed: {
+    colors() {
+      return this.$vuetify.theme.current.colors
+    },
+
     palette() {
       return {
-        primary: this.colors?.primary || '#1D4ED8',
-        secondary: this.colors?.secondary || '#7C3AED',
-        success: this.colors?.success || '#0F766E'
+        primary: this.colors?.primary,
+        secondary: this.colors?.secondary,
+        success: this.colors?.success
       }
     },
 
     chartOptions() {
       const isRtl = this.$vuetify.locale.isRtl
-      const tickColor = this.colors?.['surface-variant']
-      const gridColor = this.colors?.['on-surface-variant']
+      const tickColor = this.colors?.['text-secondary'] || this.colors?.['on-surface']
+      const gridColor = this.colors?.['border-light']
 
       return markRaw({
         ...BASE_CHART_OPTIONS,
@@ -631,7 +631,7 @@ export default {
 .loading-overlay {
   inset: 0;
   position: absolute;
-  background: color-mix(in oklab, var(--v-theme-surface), transparent 60%);
+  background: rgba(var(--v-theme-surface), 0.4);
   backdrop-filter: blur(2px);
   z-index: 10;
 }
@@ -642,12 +642,7 @@ export default {
 }
 
 .emphasis-bg .text-medium-emphasis {
-  color: color-mix(
-    in srgb,
-    rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)))
-      calc(var(--v-medium-emphasis-opacity) * 100%),
-    transparent
-  );
+  color: rgba(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)), var(--v-medium-emphasis-opacity));
 }
 
 .title,

@@ -356,7 +356,7 @@ export default {
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .palette-item {
@@ -381,7 +381,7 @@ export default {
 .palette-item .info {
   overflow: hidden;
   font-size: 0.8125rem;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -395,7 +395,7 @@ export default {
 .palette-item .sep {
   margin: 0 4px;
   font-size: 0.75rem;
-  opacity: 0.6;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .palette-item kbd {
@@ -403,7 +403,7 @@ export default {
   min-width: 1.5em;
   margin-inline-start: 2px;
   padding: 0 5px;
-  border: 1px solid rgba(var(--v-border-color), 0.38);
+  border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
   border-bottom-width: 2px;
   border-radius: 4px;
   background: transparent;
@@ -414,7 +414,7 @@ export default {
 
 .palette-empty {
   padding: 16px 8px;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .palette-error {

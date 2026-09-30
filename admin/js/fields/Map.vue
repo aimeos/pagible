@@ -246,7 +246,7 @@ export default {
   z-index: 0;
   width: 100%;
   min-height: 320px;
-  border: 1px solid rgb(var(--v-theme-surface-variant));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 4px;
 }
 
@@ -257,15 +257,15 @@ export default {
 :deep(.location-marker) {
   border: 0;
   background: transparent;
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 45%));
+  filter: drop-shadow(0 2px 2px rgba(var(--v-shadow-color), 0.45));
 }
 
 :deep(.location-marker svg) {
   display: block;
   width: 36px;
   height: 44px;
-  fill: rgb(var(--v-theme-error));
-  stroke: #ffffff;
+  fill: rgb(var(--v-theme-map-accent, var(--v-theme-primary)));
+  stroke: rgb(var(--v-theme-on-map-accent, var(--v-theme-on-primary)));
   stroke-linejoin: round;
   stroke-width: 1.5px;
 }
@@ -279,7 +279,7 @@ export default {
 
 .hint {
   margin-top: 6px;
-  color: rgb(var(--v-theme-on-surface-variant));
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   font-size: 0.75rem;
 }
 </style>

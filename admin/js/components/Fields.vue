@@ -380,7 +380,7 @@ export default {
 .item {
   margin: 24px 0;
   padding-inline-start: 8px;
-  border-inline-start: 3px solid rgba(var(--v-theme-primary), 0.16);
+  border-inline-start: 3px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .item.protected {

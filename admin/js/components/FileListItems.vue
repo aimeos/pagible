@@ -1107,7 +1107,7 @@ a.item-usage {
 .items.list .v-list-item {
   content-visibility: auto;
   contain-intrinsic-size: auto 56px;
-  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 0;
   padding: 4px 0;
 }
@@ -1163,7 +1163,7 @@ a.item-usage {
 
 .items.grid .v-list-item {
   grid-template-rows: max-content;
-  border: 1px solid rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   content-visibility: auto;
   contain-intrinsic-size: auto 260px;
 }
@@ -1185,10 +1185,9 @@ a.item-usage {
 }
 
 .items.grid .v-list-item .item-menu {
-  background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-surface));
+  background: rgba(var(--v-theme-surface-variant), 0.8);
+  color: rgb(var(--v-theme-on-surface-variant));
   border-radius: 50%;
-  opacity: 0.6;
   right: 0;
 }
 

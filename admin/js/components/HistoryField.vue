@@ -212,7 +212,7 @@ export default {
   font-size: 0.75rem;
   font-style: italic;
   text-align: center;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .media-loading, .media-error {
@@ -247,7 +247,7 @@ export default {
 
 .empty-media {
   font-size: 0.875rem;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .file {
@@ -332,7 +332,7 @@ pre {
 
 .line-gap {
   text-align: center;
-  opacity: 0.6;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .whitespace::before {

@@ -139,14 +139,14 @@ export default {
 
 .plus {
   margin: 0 4px;
-  opacity: 0.6;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 kbd {
   display: inline-block;
   min-width: 1.75em;
   padding: 2px 6px;
-  border: 1px solid rgba(var(--v-border-color), 0.38);
+  border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
   border-bottom-width: 2px;
   border-radius: 4px;
   background: transparent;

@@ -118,7 +118,7 @@ export default {
 }
 
 .v-list-item.active:before {
-  color: rgb(var(--v-theme-warning));
+  color: rgb(var(--v-theme-primary));
   margin-inline-end: 4px;
   font-size: 150%;
   content: '•';

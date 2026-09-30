@@ -316,6 +316,7 @@ export default {
 .section-title {
   align-items: center;
   background-color: rgb(var(--v-theme-background));
+  color: rgb(var(--v-theme-on-background));
   display: flex;
   justify-content: center;
   margin: 40px 0 0;
@@ -335,7 +336,7 @@ export default {
 
 .items.grid .v-list-item {
   grid-template-rows: max-content;
-  border: 1px solid rgb(var(--v-theme-primary));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .items.grid .item-preview {

@@ -31,7 +31,7 @@ export default {
   align-items: center;
   gap: 16px;
   padding: 12px 8px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   opacity: calc(1 - var(--i) * 0.12);
 }
 

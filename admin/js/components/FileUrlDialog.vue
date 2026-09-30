@@ -296,7 +296,7 @@ export default {
 
 .items.grid .v-list-item {
   grid-template-rows: max-content;
-  border: 1px solid rgb(var(--v-theme-primary));
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .items.grid .item-preview {

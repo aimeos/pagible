@@ -464,7 +464,7 @@ export default {
 
 <style scoped>
 .toolbar-counter {
-  opacity: 0.85;
+  opacity: var(--v-medium-emphasis-opacity);
   margin-inline-end: 8px;
 }
 
@@ -480,12 +480,12 @@ h3.section-header:first-child {
 }
 
 .conflict-card.solved {
-  border-color: rgba(var(--v-theme-on-surface), 0.08);
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
   background: rgba(var(--v-theme-on-surface), 0.04);
 }
 
 .conflict-card.solved .conflict-key {
-  color: rgba(var(--v-theme-on-surface), 0.6);
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 
 .conflict-title {
@@ -517,7 +517,7 @@ h3.section-header:first-child {
 
 .diff-label {
   font-weight: 500;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
   white-space: nowrap;
 }
 
@@ -545,7 +545,7 @@ h3.section-header:first-child {
 }
 
 .conflict-diff .change-theirs {
-  background-color: rgba(var(--v-theme-error), 0.08);
+  background-color: rgba(var(--v-theme-warning), 0.08);
 }
 
 .conflict-diff .change-mine {

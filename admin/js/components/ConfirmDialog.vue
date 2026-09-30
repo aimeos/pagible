@@ -73,7 +73,7 @@ export default {
 
 .confirm-list {
   margin-top: 16px;
-  border: 1px solid rgba(var(--v-border-color), 0.38);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 4px;
   padding: 0;
 }
