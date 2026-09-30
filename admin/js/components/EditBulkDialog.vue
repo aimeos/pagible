@@ -73,8 +73,7 @@ export default {
       :items="locales()"
       :modelValue="lang"
       @update:modelValue="lang = $event"
-      :label="$gettext('Language')"
-      :hint="$gettext('Language of the content')"
+      :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the content')"
       variant="underlined"
       hide-details="auto"
     />

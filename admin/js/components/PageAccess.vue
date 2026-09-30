@@ -171,7 +171,7 @@ export default {
 
     <v-radio-group
       v-model="mode"
-      :hint="$gettext('Public pages are visible to everyone, others only to logged in users or users with the selected roles')"
+      :label="$gettext('Visibility') + ' ‒ ' + $gettext('Public pages are visible to everyone, others only to logged in users or users with the selected roles')"
       :disabled="saving"
       @update:model-value="select"
     >
@@ -184,8 +184,7 @@ export default {
       v-if="mode === 'restricted'"
       v-model="values"
       :items="items"
-      :label="$gettext('Access')"
-      :hint="$gettext('Only visitors with one of these roles can view the page')"
+      :label="$gettext('Access') + ' ‒ ' + $gettext('Only visitors with one of these roles can view the page')"
       :loading="loading"
       :disabled="saving"
       variant="underlined"

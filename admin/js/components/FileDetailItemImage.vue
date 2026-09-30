@@ -753,8 +753,7 @@ export default {
         >
           <v-textarea
             v-model="edittext"
-            :label="$gettext('Describe the changes')"
-            :hint="$gettext('Describe what should be changed in the image, e.g. make the sky blue')"
+            :label="$gettext('Describe the changes') + ' ‒ ' + $gettext('Describe what should be changed in the image, e.g. make the sky blue')"
             variant="underlined"
             autofocus
             clearable
@@ -800,8 +799,7 @@ export default {
                 v-model="extend.top"
                 variant="outlined"
                 controlVariant="hidden"
-                :label="$pgettext('image edge', 'Top')"
-                :hint="$gettext('Number of pixels added at this side of the image')"
+                :label="$pgettext('image edge', 'Top') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
                 :max="2000"
                 :min="0"
               />
@@ -813,8 +811,7 @@ export default {
                 v-model="extend.left"
                 variant="outlined"
                 controlVariant="hidden"
-                :label="$pgettext('image edge', 'Left')"
-                :hint="$gettext('Number of pixels added at this side of the image')"
+                :label="$pgettext('image edge', 'Left') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
                 :max="2000"
                 :min="0"
               />
@@ -824,8 +821,7 @@ export default {
                 v-model="extend.right"
                 variant="outlined"
                 controlVariant="hidden"
-                :label="$pgettext('image edge', 'Right')"
-                :hint="$gettext('Number of pixels added at this side of the image')"
+                :label="$pgettext('image edge', 'Right') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
                 :max="2000"
                 :min="0"
               />
@@ -837,8 +833,7 @@ export default {
                 v-model="extend.bottom"
                 variant="outlined"
                 controlVariant="hidden"
-                :label="$pgettext('image edge', 'Bottom')"
-                :hint="$gettext('Number of pixels added at this side of the image')"
+                :label="$pgettext('image edge', 'Bottom') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
                 :max="2000"
                 :min="0"
               />

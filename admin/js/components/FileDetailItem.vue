@@ -388,8 +388,7 @@ export default {
             :modelValue="item.name"
             @update:modelValue="update('name', $event)"
             variant="underlined"
-            :label="$gettext('Name')"
-            :hint="$gettext('Name to find the file in the media list')"
+            :label="$gettext('Name') + ' ‒ ' + $gettext('Name to find the file in the media list')"
             counter="255"
             maxlength="255"
           ></v-text-field>
@@ -402,8 +401,7 @@ export default {
             :modelValue="item.lang"
             @update:modelValue="update('lang', $event)"
             variant="underlined"
-            :label="$gettext('Language')"
-            :hint="$gettext('Language of the file content, choose none if used in all languages')"
+            :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the file content, choose none if used in all languages')"
           ></v-select>
         </v-col>
       </v-row>
@@ -499,8 +497,7 @@ export default {
               <v-textarea
                 ref="description"
                 @update:modelValue="descriptionUpdated(entry.value, $event)"
-                :label="$gettext('Description (%{lang})', { lang: entry.value })"
-                :hint="$gettext('Alternative text for screen readers and search engines, also used as caption')"
+                :label="$gettext('Description (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Alternative text for screen readers and search engines, also used as caption')"
                 :modelValue="item.description?.[entry.value] || ''"
                 :readonly="readonly"
                 variant="underlined"
@@ -550,8 +547,7 @@ export default {
               <v-textarea
                 ref="transcription"
                 @update:modelValue="transcriptionUpdated(entry.value, $event)"
-                :label="$gettext('Transcription (%{lang})', { lang: entry.value })"
-                :hint="$gettext('Spoken text in WebVTT format, shown as subtitles and transcript')"
+                :label="$gettext('Transcription (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Spoken text in WebVTT format, shown as subtitles and transcript')"
                 :modelValue="item.transcription?.[entry.value] || ''"
                 :readonly="readonly"
                 variant="underlined"
