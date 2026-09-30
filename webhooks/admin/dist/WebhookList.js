@@ -319,7 +319,7 @@ var m = "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.5
 	class: "item-subtitle item-endpoint"
 }, G = { class: "item-subtitle" }, K = { class: "item-aux text-end" }, q = { class: "item-subtitle" }, J = { class: "item-subtitle" }, Y = {
 	key: 0,
-	class: "item-subtitle webhook-paused text-warning"
+	class: "item-subtitle webhook-paused"
 }, X = {
 	key: 1,
 	class: "loading"
@@ -680,6 +680,6 @@ function $(e, m, h, g, _, v) {
 		"persistent"
 	])], 64);
 }
-var ie = /*#__PURE__*/ w(M, [["render", $]]);
+var ie = /*#__PURE__*/ w(M, [["render", $], ["__scopeId", "data-v-30e58480"]]);
 //#endregion
 export { ie as default };
