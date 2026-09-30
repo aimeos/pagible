@@ -33,14 +33,6 @@ input:-webkit-autofill:focus {
   direction: ltr;
 }
 
-.v-theme--light {
-  --v-theme-surface-light: 238, 242, 246;
-}
-
-.v-theme--dark {
-  --v-theme-surface-light: 50, 58, 66;
-}
-
 .v-locale--is-rtl .v-btn:not(.no-rtl) .v-icon {
   transform: scaleX(-1);
 }
@@ -79,7 +71,7 @@ input:-webkit-autofill:focus {
 }
 
 .tint-tabs {
-  background-color: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16);
+  background-color: rgba(var(--v-theme-primary), 0.16);
   color: rgb(var(--v-theme-on-surface));
 }
 
@@ -102,6 +94,15 @@ input:-webkit-autofill:focus {
 
 .v-tab.error:before {
   color: rgb(var(--v-theme-error));
+}
+
+/* The detail tabs are on the dark background in both themes: blend the status colors with its text color */
+.detail-tabs .v-tab.changed:before {
+  color: color-mix(in srgb, rgb(var(--v-theme-warning)) 50%, rgb(var(--v-theme-on-background)));
+}
+
+.detail-tabs .v-tab.error:before {
+  color: color-mix(in srgb, rgb(var(--v-theme-error)) 50%, rgb(var(--v-theme-on-background)));
 }
 
 .v-window {
@@ -131,10 +132,10 @@ input:-webkit-autofill:focus {
 
 .v-sheet.box {
   border-radius: 12px 12px 0 0;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-bottom: 0;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(var(--v-theme-on-surface), 0.06),
     0 -8px 32px -12px rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.25);
   height: 100%;
   margin: 0 1%;
@@ -164,7 +165,7 @@ input:-webkit-autofill:focus {
   scrollbar-color: rgba(var(--v-theme-on-surface), 0.24) transparent;
 }
 
-.v-navigation-drawer {
+.v-navigation-drawer.nav {
   scrollbar-color: rgba(var(--v-theme-on-background), 0.24) transparent;
 }
 
@@ -223,7 +224,7 @@ input:-webkit-autofill:focus {
 }
 
 .v-list-group:not(:last-child) {
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-activated-opacity));
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding: 4px 0;
 }
 
@@ -300,42 +301,47 @@ input:-webkit-autofill:focus {
 
 .v-dialog > .v-overlay__content > .v-card {
   overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 16px !important;
   background-color: rgb(var(--v-theme-surface));
   /* Layered shadow: crisp contact edge + soft ambient + wide brand-tinted glow */
   box-shadow:
-    0 1px 2px rgba(var(--v-theme-background), 0.08),
-    0 8px 24px -8px rgba(var(--v-theme-background), 0.2),
+    0 1px 2px rgba(var(--v-shadow-color), 0.08),
+    0 8px 24px -8px rgba(var(--v-shadow-color), 0.2),
     0 16px 40px -16px rgba(var(--v-theme-primary), 0.2) !important;
 }
 
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-list {
   box-shadow:
-    0 1px 2px rgba(var(--v-theme-background), 0.08),
-    0 12px 32px -12px rgba(var(--v-theme-background), 0.28) !important;
+    0 1px 2px rgba(var(--v-shadow-color), 0.08),
+    0 12px 32px -12px rgba(var(--v-shadow-color), 0.28) !important;
 }
 
-/* Unified dialog and menu headers: light accent tint, warning/error dialogs are tinted in their color */
+/* Unified dialog and menu headers: primary tint, warning/error dialogs are tinted in their color */
 .v-dialog > .v-overlay__content > .v-card > .v-toolbar,
 .v-menu > .v-overlay__content > .v-card > .v-toolbar {
   flex: 0 0 auto;
   border-bottom: 0;
-  background: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16) !important;
+  background: rgba(var(--v-theme-primary), 0.16) !important;
   color: rgb(var(--v-theme-on-surface)) !important;
 }
 
+/* Menus on the dark background use the nav accent and its text color */
+.v-menu > .v-overlay__content > .menu-content.v-card > .v-toolbar {
+  background: rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.16) !important;
+  color: rgb(var(--v-theme-on-background)) !important;
+}
+
 .v-overlay .v-card > .v-toolbar.bg-warning {
-  --header-tint: var(--v-theme-warning);
+  background: rgba(var(--v-theme-warning), 0.18) !important;
 }
 
 .v-overlay .v-card > .v-toolbar.bg-error {
-  --header-tint: var(--v-theme-error);
+  background: rgba(var(--v-theme-error), 0.18) !important;
 }
 
 .v-overlay .v-card > .v-toolbar:is(.bg-warning, .bg-error) {
-  background: color-mix(in srgb, rgb(var(--header-tint)) 18%, rgb(var(--v-theme-surface))) !important;
   color: rgb(var(--v-theme-on-surface)) !important;
 }
 
@@ -371,15 +377,22 @@ input:-webkit-autofill:focus {
   color: rgb(var(--v-theme-on-surface)) !important;
 }
 
-/* The app bar is dark in both themes: tonal buttons use a lightened tint and light text */
+/* The app bar is dark in both themes: tonal buttons tint their underlay in the theme color behind light text */
 .v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) {
-  --btn-tint: var(--v-theme-nav-accent, var(--v-theme-primary));
-  color: color-mix(in srgb, rgb(var(--btn-tint)) 65%, rgb(var(--v-theme-on-background))) !important;
+  color: rgb(var(--v-theme-nav-accent, var(--v-theme-primary))) !important;
 }
 
-.v-app-bar .v-btn:is(.text-error, .error) { --btn-tint: var(--v-theme-error); }
-.v-app-bar .v-btn.text-warning { --btn-tint: var(--v-theme-warning); }
-.v-app-bar .v-btn.saved { --btn-tint: var(--v-theme-success); }
+.v-app-bar .v-btn:where(.v-btn--variant-tonal, .error, .saved):is(.text-error, .error) {
+  color: rgb(var(--v-theme-error)) !important;
+}
+
+.v-app-bar .v-btn:where(.v-btn--variant-tonal, .error, .saved).text-warning {
+  color: rgb(var(--v-theme-warning)) !important;
+}
+
+.v-app-bar .v-btn.saved {
+  color: rgb(var(--v-theme-success)) !important;
+}
 
 .v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) > .v-btn__underlay {
   background-color: currentColor;
@@ -434,7 +447,7 @@ input:-webkit-autofill:focus {
 }
 
 .v-dialog > .v-overlay__content > .v-card > .v-card-actions {
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   background-color: transparent;
 }
 
@@ -545,6 +558,12 @@ input:-webkit-autofill:focus {
 
 .menu-content {
   background-color: rgb(var(--v-theme-background));
+  color: rgb(var(--v-theme-on-background));
+}
+
+/* Plugin load errors are shown on the dark background: blend the error color with its text color */
+.plugin-error {
+  color: color-mix(in srgb, rgb(var(--v-theme-error)) 50%, rgb(var(--v-theme-on-background)));
 }
 
 .loading,
@@ -601,7 +620,7 @@ input:-webkit-autofill:focus {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.55), transparent 60%), rgb(var(--v-theme-warning));
+  background: rgb(var(--v-theme-warning));
   box-shadow:
     0 0 0 2px rgb(var(--v-theme-surface)),
     0 0 8px 1px rgba(var(--v-theme-warning), 0.55);
@@ -696,22 +715,25 @@ input:-webkit-autofill:focus {
 input[readonly],
 textarea[readonly],
 .ck-editor .ck-read-only {
-  background-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 6%, rgb(var(--v-theme-surface))) !important;
+  background-color: rgba(var(--v-theme-primary), var(--v-hover-opacity)) !important;
 }
 
 .ck-editor {
   --ck-powered-by-background: rgb(var(--v-theme-surface-variant));
-  --ck-color-split-button-hover-background: color-mix(in srgb, rgb(var(--v-theme-primary)) 6%, rgb(var(--v-theme-surface)));
-  --ck-color-button-default-hover-background: color-mix(in srgb, rgb(var(--v-theme-primary)) 6%, rgb(var(--v-theme-surface)));
+  --ck-powered-by-text-color: rgb(var(--v-theme-on-surface-variant));
+  --ck-color-split-button-hover-background: rgba(var(--v-theme-primary), var(--v-hover-opacity));
+  --ck-color-button-default-hover-background: rgba(var(--v-theme-primary), var(--v-hover-opacity));
   --ck-color-toolbar-background: rgb(var(--v-theme-surface));
   --ck-color-base-background: rgb(var(--v-theme-surface));
+  --ck-color-base-foreground: rgb(var(--v-theme-surface-light));
   --ck-color-list-background: rgb(var(--v-theme-surface));
-  --ck-color-list-button-hover-background: color-mix(in srgb, rgb(var(--v-theme-primary)) 6%, rgb(var(--v-theme-surface)));
-  --ck-color-button-on-hover-background: color-mix(in srgb, rgb(var(--v-theme-primary)) 16%, rgb(var(--v-theme-surface)));
-  --ck-color-button-on-background: color-mix(in srgb, rgb(var(--v-theme-primary)) 16%, rgb(var(--v-theme-surface)));
+  --ck-color-list-button-hover-background: rgba(var(--v-theme-primary), var(--v-hover-opacity));
+  --ck-color-button-on-hover-background: rgba(var(--v-theme-primary), var(--v-activated-opacity));
+  --ck-color-button-on-background: rgba(var(--v-theme-primary), var(--v-activated-opacity));
   --ck-color-button-on-color: rgb(var(--v-theme-primary));
   --ck-color-focus-border: rgb(var(--v-theme-primary));
-  --ck-color-text: rgb(var(--v-theme-on-surface));
+  --ck-color-base-text: rgb(var(--v-theme-on-surface));
+  --ck-color-list-button-on-text: rgb(var(--v-theme-on-primary));
   --ck-content-font-color: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
 }
@@ -745,7 +767,7 @@ textarea[readonly],
 }
 
 .help {
-  color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--v-theme-on-surface-light));
   background-color: rgb(var(--v-theme-surface-light));
   padding: 16px 24px 16px 32px;
   margin-bottom: 16px;
@@ -776,6 +798,7 @@ textarea[readonly],
   flex-wrap: wrap;
   justify-content: center;
   background-color: rgb(var(--v-theme-background));
+  color: rgb(var(--v-theme-on-background));
 }
 
 @media (max-width: 768px) {

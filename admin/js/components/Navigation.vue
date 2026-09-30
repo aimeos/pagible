@@ -103,6 +103,7 @@ export default {
 
 <style scoped>
 .v-navigation-drawer.nav {
+  --v-border-color: var(--v-theme-on-background);
   background-color: rgb(var(--v-theme-background));
   border: none;
   color: rgb(var(--v-theme-on-background));
@@ -130,17 +131,17 @@ button.router-link {
 .btn-shortcuts .hint {
   margin-inline-start: auto;
   padding: 0 6px;
-  border: 1px solid rgba(var(--v-border-color), 0.38);
+  border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
   border-radius: 4px;
   background: transparent;
   font-family: inherit;
   font-size: 0.75rem;
-  opacity: 0.7;
+  color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
 }
 
 button.router-link:focus-visible,
 a.router-link:focus-visible {
-  outline: 2px solid rgb(var(--v-theme-primary));
+  outline: 2px solid rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));
   outline-offset: -2px;
   border-radius: 4px;
 }

@@ -346,11 +346,10 @@ export default {
   z-index: 999;
   position: absolute;
   transform: translate(-50%, -50%);
-  background: rgb(var(--v-theme-surface-variant));
-  color: rgb(var(--v-theme-surface));
+  background: rgba(var(--v-theme-surface-variant), 0.85);
+  color: rgb(var(--v-theme-on-surface-variant));
   border-radius: 10px;
   font-weight: bold;
-  opacity: 0.85;
   padding: 20px;
 }
 </style>

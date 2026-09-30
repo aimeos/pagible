@@ -224,16 +224,19 @@ export default {
             </template>
           </v-text-field>
         </template>
-        <v-alert v-show="error" color="error" :icon="mdiAlertOctagon">
+        <v-alert v-show="error" color="surface" border="start" border-color="error">
+          <template v-slot:prepend>
+            <v-icon color="error" :icon="mdiAlertOctagon" />
+          </template>
           {{ $gettext('Error') + ': ' + error }}
         </v-alert>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn v-if="urllogin" type="submit" variant="tonal" color="primary">
+        <v-btn v-if="urllogin" type="submit" variant="tonal">
           {{ $gettext('Sign in') }}
         </v-btn>
-        <v-btn v-else type="submit" variant="tonal" color="primary" :disabled="form != true && !autofilled">
+        <v-btn v-else type="submit" variant="tonal" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>
@@ -256,8 +259,7 @@ export default {
   color: rgb(var(--v-theme-on-primary));
   border-radius: 16px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 24px 48px -16px rgba(var(--v-theme-background), 0.6),
+    0 24px 48px -16px rgba(var(--v-shadow-color), 0.6),
     0 0 64px -8px rgba(var(--v-theme-primary), 0.45);
   padding: 8px;
   width: 20rem;
@@ -284,23 +286,41 @@ export default {
   justify-content: center;
 }
 
-/* the card is primary itself, so tint the button with its foreground color */
-.login .v-card-actions .v-btn--variant-tonal {
-  color: rgb(var(--v-theme-on-primary)) !important;
-}
-
+/* the button has no color, so it inherits the foreground color of the card */
 .login .v-card-actions .v-btn--variant-tonal .v-btn__underlay {
   opacity: 0.16;
 }
 
-.login .v-card-actions .v-btn--variant-tonal .v-btn__content {
-  color: inherit;
+/* tonal buttons use the surface text color by default which is dark on the colored card */
+.login .v-card.v-theme--light .v-card-actions .v-btn__content {
+  color: rgb(var(--v-theme-on-primary-darken-1, var(--v-theme-on-primary)));
 }
 
-.login .v-theme--light,
-.login .v-field--error,
-.login .v-field--error:not(.v-field--disabled) .v-field__clearable > .v-icon {
-  --v-theme-error: 255, 167, 38;
+.login .v-card.v-theme--dark .v-card-actions .v-btn__content {
+  color: rgb(var(--v-theme-on-primary));
+}
+
+/*
+ * WCAG 2.2 AAA (7:1) for text on the colored card: the light card uses the darker primary
+ * shade with its foreground color, labels and input text are fully opaque and the error
+ * color of the fields is the foreground color of the card as no theme color contrasts enough
+ */
+.login .v-card.v-theme--light {
+  background: rgb(var(--v-theme-primary-darken-1, var(--v-theme-primary)));
+  color: rgb(var(--v-theme-on-primary-darken-1, var(--v-theme-on-primary)));
+}
+
+.login .v-card .v-label,
+.login .v-card .v-field__input {
+  opacity: 1;
+}
+
+.login .v-card.v-theme--light .v-input {
+  --v-theme-error: var(--v-theme-on-primary-darken-1, var(--v-theme-on-primary));
+}
+
+.login .v-card.v-theme--dark .v-input {
+  --v-theme-error: var(--v-theme-on-primary);
 }
 
 .login .error {

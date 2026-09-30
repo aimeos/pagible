@@ -196,20 +196,20 @@ export default {
   >
     <v-expansion-panels v-model="opened" class="version-panels" elevation="2">
           <v-timeline side="end" align="start">
-            <v-timeline-item v-if="loading" dot-color="grey-lighten-1" size="small" width="100%">
+            <v-timeline-item v-if="loading" dot-color="text-secondary" size="small" width="100%">
               <div class="loading" role="status">{{ $gettext('Loading') }}<LoadingSpinner width="32" height="32" /></div>
             </v-timeline-item>
             <v-timeline-item v-else-if="failed" dot-color="error" size="small" width="100%">
               <div role="alert">{{ $gettext('Error fetching versions') }}</div>
               <v-btn variant="outlined" @click="fetch">{{ $gettext('Retry') }}</v-btn>
             </v-timeline-item>
-            <v-timeline-item v-else-if="!cards.length" dot-color="grey-lighten-1" size="small" width="100%">
+            <v-timeline-item v-else-if="!cards.length" dot-color="text-secondary" size="small" width="100%">
               <span role="status">{{ $gettext('No changes') }}</span>
             </v-timeline-item>
 
             <v-timeline-item
               v-for="card in cards" :key="card.key"
-              :dot-color="card.after.published ? 'success' : 'grey-lighten-1'"
+              :dot-color="card.after.published ? 'success' : 'text-secondary'"
               width="100%" size="small"
             >
               <v-expansion-panel :value="card.key" class="version-panel">
@@ -402,7 +402,7 @@ export default {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: 0.875rem;
-  opacity: 0.75;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .version-summary {
@@ -525,7 +525,7 @@ export default {
 
 .block-location {
   font-size: 0.8rem;
-  opacity: 0.7;
+  opacity: var(--v-medium-emphasis-opacity);
   margin-bottom: 8px;
 }
 

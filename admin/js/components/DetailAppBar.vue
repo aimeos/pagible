@@ -333,10 +333,6 @@ export default {
   padding: 0;
 }
 
-.publish-menu .v-toolbar-title {
-  color: rgb(var(--v-theme-on-background));
-}
-
 .publish-menu-actions {
   padding: 12px 16px;
 }
@@ -377,7 +373,7 @@ export default {
 }
 
 .menu-publish-pickers :deep(.v-picker .v-date-picker-month__day--selected button) {
-  color: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface-variant));
 }
 
 @media (max-width: 759px) {

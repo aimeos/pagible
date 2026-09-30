@@ -582,7 +582,7 @@ export const useDrawerStore = defineStore('drawer', {
  * not make them reactive.
  */
 const PluginError = markRaw({
-  render: () => h('div', { class: 'pa-4 text-error' }, gettext.$gettext('Failed to load plugin'))
+  render: () => h('div', { class: 'pa-4 plugin-error' }, gettext.$gettext('Failed to load plugin'))
 })
 
 function pluginComponent(def) {

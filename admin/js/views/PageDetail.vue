@@ -964,7 +964,7 @@ export default {
 </template>
 
 <style scoped>
-.v-tab.conflict {
-  color: rgb(var(--v-theme-error));
+.detail-tabs .v-tab.conflict {
+  color: color-mix(in srgb, rgb(var(--v-theme-error)) 50%, rgb(var(--v-theme-on-background)));
 }
 </style>

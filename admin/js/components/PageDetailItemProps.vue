@@ -241,8 +241,7 @@ export default {
             :items="statusItems"
             :readonly="readonly"
             :modelValue="item.status"
-            :label="$gettext('Status')"
-            :hint="$gettext('Disabled pages are offline, hidden pages are online but not shown in the navigation')"
+            :label="$gettext('Status') + ' ‒ ' + $gettext('Disabled pages are offline, hidden pages are online but not shown in the navigation')"
             @update:modelValue="update('status', $event)"
             variant="underlined"
             item-title="val"
@@ -343,8 +342,7 @@ export default {
             ref="type"
             :readonly="readonly"
             :modelValue="item.type"
-            :label="$gettext('Page type')"
-            :hint="$gettext('Template of the theme which defines the page layout')"
+            :label="$gettext('Page type') + ' ‒ ' + $gettext('Template of the theme which defines the page layout')"
             :items="Object.keys(schemas.themes[item.theme || 'cms']?.types || { page: '' })"
             @update:modelValue="update('type', $event)"
             variant="underlined"
@@ -400,7 +398,7 @@ export default {
 <style scoped>
 :deep(.v-field__prefix) {
   background: rgba(var(--v-theme-on-surface), 0.04);
-  border-inline-end: thin solid rgba(var(--v-theme-on-surface), 0.12);
+  border-inline-end: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding-inline: 8px;
   margin-inline-end: 4px;
   align-self: stretch;

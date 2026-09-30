@@ -985,7 +985,7 @@ export default {
 }
 
 .items .v-list-item {
-  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 0;
   contain-intrinsic-size: auto 56px;
   content-visibility: auto;

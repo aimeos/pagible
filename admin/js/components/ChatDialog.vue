@@ -502,7 +502,7 @@ export default {
 
 .chat-bubble.error {
   border-color: rgba(var(--v-theme-error), var(--v-border-opacity));
-  background-color: rgba(var(--v-theme-error), var(--v-activated-opacity));
+  background-color: rgba(var(--v-theme-error), 0.12);
 }
 
 /* User bubble: raw text, so honor its own newlines/spacing. */
@@ -549,7 +549,7 @@ export default {
   margin: 0 0 8px;
   padding-inline-start: 10px;
   border-inline-start: 3px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  opacity: 0.85;
+  opacity: var(--v-medium-emphasis-opacity);
 }
 
 .chat-md :deep(code) {
@@ -679,7 +679,7 @@ export default {
 .chat-input {
   flex: 0 0 auto;
   padding: 14px 16px 16px;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .chat-input :deep(textarea) {

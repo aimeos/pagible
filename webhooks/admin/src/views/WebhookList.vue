@@ -694,7 +694,7 @@ export default {
                 </div>
                 <div
                   v-if="item.paused_until"
-                  class="item-subtitle webhook-paused text-warning"
+                  class="item-subtitle webhook-paused"
                 >
                   {{ $pgettext("webhooks", "Paused until") }}:
                   {{ dateText(item.paused_until) }}
@@ -856,3 +856,10 @@ export default {
     </template>
   </CmsDialog>
 </template>
+
+<style scoped>
+/* Blended with the text color to keep AA contrast on hovered and focused list items */
+.webhook-paused {
+  color: color-mix(in srgb, rgb(var(--v-theme-warning)) 85%, rgb(var(--v-theme-on-surface)));
+}
+</style>

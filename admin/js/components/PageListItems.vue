@@ -2105,7 +2105,7 @@ export default {
 }
 
 .tree-node-inner {
-  border-bottom: 1px solid rgba(var(--v-border-color), 0.38);
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   align-items: start;
   display: flex;
   padding: 4px 0;
@@ -2182,7 +2182,7 @@ export default {
 }
 
 .tree-node-inner .item-domain {
-  color: initial;
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   display: block;
 }
 
