@@ -297,13 +297,13 @@ export default {
       const block = info.current || info.overwritten
 
       return block?.type
-        ? this.$pgettext('st', block.type) + ': ' + this.title(block)
+        ? this.$pgettext('st', block.type).replace('::', ' ') + ': ' + this.title(block)
         : this.$pgettext('fn', key)
     },
 
     title(block) {
       if (!block || typeof block !== 'object' || !block.type) return null
-      return itemTitle(block.data) || this.$pgettext('st', block.type) || ''
+      return itemTitle(block.data) || this.$pgettext('st', block.type).replace('::', ' ') || ''
     },
 
     wordDiff(w) {

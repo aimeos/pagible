@@ -927,7 +927,7 @@ export default {
             <v-icon v-if="item.publish_at" class="publish-at" :icon="mdiClockOutline" />
             <span class="item-title">{{ item.name || $gettext('New') }}</span>
           </div>
-          <div class="item-type item-subtitle">{{ item.type }}</div>
+          <div class="item-type item-subtitle">{{ item.type?.replace('::', ' ') }}</div>
         </div>
 
         <div class="item-aux">

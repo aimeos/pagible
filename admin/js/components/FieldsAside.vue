@@ -240,7 +240,7 @@ export default {
       </ActionMenu>
     </v-toolbar>
     <div class="element-info">
-      <span class="element-type">{{ $pgettext('st', element.type) }}</span>
+      <span class="element-type">{{ $pgettext('st', element.type).replace('::', ' ') }}</span>
       <v-spacer />
       <template v-if="actions && !readonly">
         <v-btn

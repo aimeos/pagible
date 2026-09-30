@@ -60,7 +60,7 @@ export default {
       const element = Object.values((block.after ? card.after : card.before).elements || {}).find(element => element.id === item?.refid)
       const title = plaintext(element?.name || item?.data?.title || item?.data?.text || '').replace(/\s+/g, ' ').slice(0, 60)
       const type = item?.type === 'reference' ? this.$gettext('Shared element')
-        : this.$pgettext('st', this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block'))
+        : this.$pgettext('st', this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block')).replace('::', ' ')
       return type + (title ? ': ' + title : '')
     },
 

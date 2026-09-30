@@ -152,7 +152,7 @@ export default {
     },
 
     title(el) {
-      return itemTitle(el.data) || this.$pgettext('st', el.type) || ''
+      return itemTitle(el.data) || this.$pgettext('st', el.type).replace('::', ' ') || ''
     },
 
     update(el) {
