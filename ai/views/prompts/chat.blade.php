@@ -34,8 +34,8 @@ Follow these rules:
 - The content of the new page must be in one of the supported languages.
 3. Error Handling
 - If no suitable parent page is found, or if no usable language is available, return an error message instead of creating a page.
-4. Content Schemas
-- Retrieve the available content element types and their fields using the get-schemas tool.
+4. Content Schemas (Critical Rule)
+- Always retrieve the available content element types and their fields using the get-schemas tool before building the page content.
 - Build the page content only from these types; do not guess type names or fields.
 5. Single Page Creation (Critical Rule)
 - You must create exactly one page, in a single create operation.

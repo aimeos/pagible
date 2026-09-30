@@ -249,7 +249,7 @@ export default {
 
       // reload the open page when its own item is saved elsewhere or after a reconnect that may
       // have missed a save, unless the user has unsaved edits
-      setupReload(this, 'page', this.item.id, () => this.reload(), () => !this.hasChanged && this.user.can('page:view'))
+      setupReload(this, 'page', this.item.id, () => this.refresh(), () => !this.hasChanged && this.user.can('page:view'))
     })
   },
 
@@ -528,6 +528,21 @@ export default {
       await this.$nextTick()
 
       focusInvalid(this.$refs.form)
+    },
+
+    // a chat turn may have changed this page via tool calls; reload it unless the user has unsaved edits
+    chatDone() {
+      if (!this.hasChanged && this.user.can('page:view')) {
+        this.refresh()
+      }
+    },
+
+    // reloads the page data and, on success, the preview iframe which renders the saved version
+    refresh() {
+      return this.reload().then((ok) => {
+        if (ok) this.$refs.editor?.reload()
+        return ok
+      })
     },
 
     review() {
@@ -931,7 +946,7 @@ export default {
   />
 
   <Teleport to="body">
-    <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" />
+    <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" @done="chatDone" />
     <HistoryDialog
       v-if="vhistory"
       v-model="vhistory"

@@ -341,12 +341,12 @@ export default {
     },
 
     toMinutes(item) {
-      item.value = item.value / 60
+      item.value = Math.round(item.value / 6) / 10
       return item
     },
 
     toPercent(item) {
-      item.value = item.value * 100
+      item.value = Math.round(item.value * 1000) / 10
       return item
     },
 

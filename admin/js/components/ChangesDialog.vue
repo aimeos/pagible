@@ -317,7 +317,7 @@ export default {
 <template>
   <CmsDialog
     v-model="show"
-    :title="$gettext('Conflicts from %{editor}', { editor: changed?.editor })"
+    :title="$gettext('Conflicts from %{editor}', { editor: changed?.editor || '' })"
     toolbar-color="error"
     max-width="800"
   >

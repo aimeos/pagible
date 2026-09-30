@@ -31,7 +31,7 @@ export function applyResult(vm, changed, successMsg, quiet) {
   if (changed) {
     applyConflict(vm, changed)
     vm.messages.add(
-      vm.$gettext('Merged with changes from %{editor}', { editor: changed.editor }),
+      vm.$gettext('Merged with changes from %{editor}', { editor: changed.editor || '' }),
       vm.hasConflict ? 'warning' : 'info'
     )
   } else if (!quiet) {
