@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "aimeos/pagible-core": "*@dev",
+        "aimeos/pagible-core": "~0.13",
         "friendsofsymfony/http-cache": "^3.2",
         "php-http/guzzle7-adapter": "^1.1"
     },

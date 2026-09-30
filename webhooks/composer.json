@@ -8,13 +8,13 @@
     "require": {
         "php": "^8.2",
         "ext-curl": "*",
-        "aimeos/pagible-core": "*@dev",
+        "aimeos/pagible-core": "~0.13",
         "guzzlehttp/psr7": "^2.6||^3.0",
         "symfony/http-foundation": "^7.0||^8.0"
     },
     "require-dev": {
-        "aimeos/pagible-admin": "*@dev",
-        "aimeos/pagible-graphql": "*@dev",
+        "aimeos/pagible-admin": "~0.13",
+        "aimeos/pagible-graphql": "~0.13",
         "orchestra/testbench": "^10.0||^11.0",
         "larastan/larastan": "^3.9"
     },

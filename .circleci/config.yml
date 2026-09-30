@@ -269,9 +269,9 @@ jobs:
       - run:
           name: Install isolated webhook package
           command: |
-            composer config repositories.admin '{"type":"path","url":"../admin","options":{"symlink":false}}'
-            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false}}'
-            composer config repositories.graphql '{"type":"path","url":"../graphql","options":{"symlink":false}}'
+            composer config repositories.admin '{"type":"path","url":"../admin","options":{"symlink":false,"versions":{"aimeos/pagible-admin":"0.13.x-dev"}}}'
+            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false,"versions":{"aimeos/pagible-core":"0.13.x-dev"}}}'
+            composer config repositories.graphql '{"type":"path","url":"../graphql","options":{"symlink":false,"versions":{"aimeos/pagible-graphql":"0.13.x-dev"}}}'
             composer config minimum-stability dev
             composer config prefer-stable true
             composer update -n --prefer-dist
@@ -296,8 +296,8 @@ jobs:
       - run:
           name: Install isolated provider
           command: |
-            composer config repositories.cashier '{"type":"path","url":"../cashier","options":{"symlink":false}}'
-            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false}}'
+            composer config repositories.cashier '{"type":"path","url":"../cashier","options":{"symlink":false,"versions":{"aimeos/pagible-cashier":"0.13.x-dev"}}}'
+            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false,"versions":{"aimeos/pagible-core":"0.13.x-dev"}}}'
             composer config minimum-stability dev
             composer config prefer-stable true
             composer update -n --prefer-dist

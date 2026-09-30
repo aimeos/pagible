@@ -8,14 +8,14 @@
 	"prefer-stable": true,
 	"minimum-stability": "dev",
 	"require": {
-		"aimeos/pagible-core": "dev-master",
-		"aimeos/pagible-admin": "dev-master",
-		"aimeos/pagible-ai": "dev-master",
-		"aimeos/pagible-graphql": "dev-master",
-		"aimeos/pagible-search": "dev-master",
-		"aimeos/pagible-jsonapi": "dev-master",
-		"aimeos/pagible-mcp": "dev-master",
-		"aimeos/pagible-theme": "dev-master"
+		"aimeos/pagible-core": "~0.13",
+		"aimeos/pagible-admin": "~0.13",
+		"aimeos/pagible-ai": "~0.13",
+		"aimeos/pagible-graphql": "~0.13",
+		"aimeos/pagible-search": "~0.13",
+		"aimeos/pagible-jsonapi": "~0.13",
+		"aimeos/pagible-mcp": "~0.13",
+		"aimeos/pagible-theme": "~0.13"
 	},
 	"require-dev": {
 		"orchestra/testbench": "^10.0||^11.0",
@@ -32,16 +32,16 @@
 		"aimeos/pagible-webhooks": "For signed outbound notifications when CMS content changes"
 	},
 	"repositories": [
-		{"type": "path", "url": "core"},
-		{"type": "path", "url": "admin"},
-		{"type": "path", "url": "ai"},
-		{"type": "path", "url": "graphql"},
-		{"type": "path", "url": "search"},
-		{"type": "path", "url": "jsonapi"},
-		{"type": "path", "url": "mcp"},
-		{"type": "path", "url": "theme"},
-		{"type": "path", "url": "webhooks"},
-		{"type": "path", "url": "cdn"}
+		{"type": "path", "url": "core", "options": {"versions": {"aimeos/pagible-core": "0.13.x-dev"}}},
+		{"type": "path", "url": "admin", "options": {"versions": {"aimeos/pagible-admin": "0.13.x-dev"}}},
+		{"type": "path", "url": "ai", "options": {"versions": {"aimeos/pagible-ai": "0.13.x-dev"}}},
+		{"type": "path", "url": "graphql", "options": {"versions": {"aimeos/pagible-graphql": "0.13.x-dev"}}},
+		{"type": "path", "url": "search", "options": {"versions": {"aimeos/pagible-search": "0.13.x-dev"}}},
+		{"type": "path", "url": "jsonapi", "options": {"versions": {"aimeos/pagible-jsonapi": "0.13.x-dev"}}},
+		{"type": "path", "url": "mcp", "options": {"versions": {"aimeos/pagible-mcp": "0.13.x-dev"}}},
+		{"type": "path", "url": "theme", "options": {"versions": {"aimeos/pagible-theme": "0.13.x-dev"}}},
+		{"type": "path", "url": "webhooks", "options": {"versions": {"aimeos/pagible-webhooks": "0.13.x-dev"}}},
+		{"type": "path", "url": "cdn", "options": {"versions": {"aimeos/pagible-cdn": "0.13.x-dev"}}}
 	],
 	"autoload": {
 		"psr-4": {
