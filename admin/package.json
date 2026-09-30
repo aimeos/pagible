@@ -1,6 +1,6 @@
 {
   "name": "admin",
-  "version": "0.13-dev",
+  "version": "0.14-dev",
   "private": true,
   "type": "module",
   "description": "PagibleAI CMS admin backend",

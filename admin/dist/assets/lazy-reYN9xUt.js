@@ -1,0 +1,1 @@
+import{Zn as e,er as t,vn as n}from"./charts-jDwLkx1m.js";import{Z as r}from"./layout-B7jolelR.js";var i=r({eager:Boolean},`lazy`);function a(r,i){let a=e(!1),o=t(()=>a.value||r.eager||i.value);n(i,()=>a.value=!0);function s(){r.eager||(a.value=!1)}return{isBooted:a,hasContent:o,onAfterLeave:s}}export{a as n,i as t};
