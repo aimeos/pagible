@@ -553,7 +553,7 @@ function $(e, m, h, g, _, v) {
 			_: 1
 		}, 8, ["onClick"]), s(x, {
 			color: "primary",
-			variant: "flat",
+			variant: "tonal",
 			onClick: v.copySecret
 		}, {
 			default: f(() => [o(d(e.$pgettext("webhooks", "Copy secret")), 1)]),
@@ -562,8 +562,7 @@ function $(e, m, h, g, _, v) {
 			_.selected ? (l(), n(x, {
 				key: 0,
 				class: "btn-test order-first",
-				color: "warning",
-				variant: "tonal",
+				variant: "outlined",
 				disabled: _.saving || !_.server.enabled,
 				loading: _.testing,
 				onClick: m[6] ||= (e) => v.ping(_.selected),
@@ -581,7 +580,7 @@ function $(e, m, h, g, _, v) {
 			}, 8, ["onClick"]),
 			s(x, {
 				color: "primary",
-				variant: "flat",
+				variant: "tonal",
 				disabled: _.testing || !_.events.length || !_.selected && !v.validUrl(_.url),
 				loading: _.saving && !_.testing,
 				onClick: v.save
@@ -611,10 +610,15 @@ function $(e, m, h, g, _, v) {
 				modelValue: _.status,
 				"onUpdate:modelValue": m[2] ||= (e) => _.status = e,
 				"aria-label": e.$pgettext("webhooks", "Active"),
+				hint: e.$pgettext("webhooks", "Inactive webhooks receive no events and their queued deliveries are dropped"),
 				color: "primary",
-				"hide-details": "",
+				"hide-details": "auto",
 				inset: ""
-			}, null, 8, ["modelValue", "aria-label"])]),
+			}, null, 8, [
+				"modelValue",
+				"aria-label",
+				"hint"
+			])]),
 			_.selected ? (l(), i(t, { key: 1 }, [a("p", re, d(_.selected.endpoint), 1), v.undecryptable(_.selected) ? (l(), n(y, {
 				key: 0,
 				type: "warning",
@@ -628,6 +632,7 @@ function $(e, m, h, g, _, v) {
 				modelValue: _.url,
 				"onUpdate:modelValue": m[3] ||= (e) => _.url = e,
 				label: e.$pgettext("webhooks", "HTTPS endpoint URL"),
+				hint: e.$pgettext("webhooks", "Address receiving the signed events, it cannot be changed later"),
 				rules: [(t) => v.validUrl(t) || e.$pgettext("webhooks", "Not a valid URL")],
 				"validate-on": "invalid-input",
 				variant: "underlined",
@@ -636,6 +641,7 @@ function $(e, m, h, g, _, v) {
 			}, null, 8, [
 				"modelValue",
 				"label",
+				"hint",
 				"rules"
 			])),
 			s(M, {
@@ -643,22 +649,29 @@ function $(e, m, h, g, _, v) {
 				"onUpdate:modelValue": m[4] ||= (e) => _.events = e,
 				items: _.names,
 				label: e.$pgettext("webhooks", "Events"),
+				hint: e.$pgettext("webhooks", "Events sent to the webhook, queued deliveries of removed events are cancelled"),
 				variant: "underlined",
 				multiple: "",
 				chips: ""
 			}, null, 8, [
 				"modelValue",
 				"items",
-				"label"
+				"label",
+				"hint"
 			]),
 			s(w, {
 				modelValue: _.name,
 				"onUpdate:modelValue": m[5] ||= (e) => _.name = e,
 				label: e.$pgettext("webhooks", "Name"),
+				hint: e.$pgettext("webhooks", "Optional name to tell webhooks with the same endpoint apart, visible to all webhook editors"),
 				class: "webhook-name",
 				variant: "underlined",
 				maxlength: "100"
-			}, null, 8, ["modelValue", "label"])
+			}, null, 8, [
+				"modelValue",
+				"label",
+				"hint"
+			])
 		], 64))]),
 		_: 1
 	}, 8, [
