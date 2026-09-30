@@ -42,6 +42,7 @@ const ariaName = (key) => (key === ' ' ? 'Space' : upper(key))
  * "scope" is "global" (independent of the view), "view" (action of the topmost view) or "list" (focused list item)
  * "scope" "tree" commands are handled by the page tree
  * "key" contains the KeyboardEvent keys (with Ctrl/Cmd if "mod" and Shift if "shift" is set)
+ * "permission" lists the permissions of which the user needs at least one to use the command
  * The displayed "keys" and the "aria" value for aria-keyshortcuts are added from the first key
  */
 export const commands = {
@@ -62,6 +63,7 @@ export const commands = {
   save: {
     scope: 'view',
     icon: mdiContentSave,
+    permission: ['page:save', 'file:save', 'element:save'],
     mod: true,
     key: ['s'],
     label: () => gettext.$gettext('Save changes')
@@ -69,6 +71,7 @@ export const commands = {
   publish: {
     scope: 'view',
     icon: mdiPublish,
+    permission: ['page:publish', 'file:publish', 'element:publish'],
     mod: true,
     shift: true,
     key: ['s'],
@@ -77,6 +80,7 @@ export const commands = {
   create: {
     scope: 'view',
     icon: mdiPlus,
+    permission: ['page:add', 'file:add', 'element:add'],
     key: ['n'],
     label: () => gettext.$gettext('New page, file or element')
   },
@@ -126,12 +130,14 @@ export const commands = {
   drop: {
     scope: 'list',
     icon: mdiDelete,
+    permission: ['page:drop', 'file:drop', 'element:drop'],
     key: isMac ? ['Delete', 'Backspace'] : ['Delete'], // Mac keyboards label Backspace as "delete"
     label: () => gettext.$gettext('Delete focused page, file or element')
   },
   copy: {
     scope: 'tree',
     icon: mdiContentCopy,
+    permission: ['page:add'],
     mod: true,
     key: ['c'],
     label: () => gettext.$gettext('Copy page')
@@ -139,6 +145,7 @@ export const commands = {
   cut: {
     scope: 'tree',
     icon: mdiContentCut,
+    permission: ['page:move'],
     mod: true,
     key: ['x'],
     label: () => gettext.$gettext('Cut page')
@@ -146,6 +153,7 @@ export const commands = {
   paste: {
     scope: 'tree',
     icon: mdiContentPaste,
+    permission: ['page:add', 'page:move'],
     mod: true,
     key: ['v'],
     label: () => gettext.$gettext('Paste page')

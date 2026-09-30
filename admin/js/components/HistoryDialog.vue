@@ -313,7 +313,7 @@ export default {
           <span>{{ active.unsaved ? $gettext('Previous version: Latest saved version') : $gettext('Previous version: %{date}', { date: date(active.before.created_at) }) }}</span>
           <span role="status">{{ $gettext('%{selected} of %{total} selected for reverting', { selected: selected(active), total: active.keys.length }) }}</span>
         </div>
-        <v-btn class="restore-selected" variant="tonal" color="info" :disabled="!selected(active)" @click="apply(active)">
+        <v-btn class="restore-selected" variant="tonal" color="primary" :disabled="!selected(active)" @click="apply(active)">
           {{ $gettext('Revert selected changes') }}
         </v-btn>
         <v-btn class="restore-whole" variant="outlined" @click="$emit('use', active.before, active.unsaved)">
@@ -606,7 +606,6 @@ export default {
   .restore-selected {
     order: 1;
     flex: 1;
-    min-width: 0;
     margin: 0;
     font-size: 0.8rem;
     letter-spacing: normal;

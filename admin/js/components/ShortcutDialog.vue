@@ -2,7 +2,8 @@
 
 <script>
 import CmsDialog from './Dialog.vue'
-import { commands, routes, shortcuts } from '../shortcuts'
+import { allowed, commands, routes, shortcuts } from '../shortcuts'
+import { useUserStore } from '../stores'
 
 export default {
   components: {
@@ -10,13 +11,18 @@ export default {
   },
 
   setup() {
-    return { shortcuts }
+    const user = useUserStore()
+    return { shortcuts, user }
   },
 
   computed: {
     groups() {
-      const pick = (...names) => names.map((name) => ({ keys: commands[name].keys, label: commands[name].label() }))
-      const go = Object.values(routes).map((route) => ({ keys: route.keys, then: true, label: route.label() }))
+      const can = (perms) => this.user.can(perms)
+      const pick = (...names) =>
+        names.filter((name) => allowed(name)).map((name) => ({ keys: commands[name].keys, label: commands[name].label() }))
+      const go = Object.entries(routes)
+        .filter(([name]) => can(name))
+        .map(([, route]) => ({ keys: route.keys, then: true, label: route.label() }))
 
       return [
         {
@@ -46,27 +52,31 @@ export default {
         },
         {
           title: this.$gettext('Page content'),
-          items: [{ keys: ['Alt', '↑ ↓'], label: this.$gettext('Move content element up or down') }]
+          items: can('page:save') ? [{ keys: ['Alt', '↑ ↓'], label: this.$gettext('Move content element up or down') }] : []
         },
         {
           title: this.$gettext('Page tree'),
-          items: [
-            { keys: ['↑', '↓'], label: this.$gettext('Move between pages') },
-            { keys: ['→'], label: this.$gettext('Expand page') },
-            { keys: ['N'], label: this.$gettext('Add subpage to focused page') },
-            { keys: ['Alt', '↑ ↓ ← →'], label: this.$gettext('Reorder or re-nest page') },
-            ...pick('copy', 'cut', 'paste')
-          ]
+          items: can('page:view')
+            ? [
+                { keys: ['↑', '↓'], label: this.$gettext('Move between pages') },
+                { keys: ['→'], label: this.$gettext('Expand page') },
+                ...(can('page:add') ? [{ keys: ['N'], label: this.$gettext('Add subpage to focused page') }] : []),
+                ...(can('page:move') ? [{ keys: ['Alt', '↑ ↓ ← →'], label: this.$gettext('Reorder or re-nest page') }] : []),
+                ...pick('copy', 'cut', 'paste')
+              ]
+            : []
         },
         {
           title: this.$gettext('AI chat'),
-          items: [
-            { keys: ['Enter'], label: this.$gettext('Send message') },
-            { keys: ['Shift', 'Enter'], label: this.$gettext('New line') },
-            { keys: ['↑', '↓'], label: this.$gettext('Recall previous messages') }
-          ]
+          items: can(['page:chat', 'file:chat', 'element:chat'])
+            ? [
+                { keys: ['Enter'], label: this.$gettext('Send message') },
+                { keys: ['Shift', 'Enter'], label: this.$gettext('New line') },
+                { keys: ['↑', '↓'], label: this.$gettext('Recall previous messages') }
+              ]
+            : []
         }
-      ]
+      ].filter((group) => group.items.length)
     }
   }
 }

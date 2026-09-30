@@ -1,5 +1,6 @@
 import ChatDialog from '../../../js/components/ChatDialog.vue'
 import { useUserStore } from '../../../js/stores'
+import '../../../js/assets/base.css'
 
 function mountDialog(props = {}, perms = {}) {
   return cy
@@ -38,6 +39,14 @@ describe('ChatDialog', () => {
     })
     cy.get('button[aria-label="Close"]').click()
     cy.get('@update').should('have.been.calledWith', false)
+  })
+
+  it('shows square buttons in the message input', () => {
+    mountDialog({}, { 'audio:transcribe': true })
+    cy.get('.chat-input .v-btn').should('have.length', 2).each(($btn) => {
+      const { width, height } = $btn[0].getBoundingClientRect()
+      expect(width, 'width').to.equal(height)
+    })
   })
 
   it('renders the message input textarea', () => {

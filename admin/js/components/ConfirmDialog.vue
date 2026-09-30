@@ -53,7 +53,7 @@ export default {
 
     <template #actions>
       <v-btn @click="confirm.close(false)" variant="text">{{ $gettext('Cancel') }}</v-btn>
-      <v-btn @click="confirm.close(true)" class="btn-confirm" color="error" variant="flat">{{
+      <v-btn @click="confirm.close(true)" class="btn-confirm" color="error" variant="tonal">{{
         $gettext('Purge')
       }}</v-btn>
     </template>

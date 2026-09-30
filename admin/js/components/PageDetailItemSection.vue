@@ -221,7 +221,7 @@ export default {
           :icon="mdiViewGridPlus"
           class="btn-add"
           color="primary"
-          variant="flat"
+          variant="tonal"
         />
       </div>
     </v-sheet>

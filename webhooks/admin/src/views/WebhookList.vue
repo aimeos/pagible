@@ -823,7 +823,7 @@ export default {
         <v-btn variant="text" @click="close">{{
           $pgettext("webhooks", "Done")
         }}</v-btn>
-        <v-btn color="primary" variant="flat" @click="copySecret">{{
+        <v-btn color="primary" variant="tonal" @click="copySecret">{{
           $pgettext("webhooks", "Copy secret")
         }}</v-btn>
       </template>
@@ -832,8 +832,7 @@ export default {
         <v-btn
           v-if="selected"
           class="btn-test order-first"
-          color="warning"
-          variant="tonal"
+          variant="outlined"
           :disabled="saving || !server.enabled"
           :loading="testing"
           @click="ping(selected)"
@@ -845,7 +844,7 @@ export default {
         }}</v-btn>
         <v-btn
           color="primary"
-          variant="flat"
+          variant="tonal"
           :disabled="
             testing || !events.length || (!selected && !validUrl(url))
           "

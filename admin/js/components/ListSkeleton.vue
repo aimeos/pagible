@@ -47,7 +47,7 @@ export default {
   background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(var(--v-theme-primary), 0.06) 50%,
+      rgba(var(--v-theme-on-surface), 0.06) 50%,
       transparent 100%
     )
     rgba(var(--v-theme-on-surface), 0.08);

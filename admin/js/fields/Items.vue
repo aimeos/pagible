@@ -510,6 +510,8 @@ export default {
       :title="$gettext('Add element')"
       :icon="mdiViewGridPlus"
       class="btn-add"
+      color="primary"
+      variant="tonal"
       @click="add()"
     />
   </div>

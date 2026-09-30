@@ -56,8 +56,8 @@ export default {
       back: () => vm.goBack(),
       nextTab: () => vm.switchTab(1),
       prevTab: () => vm.switchTab(-1),
-      publish: () => vm.openPublish(),
-      save: () => !vm.saveDisabled && !vm.saving && vm.$emit('save')
+      ...(vm.user.can(`${vm.type}:publish`) && { publish: () => vm.openPublish() }),
+      ...(vm.user.can(`${vm.type}:save`) && { save: () => !vm.saveDisabled && !vm.saving && vm.$emit('save') })
     }))
 
     return {
@@ -202,7 +202,7 @@ export default {
         :title="$gettext('Save') + ` (${hint('save')})`"
         :aria-keyshortcuts="commands.save.aria"
         :disabled="saveDisabled"
-        :variant="saveDisabled ? 'plain' : 'flat'"
+        :variant="saveDisabled ? 'plain' : 'tonal'"
         :color="error ? 'error' : conflict ? 'warning' : !saveDisabled ? 'primary' : ''"
         :icon="saved ? mdiCheck : mdiDatabaseArrowDown"
         :class="{ saved }"
@@ -218,7 +218,7 @@ export default {
             :title="$gettext('Publish') + ` (${hint('publish')})`"
             :aria-keyshortcuts="commands.publish.aria"
             :disabled="pubDisabled"
-            :variant="pubDisabled ? 'plain' : 'flat'"
+            :variant="pubDisabled ? 'plain' : 'tonal'"
             :class="{ active: canPublish, error: error }"
             class="menu-publish"
           >
@@ -234,10 +234,10 @@ export default {
             <v-toolbar-title>{{ $gettext('Publish') }}</v-toolbar-title>
           </v-toolbar>
           <v-card-actions class="publish-menu-actions">
-            <v-btn ref="publishNow" @click="publish()" variant="flat" class="menu-publish-now" color="primary" :disabled="error" block>
+            <v-btn ref="publishNow" @click="publish()" variant="tonal" class="menu-publish-now" color="primary" :disabled="error" block>
               {{ $gettext('Publish') }}
             </v-btn>
-            <v-btn @click="publish(true)" variant="flat" class="menu-publish-close" color="primary" :disabled="error" block>
+            <v-btn @click="publish(true)" variant="tonal" class="menu-publish-close" color="primary" :disabled="error" block>
               {{ $gettext('Publish & Close') }}
             </v-btn>
           </v-card-actions>
@@ -266,7 +266,7 @@ export default {
               @click="schedule()"
               :disabled="!publishAt || error"
               :color="publishAt ? 'primary' : ''"
-              variant="flat"
+              variant="tonal"
               class="menu-schedule-at"
               block
               >{{ $gettext('Schedule') }}</v-btn
@@ -275,7 +275,7 @@ export default {
               @click="schedule(true)"
               :disabled="!publishAt || error"
               :color="publishAt ? 'primary' : ''"
-              variant="flat"
+              variant="tonal"
               class="menu-schedule-close"
               block
               >{{ $gettext('Schedule & Close') }}</v-btn
@@ -295,13 +295,7 @@ export default {
 </template>
 
 <style scoped>
-.v-toolbar-title {
-  margin-inline-start: 0;
-}
-
 .v-app-bar .v-btn.menu-save.saved {
-  background-color: rgb(var(--v-theme-success)) !important;
-  color: rgb(var(--v-theme-on-success)) !important;
   opacity: 1;
   animation: save-pulse 0.9s ease-out;
 }
@@ -335,17 +329,26 @@ export default {
   }
 }
 
-.v-app-bar .v-btn.menu-publish.active {
-  background-color: rgba(var(--v-theme-primary), 1);
-  color: rgb(var(--v-theme-on-primary));
-}
-
 .publish-menu {
   padding: 0;
 }
 
+.publish-menu .v-toolbar-title {
+  color: rgb(var(--v-theme-on-background));
+}
+
 .publish-menu-actions {
   padding: 12px 16px;
+}
+
+.publish-menu-actions .v-btn :deep(.v-btn__content) {
+  color: rgb(var(--v-theme-on-background));
+}
+
+/* The menu background is dark in both themes: use the lighter nav tint like the app bar */
+.publish-menu-actions .v-btn.text-primary:not(.v-btn--disabled) :deep(.v-btn__underlay) {
+  background-color: rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));
+  opacity: 0.45;
 }
 
 .publish-menu-schedule {

@@ -272,7 +272,7 @@ export default {
         :disabled="!hasInput || !valid || limited"
         data-confirm
         class="btn-apply"
-        variant="flat"
+        variant="tonal"
         color="primary"
         >{{ $gettext('Apply') }}</v-btn
       >

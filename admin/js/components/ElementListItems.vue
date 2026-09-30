@@ -186,7 +186,7 @@ export default {
   },
 
   setup() {
-    useListShortcuts((vm) => vm.user.can('element:add') && (vm.vschemas = true))
+    useListShortcuts('element', (vm) => (vm.vschemas = true))
 
     const listKey = useListKeys()
 
@@ -834,7 +834,7 @@ export default {
         @click="reload()"
         :prepend-icon="mdiRefresh"
         :title="$gettext('Updated by another user')"
-        color="primary"
+        color="warning"
         variant="tonal"
         size="small"
         rounded="lg"

@@ -69,8 +69,4 @@ export default {
 .dialog-actions {
   padding: 8px 16px;
 }
-
-.dialog-actions .v-btn {
-  min-width: 72px;
-}
 </style>

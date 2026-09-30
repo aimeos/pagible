@@ -308,7 +308,7 @@ export default {
   },
 
   setup() {
-    useListShortcuts((vm) => vm.newPage())
+    useListShortcuts('page', (vm) => vm.newPage())
 
     const languages = useLanguageStore()
     const messages = useMessageStore()

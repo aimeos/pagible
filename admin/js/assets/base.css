@@ -65,12 +65,6 @@ input:-webkit-autofill:focus {
   color: rgb(var(--v-theme-on-background));
 }
 
-.v-toolbar .v-btn.error,
-.v-toolbar .v-btn-group.error {
-  background-color: rgb(var(--v-theme-error));
-  color: rgb(var(--v-theme-on-error));
-}
-
 .v-toolbar__prepend,
 .v-toolbar__append {
   column-gap: 4px;
@@ -139,7 +133,6 @@ input:-webkit-autofill:focus {
   border-radius: 12px 12px 0 0;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-bottom: 0;
-  background-image: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.035), transparent 160px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 -8px 32px -12px rgba(var(--v-theme-nav-accent, var(--v-theme-primary)), 0.25);
@@ -164,14 +157,6 @@ input:-webkit-autofill:focus {
 
 .v-field--focused.v-field--error:not(.v-field--variant-underlined):not(.v-field--variant-plain) {
   box-shadow: 0 0 0 4px rgba(var(--v-theme-error), 0.16);
-}
-
-.v-field--variant-underlined .v-field__outline::after {
-  border-image: linear-gradient(90deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary))) 1;
-}
-
-.v-field--variant-underlined.v-field--error .v-field__outline::after {
-  border-image: none;
 }
 
 .v-application {
@@ -332,7 +317,7 @@ input:-webkit-autofill:focus {
     0 12px 32px -12px rgba(var(--v-theme-background), 0.28) !important;
 }
 
-/* Unified dialog and menu headers: light accent tint, warning/error dialogs use their own color */
+/* Unified dialog and menu headers: light accent tint, warning/error dialogs are tinted in their color */
 .v-dialog > .v-overlay__content > .v-card > .v-toolbar,
 .v-menu > .v-overlay__content > .v-card > .v-toolbar {
   flex: 0 0 auto;
@@ -341,12 +326,17 @@ input:-webkit-autofill:focus {
   color: rgb(var(--v-theme-on-surface)) !important;
 }
 
-.v-dialog > .v-overlay__content > .v-card > .v-toolbar.bg-warning {
-  background: rgba(var(--v-theme-warning), 0.16) !important;
+.v-overlay .v-card > .v-toolbar.bg-warning {
+  --header-tint: var(--v-theme-warning);
 }
 
-.v-dialog > .v-overlay__content > .v-card > .v-toolbar.bg-error {
-  background: rgba(var(--v-theme-error), 0.16) !important;
+.v-overlay .v-card > .v-toolbar.bg-error {
+  --header-tint: var(--v-theme-error);
+}
+
+.v-overlay .v-card > .v-toolbar:is(.bg-warning, .bg-error) {
+  background: color-mix(in srgb, rgb(var(--header-tint)) 18%, rgb(var(--v-theme-surface))) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
 }
 
 .v-dialog > .v-overlay__content > .v-card > .v-toolbar .v-toolbar-title,
@@ -370,16 +360,44 @@ input:-webkit-autofill:focus {
   opacity: 0;
 }
 
-/* Primary dialog action: brand gradient with a hover lift */
-.v-dialog .v-card-actions .v-btn--variant-flat.bg-primary {
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary))) !important;
-  color: rgb(var(--v-theme-on-primary)) !important;
-  box-shadow: 0 4px 14px -6px rgba(var(--v-theme-primary), 0.45);
+/* Primary dialog action: hover lift */
+.v-dialog .v-card-actions .v-btn--variant-tonal.text-primary:hover {
+  transform: translateY(-1px);
 }
 
-.v-dialog .v-card-actions .v-btn--variant-flat.bg-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px -6px rgba(var(--v-theme-primary), 0.7);
+/* Recording in progress */
+.v-btn.dictating {
+  background-color: rgba(var(--v-theme-primary), 0.24) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+}
+
+/* The app bar is dark in both themes: tonal buttons use a lightened tint and light text */
+.v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) {
+  --btn-tint: var(--v-theme-nav-accent, var(--v-theme-primary));
+  color: color-mix(in srgb, rgb(var(--btn-tint)) 65%, rgb(var(--v-theme-on-background))) !important;
+}
+
+.v-app-bar .v-btn:is(.text-error, .error) { --btn-tint: var(--v-theme-error); }
+.v-app-bar .v-btn.text-warning { --btn-tint: var(--v-theme-warning); }
+.v-app-bar .v-btn.saved { --btn-tint: var(--v-theme-success); }
+
+.v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) > .v-btn__underlay {
+  background-color: currentColor;
+  opacity: 0.45;
+}
+
+.v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) > .v-btn__content {
+  color: rgb(var(--v-theme-on-background));
+}
+
+/* Vuetify rounds the tint layer only for tonal buttons; keep it rounded when switching to plain/text */
+.v-btn__underlay {
+  border-radius: inherit;
+}
+
+/* The absolute tint layer would otherwise paint over the (static) label and tint the text */
+.v-btn > :is(.v-btn__content, .v-btn__prepend, .v-btn__append) {
+  position: relative;
 }
 
 /* Tactile press feedback on all buttons */
@@ -446,13 +464,23 @@ input:-webkit-autofill:focus {
   min-width: unset;
 }
 
+/* Text buttons never shrink below a comfortable click target */
+.v-btn:not(.v-btn--icon):not(.v-btn--stacked) {
+  min-width: 72px;
+}
+
+/* Tonal buttons: black-ish or white-ish text on a tint light enough for WCAG AAA contrast */
 .v-theme--dark .v-btn--variant-tonal .v-btn__underlay {
-  opacity: calc(var(--v-activated-opacity) * 3);
+  opacity: calc(var(--v-activated-opacity) * 2);
 }
 
 .v-btn--variant-tonal .v-btn__content {
   color: rgb(var(--v-theme-on-surface));
-  opacity: 0.8;
+}
+
+/* Warnings need a stronger tint to stand out */
+.v-btn--variant-tonal:is(.text-error, .text-warning) > .v-btn__underlay {
+  opacity: 0.35;
 }
 
 .v-date-picker-controls {
@@ -559,12 +587,12 @@ input:-webkit-autofill:focus {
   min-height: 48px;
 }
 
-.dictating {
-  background-color: rgb(var(--v-theme-primary)) !important;
-  color: rgb(var(--v-theme-on-primary)) !important;
+/* Draft marker: checkbox in the warning color with a status dot on its corner */
+.v-selection-control.draft .v-selection-control__input > .v-icon {
+  color: rgb(var(--v-theme-warning));
+  opacity: 1;
 }
 
-/* Draft marker: glowing status dot on the checkbox corner */
 .v-selection-control.draft .v-selection-control__input::after {
   content: '';
   position: absolute;
@@ -650,8 +678,8 @@ input:-webkit-autofill:focus {
 }
 
 .item-lang {
-  background-color: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
+  background-color: rgba(var(--v-theme-primary), 0.14);
+  color: color-mix(in srgb, rgb(var(--v-theme-primary)) 75%, rgb(var(--v-theme-on-surface)));
   display: inline-block;
   margin-inline-end: 4px;
   text-transform: uppercase;
@@ -792,7 +820,7 @@ textarea[readonly],
   }
 
   .v-btn,
-  .v-dialog .v-card-actions .v-btn--variant-flat.bg-primary:hover {
+  .v-dialog .v-card-actions .v-btn--variant-tonal.text-primary:hover {
     transform: none !important;
   }
 

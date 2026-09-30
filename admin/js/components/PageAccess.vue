@@ -201,7 +201,8 @@ export default {
     <div class="actions">
       <v-btn
         class="btn-apply-access"
-        variant="outlined"
+        variant="tonal"
+        color="primary"
         :loading="saving"
         :disabled="!valid || limited"
         @click="apply(false)"

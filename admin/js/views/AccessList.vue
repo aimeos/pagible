@@ -349,7 +349,7 @@ export default {
           :disabled="addDisabled"
           :loading="saving"
           color="primary"
-          variant="flat"
+          variant="tonal"
         >
           {{ $gettext('Add') }}
         </v-btn>

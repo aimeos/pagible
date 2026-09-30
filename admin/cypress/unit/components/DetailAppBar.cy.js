@@ -1,8 +1,9 @@
-import { h, ref } from 'vue'
+import { h, reactive, ref } from 'vue'
 import { VLayout, VTab, VTabs } from 'vuetify/components'
 import DetailAppBar from '../../../js/components/DetailAppBar.vue'
 import { useDrawerStore, useUserStore, useViewStack } from '../../../js/stores'
 import { keydown } from '../../../js/shortcuts'
+import '../../../js/assets/base.css'
 
 describe('DetailAppBar', () => {
   function mount(props = {}, children = () => []) {
@@ -104,5 +105,30 @@ describe('DetailAppBar', () => {
       keydown(new KeyboardEvent('keydown', { key: '\\', cancelable: true }))
       expect(drawer.aside).to.equal(!before)
     })
+  })
+
+  it('keeps the save and publish buttons round after saving and publishing', () => {
+    const attrs = reactive({ type: 'page', label: 'Page', name: 'Home', dirty: true, saving: false, publishing: false })
+
+    cy.mount(
+      { render: () => h(VLayout, () => [h(DetailAppBar, attrs)]) },
+      {
+        global: {
+          plugins: [{
+            install() {
+              useUserStore().me = { permission: { 'page:save': true, 'page:publish': true } }
+            }
+          }]
+        }
+      }
+    )
+
+    cy.then(() => (attrs.saving = true)).wait(50)
+    cy.then(() => Object.assign(attrs, { saving: false, dirty: false }))
+    cy.get('.menu-save.saved .v-btn__underlay').should('have.css', 'border-radius', '50%')
+
+    cy.then(() => (attrs.publishing = true)).wait(50)
+    cy.then(() => Object.assign(attrs, { publishing: false, published: true }))
+    cy.get('.menu-publish.v-btn--disabled .v-btn__underlay').should('have.css', 'border-radius', '50%')
   })
 })

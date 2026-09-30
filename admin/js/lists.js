@@ -8,15 +8,15 @@ import { useDrawerStore } from './stores'
 
 /**
  * Registers the list view actions unless the list is embedded, e.g. in a dialog
- * "create" gets the component instance and adds a new item
+ * "create" gets the component instance and adds a new item of the given type if the user is allowed to
  */
-export function useListShortcuts(create) {
+export function useListShortcuts(type, create) {
   useShortcuts((vm) =>
     vm.embed
       ? null
       : {
           aside: () => useDrawerStore().toggle('aside'),
-          create: () => create(vm),
+          ...(vm.user.can(`${type}:add`) && { create: () => create(vm) }),
           search: () => vm.$refs.search?.focus()
         }
   )

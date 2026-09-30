@@ -4,6 +4,7 @@
 
 import { getCurrentInstance, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, shallowReactive } from 'vue'
 import { commands, isMac, routes } from './commands'
+import { useUserStore } from './stores'
 
 export { commands, hint, routes } from './commands'
 
@@ -124,7 +125,13 @@ export function command(ev, ...scopes) {
 
   return Object.keys(commands).find((name) => {
     const cmd = commands[name]
-    return scopes.includes(cmd.scope) && cmd.key.includes(key) && !!cmd.mod === mod && !!cmd.shift === ev.shiftKey
+    return (
+      scopes.includes(cmd.scope) &&
+      cmd.key.includes(key) &&
+      !!cmd.mod === mod &&
+      !!cmd.shift === ev.shiftKey &&
+      allowed(name)
+    )
   })
 }
 
@@ -142,9 +149,21 @@ const globals = {
 }
 
 /**
+ * Returns true if the user has one of the permissions required by the command (reactive)
+ */
+export function allowed(name) {
+  const perms = commands[name]?.permission
+  return !!commands[name] && (!perms || useUserStore().can(perms))
+}
+
+/**
  * Returns true if the command can be executed in the current view (reactive)
  */
 export function available(name) {
+  if (!allowed(name)) {
+    return false
+  }
+
   switch (commands[name]?.scope) {
     case 'view':
       return has(name)
@@ -209,7 +228,7 @@ export function keydown(e) {
       case 'save':
       case 'publish':
         e.preventDefault() // never open the browser's "Save page" dialog
-        !e.repeat && trigger(name)
+        !e.repeat && allowed(name) && trigger(name)
         return
       case 'palette':
         // the rich text editor uses Ctrl/Cmd+K for links
@@ -231,7 +250,7 @@ export function keydown(e) {
   if (Date.now() - leader < LEADER_TIMEOUT) {
     leader = 0
 
-    if (routeKeys[e.key] && !overlay() && navigate) {
+    if (routeKeys[e.key] && useUserStore().can(routeKeys[e.key]) && !overlay() && navigate) {
       e.preventDefault()
       navigate(routeKeys[e.key])
     }

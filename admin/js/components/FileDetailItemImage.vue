@@ -762,7 +762,7 @@ export default {
           ></v-textarea>
 
           <template #actions>
-            <v-btn variant="flat" color="primary" :disabled="!edittext" @click="painted">{{
+            <v-btn variant="tonal" color="primary" :disabled="!edittext" @click="painted">{{
               $gettext('Edit image')
             }}</v-btn>
           </template>
@@ -846,7 +846,7 @@ export default {
           </v-row>
 
           <template #actions>
-            <v-btn variant="flat" color="primary" @click="uncropped">{{
+            <v-btn variant="tonal" color="primary" @click="uncropped">{{
               $gettext('Expand image')
             }}</v-btn>
           </template>

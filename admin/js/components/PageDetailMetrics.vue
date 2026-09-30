@@ -120,7 +120,7 @@ export default {
       return {
         primary: this.colors?.primary || '#1D4ED8',
         secondary: this.colors?.secondary || '#7C3AED',
-        success: this.colors?.success || '#047857'
+        success: this.colors?.success || '#0F766E'
       }
     },
 

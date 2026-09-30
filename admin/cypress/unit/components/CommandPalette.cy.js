@@ -67,7 +67,7 @@ describe('CommandPalette', () => {
     const save = cy.stub()
     const off = register({ save, back: cy.stub() })
 
-    mount({ 'page:view': true })
+    mount({ 'page:view': true, 'page:save': true })
     open()
 
     cy.contains('.palette-item', 'Back to list view').should('exist')
@@ -76,6 +76,16 @@ describe('CommandPalette', () => {
 
     cy.get('.command-palette.v-overlay--active').should('not.exist')
     cy.wrap(save).should('have.been.calledOnce').then(() => off())
+  })
+
+  it('hides the actions the user has no permission for', () => {
+    const off = register({ save: cy.stub(), back: cy.stub() })
+
+    mount({ 'page:view': true })
+    open()
+
+    cy.contains('.palette-item', 'Back to list view').should('exist')
+    cy.contains('.palette-item', 'Save changes').should('not.exist').then(() => off())
   })
 
   it('updates the actions when the topmost view changes while open', () => {

@@ -562,7 +562,7 @@ describe('PageDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
         vm.dirty = { page: true }
-        cy.get('.menu-save').should('have.class', 'bg-warning')
+        cy.get('.menu-save').should('have.class', 'text-warning')
       })
     })
 
@@ -570,7 +570,7 @@ describe('PageDetail', () => {
       mountDetail({ 'page:save': true }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.dirty = { page: true }
-        cy.get('.menu-save').should('have.class', 'bg-primary')
+        cy.get('.menu-save').should('have.class', 'text-primary')
       })
     })
 

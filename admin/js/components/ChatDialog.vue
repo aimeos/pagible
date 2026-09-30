@@ -421,7 +421,7 @@ export default {
               :aria-label="$gettext('Send')"
               :disabled="!input.trim()"
               color="primary"
-              variant="flat"
+              variant="tonal"
               size="small"
               class="chat-send"
             />
@@ -439,7 +439,6 @@ export default {
   height: calc(80vh - 132px);
   overflow-y: auto;
   padding: 20px;
-  background: linear-gradient(180deg, rgba(var(--v-theme-primary), 0.06), transparent 120px);
 }
 
 .chat-empty {
@@ -604,7 +603,7 @@ export default {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
+  background: rgb(var(--v-theme-primary));
   animation: chat-bounce 1.2s ease-in-out infinite;
 }
 
@@ -681,11 +680,6 @@ export default {
   flex: 0 0 auto;
   padding: 14px 16px 16px;
   border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
-.chat-send:not(.v-btn--disabled) {
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
-  color: rgb(var(--v-theme-on-primary));
 }
 
 .chat-input :deep(textarea) {

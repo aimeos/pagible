@@ -230,10 +230,10 @@ export default {
       </v-card-text>
 
       <v-card-actions>
-        <v-btn v-if="urllogin" type="submit" variant="flat" color="primary">
+        <v-btn v-if="urllogin" type="submit" variant="tonal" color="primary">
           {{ $gettext('Sign in') }}
         </v-btn>
-        <v-btn v-else type="submit" variant="flat" color="primary" :disabled="form != true && !autofilled">
+        <v-btn v-else type="submit" variant="tonal" color="primary" :disabled="form != true && !autofilled">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>
@@ -246,20 +246,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(var(--v-theme-primary), 0.28), transparent 45%),
-    radial-gradient(circle at 80% 85%, rgba(var(--v-theme-secondary), 0.24), transparent 45%),
-    rgb(var(--v-theme-background));
+  background: rgb(var(--v-theme-background));
   height: 100vh;
   width: 100%;
 }
 
 .login .v-card {
-  background: linear-gradient(
-    135deg,
-    rgb(var(--v-theme-primary)),
-    color-mix(in srgb, rgb(var(--v-theme-primary)) 55%, rgb(var(--v-theme-secondary)))
-  );
+  background: rgb(var(--v-theme-primary));
   color: rgb(var(--v-theme-on-primary));
   border-radius: 16px;
   box-shadow:
@@ -289,6 +282,19 @@ export default {
 
 .login .v-card-actions {
   justify-content: center;
+}
+
+/* the card is primary itself, so tint the button with its foreground color */
+.login .v-card-actions .v-btn--variant-tonal {
+  color: rgb(var(--v-theme-on-primary)) !important;
+}
+
+.login .v-card-actions .v-btn--variant-tonal .v-btn__underlay {
+  opacity: 0.16;
+}
+
+.login .v-card-actions .v-btn--variant-tonal .v-btn__content {
+  color: inherit;
 }
 
 .login .v-theme--light,

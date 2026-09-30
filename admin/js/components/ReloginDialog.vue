@@ -211,7 +211,7 @@ export default {
         form="relogin-form"
         :disabled="!urllogin && !password"
         :loading="loading"
-        variant="flat"
+        variant="tonal"
         color="primary"
       >
         {{ urllogin ? $gettext('Continue') : $gettext('Login') }}

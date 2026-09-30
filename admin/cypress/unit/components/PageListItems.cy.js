@@ -644,7 +644,7 @@ describe('PageListItems', () => {
   })
 
   it('cuts the focused page with Ctrl+X and Cmd+X', () => {
-    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+    mountList({}, { 'page:view': true, 'page:move': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
       const cut = (opts) => {
         vm.clip = null
@@ -662,7 +662,7 @@ describe('PageListItems', () => {
   })
 
   it('selects and deletes the focused page with Space and Delete', () => {
-    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+    mountList({}, { 'page:view': true, 'page:drop': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
       const stat = { data: { id: 'p1' } }
       const press = (key, opts = {}) => {

@@ -1,5 +1,7 @@
 import { computed } from 'vue'
-import { available, command, commands, execute, has, hint, keydown, register, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
+import { createPinia, setActivePinia } from 'pinia'
+import { useUserStore } from '../../../js/stores'
+import { available, command, commands, execute, has, hint, keydown, register, routes, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
 
 describe('shortcuts', () => {
   const key = (key, opts = {}) => {
@@ -16,9 +18,46 @@ describe('shortcuts', () => {
     el.remove()
   }
 
+  const all = Object.fromEntries(
+    [...Object.values(commands).flatMap((cmd) => cmd.permission || []), ...Object.keys(routes)].map((perm) => [perm, true])
+  )
+
   beforeEach(() => {
+    setActivePinia(createPinia())
+    useUserStore().me = { permission: all }
     shortcuts.palette = false
     shortcuts.sheet = false
+  })
+
+  it('ignores commands the user has no permission for', () => {
+    const save = cy.stub()
+    const off = register({ save, back: cy.stub() })
+    useUserStore().me = { permission: { 'page:view': true } }
+
+    expect(available('save')).to.equal(false)
+    expect(available('back')).to.equal(true)
+    key('s', { ctrlKey: true })
+    expect(save).not.to.have.been.called
+    expect(command(new KeyboardEvent('keydown', { key: 'Delete' }), 'list')).to.equal(undefined)
+
+    useUserStore().me = { permission: { 'file:save': true } }
+    expect(available('save')).to.equal(true)
+
+    off()
+  })
+
+  it('navigates only to the routes the user has access to', () => {
+    const navigate = cy.stub()
+    setNavigate(navigate)
+    useUserStore().me = { permission: { 'file:view': true } }
+
+    key('g')
+    key('p')
+    key('g')
+    key('m')
+
+    expect(navigate.args.map((args) => args[0])).to.deep.equal(['file:view'])
+    setNavigate(null)
   })
 
   it('calls only the actions of the most recently registered view', () => {

@@ -6,13 +6,15 @@ const stubs = {
   SchemaItems: { template: '<div class="schema-items-stub" />' },
 }
 
-function mountList(props = {}, perms = {}, apollo = {}) {
+// "early" sets the permissions before mounting, e.g. for shortcuts registered on mount
+function mountList(props = {}, perms = {}, apollo = {}, early = false) {
   return cy.mount(ElementListItems, {
     props: {
       ...props,
     },
     global: {
       stubs,
+      plugins: early ? [{ install: () => (useUserStore().me = { permission: perms }) }] : [],
       provide: {
         debounce: (fn) => fn,
       },
@@ -118,7 +120,7 @@ describe('ElementListItems', () => {
   })
 
   it('focuses the search field and opens the element type picker via shortcuts', () => {
-    mountList({ embed: false }, { 'element:view': true, 'element:add': true })
+    mountList({ embed: false }, { 'element:view': true, 'element:add': true }, {}, true)
     cy.get('.search input').should('exist')
     cy.then(() => expect(trigger('search')).to.equal(true))
     cy.get('.search input').should('have.focus')

@@ -177,12 +177,7 @@ a.router-link:visited {
   inset-inline-start: 0;
   width: 3px;
   border-radius: 3px;
-  /* secondary is lightened towards the text color so it stays visible on the dark navigation */
-  background: linear-gradient(
-    180deg,
-    rgb(var(--v-theme-nav-accent, var(--v-theme-primary))),
-    color-mix(in srgb, rgb(var(--v-theme-secondary)) 60%, rgb(var(--v-theme-on-background)))
-  );
+  background: rgb(var(--v-theme-nav-accent, var(--v-theme-primary)));
 }
 
 .v-list-item:has(.router-link-active) .icon {

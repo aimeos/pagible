@@ -166,7 +166,7 @@ export default {
   },
 
   setup() {
-    useListShortcuts((vm) => vm.$refs.upload?.click())
+    useListShortcuts('file', (vm) => vm.$refs.upload?.click())
 
     const listKey = useListKeys()
 
@@ -825,7 +825,7 @@ export default {
         @click="reload()"
         :prepend-icon="mdiRefresh"
         :title="$gettext('Updated by another user')"
-        color="primary"
+        color="warning"
         variant="tonal"
         size="small"
         rounded="lg"

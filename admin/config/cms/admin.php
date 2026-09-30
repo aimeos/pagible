@@ -25,7 +25,7 @@ return [
                 'secondary-darken-1' => '#6D28D9',
                 'error' => '#DC2626',
                 'info' => '#0369A1',
-                'success' => '#047857',
+                'success' => '#0F766E',
                 'warning' => '#B45309',
                 'map-accent' => '#FFD700',
                 'nav-accent' => '#60A5FA',
@@ -46,7 +46,7 @@ return [
         'dark' => [
             'colors' => [
                 'background' => '#0F172A',
-                'surface' => '#1F2336',
+                'surface' => '#141E33',
                 'emphasis' => '#2B3A59',
                 'on-emphasis' => '#EEF0FF',
                 'primary' => '#60A5FA',
@@ -55,7 +55,7 @@ return [
                 'secondary-darken-1' => '#8B5CF6',
                 'error' => '#F87171',
                 'info' => '#38BDF8',
-                'success' => '#34D399',
+                'success' => '#2DD4BF',
                 'warning' => '#FBBF24',
                 'map-accent' => '#FDE047',
                 'nav-accent' => '#60A5FA',
