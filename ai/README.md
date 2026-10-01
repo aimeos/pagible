@@ -12,26 +12,33 @@ composer require aimeos/pagible
 
 After installation, the configuration is available in `config/cms/ai.php`. Each AI feature can use a different provider and model:
 
-| Feature | Provider | Model | Description |
-|---------|----------|-------|-------------|
-| `write` | `gemini` | `gemini-2.5-flash` | Content generation |
-| `refine` | `gemini` | `gemini-2.5-flash` | Content refinement |
-| `describe` | `gemini` | `gemini-2.5-flash` | File description generation |
-| `translate` | `deepl` | | Text translation |
-| `imagine` | `gemini` | `gemini-2.5-flash-image` | Image generation |
-| `inpaint` | `gemini` | `gemini-2.5-flash-image` | Image inpainting |
-| `repaint` | `gemini` | `gemini-2.5-flash-image` | Image repainting |
-| `erase` | `clipdrop` | | Object removal from images |
-| `isolate` | `clipdrop` | | Background removal |
-| `uncrop` | `clipdrop` | | Image extension |
-| `upscale` | `clipdrop` | | Image upscaling |
-| `transcribe` | `openai` | `whisper-1` | Audio transcription |
+| Feature | Default provider | Description |
+|---------|------------------|-------------|
+| `write` | `gemini` | Content generation and the admin AI chat |
+| `refine` | `openai` | Content refinement |
+| `describe` | `gemini` | File description generation |
+| `translate` | `deepl` | Text translation |
+| `imagine` | `gemini` | Image generation |
+| `inpaint` | `gemini` | Image inpainting |
+| `repaint` | `gemini` | Image repainting |
+| `erase` | `clipdrop` | Object removal from images |
+| `isolate` | `clipdrop` | Background removal |
+| `uncrop` | `clipdrop` | Image extension |
+| `upscale` | `clipdrop` | Image upscaling |
+| `transcribe` | `openai` | Audio transcription |
 
-Global setting:
+If no model is configured, the provider's default model is used.
 
-| Option | Env Variable | Description |
-|--------|-------------|-------------|
-| `maxtoken` | `CMS_AI_MAXTOKEN` | Maximum tokens for AI responses |
+Global settings:
+
+| Option | Env Variable | Default | Description |
+|--------|-------------|---------|-------------|
+| `maxtoken` | `CMS_AI_MAXTOKEN` | provider default | Maximum tokens per AI response |
+| `maxsteps` | `CMS_AI_MAXSTEPS` | `25` | Maximum tool steps of the admin AI chat |
+| `timeout` | `CMS_AI_TIMEOUT` | `300` | Maximum seconds an AI request may run |
+| `maxinput` | `CMS_AI_MAXINPUT` | `1048576` | Maximum input size in bytes sent to a provider |
+| `maxdepth` | `CMS_AI_MAXDEPTH` | `20` | Maximum nesting depth of structured input |
+| `middleware` | | `['web', 'throttle:cms-ai']` | Middleware of the `cmsapi/chat` streaming route |
 
 ### Environment Variables
 
@@ -47,7 +54,6 @@ For example, to configure the write feature:
 
 ```env
 CMS_AI_WRITE=gemini
-CMS_AI_WRITE_MODEL=gemini-2.5-flash
 CMS_AI_WRITE_API_KEY=your-api-key
 ```
 
