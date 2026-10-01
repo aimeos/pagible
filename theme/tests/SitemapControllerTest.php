@@ -169,6 +169,16 @@ class SitemapControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testSitemapRateLimitAllowsIndexChunksAndNews(): void
+    {
+        \Illuminate\Support\Facades\RateLimiter::clear( md5( 'cms-sitemap' . '127.0.0.1' ) );
+
+        foreach( ['/sitemap.xml', '/sitemap-news.xml', '/sitemap-1.xml'] as $url ) {
+            $this->assertNotEquals( 429, $this->get( $url )->getStatusCode(), $url );
+        }
+    }
+
+
     public function testIndexExcludesRestrictedPages()
     {
         $page = Page::where( 'path', 'hidden' )->firstOrFail();

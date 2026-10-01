@@ -87,7 +87,7 @@ class ThemeServiceProvider extends Provider
         );
 
         RateLimiter::for( 'cms-sitemap', fn( $request ) =>
-            Limit::perMinutes( 5, 1 )->by( $request->ip() )
+            Limit::perMinute( 10 )->by( $request->ip() )
         );
     }
 
