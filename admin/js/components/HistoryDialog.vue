@@ -209,7 +209,7 @@ export default {
 
             <v-timeline-item
               v-for="card in cards" :key="card.key"
-              :dot-color="card.after.published ? 'success' : 'text-secondary'"
+              :dot-color="card.after.published ? 'success' : 'rgba(var(--v-theme-on-surface), 0.2)'"
               width="100%" size="small"
             >
               <v-expansion-panel :value="card.key" class="version-panel">
