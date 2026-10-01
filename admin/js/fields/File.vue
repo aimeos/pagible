@@ -358,7 +358,7 @@ export default {
     <slot name="label" />
   </FileProtect>
 
-  <v-row :class="{ 'field-columns': file.path }">
+  <v-row class="file-field" :class="{ 'field-columns': file.path }">
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
         <div v-if="file.id" class="file">
@@ -645,6 +645,18 @@ export default {
 .files .file .v-progress-linear {
   position: absolute;
   z-index: 1;
+}
+
+/* Layout depends on the width available to the field, not on the viewport */
+.file-field {
+  container-type: inline-size;
+}
+
+@container (width < 576px) {
+  .file-field > .v-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
 .field-columns > .v-col {
