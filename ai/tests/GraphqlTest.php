@@ -83,7 +83,7 @@ class GraphqlTest extends AiTestAbstract
     {
         $file = File::firstOrFail();
         $image = base64_encode( $this->pngBinary() );
-        Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
+        $fake = Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
         $response = $this->actingAs( $this->user )->graphQL( "
             mutation {
@@ -94,6 +94,8 @@ class GraphqlTest extends AiTestAbstract
                 'imagine' => $image
             ]
         ] );
+
+        $fake->assertCalled( 'imagine', fn( $args ) => $args[0] === "Generate content\n\nThis is a test context." );
     }
 
 

@@ -33,6 +33,8 @@ final class Imagine
             throw new Error( 'Prompt must not be empty' );
         }
 
+        $prompt = $args['prompt'] . ( !empty( $args['context'] ) ? "\n\n" . $args['context'] : '' );
+
         $provider = config( 'cms.ai.imagine.provider' );
         $config = config( 'cms.ai.imagine', [] );
         $model = config( 'cms.ai.imagine.model' );
@@ -44,7 +46,7 @@ final class Imagine
                 ->using( $provider, $config )
                 ->model( $model )
                 ->ensure( 'imagine' )
-                ->imagine( $args['prompt'], $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
+                ->imagine( $prompt, $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
                 ->base64();
         }
         catch( PrismaException $e )
