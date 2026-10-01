@@ -92,7 +92,7 @@ export default {
               >
                 <v-img v-if="fileurl(row[position], Object.values(row[position].previews || {})[0] ?? row[position].path)"
                   :srcset="filesrcset(row[position])" :src="fileurl(row[position], Object.values(row[position].previews || {})[0] ?? row[position].path)"
-                  :alt="name(row[position])" height="150" draggable="false" loading="lazy"
+                  :alt="name(row[position])" height="150" class="checkered" draggable="false" loading="lazy"
                 >
                   <template #placeholder><div class="media-loading" role="status"><LoadingSpinner width="24" height="24" />{{ $gettext('Loading preview') }}</div></template>
                   <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
@@ -120,7 +120,7 @@ export default {
           <p class="media-label">
             {{ preview.position === 'before' ? $gettext('Previous value') : $gettext('New value') }} · {{ name(preview.file) }}
           </p>
-          <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh">
+          <v-img v-if="fileurl(preview.file)" :src="fileurl(preview.file)" :alt="name(preview.file)" height="60vh" class="checkered">
             <template #placeholder><div class="media-loading" role="status"><LoadingSpinner width="24" height="24" />{{ $gettext('Loading preview') }}</div></template>
             <template #error><div class="media-error" role="status">{{ $gettext('Preview unavailable') }}</div></template>
           </v-img>
@@ -284,6 +284,10 @@ export default {
   border: 0;
   background: transparent;
   color: inherit;
+}
+
+.checkered {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
 }
 
 .media-zoom:focus-visible {
