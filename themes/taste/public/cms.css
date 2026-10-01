@@ -260,6 +260,10 @@ header nav .sidebar-close button {
         display: none;
     }
 
+    body > header:has(nav.small) {
+        backdrop-filter: none;
+    }
+
     header nav.small {
         position: fixed;
         inset: 0;

@@ -86,10 +86,17 @@ setups with one Cloudflare zone per domain:
 
 ## What is purged
 
-* **Pages**: The URLs of pages whose published content, route, access rules or files changed, i.e.
-  the same pages the complete-page cache of the theme package invalidates. A moved page is purged at
-  its old and new URL. The URLs are generated from the `cms.page` route and `CMS_CDN_URL` or `APP_URL`, or the page
-  domain if `cms.multidomain` is enabled. Without the theme package, no page URLs are purged.
+* **Pages**: The same pages the complete-page cache of the theme package invalidates. Pages are purged when
+  * a new version is published, also by scheduled publishing
+  * the URL path or domain changes on publishing; the page is purged at its old and new URL
+  * access rules are set or removed
+  * the page is deleted or permanently removed, including its subpages
+  * files they use are deleted from storage or moved to the private disk
+  * editors use the "Clear cache" action
+
+  Moving a page in the page tree doesn't change its URL and doesn't purge it. The URLs are generated from
+  the `cms.page` route and `CMS_CDN_URL` or `APP_URL`, or the page domain if `cms.multidomain` is enabled.
+  Without the theme package, no page URLs are purged.
 * **Files**: The public URLs of files and previews deleted from storage or moved to the private disk.
   New uploads always get new file names, so their URLs never serve outdated content.
 * **Shared content**: All pages which use a published, deleted or restored shared element or file.
