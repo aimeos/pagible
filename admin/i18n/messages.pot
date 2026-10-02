@@ -3110,12 +3110,17 @@ msgstr ""
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
+msgid "Form fields"
 msgstr ""
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
+msgid "Field"
+msgstr ""
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
 msgstr ""
 
 #: js/strings.js:154
@@ -3795,12 +3800,22 @@ msgstr ""
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
+msgid "Optional text shown between headline and contact form"
 msgstr ""
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
+msgid "Form fields shown to visitors in this order"
+msgstr ""
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr ""
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
 msgstr ""
 
 #: js/strings.js:294

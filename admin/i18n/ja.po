@@ -2887,13 +2887,18 @@ msgstr "対象のページまたはリンク"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "必須フィールド"
+msgid "Form fields"
+msgstr "フォーム項目"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "任意フィールド"
+msgid "Field"
+msgstr "項目"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "必須"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3574,13 +3579,23 @@ msgstr "お問い合わせフォームの上に表示される任意の見出し
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "訪問者が入力必須のフォーム項目"
+msgid "Optional text shown between headline and contact form"
+msgstr "見出しとお問い合わせフォームの間に表示される任意のテキスト"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "訪問者が任意で入力できるフォーム項目"
+msgid "Form fields shown to visitors in this order"
+msgstr "この順序で訪問者に表示されるフォーム項目"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "フォーム項目を選択するか、独自の名前を入力してください"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "訪問者はこの項目を入力する必要があります"
 
 #: js/strings.js:294
 msgctxt "fh"

@@ -2911,13 +2911,18 @@ msgstr "Målside eller lenke"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Obligatoriske felt"
+msgid "Form fields"
+msgstr "Skjemafelt"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Valgfrie felt"
+msgid "Field"
+msgstr "Felt"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Påkrevd"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3604,13 +3609,23 @@ msgstr "Valgfri overskrift vist over kontaktskjemaet"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Skjemafelt besøkende må fylle ut"
+msgid "Optional text shown between headline and contact form"
+msgstr "Valgfri tekst som vises mellom overskriften og kontaktskjemaet"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Skjemafelt besøkende kan fylle ut"
+msgid "Form fields shown to visitors in this order"
+msgstr "Skjemafelt som vises for besøkende i denne rekkefølgen"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Velg et skjemafelt eller skriv inn ditt eget navn"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Besøkende må fylle ut dette feltet"
 
 #: js/strings.js:294
 msgctxt "fh"

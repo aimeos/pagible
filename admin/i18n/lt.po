@@ -2942,13 +2942,18 @@ msgstr "Tikslinis puslapis arba nuoroda"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Privalomi laukeliai"
+msgid "Form fields"
+msgstr "Formos laukai"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Neprivalomi laukeliai"
+msgid "Field"
+msgstr "Laukas"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Privalomas"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3638,13 +3643,23 @@ msgstr "Neprivaloma antraštė virš kontaktų formos"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Formos laukai, kuriuos lankytojai privalo užpildyti"
+msgid "Optional text shown between headline and contact form"
+msgstr "Neprivalomas tekstas, rodomas tarp antraštės ir kontaktų formos"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Formos laukai, kuriuos lankytojai gali užpildyti"
+msgid "Form fields shown to visitors in this order"
+msgstr "Lankytojams šia tvarka rodomi formos laukai"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Pasirinkite formos lauką arba įveskite savo pavadinimą"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Lankytojai privalo užpildyti šį lauką"
 
 #: js/strings.js:294
 msgctxt "fh"

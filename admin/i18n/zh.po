@@ -2874,13 +2874,18 @@ msgstr "目标页面或链接"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "必填字段"
+msgid "Form fields"
+msgstr "表单字段"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "选填字段"
+msgid "Field"
+msgstr "字段"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "必填"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3561,13 +3566,23 @@ msgstr "联系表单上方显示的可选标题"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "访客必须填写的表单字段"
+msgid "Optional text shown between headline and contact form"
+msgstr "显示在标题和联系表单之间的可选文本"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "访客可以选择填写的表单字段"
+msgid "Form fields shown to visitors in this order"
+msgstr "按此顺序向访客显示的表单字段"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "选择表单字段或输入自定义名称"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "访客必须填写此字段"
 
 #: js/strings.js:294
 msgctxt "fh"

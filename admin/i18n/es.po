@@ -2928,13 +2928,18 @@ msgstr "Página de destino o enlace"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Campos obligatorios"
+msgid "Form fields"
+msgstr "Campos del formulario"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Campos opcionales"
+msgid "Field"
+msgstr "Campo"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Obligatorio"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3627,13 +3632,23 @@ msgstr "Título opcional mostrado encima del formulario de contacto"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Campos del formulario que los visitantes deben rellenar"
+msgid "Optional text shown between headline and contact form"
+msgstr "Texto opcional mostrado entre el título y el formulario de contacto"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Campos del formulario que los visitantes pueden rellenar"
+msgid "Form fields shown to visitors in this order"
+msgstr "Campos del formulario mostrados a los visitantes en este orden"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Seleccione un campo del formulario o introduzca su propio nombre"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Los visitantes deben rellenar este campo"
 
 #: js/strings.js:294
 msgctxt "fh"

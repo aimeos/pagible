@@ -2879,13 +2879,18 @@ msgstr "หน้าเป้าหมายหรือลิงค์"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "ฟิลด์ที่จำเป็น"
+msgid "Form fields"
+msgstr "ฟิลด์ของแบบฟอร์ม"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "ฟิลด์ที่ไม่บังคับ"
+msgid "Field"
+msgstr "ฟิลด์"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "จำเป็น"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3566,13 +3571,23 @@ msgstr "หัวข้อที่แสดงเหนือแบบฟอร
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "ช่องแบบฟอร์มที่ผู้เข้าชมต้องกรอก"
+msgid "Optional text shown between headline and contact form"
+msgstr "ข้อความเพิ่มเติมที่แสดงระหว่างหัวข้อและแบบฟอร์มติดต่อ"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "ช่องแบบฟอร์มที่ผู้เข้าชมกรอกได้ตามต้องการ"
+msgid "Form fields shown to visitors in this order"
+msgstr "ฟิลด์ของแบบฟอร์มที่แสดงต่อผู้เยี่ยมชมตามลำดับนี้"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "เลือกฟิลด์ของแบบฟอร์มหรือป้อนชื่อของคุณเอง"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "ผู้เยี่ยมชมต้องกรอกฟิลด์นี้"
 
 #: js/strings.js:294
 msgctxt "fh"

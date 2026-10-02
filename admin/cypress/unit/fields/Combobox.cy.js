@@ -15,7 +15,7 @@ describe('Combobox', () => {
     cy.mount(Combobox, {
       props: { modelValue: 'cat', config: { options: staticOptions } },
     })
-    cy.get('.v-combobox').should('contain', 'cat')
+    cy.get('.v-combobox input[role="combobox"]').should('have.value', 'Cat')
   })
 
   it('shows static options when the menu opens', () => {
@@ -32,6 +32,26 @@ describe('Combobox', () => {
     })
     cy.get('.v-combobox input[role="combobox"]').type('Hamster{enter}')
     cy.get('@update').should('have.been.called')
+  })
+
+  it('emits the option value instead of the option object', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(Combobox, {
+      props: { config: { options: staticOptions }, 'onUpdate:modelValue': onUpdate },
+    })
+    cy.get('.v-combobox').click()
+    cy.contains('.v-list-item', 'Cat').click()
+    cy.get('@update').should('have.been.calledWith', 'cat')
+  })
+
+  it('emits option values for multiple selection', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(Combobox, {
+      props: { modelValue: [], config: { options: staticOptions, multiple: true }, 'onUpdate:modelValue': onUpdate },
+    })
+    cy.get('.v-combobox').click()
+    cy.contains('.v-list-item', 'Cat').click()
+    cy.get('@update').should('have.been.calledWith', ['cat'])
   })
 
   it('shows empty state when no matching options exist', () => {

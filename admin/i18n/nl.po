@@ -2930,13 +2930,18 @@ msgstr "Doelpagina of link"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Verplichte velden"
+msgid "Form fields"
+msgstr "Formuliervelden"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Optionele velden"
+msgid "Field"
+msgstr "Veld"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Verplicht"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3630,13 +3635,23 @@ msgstr "Optionele kop boven het contactformulier"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Formuliervelden die bezoekers moeten invullen"
+msgid "Optional text shown between headline and contact form"
+msgstr "Optionele tekst tussen de kop en het contactformulier"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Formuliervelden die bezoekers kunnen invullen"
+msgid "Form fields shown to visitors in this order"
+msgstr "Formuliervelden die bezoekers in deze volgorde zien"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Selecteer een formulierveld of voer een eigen naam in"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Bezoekers moeten dit veld invullen"
 
 #: js/strings.js:294
 msgctxt "fh"

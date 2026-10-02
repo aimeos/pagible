@@ -2912,13 +2912,18 @@ msgstr "Sihtleht või link"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Kohustuslikud väljad"
+msgid "Form fields"
+msgstr "Vormi väljad"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Valikulised väljad"
+msgid "Field"
+msgstr "Väli"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Kohustuslik"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3603,13 +3608,23 @@ msgstr "Valikuline pealkiri kontaktivormi kohal"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Vormiväljad, mida külastajad peavad täitma"
+msgid "Optional text shown between headline and contact form"
+msgstr "Valikuline tekst pealkirja ja kontaktivormi vahel"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Vormiväljad, mida külastajad võivad täita"
+msgid "Form fields shown to visitors in this order"
+msgstr "Külastajatele selles järjekorras kuvatavad vormi väljad"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Valige vormi väli või sisestage oma nimi"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Külastajad peavad selle välja täitma"
 
 #: js/strings.js:294
 msgctxt "fh"
