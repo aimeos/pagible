@@ -806,6 +806,10 @@ textarea[readonly],
   color: rgb(var(--v-theme-on-background));
 }
 
+.editor-container > .toolbar .v-btn {
+  color: rgb(var(--v-theme-on-surface));
+}
+
 @media (max-width: 768px) {
   .toolbar {
     width: auto;
