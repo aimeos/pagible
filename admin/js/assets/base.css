@@ -833,27 +833,27 @@ textarea[readonly],
 }
 
 /* Content element status: colored start border and a faint header tint */
-.v-expansion-panels > .v-expansion-panel.changed {
+.v-expansion-panels .v-expansion-panel.changed {
   border-inline-start: 3px solid rgb(var(--v-theme-warning));
 }
 
-.v-expansion-panels > .v-expansion-panel.merged {
+.v-expansion-panels .v-expansion-panel.merged {
   border-inline-start: 3px solid rgb(var(--v-theme-info));
 }
 
-.v-expansion-panels > .v-expansion-panel.conflict {
+.v-expansion-panels .v-expansion-panel.conflict {
   border-inline-start: 3px solid rgb(var(--v-theme-error));
 }
 
-.v-expansion-panels > .v-expansion-panel.changed > .v-expansion-panel-title {
+.v-expansion-panels .v-expansion-panel.changed > .v-expansion-panel-title {
   background-color: rgba(var(--v-theme-warning), 0.04);
 }
 
-.v-expansion-panels > .v-expansion-panel.merged > .v-expansion-panel-title {
+.v-expansion-panels .v-expansion-panel.merged > .v-expansion-panel-title {
   background-color: rgba(var(--v-theme-info), 0.04);
 }
 
-.v-expansion-panels > .v-expansion-panel:is(.conflict, .error) > .v-expansion-panel-title {
+.v-expansion-panels .v-expansion-panel:is(.conflict, .error) > .v-expansion-panel-title {
   background-color: rgba(var(--v-theme-error), 0.04);
   color: rgb(var(--v-theme-error));
 }
