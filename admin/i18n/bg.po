@@ -2928,13 +2928,18 @@ msgstr "Целева страница или връзка"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Задължителни полета"
+msgid "Form fields"
+msgstr "Полета на формата"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Незадължителни полета"
+msgid "Field"
+msgstr "Поле"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Задължително"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3629,13 +3634,23 @@ msgstr "Незадължително заглавие, показано над �
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Полета от формуляра, които посетителите трябва да попълнят"
+msgid "Optional text shown between headline and contact form"
+msgstr "Незадължителен текст между заглавието и формата за контакт"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Полета от формуляра, които посетителите могат да попълнят"
+msgid "Form fields shown to visitors in this order"
+msgstr "Полета на формата, показвани на посетителите в този ред"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Изберете поле на формата или въведете собствено име"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Посетителите трябва да попълнят това поле"
 
 #: js/strings.js:294
 msgctxt "fh"

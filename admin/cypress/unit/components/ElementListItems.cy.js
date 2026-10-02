@@ -124,7 +124,7 @@ describe('ElementListItems', () => {
     cy.get('.search input').should('exist')
     cy.then(() => expect(trigger('search')).to.equal(true))
     cy.get('.search input').should('have.focus')
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
     cy.then(() => trigger('create'))
     cy.contains('.v-dialog:visible', 'Content elements').should('exist')
   })

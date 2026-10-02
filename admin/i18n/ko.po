@@ -2885,13 +2885,18 @@ msgstr "대상 페이지 또는 링크"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "필수 필드"
+msgid "Form fields"
+msgstr "양식 필드"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "선택 필드"
+msgid "Field"
+msgstr "필드"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "필수"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3572,13 +3577,23 @@ msgstr "문의 양식 위에 표시되는 선택적 제목"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "방문자가 반드시 입력해야 하는 양식 필드"
+msgid "Optional text shown between headline and contact form"
+msgstr "제목과 문의 양식 사이에 표시되는 선택적 텍스트"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "방문자가 선택적으로 입력할 수 있는 양식 필드"
+msgid "Form fields shown to visitors in this order"
+msgstr "이 순서로 방문자에게 표시되는 양식 필드"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "양식 필드를 선택하거나 직접 이름을 입력하세요"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "방문자가 이 필드를 반드시 입력해야 합니다"
 
 #: js/strings.js:294
 msgctxt "fh"

@@ -1,5 +1,6 @@
 import FileDetailItemImage from '../../../js/components/FileDetailItemImage.vue'
 import { useUserStore } from '../../../js/stores'
+import '../../../js/assets/base.css'
 
 const item = {
   id: '1',

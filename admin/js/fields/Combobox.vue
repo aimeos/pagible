@@ -29,6 +29,7 @@ export default {
     "
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
+    :return-object="false"
     :chips="config.multiple"
     :modelValue="modelValue ?? config.default ?? null"
     @update:modelValue="$emit('update:modelValue', $event)"

@@ -2899,13 +2899,18 @@ msgstr "Trang đích hoặc liên kết"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Trường bắt buộc"
+msgid "Form fields"
+msgstr "Trường biểu mẫu"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Trường tùy chọn"
+msgid "Field"
+msgstr "Trường"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Bắt buộc"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3592,13 +3597,23 @@ msgstr "Tiêu đề tùy chọn hiển thị phía trên biểu mẫu liên hệ
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Các trường biểu mẫu khách truy cập phải điền"
+msgid "Optional text shown between headline and contact form"
+msgstr "Văn bản tùy chọn hiển thị giữa tiêu đề và biểu mẫu liên hệ"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Các trường biểu mẫu khách truy cập có thể điền"
+msgid "Form fields shown to visitors in this order"
+msgstr "Các trường biểu mẫu hiển thị cho khách truy cập theo thứ tự này"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Chọn một trường biểu mẫu hoặc nhập tên của riêng bạn"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Khách truy cập phải điền vào trường này"
 
 #: js/strings.js:294
 msgctxt "fh"

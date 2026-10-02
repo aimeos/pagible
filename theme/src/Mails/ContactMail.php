@@ -31,6 +31,14 @@ class ContactMail extends Mailable
 
     public function build(): self
     {
+        if( $email = $this->data['email'] ?? null )
+        {
+            $name = $this->data['name'] ?? null;
+
+            // keep the configured sender address to pass SPF/DKIM/DMARC checks
+            $this->from( config( 'mail.from.address' ), $name ?: $email )->replyTo( $email, $name );
+        }
+
         return $this
             ->subject( 'Contact mail from ' . config( 'app.name' ) )
             ->markdown( 'cms::mails.contact' );

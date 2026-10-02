@@ -2934,13 +2934,18 @@ msgstr "Σελίδα ή σύνδεσμος στόχος"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Υποχρεωτικά πεδία"
+msgid "Form fields"
+msgstr "Πεδία φόρμας"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Προαιρετικά πεδία"
+msgid "Field"
+msgstr "Πεδίο"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Υποχρεωτικό"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3638,13 +3643,23 @@ msgstr "Προαιρετική επικεφαλίδα που εμφανίζετ�
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Πεδία φόρμας που πρέπει να συμπληρώσουν οι επισκέπτες"
+msgid "Optional text shown between headline and contact form"
+msgstr "Προαιρετικό κείμενο που εμφανίζεται μεταξύ επικεφαλίδας και φόρμας επικοινωνίας"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Πεδία φόρμας που μπορούν να συμπληρώσουν οι επισκέπτες"
+msgid "Form fields shown to visitors in this order"
+msgstr "Πεδία φόρμας που εμφανίζονται στους επισκέπτες με αυτή τη σειρά"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Επιλέξτε ένα πεδίο φόρμας ή εισαγάγετε δικό σας όνομα"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Οι επισκέπτες πρέπει να συμπληρώσουν αυτό το πεδίο"
 
 #: js/strings.js:294
 msgctxt "fh"

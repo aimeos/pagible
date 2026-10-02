@@ -138,7 +138,7 @@ export default {
     <v-sheet class="scroll refs">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
         <v-expansion-panel v-if="element.bypages?.length && user.can('page:view')">
-          <v-expansion-panel-title>{{ $gettext('Shared elements') }}</v-expansion-panel-title>
+          <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="pages" density="comfortable" hover>
               <thead>

@@ -2998,13 +2998,18 @@ msgstr "الصفحة المستهدفة أو الرابط"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "الحقول الإلزامية"
+msgid "Form fields"
+msgstr "حقول النموذج"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "الحقول الاختيارية"
+msgid "Field"
+msgstr "الحقل"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "مطلوب"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3686,13 +3691,23 @@ msgstr "عنوان اختياري يظهر أعلى نموذج الاتصال"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "حقول النموذج التي يجب على الزوار تعبئتها"
+msgid "Optional text shown between headline and contact form"
+msgstr "نص اختياري يظهر بين العنوان ونموذج الاتصال"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "حقول النموذج التي يمكن للزوار تعبئتها"
+msgid "Form fields shown to visitors in this order"
+msgstr "حقول النموذج المعروضة للزوار بهذا الترتيب"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "اختر حقلاً من النموذج أو أدخل اسمًا خاصًا بك"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "يجب على الزوار ملء هذا الحقل"
 
 #: js/strings.js:294
 msgctxt "fh"

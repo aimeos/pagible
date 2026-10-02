@@ -45,6 +45,16 @@ input:-webkit-autofill:focus {
   text-align: center;
 }
 
+.checkered,
+.cropper-container.cropper-bg {
+  background: conic-gradient(
+    rgba(var(--v-theme-on-surface), 0.1) 25%,
+    transparent 0 50%,
+    rgba(var(--v-theme-on-surface), 0.1) 0 75%,
+    transparent 0
+  ) 0 0 / 16px 16px repeat rgb(var(--v-theme-surface));
+}
+
 .v-navigation-drawer,
 .v-navigation-drawer button,
 .v-navigation-drawer .v-list-item,
@@ -399,6 +409,11 @@ input:-webkit-autofill:focus {
   opacity: 0.45;
 }
 
+/* The dark status colors of the light theme need a stronger tint to stand out from the app bar */
+.v-app-bar .v-btn.v-theme--light:where(.v-btn--variant-tonal, .error, .saved):is(.text-error, .error, .text-warning, .saved) > .v-btn__underlay {
+  opacity: 0.75;
+}
+
 .v-app-bar .v-btn:is(.v-btn--variant-tonal, .error, .saved) > .v-btn__content {
   color: rgb(var(--v-theme-on-background));
 }
@@ -733,6 +748,7 @@ textarea[readonly],
   --ck-color-button-on-color: rgb(var(--v-theme-primary));
   --ck-color-focus-border: rgb(var(--v-theme-primary));
   --ck-color-base-text: rgb(var(--v-theme-on-surface));
+  --ck-color-text: rgb(var(--v-theme-on-surface));
   --ck-color-list-button-on-text: rgb(var(--v-theme-on-primary));
   --ck-content-font-color: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;

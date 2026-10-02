@@ -2946,13 +2946,18 @@ msgstr "Mērķa lapa vai saite"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Obligātie lauki"
+msgid "Form fields"
+msgstr "Formas lauki"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "Neobligātie lauki"
+msgid "Field"
+msgstr "Lauks"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Obligāts"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3640,13 +3645,23 @@ msgstr "Neobligāts virsraksts virs saziņas veidlapas"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Veidlapas lauki, kas apmeklētājiem jāaizpilda"
+msgid "Optional text shown between headline and contact form"
+msgstr "Neobligāts teksts starp virsrakstu un kontaktformu"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Veidlapas lauki, kurus apmeklētāji var aizpildīt"
+msgid "Form fields shown to visitors in this order"
+msgstr "Formas lauki, kas apmeklētājiem tiek rādīti šādā secībā"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Izvēlieties formas lauku vai ievadiet savu nosaukumu"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Apmeklētājiem jāaizpilda šis lauks"
 
 #: js/strings.js:294
 msgctxt "fh"

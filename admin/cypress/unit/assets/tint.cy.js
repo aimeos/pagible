@@ -149,9 +149,9 @@ describe('tinted colors', () => {
 
           ;['warning', 'error'].forEach((type) => {
             const style = getComputedStyle($root[0].querySelector(`.header-${type}`))
-            const bg = parse(style.backgroundColor)
+            const bg = over(parse(style.backgroundColor), surface)
 
-            expect(bg.slice(0, 3), `${type} header is tinted`).not.to.deep.equal(surface)
+            expect(bg, `${type} header is tinted`).not.to.deep.equal(surface.slice(0, 3))
             expect(contrast(parse(style.color), bg), `${type} header text`).to.be.at.least(7)
           })
         })

@@ -27,7 +27,7 @@ describe('ConfirmDialog', () => {
 
     cy.get('.v-dialog:visible .btn-confirm').click()
     cy.then(() => result).should('equal', true)
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
   })
 
   it('resolves false on cancel', () => {

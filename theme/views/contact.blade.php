@@ -9,16 +9,31 @@
 
 <h2 class="title">{{ $data->title ?? '' }}</h2>
 
+@if($data->description ?? null)
+    <div class="cms-text">@markdown($data->description)</div>
+@endif
+
 @php
-    $schema = \Aimeos\Cms\Requests\ContactRequest::schema(
-        $data->mandatory ?? $data->fields ?? null,
-        $data->optional ?? []
-    );
+    $value = fn($field) => is_object($field) ? ($field->value ?? null) : $field;
+    $order = null;
+
+    if(is_array($data->inputs ?? null)) {
+        $inputs = array_map(fn($input) => (object) $input, array_values($data->inputs));
+        $order = array_map(fn($input) => $value($input->field ?? null), $inputs);
+        $mandatory = array_values(array_map(fn($input) => $value($input->field ?? null), array_filter($inputs, fn($input) => !empty($input->required))));
+        $optional = $order;
+    } else {
+        $mandatory = $data->mandatory ?? $data->fields ?? null;
+        $mandatory = is_array($mandatory) ? array_map($value, $mandatory) : $mandatory;
+        $optional = array_map($value, (array) ($data->optional ?? []));
+    }
+
+    $schema = \Aimeos\Cms\Requests\ContactRequest::schema($mandatory, $optional);
     $sets = json_decode($schema, true);
-    $fieldsets = [
-        ['fields' => $sets['mandatory'], 'required' => true],
-        ['fields' => $sets['optional'], 'required' => false],
-    ];
+    $fields = array_values(array_unique(array_filter(
+        $order ?? [...$sets['mandatory'], ...$sets['optional']],
+        fn($field) => in_array($field, $sets['mandatory'], true) || in_array($field, $sets['optional'], true)
+    )));
     $placeholders = [
         'name' => __('Your name'),
         'email' => __('Your e-mail address'),
@@ -41,26 +56,25 @@
         <input type="hidden" name="source" value="{{ $source }}">
     @endif
 
-    @foreach($fieldsets as $fieldset)
-        @foreach(array_chunk($fieldset['fields'], 2) as $row)
-            <div class="grid">
-                @foreach($row as $field)
-                    @php
-                        $label = __($field === 'email' ? 'E-Mail' : \Illuminate\Support\Str::headline($field));
-                        $name = \Aimeos\Cms\Requests\ContactRequest::key($field);
-                    @endphp
-                    <div>
-                        <label for="{{ $name }}-{{ $formid }}">{{ $label }}</label>
-                        <input id="{{ $name }}-{{ $formid }}" type="{{ $types[$field] ?? 'text' }}"
-                            name="{{ $name }}" placeholder="{{ $placeholders[$field] ?? $label }}"
-                            maxlength="{{ $field === 'email' ? 254 : 255 }}"
-                            @if(isset($autocomplete[$field])) autocomplete="{{ $autocomplete[$field] }}" @endif
-                            @if($fieldset['required']) required @endif
-                            toolparamdescription="{{ $descriptions[$field] ?? $label }}" />
-                    </div>
-                @endforeach
-            </div>
-        @endforeach
+    @foreach(array_chunk($fields, 2) as $row)
+        <div class="grid">
+            @foreach($row as $field)
+                @php
+                    $label = __($field === 'email' ? 'E-Mail' : \Illuminate\Support\Str::headline($field));
+                    $name = \Aimeos\Cms\Requests\ContactRequest::key($field);
+                    $required = in_array($field, $sets['mandatory'], true);
+                @endphp
+                <div>
+                    <label for="{{ $name }}-{{ $formid }}">{{ $label }}</label>
+                    <input id="{{ $name }}-{{ $formid }}" type="{{ $types[$field] ?? 'text' }}"
+                        name="{{ $name }}" placeholder="{{ $placeholders[$field] ?? $label }}"
+                        maxlength="{{ $field === 'email' ? 254 : 255 }}"
+                        @if(isset($autocomplete[$field])) autocomplete="{{ $autocomplete[$field] }}" @endif
+                        @if($required) required @endif
+                        toolparamdescription="{{ $descriptions[$field] ?? $label }}" />
+                </div>
+            @endforeach
+        </div>
     @endforeach
     <div>
         <label for="message-{{ $formid }}">{{ __('Message') }}</label>

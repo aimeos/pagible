@@ -982,19 +982,6 @@ export default {
   width: 100%;
   min-height: 180px;
   object-fit: contain;
-  background-color: rgb(var(--v-theme-surface));
-  background-image: conic-gradient(
-    rgba(var(--v-theme-on-surface), 0.12) 25%,
-    transparent 0 50%,
-    rgba(var(--v-theme-on-surface), 0.12) 0 75%,
-    transparent 0
-  );
-  background-repeat: repeat;
-  background-size: 16px 16px;
-}
-
-:deep(.cropper-bg) {
-  background-repeat: repeat;
 }
 
 :deep(.crop-label) {

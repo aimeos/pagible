@@ -319,7 +319,7 @@ describe('WebhookList', () => {
     cy.get('[role="listitem"] .item-endpoint').should('contain', 'https://example.com/')
 
     cy.get('.v-dialog:visible .v-card-actions').contains('.v-btn', 'Done').click()
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
 
     cy.get('.btn-add').first().click()
     cy.get('.v-dialog:visible .webhook-secret').should('not.exist')
@@ -560,7 +560,7 @@ describe('WebhookList', () => {
     cy.get('.v-dialog:visible .webhook-name input').should('have.value', 'Shop')
 
     cy.get('.v-dialog:visible .v-card-actions').contains('.v-btn', 'Cancel').click()
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
   })
 
   it('asks to rotate a secret which can\'t be decrypted', () => {
@@ -594,7 +594,7 @@ describe('WebhookList', () => {
     cy.wrap(mutate).should('have.been.calledOnce')
 
     cy.get('.v-dialog:visible button[aria-label="Close"]').click()
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
   })
 
   it('sends a test event from the edit dialog', () => {
@@ -605,7 +605,7 @@ describe('WebhookList', () => {
     cy.contains('.v-dialog:visible .v-toolbar-title', 'Add webhook').should('exist')
     cy.get('.v-dialog:visible .v-card-actions .btn-test').should('not.exist')
     cy.get('.v-dialog:visible button[aria-label="Close"]').click()
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
 
     cy.contains('[role="listitem"] .item-content', 'https://example.com/orders/').click()
     // the test button is at the start of the footer, before the spacer of the dialog

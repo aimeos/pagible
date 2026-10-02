@@ -26,7 +26,7 @@ describe('ShortcutDialog', () => {
     cy.contains('.v-dialog:visible h2', 'Page tree').should('exist')
 
     cy.get('.v-dialog:visible .v-toolbar .v-btn').click()
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
     cy.then(() => expect(shortcuts.sheet).to.equal(false))
   })
 

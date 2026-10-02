@@ -967,68 +967,61 @@
                     "type": "string",
                     "hint": "Optional headline shown above the contact form"
                 },
-                "mandatory": {
-                    "type": "combobox",
-                    "label": "Mandatory fields",
-                    "hint": "Form fields visitors must fill out",
-                    "multiple": true,
+                "description": {
+                    "type": "markdown",
+                    "hint": "Optional text shown between headline and contact form"
+                },
+                "inputs": {
+                    "type": "items",
+                    "label": "Form fields",
+                    "hint": "Form fields shown to visitors in this order",
                     "max": 20,
                     "default": [
-                        "name",
-                        "email"
+                        {
+                            "field": "name",
+                            "required": true
+                        },
+                        {
+                            "field": "email",
+                            "required": true
+                        }
                     ],
-                    "options": [
-                        {
-                            "value": "name",
-                            "label": "Name"
+                    "item": {
+                        "field": {
+                            "type": "combobox",
+                            "label": "Field",
+                            "hint": "Select a form field or enter your own name",
+                            "required": true,
+                            "options": [
+                                {
+                                    "value": "name",
+                                    "label": "Name"
+                                },
+                                {
+                                    "value": "company",
+                                    "label": "Company"
+                                },
+                                {
+                                    "value": "telephone",
+                                    "label": "Telephone"
+                                },
+                                {
+                                    "value": "email",
+                                    "label": "E-Mail"
+                                },
+                                {
+                                    "value": "subject",
+                                    "label": "Subject"
+                                }
+                            ]
                         },
-                        {
-                            "value": "company",
-                            "label": "Company"
-                        },
-                        {
-                            "value": "telephone",
-                            "label": "Telephone"
-                        },
-                        {
-                            "value": "email",
-                            "label": "E-Mail"
-                        },
-                        {
-                            "value": "subject",
-                            "label": "Subject"
+                        "required": {
+                            "type": "switch",
+                            "label": "Required",
+                            "hint": "Visitors must fill out this field",
+                            "default": false
                         }
-                    ]
-                },
-                "optional": {
-                    "type": "combobox",
-                    "label": "Optional fields",
-                    "hint": "Form fields visitors can fill out",
-                    "multiple": true,
-                    "max": 20,
-                    "default": [],
-                    "options": [
-                        {
-                            "value": "name",
-                            "label": "Name"
-                        },
-                        {
-                            "value": "company",
-                            "label": "Company"
-                        },
-                        {
-                            "value": "telephone",
-                            "label": "Telephone"
-                        },
-                        {
-                            "value": "email",
-                            "label": "E-Mail"
-                        },
-                        {
-                            "value": "subject",
-                            "label": "Subject"
-                        }
-                    ]
+                    }
                 }
             }
         }

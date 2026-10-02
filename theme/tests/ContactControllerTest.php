@@ -39,8 +39,13 @@ class ContactControllerTest extends ThemeTestAbstract
         $response->assertJson( ['message' => 'Message sent successfully', 'status' => true] );
 
         Mail::assertSent( ContactMail::class, function( $mail ) use ( $source ) {
+            $html = $mail->render();
+
             return $mail->hasTo( 'test@example.com' )
-                && $mail->data['source'] === $source;
+                && $mail->hasFrom( 'test@example.com', 'Test User' )
+                && $mail->hasReplyTo( 'sender@google.com', 'Test User' )
+                && $mail->data['source'] === $source
+                && preg_match( '#Test User</p>\s*<p[^>]*><strong[^>]*>E-Mail:</strong> sender@google.com</p>#', $html );
         } );
     }
 

@@ -215,24 +215,21 @@ class ThemeTest extends ThemeTestAbstract
 	public function testRegisterContactFields()
 	{
 		$fields = Schema::get( 'cms' )['content']['contact']['fields'];
-		$mandatory = $fields['mandatory'];
-		$optional = $fields['optional'];
+		$inputs = $fields['inputs'];
 
-		$this->assertSame( 'combobox', $mandatory['type'] );
-		$this->assertSame( 'Mandatory fields', $mandatory['label'] );
-		$this->assertTrue( $mandatory['multiple'] );
-		$this->assertSame( 20, $mandatory['max'] );
-		$this->assertSame( ['name', 'email'], $mandatory['default'] );
-		$this->assertSame( 'combobox', $optional['type'] );
-		$this->assertSame( 'Optional fields', $optional['label'] );
-		$this->assertTrue( $optional['multiple'] );
-		$this->assertSame( 20, $optional['max'] );
-		$this->assertSame( [], $optional['default'] );
+		$this->assertSame( 'items', $inputs['type'] );
+		$this->assertSame( 'Form fields', $inputs['label'] );
+		$this->assertSame( 20, $inputs['max'] );
+		$this->assertSame( [['field' => 'name', 'required' => true], ['field' => 'email', 'required' => true]], $inputs['default'] );
+		$this->assertSame( 'combobox', $inputs['item']['field']['type'] );
+		$this->assertTrue( $inputs['item']['field']['required'] );
+		$this->assertSame( 'switch', $inputs['item']['required']['type'] );
 		$this->assertSame(
 			['name', 'company', 'telephone', 'email', 'subject'],
-			array_column( $mandatory['options'], 'value' )
+			array_column( $inputs['item']['field']['options'], 'value' )
 		);
-		$this->assertSame( $mandatory['options'], $optional['options'] );
+		$this->assertArrayNotHasKey( 'mandatory', $fields );
+		$this->assertArrayNotHasKey( 'optional', $fields );
 	}
 
 
@@ -399,6 +396,44 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testContactRendersInputsInOrder()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id', 'inputs' => [
+			(object) ['field' => 'name', 'required' => true],
+			(object) ['field' => (object) ['value' => 'company', 'label' => 'Company'], 'required' => false],
+			(object) ['field' => 'email', 'required' => true],
+			(object) ['field' => 'Account reference'],
+			(object) ['field' => 'name'],
+		]];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		preg_match_all( '/<input id="[^"]+" type="[^"]+"\s+name="([^"]+)"[^>]*>/', $html, $matches );
+
+		$this->assertSame( ['name', 'company', 'email', ContactRequest::key( 'Account reference' )], $matches[1] );
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="name"[^>]+required[^>]*>/', $html );
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="email"[^>]+required[^>]*>/', $html );
+		$this->assertSame( 1, preg_match( '/<input[^>]+name="company"[^>]*>/', $html, $company ) );
+		$this->assertStringNotContainsString( 'required', $company[0] );
+		$this->assertStringContainsString(
+			'value="' . e( ContactRequest::schema( ['name', 'email'], ['company', 'Account reference'] ) ) . '"', $html
+		);
+	}
+
+
+	public function testContactRendersDefaultFields()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id'];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="name"[^>]+required[^>]*>/', $html );
+		$this->assertMatchesRegularExpression( '/<input[^>]+name="email"[^>]+required[^>]*>/', $html );
+	}
+
+
 	public function testContactRendersLegacyFieldsAsMandatory()
 	{
 		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
@@ -407,6 +442,17 @@ class ThemeTest extends ThemeTestAbstract
 		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
 
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="subject"[^>]+required[^>]*>/', $html );
+	}
+
+
+	public function testContactRendersDescription()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id', 'title' => 'Contact', 'description' => 'Reach **us**'];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+
+		$this->assertStringContainsString( '<div class="cms-text"><p>Reach <strong>us</strong></p>', $html );
 	}
 
 

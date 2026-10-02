@@ -940,6 +940,7 @@ export default {
           :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
+          class="checkered"
         ></v-img>
 
         <v-img
@@ -948,6 +949,7 @@ export default {
           :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
+          class="checkered"
         ></v-img>
 
         <svg
@@ -1097,11 +1099,6 @@ a.item-usage {
 
 .items .item-usage.notused {
   color: rgb(var(--v-theme-error));
-}
-
-.items .item-preview .v-img {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX////Ly8vsgL9iAAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=);
-  background-repeat: repeat;
 }
 
 .items.list .v-list-item {

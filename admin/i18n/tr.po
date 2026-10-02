@@ -2927,13 +2927,18 @@ msgstr "Hedef sayfa veya bağlantı"
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Mandatory fields"
-msgstr "Zorunlu alanlar"
+msgid "Form fields"
+msgstr "Form alanları"
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Optional fields"
-msgstr "İsteğe bağlı alanlar"
+msgid "Field"
+msgstr "Alan"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Required"
+msgstr "Zorunlu"
 
 #: js/strings.js:154
 msgctxt "fn"
@@ -3617,13 +3622,23 @@ msgstr "İletişim formunun üstünde gösterilen isteğe bağlı başlık"
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Form fields visitors must fill out"
-msgstr "Ziyaretçilerin doldurması zorunlu form alanları"
+msgid "Optional text shown between headline and contact form"
+msgstr "Başlık ile iletişim formu arasında gösterilen isteğe bağlı metin"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields visitors can fill out"
-msgstr "Ziyaretçilerin doldurabileceği form alanları"
+msgid "Form fields shown to visitors in this order"
+msgstr "Ziyaretçilere bu sırayla gösterilen form alanları"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Bir form alanı seçin veya kendi adınızı girin"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Ziyaretçilerin bu alanı doldurması gerekir"
 
 #: js/strings.js:294
 msgctxt "fh"
