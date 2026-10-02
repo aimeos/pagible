@@ -733,6 +733,7 @@ textarea[readonly],
   --ck-color-button-on-color: rgb(var(--v-theme-primary));
   --ck-color-focus-border: rgb(var(--v-theme-primary));
   --ck-color-base-text: rgb(var(--v-theme-on-surface));
+  --ck-color-text: rgb(var(--v-theme-on-surface));
   --ck-color-list-button-on-text: rgb(var(--v-theme-on-primary));
   --ck-content-font-color: rgb(var(--v-theme-on-surface));
   --ck-border-radius: 4px;
@@ -745,7 +746,7 @@ textarea[readonly],
 
 .ck.ck-icon.ck-icon_inherit-color,
 .ck.ck-icon.ck-icon_inherit-color * {
-  color: initial;
+  color: initial !important;
 }
 
 .ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
