@@ -1,1 +1,0 @@
-import e from"./File--LIn-k_U.js";var t={extends:e,setup:e.setup,computed:{kind(){return`image`}}};export{t as default};
