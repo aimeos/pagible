@@ -745,7 +745,7 @@ textarea[readonly],
 
 .ck.ck-icon.ck-icon_inherit-color,
 .ck.ck-icon.ck-icon_inherit-color * {
-  color: initial;
+  color: initial !important;
 }
 
 .ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
