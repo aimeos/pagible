@@ -40,6 +40,8 @@ class ContactController extends Controller
             'fields' => $fields,
             'message' => $values['message'],
             'source' => $values['source'] ?? null,
+            'email' => $values['email'] ?? null,
+            'name' => $values['name'] ?? null,
         ];
 
         Mail::to(config('mail.from.address'))->send(
