@@ -376,7 +376,7 @@ export default {
       v-for="(item, idx) in images"
       :key="idx"
       :class="{ readonly: readonly }"
-      class="image"
+      class="image checkered"
       :title="description(item)"
     >
       <v-progress-linear v-if="item.uploading" color="primary" height="5" indeterminate rounded />
@@ -510,11 +510,6 @@ export default {
   height: 180px;
   width: 180px;
   margin: 1px;
-}
-
-.images .image {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC);
-  background-repeat: repeat;
 }
 
 .images .image-preview {

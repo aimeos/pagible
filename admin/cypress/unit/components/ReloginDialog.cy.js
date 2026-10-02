@@ -43,7 +43,7 @@ describe('ReloginDialog', () => {
 
     cy.get('.v-dialog:visible input[type=password]').type('secret{enter}')
     cy.get('@relogin').should('have.been.calledOnceWith', 'secret')
-    cy.get('.v-dialog:visible').should('not.exist')
+    cy.get('.v-dialog.v-overlay--active').should('not.exist')
   })
 
   it('shows the error if signing in fails', () => {
@@ -113,7 +113,7 @@ describe('ReloginDialog', () => {
 
       cy.contains('.v-dialog:visible .v-card-actions .v-btn', 'Continue').click()
       cy.get('@resume').should('have.been.calledOnce')
-      cy.get('.v-dialog:visible').should('not.exist')
+      cy.get('.v-dialog.v-overlay--active').should('not.exist')
     })
 
     it('tells the user if not signed in yet', () => {
