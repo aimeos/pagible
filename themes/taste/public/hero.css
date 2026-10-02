@@ -21,6 +21,7 @@
 .hero .first {
     align-self: center;
     padding: clamp(2.25rem, 6vw, 5.5rem);
+    container-type: inline-size;
 }
 
 .hero .subtitle {
@@ -35,7 +36,10 @@
 .hero .title {
     margin-bottom: 1.5rem;
     color: var(--pico-contrast-inverse);
+    /* sized to the text column so words fit, long ones are hyphenated instead of broken anywhere */
+    font-size: clamp(2.2rem, 17cqi, 5.75rem);
     text-align: start;
+    hyphens: auto;
 }
 
 .hero .cms-text {

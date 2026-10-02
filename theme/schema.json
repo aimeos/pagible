@@ -809,6 +809,11 @@
                             "hint": "Name of the price plan",
                             "required": true
                         },
+                        "file": {
+                            "type": "image",
+                            "label": "image",
+                            "hint": "Image shown at the top of the price plan"
+                        },
                         "access": {
                             "type": "autocomplete",
                             "label": "Frontend access role",
