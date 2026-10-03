@@ -53,6 +53,8 @@ export default {
     return {
       pos: null,
       index: null,
+      // the preview shows the saved page, unsaved domain/path changes (e.g. by translating) would 404
+      saved: { domain: this.item.domain, path: this.item.path },
       element: null,
       section: 'main',
       loading: true,
@@ -96,7 +98,7 @@ export default {
         return null
       }
 
-      const domain = this.item.domain || ''
+      const domain = this.saved.domain || ''
       let url = this.app.urlpage
 
       if (!domain) {
@@ -107,7 +109,7 @@ export default {
 
       return url
         .replace(/_domain_/, domain)
-        .replace(/_path_/, this.item.path || '')
+        .replace(/_path_/, this.saved.path || '')
         .replace(/([^:/])\/+$/, '$1')
     },
 
@@ -248,6 +250,7 @@ export default {
   watch: {
     'save.count': function () {
       if (this.save.count > 0) {
+        this.saved = { domain: this.item.domain, path: this.item.path }
         this.reload()
       }
     }
