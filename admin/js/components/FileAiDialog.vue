@@ -62,16 +62,19 @@ export default {
     }
   },
 
-  beforeUpdate() {
-    this.chat = [this.context?.title, this.context?.text, this.context?.description]
-      .filter(Boolean)
-      .join('\n')
-    this.used = this.files || []
-  },
-
   watch: {
-    modelValue(val) {
-      if (!val) {
+    modelValue: {
+      immediate: true,
+      handler(val) {
+        // prefill only when opened, re-renders (e.g. while generating) must keep the user's input
+        if (val) {
+          this.chat = [this.context?.title, this.context?.text, this.context?.description]
+            .filter(Boolean)
+            .join('\n')
+          this.used = [...(this.files || [])]
+          return
+        }
+
         this.items.forEach((item) => {
           if (item.path.startsWith('blob:')) {
             URL.revokeObjectURL(item.path)
