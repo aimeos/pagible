@@ -183,7 +183,7 @@ msgstr "Webhook ekle"
 #: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
-msgstr "Aramak için"
+msgstr "Ara"
 
 #: src/views/WebhookList.vue:594
 msgctxt "webhooks"
@@ -198,12 +198,12 @@ msgstr "Düzenle"
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
-msgstr "Yenile"
+msgstr "Anahtarı yenile"
 
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
-msgstr "Son başarı"
+msgstr "Son başarılı teslimat"
 
 #: src/views/WebhookList.vue:692
 msgctxt "webhooks"
@@ -249,7 +249,9 @@ msgstr "Bu gizli anahtarı şimdi kopyalayın. Bir daha gösterilmeyecektir."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Devre dışı webhook'lar hiçbir olay almaz ve kuyruktaki teslimatları iptal edilir"
+msgstr ""
+"Devre dışı webhook'lar hiçbir olay almaz ve kuyruktaki teslimatları iptal "
+"edilir"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -270,7 +272,9 @@ msgstr "Olaylar"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Webhook'a gönderilen olaylar, kaldırılan olayların kuyruktaki teslimatları iptal edilir"
+msgstr ""
+"Webhook'a gönderilen olaylar, kaldırılan olayların kuyruktaki teslimatları "
+"iptal edilir"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -282,7 +286,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Aynı uç noktaya sahip webhook'ları ayırt etmek için isteğe bağlı ad, tüm webhook düzenleyicilerine görünür"
+msgstr ""
+"Aynı uç noktaya sahip webhook'ları ayırt etmek için isteğe bağlı ad, tüm "
+"webhook düzenleyicilerine görünür"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -294,17 +300,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Gizli anahtarı kopyala"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Test et"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "İptal"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Kaydet"

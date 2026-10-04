@@ -24,7 +24,7 @@ export default {
   computed: {
     labels() {
       return {
-        Editor: this.$gettext('Editor'),
+        Editor: this.$pgettext('editor person', 'Editor'),
         Language: this.$gettext('Language'),
         Latest: this.$gettext('Latest'),
         'Latest edit': this.$gettext('Latest edit'),

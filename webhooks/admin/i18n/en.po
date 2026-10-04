@@ -85,7 +85,7 @@ msgstr "Test event failed"
 #: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
-msgstr ""
+msgstr "Error purging webhook"
 
 #: src/views/WebhookList.vue:420
 msgctxt "webhooks"
@@ -170,7 +170,7 @@ msgstr "Toggle selection"
 #: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
 msgid "Purge"
-msgstr ""
+msgstr "Purge"
 
 #: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
 #: src/views/WebhookList.vue:741
@@ -248,6 +248,7 @@ msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
 msgstr ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -257,7 +258,7 @@ msgstr "HTTPS endpoint URL"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr ""
+msgstr "Address receiving the signed events, it cannot be changed later"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -269,6 +270,7 @@ msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
 msgstr ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,6 +283,8 @@ msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
 msgstr ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -292,17 +296,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copy secret"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Test"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Save"

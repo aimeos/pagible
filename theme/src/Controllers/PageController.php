@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\App;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
 use Aimeos\Cms\Models\Element;
@@ -231,8 +230,9 @@ class PageController extends Controller
      */
     protected function render( Page $page, mixed $value, string $locale, ?Authenticatable $user ) : string
     {
-        App::setLocale( $locale );
-        Paginator::useBootstrap();
+        Theme::locale( $locale );
+        Paginator::defaultView( 'cms::pagination' );
+        Paginator::defaultSimpleView( 'cms::pagination-simple' );
 
         $content = collect( (array) $value )->groupBy( 'group' );
         $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );

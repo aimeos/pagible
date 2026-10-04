@@ -41,12 +41,12 @@ msgstr "ทั้งหมด"
 #: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
 msgctxt "webhooks"
 msgid "Active"
-msgstr "ใช้งาน"
+msgstr "ใช้งานอยู่"
 
 #: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
-msgstr "ไม่ใช้งาน"
+msgstr "ไม่ได้ใช้งาน"
 
 #: src/views/WebhookList.vue:250
 msgctxt "webhooks"
@@ -113,7 +113,7 @@ msgstr "การเข้าถึงถูกปฏิเสธ"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "ไม่สามารถถอดรหัสข้อมูลลับได้ ให้เปลี่ยนข้อมูลลับ"
+msgstr "ไม่สามารถถอดรหัสข้อมูลลับได้ โปรดเปลี่ยนข้อมูลลับ"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
@@ -123,7 +123,7 @@ msgstr "ถูกบล็อกโดยการกำหนดค่าเซ
 #: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
-msgstr "ไม่ใช้ URL ที่ถูกต้อง"
+msgstr "ไม่ใช่ URL ที่ถูกต้อง"
 
 #: src/views/WebhookList.vue:452
 msgctxt "webhooks"
@@ -245,7 +245,7 @@ msgstr "คัดลอกข้อมูลลับนี้ตอนนี้
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "เว็บฮุกที่ไม่ใช้งานจะไม่ได้รับเหตุการณ์ใด ๆ และการส่งที่ค้างอยู่ในคิวจะถูกยกเลิก"
+msgstr "เว็บฮุกที่ไม่ได้ใช้งานจะไม่ได้รับเหตุการณ์ใด ๆ และการส่งที่ค้างอยู่ในคิวจะถูกยกเลิก"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -278,7 +278,8 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "ชื่อที่ไม่บังคับสำหรับแยกความแตกต่างของเว็บฮุกที่มีปลายทางเดียวกัน มองเห็นได้โดยผู้แก้ไขเว็บฮุกทุกคน"
+msgstr ""
+"ชื่อที่ไม่บังคับสำหรับแยกความแตกต่างของเว็บฮุกที่มีปลายทางเดียวกัน มองเห็นได้โดยผู้แก้ไขเว็บฮุกทุกคน"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -290,17 +291,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "คัดลอกข้อมูลลับ"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "ทดสอบ"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "บันทึก"

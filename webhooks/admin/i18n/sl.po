@@ -102,7 +102,7 @@ msgstr "Skrivnosti ni mogoče kopirati"
 #: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
-msgstr "Ni"
+msgstr "Brez"
 
 #: src/views/WebhookList.vue:447
 msgctxt "webhooks"
@@ -162,7 +162,7 @@ msgstr "Dostava ni uspela"
 #: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
-msgstr "Pošlji podpisana obvestila, ko se objavljena vsebina spremeni."
+msgstr "Pošiljanje podpisanih obvestil ob spremembi objavljene vsebine."
 
 #: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
@@ -249,7 +249,9 @@ msgstr "Kopirajte to skrivnost zdaj. Ne bo več prikazana."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Neaktivni webhooki ne prejemajo dogodkov, njihove čakajoče dostave pa se zavržejo"
+msgstr ""
+"Neaktivni webhooki ne prejemajo dogodkov, njihove čakajoče dostave pa se "
+"zavržejo"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -259,7 +261,7 @@ msgstr "URL končne točke HTTPS"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Naslov, ki prejema podpisane dogodke, ga kasneje ni mogoče spremeniti"
+msgstr "Naslov, ki prejema podpisane dogodke; pozneje ga ni mogoče spremeniti"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -270,7 +272,9 @@ msgstr "Dogodki"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Dogodki, poslani na webhook, čakajoče dostave odstranjenih dogodkov se prekličejo"
+msgstr ""
+"Dogodki, poslani na webhook, čakajoče dostave odstranjenih dogodkov se "
+"prekličejo"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -282,7 +286,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Neobvezno ime za razlikovanje webhookov z enako končno točko, vidno vsem urednikom webhookov"
+msgstr ""
+"Neobvezno ime za razlikovanje webhookov z enako končno točko, vidno vsem "
+"urednikom webhookov"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -294,17 +300,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopiraj skrivnost"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Preizkusi"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Shrani"

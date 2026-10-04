@@ -103,7 +103,7 @@ export default {
     },
 
     group(name) {
-      return name === 'uncategorized' ? this.$gettext('uncategorized') : this.$pgettext('sg', name)
+      return name === 'uncategorized' ? this.$gettext('Uncategorized') : this.$pgettext('sg', name)
     },
 
     label(item) {

@@ -194,7 +194,7 @@ msgstr "Опресняване"
 #: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
-msgstr "Редактиране на"
+msgstr "Редактиране"
 
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
@@ -219,7 +219,7 @@ msgstr "Спряно до"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "Зареждане на"
+msgstr "Зареждане"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -250,7 +250,9 @@ msgstr "Копирайте тази тайна сега. Тя няма да бъ
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Неактивните уебхукове не получават събития и техните чакащи доставки се отхвърлят"
+msgstr ""
+"Неактивните уебхукове не получават събития и техните чакащи доставки се "
+"отхвърлят"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -260,7 +262,8 @@ msgstr "URL на HTTPS крайна точка"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Адрес, който получава подписаните събития, не може да бъде променян по-късно"
+msgstr ""
+"Адрес, който получава подписаните събития, не може да бъде променян по-късно"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -271,7 +274,9 @@ msgstr "Събития"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Събития, изпращани към уебхука, чакащите доставки на премахнати събития се отменят"
+msgstr ""
+"Събития, изпращани към уебхука, чакащите доставки на премахнати събития се "
+"отменят"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -283,7 +288,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Незадължително име за разграничаване на уебхукове с един и същ адрес (крайна точка), видимо за всички редактори на уебхукове"
+msgstr ""
+"Незадължително име за разграничаване на уебхукове с един и същ адрес (крайна "
+"точка), видимо за всички редактори на уебхукове"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -295,20 +302,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Копиране на тайната"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
-msgstr "Тествай"
+msgstr "Тестване"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
-msgstr "Отмяна на"
+msgstr "Отказ"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "Запазете"
+msgstr "Запазване"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

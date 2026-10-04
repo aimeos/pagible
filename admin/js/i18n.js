@@ -99,12 +99,28 @@ export async function load(locale) {
   return false
 }
 
+// Traditional Chinese browser locales which use the zh-TW catalog
+const hant = ['zh-hant', 'zh-hk', 'zh-mo', 'zh-tw']
+
+/**
+ * Returns the supported locale matching a browser language, e.g. "pt-BR" for "pt-br",
+ * "zh-TW" for "zh-Hant-HK" and "pt" for "pt-PT"
+ */
+export function match(lang, supported) {
+  const code = lang?.toLowerCase() || ''
+  const find = (value) => supported.find((locale) => locale.toLowerCase() === value)
+
+  return find(code)
+    || (hant.some((prefix) => code.startsWith(prefix)) && find('zh-tw'))
+    || find(code.split('-')[0])
+}
+
 export const ready = import(`../i18n/LINGUAS?raw`).then((content) => {
   const supported = content.default.trim().split(/\s+/)
   const locale =
     (navigator.languages || [navigator.language])
-      .map((lang) => lang?.toLowerCase()?.slice(0, 2))
-      .find((lang) => supported.includes(lang)) || 'en'
+      .map((lang) => match(lang, supported))
+      .find(Boolean) || 'en'
 
   gettext.available = Object.fromEntries(supported.map((value) => [value, value]))
 

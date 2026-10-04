@@ -250,7 +250,9 @@ msgstr "Copie este segredo agora. Não será apresentado novamente."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Os webhooks inativos não recebem eventos e as suas entregas em fila são descartadas"
+msgstr ""
+"Os webhooks inativos não recebem eventos e as suas entregas em fila são "
+"descartadas"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -260,7 +262,9 @@ msgstr "URL do ponto de extremidade HTTPS"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Endereço que recebe os eventos assinados, não pode ser alterado posteriormente"
+msgstr ""
+"Endereço que recebe os eventos assinados, não pode ser alterado "
+"posteriormente"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -271,7 +275,9 @@ msgstr "Eventos"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Eventos enviados para o webhook, as entregas em fila de eventos removidos são canceladas"
+msgstr ""
+"Eventos enviados para o webhook, as entregas em fila de eventos removidos "
+"são canceladas"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -283,7 +289,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Nome opcional para distinguir webhooks com o mesmo ponto de extremidade, visível para todos os editores de webhooks"
+msgstr ""
+"Nome opcional para distinguir webhooks com o mesmo ponto de extremidade, "
+"visível para todos os editores de webhooks"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -295,17 +303,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copiar segredo"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testar"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Guardar"

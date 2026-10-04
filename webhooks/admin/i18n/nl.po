@@ -65,14 +65,12 @@ msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
-msgstr ""
-"Het geheim van deze webhook vernieuwen? Ontvangers moeten worden bijgewerkt "
-"met het nieuwe geheim."
+msgstr "Het geheim van deze webhook vervangen? Ontvangers moeten worden bijgewerkt met het nieuwe geheim."
 
 #: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
-msgstr "Fout bij het vernieuwen van het webhookgeheim"
+msgstr "Fout bij het vervangen van het webhookgeheim"
 
 #: src/views/WebhookList.vue:358
 msgctxt "webhooks"
@@ -117,7 +115,7 @@ msgstr "Toegang geweigerd"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "Geheim kan niet worden ontsleuteld, vernieuw het"
+msgstr "Geheim kan niet worden ontsleuteld, vervang het"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
@@ -199,7 +197,7 @@ msgstr "Bewerk"
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
-msgstr "Vernieuwen"
+msgstr "Vervangen"
 
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
@@ -250,7 +248,9 @@ msgstr "Kopieer dit geheim nu. Het wordt niet opnieuw weergegeven."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Inactieve webhooks ontvangen geen gebeurtenissen en hun wachtende bezorgingen worden verwijderd"
+msgstr ""
+"Inactieve webhooks ontvangen geen gebeurtenissen en hun wachtende "
+"bezorgingen worden verwijderd"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -260,7 +260,9 @@ msgstr "URL van HTTPS-eindpunt"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Adres dat de ondertekende gebeurtenissen ontvangt, kan later niet meer worden gewijzigd"
+msgstr ""
+"Adres dat de ondertekende gebeurtenissen ontvangt, kan later niet meer "
+"worden gewijzigd"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -271,7 +273,9 @@ msgstr "Gebeurtenissen"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Gebeurtenissen die naar de webhook worden gestuurd, wachtende bezorgingen van verwijderde gebeurtenissen worden geannuleerd"
+msgstr ""
+"Gebeurtenissen die naar de webhook worden gestuurd, wachtende bezorgingen "
+"van verwijderde gebeurtenissen worden geannuleerd"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -283,7 +287,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Optionele naam om webhooks met hetzelfde eindpunt te onderscheiden, zichtbaar voor alle webhookbeheerders"
+msgstr ""
+"Optionele naam om webhooks met hetzelfde eindpunt te onderscheiden, "
+"zichtbaar voor alle webhookbeheerders"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -295,20 +301,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Geheim kopiëren"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testen"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "Sla"
+msgstr "Opslaan"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

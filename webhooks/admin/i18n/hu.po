@@ -36,7 +36,7 @@ msgstr "Állapot"
 #: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
-msgstr "Minden"
+msgstr "Összes"
 
 #: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
 #: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
@@ -182,7 +182,7 @@ msgstr "Webhook hozzáadása"
 #: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
-msgstr "Keresés a"
+msgstr "Keresés"
 
 #: src/views/WebhookList.vue:594
 msgctxt "webhooks"
@@ -222,7 +222,7 @@ msgstr "Betöltés"
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
 msgid "No entries found"
-msgstr "Nem találtunk bejegyzést"
+msgstr "Nem található bejegyzés"
 
 #: src/views/WebhookList.vue:716
 msgctxt "webhooks"
@@ -248,7 +248,9 @@ msgstr "Másolja ki most ezt a titkos kulcsot. Többé nem jelenik meg."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Az inaktív webhookok nem kapnak eseményeket, és a várakozó kézbesítéseik elvesznek"
+msgstr ""
+"Az inaktív webhookok nem kapnak eseményeket, és a várakozó kézbesítéseik "
+"elvesznek"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -269,7 +271,9 @@ msgstr "Események"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "A webhooknak küldött események, az eltávolított események várakozó kézbesítései visszavonásra kerülnek"
+msgstr ""
+"A webhooknak küldött események, az eltávolított események várakozó "
+"kézbesítései visszavonásra kerülnek"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +285,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Opcionális név az azonos végponttal rendelkező webhookok megkülönböztetésére, minden webhook-szerkesztő számára látható"
+msgstr ""
+"Opcionális név az azonos végponttal rendelkező webhookok "
+"megkülönböztetésére, minden webhook-szerkesztő számára látható"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +299,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Titkos kulcs másolása"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Teszt"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
-msgstr "Törölje"
+msgstr "Mégse"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Mentés"

@@ -158,7 +158,7 @@ php artisan cms:benchmark:theme [options]
 
 | Directive | Description |
 |-----------|-------------|
-| `@localDate($date, $format)` | Formats a date using Carbon locale-aware `isoFormat` |
+| `@localDate($date, $format)` | Formats a date in the current locale: no format for day and month (e.g. "October 5"), `short`, `medium`, `long` or `full` for ICU date styles, otherwise a Carbon `isoFormat` pattern |
 | `@markdown($text)` | Converts Markdown to HTML using GitHub-flavored CommonMark |
 
 ## License

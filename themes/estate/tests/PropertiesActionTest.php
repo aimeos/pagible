@@ -149,6 +149,9 @@ class PropertiesActionTest extends ThemeTestAbstract
         $response->assertSee( '<ul class="list-items list-cards"', false );
         $response->assertSee( '<li class="property-list-item">', false );
         $response->assertDontSee( 'role="listitem"', false );
+        $response->assertSee( '10 rooms' );
+        $response->assertSee( 'September 1, 2026' );
+        $this->assertMatchesRegularExpression( '/\b1 bathroom\b|\b\d+ bathrooms\b/', $response->getContent() );
     }
 
 

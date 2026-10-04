@@ -1,4 +1,4 @@
-import gettext, { load, mergeCatalog, pluginLabel, ready } from '../../../js/i18n'
+import gettext, { load, match, mergeCatalog, pluginLabel, ready } from '../../../js/i18n'
 import { plugins } from '../../../js/config'
 
 describe('plugin translations', () => {
@@ -102,5 +102,21 @@ describe('plugin translations', () => {
         expect(gettext.$pgettext('cache', 'Save')).to.equal('Zwischenspeichern')
       })
     })
+  })
+})
+
+describe('browser locale', () => {
+  const supported = ['de', 'en', 'pt', 'pt-BR', 'zh', 'zh-TW']
+
+  it('matches regional and base locales', () => {
+    expect(match('pt-BR', supported)).to.equal('pt-BR')
+    expect(match('pt-br', supported)).to.equal('pt-BR')
+    expect(match('pt-PT', supported)).to.equal('pt')
+    expect(match('de-AT', supported)).to.equal('de')
+    expect(match('zh-CN', supported)).to.equal('zh')
+    expect(match('zh-Hant-HK', supported)).to.equal('zh-TW')
+    expect(match('zh-HK', supported)).to.equal('zh-TW')
+    expect(match('fr', supported)).to.be.undefined
+    expect(match(undefined, supported)).to.be.undefined
   })
 })

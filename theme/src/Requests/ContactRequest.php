@@ -16,6 +16,19 @@ class ContactRequest extends FormRequest
     private const STANDARD_FIELDS = ['name', 'company', 'telephone', 'email', 'subject'];
 
 
+    /** @return array<string, string> */
+    public function attributes(): array
+    {
+        $attributes = ['message' => __( 'Message' ), 'source' => __( 'Source page' )];
+
+        foreach( $this->fields() as $field ) {
+            $attributes[self::key( $field )] = __( $field === 'email' ? 'E-Mail' : \Illuminate\Support\Str::headline( $field ) );
+        }
+
+        return $attributes;
+    }
+
+
     /** @return array<int, string> */
     public function fields(): array
     {
@@ -42,6 +55,23 @@ class ContactRequest extends FormRequest
     public function optional(): array
     {
         return $this->sets()['optional'];
+    }
+
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        $invalid = __( ':attribute: The value is invalid.' );
+
+        return [
+            'required' => __( ':attribute: This field is required.' ),
+            'email' => __( ':attribute: Please enter a valid e-mail address.' ),
+            'max' => __( ':attribute: The text is too long.' ),
+            'required_with' => $invalid,
+            'string' => $invalid,
+            'size' => $invalid,
+            'url' => $invalid,
+        ];
     }
 
 
@@ -100,6 +130,19 @@ class ContactRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+
+    /**
+     * Uses the language of the page containing the contact form for the validation messages.
+     */
+    protected function prepareForValidation(): void
+    {
+        $locale = $this->input( 'locale' );
+
+        if( is_string( $locale ) && preg_match( '/^[A-Za-z]{2,3}([-_][A-Za-z0-9]{2,8}){0,3}$/', $locale ) ) {
+            \Aimeos\Cms\Theme::translations( $locale );
+        }
     }
 
 

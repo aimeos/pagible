@@ -35,6 +35,16 @@ function PagibleSearch() {
             const onSubmit = (ev) => this.select(ev);
             const onInput = this.debounce((ev) => this.search(ev));
 
+            // Announces empty or failed searches to screen readers
+            const results = dialog.querySelector('.results');
+
+            if (results && !dialog.querySelector('.search-status')) {
+                const status = document.createElement('p');
+                status.classList.add('search-status');
+                status.setAttribute('role', 'status');
+                results.before(status);
+            }
+
             input?.focus();
 
             form?.addEventListener('submit', onSubmit);
@@ -79,6 +89,8 @@ function PagibleSearch() {
                 return;
             }
 
+            const results = ev.target?.closest('article')?.querySelector('.results');
+
             fetch(form.getAttribute('action')?.replace(/_term_/, encodeURIComponent(value)), {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' },
@@ -86,13 +98,14 @@ function PagibleSearch() {
                 if (!response.ok) throw response;
                 return response.json();
             }).then(result => {
-                const results = ev.target?.closest('article')?.querySelector('.results');
                 if (results) {
                     nextPageUrl = result.next_page_url;
                     this.update(results, result.data, value);
                     this.loadmore(results, value);
+                    this.status(results, result.data?.length ? '' : results.dataset.noResults || 'No results found');
                 }
             }).catch(error => {
+                this.status(results, results?.dataset.failed || 'Search failed');
                 console.error('Error searching pages', error);
             });
 
@@ -109,6 +122,15 @@ function PagibleSearch() {
             }
 
             ev.preventDefault();
+        },
+
+
+        status(results, text) {
+            const status = results?.parentElement?.querySelector('.search-status');
+
+            if (status) {
+                status.textContent = text;
+            }
         },
 
 
@@ -152,7 +174,7 @@ function PagibleSearch() {
 
             const btn = document.createElement('button');
             btn.classList.add('load-more');
-            btn.textContent = 'Load more';
+            btn.textContent = results.dataset.loadMore || 'Load more';
             btn.addEventListener('click', () => {
                 btn.disabled = true;
 

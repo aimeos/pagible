@@ -217,7 +217,7 @@ msgstr "Satt på pause til"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "Lasting"
+msgstr "Laster"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -248,7 +248,9 @@ msgstr "Kopier denne hemmeligheten nå. Den vises ikke igjen."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Inaktive webhooks mottar ingen hendelser, og ventende leveranser blir forkastet"
+msgstr ""
+"Inaktive webhooks mottar ingen hendelser, og ventende leveranser blir "
+"forkastet"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -269,7 +271,9 @@ msgstr "Hendelser"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Hendelser som sendes til webhooken, ventende leveranser av fjernede hendelser blir kansellert"
+msgstr ""
+"Hendelser som sendes til webhooken, ventende leveranser av fjernede "
+"hendelser blir kansellert"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +285,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Valgfritt navn for å skille webhooks med samme endepunkt, synlig for alle webhook-redaktører"
+msgstr ""
+"Valgfritt navn for å skille webhooks med samme endepunkt, synlig for alle "
+"webhook-redaktører"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,20 +299,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopier hemmelighet"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Test"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "Spar"
+msgstr "Lagre"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

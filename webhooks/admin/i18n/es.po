@@ -243,13 +243,14 @@ msgstr "Editar webhook"
 #: src/views/WebhookList.vue:750
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
-msgstr "Copia este secreto ahora. No volverá a mostrarse."
+msgstr "Copie este secreto ahora. No volverá a mostrarse."
 
 #: src/views/WebhookList.vue:771
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Los webhooks inactivos no reciben eventos y sus entregas en cola se descartan"
+msgstr ""
+"Los webhooks inactivos no reciben eventos y sus entregas en cola se descartan"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -270,7 +271,9 @@ msgstr "Eventos"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Eventos enviados al webhook, las entregas en cola de eventos eliminados se cancelan"
+msgstr ""
+"Eventos enviados al webhook, las entregas en cola de eventos eliminados se "
+"cancelan"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -282,7 +285,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Nombre opcional para diferenciar webhooks con el mismo punto de conexión, visible para todos los editores de webhooks"
+msgstr ""
+"Nombre opcional para diferenciar webhooks con el mismo punto de conexión, "
+"visible para todos los editores de webhooks"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -294,17 +299,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copiar secreto"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Probar"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Guardar"

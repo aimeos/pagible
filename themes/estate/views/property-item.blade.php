@@ -51,13 +51,11 @@
         </p>
 
         @if(($facts = collect([
-            'rooms' => $property->rooms !== null ? __(':value :unit', [
+            'rooms' => $property->rooms !== null ? trans_choice(':value room|:value rooms', (int) ceil((float) $property->rooms), [
                 'value' => \Illuminate\Support\Number::format($property->rooms, maxPrecision: 1, locale: app()->getLocale()),
-                'unit' => __('rooms'),
             ]) : null,
-            'bathrooms' => $property->bathrooms !== null ? __(':value :unit', [
+            'bathrooms' => $property->bathrooms !== null ? trans_choice(':value bathroom|:value bathrooms', (int) $property->bathrooms, [
                 'value' => \Illuminate\Support\Number::format($property->bathrooms, locale: app()->getLocale()),
-                'unit' => __('Bathrooms'),
             ]) : null,
             'area' => __(':value :unit', [
                 'value' => \Illuminate\Support\Number::format($property->living_area ?? $property->area, maxPrecision: 2, locale: app()->getLocale()),
@@ -83,7 +81,7 @@
         @if($property->available_from ?? null)
             <p class="property-line property-line-availability">
                 <span class="property-available_from">{{ __('Available from') }}</span>
-                <time datetime="{{ $property->available_from }}">{{ \Illuminate\Support\Carbon::parse($property->available_from)->translatedFormat('j F Y') }}</time>
+                <time datetime="{{ $property->available_from }}">@localDate($property->available_from, 'long')</time>
             </p>
         @endif
 

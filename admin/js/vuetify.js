@@ -9,7 +9,7 @@ import { VDialog } from 'vuetify/components/VDialog'
 import { VMenu } from 'vuetify/components/VMenu'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-const localeMap = { zh: 'zhHans' }
+const localeMap = { zh: 'zh-Hans', 'zh-TW': 'zh-Hant', 'pt-BR': 'pt', sr: 'sr-Cyrl' }
 const MAX_LOCALES = 3
 
 export async function switchLocale(code) {

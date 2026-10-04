@@ -40,7 +40,7 @@ class ContactMail extends Mailable
         }
 
         return $this
-            ->subject( 'Contact mail from ' . config( 'app.name' ) )
+            ->subject( __( 'Contact mail from :name', ['name' => config( 'app.name' )] ) )
             ->markdown( 'cms::mails.contact' );
     }
 }

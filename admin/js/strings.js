@@ -20,6 +20,8 @@
  * - image edge: "Top", "Left", "Right" and "Bottom" of an image
  * - page status: "Enable" and "Disable" of pages
  * - search ranking: "Position" in the search results
+ * - editing interface: the visual page editor
+ * - editor person: the user who edited an item
  * - text element: "Split" a text element
  *
  * New contexts should use descriptive words like the last ones, not abbreviations.
@@ -144,7 +146,6 @@ if ($pgettext) {
   $pgettext('fn', 'Frontend access role')
   $pgettext('fn', 'Payment prices')
   $pgettext('fn', 'Payment reference')
-  $pgettext('fn', 'Payment kind')
   $pgettext('fn', 'Currency')
   $pgettext('fn', 'Billing interval')
   $pgettext('fn', 'Price unit')
@@ -215,7 +216,7 @@ if ($pgettext) {
   $pgettext('fh', 'Source code shown with syntax highlighting')
   $pgettext('fh', 'Optional caption shown above the table')
   $pgettext('fh', 'Use the first row, the first column or both as table headers')
-  $pgettext('fh', 'Table data as comma separated values, one row per line')
+  $pgettext('fh', 'Enter data in the cells; add or remove rows and columns as needed')
   $pgettext('fh', 'Optional headline shown above the map')
   $pgettext('fh', 'Description shown next to the map, e.g. address or directions')
   $pgettext('fh', 'Search for a place or click on the map to set the location')
