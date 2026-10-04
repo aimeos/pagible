@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider as Provider;
+use Illuminate\Translation\Translator;
 
 class ThemeServiceProvider extends Provider
 {
@@ -77,7 +78,10 @@ class ThemeServiceProvider extends Provider
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/theme.php', 'cms.theme' );
 
         // Page languages are BCP 47 tags ("pt-BR") but Laravel's plural rules expect "pt_BR"
-        $this->app->extend( 'translator', fn( $translator ) => tap( $translator )->setSelector( new MessageSelector() ) );
+        $this->app->extend( 'translator', function( Translator $translator ) {
+            $translator->setSelector( new MessageSelector() );
+            return $translator;
+        } );
     }
 
     protected function rateLimiter(): void
