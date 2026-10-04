@@ -7,6 +7,21 @@ import { command, useShortcuts } from './shortcuts'
 import { useDrawerStore } from './stores'
 
 /**
+ * Returns the number of items in total and those affected by publishing, deleting and restoring
+ */
+export function tally(items) {
+  const counts = { all: 0, draft: 0, live: 0, trashed: 0 }
+
+  for (const item of items) {
+    counts.all++
+    counts.draft += item.published ? 0 : 1
+    counts[item.deleted_at ? 'trashed' : 'live']++
+  }
+
+  return counts
+}
+
+/**
  * Registers the list view actions unless the list is embedded, e.g. in a dialog
  * "create" gets the component instance and adds a new item of the given type if the user is allowed to
  */

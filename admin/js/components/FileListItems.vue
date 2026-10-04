@@ -33,7 +33,7 @@ import {
   useChangeStore,
   useConfirmStore
 } from '../stores'
-import { useListKeys, useListShortcuts } from '../lists'
+import { tally, useListKeys, useListShortcuts } from '../lists'
 import { debounce, fileurl, filesrcset } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
 
@@ -246,16 +246,12 @@ export default {
       })
     },
 
-    canTrash() {
-      return this.items.some((item) => this.checked.has(item.id) && !item.deleted_at)
+    counts() {
+      return tally(this.items.filter((item) => this.checked.has(item.id)))
     },
 
     isChecked() {
       return this.checked.size > 0
-    },
-
-    isTrashed() {
-      return this.items.some((item) => this.checked.has(item.id) && item.deleted_at)
     }
   },
 
@@ -754,30 +750,30 @@ export default {
               variant="text"
             />
           </template>
-          <v-list-item v-if="isChecked && user.can('file:publish')">
-            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
-              $gettext('Publish')
-            }}</v-btn>
+          <v-list-item v-if="counts.draft && user.can('file:publish')">
+            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()"
+              >{{ $gettext('Publish') }} ({{ counts.draft }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('file:save')">
-            <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()">{{
-              $gettext('Edit properties')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()"
+              >{{ $gettext('Edit properties') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
-          <v-list-item v-if="canTrash && user.can('file:drop')">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
-              $gettext('Delete')
-            }}</v-btn>
+          <v-list-item v-if="counts.live && user.can('file:drop')">
+            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()"
+              >{{ $gettext('Delete') }} ({{ counts.live }})</v-btn
+            >
           </v-list-item>
-          <v-list-item v-if="isTrashed && user.can('file:keep')">
-            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
-              $gettext('Restore')
-            }}</v-btn>
+          <v-list-item v-if="counts.trashed && user.can('file:keep')">
+            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()"
+              >{{ $gettext('Restore') }} ({{ counts.trashed }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('file:purge')">
-            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
-              $gettext('Purge')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()"
+              >{{ $gettext('Purge') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
         </ActionMenu>
       </span>

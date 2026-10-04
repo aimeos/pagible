@@ -282,6 +282,23 @@ describe('ElementListItems', () => {
     })
   })
 
+  it('counts the selected items affected by the bulk actions', () => {
+    mountList({}, { 'element:publish': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ElementListItems).vm
+      vm.items = [
+        { id: 'element-1', published: true },
+        { id: 'element-2', published: false, deleted_at: '2026-01-01' },
+        { id: 'element-3', published: false },
+      ]
+
+      vm.checked = new Set(['element-1'])
+      expect(vm.counts).to.deep.equal({ all: 1, draft: 0, live: 1, trashed: 0 })
+
+      vm.checked = new Set(['element-1', 'element-2', 'element-3'])
+      expect(vm.counts).to.deep.equal({ all: 3, draft: 2, live: 2, trashed: 1 })
+    })
+  })
+
   describe('list keys', () => {
     const query = () => cy.stub().resolves({
       data: {
