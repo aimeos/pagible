@@ -45,7 +45,7 @@ import {
   useMessageStore,
   useChangeStore
 } from '../stores'
-import { useListShortcuts } from '../lists'
+import { tally, useListShortcuts } from '../lists'
 import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, cleanEcho, listEcho } from '../echo'
@@ -296,6 +296,7 @@ export default {
       loading: true,
       checked: null,
       clip: null,
+      counts: tally([]),
       sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
@@ -413,22 +414,8 @@ export default {
       })
     },
 
-    canTrash() {
-      return (
-        this.isChecked &&
-        this.$refs.tree?.statsFlat.some((stat) => stat._checked && !stat.data.deleted_at)
-      )
-    },
-
     isChecked() {
       return this.checked || this.$refs.tree?.statsFlat.some((stat) => stat._checked)
-    },
-
-    isTrashed() {
-      return (
-        this.isChecked &&
-        this.$refs.tree?.statsFlat.some((stat) => stat._checked && stat.data.deleted_at)
-      )
     }
   },
 
@@ -587,11 +574,7 @@ export default {
         return
       }
 
-      const list = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data?.id
-          })
+      const list = stat ? [stat] : this.selected()
       const ids = list.map((stat) => stat.data.id)
 
       if (!list.length) {
@@ -645,6 +628,10 @@ export default {
       )
     },
 
+    count() {
+      this.counts = tally(this.selected().map((stat) => stat.data))
+    },
+
     cut(stat, node) {
       this.$refs.tree.statsFlat.forEach((stat) => {
         delete stat.cut
@@ -660,11 +647,7 @@ export default {
         return
       }
 
-      const list = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data?.id
-          })
+      const list = stat ? [stat] : this.selected()
 
       if (!list.length) {
         return
@@ -745,9 +728,7 @@ export default {
     },
 
     editAccess(stat = null) {
-      const list = stat
-        ? [stat]
-        : this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+      const list = stat ? [stat] : this.selected()
 
       this.accessIds = list.map((stat) => stat.data.id)
       this.accessDescendants = list.length === 1 ? list[0].data.has || 0 : 0
@@ -756,9 +737,7 @@ export default {
     },
 
     editProps(stat = null) {
-      const list = stat
-        ? [stat]
-        : this.$refs.tree?.statsFlat.filter((stat) => stat._checked && stat.data?.id) || []
+      const list = stat ? [stat] : this.selected()
       const set = new Set(list)
 
       this.propsCount = list.length
@@ -931,11 +910,7 @@ export default {
         return
       }
 
-      const stats = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data.id && stat.data.deleted_at
-          })
+      const stats = stat ? [stat] : this.selected((page) => page.deleted_at)
       const list = stats.filter((stat) => {
         return stats.indexOf(stat.parent) === -1
       })
@@ -1219,11 +1194,7 @@ export default {
         return
       }
 
-      const list = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data.id && !stat.data.published
-          })
+      const list = stat ? [stat] : this.selected((page) => !page.published)
 
       if (!list.length) {
         return
@@ -1260,11 +1231,7 @@ export default {
         return
       }
 
-      const list = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data.id
-          })
+      const list = stat ? [stat] : this.selected()
 
       if (
         !list.length ||
@@ -1504,17 +1471,19 @@ export default {
         })
     },
 
+    selected(fn = () => true) {
+      return (this.$refs.tree?.statsFlat || []).filter((stat) => {
+        return stat._checked && stat.data?.id && fn(stat.data)
+      })
+    },
+
     status(stat, val) {
       if (!this.user.can('page:save')) {
         this.messages.add(this.$gettext('Permission denied'), 'error')
         return
       }
 
-      const list = stat
-        ? [stat]
-        : this.$refs.tree.statsFlat.filter((stat) => {
-            return stat._checked && stat.data.id
-          })
+      const list = stat ? [stat] : this.selected()
 
       if (!list.length) {
         return
@@ -1696,60 +1665,61 @@ export default {
           <template #activator="{ props, label }">
             <v-btn
               v-bind="props"
+              @click="count()"
               :disabled="!isChecked || embed"
               :title="label"
               :icon="mdiDotsVertical"
               variant="text"
             />
           </template>
-          <v-list-item v-if="isChecked && user.can('page:publish')">
-            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()">{{
-              $gettext('Publish')
-            }}</v-btn>
+          <v-list-item v-if="counts.draft && user.can('page:publish')">
+            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()"
+              >{{ $gettext('Publish') }} ({{ counts.draft }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)">{{
-              $pgettext('page status', 'Enable')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)"
+              >{{ $pgettext('page status', 'Enable') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)">{{
-              $pgettext('page status', 'Disable')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)"
+              >{{ $pgettext('page status', 'Disable') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()">{{
-              $gettext('Edit properties')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()"
+              >{{ $gettext('Edit properties') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:access')">
-            <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess()">{{
-              $gettext('Access')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess()"
+              >{{ $gettext('Access') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('cache:clear')">
-            <v-btn :prepend-icon="mdiCached" variant="text" @click="clear()">{{
-              $gettext('Clear cache')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiCached" variant="text" @click="clear()"
+              >{{ $gettext('Clear cache') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
 
           <v-divider></v-divider>
 
-          <v-list-item v-if="canTrash && user.can('page:drop')">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()">{{
-              $gettext('Delete')
-            }}</v-btn>
+          <v-list-item v-if="counts.live && user.can('page:drop')">
+            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()"
+              >{{ $gettext('Delete') }} ({{ counts.live }})</v-btn
+            >
           </v-list-item>
-          <v-list-item v-if="isTrashed && user.can('page:keep')">
-            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()">{{
-              $gettext('Restore')
-            }}</v-btn>
+          <v-list-item v-if="counts.trashed && user.can('page:keep')">
+            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()"
+              >{{ $gettext('Restore') }} ({{ counts.trashed }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="isChecked && user.can('page:purge')">
-            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()">{{
-              $gettext('Purge')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()"
+              >{{ $gettext('Purge') }} ({{ counts.all }})</v-btn
+            >
           </v-list-item>
         </ActionMenu>
       </span>
@@ -1887,22 +1857,22 @@ export default {
             <v-divider></v-divider>
 
             <v-list-item v-if="user.can('page:move')">
-              <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)">{{
-                $pgettext('clipboard', 'Cut')
-              }}</v-btn>
+              <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)"
+                >{{ $pgettext('clipboard', 'Cut') }}</v-btn
+              >
             </v-list-item>
             <v-list-item v-if="!embed && user.can('page:add')">
-              <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)">{{
-                $pgettext('clipboard', 'Copy')
-              }}</v-btn>
+              <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)"
+                >{{ $pgettext('clipboard', 'Copy') }}</v-btn
+              >
             </v-list-item>
 
             <v-list-group v-if="clip?.type == 'copy' && !this.embed && user.can('page:add')">
               <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" @click.stop>
-                  <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                    $gettext('Paste')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiContentPaste" variant="text"
+                    >{{ $gettext('Paste') }}</v-btn
+                  >
                 </v-list-item>
               </template>
               <v-list-item>
@@ -1925,9 +1895,9 @@ export default {
             <v-list-group v-if="clip?.type == 'cut' && !this.embed && user.can('page:move')">
               <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" @click.stop>
-                  <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                    $gettext('Paste')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiContentPaste" variant="text"
+                    >{{ $gettext('Paste') }}</v-btn
+                  >
                 </v-list-item>
               </template>
               <v-list-item>

@@ -147,6 +147,10 @@ export default {
       return this.content.filter((el) => el._checked).length
     },
 
+    clipCount() {
+      return this.clipboard.get('page-content')?.length || 0
+    },
+
     keeps() {
       return this.content.some((el) => !this.shown(el))
         ? Math.max(this.content.length, 30)
@@ -202,25 +206,8 @@ export default {
     },
 
     copy(idx) {
-      const list = []
-
-      if (idx === undefined) {
-        for (let i = this.content.length - 1; i >= 0; i--) {
-          if (this.content[i]._checked) {
-            const entry = clone(this.content[i])
-            entry._checked = false
-            entry['id'] = null
-            list.push(entry)
-          }
-        }
-      } else {
-        const entry = clone(this.content[idx])
-        entry._checked = false
-        entry['id'] = null
-        list.push(entry)
-      }
-
-      this.clipboard.set('page-content', list.reverse())
+      const list = this.selection(idx).map((el) => ({ ...clone(el), id: null, _checked: false }))
+      this.clipboard.set('page-content', list)
     },
 
     createMarkdown(el) {
@@ -235,25 +222,10 @@ export default {
     },
 
     cut(idx) {
-      const list = []
+      const list = this.selection(idx)
 
-      if (idx === undefined) {
-        for (let i = this.content.length - 1; i >= 0; i--) {
-          if (this.content[i]._checked) {
-            const entry = this.take(i)
-            entry._checked = false
-            entry.id = null
-            list.push(entry)
-          }
-        }
-      } else {
-        const entry = this.take(idx)
-        entry._checked = false
-        entry.id = null
-        list.push(entry)
-      }
-
-      this.clipboard.set('page-content', list.reverse())
+      list.forEach((el) => this.take(this.content.indexOf(el)))
+      this.clipboard.set('page-content', list.map((el) => ({ ...el, id: null, _checked: false })))
       this.$emit('update:content', this.content)
     },
 
@@ -285,32 +257,24 @@ export default {
     },
 
     merge() {
-      let idx = 0
-      const entries = []
-
-      for (let i = this.content.length - 1; i >= 0; i--) {
-        if (
-          this.content[i]._checked &&
-          ['text', 'code', 'heading'].includes(this.content[i].type)
-        ) {
-          entries.push(this.take(i))
-          idx = i
-        }
-      }
+      const types = ['text', 'code', 'heading']
+      const entries = this.selection().filter((el) => types.includes(el.type))
 
       if (entries.length === 0) {
         return
       }
 
-      const entry = entries.reverse().reduce(
-        (acc, el) => {
-          acc.data.text += this.createMarkdown(el) + '\n\n'
-          return acc
-        },
-        { id: uid(), group: this.section, type: 'text', data: { text: '' }, _changed: true }
-      )
+      const idx = this.content.indexOf(entries[0])
+      const text = entries.map((el) => this.createMarkdown(el) + '\n\n').join('')
 
-      this.content.splice(idx, 0, entry)
+      entries.forEach((el) => this.take(this.content.indexOf(el)))
+      this.content.splice(idx, 0, {
+        id: uid(),
+        group: this.section,
+        type: 'text',
+        data: { text },
+        _changed: true
+      })
       this.$emit('update:content', this.content)
     },
 
@@ -375,11 +339,7 @@ export default {
     },
 
     purge() {
-      for (let i = this.content.length - 1; i >= 0; i--) {
-        if (this.content[i]._checked) {
-          this.take(i)
-        }
-      }
+      this.selection().forEach((el) => this.take(this.content.indexOf(el)))
 
       this.error()
       this.$emit('update:content', this.content)
@@ -499,6 +459,12 @@ export default {
 
         el._hide = Boolean(term) && !found
       })
+    },
+
+    selection(idx) {
+      return idx === undefined || this.content[idx]?._checked
+        ? this.content.filter((el) => el._checked)
+        : [this.content[idx]]
     },
 
     share(idx) {
@@ -853,19 +819,19 @@ export default {
             >
           </template>
           <v-list-item v-if="checkedCount">
-            <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()">{{
-              $pgettext('clipboard', 'Copy')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()"
+              >{{ $pgettext('clipboard', 'Copy') }} ({{ checkedCount }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="checkedCount">
-            <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()">{{
-              $pgettext('clipboard', 'Cut')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()"
+              >{{ $pgettext('clipboard', 'Cut') }} ({{ checkedCount }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="clipboard.get('page-content')">
-            <v-btn :prepend-icon="mdiContentPaste" variant="text" @click="paste()">{{
-              $gettext('Paste')
-            }}</v-btn>
+            <v-btn :prepend-icon="mdiContentPaste" variant="text" @click="paste()"
+              >{{ $gettext('Paste') }} ({{ clipCount }})</v-btn
+            >
           </v-list-item>
           <v-list-item v-if="checkedCount > 1">
             <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
@@ -949,14 +915,14 @@ export default {
                 </template>
 
                 <v-list-item v-if="!el._error">
-                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                    $pgettext('clipboard', 'Copy')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)"
+                    >{{ $pgettext('clipboard', 'Copy') }}{{ el._checked ? ` (${checkedCount})` : '' }}</v-btn
+                  >
                 </v-list-item>
                 <v-list-item v-if="!el._error">
-                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                    $pgettext('clipboard', 'Cut')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)"
+                    >{{ $pgettext('clipboard', 'Cut') }}{{ el._checked ? ` (${checkedCount})` : '' }}</v-btn
+                  >
                 </v-list-item>
                 <v-list-item>
                   <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
@@ -967,14 +933,14 @@ export default {
                 <v-divider></v-divider>
 
                 <v-list-item v-if="clipboard.get('page-content')">
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
-                    $gettext('Paste before')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)"
+                    >{{ $gettext('Paste before') }} ({{ clipCount }})</v-btn
+                  >
                 </v-list-item>
                 <v-list-item v-if="clipboard.get('page-content')">
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
-                    $gettext('Paste after')
-                  }}</v-btn>
+                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)"
+                    >{{ $gettext('Paste after') }} ({{ clipCount }})</v-btn
+                  >
                 </v-list-item>
                 <v-list-item>
                   <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{

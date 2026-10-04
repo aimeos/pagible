@@ -237,6 +237,48 @@ describe('PageDetailContentList', () => {
     cy.contains('.v-overlay .v-btn', 'Paste after').should('exist')
   })
 
+  it('copies all selected elements from the context menu of a selected element', () => {
+    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
+
+    mountList({ content: items }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailContentList).vm
+
+      vm.copy(2)
+      expect(vm.clipboard.get('page-content').map((el) => el.data.title)).to.deep.equal([
+        'Item 0',
+        'Item 2',
+      ])
+
+      vm.copy(1)
+      expect(vm.clipboard.get('page-content').map((el) => el.data.title)).to.deep.equal(['Item 1'])
+    })
+
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(0).click()
+    cy.contains('.v-overlay .v-btn', 'Copy (2)').should('exist')
+    cy.contains('.v-overlay .v-btn', 'Cut (2)').should('exist')
+  })
+
+  it('cuts only the current element from the context menu of an unselected element', () => {
+    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
+
+    mountList({ content: items }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailContentList).vm
+
+      vm.cut(1)
+      expect(vm.clipboard.get('page-content').map((el) => el.data.title)).to.deep.equal(['Item 1'])
+      expect(items.map((el) => el.data.title)).to.deep.equal(['Item 0', 'Item 2'])
+    })
+  })
+
+  it('shows no count in the context menu of an unselected element', () => {
+    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
+
+    mountList({ content: items }, { 'page:save': true })
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
+    cy.get('.v-overlay .v-btn').contains(/^\s*Copy\s*$/).should('exist')
+    cy.get('.v-overlay .v-btn').contains(/^\s*Cut\s*$/).should('exist')
+  })
+
   it('hides bulk actions without page:save permission', () => {
     mountList()
     cy.get('.bulk').should('not.exist')
