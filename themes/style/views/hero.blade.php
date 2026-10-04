@@ -22,14 +22,13 @@
         <div class="cms-text">@markdown($data->text)</div>
     @endif
 
-    @if(($data->url ?? null) || ($data->{'url-alternative'} ?? null))
+    @if($data->buttons ?? null)
         <div class="actions">
-            @if($data->url ?? null)
-                <a class="btn url" href="{{ cmslink($data->url) }}" rel="{{ $data->{'url-rel'} ?? '' }}">{{ $data->button ?? '' }}</a>
-            @endif
-            @if($data->{'url-alternative'} ?? null)
-                <a class="btn url-alternative" href="{{ cmslink($data->{'url-alternative'}) }}" rel="{{ $data->{'url-alternative-rel'} ?? '' }}">{{ $data->{'button-alternative'} ?? '' }}</a>
-            @endif
+            @foreach($data->buttons as $button)
+                @if($url = cmslink($button->url ?? null))
+                    <a class="btn" href="{{ $url }}" rel="{{ $button->{'url-rel'} ?? '' }}">{{ $button->label ?? '' }}</a>
+                @endif
+            @endforeach
         </div>
     @endif
 </div>

@@ -496,10 +496,10 @@ class PremiumDemo extends AbstractDemo
                 'title' => 'Three tools. One quieter workspace.',
                 'subtitle' => 'The Stillform collection',
                 'text' => 'Each product solves one repeated part of the working day, then gets out of the way. Built from serviceable modules and finished to sit comfortably in a room for years.',
-                'url' => '#products',
-                'button' => 'Choose a product',
-                'url-alternative' => '/support',
-                'button-alternative' => 'Check compatibility',
+                'buttons' => [
+                    ['label' => 'Choose a product', 'url' => '#products'],
+                    ['label' => 'Check compatibility', 'url' => '/support'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'beam' ), 'type' => 'file'],
                     ['id' => $this->img( 'dial' ), 'type' => 'file'],
@@ -689,10 +689,10 @@ class PremiumDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'Stillform',
             'text' => $text,
-            'url' => '/collection',
-            'button' => 'Explore the collection',
-            'url-alternative' => '/journal',
-            'button-alternative' => 'Back to the journal',
+            'buttons' => [
+                ['label' => 'Explore the collection', 'url' => '/collection'],
+                ['label' => 'Back to the journal', 'url' => '/journal'],
+            ],
         ]];
     }
 
@@ -783,10 +783,10 @@ class PremiumDemo extends AbstractDemo
                 'title' => 'Technology, made to belong',
                 'subtitle' => 'Stillform — quiet tools for focused rooms',
                 'text' => 'We design useful connected objects with precise physical controls, repairable construction, and no demand for more attention than the task deserves.',
-                'url' => '/collection',
-                'button' => 'Explore the collection',
-                'url-alternative' => '/studio',
-                'button-alternative' => 'Visit the studio',
+                'buttons' => [
+                    ['label' => 'Explore the collection', 'url' => '/collection'],
+                    ['label' => 'Visit the studio', 'url' => '/studio'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'beam' ), 'type' => 'file'],
                     ['id' => $this->img( 'dial' ), 'type' => 'file'],

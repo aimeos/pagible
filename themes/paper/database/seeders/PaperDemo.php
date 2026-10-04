@@ -552,10 +552,10 @@ class PaperDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'Margin & Matter',
             'text' => $text,
-            'url' => '/journal',
-            'button' => 'Back to the journal',
-            'url-alternative' => '/subscribe',
-            'button-alternative' => 'Subscribe',
+            'buttons' => [
+                ['label' => 'Back to the journal', 'url' => '/journal'],
+                ['label' => 'Subscribe', 'url' => '/subscribe'],
+            ],
         ]];
     }
 
@@ -646,10 +646,10 @@ class PaperDemo extends AbstractDemo
                 'title' => 'A journal for the things worth noticing',
                 'subtitle' => 'Margin & Matter — Issue 07',
                 'text' => 'Independent stories about useful objects, thoughtful rooms, public places, and the people who know them closely.',
-                'url' => '/journal',
-                'button' => 'Read the journal',
-                'url-alternative' => '/subscribe',
-                'button-alternative' => 'Subscribe',
+                'buttons' => [
+                    ['label' => 'Read the journal', 'url' => '/journal'],
+                    ['label' => 'Subscribe', 'url' => '/subscribe'],
+                ],
                 'files' => [['id' => $fileId, 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [

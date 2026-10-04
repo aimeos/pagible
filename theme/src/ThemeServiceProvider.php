@@ -29,6 +29,7 @@ class ThemeServiceProvider extends Provider
 
         View::addNamespace( 'cms', $basedir . '/views' );
 
+        $this->loadMigrationsFrom( $basedir . '/database/migrations' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme' );

@@ -302,10 +302,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Coaching you can use on the next rep.',
                 'subtitle' => 'Meet the team',
                 'text' => 'Clear eyes, calm cues, serious standards. Our coaches know when to push, when to simplify, and how to keep a full room moving without losing the individual.',
-                'url' => '/start',
-                'button' => 'Meet us on the floor',
-                'url-alternative' => '/training',
-                'button-alternative' => 'Explore the sessions',
+                'buttons' => [
+                    ['label' => 'Meet us on the floor', 'url' => '/start'],
+                    ['label' => 'Explore the sessions', 'url' => '/training'],
+                ],
                 'files' => [['id' => $this->heroImg( 'team' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
@@ -523,10 +523,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Choose a rhythm. Build momentum',
                 'subtitle' => 'RALLY membership',
                 'text' => 'Straightforward plans for one good session, a reliable twice-weekly practice, or training that moves with your week. No joining fee. No twelve-month lock-in.',
-                'url' => '#plans',
-                'button' => 'Compare plans',
-                'url-alternative' => '/start',
-                'button-alternative' => 'Try your first class',
+                'buttons' => [
+                    ['label' => 'Compare plans', 'url' => '#plans'],
+                    ['label' => 'Try your first class', 'url' => '/start'],
+                ],
                 'files' => [['id' => $this->heroImg( 'community' ), 'type' => 'file']],
             ]],
             ['id' => 'plans', 'type' => 'pricing', 'group' => 'main', 'data' => [
@@ -674,10 +674,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Four sessions. One complete training week.',
                 'subtitle' => 'The RALLY method',
                 'text' => 'Strength to create capacity. Conditioning to use it. Hybrid sessions to connect the pieces. Mobility to keep the options open.',
-                'url' => '#sessions',
-                'button' => 'Find your session',
-                'url-alternative' => '/start',
-                'button-alternative' => 'Book a first class',
+                'buttons' => [
+                    ['label' => 'Find your session', 'url' => '#sessions'],
+                    ['label' => 'Book a first class', 'url' => '/start'],
+                ],
                 'files' => [
                     ['id' => $this->heroImg( 'athlete' ), 'type' => 'file'],
                     ['id' => $this->heroImg( 'interval' ), 'type' => 'file'],
@@ -736,10 +736,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Do the work. Keep the momentum',
                 'subtitle' => 'First class · 15€',
                 'text' => 'Choose a session with a coach and leave knowing what should come next.',
-                'url' => '/start',
-                'button' => 'Book now',
-                'url-alternative' => '/studio-guide',
-                'button-alternative' => 'Read the studio guide',
+                'buttons' => [
+                    ['label' => 'Book now', 'url' => '/start'],
+                    ['label' => 'Read the studio guide', 'url' => '/studio-guide'],
+                ],
             ]],
         ], $home );
 
@@ -778,10 +778,10 @@ class BoldDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'RALLY Training Club',
             'text' => $text,
-            'url' => '/start',
-            'button' => 'Book now',
-            'url-alternative' => '/journal',
-            'button-alternative' => 'Back to field notes',
+            'buttons' => [
+                ['label' => 'Book now', 'url' => '/start'],
+                ['label' => 'Back to field notes', 'url' => '/journal'],
+            ],
         ]];
     }
 
@@ -932,10 +932,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Train with intent. Leave with momentum',
                 'subtitle' => 'RALLY Training Club · Berlin',
                 'text' => 'Coached strength and conditioning for people who want serious progress, clear direction, and enough energy left for the rest of life.',
-                'url' => '/start',
-                'button' => 'Book now',
-                'url-alternative' => '/training',
-                'button-alternative' => 'See how we train',
+                'buttons' => [
+                    ['label' => 'Book now', 'url' => '/start'],
+                    ['label' => 'See how we train', 'url' => '/training'],
+                ],
                 'files' => [
                     ['id' => $this->heroImg( 'athlete' ), 'type' => 'file'],
                     ['id' => $this->heroImg( 'community' ), 'type' => 'file'],
@@ -992,10 +992,10 @@ class BoldDemo extends AbstractDemo
                 'title' => 'Your next training week can start today.',
                 'subtitle' => 'First class · 15€',
                 'text' => 'Tell us what you want to build. We will help you choose the session and take care of the first step.',
-                'url' => '/start',
-                'button' => 'Start training',
-                'url-alternative' => '/membership',
-                'button-alternative' => 'Compare memberships',
+                'buttons' => [
+                    ['label' => 'Start training', 'url' => '/start'],
+                    ['label' => 'Compare memberships', 'url' => '/membership'],
+                ],
             ]],
             ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];

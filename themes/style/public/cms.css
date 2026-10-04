@@ -202,19 +202,6 @@ a.btn:hover {
     color: var(--pico-background-color);
 }
 
-.btn.url-alternative,
-a.btn.url-alternative {
-    background: transparent;
-    border-color: var(--pico-color);
-    color: var(--pico-color);
-}
-
-.btn.url-alternative:hover,
-a.btn.url-alternative:hover {
-    background: var(--pico-color);
-    color: var(--pico-background-color);
-}
-
 main {
     width: 100%;
     margin: auto;

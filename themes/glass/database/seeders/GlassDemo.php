@@ -530,8 +530,9 @@ class GlassDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'SignalLake in practice',
             'text' => $text,
-            'url' => '/docs',
-            'button' => 'Explore the documentation',
+            'buttons' => [
+                ['label' => 'Explore the documentation', 'url' => '/docs'],
+            ],
         ]];
     }
 
@@ -646,10 +647,10 @@ class GlassDemo extends AbstractDemo
                 'title' => 'SignalLake Analytics Cloud',
                 'subtitle' => 'Live metrics for operating teams',
                 'text' => 'SignalLake gives revenue, product, and finance teams one governed place to read the numbers that shape the week.',
-                'url' => '#pricing',
-                'button' => 'View plans',
-                'url-alternative' => '/docs',
-                'button-alternative' => 'Read docs',
+                'buttons' => [
+                    ['label' => 'View plans', 'url' => '#pricing'],
+                    ['label' => 'Read docs', 'url' => '/docs'],
+                ],
                 'background' => ['id' => $this->img( 'cloud' ), 'type' => 'file'],
                 'background-animation' => 'zoom',
                 'files' => [

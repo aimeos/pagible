@@ -305,10 +305,10 @@ class NewsDemo extends AbstractDemo
             'title' => 'Continue reading in ' . $section,
             'subtitle' => 'The Ledger',
             'text' => 'Analysis, conversations, and numbers that reveal the wider context.',
-            'url' => '/' . $path,
-            'button' => 'Visit the section',
-            'url-alternative' => '/subscribe',
-            'button-alternative' => 'Subscribe to The Ledger',
+            'buttons' => [
+                ['label' => 'Visit the section', 'url' => '/' . $path],
+                ['label' => 'Subscribe to The Ledger', 'url' => '/subscribe'],
+            ],
         ]];
     }
 
@@ -399,8 +399,9 @@ class NewsDemo extends AbstractDemo
                 'title' => 'Europe’s industrial rebuild enters its decisive phase',
                 'subtitle' => 'Companies',
                 'text' => 'Manufacturers are investing while production continues. The next round of decisions will determine where batteries, chips, and clean-energy equipment are made.',
-                'url' => '/industry-without-a-blueprint',
-                'button' => 'Europe’s industrial rebuild',
+                'buttons' => [
+                    ['label' => 'Europe’s industrial rebuild', 'url' => '/industry-without-a-blueprint'],
+                ],
                 'files' => [['id' => $fileId, 'type' => 'file']],
             ]],
             ['id' => 'top-stories', 'type' => 'cards', 'group' => 'main', 'data' => [
