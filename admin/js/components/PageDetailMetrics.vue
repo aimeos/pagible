@@ -119,7 +119,7 @@ export default {
     palette() {
       return {
         primary: this.colors?.primary,
-        secondary: this.colors?.secondary,
+        secondary: this.colors?.warning,
         success: this.colors?.success
       }
     },
