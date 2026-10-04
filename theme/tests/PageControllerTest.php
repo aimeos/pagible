@@ -425,6 +425,40 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testHeroRendersButtons()
+    {
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+
+        Resource::addPage( [
+            'lang' => 'en',
+            'name' => 'Hero buttons',
+            'title' => 'Hero buttons',
+            'path' => 'hero-buttons',
+            'status' => 1,
+            'content' => [[
+                'id' => 'hero-buttons',
+                'type' => 'hero',
+                'group' => 'main',
+                'data' => [
+                    'title' => 'Hero buttons',
+                    'buttons' => [
+                        ['label' => 'First action', 'url' => 'https://example.com/first', 'url-rel' => 'nofollow'],
+                        ['label' => 'Second action', 'url' => 'https://example.com/second'],
+                        ['label' => 'Third action', 'url' => 'https://example.com/third'],
+                    ],
+                ],
+            ]],
+        ], $this->user, parent: $root->id );
+
+        $response = $this->actingAs( $this->user )->get( '/hero-buttons' );
+
+        $response->assertStatus( 200 );
+        $response->assertSeeInOrder( ['First action', 'Second action', 'Third action'] );
+        $response->assertSee( 'href="https://example.com/first" rel="nofollow"', false );
+        $this->assertSame( 3, substr_count( (string) $response->getContent(), '<a class="btn"' ) );
+    }
+
+
     public function testAnonymousCacheablePageHasNoCookies()
     {
         Page::forceCreate([

@@ -98,8 +98,9 @@ class EstateDemo extends AbstractDemo
                 'text' => 'Open the full presentation for each current property, or return to the complete overview to compare location, price, availability, and fit.',
                 'background' => ['id' => $this->img( 'market' ), 'type' => 'file'],
                 'background-animation' => 'zoom',
-                'url' => '/properties',
-                'button' => 'View all properties',
+                'buttons' => [
+                    ['label' => 'View all properties', 'url' => '/properties'],
+                ],
             ]],
         ], $home );
 
@@ -356,10 +357,10 @@ class EstateDemo extends AbstractDemo
                 'title' => 'Review the portfolio before the next purchase',
                 'subtitle' => 'Estate advisory',
                 'text' => 'Map income, lease events, location exposure, and planned capital work before comparing the next opportunity.',
-                'url' => '/#home-contact',
-                'button' => 'Request a portfolio review',
-                'url-alternative' => '/properties',
-                'button-alternative' => 'Compare current properties',
+                'buttons' => [
+                    ['label' => 'Request a portfolio review', 'url' => '/#home-contact'],
+                    ['label' => 'Compare current properties', 'url' => '/properties'],
+                ],
             ]],
         ], $news );
 
@@ -433,10 +434,10 @@ class EstateDemo extends AbstractDemo
                 'title' => 'Turn the survey into a renovation brief',
                 'subtitle' => 'Estate advisory',
                 'text' => 'Set the market objective, essential work, budget range, and decision points before design and procurement begin.',
-                'url' => '/#home-contact',
-                'button' => 'Discuss a renovation strategy',
-                'url-alternative' => '/properties',
-                'button-alternative' => 'View current properties',
+                'buttons' => [
+                    ['label' => 'Discuss a renovation strategy', 'url' => '/#home-contact'],
+                    ['label' => 'View current properties', 'url' => '/properties'],
+                ],
             ]],
         ], $news );
 
@@ -566,10 +567,10 @@ class EstateDemo extends AbstractDemo
                 'title' => 'Find the property behind your next move',
                 'subtitle' => 'Estate',
                 'text' => 'Compare residential, rental, and commercial properties with clear pricing, availability, location details, and practical market context.',
-                'url' => '/properties',
-                'button' => 'View properties',
-                'url-alternative' => '/news',
-                'button-alternative' => 'Read property news',
+                'buttons' => [
+                    ['label' => 'View properties', 'url' => '/properties'],
+                    ['label' => 'Read property news', 'url' => '/news'],
+                ],
                 'background' => ['id' => $fileId, 'type' => 'file'],
                 'background-animation' => 'zoom',
             ]],

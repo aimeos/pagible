@@ -421,8 +421,9 @@ class DefaultDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'Discuss the work',
             'text' => $text,
-            'url' => '/#contact',
-            'button' => 'Start a conversation',
+            'buttons' => [
+                ['label' => 'Start a conversation', 'url' => '/#contact'],
+            ],
         ]];
     }
 
@@ -537,10 +538,10 @@ class DefaultDemo extends AbstractDemo
                 'title' => 'Make complex change workable',
                 'subtitle' => 'Meridian Works',
                 'text' => 'We help leadership teams redesign services, clarify operating models, and recover important work when delivery has lost its way.',
-                'url' => '#contact',
-                'button' => 'Discuss an engagement',
-                'url-alternative' => '/docs',
-                'button-alternative' => 'Read the client handbook',
+                'buttons' => [
+                    ['label' => 'Discuss an engagement', 'url' => '#contact'],
+                    ['label' => 'Read the client handbook', 'url' => '/docs'],
+                ],
                 'files' => [['id' => $fileId, 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [

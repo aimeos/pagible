@@ -464,8 +464,9 @@ HTML,
             'title' => $title,
             'subtitle' => 'PagibleAI in practice',
             'text' => $text,
-            'url' => '/docs',
-            'button' => 'Open the documentation',
+            'buttons' => [
+                ['label' => 'Open the documentation', 'url' => '/docs'],
+            ],
         ]];
     }
 
@@ -611,8 +612,9 @@ HTML,
                 'title' => 'A Laravel CMS your whole team can work with',
                 'subtitle' => 'PagibleAI CMS',
                 'text' => 'Give editors a clear publishing system and developers a compact, API-first foundation that fits the Laravel application you already run.',
-                'url' => '/docs',
-                'button' => 'Install PagibleAI',
+                'buttons' => [
+                    ['label' => 'Install PagibleAI', 'url' => '/docs'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'hero-team' ), 'type' => 'file'],
                 ],

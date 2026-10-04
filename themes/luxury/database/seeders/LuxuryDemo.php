@@ -427,10 +427,10 @@ class LuxuryDemo extends AbstractDemo
                 'title' => 'Sleep with stone, linen, and open air',
                 'subtitle' => 'Stay at Avelune',
                 'text' => 'Twenty-eight rooms and suites set between the old house, garden, and olive terraces. Each has outdoor space and the quiet details needed for genuine rest.',
-                'url' => '#rooms',
-                'button' => 'Find your room',
-                'url-alternative' => '/reserve',
-                'button-alternative' => 'Request dates',
+                'buttons' => [
+                    ['label' => 'Find your room', 'url' => '#rooms'],
+                    ['label' => 'Request dates', 'url' => '/reserve'],
+                ],
                 'files' => [['id' => $this->img( 'suite' ), 'type' => 'file']],
             ]],
             ['id' => 'rooms', 'type' => 'pricing', 'group' => 'main', 'data' => [
@@ -526,10 +526,10 @@ class LuxuryDemo extends AbstractDemo
                 'title' => 'Return to your own rhythm',
                 'subtitle' => 'The Avelune wellness house',
                 'text' => 'Skilled touch, warm water, steady movement, and programmes built around what your body can use—not a crowded schedule.',
-                'url' => '#rituals',
-                'button' => 'Explore rituals',
-                'url-alternative' => '/reserve',
-                'button-alternative' => 'Plan a retreat',
+                'buttons' => [
+                    ['label' => 'Explore rituals', 'url' => '#rituals'],
+                    ['label' => 'Plan a retreat', 'url' => '/reserve'],
+                ],
                 'files' => [['id' => $this->img( 'spa' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -681,10 +681,10 @@ class LuxuryDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'Avelune Retreat',
             'text' => $text,
-            'url' => '/reserve',
-            'button' => 'Plan your stay',
-            'url-alternative' => '/journal',
-            'button-alternative' => 'Back to the journal',
+            'buttons' => [
+                ['label' => 'Plan your stay', 'url' => '/reserve'],
+                ['label' => 'Back to the journal', 'url' => '/journal'],
+            ],
         ]];
     }
 
@@ -768,10 +768,10 @@ class LuxuryDemo extends AbstractDemo
                 'title' => 'A quiet estate between mountain and sea',
                 'subtitle' => 'Avelune Retreat — Mallorca',
                 'text' => 'Twenty-eight rooms, a restorative bath house, and a kitchen rooted in the island. Come for clear air, deep sleep, and days with space around them.',
-                'url' => '/stay',
-                'button' => 'Discover the rooms',
-                'url-alternative' => '/reserve',
-                'button-alternative' => 'Plan your stay',
+                'buttons' => [
+                    ['label' => 'Discover the rooms', 'url' => '/stay'],
+                    ['label' => 'Plan your stay', 'url' => '/reserve'],
+                ],
                 'files' => [['id' => $this->img( 'home' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [

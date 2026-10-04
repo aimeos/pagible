@@ -97,10 +97,10 @@ class TasteDemo extends AbstractDemo
                 'title' => 'The work behind the bowl',
                 'subtitle' => 'Our kitchen',
                 'text' => 'Broth starts before the room opens. Noodles are portioned for each service, vegetables meet the grill to order, and every garnish has a reason to be there.',
-                'url' => '/menu',
-                'button' => 'See the menu',
-                'url-alternative' => '/visit',
-                'button-alternative' => 'Visit Sumi',
+                'buttons' => [
+                    ['label' => 'See the menu', 'url' => '/menu'],
+                    ['label' => 'Visit Sumi', 'url' => '/visit'],
+                ],
                 'files' => [['id' => $this->img( 'fire' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'image-text', 'group' => 'main', 'data' => [
@@ -151,10 +151,10 @@ class TasteDemo extends AbstractDemo
                 'title' => 'Choose the bowl that fits tonight',
                 'subtitle' => 'Noodles · plates · drinks',
                 'text' => 'Three long-cooked broths, one seasonal bowl, a handful of plates for the table, and cold drinks mixed to cut through the warmth.',
-                'url' => '#bowls',
-                'button' => 'See the bowls',
-                'url-alternative' => '/visit',
-                'button-alternative' => 'Plan your visit',
+                'buttons' => [
+                    ['label' => 'See the bowls', 'url' => '#bowls'],
+                    ['label' => 'Plan your visit', 'url' => '/visit'],
+                ],
                 'files' => [['id' => $this->img( 'plates' ), 'type' => 'file']],
             ]],
             ['id' => 'bowls', 'type' => 'pricing', 'group' => 'main', 'data' => [
@@ -216,10 +216,10 @@ class TasteDemo extends AbstractDemo
                 'title' => 'Your seat is closer than you think',
                 'subtitle' => 'Visit Sumi',
                 'text' => "Find us at Kastanienallee 48 in Prenzlauer Berg. Walk in for counter seats or send a table request for groups of four or more. The kitchen serves the full menu until thirty minutes before closing.",
-                'url' => '#table-request',
-                'button' => 'Request a table',
-                'url-alternative' => '/menu',
-                'button-alternative' => 'Read the menu',
+                'buttons' => [
+                    ['label' => 'Request a table', 'url' => '#table-request'],
+                    ['label' => 'Read the menu', 'url' => '/menu'],
+                ],
                 'files' => [['id' => $this->img( 'counter' ), 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
@@ -408,10 +408,10 @@ class TasteDemo extends AbstractDemo
                 'title' => 'Broth, fire, and a seat at the counter',
                 'subtitle' => 'Walk in with 1–3 guests · Tue–Sun from 12:00',
                 'text' => 'Slow broth and springy ramen, grilled small plates and cold drinks in Prenzlauer Berg, from lunch through late counter seats.',
-                'url' => '/menu',
-                'button' => 'See the menu',
-                'url-alternative' => '/visit#table-request',
-                'button-alternative' => 'Group table requests',
+                'buttons' => [
+                    ['label' => 'See the menu', 'url' => '/menu'],
+                    ['label' => 'Group table requests', 'url' => '/visit#table-request'],
+                ],
                 'files' => [['id' => $this->img( 'miso' ), 'type' => 'file']],
             ]],
             ['id' => 'menu-highlights', 'type' => 'pricing', 'group' => 'main', 'data' => [

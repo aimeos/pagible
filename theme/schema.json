@@ -377,23 +377,28 @@
                     "type": "markdown",
                     "hint": "Introduction shown below the headline"
                 },
-                "url": {
-                    "type": "url",
-                    "hint": "Page or link the main button leads to",
-                    "rel": true
+                "buttons": {
+                    "type": "items",
+                    "hint": "Buttons leading visitors to the next step",
+                    "max": 3,
+                    "item": {
+                        "label": {
+                            "type": "string",
+                            "hint": "Text of the button",
+                            "required": true
+                        },
+                        "url": {
+                            "type": "url",
+                            "hint": "Page or link the button leads to",
+                            "rel": true,
+                            "required": true
+                        }
+                    }
                 },
-                "button": {
-                    "type": "string",
-                    "hint": "Text of the main button"
-                },
-                "url-alternative": {
-                    "type": "url",
-                    "hint": "Page or link the second button leads to",
-                    "rel": true
-                },
-                "button-alternative": {
-                    "type": "string",
-                    "hint": "Text of the second button"
+                "files": {
+                    "type": "images",
+                    "label": "images",
+                    "hint": "Images shown next to the text"
                 },
                 "background": {
                     "type": "image",
@@ -414,11 +419,6 @@
                             "label": "Zoom"
                         }
                     ]
-                },
-                "files": {
-                    "type": "images",
-                    "label": "images",
-                    "hint": "Images shown next to the text"
                 }
             }
         },

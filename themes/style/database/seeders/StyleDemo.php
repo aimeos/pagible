@@ -86,10 +86,10 @@ class StyleDemo extends AbstractDemo
                 'title' => 'The work stays close',
                 'subtitle' => 'Veyra Atelier — Berlin',
                 'text' => 'Every style is developed, fitted, and finished within a short walk of our boutique. Keeping the work close lets us make fewer pieces and know each one properly.',
-                'url' => '#process',
-                'button' => 'See the process',
-                'url-alternative' => '/visit',
-                'button-alternative' => 'Book a fitting',
+                'buttons' => [
+                    ['label' => 'See the process', 'url' => '#process'],
+                    ['label' => 'Book a fitting', 'url' => '/visit'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'atelier' ), 'type' => 'file'],
                     ['id' => $this->img( 'pattern' ), 'type' => 'file'],
@@ -357,10 +357,10 @@ class StyleDemo extends AbstractDemo
                 'title' => 'No. 08 — After dark',
                 'subtitle' => 'Veyra Autumn / Winter 2026',
                 'text' => 'Long lines, exact shoulders, and cloth that catches the last available light. Cut in numbered editions in Berlin.',
-                'url' => '#pieces',
-                'button' => 'View the pieces',
-                'url-alternative' => '/lookbook',
-                'button-alternative' => 'Open the lookbook',
+                'buttons' => [
+                    ['label' => 'View the pieces', 'url' => '#pieces'],
+                    ['label' => 'Open the lookbook', 'url' => '/lookbook'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'collection' ), 'type' => 'file'],
                     ['id' => $this->img( 'coat' ), 'type' => 'file'],
@@ -472,10 +472,10 @@ class StyleDemo extends AbstractDemo
                 'title' => 'After dark',
                 'subtitle' => 'Lookbook No. 08',
                 'text' => 'Berlin, 20:47–23:16. Photographed between the last office lights and the first train home.',
-                'url' => '#looks',
-                'button' => 'View the story',
-                'url-alternative' => '/collection',
-                'button-alternative' => 'Shop the collection',
+                'buttons' => [
+                    ['label' => 'View the story', 'url' => '#looks'],
+                    ['label' => 'Shop the collection', 'url' => '/collection'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'look-one' ), 'type' => 'file'],
                     ['id' => $this->img( 'home' ), 'type' => 'file'],
@@ -542,10 +542,10 @@ class StyleDemo extends AbstractDemo
                 'title' => 'Take time with the clothes',
                 'subtitle' => 'Veyra Boutique — Berlin',
                 'text' => 'Visit without an appointment during boutique hours, or reserve the fitting room for an unhurried look at the full collection.',
-                'url' => '#appointment',
-                'button' => 'Request an appointment',
-                'url-alternative' => 'mailto:boutique@veyra.example',
-                'button-alternative' => 'Email the boutique',
+                'buttons' => [
+                    ['label' => 'Request an appointment', 'url' => '#appointment'],
+                    ['label' => 'Email the boutique', 'url' => 'mailto:boutique@veyra.example'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'rail' ), 'type' => 'file'],
                     ['id' => $this->img( 'fitting' ), 'type' => 'file'],
@@ -614,10 +614,10 @@ class StyleDemo extends AbstractDemo
             'title' => $title,
             'subtitle' => 'Veyra — Collection No. 08',
             'text' => $text,
-            'url' => '/collection',
-            'button' => 'View the collection',
-            'url-alternative' => '/journal',
-            'button-alternative' => 'Back to the journal',
+            'buttons' => [
+                ['label' => 'View the collection', 'url' => '/collection'],
+                ['label' => 'Back to the journal', 'url' => '/journal'],
+            ],
         ]];
     }
 
@@ -708,10 +708,10 @@ class StyleDemo extends AbstractDemo
                 'title' => 'Dress for what follows',
                 'subtitle' => 'Veyra — Collection No. 08',
                 'text' => 'An independent Berlin label cutting limited editions in wool, silk, and linen. Strong lines, measured volume, and clothes made to move beyond one evening.',
-                'url' => '/collection',
-                'button' => 'View No. 08',
-                'url-alternative' => '/lookbook',
-                'button-alternative' => 'Open the lookbook',
+                'buttons' => [
+                    ['label' => 'View No. 08', 'url' => '/collection'],
+                    ['label' => 'Open the lookbook', 'url' => '/lookbook'],
+                ],
                 'files' => [
                     ['id' => $this->img( 'home' ), 'type' => 'file'],
                     ['id' => $this->img( 'coat' ), 'type' => 'file'],

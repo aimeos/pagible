@@ -305,10 +305,10 @@ class JournalDemo extends AbstractDemo
             'title' => 'Continue reading in ' . $section,
             'subtitle' => 'Kontur',
             'text' => 'Analysis, conversations, and numbers that reveal the wider context.',
-            'url' => '/' . $path,
-            'button' => 'Visit the section',
-            'url-alternative' => '/subscribe',
-            'button-alternative' => 'Subscribe to Kontur',
+            'buttons' => [
+                ['label' => 'Visit the section', 'url' => '/' . $path],
+                ['label' => 'Subscribe to Kontur', 'url' => '/subscribe'],
+            ],
         ]];
     }
 
@@ -399,10 +399,10 @@ class JournalDemo extends AbstractDemo
                 'title' => 'Business is changing. We show where it leads.',
                 'subtitle' => 'Kontur | Edition 04.26',
                 'text' => 'Reporting, analysis, and conversations about companies, money, and work—with time for the facts and attention to the consequences.',
-                'url' => '/economy',
-                'button' => 'Latest analysis',
-                'url-alternative' => '/subscribe',
-                'button-alternative' => 'Try an edition',
+                'buttons' => [
+                    ['label' => 'Latest analysis', 'url' => '/economy'],
+                    ['label' => 'Try an edition', 'url' => '/subscribe'],
+                ],
                 'files' => [['id' => $fileId, 'type' => 'file']],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [

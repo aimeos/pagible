@@ -200,12 +200,30 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testRegisterHeroButtons()
+	{
+		$fields = Schema::get( 'cms' )['content']['hero']['fields'];
+		$buttons = $fields['buttons'];
+
+		$this->assertArrayNotHasKey( 'url', $fields );
+		$this->assertArrayNotHasKey( 'button', $fields );
+		$this->assertArrayNotHasKey( 'url-alternative', $fields );
+		$this->assertArrayNotHasKey( 'button-alternative', $fields );
+		$this->assertSame( 'items', $buttons['type'] );
+		$this->assertArrayNotHasKey( 'required', $buttons );
+		$this->assertSame( 3, $buttons['max'] );
+		$this->assertTrue( $buttons['item']['label']['required'] );
+		$this->assertSame( 'url', $buttons['item']['url']['type'] );
+		$this->assertTrue( $buttons['item']['url']['required'] );
+	}
+
+
 	public function testRegisterUrlRelationships()
 	{
 		$schema = Schema::get( 'cms' );
 
-		$this->assertTrue( $schema['content']['hero']['fields']['url']['rel'] );
-		$this->assertTrue( $schema['content']['hero']['fields']['url-alternative']['rel'] );
+		$this->assertTrue( $schema['content']['hero']['fields']['buttons']['item']['url']['rel'] );
+		$this->assertTrue( $schema['content']['cta']['fields']['buttons']['item']['url']['rel'] );
 		$this->assertTrue( $schema['content']['pricing']['fields']['items']['item']['url']['rel'] );
 		$this->assertArrayNotHasKey( 'rel', $schema['meta']['canonical']['fields']['url'] );
 		$this->assertArrayNotHasKey( 'rel', $schema['config']['security']['fields']['contact'] );
