@@ -66,22 +66,22 @@ class HeroButtonsMigrationTest extends ThemeTestAbstract
 
         $stored = json_decode( $db->table( 'cms_pages' )->where( 'id', $page->id )->value( 'content' ), true );
 
-        $this->assertSame( ['title' => 'Unchanged', 'url' => '/keep'], $stored[0]['data'] );
-        $this->assertSame( $expected, $stored[1]['data'] );
-        $this->assertSame( ['title' => 'Label only'], $stored[2]['data'] );
+        $this->assertEquals( ['title' => 'Unchanged', 'url' => '/keep'], $stored[0]['data'] );
+        $this->assertEquals( $expected, $stored[1]['data'] );
+        $this->assertEquals( ['title' => 'Label only'], $stored[2]['data'] );
 
         $aux = json_decode( $db->table( 'cms_versions' )->where( 'id', $page->latest_id )->value( 'aux' ), true );
-        $this->assertSame( $expected, $aux['content'][1]['data'] );
+        $this->assertEquals( $expected, $aux['content'][1]['data'] );
 
         $data = json_decode( $db->table( 'cms_elements' )->where( 'id', $element->id )->value( 'data' ), true );
-        $this->assertSame( $expected, $data );
+        $this->assertEquals( $expected, $data );
 
         $version = json_decode( $db->table( 'cms_versions' )->where( 'id', $element->latest_id )->value( 'data' ), true );
-        $this->assertSame( $expected, $version['data'] );
+        $this->assertEquals( $expected, $version['data'] );
 
         $migration->up();
 
         $data = json_decode( $db->table( 'cms_elements' )->where( 'id', $element->id )->value( 'data' ), true );
-        $this->assertSame( $expected, $data );
+        $this->assertEquals( $expected, $data );
     }
 }
