@@ -7,6 +7,7 @@ import {
   useClipboardStore,
   useDirtyStore,
   useDrawerStore,
+  useLanguageStore,
   useMessageStore,
   useSchemaStore,
   useSideStore,
@@ -496,6 +497,24 @@ describe('useSchemaStore', () => {
 })
 
 
+
+describe('useLanguageStore', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('returns the first available locale as default', () => {
+    const languages = useLanguageStore()
+    languages.available = ['de', 'en']
+    expect(languages.default()).to.equal('de')
+  })
+
+  it('falls back to en without available locales', () => {
+    const languages = useLanguageStore()
+    languages.available = []
+    expect(languages.default()).to.equal('en')
+  })
+})
 
 describe('useDrawerStore', () => {
   beforeEach(() => {

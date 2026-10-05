@@ -695,27 +695,35 @@ export default {
 
       this.translating = true
 
-      const { translate } = await import('../ai')
-      translate(
-        list.map((entry) => entry.text),
-        lang,
-        this.item.lang
-      )
-        .then((result) => {
-          result.forEach((text, index) => {
-            if (list[index]) {
-              list[index].item[list[index].key] = text
-            }
-          })
+      try {
+        const { translate } = await import('../ai')
+        const texts = list.map((entry) => entry.text)
+        const result = []
 
-          this.dirty['content'] = true
-          this.dirty['page'] = true
+        // The translate mutation accepts at most 50 texts per request
+        for (let i = 0; i < texts.length; i += 50) {
+          const chunk = await translate(texts.slice(i, i + 50), lang, this.item.lang)
 
-          this.item.lang = lang
+          if (!Array.isArray(chunk)) {
+            return // error message is already shown by translate()
+          }
+
+          result.push(...chunk)
+        }
+
+        result.forEach((text, index) => {
+          if (list[index]) {
+            list[index].item[list[index].key] = text
+          }
         })
-        .finally(() => {
-          this.translating = false
-        })
+
+        this.dirty['content'] = true
+        this.dirty['page'] = true
+
+        this.item.lang = lang
+      } finally {
+        this.translating = false
+      }
     },
 
     translateText(texts, to, from = null) {

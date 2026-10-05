@@ -627,7 +627,7 @@ export const useLanguageStore = defineStore('language', {
 
   actions: {
     default() {
-      return Object.keys(this.available)[0] || 'en'
+      return this.available[0] || 'en'
     },
 
     translate(key) {
