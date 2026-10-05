@@ -44,13 +44,22 @@ class CashierToken
 
 
     /**
+     * Encodes bytes as unpadded URL-safe Base64.
+     */
+    public static function encode( string $value ) : string
+    {
+        return rtrim( strtr( base64_encode( $value ), '+/', '-_' ), '=' );
+    }
+
+
+    /**
      * Signs an arbitrary Cashier payload.
      *
      * @param array<string, mixed> $data
      */
     public function make( array $data ) : string
     {
-        $payload = $this->encode( json_encode( $data,
+        $payload = self::encode( json_encode( $data,
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ) );
 
@@ -140,15 +149,6 @@ class CashierToken
 
 
     /**
-     * Encodes bytes as unpadded URL-safe Base64.
-     */
-    private function encode( string $value ) : string
-    {
-        return rtrim( strtr( base64_encode( $value ), '+/', '-_' ), '=' );
-    }
-
-
-    /**
      * Returns the current and previous Laravel application keys.
      *
      * @return list<string>
@@ -185,6 +185,6 @@ class CashierToken
      */
     private function signature( string $payload, string $key ) : string
     {
-        return $this->encode( hash_hmac( 'sha256', $payload, $key, true ) );
+        return self::encode( hash_hmac( 'sha256', $payload, $key, true ) );
     }
 }

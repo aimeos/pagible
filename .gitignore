@@ -8,3 +8,4 @@ composer.lock
 node_modules/
 tests/coverage/
 vendor/
+videos/

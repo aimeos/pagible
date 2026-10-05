@@ -29,9 +29,16 @@ class CmsMetricCard extends Card
      */
     public static function available() : array
     {
-        return array_filter(
-            self::cards(), fn( array $definition ) => self::requirementsAvailable( $definition )
-        );
+        return array_filter( self::cards(), function( array $definition ) {
+            foreach( (array) ( $definition['requires'] ?? [] ) as $class )
+            {
+                if( !is_string( $class ) || !class_exists( $class ) ) {
+                    return false;
+                }
+            }
+
+            return true;
+        } );
     }
 
 
@@ -102,45 +109,27 @@ class CmsMetricCard extends Card
 
 
     /**
+     * Returns up to four distinct detail values and the optional success rate.
+     *
      * @param Collection<int, object> $rows
+     * @param list<string> $details
      */
-    protected function detail( Collection $rows, string ...$fields ) : string
+    protected function detail( Collection $rows, array $details = [], bool $success = false ) : string
     {
-        return $rows
-            ->flatMap( fn( object $row ) => collect( $fields )->map( fn( string $field ) => $row->{$field} ?? null ) )
+        $text = $rows
+            ->flatMap( fn( object $row ) => collect( $details )->map( fn( string $field ) => $row->{$field} ?? null ) )
             ->filter()
             ->unique()
             ->take( 4 )
             ->implode( ', ' );
-    }
 
-
-    /**
-     * @param Collection<int, object> $rows
-     * @param list<string> $details
-     */
-    protected function detailText( Collection $rows, array $details = [], bool $success = false ) : string
-    {
-        return trim( implode( ' | ', array_filter( [
-            $details ? $this->detail( $rows, ...$details ) : '',
-            $success ? $this->successRate( $rows ) : '',
-        ] ) ) );
-    }
-
-
-    /**
-     * @param array<string, mixed> $definition
-     */
-    protected static function requirementsAvailable( array $definition ) : bool
-    {
-        foreach( (array) ( $definition['requires'] ?? [] ) as $class )
+        if( $success && ( $total = (int) $rows->sum( 'count' ) ) > 0 )
         {
-            if( !is_string( $class ) || !class_exists( $class ) ) {
-                return false;
-            }
+            $count = (int) $rows->filter( fn( object $row ) => (bool) ( $row->success ?? false ) )->sum( 'count' );
+            $text = implode( ' | ', array_filter( [$text, round( $count / $total * 100 ) . '% success'] ) );
         }
 
-        return true;
+        return trim( $text );
     }
 
 
@@ -153,23 +142,6 @@ class CmsMetricCard extends Card
         $payload = json_decode( $key, true );
 
         return (object) array_merge( is_array( $payload ) ? $payload : ['key' => $key], $values );
-    }
-
-
-    /**
-     * @param Collection<int, object> $rows
-     */
-    protected function successRate( Collection $rows ) : string
-    {
-        $total = (int) $rows->sum( 'count' );
-
-        if( $total === 0 ) {
-            return '';
-        }
-
-        $success = (int) $rows->filter( fn( object $row ) => (bool) ( $row->success ?? false ) )->sum( 'count' );
-
-        return round( $success / $total * 100 ) . '% success';
     }
 
 
@@ -189,7 +161,7 @@ class CmsMetricCard extends Card
                 'sum' => null,
                 'avg' => $this->avg( $rows ),
                 'max' => $rows->max( 'max' ),
-                'detail' => $this->detailText( $rows, $details, $success ),
+                'detail' => $this->detail( $rows, $details, $success ),
             ] )
             ->sortByDesc( 'count' )
             ->take( self::SUMMARY_LIMIT )

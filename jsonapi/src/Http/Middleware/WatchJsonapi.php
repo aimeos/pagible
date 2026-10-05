@@ -39,13 +39,13 @@ class WatchJsonapi
         $duration = Watch::duration( $start );
         $tenant = Tenancy::value();
 
-        Watch::dispatchWhen( 'cms.jsonapi.watch', CmsJsonapi::class, fn() => new CmsJsonapi(
+        Watch::dispatch( CmsJsonapi::class, fn() => new CmsJsonapi(
             action: $action,
             durationMs: $duration,
             domain: $domain,
             includes: $this->includes( $request ),
             tenant: $tenant,
-        ) );
+        ), 'cms.jsonapi.watch' );
 
         Watch::observe(
             source: 'jsonapi',

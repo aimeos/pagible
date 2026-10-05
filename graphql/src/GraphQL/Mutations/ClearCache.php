@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -20,7 +20,9 @@ final class ClearCache
      */
     public function __invoke( $rootValue, array $args ) : int
     {
-        $ids = array_values( array_unique( $args['ids'] ?? [] ) );
+        if( empty( $ids = array_values( array_unique( $args['ids'] ?? [] ) ) ) ) {
+            return 0;
+        }
 
         $roots = Page::query()
             ->withTrashed()
@@ -28,35 +30,15 @@ final class ClearCache
             ->whereIn( 'id', $ids )
             ->get();
 
-        if (count( $ids ) !== $roots->count()) {
-            abort( 404 );
+        if( count( $ids ) !== $roots->count() ) {
+            throw new \Aimeos\Cms\Exception( 'Page not found' );
         }
 
-        $pages = collect();
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Page> $pages */
+        $pages = Resource::pageSubtree( $roots )->get( ['domain', 'path'] );
 
-        foreach( $roots as $root ) {
-            $left = (int) $root->getAttribute( NestedSet::LFT );
-            $right = (int) $root->getAttribute( NestedSet::RGT );
+        Resource::invalidatePages( $pages );
 
-            $pages = $pages->merge( Page::query()
-                ->withTrashed()
-                ->whereBetween( NestedSet::LFT, [$left, $right] )
-                ->get( ['domain', 'path'] )
-            );
-        }
-
-        $pages = $pages->unique( fn( $page ) => $page->getAttribute( 'domain' ) . '|' . $page->getAttribute( 'path' ) );
-        $paths = [];
-
-        foreach( $pages as $page ) {
-            $domain = (string) $page->getAttribute( 'domain' );
-            $paths[$domain][] = (string) $page->getAttribute( 'path' );
-        }
-
-        foreach( $paths as $domain => $items ) {
-            PageInvalidated::dispatch( (string) $domain, $items );
-        }
-
-        return $pages->count();
+        return $pages->unique( fn( $page ) => $page->domain . '|' . $page->path )->count();
     }
 }

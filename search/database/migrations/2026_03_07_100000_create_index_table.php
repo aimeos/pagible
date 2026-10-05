@@ -72,7 +72,10 @@ return new class extends Migration
 
         $schema->dropIfExists('cms_page_search');
 
-        Artisan::call('cms:index');
+        // indexing pages needs the frontend access table created by a later core migration
+        if( $schema->hasTable('cms_page_access') ) {
+            Artisan::call('cms:index');
+        }
     }
 
 

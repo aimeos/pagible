@@ -91,55 +91,29 @@ class WebhookListener
                 );
             }
 
-            // Lost deliveries aren't retried, so editors must see that the subscriptions missed events
-            if( !$this->queue( $jobs ) ) {
-                $this->lost( $tenant, $webhooks->all() );
+            try {
+                Queue::connection( $this->config->connection() )
+                    ->bulk( $jobs, queue: (string) config( 'cms.webhooks.queue.name', 'cms-webhooks' ) );
+            }
+            catch( \Throwable $e )
+            {
+                // Lost deliveries aren't retried, so editors must see that the subscriptions missed events
+                report( $e );
+                $this->config->warn( 'cms.webhook.delivery_blocked', ['reason' => 'queue_failed'] );
+
+                if( $webhooks->isNotEmpty() )
+                {
+                    Webhook::withoutTenancy()
+                        ->where( 'tenant_id', $tenant )
+                        ->whereIn( 'id', $webhooks->all() )
+                        ->toBase()
+                        ->update( ['last_error' => Webhook::error( 'queue_failed' )] );
+                }
             }
         }
         catch( \Throwable $e ) {
             report( $e );
         }
-    }
-
-
-    /**
-     * Logs the lost deliveries and shows the reason for the subscriptions in the admin panel.
-     *
-     * @param array<int, int|string> $ids Subscription IDs
-     */
-    private function lost( string $tenant, array $ids ) : void
-    {
-        $this->config->warn( 'cms.webhook.delivery_blocked', ['reason' => 'queue_failed'] );
-
-        if( $ids !== [] )
-        {
-            Webhook::withoutTenancy()
-                ->where( 'tenant_id', $tenant )
-                ->whereIn( 'id', $ids )
-                ->toBase()
-                ->update( ['last_error' => Webhook::error( 'queue_failed' )] );
-        }
-    }
-
-
-    /**
-     * Pushes the delivery jobs to the queue.
-     *
-     * @param array<int, DeliverWebhook|DeliverEndpoint> $jobs
-     * @return bool TRUE if the jobs were queued, FALSE if pushing them failed
-     */
-    private function queue( array $jobs ) : bool
-    {
-        $name = (string) config( 'cms.webhooks.queue.name', 'cms-webhooks' );
-
-        try {
-            Queue::connection( $this->config->connection() )->bulk( $jobs, queue: $name );
-        } catch( \Throwable $e ) {
-            report( $e );
-            return false;
-        }
-
-        return true;
     }
 
 

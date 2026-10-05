@@ -7,11 +7,13 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Nestedset\NestedSet;
 use Closure;
 
 
@@ -161,6 +163,25 @@ trait Benchmarks
 
 
     /**
+     * Add an unpublished draft copying the latest version of the item.
+     *
+     * @param Page|Element|File $item Item to add the draft to
+     */
+    protected function draft( Page|Element|File $item ): void
+    {
+        $version = $item->versions()->forceCreate( [
+            'lang' => 'en',
+            'data' => (array) $item->latest?->data,
+            'aux' => (array) $item->latest?->aux,
+            'published' => false,
+            'editor' => 'benchmark',
+        ] );
+        $item->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $item->setRelation( 'latest', $version );
+    }
+
+
+    /**
      * Get the query execution plan for a SQL statement.
      *
      * @param string $sql SQL query
@@ -216,6 +237,45 @@ trait Benchmarks
 
 
     /**
+     * Load the benchmark items and add unpublished drafts for the publish benchmarks.
+     *
+     * Each benchmark iteration is rolled back, so the same items can be reused.
+     *
+     * @param string $domain Domain name
+     * @param bool $all TRUE to add drafts for the element and file too, FALSE for the page only
+     * @return array{root: Page, page: Page, parent: Page, element: Element, file: File, trashed: array{page: Page, element: Element, file: File}}
+     */
+    protected function fixtures( string $domain, bool $all = false ): array
+    {
+        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
+
+        $count = Page::where( 'tag', '!=', 'root' )->count();
+        $page = Page::where( 'tag', '!=', 'root' )
+            ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+
+        $parent = Page::where( NestedSet::DEPTH, 1 )
+            ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
+
+        $element = Element::where( 'editor', 'benchmark' )->firstOrFail();
+        $file = File::where( 'editor', 'benchmark' )->firstOrFail();
+
+        foreach( $all ? [$page, $element, $file] : [$page] as $item )
+        {
+            $this->draft( $item );
+        }
+
+        // Pre-seeded soft-deleted items for the restore benchmarks
+        $trashed = [
+            'page' => Page::onlyTrashed()->firstOrFail(),
+            'element' => Element::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail(),
+            'file' => File::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail(),
+        ];
+
+        return compact( 'root', 'page', 'parent', 'element', 'file', 'trashed' );
+    }
+
+
+    /**
      * Compute min/max/avg/p90/p95/p99 from nanosecond durations.
      *
      * @param array<int, int|float> $durations Durations in nanoseconds
@@ -264,17 +324,6 @@ trait Benchmarks
 
 
     /**
-     * Set up tenancy from the --tenant option.
-     */
-    protected function tenant( string $tenant ): void
-    {
-        \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
-            return $tenant;
-        };
-    }
-
-
-    /**
      * Create a benchmark user with full CMS permissions.
      *
      * @return \Illuminate\Foundation\Auth\User
@@ -302,17 +351,28 @@ trait Benchmarks
 
 
     /**
-     * Run a seeder class.
+     * Run the closure as logged in benchmark user inside a rolled back transaction.
      *
-     * @param string $seederClass Fully qualified seeder class name
-     * @param mixed ...$args Arguments to pass to run()
+     * @param Closure $fn Closure receiving the benchmark user
      */
-    protected function seed( string $seederClass, ...$args ): void
+    protected function sandbox( Closure $fn ): void
     {
-        $seeder = new $seederClass;
+        $conn = config( 'cms.db', 'sqlite' );
 
-        if( $seeder instanceof \Illuminate\Database\Seeder ) {
-            $seeder( ...$args );
+        DB::connection( $conn )->beginTransaction();
+
+        try
+        {
+            $user = $this->user();
+            Auth::login( $user );
+
+            $fn( $user );
+        }
+        finally
+        {
+            Auth::logout();
+            Auth::guard()->forgetUser();
+            DB::connection( $conn )->rollBack();
         }
     }
 
@@ -332,11 +392,15 @@ trait Benchmarks
 
 
     /**
-     * Validate common options and abort if invalid.
+     * Validate common options, set up the tenant and abort if invalid.
      *
+     * @param string $tenant Tenant ID
+     * @param int $tries Number of iterations per benchmark
+     * @param bool $force TRUE to run in production
+     * @param bool $seeded TRUE to require existing benchmark data
      * @return bool True if validation passed
      */
-    protected function checks( string $tenant, int $tries, bool $force = false ): bool
+    protected function checks( string $tenant, int $tries, bool $force = false, bool $seeded = true ): bool
     {
         if( empty( $tenant ) )
         {
@@ -356,18 +420,15 @@ trait Benchmarks
             return false;
         }
 
+        \Aimeos\Cms\Tenancy::set( $tenant );
+
+        if( $seeded && !Page::where( 'editor', 'benchmark' )->exists() )
+        {
+            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
+            return false;
+        }
+
         return true;
-    }
-
-
-    /**
-     * Check if benchmark data exists for the current tenant/domain/lang.
-     *
-     * @return bool True if data exists
-     */
-    protected function hasSeededData(): bool
-    {
-        return Page::where( 'editor', 'benchmark' )->exists();
     }
 
 

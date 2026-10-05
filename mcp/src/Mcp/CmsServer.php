@@ -22,11 +22,11 @@ class CmsServer extends Server
 
 
     /**
-     * The tools registered with this MCP server.
+     * The CMS tools of this MCP server, also used by the AI chat.
      *
      * @var array<int, class-string<\Laravel\Mcp\Server\Tool>>
      */
-    protected array $tools = [
+    public const TOOLS = [
         // Read tools - Discovery & configuration
         \Aimeos\Cms\Tools\GetAccess::class,
         \Aimeos\Cms\Tools\GetLocales::class,
@@ -70,8 +70,14 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\PublishFile::class,
         \Aimeos\Cms\Tools\DropFile::class,
         \Aimeos\Cms\Tools\RestoreFile::class,
-
     ];
+
+    /**
+     * The tools registered with this MCP server.
+     *
+     * @var array<int, class-string<\Laravel\Mcp\Server\Tool>>
+     */
+    protected array $tools = self::TOOLS;
 
     /** @var array<int, class-string<\Laravel\Mcp\Server\Tool>> */
     protected static array $registered = [];
@@ -144,6 +150,7 @@ class CmsServer extends Server
 
         $payload = $response->toArray();
 
-        return !isset( $payload['error'] ) && !data_get( $payload, 'result.isError', false );
+        return !isset( $payload['error'] ) && !data_get( $payload, 'result.isError', false )
+            && !data_get( $payload, 'result.structuredContent.error' );
     }
 }

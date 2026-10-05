@@ -7,14 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Publication;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -24,54 +22,26 @@ use Laravel\Mcp\Request;
 #[Description('Publishes one or more pages by ID. Pass an array of up to 50 UUIDs. Optionally schedule for a future ISO 8601 datetime via "at". Returns published and skipped items with reasons.')]
 class PublishPage extends Tool
 {
+    protected const PERMISSIONS = ['page:publish'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:publish', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|array|max:50',
             'id.*' => 'string|max:36',
             'at' => 'date',
         ], [
-            'id.required' => 'You must specify the ID (string) or IDs (array of up to 50) of the pages to publish.',
+            'id.required' => 'You must specify an array of up to 50 IDs of the pages to publish.',
         ] );
 
-        $ids = (array) $v['id'];
-        $at = $v['at'] ?? null;
-        $items = Publication::publish( Page::class, $ids, $request->user(), $at );
+        $ids = $v['id'];
+        $items = Publication::publish( Page::class, $ids, $request->user(), $v['at'] ?? null );
 
-        $published = [];
-        $skipped = [];
-
-        foreach( $items as $item )
-        {
-            /** @var Page $item */
-            if( !$item->latest ) {
-                $skipped[] = ['id' => $item->id, 'reason' => 'No draft version'];
-            } elseif( $at && $item->latest->published ) {
-                $skipped[] = ['id' => $item->id, 'reason' => 'Already published'];
-            } elseif( $at ) {
-                $published[] = ['id' => $item->id, 'name' => $item->name, 'scheduled_at' => $at];
-            } else {
-                $published[] = ['id' => $item->id, 'name' => $item->name, 'path' => $item->path];
-            }
-        }
-
-        $notFound = array_diff( $ids, $items->pluck( 'id' )->all() );
-
-        foreach( $notFound as $id ) {
-            $skipped[] = ['id' => $id, 'reason' => 'Not found'];
-        }
-
-        return Response::structured( [
-            'published' => $published,
-            'skipped' => $skipped,
-        ] );
+        return Response::structured( Presenter::published( $items, $ids, $v['at'] ?? null ) );
     }
 
 
@@ -90,17 +60,5 @@ class PublishPage extends Tool
             'at' => $schema->string()
                 ->description('Schedule publication for a future date/time in ISO 8601 format, e.g., "2026-04-01 12:00:00". Omit to publish immediately.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:publish', $request->user() );
     }
 }

@@ -7,20 +7,13 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Cms\Permission;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Ai;
 use Aimeos\Prisma\Files\Image;
-use Aimeos\Prisma\Exceptions\PrismaException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use GraphQL\Error\Error;
 
 
 final class Imagine
 {
-    use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
@@ -29,64 +22,6 @@ final class Imagine
      */
     public function __invoke( $rootValue, array $args ) : string
     {
-        if( empty( $args['prompt'] ) ) {
-            throw new Error( 'Prompt must not be empty' );
-        }
-
-        $prompt = $args['prompt'] . ( !empty( $args['context'] ) ? "\n\n" . $args['context'] : '' );
-
-        $provider = config( 'cms.ai.imagine.provider' );
-        $config = config( 'cms.ai.imagine', [] );
-        $model = config( 'cms.ai.imagine.model' );
-        $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
-
-        try
-        {
-            return Prisma::image()->observe( $this->observer() )
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'imagine' )
-                ->imagine( $prompt, $this->files( $args['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
-                ->base64();
-        }
-        catch( PrismaException $e )
-        {
-            Log::error( 'AI service error', ['mutation' => 'Imagine', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage() );
-        }
-    }
-
-
-    /**
-     * @param array<mixed> $ids
-     * @return array<mixed>
-     */
-    protected function files( array $ids ) : array
-    {
-        if( empty( $ids ) ) {
-            return [];
-        }
-
-        if( !Permission::can( 'file:view', Auth::user() ) ) {
-            throw new Error( 'Insufficient permissions' );
-        }
-
-        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get()->map( function( $file ) {
-
-            if( !str_starts_with( $file->mime, 'image/' ) ) {
-                return null;
-            }
-
-            if( str_starts_with( (string) $file->path, 'http' ) ) {
-                return Image::fromUrl(
-                    (string) $file->path,
-                    $file->mime,
-                    !(bool) config( 'cms.allow-internal' ),
-                );
-            }
-
-            return Image::fromStoragePath( (string) $file->path, File::diskName( (string) $file->disk ) );
-
-        } )->filter()->values()->toArray();
+        return $this->ai( fn() => Ai::imagine( $args['prompt'], Ai::files( $args['files'] ?? [], Image::class ), $args['context'] ?? null ) );
     }
 }

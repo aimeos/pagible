@@ -25,7 +25,6 @@ use Aimeos\Cms\Concerns\ResolvesFiles;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\Auth;
@@ -101,33 +100,18 @@ class PageSchema extends Schema
             Number::make( 'cache' )->readOnly(),
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
-            ArrayHash::make( 'meta' )->readOnly()->extractUsing( function( $model, $column, $items ) {
+            ...array_map( fn( $name ) => ArrayHash::make( $name )->readOnly()->extractUsing( function( $model, $column, $items ) use ( $name ) {
                 $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
-                return $this->resolveFiles( $model, $version ? $version->aux->meta : $items );
-            } ),
-            ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
-                return $this->resolveFiles( $model, $version ? $version->aux->config : $items );
-            } ),
-            ArrayHash::make( 'content' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
-                return $this->resolveContent( $model, $version ? $version->aux->content : $items );
-            } ),
+                $items = $version ? $version->aux->{$name} : $items;
+
+                return $name === 'content' ? $this->resolveContent( $model, $items ) : $this->resolveFiles( $model, $items );
+            } ), ['meta', 'config', 'content'] ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
-                static fn($relation) => $relation->withoutLinks()
+                static fn( $relation ) => $relation->withoutLinks()
             ),
-            HasMany::make( 'ancestors' )->type( 'navs' )->readOnly()->serializeUsing(
-                static fn($relation) => $relation->withoutLinks()
-            ),
-            HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
-                static fn($relation) => $relation->withoutLinks()
-            ),
-            HasMany::make( 'menu' )->type( 'navs' )->readOnly()->serializeUsing(
-                static fn($relation) => $relation->withoutLinks()
-            ),
-            HasMany::make( 'subtree' )->type( 'navs' )->readOnly()->serializeUsing(
-                static fn($relation) => $relation->withoutLinks()
-            ),
+            ...array_map( fn( $name ) => HasMany::make( $name )->type( 'navs' )->readOnly()->serializeUsing(
+                static fn( $relation ) => $relation->withoutLinks()
+            ), ['ancestors', 'children', 'menu', 'subtree'] ),
         ];
     }
 
@@ -140,18 +124,9 @@ class PageSchema extends Schema
     public function filters(): array
     {
         return [
-            Where::make( 'domain' )->deserializeUsing(
-                fn($value) => (string) $value
-            ),
-            Where::make( 'path' )->deserializeUsing(
-                fn($value) => (string) $value
-            ),
-            Where::make( 'tag' )->deserializeUsing(
-                fn($value) => (string) $value
-            ),
-            Where::make( 'lang' )->deserializeUsing(
-                fn($value) => (string) $value
-            ),
+            ...array_map( fn( $name ) => Where::make( $name )->deserializeUsing(
+                fn( $value ) => (string) $value
+            ), ['domain', 'path', 'tag', 'lang'] ),
             WhereIdIn::make( $this ),
         ];
     }
@@ -191,7 +166,7 @@ class PageSchema extends Schema
 
         $query = $query->orderBy( NestedSet::LFT );
 
-        if( $request && ( $filter = $request->get( 'filter' ) ) ) {
+        if( $request?->get( 'filter' ) ) {
             return $query;
         }
 

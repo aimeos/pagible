@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class GlassDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'why-weekly-dashboards-lose-trust' => 'Learn why dashboards lose trust when freshness, ownership, and metric context are missing, and how to restore confidence in weekly reviews.',
         'metric-ownership-is-a-product-decision' => 'Treat metric ownership as product work by recording definitions, sources, approval rules, and change history in one governed contract.',
         'freshness-is-more-than-a-timestamp' => 'Design freshness rules around business decisions, with source-aware thresholds, warnings, and publication holds for stale data.',
@@ -32,7 +31,7 @@ class GlassDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'audit' => ['photo-1454165804606-c3d57bc86b40', 'Change audit', 'Workspace with charts and notes for reviewing metric changes'],
         'approval' => ['photo-1551836022-d5d88e9218df', 'Metric approval', 'Analytics owner reviewing an approved metric record'],
         'board' => ['photo-1551434678-e076c223a692', 'Planning session', 'Team reviewing analytics priorities on a glass wall'],
@@ -500,24 +499,6 @@ class GlassDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates the closing call-to-action hero for an article.
      *
      * @param string $title Hero title
@@ -569,39 +550,11 @@ class GlassDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Product', 'text' => "- [Platform](/)\n- [Pricing](/#pricing)\n- [Docs](/docs)"],
-                ['title' => 'Resources', 'text' => "- [Field Notes](/blog)\n- [Metric contracts](/docs)\n- [One revenue number for all](/one-revenue-number-for-finance-and-product)"],
-                ['title' => 'Company', 'text' => '- hello@signallake.test'],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'SignalLake footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'SignalLake footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'SignalLake footer', ['cards' => [
+            ['title' => 'Product', 'text' => "- [Platform](/)\n- [Pricing](/#pricing)\n- [Docs](/docs)"],
+            ['title' => 'Resources', 'text' => "- [Field Notes](/blog)\n- [Metric contracts](/docs)\n- [One revenue number for all](/one-revenue-number-for-finance-and-product)"],
+            ['title' => 'Company', 'text' => '- hello@signallake.test'],
+        ]] );
     }
 
 
@@ -630,17 +583,7 @@ class GlassDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'SignalLake'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -765,87 +708,7 @@ class GlassDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'SignalLake Analytics Cloud',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'SignalLake Analytics Cloud',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or meta data
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'SignalLake Analytics Cloud', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -919,48 +782,13 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'SignalLake, analytics cloud, governed metrics, business intelligence',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'SignalLake']],
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'SignalLake']];
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'SignalLake, analytics cloud, governed metrics, business intelligence', $fileIds, $meta );
     }
 
 

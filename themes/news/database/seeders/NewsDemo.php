@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class NewsDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'economy' => 'The Ledger Companies desk explains industry, energy, technology, and independent business with careful reporting and clear writing.',
         'industry-without-a-blueprint' => 'How industrial companies are rebuilding production while energy costs, supply chains, and skills shortages apply pressure at the same time.',
         'who-owns-the-grid' => 'Networks, storage, and new power generation will shape the energy transition. The Ledger follows the missing capital and the models that can work.',
@@ -42,7 +41,7 @@ class NewsDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'architecture' => ['photo-1486406146926-c627a92ad1ab', 'A changing city', 'Modern office architecture with a gridded glass facade'],
         'boardroom' => ['photo-1497366754035-f200968a6e72', 'Editorial conference', 'Bright office with a long table prepared for an editorial conference'],
         'city' => ['photo-1449824913935-59a10b8d2000', 'Metropolis in transition', 'Broad avenue running between dense towers in an international city'],
@@ -275,24 +274,6 @@ class NewsDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing call to action for an article.
      *
      * @param string $section Section name
@@ -320,40 +301,12 @@ class NewsDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Sections', 'text' => "- [Companies](/economy)\n- [Markets](/money)\n- [Real estate](/property)\n- [Work & careers](/work)"],
-                ['title' => 'The Ledger', 'text' => "- [About the editors](/about-ledger)\n- [Contact](/about-ledger#contact)\n- [Subscribe](/subscribe)"],
-                ['title' => 'Briefings', 'text' => "- [The Ledger Morning](/subscribe)\n- [Friday Briefing](/subscribe)\n- [Topic dossiers](/economy)"],
-                ['title' => 'Editorial', 'text' => "- [editorial@ledger.example](mailto:editorial@ledger.example)\n- Hamburg · Berlin · Frankfurt"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'The Ledger Footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'The Ledger Footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'The Ledger Footer', ['cards' => [
+            ['title' => 'Sections', 'text' => "- [Companies](/economy)\n- [Markets](/money)\n- [Real estate](/property)\n- [Work & careers](/work)"],
+            ['title' => 'The Ledger', 'text' => "- [About the editors](/about-ledger)\n- [Contact](/about-ledger#contact)\n- [Subscribe](/subscribe)"],
+            ['title' => 'Briefings', 'text' => "- [The Ledger Morning](/subscribe)\n- [Friday Briefing](/subscribe)\n- [Topic dossiers](/economy)"],
+            ['title' => 'Editorial', 'text' => "- [editorial@ledger.example](mailto:editorial@ledger.example)\n- Hamburg · Berlin · Frankfurt"],
+        ]] );
     }
 
 
@@ -382,17 +335,7 @@ class NewsDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'The Ledger'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -461,87 +404,7 @@ class NewsDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'The Ledger | Business in context',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'The Ledger | Business in context',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc, 'en' );
+        return $this->saveRoot( 'The Ledger | Business in context', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -590,47 +453,12 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'The Ledger, business newspaper, companies, markets, real estate, work',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'The Ledger, business newspaper, companies, markets, real estate, work', $fileIds, $meta );
     }
 
 

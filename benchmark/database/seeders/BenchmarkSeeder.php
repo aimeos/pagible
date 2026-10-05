@@ -20,6 +20,7 @@ class BenchmarkSeeder
     private string $tenantId;
     private string $editor;
     private string $domain;
+    /** @var int<1, max> */
     private int $chunk;
     private ?\Closure $onProgress = null;
 
@@ -39,7 +40,7 @@ class BenchmarkSeeder
         $this->onProgress = $onProgress;
         $this->editor = $editor;
         $this->domain = $domain;
-        $this->chunk = $chunk;
+        $this->chunk = max( 1, $chunk );
 
         $conn = config( 'cms.db', 'sqlite' );
 
@@ -241,9 +242,7 @@ class BenchmarkSeeder
             $lft++;
         }
 
-        if( !empty( $pages ) ) {
-            $flush();
-        }
+        $flush();
     }
 
 
@@ -287,7 +286,7 @@ class BenchmarkSeeder
     protected function createFiles( int $count, string $now, string $nowMs ): array
     {
         $conn = config( 'cms.db', 'sqlite' );
-        $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
+        $imagePath = realpath( __DIR__ . '/../../assets/image.png' );
         $fileRows = [];
         $versionRows = [];
         $ids = [];
@@ -437,6 +436,11 @@ class BenchmarkSeeder
 
     /**
      * Build a page row for bulk insert.
+     *
+     * @param array<string, mixed> $data Page data
+     * @param array<int, mixed> $content Content elements
+     * @param array<string, mixed> $meta Meta data
+     * @return array<string, mixed> Row for bulk insert
      */
     protected function pageRow(
         string $id, ?string $parentId, string $versionId,
@@ -477,6 +481,11 @@ class BenchmarkSeeder
 
     /**
      * Build a version row for bulk insert.
+     *
+     * @param array<string, mixed> $data Version data
+     * @param array<int, mixed> $content Content elements
+     * @param array<string, mixed> $meta Meta data
+     * @return array<string, mixed> Row for bulk insert
      */
     protected function versionRow(
         string $id, string $versionableId, string $versionableType,

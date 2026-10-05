@@ -64,14 +64,12 @@ final class Publication
         $model->stage( $version );
         $model->save();
 
-        if( !$version->published ) {
-            $version->published = true;
-            $version->save();
-        }
+        $version->published = true;
+        $version->save();
 
         $this->track( $model, $version );
 
-        if( $previous && $model instanceof Page ) {
+        if( $previous ) {
             self::invalidate( $model, ...$previous );
         }
     }
@@ -178,16 +176,11 @@ final class Publication
     {
         Validation::publishAt( $at );
 
-        $action = match( $model ) {
-            Element::class => 'element:publish',
-            File::class => 'file:publish',
-            Page::class => 'page:publish',
-            default => throw new \InvalidArgumentException( 'Invalid CMS model: ' . $model ),
-        };
-
-        if( $user && !Permission::can( $action, $user ) ) {
-            throw new Exception( 'Insufficient permissions' );
+        if( !in_array( $model, Version::TYPES, true ) ) {
+            throw new \InvalidArgumentException( 'Invalid CMS model: ' . $model );
         }
+
+        Permission::check( $model::PERM . ':publish', $user );
 
         $ids = array_values( array_unique( $ids ) );
         $model::checkBulk( count( $ids ) );
@@ -211,18 +204,13 @@ final class Publication
 
                     if( !$unpublished->isEmpty() )
                     {
-                        $pairs = $unpublished->map( function( Base $item ) {
-                            if( !( $version = $item->latest ) ) {
-                                throw new \LogicException( 'Unpublished model has no latest version.' );
-                            }
-
-                            return [$item, $version];
-                        } );
-                        $versions = $pairs->map( fn( array $pair ) : Version => $pair[1] )->values();
+                        $versions = $unpublished->pluck( 'latest' );
 
                         if( !$at ) {
                             $publication->prepare( $versions, $user );
-                            $publication->applyAll( $pairs->all() );
+                            $publication->applyAll( $unpublished->map( fn( Base $item ) => [
+                                $item, $item->latest ?? throw new \LogicException( 'Unpublished model has no latest version.' )
+                            ] )->all() );
                             $publication->publishVersions();
                         } else {
                             if( $user ) {
@@ -233,14 +221,8 @@ final class Publication
                         }
                     }
 
-                    foreach( $loaded as $item )
-                    {
-                        $items->push( $item );
-                    }
-
-                    foreach( $unpublished as $item ) {
-                        $pending->push( $item );
-                    }
+                    $items = $items->concat( $loaded );
+                    $pending = $pending->concat( $unpublished );
                 }
 
                 return [$items, $pending];
@@ -275,12 +257,8 @@ final class Publication
 
         foreach( $items as [$model, $version] )
         {
-            $id = $model->id;
-            $versionId = $version->id;
-
-            if( $id === null || $versionId === null ) {
-                throw new \LogicException( 'Prepared publication contains an unsaved model.' );
-            }
+            $id = (string) $model->id;
+            $versionId = (string) $version->id;
 
             $previous = $model instanceof Page
                 ? [(string) $model->domain, (string) $model->path]
@@ -423,6 +401,7 @@ final class Publication
         $instance = new $model();
         $table = $instance->getTable();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $first = fn( string $from, string $col, string $ref ) => $db->table( $from )->select( $col )->whereColumn( $col, $ref )->limit( 1 );
         $columns = [
             'id',
             'tenant_id',
@@ -456,43 +435,28 @@ final class Publication
                     ->selectRaw( 'count(*)' )
                     ->whereColumn( 'page_id', "{$table}.id" )
                     ->where( 'tenant_id', Tenancy::value() ),
-                'pub_active_files' => $db->table( 'cms_page_file' )
-                    ->select( 'page_id' )
-                    ->whereColumn( 'page_id', "{$table}.id" )
-                    ->limit( 1 ),
-                'pub_active_elements' => $db->table( 'cms_page_element' )
-                    ->select( 'page_id' )
-                    ->whereColumn( 'page_id', "{$table}.id" )
-                    ->limit( 1 ),
+                'pub_active_files' => $first( 'cms_page_file', 'page_id', "{$table}.id" ),
+                'pub_active_elements' => $first( 'cms_page_element', 'page_id', "{$table}.id" ),
             ] );
         }
         elseif( !$compact && $model === Element::class )
         {
             $query->addSelect( [
-                'pub_active_files' => $db->table( 'cms_element_file' )
-                    ->select( 'element_id' )
-                    ->whereColumn( 'element_id', "{$table}.id" )
-                    ->limit( 1 ),
+                'pub_active_files' => $first( 'cms_element_file', 'element_id', "{$table}.id" ),
             ] );
         }
 
         if( $model !== File::class )
         {
             $query->addSelect( [
-                'pub_target_files' => $db->table( 'cms_version_file' )
-                    ->select( 'version_id' )
-                    ->whereColumn( 'version_id', 'cms_latest.id' )
-                    ->limit( 1 ),
+                'pub_target_files' => $first( 'cms_version_file', 'version_id', 'cms_latest.id' ),
             ] );
         }
 
         if( $model === Page::class )
         {
             $query->addSelect( [
-                'pub_target_elements' => $db->table( 'cms_version_element' )
-                    ->select( 'version_id' )
-                    ->whereColumn( 'version_id', 'cms_latest.id' )
-                    ->limit( 1 ),
+                'pub_target_elements' => $first( 'cms_version_element', 'version_id', 'cms_latest.id' ),
             ] );
         }
 
@@ -573,19 +537,12 @@ final class Publication
 
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
         {
-            $loaded = self::items( Element::class, $chunk );
+            $loaded = self::items( Element::class, $chunk )->whereInstanceOf( Element::class );
             $items = [];
 
             foreach( $loaded as $element )
             {
-                if( !$element instanceof Element ) {
-                    throw new \LogicException( 'Invalid CMS element result.' );
-                }
-
-                if( ( $id = $element->id ) === null ) {
-                    throw new \LogicException( 'Stored CMS element has no ID.' );
-                }
-
+                $id = (string) $element->id;
                 $existing[$id] = $element;
                 $this->elements[$id] = $element;
 
@@ -594,9 +551,7 @@ final class Publication
                 }
             }
 
-            if( $items && $user && !Permission::can( 'element:publish', $user ) ) {
-                throw new Exception( 'Insufficient permissions' );
-            }
+            Permission::check( 'element:publish', $user, (bool) $items );
 
             $owners = $this->references( collect( array_column( $items, 1 ) ) );
             $files = $this->publishFiles( $this->related( $owners, 'files' ), $user );
@@ -630,20 +585,14 @@ final class Publication
 
             foreach( $loaded as $file )
             {
-                if( ( $id = $file->id ) === null ) {
-                    throw new \LogicException( 'Stored CMS file has no ID.' );
-                }
-
-                $existing[$id] = true;
+                $existing[(string) $file->id] = true;
 
                 if( $file->latest && !$file->latest->published ) {
                     $items[] = [$file, $file->latest];
                 }
             }
 
-            if( $items && $user && !Permission::can( 'file:publish', $user ) ) {
-                throw new Exception( 'Insufficient permissions' );
-            }
+            Permission::check( 'file:publish', $user, (bool) $items );
 
             $this->applyAll( $items );
         }
@@ -692,11 +641,7 @@ final class Publication
 
             /** @var string $id */
             $id = $version->versionable_id;
-            $versionId = $version->id;
-
-            if( $versionId === null ) {
-                throw new \LogicException( 'Stored CMS version has no ID.' );
-            }
+            $versionId = (string) $version->id;
 
             $owners[$versionId] = ['type' => $type, 'id' => $id];
 
@@ -891,24 +836,13 @@ final class Publication
      */
     private function track( Base $model, Version $version ) : void
     {
-        $id = $model->id;
-
-        if( $id === null ) {
-            throw new \LogicException( 'Published CMS model has no ID.' );
-        }
-
-        if( ( $versionId = $version->id ) === null ) {
-            throw new \LogicException( 'Published CMS version has no ID.' );
-        }
-
+        $id = (string) $model->id;
+        $versionId = (string) $version->id;
         $projection = ['version_id' => $versionId];
 
         if( $model instanceof Page )
         {
-            $projection += [
-                'path' => (string) ( $version->data->path ?? $model->path ),
-                'domain' => (string) ( $version->data->domain ?? $model->domain ),
-            ];
+            $projection += $model->route( $version );
 
             $elements = [];
 

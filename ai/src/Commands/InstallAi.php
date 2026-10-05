@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallAi extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -29,9 +33,6 @@ class InstallAi extends Command
     public function handle(): int
     {
         $result = 0;
-
-        $this->comment( '  Publishing Prism PHP configuration ...' );
-        $result += $this->call( 'vendor:publish', ['--tag' => 'prism-config'] );
 
         $this->comment( '  Publishing Analytics Bridge files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\AnalyticsBridge\ServiceProvider'] );
@@ -53,26 +54,6 @@ class InstallAi extends Command
      */
     protected function schema() : int
     {
-        $filename = 'graphql/schema.graphql';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        $string = '#import cms-ai.graphql';
-
-        if( strpos( $content, $string ) === false )
-        {
-            file_put_contents( base_path( $filename ), $content . "\n\n" . $string );
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        }
-        else
-        {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->append( 'graphql/schema.graphql', '#import cms-ai.graphql' );
     }
 }

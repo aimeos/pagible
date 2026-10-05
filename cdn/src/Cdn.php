@@ -107,6 +107,8 @@ class Cdn
     {
         $urls = array_values( array_unique( array_filter( $urls ) ) );
         $limit = max( 0, (int) config( 'cms.cdn.limit', 0 ) );
+        $conn = config( 'cms.queue.connection' ) ?: config( 'queue.default' );
+        $sync = config( 'queue.connections.' . $conn . '.driver' ) === 'sync';
 
         foreach( self::clients() as $name => $config )
         {
@@ -125,7 +127,7 @@ class Cdn
             {
                 $job = PurgeCdn::dispatch( $name, $chunk );
                 // The sync queue can't delay jobs, so the URLs are purged after the response is sent instead
-                self::sync() ? $job->afterResponse() : $job->delay( $delay ?: null );
+                $sync ? $job->afterResponse() : $job->delay( $delay ?: null );
             }
         }
     }
@@ -163,15 +165,5 @@ class Cdn
             'http_errors' => false,
             'timeout' => $timeout,
         ] ), [new ErrorPlugin()] );
-    }
-
-
-    /**
-     * Tests if the CDN jobs run synchronously, which can't delay them.
-     */
-    private static function sync() : bool
-    {
-        $conn = config( 'cms.queue.connection' ) ?: config( 'queue.default' );
-        return config( 'queue.connections.' . $conn . '.driver' ) === 'sync';
     }
 }

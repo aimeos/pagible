@@ -73,7 +73,7 @@ class SearchController extends Controller
 
         // Keep the rich audit payload package-local. The neutral metric event only
         // carries aggregation-safe fields, and each consumer samples independently.
-        Watch::dispatchWhen( 'cms.theme.watch', CmsSearch::class, fn() => new CmsSearch(
+        Watch::dispatch( CmsSearch::class, fn() => new CmsSearch(
             query: (string) $vals['q'],
             results: $paginator->total(),
             page: $paginator->currentPage(),
@@ -81,7 +81,7 @@ class SearchController extends Controller
             domain: $domain,
             lang: $lang,
             tenant: $tenant,
-        ) );
+        ), 'cms.theme.watch' );
 
         Watch::observe(
             source: 'search',

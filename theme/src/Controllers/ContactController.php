@@ -22,19 +22,12 @@ class ContactController extends Controller
     {
         $start = hrtime( true );
         $values = $request->safe()->except( ['h-captcha-response', 'schema', 'signature'] );
+        $mandatory = $request->mandatory();
         $fields = array_map( fn( $field ) => [
             'name' => $field,
-            'value' => $values[ContactRequest::key( $field )],
-            'required' => true,
-        ], $request->mandatory() );
-
-        foreach( $request->optional() as $field ) {
-            $fields[] = [
-                'name' => $field,
-                'value' => $values[ContactRequest::key( $field )] ?? null,
-                'required' => false,
-            ];
-        }
+            'value' => $values[ContactRequest::key( $field )] ?? null,
+            'required' => in_array( $field, $mandatory, true ),
+        ], [...$mandatory, ...$request->optional()] );
 
         $data = [
             'fields' => $fields,
@@ -52,12 +45,12 @@ class ContactController extends Controller
         $ip = (string) $request->ip();
         $tenant = Tenancy::value();
 
-        Watch::dispatchWhen( 'cms.theme.watch', CmsContact::class, fn() => new CmsContact(
+        Watch::dispatch( CmsContact::class, fn() => new CmsContact(
             email: (string) ( $values['email'] ?? '' ),
             ip: $ip,
             durationMs: $duration,
             tenant: $tenant,
-        ) );
+        ), 'cms.theme.watch' );
 
         Watch::observe(
             source: 'contact',

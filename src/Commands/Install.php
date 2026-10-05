@@ -41,10 +41,10 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
     /**
      * Execute command
      */
-    public function handle(): void
+    public function handle(): int
     {
         $result = 0;
-        $options = $this->option( 'seed' ) ? ['--seed' => true] : [];
+        $seed = (bool) $this->option( 'seed' );
 
         $all = collect( Artisan::all() )->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:install:' ) )->keys();
 
@@ -54,13 +54,16 @@ Made with <fg=green>love</> by the Pagible CMS community. Be a part of it!
         foreach( $commands as $command )
         {
             $this->comment( sprintf( '  Running %s ...', $command ) );
+            $options = $seed && $this->getApplication()?->find( $command )->getDefinition()->hasOption( 'seed' ) ? ['--seed' => true] : [];
             $result += $this->call( $command, $options );
         }
 
         if( $result ) {
             $this->error( '  Error during Pagible CMS installation!' );
-        } else {
-            $this->line( self::$template );
+            return self::FAILURE;
         }
+
+        $this->line( self::$template );
+        return self::SUCCESS;
     }
 }

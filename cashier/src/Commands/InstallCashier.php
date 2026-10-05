@@ -28,13 +28,8 @@ class InstallCashier extends Command
         $setup = app( CashierSetup::class );
         $provider = $setup->provider();
 
-        if( !$provider )
-        {
-            $installed = $setup->providers();
-            $message = $installed === [] ? 'No Pagible Cashier provider is installed.'
-                : 'More than one Pagible Cashier provider is installed: ' . implode( ', ', $installed ) . '.';
-            $this->error( $message . ' Install exactly one of Stripe, Paddle, or Mollie.' );
-
+        if( !$provider ) {
+            $this->error( (string) $setup->unselected() );
             return $this->done( Command::FAILURE );
         }
 

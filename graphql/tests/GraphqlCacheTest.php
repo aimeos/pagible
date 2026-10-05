@@ -88,6 +88,16 @@ class GraphqlCacheTest extends GraphqlTestAbstract
     }
 
 
+    public function testClearCacheNotFound(): void
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($ids: [ID!]!) {
+                clearCache(ids: $ids)
+            }
+        ', ['ids' => ['00000000-0000-0000-0000-000000000000']] )->assertGraphQLErrorMessage( 'Page not found' );
+    }
+
+
     public function testRequiresClearPermission(): void
     {
         $page = Page::where( 'tag', 'disabled' )->firstOrFail();

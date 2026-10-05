@@ -9,16 +9,10 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
-use Aimeos\Nestedset\NestedSet;
 
 
 class BenchmarkMcp extends Command
@@ -30,10 +24,7 @@ class BenchmarkMcp extends Command
     protected $signature = 'cms:benchmark:mcp
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--seed : Seed benchmark data before running benchmarks}
-        {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -54,75 +45,16 @@ class BenchmarkMcp extends Command
             return self::FAILURE;
         }
 
-        $this->tenant( $tenant );
-
-        if( !$this->hasSeededData() )
-        {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
-            return self::FAILURE;
-        }
-
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $conn = config( 'cms.db', 'sqlite' );
 
         config( ['scout.driver' => 'cms'] );
 
-        // Wrap everything in a transaction for user cleanup
-        DB::connection( $conn )->beginTransaction();
-
-        try
-        {
-            $user = $this->user();
-
-            // ── Page setup ────────────────────────────────────────────
-
-            $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
-
-            $count = Page::where( 'tag', '!=', 'root' )->count();
-            $page = Page::where( 'tag', '!=', 'root' )
-                ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
-
-            $trashedPage = Page::onlyTrashed()->firstOrFail();
-
-            $unpubVersion = $page->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => (array) $page->latest?->data,
-                'aux' => (array) $page->latest?->aux,
-                'published' => false,
-                'editor' => 'benchmark',
-            ] );
-            $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
-            $page->setRelation( 'latest', $unpubVersion );
-
-            // ── Element setup ─────────────────────────────────────────
-
-            $element = Element::where( 'editor', 'benchmark' )->firstOrFail();
-            $trashedElement = Element::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail();
-
-            $unpubElVersion = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => (array) $element->latest?->data,
-                'aux' => (array) $element->latest?->aux,
-                'published' => false,
-                'editor' => 'benchmark',
-            ] );
-            $element->forceFill( ['latest_id' => $unpubElVersion->id] )->saveQuietly();
-            $element->setRelation( 'latest', $unpubElVersion );
-
-            // ── File setup ────────────────────────────────────────────
-
-            $file = File::where( 'editor', 'benchmark' )->firstOrFail();
-            $trashedFile = File::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail();
-
-            $unpubFileVersion = $file->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => (array) $file->latest?->data,
-                'aux' => (array) $file->latest?->aux,
-                'published' => false,
-                'editor' => 'benchmark',
-            ] );
-            $file->forceFill( ['latest_id' => $unpubFileVersion->id] )->saveQuietly();
-            $file->setRelation( 'latest', $unpubFileVersion );
+        // Run everything in a rolled back transaction for user cleanup
+        $this->sandbox( function( $user ) use ( $domain, $tries ) {
+            [
+                'root' => $root, 'page' => $page, 'element' => $element, 'file' => $file,
+                'trashed' => ['page' => $trashedPage, 'element' => $trashedElement, 'file' => $trashedFile],
+            ] = $this->fixtures( $domain, true );
 
             Http::fake( fn() => Http::response( 'benchmark', 200 ) );
 
@@ -268,13 +200,7 @@ class BenchmarkMcp extends Command
             }, tries: $tries );
 
             $this->line( '' );
-        }
-        finally
-        {
-            Auth::logout();
-            Auth::guard()->forgetUser();
-            DB::connection( $conn )->rollBack();
-        }
+        } );
 
         return self::SUCCESS;
     }

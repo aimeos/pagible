@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -112,7 +113,7 @@ class Backup extends Command
 
                 $written = file_put_contents( $tmpDir . '/manifest.json', json_encode(
                     $manifest,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
+                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                 ) . "\n" );
 
                 if( $written === false ) {
@@ -133,7 +134,7 @@ class Backup extends Command
             BackupCreated::dispatch( $tenant, $zipPath, $counts );
 
             $this->info( sprintf( 'Backup created: %s', $zipPath ) );
-            $this->table( ['Table', 'Records'], collect( $counts )->map( fn( $c, $t ) => [$t, $c] )->values()->toArray() );
+            $this->table( ['Table', 'Records'], array_map( null, array_keys( $counts ), $counts ) );
 
             return Command::SUCCESS;
         }
@@ -165,24 +166,14 @@ class Backup extends Command
     protected function checksums( string $dir ): array
     {
         $checksums = [];
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-        );
 
-        foreach( $iterator as $file )
+        foreach( $this->entries( $dir ) as $name => $path )
         {
-            if( !$file->isFile() ) {
-                continue;
+            if( ( $hash = hash_file( 'sha256', $path ) ) === false ) {
+                throw new \RuntimeException( 'Failed to checksum backup entry: ' . basename( $path ) );
             }
 
-            $hash = hash_file( 'sha256', $file->getPathname() );
-
-            if( $hash === false ) {
-                throw new \RuntimeException( 'Failed to checksum backup entry: ' . $file->getFilename() );
-            }
-
-            $path = substr( $file->getPathname(), strlen( $dir ) + 1 );
-            $checksums[str_replace( DIRECTORY_SEPARATOR, '/', $path )] = $hash;
+            $checksums[$name] = $hash;
         }
 
         ksort( $checksums );
@@ -199,6 +190,7 @@ class Backup extends Command
      */
     protected function copyMedia( string $tenant, string $dir ): int
     {
+        $filesystem = new Filesystem();
         $storages = [];
         $count = 0;
 
@@ -206,52 +198,22 @@ class Backup extends Command
         {
             $storage = $storages[$logical] ??= Storage::disk( File::diskName( $logical ) );
             $size = $storage->size( $file );
-            $mediaDir = $dir . '/media/' . $logical;
-            $target = $mediaDir . '/' . $file;
-            $targetDir = dirname( $target );
+            $target = $dir . '/media/' . $logical . '/' . $file;
 
-            if( !is_dir( $targetDir ) ) {
-                if( !mkdir( $targetDir, 0755, true ) && !is_dir( $targetDir ) ) {
-                    throw new \RuntimeException( 'Failed to create media backup directory' );
-                }
-            }
+            $filesystem->ensureDirectoryExists( dirname( $target ) );
 
-            $stream = $storage->readStream( $file );
-
-            if( !$stream ) {
+            if( !( $stream = $storage->readStream( $file ) ) ) {
                 throw new \RuntimeException( 'Failed to read media file: ' . $file );
             }
 
-            try
-            {
-                $out = fopen( $target, 'w' );
-
-                if( !$out ) {
-                    throw new \RuntimeException( 'Failed to create media backup file' );
-                }
-
-                try
-                {
-                    $written = stream_copy_to_stream( $stream, $out );
-
-                    if( $written === false || $written !== $size ) {
-                        throw new \RuntimeException( 'Failed to copy media file: ' . $file );
-                    }
-                }
-                finally
-                {
-                    fclose( $out );
-                }
-            }
-            finally
-            {
-                if( is_resource( $stream ) ) {
-                    fclose( $stream );
-                }
+            try {
+                $written = file_put_contents( $target, $stream );
+            } finally {
+                fclose( $stream );
             }
 
-            if( filesize( $target ) !== $size ) {
-                throw new \RuntimeException( 'Failed to verify media file: ' . $file );
+            if( $written !== $size || filesize( $target ) !== $size ) {
+                throw new \RuntimeException( 'Failed to copy media file: ' . $file );
             }
 
             $count++;
@@ -273,7 +235,6 @@ class Backup extends Command
     {
         $zipPath = $dir . '.zip';
         $zip = new \ZipArchive();
-        $opened = false;
 
         try
         {
@@ -281,31 +242,28 @@ class Backup extends Command
                 throw new \RuntimeException( 'Failed to create ZIP archive' );
             }
 
-            $opened = true;
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-                \RecursiveIteratorIterator::LEAVES_ONLY
-            );
-
-            foreach( $iterator as $file )
+            try
             {
-                $relativePath = substr( $file->getPathname(), strlen( $dir ) + 1 );
-                $isMedia = str_starts_with( $relativePath, 'media/' );
+                foreach( $this->entries( $dir ) as $name => $path )
+                {
+                    if( !$zip->addFile( $path, $name ) ) {
+                        throw new \RuntimeException( 'Failed to add ZIP entry: ' . $name );
+                    }
 
-                if( !$zip->addFile( $file->getPathname(), $relativePath ) ) {
-                    throw new \RuntimeException( 'Failed to add ZIP entry: ' . $relativePath );
-                }
-
-                if( $isMedia && !$zip->setCompressionName( $relativePath, \ZipArchive::CM_STORE ) ) {
-                    throw new \RuntimeException( 'Failed to configure ZIP entry: ' . $relativePath );
+                    if( str_starts_with( $name, 'media/' ) && !$zip->setCompressionName( $name, \ZipArchive::CM_STORE ) ) {
+                        throw new \RuntimeException( 'Failed to configure ZIP entry: ' . $name );
+                    }
                 }
             }
+            finally
+            {
+                $closed = $zip->close();
+            }
 
-            if( !$zip->close() ) {
+            if( !$closed ) {
                 throw new \RuntimeException( 'Failed to finish ZIP archive' );
             }
 
-            $opened = false;
             $size = filesize( $zipPath );
 
             if( $size === false ) {
@@ -352,11 +310,28 @@ class Backup extends Command
         }
         finally
         {
-            if( $opened ) {
-                $zip->close();
-            }
-
             @unlink( $zipPath );
+        }
+    }
+
+
+    /**
+     * Yields the files below the directory as relative entry name => file path.
+     *
+     * @param string $dir Directory path
+     * @return \Generator<string, string> Entry name => file path
+     */
+    protected function entries( string $dir ): \Generator
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
+        );
+
+        foreach( $iterator as $file )
+        {
+            if( $file->isFile() ) {
+                yield str_replace( DIRECTORY_SEPARATOR, '/', substr( $file->getPathname(), strlen( $dir ) + 1 ) ) => $file->getPathname();
+            }
         }
     }
 
@@ -379,30 +354,20 @@ class Backup extends Command
 
         foreach( $cursor as $row )
         {
-            fwrite( $fh, json_encode( (array) $row, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n" );
+            $line = json_encode( (array) $row, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+
+            if( fwrite( $fh, $line . "\n" ) === false ) {
+                throw new \RuntimeException( 'Failed to write NDJSON file: ' . basename( $file ) );
+            }
+
             $count++;
         }
 
-        fclose( $fh );
-
-        return $count;
-    }
-
-
-    /**
-     * Decodes a JSON object into an associative array.
-     *
-     * @return array<string, mixed>
-     */
-    protected function json( mixed $value ): array
-    {
-        if( is_string( $value ) ) {
-            $value = json_decode( $value, true );
-        } elseif( is_object( $value ) ) {
-            $value = (array) $value;
+        if( !fclose( $fh ) ) {
+            throw new \RuntimeException( 'Failed to close NDJSON file: ' . basename( $file ) );
         }
 
-        return is_array( $value ) ? $value : [];
+        return $count;
     }
 
 
@@ -441,16 +406,10 @@ class Backup extends Command
 
             foreach( $files as $file )
             {
-                $paths = [
-                    $file->path,
-                    ...array_values( $this->json( $file->previews ) ),
-                ];
+                $paths = self::filePaths( (array) $file );
 
-                foreach( $versions->get( $file->id, [] ) as $version )
-                {
-                    $data = $this->json( $version->data );
-                    $paths[] = $data['path'] ?? null;
-                    array_push( $paths, ...array_values( (array) ( $data['previews'] ?? [] ) ) );
+                foreach( $versions->get( $file->id, [] ) as $version ) {
+                    array_push( $paths, ...self::versionPaths( (array) $version ) );
                 }
 
                 $seen = [];
@@ -485,12 +444,7 @@ class Backup extends Command
     protected function prune( string $disk, string $tenant, int $keep ): void
     {
         $storage = Storage::disk( $disk );
-        $prefix = 'pagible-' . $tenant . '-';
-
-        $files = collect( $storage->files() )
-            ->filter( fn( string $f ) => str_starts_with( basename( $f ), $prefix ) && str_ends_with( $f, '.zip' ) )
-            ->sort()
-            ->values();
+        $files = $this->backups( $storage, $tenant );
 
         $toDelete = $files->slice( 0, max( 0, $files->count() - $keep ) );
 
@@ -537,30 +491,12 @@ class Backup extends Command
      */
     protected function removeDir( string $dir ): void
     {
+        // deleteDirectory() would follow a symlinked root directory
         if( is_link( $dir ) ) {
             @unlink( $dir );
-            return;
+        } else {
+            ( new Filesystem() )->deleteDirectory( $dir );
         }
-
-        if( !is_dir( $dir ) ) {
-            return;
-        }
-
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach( $iterator as $item )
-        {
-            if( $item->isDir() ) {
-                rmdir( $item->getPathname() );
-            } else {
-                unlink( $item->getPathname() );
-            }
-        }
-
-        rmdir( $dir );
     }
 
 

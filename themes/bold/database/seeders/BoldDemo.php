@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class BoldDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'training' => 'Explore RALLY strength, conditioning, hybrid, and mobility sessions: coached small-group training built for measurable progress.',
         'coaches' => 'Meet the RALLY coaching team and the specialists who make every strength, conditioning, and mobility session purposeful and personal.',
         'membership' => 'Compare RALLY Training Club drop-in, eight-session, and unlimited memberships, with transparent pricing and no joining fee.',
@@ -40,7 +39,7 @@ class BoldDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'athlete' => ['photo-1517836357463-d25dfeac3438', 'RALLY strength athlete', 'Athlete training with free weights in a focused strength session'],
         'battle-rope' => ['photo-1538805060514-97d9cc17730c', 'RALLY conditioning session', 'Athlete driving through an energetic conditioning interval'],
         'coach' => ['photo-1571019613454-1cb2f99b2d8b', 'RALLY coach', 'Coach giving clear movement feedback during a small-group training session'],
@@ -58,14 +57,8 @@ class BoldDemo extends AbstractDemo
         'woman' => ['photo-1549476464-37392f717541', 'RALLY athlete', 'Athlete training confidently with free weights in a bright gym'],
     ];
 
-    /** @var array<string, string> File IDs for fixed-ratio card images */
-    private array $cardImages = [];
     private string $element;
-    /** @var array<string, string> File IDs for portrait hero images */
-    private array $heroImages = [];
     private string $logoFile;
-    /** @var array<string, string> File IDs for fixed-ratio slideshow images */
-    private array $slideImages = [];
 
 
     /**
@@ -748,24 +741,6 @@ class BoldDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing call to action for a journal article.
      *
      * @param string $title Hero title
@@ -794,25 +769,7 @@ class BoldDemo extends AbstractDemo
      */
     protected function cardImg( string $key ) : string
     {
-        if( !isset( $this->cardImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1200, 900 ),
-                'previews' => ['400' => $url( 400, 300 ), '800' => $url( 800, 600 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->cardImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->cardImages[$key];
+        return $this->cropped( $key, 1200, 900, true, [400, 800] );
     }
 
 
@@ -823,40 +780,12 @@ class BoldDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Train', 'text' => "- [Sessions](/training)\n- [Coaches](/coaches)\n- [Membership](/membership)\n- [Book a first class](/start)"],
-                ['title' => 'Prepare', 'text' => "- [Studio guide](/studio-guide)\n- [Your first session](/studio-guide/first-session)\n- [Booking and recovery](/studio-guide/booking-and-recovery)"],
-                ['title' => 'Read', 'text' => "- [RALLY Field Notes](/journal)\n- [Strength is a skill](/strength-is-a-skill)\n- [Build a week that holds](/how-to-build-a-week-that-holds)"],
-                ['title' => 'Studio', 'text' => "- Köpenicker Straße 84\n- 10997 Berlin\n- [hello@rally.example](mailto:hello@rally.example)\n- +49 30 555 0184"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'RALLY footer',
-                'data' => ['type' => 'cards', 'data' => ['title' => 'RALLY Training Club', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'RALLY footer',
-                    'data' => ['title' => 'RALLY Training Club', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'RALLY footer', ['title' => 'RALLY Training Club', 'cards' => [
+            ['title' => 'Train', 'text' => "- [Sessions](/training)\n- [Coaches](/coaches)\n- [Membership](/membership)\n- [Book a first class](/start)"],
+            ['title' => 'Prepare', 'text' => "- [Studio guide](/studio-guide)\n- [Your first session](/studio-guide/first-session)\n- [Booking and recovery](/studio-guide/booking-and-recovery)"],
+            ['title' => 'Read', 'text' => "- [RALLY Field Notes](/journal)\n- [Strength is a skill](/strength-is-a-skill)\n- [Build a week that holds](/how-to-build-a-week-that-holds)"],
+            ['title' => 'Studio', 'text' => "- Köpenicker Straße 84\n- 10997 Berlin\n- [hello@rally.example](mailto:hello@rally.example)\n- +49 30 555 0184"],
+        ]] );
     }
 
 
@@ -879,25 +808,7 @@ class BoldDemo extends AbstractDemo
      */
     protected function heroImg( string $key ) : string
     {
-        if( !isset( $this->heroImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1200, 1600 ),
-                'previews' => ['450' => $url( 450, 600 ), '900' => $url( 900, 1200 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->heroImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->heroImages[$key];
+        return $this->cropped( $key, 1200, 1600, true, [450, 900] );
     }
 
 
@@ -915,17 +826,7 @@ class BoldDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'RALLY Training Club'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -1012,87 +913,7 @@ class BoldDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'RALLY Training Club | Train With Intent',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'RALLY Training Club | Train With Intent',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'RALLY Training Club | Train With Intent', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -1143,47 +964,12 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'RALLY Training Club, Berlin fitness studio, strength training, conditioning, coached group training',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'RALLY Training Club, Berlin fitness studio, strength training, conditioning, coached group training', $fileIds, $meta );
     }
 
 
@@ -1212,24 +998,6 @@ SVG;
      */
     protected function slideImg( string $key ) : string
     {
-        if( !isset( $this->slideImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 750 ),
-                'previews' => ['500' => $url( 500, 250 ), '1000' => $url( 1000, 500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->slideImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->slideImages[$key];
+        return $this->cropped( $key, 1500, 750, true );
     }
 }

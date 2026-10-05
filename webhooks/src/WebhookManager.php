@@ -9,7 +9,6 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Webhook;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -57,15 +56,23 @@ class WebhookManager
      */
     public function add( string $url, array $events, bool $status, ?Authenticatable $user, string $name = '' ) : array
     {
-        $tenant = $this->authorize( $user );
-        $url = $this->canonical( trim( $url ) );
+        $this->authorize( $user );
+
+        try {
+            $url = $this->client->canonical( trim( $url ) );
+        } catch( WebhookException ) {
+            throw new Exception( 'Invalid or disallowed webhook URL.' );
+        }
+
         $events = $this->events( $events );
         $name = $this->name( $name );
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = $this->locked( $tenant, function() use ( $actor, $events, $name, $secret, $status, $url ) {
-            $this->assertLimit();
+        $webhook = Utils::lockedTransaction( function() use ( $actor, $events, $name, $secret, $status, $url ) {
+            if( Webhook::query()->count() >= max( 1, (int) config( 'cms.webhooks.limit', 25 ) ) ) {
+                throw new Exception( 'The webhook limit has been reached.' );
+            }
 
             return Webhook::forceCreate( [
                 'status' => $status,
@@ -91,7 +98,7 @@ class WebhookManager
      */
     public function purge( array $ids, ?Authenticatable $user ) : int
     {
-        $tenant = $this->authorize( $user );
+        $this->authorize( $user );
         $ids = array_values( array_unique( array_filter( $ids, 'is_string' ) ) );
 
         // Independent of the limit because subscriptions above a lowered limit are listed too
@@ -100,7 +107,7 @@ class WebhookManager
         }
 
         $actor = Utils::editor( $user );
-        $webhooks = $this->locked( $tenant, function() use ( $ids ) {
+        $webhooks = Utils::lockedTransaction( function() use ( $ids ) {
             $webhooks = Webhook::query()->whereIn( 'id', $ids )->get();
 
             Webhook::query()
@@ -168,11 +175,11 @@ class WebhookManager
      */
     public function rotate( string $id, ?Authenticatable $user ) : array
     {
-        $tenant = $this->authorize( $user );
+        $this->authorize( $user );
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = $this->locked( $tenant, function() use ( $actor, $id, $secret ) {
+        $webhook = Utils::lockedTransaction( function() use ( $actor, $id, $secret ) {
             $webhook = $this->find( $id );
 
             // Only the replaced secret stays valid, a secret rotated before isn't accepted any more
@@ -209,12 +216,12 @@ class WebhookManager
      */
     public function save( string $id, array $events, bool $status, ?Authenticatable $user, ?string $name = null ) : Webhook
     {
-        $tenant = $this->authorize( $user );
+        $this->authorize( $user );
         $events = $this->events( $events );
         $name = $name !== null ? $this->name( $name ) : null;
         $actor = Utils::editor( $user );
 
-        [$webhook, $changes] = $this->locked( $tenant, function() use ( $actor, $events, $id, $name, $status ) {
+        [$webhook, $changes] = Utils::lockedTransaction( function() use ( $actor, $events, $id, $name, $status ) {
             $webhook = $this->find( $id );
 
             $webhook->forceFill( [
@@ -241,14 +248,6 @@ class WebhookManager
     }
 
 
-    private function assertLimit() : void
-    {
-        if( Webhook::query()->count() >= max( 1, (int) config( 'cms.webhooks.limit', 25 ) ) ) {
-            throw new Exception( 'The webhook limit has been reached.' );
-        }
-    }
-
-
     private function authorize( ?Authenticatable $user ) : string
     {
         if( !Permission::can( 'config:webhook', $user ) ) {
@@ -256,16 +255,6 @@ class WebhookManager
         }
 
         return Tenancy::value();
-    }
-
-
-    private function canonical( string $url ) : string
-    {
-        try {
-            return $this->client->canonical( $url );
-        } catch( WebhookException ) {
-            throw new Exception( 'Invalid or disallowed webhook URL.' );
-        }
     }
 
 
@@ -313,23 +302,6 @@ class WebhookManager
     private function find( string $id ) : Webhook
     {
         return Webhook::query()->find( $id ) ?? throw new Exception( 'Webhook not found.' );
-    }
-
-
-    /**
-     * @template T
-     * @param \Closure(): T $callback
-     * @return T
-     */
-    private function locked( string $tenant, \Closure $callback ) : mixed
-    {
-        $seconds = max( 1, (int) config( 'cms.lock', 30 ) );
-        $key = 'cms_webhooks_' . hash( 'sha256', $tenant );
-
-        return Cache::lock( $key, $seconds )->block(
-            $seconds,
-            fn() => Utils::transaction( $callback ),
-        );
     }
 
 

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
+use Aimeos\Cms\Watch;
 use Illuminate\Foundation\Events\Dispatchable;
 
 
@@ -16,7 +17,7 @@ use Illuminate\Foundation\Events\Dispatchable;
  * Dispatched by Permission::set(), so every write path — GraphQL, artisan,
  * queued jobs — is covered, not just one transport.
  */
-final class PermissionChanged
+final class PermissionChanged implements Loggable
 {
     use Dispatchable;
 
@@ -32,4 +33,27 @@ final class PermissionChanged
         public readonly string $userAgent = '',
         public readonly string $tenant = '',
     ) {}
+
+
+    /**
+     * Returns the audit entry, always logged as warning.
+     *
+     * The acting and target principals stay identifiable for forensic use even when
+     * anonymization is on; only network metadata follows the anonymization setting.
+     *
+     * @return array{message: string, fields: array<string, mixed>, level: 'warning'}
+     */
+    public function log() : array
+    {
+        return ['message' => 'cms.user', 'level' => 'warning', 'fields' => [
+            'action' => 'permission',
+            'actor' => $this->actorEmail,
+            'target' => $this->targetEmail,
+            'target_id' => $this->targetId,
+            'assignments' => $this->assignments,
+            'ip' => Watch::mask( $this->ip ),
+            'user_agent' => Watch::mask( $this->userAgent ),
+            'tenant_id' => $this->tenant,
+        ]];
+    }
 }

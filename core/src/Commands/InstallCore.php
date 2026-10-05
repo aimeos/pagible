@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallCore extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -63,24 +67,21 @@ class InstallCore extends Command
     protected function config() : int
     {
         $filename = 'config/cms.php';
-        $path = base_path( $filename );
-        $content = file_get_contents( $path );
 
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
+        $result = $this->patch( $filename, function( string $content ) use ( $filename ) {
 
-        $updated = str_replace( 'throttle:cms-admin', 'throttle:cms-broadcast', $content );
+            $content = str_replace( 'throttle:cms-admin', 'throttle:cms-broadcast', $content );
 
-        if( !preg_match( "/^[ \t]*'disks'[ \t]*=>/m", $updated ) )
-        {
+            if( preg_match( "/^[ \t]*'disks'[ \t]*=>/m", $content ) ) {
+                return $content;
+            }
+
             $pattern = "/^(?<indent>[ \t]*)'disk'[ \t]*=>[ \t]*(?<value>.+?)[ \t]*,[ \t]*$/m";
 
-            if( !preg_match( $pattern, $updated, $match ) ) {
+            if( !preg_match( $pattern, $content, $match ) ) {
                 $this->error( "  File [$filename] contains no safely replaceable top-level [disk] entry." );
                 $this->line( "  Replace it manually with [disks.public.name] and [disks.private.name/ttl]." );
-                return 1;
+                return null;
             }
 
             $indent = $match['indent'];
@@ -96,24 +97,19 @@ class InstallCore extends Command
                 "{$indent}    ],",
                 "{$indent}],",
             ] );
-            $updated = preg_replace( $pattern, $replacement, $updated, 1 );
+
+            if( ( $content = preg_replace( $pattern, $replacement, $content, 1 ) ) === null ) {
+                $this->error( "  Updating file [$filename] failed!" );
+            }
+
+            return $content;
+        } );
+
+        if( $result ) {
+            return $result;
         }
 
-        if( !is_string( $updated ) ) {
-            $this->error( "  Updating file [$filename] failed!" );
-            return 1;
-        }
-
-        if( $updated === $content ) {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        } elseif( file_put_contents( $path, $updated ) === false ) {
-            $this->error( "  Updating file [$filename] failed!" );
-            return 1;
-        } else {
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        }
-
-        $values = require $path;
+        $values = require base_path( $filename );
 
         if( !is_array( $values ) ) {
             $this->error( "  File [$filename] doesn't return a configuration array!" );
@@ -135,19 +131,19 @@ class InstallCore extends Command
         $name = config( 'cms.db', 'sqlite' );
         $path = (string) config( "database.connections.{$name}.database", database_path( 'database.sqlite' ) );
 
-        if( $name && !file_exists( $path ) )
-        {
-            if( touch( $path ) === true ) {
-                $this->line( sprintf( '  Created database [%1$s]' . PHP_EOL, $path ) );
-            } else {
-                $this->error( sprintf( '  Creating database [%1$s] failed!' . PHP_EOL, $path ) ); exit( 1 );
-            }
-        }
-        else
+        if( config( "database.connections.{$name}.driver" ) !== 'sqlite' || $path === ':memory:' || file_exists( $path ) )
         {
             $this->line( '  Creating database is not necessary' . PHP_EOL );
+            return 0;
         }
 
+        if( !touch( $path ) )
+        {
+            $this->error( sprintf( '  Creating database [%1$s] failed!' . PHP_EOL, $path ) );
+            return 1;
+        }
+
+        $this->line( sprintf( '  Created database [%1$s]' . PHP_EOL, $path ) );
         return 0;
     }
 }

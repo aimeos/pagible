@@ -7,14 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -24,42 +22,30 @@ use Laravel\Mcp\Request;
 #[Description('Restores a previously soft-deleted page. Returns the restored page as a JSON object.')]
 class RestorePage extends Tool
 {
+    protected const PERMISSIONS = ['page:keep'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:keep', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to restore.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->find( $v['id'] );
+        /** @var Page $item */
+        $item = Page::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
 
-        if( !$page ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
-
-        if( !$page->trashed() ) {
+        if( !$item->trashed() ) {
             return Response::structured( ['error' => 'Page is not deleted.'] );
         }
 
         $items = Resource::restore( Page::class, [$v['id']], $request->user() );
 
-        /** @var Page $restored */
-        $restored = $items->firstOrFail();
-
-        return Response::structured( ['id' => $restored->id] + $restored->toArray() + [
-            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-                'domain' => $restored->domain ?: request()->getHost(),
-            ] : [] ) + ['path' => $restored->path] ),
-        ] );
+        return Response::structured( Presenter::item( $items->firstOrFail(), true ) );
     }
 
 
@@ -75,17 +61,5 @@ class RestorePage extends Tool
                 ->description('The UUID of the soft-deleted page to restore.')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:keep', $request->user() );
     }
 }

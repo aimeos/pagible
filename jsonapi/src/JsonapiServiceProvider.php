@@ -3,12 +3,9 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\CmsJsonapi;
-use Aimeos\Cms\Listeners\JsonapiLogListener;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scopes\Status;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class JsonapiServiceProvider extends Provider
@@ -30,7 +27,7 @@ class JsonapiServiceProvider extends Provider
         }
 
         $this->loadRoutesFrom( dirname( __DIR__ ) . '/routes/jsonapi.php' );
-        $this->rateLimiter();
+        Utils::limit( 'cms-jsonapi', 60, false );
 
         $this->publishes( [dirname( __DIR__ ) . '/config/cms/jsonapi.php' => config_path( 'cms/jsonapi.php' )], 'cms-config' );
 
@@ -41,9 +38,7 @@ class JsonapiServiceProvider extends Provider
 
     protected function watch() : void
     {
-        Watch::listen( [
-            CmsJsonapi::class => JsonapiLogListener::class,
-        ], 'cms.jsonapi.watch' );
+        Watch::listen( [CmsJsonapi::class], 'cms.jsonapi.watch' );
     }
 
 
@@ -52,7 +47,6 @@ class JsonapiServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\BenchmarkJsonapi::class,
                 \Aimeos\Cms\Commands\InstallJsonapi::class,
             ] );
         }
@@ -66,13 +60,5 @@ class JsonapiServiceProvider extends Provider
             config('jsonapi.servers', []) ,
             ['cms' => \Aimeos\Cms\JsonApi\V1\Server::class]),
         ]);
-    }
-
-
-    protected function rateLimiter(): void
-    {
-        RateLimiter::for( 'cms-jsonapi', fn( $request ) =>
-            Limit::perMinute( 60 )->by( $request->ip() )
-        );
     }
 }

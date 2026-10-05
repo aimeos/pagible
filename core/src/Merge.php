@@ -112,12 +112,8 @@ class Merge
     {
         $latestData = (array) $file->latest?->data;
         $latestAux = (array) $file->latest?->aux;
-        $current = $file->getAttribute( 'latest_id' );
-        $base = $latestId && $current && $latestId !== $current
-            ? $file->versions()->find( $latestId )
-            : null;
 
-        if( !$base ) {
+        if( !$base = self::base( $file, $latestId ) ) {
             return [array_replace( $latestData, $data ), array_replace( $latestAux, $aux ), []];
         }
 
@@ -139,11 +135,8 @@ class Merge
     public static function model( Base $model, array $input, ?string $latestId ) : array
     {
         $latest = $model->latest;
-        $base = $latestId && $latestId !== $model->latest_id
-            ? $model->versions()->find( $latestId )
-            : null;
 
-        if( $base ) {
+        if( $base = self::base( $model, $latestId ) ) {
             return self::structured( (array) $base->data, (array) $latest?->data, $input );
         }
 
@@ -164,19 +157,8 @@ class Merge
         $latestData = (array) $latest?->data;
         $latestAux = (array) $latest?->aux;
 
-        if( $latestId && $latestId !== $page->latest_id )
+        if( $base = self::base( $page, $latestId ) )
         {
-            /** @var Version|null $base */
-            $base = $page->versions()->find( $latestId );
-
-            if( !$base ) {
-                return [
-                    array_replace( $latestData, $data ),
-                    array_replace( $latestAux, $aux ),
-                    null,
-                ];
-            }
-
             $latestMeta = (array) ( $latest?->aux->meta ?? [] );
             $latestContent = (array) ( $latest?->aux->content ?? [] );
             $latestConfig = (array) ( $latest?->aux->config ?? [] );
@@ -267,8 +249,7 @@ class Merge
             else
             {
                 // Both changed differently from base — last-write-wins (incoming)
-                $merged = self::isMap( $b ) && self::isMap( $c ) && self::isMap( $i ) ? self::try( (array) $b, (array) $c, (array) $i )
-                    : ( is_string( $b ) && is_string( $c ) && is_string( $i ) ? self::tryString( $b, $c, $i ) : null );
+                $merged = self::value( $b, $c, $i );
                 $diff[$k] = ['previous' => $b, 'current' => $i, 'overwritten' => $c, 'merged' => $merged];
                 $result[$k] = $merged ?? $i;
             }
@@ -305,34 +286,33 @@ class Merge
             }
             elseif( !self::eq( $cv, $bv ) && !self::eq( $iv, $bv ) && !self::eq( $cv, $iv ) )
             {
-                if( self::isMap( $bv ) && self::isMap( $cv ) && self::isMap( $iv ) )
-                {
-                    $sub = self::try( (array) $bv, (array) $cv, (array) $iv );
-
-                    if( $sub === null ) {
-                        return null;
-                    }
-
-                    $result[$k] = $sub;
-                }
-                elseif( is_string( $base[$k] ?? null ) && is_string( $current[$k] ?? null ) && is_string( $incoming[$k] ?? null ) )
-                {
-                    $sub = self::tryString( $base[$k], $current[$k], $incoming[$k] );
-
-                    if( $sub === null ) {
-                        return null;
-                    }
-
-                    $result[$k] = $sub;
-                }
-                else
-                {
+                if( ( $sub = self::value( $bv, $cv, $iv ) ) === null ) {
                     return null;
                 }
+
+                $result[$k] = $sub;
             }
         }
 
         return $result;
+    }
+
+
+    /**
+     * Returns the version the editor started from if it isn't the latest version any more.
+     *
+     * @param Base $model Model with its versions
+     * @param string|null $latestId Version ID the caller originally edited
+     * @return Version|null Base version for a three-way merge or NULL if not available
+     */
+    protected static function base( Base $model, ?string $latestId ) : ?Version
+    {
+        if( !$latestId || !$model->latest_id || $latestId === $model->latest_id ) {
+            return null;
+        }
+
+        /** @var Version|null */
+        return $model->versions()->find( $latestId );
     }
 
 
@@ -557,5 +537,27 @@ class Merge
         }
 
         return $map;
+    }
+
+
+    /**
+     * Merges three diverged values structurally or word-wise.
+     *
+     * @param mixed $base Value both sides started from
+     * @param mixed $current Value saved by the other editor
+     * @param mixed $incoming Value sent by this editor
+     * @return array<string, mixed>|string|null Merged value or NULL on conflict
+     */
+    private static function value( mixed $base, mixed $current, mixed $incoming ) : array|string|null
+    {
+        if( self::isMap( $base ) && self::isMap( $current ) && self::isMap( $incoming ) ) {
+            return self::try( (array) $base, (array) $current, (array) $incoming );
+        }
+
+        if( is_string( $base ) && is_string( $current ) && is_string( $incoming ) ) {
+            return self::tryString( $base, $current, $incoming );
+        }
+
+        return null;
     }
 }

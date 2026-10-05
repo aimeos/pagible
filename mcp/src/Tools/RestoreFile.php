@@ -7,14 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -24,37 +22,30 @@ use Laravel\Mcp\Request;
 #[Description('Restores a previously soft-deleted media file. Returns the restored file as a JSON object.')]
 class RestoreFile extends Tool
 {
+    protected const PERMISSIONS = ['file:keep'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:keep', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the file to restore.',
         ] );
 
-        /** @var File|null $file */
-        $file = File::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->find( $v['id'] );
+        /** @var File $item */
+        $item = File::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
 
-        if( !$file ) {
-            return Response::structured( ['error' => 'File not found.'] );
-        }
-
-        if( !$file->trashed() ) {
+        if( !$item->trashed() ) {
             return Response::structured( ['error' => 'File is not deleted.'] );
         }
 
         $items = Resource::restore( File::class, [$v['id']], $request->user() );
 
-        $item = $items->firstOrFail();
-
-        return Response::structured( ['id' => $item->id] + $item->toArray() );
+        return Response::structured( Presenter::item( $items->firstOrFail() ) );
     }
 
 
@@ -70,17 +61,5 @@ class RestoreFile extends Tool
                 ->description('The UUID of the soft-deleted file to restore.')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'file:keep', $request->user() );
     }
 }

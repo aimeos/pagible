@@ -13,7 +13,6 @@ class SearchServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\BenchmarkSearch::class,
                 \Aimeos\Cms\Commands\Index::class,
                 \Aimeos\Cms\Commands\InstallSearch::class,
             ] );

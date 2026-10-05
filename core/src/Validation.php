@@ -7,12 +7,57 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Page;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 
 class Validation
 {
+    /** @var array<class-string, array<string, int>> Maximum string lengths or integer values of scalar fields */
+    private const LIMITS = [
+        Element::class => ['lang' => 5, 'name' => 255, 'type' => 50],
+        File::class => ['lang' => 5, 'mime' => 100, 'name' => 255, 'path' => 255],
+        Page::class => [
+            'cache' => 32767, 'domain' => 255, 'lang' => 5, 'name' => 255, 'path' => 255, 'related_id' => 36,
+            'status' => 32767, 'tag' => 30, 'theme' => 30, 'title' => 255, 'to' => 255, 'type' => 30,
+        ],
+    ];
+
+    /** @var array<string, bool> Scalar fields containing non-negative integers */
+    private const NUMBERS = ['cache' => true, 'status' => true];
+
+
+    /**
+     * Validates the scalar fields of the input against the storage limits of the model.
+     *
+     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param array<string, mixed> $input Input data
+     * @throws Exception If a value isn't scalar or exceeds its limit
+     */
+    public static function limits( string $model, array $input ) : void
+    {
+        foreach( self::LIMITS[$model] as $key => $max )
+        {
+            if( ( $value = $input[$key] ?? null ) === null ) {
+                continue;
+            }
+
+            if( isset( self::NUMBERS[$key] ) )
+            {
+                if( filter_var( $value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $max]] ) === false ) {
+                    throw new Exception( sprintf( 'Invalid value for "%s", expected an integer between 0 and %d', $key, $max ) );
+                }
+            }
+            elseif( !is_scalar( $value ) || mb_strlen( (string) $value ) > $max ) {
+                throw new Exception( sprintf( 'Invalid value for "%s", expected up to %d characters', $key, $max ) );
+            }
+        }
+    }
+
+
     /**
      * Sanitizes page input: validates URL, strips config without permission,
      * sanitizes HTML content, populates per-element file lists, validates
@@ -25,6 +70,8 @@ class Validation
      */
     public static function page( array $input, ?Authenticatable $user = null ) : array
     {
+        self::limits( Page::class, $input );
+
         if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
             throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
         }
@@ -39,18 +86,10 @@ class Validation
             {
                 $item = (object) $item;
 
-                if( ( $item->type ?? null ) === 'html' )
-                {
-                    if( is_object( $item->data ?? null ) && isset( $item->data->text ) ) {
-                        $item->data->text = Utils::html( (string) $item->data->text );
-                    } elseif( is_array( $item->data ?? null ) && isset( $item->data['text'] ) ) {
-                        $item->data['text'] = Utils::html( (string) $item->data['text'] );
-                    }
-                }
-
                 if( is_string( $item->type ?? null )
                     && ( is_object( $item->data ?? null ) || is_array( $item->data ?? null ) )
                 ) {
+                    self::html( $item->type, $item->data );
                     $item->data = self::defaults( $item->type, $item->data );
                 }
 
@@ -386,18 +425,28 @@ class Validation
 
 
     /**
-     * Validates a single element type against configured content schemas
+     * Validates an element type and sanitizes the element data if passed
      *
      * @param string $type Element type to validate
+     * @param object|array<string, mixed>|null $data Element data to sanitize
+     * @param bool $strict TRUE to reject element types missing in the schemas
+     * @return array<string, mixed>|null Sanitized data with defaults or NULL if no data was passed
      * @throws Exception If element type is unknown
      */
-    public static function element( string $type ): void
+    public static function element( string $type, object|array|null $data = null, bool $strict = true ) : ?array
     {
         $schemas = Schema::schemas( section: 'content' );
 
-        if( !isset( $schemas[$type] ) ) {
+        if( $strict && !isset( $schemas[$type] ) ) {
             throw new Exception( sprintf( 'Unknown element type "%s"', $type ) );
         }
+
+        if( $data === null ) {
+            return null;
+        }
+
+        self::html( $type, $data );
+        return (array) self::defaults( $type, $data, 'content', $schemas );
     }
 
 

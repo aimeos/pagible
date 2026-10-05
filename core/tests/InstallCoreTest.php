@@ -95,4 +95,32 @@ class InstallCoreTest extends CoreTestAbstract
             }
         }
     }
+
+
+    public function testDbCreatesSqliteFileOnly() : void
+    {
+        $path = sys_get_temp_dir() . '/cms-install-' . uniqid() . '.sqlite';
+        $config = config( 'database.connections' );
+        $db = config( 'cms.db' );
+
+        $command = new InstallCore();
+        $command->setOutput( new OutputStyle( new ArrayInput( [] ), new BufferedOutput() ) );
+        $method = new \ReflectionMethod( $command, 'db' );
+
+        try
+        {
+            config( ['cms.db' => 'cmstest', 'database.connections.cmstest' => ['driver' => 'mysql', 'database' => $path]] );
+            $this->assertSame( 0, $method->invoke( $command ) );
+            $this->assertFileDoesNotExist( $path );
+
+            config( ['database.connections.cmstest' => ['driver' => 'sqlite', 'database' => $path]] );
+            $this->assertSame( 0, $method->invoke( $command ) );
+            $this->assertFileExists( $path );
+        }
+        finally
+        {
+            config( ['cms.db' => $db, 'database.connections' => $config] );
+            @unlink( $path );
+        }
+    }
 }

@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-benchmark",
+    "description": "Pagible CMS - Performance benchmarks for development",
+    "keywords": ["laravel", "cms", "benchmark", "performance"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\BenchmarkServiceProvider"
+            ]
+        }
+    }
+}

@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class PremiumDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'collection' => 'Explore Stillform Beam One, Dial One, and Dock One: calm, repairable technology designed for focused rooms and long daily use.',
         'studio' => 'Meet the Stillform team and see how industrial design, electronics, materials, and repairability shape every product.',
         'journal' => 'Read Stillform Journal notes on physical interfaces, adaptive light, repairable electronics, and designing calmer technology.',
@@ -39,7 +38,7 @@ class PremiumDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'beam' => ['photo-1507473885765-e6ed057f782c', 'Beam One task light', 'Minimal task light casting a warm pool of light across a quiet workspace'],
         'detail' => ['photo-1523275335684-37898b6baf30', 'Precision control detail', 'Close view of a precisely machined metal control and its tactile markings'],
         'dial' => ['photo-1765805914125-56fce216cd1b', 'Dial One product detail', 'Black desktop control with a large illuminated rotary dial and physical shortcut buttons'],
@@ -58,8 +57,6 @@ class PremiumDemo extends AbstractDemo
 
     private string $element;
     private string $logoFile;
-    /** @var array<string, string> File IDs for fixed-ratio slideshow images */
-    private array $slideImages = [];
 
 
     /**
@@ -659,24 +656,6 @@ class PremiumDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing product call to action for a journal article.
      *
      * @param string $title Hero title
@@ -704,40 +683,12 @@ class PremiumDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Products', 'text' => "- [Collection](/collection)\n- [Beam One](/collection#products)\n- [Dial One](/collection#products)\n- [Dock One](/collection#products)"],
-                ['title' => 'Company', 'text' => "- [Studio](/studio)\n- [Journal](/journal)\n- [Contact](/contact)"],
-                ['title' => 'Support', 'text' => "- [Product support](/support)\n- [Set up Beam One](/support/beam-one)\n- [Care and repair](/support/care-and-repair)"],
-                ['title' => 'Contact', 'text' => "- [General enquiries](/contact)\n- [orders@stillform.example](mailto:orders@stillform.example)\n- [trade@stillform.example](mailto:trade@stillform.example)\n- [support@stillform.example](mailto:support@stillform.example)"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Stillform footer',
-                'data' => ['type' => 'cards', 'data' => ['title' => 'Stillform', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Stillform footer',
-                    'data' => ['title' => 'Stillform', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Stillform footer', ['title' => 'Stillform', 'cards' => [
+            ['title' => 'Products', 'text' => "- [Collection](/collection)\n- [Beam One](/collection#products)\n- [Dial One](/collection#products)\n- [Dock One](/collection#products)"],
+            ['title' => 'Company', 'text' => "- [Studio](/studio)\n- [Journal](/journal)\n- [Contact](/contact)"],
+            ['title' => 'Support', 'text' => "- [Product support](/support)\n- [Set up Beam One](/support/beam-one)\n- [Care and repair](/support/care-and-repair)"],
+            ['title' => 'Contact', 'text' => "- [General enquiries](/contact)\n- [orders@stillform.example](mailto:orders@stillform.example)\n- [trade@stillform.example](mailto:trade@stillform.example)\n- [support@stillform.example](mailto:support@stillform.example)"],
+        ]] );
     }
 
 
@@ -766,17 +717,7 @@ class PremiumDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Stillform'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -849,87 +790,7 @@ class PremiumDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'Stillform | Technology, Made to Belong',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'Stillform | Technology, Made to Belong',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'Stillform | Technology, Made to Belong', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -986,47 +847,12 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Stillform, design technology, repairable electronics, industrial design, calm technology',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Stillform, design technology, repairable electronics, industrial design, calm technology', $fileIds, $meta );
     }
 
 
@@ -1054,24 +880,6 @@ SVG;
      */
     protected function slideImg( string $key ) : string
     {
-        if( !isset( $this->slideImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 750 ),
-                'previews' => ['500' => $url( 500, 250 ), '1000' => $url( 1000, 500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->slideImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->slideImages[$key];
+        return $this->cropped( $key, 1500, 750, true );
     }
 }

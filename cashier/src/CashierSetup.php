@@ -58,21 +58,34 @@ class CashierSetup
     public function checks() : array
     {
         $provider = $this->provider();
-        $providers = $this->providers();
 
         return [
             $this->result(
                 'Payment provider',
                 $provider !== null,
-                $provider ? ucfirst( $provider ) . ' is the only installed Pagible Cashier provider.' : '',
-                $providers === []
-                    ? 'Install exactly one of the Stripe, Paddle, or Mollie provider packages.'
-                    : 'More than one Pagible Cashier provider is installed: ' . implode( ', ', $providers ) . '.',
+                ucfirst( (string) $provider ) . ' is the only installed Pagible Cashier provider.',
+                (string) $this->unselected(),
             ),
-            $this->binding( $provider ),
-            $this->key(),
+            $this->result(
+                'Provider registration',
+                $provider !== null && app()->bound( CashierProvider::class ),
+                'Laravel package discovery registered the Pagible provider.',
+                $provider ? 'The provider package is installed but its service provider is not registered.'
+                    : 'Select one payment provider first.',
+            ),
+            $this->result(
+                'APP_KEY',
+                trim( (string) config( 'app.key' ) ) !== '',
+                'The application key is configured.',
+                'Run php artisan key:generate.',
+            ),
             $this->url(),
-            $this->login(),
+            $this->result(
+                'Login route',
+                Route::has( 'login' ),
+                'The named login route is available.',
+                'Define the named login route required for guest checkout.',
+            ),
             $this->routes( $provider ),
             $this->model(),
             $this->trait( CashierAccessTrait::class, 'CashierAccess' ),
@@ -188,19 +201,17 @@ class CashierSetup
 
 
     /**
-     * Checks whether the provider service is registered.
-     *
-     * @return array{name: string, ok: bool, message: string}
+     * Returns why no single provider can be used or null if exactly one is installed.
      */
-    private function binding( ?string $provider ) : array
+    public function unselected() : ?string
     {
-        return $this->result(
-            'Provider registration',
-            $provider !== null && app()->bound( CashierProvider::class ),
-            'Laravel package discovery registered the Pagible provider.',
-            $provider ? 'The provider package is installed but its service provider is not registered.'
-                : 'Select one payment provider first.',
-        );
+        if( count( $providers = $this->providers() ) === 1 ) {
+            return null;
+        }
+
+        return ( $providers === [] ? 'No Pagible Cashier provider is installed.'
+            : 'More than one Pagible Cashier provider is installed: ' . implode( ', ', $providers ) . '.' )
+            . ' Install exactly one of the Stripe, Paddle, or Mollie provider packages.';
     }
 
 
@@ -288,35 +299,6 @@ class CashierSetup
         catch( \Throwable $e ) {
             return $this->result( 'Database', false, '', 'Unable to inspect it: ' . $e->getMessage() );
         }
-    }
-
-
-    /**
-     * Checks the application encryption key.
-     *
-     * @return array{name: string, ok: bool, message: string}
-     */
-    private function key() : array
-    {
-        $ok = trim( (string) config( 'app.key' ) ) !== '';
-
-        return $this->result( 'APP_KEY', $ok, 'The application key is configured.', 'Run php artisan key:generate.' );
-    }
-
-
-    /**
-     * Checks the named login route used by checkout.
-     *
-     * @return array{name: string, ok: bool, message: string}
-     */
-    private function login() : array
-    {
-        return $this->result(
-            'Login route',
-            Route::has( 'login' ),
-            'The named login route is available.',
-            'Define the named login route required for guest checkout.',
-        );
     }
 
 

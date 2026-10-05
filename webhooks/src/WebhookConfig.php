@@ -240,20 +240,13 @@ class WebhookConfig
 
         $events = $endpoint['events'] ?? null;
 
-        if( !$this->validList( $events ) || array_diff( $events, WebhookManager::EVENTS ) !== [] ) {
+        if( !is_array( $events ) || $events === [] || !array_is_list( $events )
+            || array_filter( $events, fn( mixed $item ) => !is_string( $item ) ) !== []
+            || array_diff( $events, WebhookManager::EVENTS ) !== [] )
+        {
             throw new WebhookException( 'invalid_events' );
         }
 
         return ['url' => $url, 'secrets' => $secrets, 'events' => $events];
-    }
-
-
-    /**
-     * @phpstan-assert-if-true non-empty-list<string> $value
-     */
-    private function validList( mixed $value ) : bool
-    {
-        return is_array( $value ) && $value !== [] && array_is_list( $value )
-            && array_filter( $value, fn( mixed $item ) => !is_string( $item ) ) === [];
     }
 }

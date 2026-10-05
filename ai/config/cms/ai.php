@@ -74,9 +74,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Define the AI tools used for content generation. Each tool has a provider,
-    | model, and API key. The base URL for the provider is optional. Use the AI
-    | providers defined in ./config/prism.php or any other provider supported by
-    | Prism/Prisma.
+    | model, and API key. The base URL for the provider is optional. Use any
+    | provider supported by Prisma.
     |
     */
     'write' => [ // Generate text content based on prompts

@@ -4,6 +4,7 @@
 /admin/          export-ignore
 /ai/             export-ignore
 /backup/         export-ignore
+/benchmark/      export-ignore
 /bin/            export-ignore
 /cashier/        export-ignore
 /cashier-mollie/ export-ignore
@@ -15,6 +16,7 @@
 /import/         export-ignore
 /jsonapi/        export-ignore
 /mcp/            export-ignore
+/pulse/          export-ignore
 /search/         export-ignore
 /theme/          export-ignore
 /tests/          export-ignore

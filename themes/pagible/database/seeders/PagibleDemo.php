@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class PagibleDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'a-draft-should-never-overwrite-a-live-page' => 'Keep live pages stable while editors prepare, review, schedule, and restore immutable content versions in PagibleAI CMS.',
         'give-structured-content-a-shape-editors-can-use' => 'Design structured content models with clear fields, useful constraints, and stable contracts for editors, Blade views, and API clients.',
         'where-ai-belongs-in-editorial-work' => 'Use AI for drafting, translation, transcription, and media work while keeping editorial review and publishing decisions human.',
@@ -34,7 +33,7 @@ class PagibleDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'api' => ['photo-1558494949-ef010cbdcc31', 'Content delivery infrastructure', 'Server infrastructure used to deliver content through web APIs'],
         'content' => ['photo-1497366811353-6870744d04b2', 'Structured content planning', 'Editorial workspace prepared for structured content planning'],
         'delivery' => ['photo-1754039984985-ef607d80113a', 'Content delivery code', 'Website delivery code displayed across several screens in a dark workspace'],
@@ -53,8 +52,6 @@ class PagibleDemo extends AbstractDemo
         'workflow' => ['photo-1552664730-d307ca884978', 'Editorial workflow', 'Team discussing an editorial workflow around a shared table'],
     ];
 
-    /** @var array<string, string> File IDs for fixed-ratio card images */
-    private array $cardImages = [];
     private string $element;
     private string $guideFile;
     private string $logoFile;
@@ -434,24 +431,6 @@ HTML,
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates the closing call-to-action hero for an article.
      *
      * @param string $title Hero title
@@ -479,25 +458,7 @@ HTML,
      */
     protected function cardImg( string $key ) : string
     {
-        if( !isset( $this->cardImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 1000 ),
-                'previews' => ['500' => $url( 500, 333 ), '1000' => $url( 1000, 667 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->cardImages[$key] = $this->saveFile( $data );
-        }
-
-        return $this->cardImages[$key];
+        return $this->cropped( $key, 1500, 1000 );
     }
 
 
@@ -508,40 +469,12 @@ HTML,
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'PagibleAI', 'text' => "- [Features](/features)\n- [Themes](/themes)\n- [For Editors](/cms-for-editors)"],
-                ['title' => 'Developers', 'text' => "- [Documentation](/docs)\n- [Install PagibleAI](/install-pagibleai-cms)\n- [REST API](/json-rest-api)\n- [GraphQL API](/graphql-api)\n- [MCP AI](/configure-mcp)"],
-                ['title' => 'CMS', 'text' => "- [Laravel CMS](/laravel-cms)\n- [Headless CMS](/headless-cms)\n- [Cloud-Native CMS](/cloud-native-cms)\n- [Agentic CMS](/agentic-cms)"],
-                ['title' => 'Resources', 'text' => "- [Blog](/blog)\n- [Upgrade Guide](/upgrade-pagibleai-cms)\n- [Star Repo](https://github.com/aimeos/pagible)"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'PagibleAI footer',
-                'data' => ['type' => 'cards', 'data' => ['columns' => '4', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'PagibleAI footer',
-                    'data' => ['columns' => '4', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'PagibleAI footer', ['columns' => '4', 'cards' => [
+            ['title' => 'PagibleAI', 'text' => "- [Features](/features)\n- [Themes](/themes)\n- [For Editors](/cms-for-editors)"],
+            ['title' => 'Developers', 'text' => "- [Documentation](/docs)\n- [Install PagibleAI](/install-pagibleai-cms)\n- [REST API](/json-rest-api)\n- [GraphQL API](/graphql-api)\n- [MCP AI](/configure-mcp)"],
+            ['title' => 'CMS', 'text' => "- [Laravel CMS](/laravel-cms)\n- [Headless CMS](/headless-cms)\n- [Cloud-Native CMS](/cloud-native-cms)\n- [Agentic CMS](/agentic-cms)"],
+            ['title' => 'Resources', 'text' => "- [Blog](/blog)\n- [Upgrade Guide](/upgrade-pagibleai-cms)\n- [Star Repo](https://github.com/aimeos/pagible)"],
+        ]] );
     }
 
 
@@ -595,17 +528,7 @@ HTML,
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'PagibleAI'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -708,87 +631,7 @@ HTML,
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'PagibleAI CMS for Laravel',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'PagibleAI CMS for Laravel',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or meta data
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'PagibleAI CMS for Laravel', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -829,49 +672,13 @@ HTML,
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $logoId = $this->logoFile();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'PagibleAI CMS, Laravel CMS, structured content, publishing',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['id' => Utils::uid(), 'type' => 'image', 'group' => 'footer', 'data' => ['file' => ['id' => $this->logoFile(), 'type' => 'file']]],
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'image', 'group' => 'footer', 'data' => ['file' => ['id' => $logoId, 'type' => 'file']]];
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'PagibleAI CMS, Laravel CMS, structured content, publishing', $fileIds, $meta );
     }
 
 

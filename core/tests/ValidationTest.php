@@ -13,6 +13,52 @@ use Aimeos\Cms\Exception;
 
 class ValidationTest extends CoreTestAbstract
 {
+    public function testLimits()
+    {
+        Validation::limits( \Aimeos\Cms\Models\Page::class, [
+            'title' => str_repeat( 'ä', 255 ), 'status' => 2, 'cache' => '5', 'tag' => null,
+        ] );
+        Validation::limits( \Aimeos\Cms\Models\Element::class, ['type' => 'heading', 'name' => 'Test'] );
+
+        $this->addToAssertionCount( 1 );
+    }
+
+
+    public function testLimitsTooLong()
+    {
+        $this->expectException( Exception::class );
+        Validation::limits( \Aimeos\Cms\Models\File::class, ['mime' => str_repeat( 'a', 101 )] );
+    }
+
+
+    public function testLimitsNotScalar()
+    {
+        $this->expectException( Exception::class );
+        Validation::limits( \Aimeos\Cms\Models\Element::class, ['name' => ['a']] );
+    }
+
+
+    public function testLimitsNumberRange()
+    {
+        $this->expectException( Exception::class );
+        Validation::limits( \Aimeos\Cms\Models\Page::class, ['status' => 32768] );
+    }
+
+
+    public function testLimitsNegativeNumber()
+    {
+        $this->expectException( Exception::class );
+        Validation::limits( \Aimeos\Cms\Models\Page::class, ['cache' => -1] );
+    }
+
+
+    public function testPageLimits()
+    {
+        $this->expectException( Exception::class );
+        Validation::page( ['lang' => 'en-GB-x'] );
+    }
+
+
     public function testContentValid()
     {
         Validation::content( [

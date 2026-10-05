@@ -8,18 +8,14 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Filter;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Tools\Concerns\Metadata;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -30,18 +26,14 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches pages. Parameters: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Use term parameter if possible. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
-    use Metadata;
+    protected const PERMISSIONS = ['page:view'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'term' => 'string|max:255',
             'lang' => 'string|max:5',
@@ -59,10 +51,9 @@ class SearchPages extends Tool
             'to' => 'string|max:2000',
         ] );
 
-        $search = Page::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+        $search = Filter::search( Page::class, $v['term'] ?? '' )
             ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
             ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
-            ->searchFields( 'draft' )
             ->take( 25 );
 
         $result = [];
@@ -70,25 +61,7 @@ class SearchPages extends Tool
         foreach( Filter::pages( $search, $v )->get() as $item )
         {
             /** @var Page $item */
-            $data = $item->latest->data ?? new \stdClass();
-            $result[] = $this->result( $item, [
-                'has_children' => $item->has,
-                'parent_id' => $item->parent_id,
-                'tag' => $data->tag ?? null,
-                'path' => $data->path ?? null,
-                'domain' => $data->domain ?? null,
-                'to' => $data->to ?? null,
-                'name' => $data->name ?? null,
-                'title' => $data->title ?? null,
-                'type' => $data->type ?? null,
-                'theme' => $data->theme ?? null,
-                'status' => $data->status ?? null,
-                'cache' => $data->cache ?? null,
-            ] ) + [
-                'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-                    'domain' => ( $data->domain ?? null ) ?: request()->getHost(),
-                ] : [] ) + ['path' => $data->path ?? ''] ),
-            ];
+            $result[] = ['has_children' => $item->has] + Presenter::page( $item, false );
         }
 
         return Response::structured( ['pages' => $result] );
@@ -132,17 +105,5 @@ class SearchPages extends Tool
             'to' => $schema->string()
                 ->description('Filter by redirect URL.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:view', $request->user() );
     }
 }

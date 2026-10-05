@@ -134,7 +134,7 @@ class CashierPaddle extends CashierProvider
 
         if( !$origin && str_starts_with( $id, 'sub_' ) )
         {
-            $subscription = (array) $this->subscription( $id );
+            $subscription = (array) Cashier::api( 'GET', 'subscriptions/' . $id )->json( 'data' );
             $custom = $subscription['custom_data'] ?? null;
 
             if( $custom !== null ) {
@@ -224,18 +224,6 @@ class CashierPaddle extends CashierProvider
             ],
             'transaction' => $transaction,
         ] );
-    }
-
-
-    /**
-     * Resolves a Paddle subscription for source-bound cancellation metadata.
-     *
-     * @return array<string, mixed>|object
-     */
-    protected function subscription( string $id ) : array|object
-    {
-        $data = Cashier::api( 'GET', 'subscriptions/' . $id )->json( 'data' );
-        return is_array( $data ) || is_object( $data ) ? $data : [];
     }
 
 

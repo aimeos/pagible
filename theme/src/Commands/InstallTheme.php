@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallTheme extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -47,33 +51,14 @@ class InstallTheme extends Command
      */
     protected function services() : int
     {
-        $done = 0;
-        $filename = 'config/services.php';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        if( strpos( $content, 'hcaptcha' ) === false && ( $pos = strrpos( $content, '],' ) ) !== false )
-        {
-            $content = substr_replace( $content, "
+        $string = "
 
     'hcaptcha' => [
         'sitekey' => env('HCAPTCHA_SITEKEY'),
         'secret' => env('HCAPTCHA_SECRET'),
-    ],", $pos + 2, 0 );
-            $this->line( sprintf( '  Added HCaptcha configuration to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
+    ],";
 
-        if( $done ) {
-            file_put_contents( base_path( $filename ), $content );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->insert( 'config/services.php', '],', $string, 'hcaptcha',
+            '  Added HCaptcha configuration to [%1$s]' . PHP_EOL, true );
     }
 }

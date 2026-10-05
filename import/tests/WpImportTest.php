@@ -245,6 +245,44 @@ class WpImportTest extends ImportTestAbstract
     }
 
 
+    public function testKeepsInnerBlockTypesInColumns(): void
+    {
+        $this->page( 'Root', '', 'new.example', 'root' );
+
+        DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
+            'ID' => 30,
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'post_date' => '2026-08-24 12:00:00',
+            'post_name' => 'columns',
+            'post_title' => 'Columns',
+            'post_excerpt' => 'Columns introduction',
+            'post_content' => '<!-- wp:columns --><div class="wp-block-columns"><!-- wp:column --><div class="wp-block-column">'
+                . '<!-- wp:heading --><h2>Column heading</h2><!-- /wp:heading -->'
+                . '<!-- wp:paragraph --><p>Column text</p><!-- /wp:paragraph -->'
+                . '</div><!-- /wp:column --></div><!-- /wp:columns -->',
+            'post_mime_type' => '',
+            'guid' => '',
+        ] );
+
+        $result = Artisan::call( 'cms:wp-import', [
+            '--connection' => 'wordpress',
+            '--domain' => 'new.example',
+            '--blog-path' => 'tips',
+        ] );
+
+        $this->assertSame( 0, $result );
+
+        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'columns' )->firstOrFail();
+        $content = array_values( (array) $article->content );
+
+        $this->assertSame( 'heading', $content[1]->type ?? null );
+        $this->assertSame( 'Column heading', $content[1]->data->title ?? null );
+        $this->assertSame( 'text', $content[2]->type ?? null );
+        $this->assertSame( 'Column text', $content[2]->data->text ?? null );
+    }
+
+
     public function testUsesFirstInlineImageAsListCover(): void
     {
         $this->page( 'Root', '', 'new.example', 'root' );

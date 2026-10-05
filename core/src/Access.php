@@ -122,7 +122,7 @@ class Access
      */
     public function list() : array
     {
-        return array_keys( $this->catalog() );
+        return array_map( 'strval', array_keys( $this->catalog() ) );
     }
 
 
@@ -162,7 +162,7 @@ class Access
         $term = mb_strtolower( $term );
 
         return array_slice( array_values( array_filter(
-            array_keys( $this->catalog() ),
+            $this->list(),
             fn( string $value ) => $term === '' || str_starts_with( mb_strtolower( $value ), $term ),
         ) ), 0, $limit );
     }
@@ -214,11 +214,8 @@ class Access
             throw new Exception( sprintf( 'No more than %d access values may be deleted at once.', self::MAX_CHANGE_VALUES ) );
         }
 
-        $catalog = $this->catalog();
-        $values = array_values( array_filter( $values, fn( $value ) => isset( $catalog[$value] ) ) );
-
-        if( $values === [] ) {
-            return array_keys( $catalog );
+        if( ( $values = $this->known( $values ) ) === [] ) {
+            return $this->list();
         }
 
         (self::$deleteCallback)( $values );
@@ -265,7 +262,7 @@ class Access
             $result[self::value( $value )] = true;
         }
 
-        $result = array_keys( $result );
+        $result = array_map( 'strval', array_keys( $result ) );
         sort( $result, SORT_STRING );
 
         return $result;
@@ -322,37 +319,26 @@ class Access
             }
         }
 
-        if( ( $this->resolved[$user] ?? false ) === true )
-        {
-            $result = $this->filter( $values ?? array_keys( $catalog ), $granted );
+        $all = $values === null;
+        $values ??= $this->list();
 
-            if( $values === null ) {
-                $this->allowed[$user] = $result;
+        if( ( $this->resolved[$user] ?? false ) !== true )
+        {
+            $gate = Gate::forUser( $user );
+
+            foreach( $values as $value )
+            {
+                if( is_string( $value ) && isset( $catalog[$value] ) ) {
+                    $granted[$value] ??= $gate->allows( $value );
+                }
             }
 
-            return $result;
+            $this->grants[$user] = $granted;
         }
 
-        $gate = Gate::forUser( $user );
-        $result = $seen = [];
+        $result = $this->filter( $values, $granted );
 
-        foreach( $values ?? array_keys( $catalog ) as $value )
-        {
-            if( !is_string( $value ) || !isset( $catalog[$value] ) || isset( $seen[$value] ) ) {
-                continue;
-            }
-
-            $seen[$value] = true;
-            $granted[$value] ??= $gate->allows( $value );
-
-            if( $granted[$value] ) {
-                $result[] = $value;
-            }
-        }
-
-        $this->grants[$user] = $granted;
-
-        if( $values === null ) {
+        if( $all ) {
             $this->allowed[$user] = $result;
         }
 
@@ -510,21 +496,8 @@ class Access
         }
 
         $values = self::$listCallback ? ( self::$listCallback )() : [];
-        $catalog = [];
 
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) ) {
-                throw new Exception( 'Access values must be non-empty strings.' );
-            }
-
-            $catalog[self::value( $value )] = true;
-        }
-
-        ksort( $catalog, SORT_STRING );
-        $this->catalog = $catalog;
-
-        return $catalog;
+        return $this->catalog = array_fill_keys( self::normalize( $values ), true );
     }
 
 
@@ -582,7 +555,7 @@ class Access
 
 
     /**
-     * Filters candidate values by a resolved grant map.
+     * Filters candidate values by a grant map, keeping the first occurrence of each granted value.
      *
      * @param iterable<mixed> $values
      * @param array<string, bool> $granted
@@ -594,7 +567,7 @@ class Access
 
         foreach( $values as $value )
         {
-            if( !is_string( $value ) || !isset( $granted[$value] ) || isset( $seen[$value] ) ) {
+            if( !is_string( $value ) || empty( $granted[$value] ) || isset( $seen[$value] ) ) {
                 continue;
             }
 
@@ -771,9 +744,7 @@ class Access
     private function refresh() : void
     {
         $this->catalog = null;
-        $this->allowed = new \WeakMap();
-        $this->grants = new \WeakMap();
-        $this->resolved = new \WeakMap();
+        $this->reset();
     }
 
 
@@ -789,16 +760,20 @@ class Access
             return $this->userAccess( $user, $values );
         }
 
-        return $user->getConnection()->transaction( function() use ( $tenant, $user, $values ) {
-            /** @var Model&Authenticatable $locked */
-            $locked = $user->newQuery()->whereKey( $user->getKey() )->lockForUpdate()->firstOrFail();
+        return Tenancy::lock( $user, $tenant, 'Frontend access can only be changed for users in the current tenant.',
+            fn( Authenticatable&Model $locked ) => $this->userAccess( $locked, $values )
+        );
+    }
 
-            if( !Tenancy::allows( $locked, $tenant ) ) {
-                throw new Exception( 'Frontend access can only be changed for users in the current tenant.' );
-            }
 
-            return $this->userAccess( $locked, $values );
-        } );
+    /**
+     * Clears the request-local grant caches of all users.
+     */
+    private function reset() : void
+    {
+        $this->allowed = new \WeakMap();
+        $this->grants = new \WeakMap();
+        $this->resolved = new \WeakMap();
     }
 
 
@@ -817,11 +792,8 @@ class Access
         $this->context();
         $result = $callback( $user, $values );
 
-        if( $values !== null )
-        {
-            $this->allowed = new \WeakMap();
-            $this->grants = new \WeakMap();
-            $this->resolved = new \WeakMap();
+        if( $values !== null ) {
+            $this->reset();
         }
 
         return $this->known( $result );
@@ -865,13 +837,7 @@ class Access
         $model = self::model( $model );
 
         $model->getConnection()->transaction( function() use ( $model, $values, $where ) {
-            $query = $model->newQuery();
-
-            foreach( $where as $column => $value ) {
-                $query->where( $column, $value );
-            }
-
-            $query->whereIn( 'name', $values )->get()->each->delete();
+            $model->newQuery()->where( $where )->whereIn( 'name', $values )->get()->each->delete();
         } );
     }
 
@@ -884,17 +850,10 @@ class Access
      */
     private static function modelNames( mixed $model, array $where = [] ) : array
     {
-        $query = self::model( $model )->newQuery();
-
-        foreach( $where as $column => $value ) {
-            $query->where( $column, $value );
-        }
-
-        $values = $query->distinct()->orderBy( 'name' )
+        return self::model( $model )->newQuery()->where( $where )
+            ->distinct()->orderBy( 'name' )
             ->pluck( 'name' )
             ->all();
-
-        return $values;
     }
 
 

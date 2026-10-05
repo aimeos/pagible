@@ -17,6 +17,16 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
+    public function testCmsNested()
+    {
+        $item = (object) ['obj' => (object) ['arr' => ['key' => 'value']], 'str' => 'text'];
+
+        $this->assertEquals( 'value', cms( $item, 'obj.arr.key' ) );
+        $this->assertEquals( 'def', cms( $item, 'obj.arr.none', 'def' ) );
+        $this->assertEquals( 'def', cms( $item, 'str.none', 'def' ) );
+    }
+
+
     public function testCmsAssetKeepsPublicAndRemoteFileUrls()
     {
         $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );

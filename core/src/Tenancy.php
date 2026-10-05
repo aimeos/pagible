@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
@@ -109,6 +110,31 @@ class Tenancy
         $id = data_get( $user, 'tenant_id' );
 
         return is_string( $id ) && $id === $tenant;
+    }
+
+
+    /**
+     * Runs a callback in a transaction with the user row locked and the tenant re-checked.
+     *
+     * @template T
+     * @param Authenticatable&Model $user Persisted user model
+     * @param string $tenant Tenant ID the user must belong to
+     * @param string $error Exception message if the locked user isn't in the tenant
+     * @param \Closure(Authenticatable&Model):T $callback Receives the locked user
+     * @return T
+     */
+    public static function lock( Authenticatable&Model $user, string $tenant, string $error, \Closure $callback ) : mixed
+    {
+        return $user->getConnection()->transaction( function() use ( $callback, $error, $tenant, $user ) {
+            /** @var Authenticatable&Model $locked */
+            $locked = $user->newQuery()->whereKey( $user->getKey() )->lockForUpdate()->firstOrFail();
+
+            if( !self::allows( $locked, $tenant ) ) {
+                throw new Exception( $error );
+            }
+
+            return $callback( $locked );
+        } );
     }
 
 

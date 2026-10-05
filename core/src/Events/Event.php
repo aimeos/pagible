@@ -7,11 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
@@ -27,18 +23,9 @@ use Illuminate\Foundation\Events\Dispatchable;
  *
  * Properties use the model/database column names so consumers can apply them directly.
  */
-abstract class Event implements ShouldBroadcastNow
+abstract class Event implements Loggable, ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets;
-
-    /**
-     * Whether this instance should be sent to the websocket broadcaster.
-     *
-     * Lets the model dispatch the event to in-process listeners (audit logging, metrics)
-     * via event() without broadcasting it, while the explicit broadcast()->toOthers()
-     * path sets it to true. Kept out of the broadcast payload.
-     */
-    public bool $broadcasting = false;
+    use Broadcasting;
 
 
     /**
@@ -82,25 +69,6 @@ abstract class Event implements ShouldBroadcastNow
 
 
     /**
-     * @return array<int, PrivateChannel>
-     */
-    public function broadcastOn() : array
-    {
-        return [new PrivateChannel( Channel::type( $this->tenant, $this->contentType ) )];
-    }
-
-
-    /**
-     * Only broadcast when dispatched through the broadcast path, not when dispatched to
-     * in-process listeners via event().
-     */
-    public function broadcastWhen() : bool
-    {
-        return $this->broadcasting;
-    }
-
-
-    /**
      * @return array<string, mixed>
      */
     public function broadcastWith() : array
@@ -116,5 +84,30 @@ abstract class Event implements ShouldBroadcastNow
             'publish_at' => $this->publish_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+
+    /**
+     * Returns the watch log entry including the page route for page events.
+     *
+     * @return array{message: string, fields: array<string, mixed>}
+     */
+    public function log() : array
+    {
+        $projected = $this instanceof Published && $this->projection !== [];
+        $data = $projected ? $this->projection : $this->data;
+
+        return ['message' => 'cms.' . $this->contentType, 'fields' => [
+            'type' => $this->contentType,
+            'source' => $this->source,
+            'action' => strtolower( class_basename( $this ) ),
+            'ids' => [$this->id],
+            'editor' => $this->editor,
+            'published' => $projected || $this->published,
+            'tenant_id' => $this->tenant,
+        ] + ( $this->contentType === 'page' ? [
+            'path' => $data['path'] ?? null,
+            'domain' => $data['domain'] ?? null,
+        ] : [] )];
     }
 }

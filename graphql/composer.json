@@ -9,8 +9,7 @@
         "php": "^8.2",
         "aimeos/pagible-core": "*@dev",
         "nuwave/lighthouse": "^6.54",
-        "mll-lab/graphql-php-scalars": "^6.4",
-        "aimeos/laravel-analytics-bridge": "~1.0"
+        "mll-lab/graphql-php-scalars": "^6.4"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0||^11.0"

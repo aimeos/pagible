@@ -60,6 +60,8 @@ class Page extends Base
 {
     use NodeTrait;
 
+    public const PERM = 'page';
+    protected const REFS = ['files', 'elements'];
 
     /** @var list<string> Columns required for Page lifecycle operations */
     public const REQUIRED_COLUMNS = [
@@ -394,10 +396,7 @@ class Page extends Base
     public function parent() : BelongsTo
     {
         return $this->belongsTo( Nav::class, $this->getParentIdName() )
-            ->select(
-                'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status',
-                'config', 'latest_id', $this->getDepthName(), $this->getLftName(), $this->getRgtName()
-            )->setModel( new Nav() );
+            ->select( Nav::SELECT_COLUMNS )->setModel( new Nav() );
     }
 
 
@@ -435,6 +434,28 @@ class Page extends Base
 
 
     /**
+     * Applies a lifecycle action to each locked page to keep the nested set consistent.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Pages
+     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
+     * @param string $editor Name of the editing user
+     */
+    public static function lifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
+    {
+        foreach( $items as $item )
+        {
+            if( $action === 'purged' ) {
+                $item->forceDelete();
+                continue;
+            }
+
+            $item->editor = $editor;
+            $action === 'dropped' ? $item->delete() : $item->restore();
+        }
+    }
+
+
+    /**
      * Positions the page relative to a sibling or parent.
      */
     public function position( ?string $beforeId = null, ?string $parentId = null ) : void
@@ -465,6 +486,21 @@ class Page extends Base
 
 
     /**
+     * Returns the page route of the given version, falling back to the current values.
+     *
+     * @param Version $version Page version
+     * @return array{path: string, domain: string} Path and domain of the page
+     */
+    public function route( Version $version ) : array
+    {
+        return [
+            'path' => (string) ( $version->data->path ?? $this->path ),
+            'domain' => (string) ( $version->data->domain ?? $this->domain ),
+        ];
+    }
+
+
+    /**
      * Get query for the complete sub-tree up to three levels.
      *
      * @return DescendantsRelation Eloquent relationship to the descendants of the page
@@ -480,7 +516,7 @@ class Page extends Base
         $maxDepth = ( $this->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
 
         $builder = $this->newScopedQuery()
-            ->select( 'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to', 'status', 'config', 'latest_id', $lft, $rgt, $depth )
+            ->select( Nav::SELECT_COLUMNS )
             ->whereIn( $depth, range( 0, $maxDepth ) )
             ->whereNotExists( function( $query ) use ( $table, $lft, $rgt ) {
                 $query->select( DB::raw( 1 ) )
@@ -516,10 +552,11 @@ class Page extends Base
         }
 
         $draft = '';
+        $version = $this->latest;
+        $data = $version?->data;
 
-        if( $version = $this->latest )
+        if( $version )
         {
-            $data = $version->data;
             $draft = mb_strtolower( trim(
                 ( $data->path ?? '' ) . "\n"
                 . ( $data->to ?? '' ) . "\n"
@@ -537,9 +574,6 @@ class Page extends Base
                 . (string) $this
             ) );
         }
-
-        $version = $this->latest;
-        $data = $version?->data;
 
         return [
             'draft' => $draft,
@@ -564,9 +598,7 @@ class Page extends Base
             'scheduled' => (int) ( $data->scheduled ?? 0 ),
 
             // frontend access hint for fast filtering
-            'restricted' => $this->relationLoaded( 'access' )
-                ? $this->getRelation( 'access' )->isNotEmpty()
-                : $this->access()->exists(),
+            'restricted' => $this->restricted(),
         ];
     }
 

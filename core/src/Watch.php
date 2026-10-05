@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Observed;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -28,31 +29,6 @@ class Watch
 
 
     /**
-     * Builds and dispatches a watch event when an in-process listener is registered for it.
-     *
-     * @param class-string $event Event class used to check for registered listeners
-     * @param \Closure(): object $factory Deferred event factory
-     */
-    public static function dispatch( string $event, \Closure $factory ) : void
-    {
-        self::dispatchIf( null, $event, $factory );
-    }
-
-
-    /**
-     * Builds and dispatches a watch event when the feature flag is enabled or a listener is registered.
-     *
-     * @param string $flag Feature flag config key gating watch logging for this event
-     * @param class-string $event Event class used to check for registered listeners
-     * @param \Closure(): object $factory Deferred event factory
-     */
-    public static function dispatchWhen( string $flag, string $event, \Closure $factory ) : void
-    {
-        self::dispatchIf( $flag, $event, $factory );
-    }
-
-
-    /**
      * Builds and dispatches a watch event when watch logging is enabled or something listens for it.
      *
      * Any in-process listener (e.g. an optional observability integration subscribing to the event)
@@ -61,8 +37,9 @@ class Watch
      *
      * @param class-string $event Event class used to check for registered listeners
      * @param \Closure(): object $factory Deferred event factory
+     * @param string|null $flag Feature flag config key gating watch logging for this event
      */
-    private static function dispatchIf( ?string $flag, string $event, \Closure $factory ) : void
+    public static function dispatch( string $event, \Closure $factory, ?string $flag = null ) : void
     {
         if( !self::enabled( $flag ) && !Event::hasListeners( $event ) ) {
             return;
@@ -89,20 +66,22 @@ class Watch
 
 
     /**
-     * Subscribes several log listeners when watch logging (and the optional feature flag) is enabled.
+     * Subscribes the log listener to several events when watch logging (and the optional feature flag) is enabled.
      *
-     * @param array<class-string, class-string> $listeners Event class => listener class
+     * @param array<int|class-string, class-string> $events Loggable event classes or event class => listener class
      * @param string|null $flag Feature flag config key gating the listeners, in addition to the channel
      */
-    public static function listen( array $listeners, ?string $flag = null ) : void
+    public static function listen( array $events, ?string $flag = null ) : void
     {
         if( !self::enabled( $flag ) ) {
             return;
         }
 
-        foreach( $listeners as $event => $listener )
+        foreach( $events as $event => $listener )
         {
-            Event::listen( $event, [$listener, 'handle'] );
+            is_int( $event )
+                ? Event::listen( $listener, [LogListener::class, 'handle'] )
+                : Event::listen( $event, [$listener, 'handle'] );
         }
     }
 
@@ -183,15 +162,13 @@ class Watch
     /**
      * Pseudonymizes a value with a keyed SHA-256 HMAC when anonymization is enabled.
      */
-    public static function mask( string $value, ?bool $anon = null ) : string
+    public static function mask( string $value ) : string
     {
         if( $value === '' ) {
             return '';
         }
 
-        $anon ??= (bool) config( 'cms.watch.anonymize', true );
-
-        return $anon ? hash_hmac( 'sha256', $value, (string) config( 'app.key' ) ) : $value;
+        return config( 'cms.watch.anonymize', true ) ? hash_hmac( 'sha256', $value, (string) config( 'app.key' ) ) : $value;
     }
 
 

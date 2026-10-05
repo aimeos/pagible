@@ -70,6 +70,16 @@ class Scout
             $joined = true;
         };
 
+        $qualify = function( string $field ) use ( $driver, $isDraft, $join, $table ) : ?string {
+            $col = DB::qualify( $field, $table, $isDraft, $driver );
+
+            if( $col && $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
+                $join();
+            }
+
+            return $col;
+        };
+
         foreach( $builder->wheres as $key => $where )
         {
             $field = is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
@@ -78,12 +88,8 @@ class Scout
                 continue;
             }
 
-            if( !( $col = DB::qualify( $field, $table, $isDraft, $driver ) ) ) {
+            if( !( $col = $qualify( $field ) ) ) {
                 continue;
-            }
-
-            if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
-                $join();
             }
 
             $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
@@ -96,33 +102,18 @@ class Scout
             }
         }
 
-        foreach( $builder->whereIns as $field => $values ) {
-            if( $col = DB::qualify( $field, $table, $isDraft, $driver ) ) {
-                if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
-                    $join();
-                }
-                $query->whereIn( $col, $values );
-            }
-        }
-
-        foreach( $builder->whereNotIns as $field => $values ) {
-            if( $col = DB::qualify( $field, $table, $isDraft, $driver ) ) {
-                if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
-                    $join();
-                }
-                $query->whereNotIn( $col, $values );
-            }
-        }
-
-        foreach( $builder->orders as &$order )
+        foreach( ['whereIn' => $builder->whereIns, 'whereNotIn' => $builder->whereNotIns] as $method => $list )
         {
-            $col = DB::qualify( $order['column'], $table, $isDraft, $driver ) ?? $table . '.' . $order['column'];
-
-            if( $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
-                $join();
+            foreach( $list as $field => $values )
+            {
+                if( $col = $qualify( $field ) ) {
+                    $query->{$method}( $col, $values );
+                }
             }
+        }
 
-            $order['column'] = $col;
+        foreach( $builder->orders as &$order ) {
+            $order['column'] = $qualify( $order['column'] ) ?? $table . '.' . $order['column'];
         }
     }
 

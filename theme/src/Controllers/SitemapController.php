@@ -25,6 +25,11 @@ class SitemapController extends Controller
      */
     protected const NEWS_PER_SITEMAP = 1000;
 
+    /**
+     * Response headers of all sitemap documents.
+     */
+    protected const HEADERS = ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300'];
+
 
     /**
      * Streams the sitemap entry point.
@@ -57,7 +62,7 @@ class SitemapController extends Controller
     {
         $name = $this->xml( $this->name( $domain ) );
         $template = $this->template();
-        $tz = new \DateTimeZone( config('app.timezone') ?: 'UTC' );
+        $tz = $this->timezone();
 
         $query = $this->query()
             ->where( 'type', 'news' )
@@ -93,7 +98,7 @@ class SitemapController extends Controller
 
             echo '</urlset>';
             flush();
-        }, 200, ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300'] );
+        }, 200, self::HEADERS );
     }
 
 
@@ -135,26 +140,7 @@ class SitemapController extends Controller
      */
     protected function name( string $domain ) : string
     {
-        $query = Nav::query()
-            ->select( 'config' )
-            ->whereNull( 'parent_id' )
-            ->whereIn( 'status', [1, 2] )
-            ->defaultOrder();
-
-        if( $domain !== '' ) {
-            $query->where( 'domain', $domain );
-        }
-
-        foreach( $query->cursor() as $page )
-        {
-            $name = trim( (string) ( $page->config->website->data->title ?? '' ) );
-
-            if( $name !== '' ) {
-                return $name;
-            }
-        }
-
-        return '';
+        return Nav::rootConfig( $domain, fn( $page ) => trim( (string) ( $page->config->website->data->title ?? '' ) ) ?: null ) ?? '';
     }
 
 
@@ -244,6 +230,15 @@ class SitemapController extends Controller
 
 
     /**
+     * Returns the application timezone used for sitemap dates.
+     */
+    protected function timezone() : \DateTimeZone
+    {
+        return new \DateTimeZone( config( 'app.timezone' ) ?: 'UTC' );
+    }
+
+
+    /**
      * Streams a `<urlset>` XML document.
      *
      * When `$limit` is null all rows are streamed (single-file mode); otherwise
@@ -257,7 +252,7 @@ class SitemapController extends Controller
      */
     protected function urlset( ?int $offset = null, ?int $limit = null ) : StreamedResponse
     {
-        $tz = new \DateTimeZone( config('app.timezone') ?: 'UTC' );
+        $tz = $this->timezone();
         $template = $this->template();
 
         $query = $this->query()->select( 'path', 'domain', 'updated_at', 'meta' );
@@ -293,7 +288,7 @@ class SitemapController extends Controller
 
             echo '</urlset>';
             flush();
-        }, 200, ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300'] );
+        }, 200, self::HEADERS );
     }
 
 
@@ -325,7 +320,7 @@ class SitemapController extends Controller
 
         if( $maxUpdated )
         {
-            $tz = new \DateTimeZone( config('app.timezone') ?: 'UTC' );
+            $tz = $this->timezone();
             $lastmod = ( date_create( $maxUpdated, $tz ) ?: new \DateTime( 'now', $tz ) )->format( \DateTimeInterface::ATOM );
         }
 
@@ -339,7 +334,7 @@ class SitemapController extends Controller
             '<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
              . implode( '', $entries ) .
             '</sitemapindex>',
-            200, ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300']
+            200, self::HEADERS
         );
     }
 }

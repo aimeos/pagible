@@ -27,9 +27,7 @@ class BenchmarkSearch extends Command
         {--domain= : Domain name}
         {--seed : Seed benchmark data before running benchmarks}
         {--unseed : Remove search index data and exit}
-        {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=50 : Rows per bulk insert batch}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run search index benchmarks';
@@ -40,14 +38,13 @@ class BenchmarkSearch extends Command
         $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
         $force = (bool) $this->option( 'force' );
+        $unseed = (bool) $this->option( 'unseed' );
 
-        if( !$this->checks( $tenant, $tries, $force ) ) {
+        if( !$this->checks( $tenant, $tries, $force, !$unseed ) ) {
             return self::FAILURE;
         }
 
-        $this->tenant( $tenant );
-
-        if( $this->option( 'unseed' ) )
+        if( $unseed )
         {
             $this->output->write( '  Flushing search index... ' );
             Page::removeAllFromSearch();
@@ -60,12 +57,6 @@ class BenchmarkSearch extends Command
             File::makeAllSearchable();
             $this->line( 'done' );
             return self::SUCCESS;
-        }
-
-        if( !$this->hasSeededData() )
-        {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
-            return self::FAILURE;
         }
 
         // Seeding: ensure search index is populated

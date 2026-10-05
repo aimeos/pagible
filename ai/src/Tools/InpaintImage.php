@@ -7,15 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Permission;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Ai;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -26,52 +23,9 @@ use Laravel\Mcp\Request;
 class InpaintImage extends Tool
 {
     use HandlesMedia;
-    use ObservesPrisma;
 
 
-    /**
-     * Handle the tool request.
-     */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
-    {
-        if( !Permission::can( 'image:inpaint', $request->user() )
-            || !Permission::can( 'file:save', $request->user() )
-            || !Permission::can( 'file:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        $v = $request->validate( [
-            'file' => 'required|string|max:36',
-            'mask' => 'required|string|max:36',
-            'prompt' => 'required|string|max:2000',
-            'latestId' => 'string|max:36',
-        ], [
-            'file.required' => 'You must specify the UUID of the image file to edit.',
-            'mask.required' => 'You must specify the UUID of the mask image file.',
-            'prompt.required' => 'You must provide a prompt describing the desired content.',
-        ] );
-
-        if( !( $image = $this->image( $v['file'] ) ) ) {
-            return Response::structured( ['error' => 'Image file not found or not an image.'] );
-        }
-
-        if( !( $mask = $this->image( $v['mask'] ) ) ) {
-            return Response::structured( ['error' => 'Mask file not found or not an image.'] );
-        }
-
-        $provider = config( 'cms.ai.inpaint.provider' );
-        $config = config( 'cms.ai.inpaint', [] );
-        $model = config( 'cms.ai.inpaint.model' );
-
-        $base64 = Prisma::image()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'inpaint' )
-            ->inpaint( $image, $mask, $v['prompt'], $config ) // @phpstan-ignore-line method.notFound
-            ->base64();
-
-        return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
-    }
+    protected const PERMISSIONS = ['image:inpaint', 'file:save', 'file:view'];
 
 
     /**
@@ -91,22 +45,35 @@ class InpaintImage extends Tool
             'prompt' => $schema->string()
                 ->description( 'Describe what to generate in the masked area.' )
                 ->required(),
-            'latestId' => $schema->string()
-                ->description( 'Version ID the caller last retrieved. Enables conflict detection.' ),
+            'latest_id' => $schema->string()
+                ->description( 'Required. The latest_id value returned by get-file, add-file, or your previous save-file for this file. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+                ->required(),
         ];
     }
 
 
     /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
+     * Handle the tool request.
      */
-    public function shouldRegister( Request $request ) : bool
+    protected function run( Request $request ) : ResponseFactory
     {
-        return Permission::can( 'image:inpaint', $request->user() )
-            && Permission::can( 'file:save', $request->user() )
-            && Permission::can( 'file:view', $request->user() );
+        $v = $request->validate( [
+            'file' => 'required|string|max:36',
+            'mask' => 'required|string|max:36',
+            'prompt' => 'required|string|max:2000',
+            'latest_id' => 'required|string|max:36',
+        ], [
+            'file.required' => 'You must specify the UUID of the image file to edit.',
+            'prompt.required' => 'You must provide a prompt describing the desired content.',
+            'mask.required' => 'You must specify the UUID of the mask image file.',
+            'latest_id.required' => 'You must pass the latest_id returned by get-file, add-file, or a previous save-file so concurrent edits are detected.',
+        ] );
+
+        $image = $this->image( $v['file'] );
+        $mask = $this->image( $v['mask'], 'Mask' );
+
+        $base64 = Ai::inpaint( $image, $mask, $v['prompt'] );
+
+        return Response::structured( $this->update( $v['file'], $base64, $v['latest_id'], $request->user() ) );
     }
 }

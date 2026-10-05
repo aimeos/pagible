@@ -47,6 +47,15 @@ abstract class Base extends Model
 
     public const MAX_BULK = 1000;
 
+    /** @var string Prefix of the permissions for the model, e.g. "page" for "page:publish" */
+    public const PERM = '';
+
+    /** @var int Number of stale versions removed at once */
+    protected const PRUNE_SIZE = 500;
+
+    /** @var list<string> Version relations referencing other items */
+    protected const REFS = [];
+
     /** @var array<string, mixed>|null */
     protected ?array $changedInfo = null;
 
@@ -195,6 +204,111 @@ abstract class Base extends Model
 
 
     /**
+     * Creates a new latest version of the model with its references and saves the model.
+     *
+     * If no references are passed, the ones of the previous latest version are copied.
+     * The change info is only set if conflicting changes have been merged.
+     *
+     * @param array<string, mixed> $values Version attributes like data, aux, lang and editor
+     * @param array<string, array<string>>|null $refs Referenced IDs by version relation or NULL to keep the previous ones
+     * @param array<string, mixed>|null $diffs Merge differences for the change info
+     * @return Version New latest version
+     */
+    public function draft( array $values, ?array $refs = null, ?array $diffs = null ) : Version
+    {
+        $editor = $this->latest->editor ?? '';
+        $previous = $this->latest_id;
+
+        $version = $this->versions()->forceCreate( $values );
+
+        if( $refs !== null )
+        {
+            foreach( array_filter( $refs ) as $relation => $ids ) {
+                $version->{$relation}()->attach( $ids );
+            }
+        }
+        elseif( $previous )
+        {
+            $db = $this->getConnection();
+            $id = $db->getDriverName() === 'pgsql' ? 'CAST(? AS uuid)' : '?';
+
+            foreach( static::REFS as $relation )
+            {
+                /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<Base, Version> $rel */
+                $rel = $version->{$relation}();
+                $key = $rel->getRelatedPivotKeyName();
+                $from = $rel->getForeignPivotKeyName();
+
+                $db->table( $rel->getTable() )->insertUsing( [$from, $key], $db->table( $rel->getTable() )
+                    ->selectRaw( $id, [$version->id] )->addSelect( $key )
+                    ->where( $from, $previous ) );
+            }
+        }
+
+        $this->setRelation( 'latest', $version );
+        $this->forceFill( ['latest_id' => $version->id] )->save();
+
+        if( $diffs ) {
+            $this->setChanged( ['editor' => $editor, 'latest' => ['id' => $version->id]
+                + array_intersect_key( $values, ['data' => 1, 'aux' => 1] ), ...$diffs] );
+        }
+
+        return $version;
+    }
+
+
+    /**
+     * Applies a lifecycle action to the locked items using set-based writes.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Items of the model
+     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
+     * @param string $editor Name of the editing user
+     */
+    public static function lifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
+    {
+        $ids = $items->modelKeys();
+
+        if( $action === 'purged' )
+        {
+            static::withTrashed()->whereIn( 'id', $ids )->forceDelete();
+
+            foreach( $items as $item ) {
+                $item->exists = false;
+                $item->wasRecentlyCreated = false;
+            }
+
+            return;
+        }
+
+        $time = static::query()->getModel()->freshTimestamp();
+        $attributes = [
+            'deleted_at' => $action === 'dropped' ? $time : null,
+            'editor' => $editor,
+            'updated_at' => $time,
+        ];
+
+        static::withTrashed()->whereIn( 'id', $ids )->update( $attributes );
+
+        foreach( $items as $item ) {
+            $item->forceFill( $attributes )->syncOriginalAttributes( array_keys( $attributes ) );
+        }
+    }
+
+
+    /**
+     * Executes the callback while the resources of the model are locked.
+     *
+     * @template T
+     * @param \Closure(): T $fcn Callback to execute
+     * @return T Result of the callback
+     */
+    public static function locked( \Closure $fcn ) : mixed
+    {
+        return $fcn();
+    }
+
+
+    /**
      * Removes old versions for several models using one ranked version stream.
      *
      * @param string $tenant Tenant ID
@@ -212,13 +326,25 @@ abstract class Base extends Model
         $stale = new \SplTempFileObject( 1024 * 1024 );
         $stale->setFlags( \SplFileObject::READ_CSV | \SplFileObject::SKIP_EMPTY );
         $stale->setCsvControl( ',', '"', '' );
+        $keep = [];
+        $found = false;
 
-        foreach( static::versionRanks( $tenant, $ids ) as [$id, $rank] ) {
+        foreach( static::versionRanks( $tenant, $ids ) as [$id, $rank] )
+        {
             if( $rank > $num ) {
                 $stale->fputcsv( [$id], ',', '"', '' );
+                $found = true;
+            } else {
+                $keep[] = $id;
             }
         }
 
+        if( !$found ) {
+            return;
+        }
+
+        $prune = static::pruner( $tenant, $ids, $keep );
+        $size = static::PRUNE_SIZE;
         $stale->rewind();
         $chunk = [];
 
@@ -228,16 +354,14 @@ abstract class Base extends Model
                 $chunk[] = $row[0];
             }
 
-            if( count( $chunk ) === 500 ) {
-                Version::withoutTenancy()->where( 'tenant_id', $tenant )
-                    ->whereIn( 'id', $chunk )->forceDelete();
+            if( count( $chunk ) === $size ) {
+                $prune( $chunk );
                 $chunk = [];
             }
         }
 
         if( $chunk ) {
-            Version::withoutTenancy()->where( 'tenant_id', $tenant )
-                ->whereIn( 'id', $chunk )->forceDelete();
+            $prune( $chunk );
         }
     }
 
@@ -248,6 +372,41 @@ abstract class Base extends Model
     public function publish( Version $version ) : void
     {
         ( new Publication() )->one( $this, $version );
+    }
+
+
+    /**
+     * Returns the references of the latest versions of the given items in a few queries.
+     *
+     * Version references never change, so the result can be passed to draft() for
+     * items whose latest version is still the same to avoid one query per relation.
+     *
+     * @param array<string> $ids Item IDs
+     * @return array<string, array<string, array<string>>> Referenced IDs by relation, keyed by latest version ID
+     */
+    public static function refs( array $ids ) : array
+    {
+        if( empty( static::REFS ) || empty( $ids ) ) {
+            return [];
+        }
+
+        $versions = static::withTrashed()->whereIn( 'id', $ids )->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all();
+        $map = array_fill_keys( $versions, array_fill_keys( static::REFS, [] ) );
+        $version = new Version();
+
+        foreach( $versions ? static::REFS : [] as $relation )
+        {
+            /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<Base, Version> $rel */
+            $rel = $version->{$relation}();
+            $from = $rel->getForeignPivotKeyName();
+            $key = $rel->getRelatedPivotKeyName();
+
+            foreach( $version->getConnection()->table( $rel->getTable() )->whereIn( $from, $versions )->get( [$from, $key] ) as $row ) {
+                $map[$row->{$from}][$relation][] = $row->{$key};
+            }
+        }
+
+        return $map;
     }
 
 
@@ -321,7 +480,7 @@ abstract class Base extends Model
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'lang', 'editor', 'published' )] );
+        return $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor', 'published' )] );
     }
 
 
@@ -330,9 +489,27 @@ abstract class Base extends Model
      */
     protected function pruning() : void
     {
-        Version::where( 'versionable_id', $this->id )
+        // pruning runs outside the tenant context of the item
+        Version::withoutTenancy()->where( 'tenant_id', (string) $this->tenant_id )
+            ->where( 'versionable_id', $this->id )
             ->where( 'versionable_type', static::class )
             ->delete();
+    }
+
+
+    /**
+     * Returns the callback removing a chunk of stale versions of the given models.
+     *
+     * @param string $tenant Tenant ID
+     * @param array<string> $ids Model IDs
+     * @param array<string> $keep IDs of the versions which are kept
+     * @return \Closure(array<string>): void
+     */
+    protected static function pruner( string $tenant, array $ids, array $keep ) : \Closure
+    {
+        return function( array $chunk ) use ( $tenant ) {
+            Version::withoutTenancy()->where( 'tenant_id', $tenant )->whereIn( 'id', $chunk )->forceDelete();
+        };
     }
 
 
@@ -373,11 +550,7 @@ abstract class Base extends Model
                 $rank = 0;
             }
 
-            if( ( $id = $version->id ) === null ) {
-                throw new \LogicException( 'Stored CMS version has no ID.' );
-            }
-
-            yield [$id, ++$rank];
+            yield [(string) $version->id, ++$rank];
         }
     }
 }

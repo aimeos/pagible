@@ -52,6 +52,7 @@
 		"psr-4": {
 			"Aimeos\\Cms\\": [
 				"backup/src/",
+				"benchmark/src/",
 				"cashier/src/",
 				"cdn/src/",
 				"import/src/",
@@ -68,6 +69,9 @@
 				"themes/style/src/",
 				"themes/taste/src/",
 				"webhooks/src/"
+			],
+			"Database\\Seeders\\": [
+				"benchmark/database/seeders/"
 			],
 			"Tests\\": [
 				"tests/",

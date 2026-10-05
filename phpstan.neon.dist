@@ -24,6 +24,8 @@ parameters:
 		- mcp/src
 		- search/src
 		- backup/src
+		- benchmark/src
+		- benchmark/database/seeders
 		- cashier/src
 		- cdn/src
 		- pulse/src

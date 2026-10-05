@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Publication;
@@ -81,16 +80,13 @@ class Publish extends Command
     protected function publish( Collection $versions, \DateTimeInterface $at, array &$failed ) : void
     {
         $changed = new Publication();
-        $conn = DB::connection( config( 'cms.db', 'sqlite' ) );
 
-        Utils::storageLock( Tenancy::value(), function() use (
-            $at, $changed, $conn, &$failed, $versions
-        ) {
-            Scout::mute( Version::TYPES, function() use ( $at, $changed, $conn, &$failed, $versions ) {
+        Utils::storageLock( Tenancy::value(), function() use ( $at, $changed, &$failed, $versions ) {
+            Scout::mute( Version::TYPES, function() use ( $at, $changed, &$failed, $versions ) {
 
                 foreach( $versions as $version )
                 {
-                    if( $publication = $this->publishVersion( $conn, $version, $at, $failed ) ) {
+                    if( $publication = $this->publishVersion( $version, $at, $failed ) ) {
                         $changed->merge( $publication );
                     }
                 }
@@ -106,7 +102,7 @@ class Publish extends Command
      *
      * @param array<string, bool> $failed
      */
-    protected function publishVersion( Connection $conn, Version $version, \DateTimeInterface $at, array &$failed ) : ?Publication
+    protected function publishVersion( Version $version, \DateTimeInterface $at, array &$failed ) : ?Publication
     {
         $model = $version->versionable;
         $id = $version->versionable_id;
@@ -124,7 +120,8 @@ class Publish extends Command
 
         try
         {
-            $conn->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
+            // no retries: apply() marks the version as published in memory
+            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
                 $publication->prepare( collect( [$version] ) );
                 $publication->apply( $model, $version );
 

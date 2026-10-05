@@ -13,7 +13,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 /**
  * Audit event for read-only JSON:API requests.
  */
-final class CmsJsonapi
+final class CmsJsonapi implements Loggable
 {
     use Dispatchable;
 
@@ -24,4 +24,21 @@ final class CmsJsonapi
         public readonly string $includes = '',
         public readonly string $tenant = '',
     ) {}
+
+
+    /**
+     * Returns the log entry, sampled by "cms.watch.sample".
+     *
+     * @return array{message: string, fields: array<string, mixed>, sample: true}
+     */
+    public function log() : array
+    {
+        return ['message' => 'cms.jsonapi', 'sample' => true, 'fields' => [
+            'action' => $this->action,
+            'duration_ms' => round( $this->durationMs, 1 ),
+            'domain' => $this->domain,
+            'includes' => $this->includes,
+            'tenant_id' => $this->tenant,
+        ]];
+    }
 }

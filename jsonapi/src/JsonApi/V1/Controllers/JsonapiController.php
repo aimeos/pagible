@@ -9,9 +9,6 @@ namespace Aimeos\Cms\JsonApi\V1\Controllers;
 
 use Illuminate\Support\Facades\Storage;
 use LaravelJsonApi\Core\Responses\DataResponse;
-use LaravelJsonApi\Core\Responses\RelatedResponse;
-use LaravelJsonApi\Eloquent\Fields\Relations\Relation;
-use LaravelJsonApi\Laravel\Http\Requests\ResourceQuery;
 use LaravelJsonApi\Laravel\Http\Controllers\JsonApiController as Controller;
 use Aimeos\Cms\JsonApi\V1\Pages\PageCollectionQuery;
 use Aimeos\Cms\JsonApi\V1\Pages\PageQuery;

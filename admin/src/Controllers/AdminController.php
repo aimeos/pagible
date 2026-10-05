@@ -15,13 +15,19 @@ use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 
 class AdminController extends Controller
 {
+    private const CORS = [
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+        'Access-Control-Allow-Headers' => 'Content-Type, Content-Length, Content-Range, Accept-Encoding, Range',
+    ];
+
+
     /**
      * Delivers a private File to an authenticated CMS editor.
      */
@@ -67,11 +73,7 @@ class AdminController extends Controller
         $method = strtoupper( $request->method() );
 
         if( $method === 'OPTIONS' ) {
-            return $this->optionsResponse();
-        }
-
-        if( !in_array( $method, ['GET', 'HEAD'] ) ) {
-            abort( 405, "Unsupported HTTP method: $method" );
+            return response( '', 204, self::CORS );
         }
 
         $user = $request->user();
@@ -89,8 +91,12 @@ class AdminController extends Controller
 
         try
         {
-            // fetch() resolves and pins the host to its public IP and rejects private targets.
-            $response = $this->fetch( $url, $method, $range );
+            // Resolves and pins every host to its public IP and rejects private targets
+            $response = \Aimeos\Cms\Utils::http( $url, ['stream' => true, 'timeout' => 10], array_filter( [
+                'User-Agent' => 'Pagible-Proxy/1.0',
+                'Accept-Encoding' => 'identity',
+                'Range' => $range,
+            ] ), $method );
         }
         catch( \Exception $e )
         {
@@ -98,10 +104,11 @@ class AdminController extends Controller
             abort( 504, 'Upstream request timed out' );
         }
 
-        $headers = $this->buildHeaders( $response, $range );
+        $maxsize = (int) config( 'cms.admin.proxy.maxsize', 10 ) * 1024 * 1024;
+        $headers = $this->buildHeaders( $response, $maxsize );
 
         $statusCode = isset( $headers['Content-Range'] ) ? 206 : $response->status();
-        $maxBytes = (int) ( $headers['Content-Length'] ?? 0 ) ?: config( 'cms.admin.proxy.maxsize', 10 ) * 1024 * 1024;
+        $maxBytes = $headers['Content-Length'] ?? $maxsize;
 
         if( $method === 'HEAD' ) {
             return response( '', $statusCode, $headers );
@@ -116,46 +123,41 @@ class AdminController extends Controller
     /**
      * Build headers for the response, including content length and range.
      *
-     * @param ClientResponse $response
-     * @param string|null $range
+     * Partial upstream responses keep their range. Complete upstream responses larger than
+     * the maximum size are truncated and returned as the first range of the content.
+     *
+     * @param ClientResponse $response Upstream response
+     * @param int $maxsize Maximum number of bytes to send
      * @return array<string, mixed>
      */
-    protected function buildHeaders( ClientResponse $response, ?string $range ): array
+    protected function buildHeaders( ClientResponse $response, int $maxsize ): array
     {
-        $maxBytes = config('cms.admin.proxy.maxsize', 10) * 1024 * 1024;
-        $rawLength = (int) ($response->header('Content-Length') ?: 0);
-        $contentLength = min( $rawLength, $maxBytes );
-        $contentRange = null;
-
-        if( $rawLength > $maxBytes && !$range ) {
-            $contentRange = "bytes 0-" . ($maxBytes - 1) . "/$rawLength";
-        }
-        elseif( $range && preg_match( '/bytes=(\d+)-(\d*)/', $range, $m ) )
-        {
-            $start = (int) $m[1];
-            $end = $m[2] !== '' ? (int) $m[2] : ($start + $maxBytes - 1);
-            $end = min($end, $start + $maxBytes - 1);
-            $contentLength = $end - $start + 1;
-            $contentRange = "bytes $start-$end/$rawLength";
-        }
+        $length = (int) $response->header( 'Content-Length' );
+        $partial = $response->status() === 206;
 
         $headers = [
             // Restrict to safe media types so attacker-controlled upstream content cannot be
             // served as executable HTML from the application origin; prevent MIME sniffing.
             'X-Content-Type-Options' => 'nosniff',
             'Content-Type' => $this->contentType( $response ),
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Content-Length, Content-Range, Accept-Encoding, Range',
             'Accept-Ranges' => 'bytes',
-        ];
+        ] + self::CORS;
 
-        if( $contentLength > 0 ) {
-            $headers['Content-Length'] = $contentLength;
+        if( $partial && preg_match( '#^bytes (\d+)-(\d+)/(\d+|\*)$#', $response->header( 'Content-Range' ), $m ) )
+        {
+            $start = (int) $m[1];
+            $end = min( (int) $m[2], $start + $maxsize - 1 );
+            $headers['Content-Length'] = $end - $start + 1;
+            $headers['Content-Range'] = "bytes $start-$end/{$m[3]}";
         }
-
-        if( $contentRange ) {
-            $headers['Content-Range'] = $contentRange;
+        elseif( !$partial && $length > $maxsize )
+        {
+            $headers['Content-Length'] = $maxsize;
+            $headers['Content-Range'] = 'bytes 0-' . ( $maxsize - 1 ) . "/$length";
+        }
+        elseif( $length > 0 )
+        {
+            $headers['Content-Length'] = min( $length, $maxsize );
         }
 
         return $headers;
@@ -184,99 +186,6 @@ class AdminController extends Controller
         }
 
         return 'application/octet-stream';
-    }
-
-
-    /**
-     * Fetch the content from the given URL using the specified method and range.
-     *
-     * Each request is pinned to the host's resolved public IP via CURLOPT_RESOLVE, and at most
-     * one redirect is followed manually so the redirect target is re-validated and re-pinned
-     * (preventing DNS-rebinding/redirect SSRF to private addresses).
-     *
-     * @param string $url
-     * @param string $method
-     * @param string|null $range
-     * @param int $hops Remaining number of redirects that may be followed
-     * @return ClientResponse
-     */
-    protected function fetch( string $url, string $method, ?string $range, int $hops = 1 ): ClientResponse
-    {
-        $parsed = parse_url( $url );
-        $host = $parsed['host'] ?? '';
-        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
-
-        if( !$host || !( $ip = \Aimeos\Cms\Utils::resolve( $host ) ) ) {
-            throw new \Aimeos\Cms\Exception( "Host '$host' blocked" );
-        }
-
-        $headers = [
-            'User-Agent' => 'Pagible-Proxy/1.0',
-            'Accept-Encoding' => 'identity',
-        ];
-
-        if( $range ) {
-            $headers['Range'] = $range;
-        }
-
-        $response = Http::withHeaders( $headers )
-            ->timeout( 10 )
-            ->withOptions( [
-                'stream' => true,
-                'verify' => true,
-                'allow_redirects' => false,
-                'curl' => [CURLOPT_RESOLVE => ["$host:$port:$ip"]],
-            ] )
-            ->send( $method, $url );
-
-        if( $hops > 0 && $response->redirect() && ( $location = $response->header( 'Location' ) ) )
-        {
-            $target = $this->location( $url, $location );
-
-            if( !\Aimeos\Cms\Utils::isValidUrl( $target ) ) {
-                throw new \Aimeos\Cms\Exception( "Redirect to '$location' blocked" );
-            }
-
-            return $this->fetch( $target, $method, $range, $hops - 1 );
-        }
-
-        return $response;
-    }
-
-
-    /**
-     * Resolves a redirect Location (absolute or root-relative) against the requested URL.
-     *
-     * @param string $base Originally requested URL
-     * @param string $location Location header value from the redirect response
-     * @return string Absolute target URL
-     */
-    protected function location( string $base, string $location ): string
-    {
-        if( preg_match( '#^https?://#i', $location ) ) {
-            return $location;
-        }
-
-        $parts = parse_url( $base );
-        $origin = ( $parts['scheme'] ?? 'https' ) . '://' . ( $parts['host'] ?? '' )
-            . ( isset( $parts['port'] ) ? ':' . $parts['port'] : '' );
-
-        return $origin . '/' . ltrim( $location, '/' );
-    }
-
-
-    /**
-     * Handle OPTIONS requests for CORS preflight checks.
-     *
-     * @return Response
-     */
-    protected function optionsResponse(): Response
-    {
-        return response('', 204, [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Content-Length, Content-Range, Accept-Encoding, Range',
-        ]);
     }
 
 

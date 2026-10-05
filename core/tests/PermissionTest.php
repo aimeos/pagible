@@ -458,35 +458,6 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
-    public function testRole()
-    {
-        $perms = Permission::role( 'viewer' );
-
-        $this->assertContains( 'page:view', $perms );
-        $this->assertContains( 'element:view', $perms );
-        $this->assertContains( 'file:view', $perms );
-        $this->assertNotContains( 'page:save', $perms );
-    }
-
-
-    public function testRoleWithWildcard()
-    {
-        $perms = Permission::role( 'admin' );
-
-        $this->assertContains( 'page:view', $perms );
-        $this->assertContains( 'image:imagine', $perms );
-        $this->assertCount( count( Permission::all() ), array_unique( $perms ) );
-    }
-
-
-    public function testRoleUnknown()
-    {
-        $perms = Permission::role( 'nonexistent' );
-
-        $this->assertEmpty( $perms );
-    }
-
-
     public function testCanWithDeny()
     {
         $user = new \App\Models\User( ['cmsperms' => ['editor', '!page:save']] );

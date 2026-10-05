@@ -62,8 +62,7 @@ class CashierStripe extends CashierProvider
         }
         elseif( $type === 'customer.subscription.created' && ( $data['status'] ?? null ) === 'trialing' )
         {
-            $end = $data['current_period_end'] ?? data_get( $data, 'items.data.0.current_period_end' );
-            $this->grant( $data, (string) ( $data['id'] ?? '' ), 'subscription', $end, $at );
+            $this->grant( $data, (string) ( $data['id'] ?? '' ), 'subscription', self::period( $data ), $at );
         }
         elseif( $type === 'invoice.paid' )
         {
@@ -71,10 +70,7 @@ class CashierStripe extends CashierProvider
 
             if( in_array( data_get( $subscription, 'status' ), ['active', 'trialing'], true ) )
             {
-                $end = data_get( $subscription, 'current_period_end' )
-                    ?? data_get( $subscription, 'items.data.0.current_period_end' );
-
-                $this->grant( $subscription, (string) data_get( $subscription, 'id', '' ), 'subscription', $end, $at );
+                $this->grant( $subscription, (string) data_get( $subscription, 'id', '' ), 'subscription', self::period( $subscription ), $at );
             }
         }
         elseif( $type === 'customer.subscription.deleted' )
@@ -234,35 +230,41 @@ class CashierStripe extends CashierProvider
 
 
     /**
+     * Returns the current period end of a Stripe subscription.
+     *
+     * @param array<string, mixed>|object $data
+     */
+    private static function period( array|object $data ) : mixed
+    {
+        return data_get( $data, 'current_period_end' ) ?? data_get( $data, 'items.data.0.current_period_end' );
+    }
+
+
+    /**
      * Returns the access source represented by a Stripe object.
      *
      * @param array<string, mixed>|object $data
      */
     private function source( array|object $data ) : string
     {
-        $meta = $this->meta( $data );
-        $invoice = data_get( $data, 'invoice' );
+        $kind = $this->meta( $data )['kind'] ?? null;
+        $invoice = $kind !== 'once' ? data_get( $data, 'invoice' ) : null;
 
         if( is_string( $invoice ) && $invoice !== '' ) {
             $invoice = Cashier::stripe()->invoices->retrieve( $invoice, [] );
         }
 
-        if( ( $meta['kind'] ?? null ) === 'subscription' || $invoice !== null )
-        {
-            return (string) (
-                data_get( $data, 'subscription' )
+        $subscription = $kind === 'subscription' || $invoice !== null
+            ? data_get( $data, 'subscription' )
                 ?? data_get( $invoice, 'subscription' )
                 ?? data_get( $invoice, 'parent.subscription_details.subscription' )
-                ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'sub_' )
-                    ? data_get( $data, 'id' ) : null )
-                ?? ''
-            );
-        }
+                ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'sub_' ) ? data_get( $data, 'id' ) : null )
+            : null;
 
         return (string) (
-            data_get( $data, 'payment_intent' )
-            ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'pi_' )
-                ? data_get( $data, 'id' ) : '' )
+            $subscription
+            ?? data_get( $data, 'payment_intent' )
+            ?? ( str_starts_with( (string) data_get( $data, 'id' ), 'pi_' ) ? data_get( $data, 'id' ) : '' )
         );
     }
 }

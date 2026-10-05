@@ -43,6 +43,7 @@ class BenchmarkTest extends CmsTestAbstract
     protected function getPackageProviders( $app )
     {
         return [
+            'Aimeos\Cms\BenchmarkServiceProvider',
             'Aimeos\Cms\CoreServiceProvider',
             'Aimeos\Cms\GraphqlServiceProvider',
             'Aimeos\Cms\JsonapiServiceProvider',

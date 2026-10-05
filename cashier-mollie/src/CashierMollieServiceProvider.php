@@ -42,7 +42,7 @@ class CashierMollieServiceProvider extends Provider
                 (array) config( 'app.previous_keys', [] ),
                 fn( mixed $old ) => is_string( $old ) && $old !== '' && $old !== $key,
             ) );
-            $token = hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $key );
+            $token = self::token( $key );
 
             foreach( ['webhooks.mollie.default', 'webhooks.mollie.aftercare', 'webhooks.mollie.first_payment'] as $name ) {
                 $route = Route::getRoutes()->getByName( $name );
@@ -68,7 +68,7 @@ class CashierMollieServiceProvider extends Provider
 
                 foreach( $previous as $old )
                 {
-                    $alias = $uri . hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $old );
+                    $alias = $uri . self::token( $old );
                     Route::post( $alias, $action )->middleware( $route->middleware() );
                 }
             }
@@ -130,6 +130,15 @@ class CashierMollieServiceProvider extends Provider
 
 
     /**
+     * Returns the webhook path token bound to an application key.
+     */
+    private static function token( string $key ) : string
+    {
+        return hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $key );
+    }
+
+
+    /**
      * Appends the application-bound token to a configured webhook URL.
      */
     private function webhook( string $url, string $token ) : string
@@ -159,7 +168,7 @@ class CashierMollieServiceProvider extends Provider
             throw new \RuntimeException( 'APP_KEY is required for Mollie webhook paths.' );
         }
 
-        $token = hash_hmac( 'sha256', 'cms-cashier-mollie-webhook', $key );
+        $token = self::token( $key );
         $urls = [
             'cashier.aftercare_webhook_url' => 'webhooks/mollie/aftercare',
             'cashier.first_payment.webhook_url' => 'webhooks/mollie/first-payment',

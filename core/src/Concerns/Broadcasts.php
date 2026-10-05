@@ -56,8 +56,6 @@ trait Broadcasts
             return;
         }
 
-        $broadcast = (bool) config( 'cms.broadcast' );
-
         if( $this->relationLoaded( 'latest' ) ) {
             $loaded = $this->getRelation( 'latest' );
 
@@ -72,7 +70,7 @@ trait Broadcasts
 
         static::send( new $class(
             ...$this->eventFields( $version, $editor, $action, $projection )
-        ), $broadcast );
+        ) );
     }
 
 
@@ -92,15 +90,9 @@ trait Broadcasts
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
         Authenticatable|string|null $editor = null, string $action = 'bulk', array $projected = [] ) : void
     {
-        if( empty( $ids ) ) {
+        if( empty( $ids ) || !static::announces( Bulk::class ) ) {
             return;
         }
-
-        if( !static::announces( Bulk::class ) ) {
-            return;
-        }
-
-        $broadcast = (bool) config( 'cms.broadcast' );
 
         static::send( new Bulk(
             contentType: $type,
@@ -112,7 +104,7 @@ trait Broadcasts
             source: Utils::source(),
             action: $action,
             projected: $projected,
-        ), $broadcast );
+        ) );
     }
 
 
@@ -175,31 +167,6 @@ trait Broadcasts
 
 
     /**
-     * Returns the event data needed to patch lists or enrich audit entries.
-     *
-     * Lifecycle changes only alter list metadata. Page routes remain in the
-     * payload because the audit listener records them.
-     *
-     * @return array<string, mixed>
-     */
-    protected function eventData( Version $version, string $action ) : array
-    {
-        if( !in_array( $action, ['dropped', 'purged', 'restored'], true ) ) {
-            return (array) $version->data;
-        }
-
-        if( !$this instanceof Page ) {
-            return [];
-        }
-
-        return [
-            'path' => (string) ( $version->data->path ?? $this->path ),
-            'domain' => (string) ( $version->data->domain ?? $this->domain ),
-        ];
-    }
-
-
-    /**
      * Extracts the shared event fields from the model and version, keyed by the event constructor
      * parameter names so they can be spread into any event.
      *
@@ -219,12 +186,19 @@ trait Broadcasts
             throw new \LogicException( 'Cannot announce unsaved CMS models.' );
         }
 
+        // Lifecycle changes only alter list metadata, page routes remain because the audit listener records them
+        $data = match( true ) {
+            !in_array( $action, ['dropped', 'purged', 'restored'], true ) => (array) $version->data,
+            $this instanceof Page => $this->route( $version ),
+            default => [],
+        };
+
         return [
             'contentType' => strtolower( class_basename( $this ) ),
             'id' => $id,
             'latest_id' => $latestId,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),
-            'data' => $this->eventData( $version, $action ),
+            'data' => $data,
             'published' => (bool) $version->published,
             'deleted_at' => $this->deleted_at ? (string) $this->deleted_at : null,
             'publish_at' => $version->publish_at,
@@ -245,11 +219,10 @@ trait Broadcasts
      * dispatched to in-process listeners, with broadcastWhen() false so it is never broadcast.
      *
      * @param Event|Bulk $event Event to dispatch, already built by the caller
-     * @param bool $broadcast Whether websocket broadcasting is enabled
      */
-    protected static function send( Event|Bulk $event, bool $broadcast ) : void
+    protected static function send( Event|Bulk $event ) : void
     {
-        if( !$broadcast ) {
+        if( !config( 'cms.broadcast' ) ) {
             DB::afterCommit( fn() => event( $event ) );
             return;
         }

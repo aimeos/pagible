@@ -83,7 +83,12 @@ class CashierMollie extends CashierProvider
     {
         if( $adverse = $this->adverse( $payment, $at ) )
         {
-            $this->revoke( $payment, $adverse );
+            if( $order = $this->paymentOrder( $payment ) ) {
+                $this->revokeOrder( $order, $adverse );
+            } else {
+                $this->remove( $payment, (string) ( $payment->id ?? '' ), $adverse );
+            }
+
             return;
         }
 
@@ -125,14 +130,19 @@ class CashierMollie extends CashierProvider
      *
      * @param ProductData $product
      * @param array<string, string> $metadata
+     * @throws \RuntimeException If Cashier Mollie returns no checkout redirect
      */
     protected function start( Authenticatable $user, array $product, array $metadata ) : RedirectResponse
     {
-        if( $product['kind'] === 'once' ) {
-            return $this->once( $user, $product, $metadata );
+        $response = $product['kind'] === 'once'
+            ? $this->once( $user, $product, $metadata )
+            : $this->subscribe( $user, $product );
+
+        if( !$response instanceof RedirectResponse ) {
+            throw new \RuntimeException( 'Cashier Mollie returned no checkout redirect.' );
         }
 
-        return $this->subscribe( $user, $product );
+        return $response;
     }
 
 
@@ -176,24 +186,12 @@ class CashierMollie extends CashierProvider
             return $occurred;
         }
 
-        if( $chargeback )
+        foreach( array_keys( array_filter( ['chargebacks' => $chargeback, 'refunds' => $refund] ) ) as $name )
         {
-            foreach( $this->events( $payment, 'chargebacks' ) as $event )
+            foreach( $this->events( $payment, $name ) as $event )
             {
-                if( is_object( $event ) && empty( $event->reversedAt )
-                    && ( $at = $this->end( $event->createdAt ?? $event->created_at ?? null ) )
-                    && ( !$latest || $at > $latest )
-                ) {
-                    $latest = $at;
-                }
-            }
-        }
-
-        if( $refund )
-        {
-            foreach( $this->events( $payment, 'refunds' ) as $event )
-            {
-                if( is_object( $event ) && ( $event->status ?? null ) === RefundStatus::REFUNDED
+                if( is_object( $event )
+                    && ( $name === 'chargebacks' ? empty( $event->reversedAt ) : ( $event->status ?? null ) === RefundStatus::REFUNDED )
                     && ( $at = $this->end( $event->createdAt ?? $event->created_at ?? null ) )
                     && ( !$latest || $at > $latest )
                 ) {
@@ -291,9 +289,9 @@ class CashierMollie extends CashierProvider
      *
      * @param ProductData $product
      * @param array<string, string> $metadata
-     * @throws \RuntimeException If Cashier Mollie is unavailable or returns no redirect
+     * @throws \RuntimeException If Cashier Mollie is unavailable
      */
-    private function once( Authenticatable $user, array $product, array $metadata ) : RedirectResponse
+    private function once( Authenticatable $user, array $product, array $metadata ) : mixed
     {
         if( !$user instanceof Model || !method_exists( $user, 'newFirstPaymentChargeThroughCheckout' ) ) {
             throw new \RuntimeException( 'Cashier Mollie is not installed.' );
@@ -306,7 +304,7 @@ class CashierMollie extends CashierProvider
 
         /** @var FirstPaymentChargeBuilder $builder */
         $builder = $user->newFirstPaymentChargeThroughCheckout();
-        $response = $builder
+        return $builder
             ->addItem( $item )
             ->setRedirectUrl( $product['url'] )
             ->molliePaymentOverrides( [
@@ -319,12 +317,6 @@ class CashierMollie extends CashierProvider
                 ],
             ] )
             ->create();
-
-        if( !$response instanceof RedirectResponse ) {
-            throw new \RuntimeException( 'Cashier Mollie returned no checkout redirect.' );
-        }
-
-        return $response;
     }
 
 
@@ -366,21 +358,6 @@ class CashierMollie extends CashierProvider
         }
 
         return $order instanceof Model ? $order : null;
-    }
-
-
-    /**
-     * Revokes the order or one-time source represented by a payment.
-     */
-    private function revoke( object $payment, \DateTimeInterface $at ) : void
-    {
-        if( $order = $this->paymentOrder( $payment ) )
-        {
-            $this->revokeOrder( $order, $at );
-            return;
-        }
-
-        $this->remove( $payment, (string) ( $payment->id ?? '' ), $at );
     }
 
 
@@ -454,9 +431,9 @@ class CashierMollie extends CashierProvider
      * Starts a subscription with the signed pricing-content plan snapshot.
      *
      * @param ProductData $product
-     * @throws \RuntimeException If Cashier Mollie is unavailable or returns no redirect
+     * @throws \RuntimeException If Cashier Mollie is unavailable
      */
-    private function subscribe( Authenticatable $user, array $product ) : RedirectResponse
+    private function subscribe( Authenticatable $user, array $product ) : mixed
     {
         if( !$user instanceof Model || !method_exists( $user, 'newSubscriptionViaMollieCheckout' ) ) {
             throw new \RuntimeException( 'Cashier Mollie is not installed.' );
@@ -471,12 +448,6 @@ class CashierMollie extends CashierProvider
             ['redirectUrl' => $product['url']],
         );
 
-        $response = $builder->create();
-
-        if( !$response instanceof RedirectResponse ) {
-            throw new \RuntimeException( 'Cashier Mollie returned no checkout redirect.' );
-        }
-
-        return $response;
+        return $builder->create();
     }
 }

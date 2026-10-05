@@ -165,6 +165,24 @@ class Permission
 
 
     /**
+     * Throws an exception if the user isn't allowed to perform the action.
+     *
+     * A NULL user is a system call and always allowed.
+     *
+     * @param string $action Action name, e.g. "page:publish"
+     * @param Authenticatable|null $user Laravel user object or NULL for system calls
+     * @param bool $needed FALSE to skip the check, e.g. if there are no related items
+     * @throws Exception If the user lacks the permission
+     */
+    public static function check( string $action, ?Authenticatable $user, bool $needed = true ) : void
+    {
+        if( $needed && $user && !self::can( $action, $user ) ) {
+            throw new Exception( 'Insufficient permissions' );
+        }
+    }
+
+
+    /**
      * Returns the available actions and their permissions.
      *
      * @param Authenticatable|null $user Laravel user object
@@ -215,18 +233,6 @@ class Permission
 
 
     /**
-     * Returns the expanded permissions for a named role.
-     *
-     * @param string $name Role name
-     * @return array<int, string> List of resolved permission names
-     */
-    public static function role( string $name ) : array
-    {
-        return self::resolve( config( "cms.roles.{$name}", [] ) );
-    }
-
-
-    /**
      * Returns the available role names from config.
      *
      * @return array<int, string> List of role names
@@ -259,23 +265,14 @@ class Permission
         }
 
         $tenant = Tenancy::value();
+        $error = 'CMS permissions can only be changed for users in the current tenant.';
 
         if( !Tenancy::allows( $user, $tenant ) ) {
-            throw new Exception( 'CMS permissions can only be changed for users in the current tenant.' );
+            throw new Exception( $error );
         }
 
-        $result = $user->getConnection()->transaction( function() use ( $entries, $tenant, $user ) {
-            /** @var Model&Authenticatable $locked */
-            $locked = $user->newQuery()->whereKey( $user->getKey() )->lockForUpdate()->firstOrFail();
-
-            if( !Tenancy::allows( $locked, $tenant ) ) {
-                throw new Exception( 'CMS permissions can only be changed for users in the current tenant.' );
-            }
-
-            $existing = data_get( $locked, 'cmsperms', [] );
-            $existing = is_array( $existing )
-                ? array_values( array_filter( $existing, 'is_string' ) )
-                : [];
+        $result = Tenancy::lock( $user, $tenant, $error, function( Authenticatable&Model $locked ) use ( $entries ) {
+            $existing = self::assigned( $locked );
 
             self::validate( $entries, $existing );
             $locked->forceFill( ['cmsperms' => $entries] )->save();

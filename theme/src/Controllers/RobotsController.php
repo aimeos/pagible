@@ -104,23 +104,6 @@ class RobotsController extends Controller
      */
     protected function text( string $domain ) : ?string
     {
-        $query = Nav::query()
-            ->select( 'config' )
-            ->whereNull( 'parent_id' )
-            ->whereIn( 'status', [1, 2] )
-            ->defaultOrder();
-
-        if( $domain !== '' ) {
-            $query->where( 'domain', $domain );
-        }
-
-        foreach( $query->cursor() as $page )
-        {
-            if( ( $text = $this->clean( $page->config->{'robots-txt'}->data->text ?? null ) ) !== null ) {
-                return $text;
-            }
-        }
-
-        return null;
+        return Nav::rootConfig( $domain, fn( $page ) => $this->clean( $page->config->{'robots-txt'}->data->text ?? null ) );
     }
 }

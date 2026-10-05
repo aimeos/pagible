@@ -7,99 +7,68 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Models\File;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use GraphQL\Error\Error;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 
 
 /**
- * Validates AI GraphQL inputs that require runtime-aware policy checks.
+ * Validates AI GraphQL uploads and converts AI provider errors into GraphQL errors.
+ *
+ * CMS exceptions are converted into client-safe errors by the global CmsExceptionDirective.
  */
 trait ValidatesInputs
 {
     /**
-     * Validates structured content size and nesting before sending it to an AI provider.
+     * Calls the AI operation and converts provider and not found errors into GraphQL errors.
+     *
+     * @param \Closure $fn Function calling the AI operation
+     * @return mixed Return value of the function
      */
-    protected function content( mixed $content ) : mixed
+    protected function ai( \Closure $fn ) : mixed
     {
-        $max = max( 1, (int) config( 'cms.ai.maxinput', 1024 * 1024 ) );
-        $json = json_encode( $content );
-
-        if( $json === false || strlen( $json ) > $max ) {
-            throw new Error( sprintf( 'Content exceeds the maximum input size of %d bytes', $max ) );
-        }
-
-        $depth = max( 1, (int) config( 'cms.ai.maxdepth', 20 ) );
-        $stack = [[$content, 1]];
-
-        while( $entry = array_pop( $stack ) )
+        try
         {
-            [$value, $level] = $entry;
-
-            if( $level > $depth ) {
-                throw new Error( sprintf( 'Content exceeds the maximum nesting depth of %d', $depth ) );
-            }
-
-            foreach( is_object( $value ) ? get_object_vars( $value ) : ( is_array( $value ) ? $value : [] ) as $child )
-            {
-                if( is_array( $child ) || is_object( $child ) ) {
-                    $stack[] = [$child, $level + 1];
-                }
-            }
+            return $fn();
         }
-
-        return $content;
+        catch( PrismaException $e )
+        {
+            Log::error( 'AI service error', ['mutation' => class_basename( static::class ), 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
+            throw new Error( $e->getMessage() );
+        }
+        catch( ModelNotFoundException $e )
+        {
+            throw new Error( class_basename( $e->getModel() ) . ' not found' );
+        }
     }
 
 
     /**
-     * Validates an upload against the shared CMS policy and expected media family.
+     * Validates an upload against the shared CMS policy and returns it as Prisma media object.
+     *
+     * @template T of \Aimeos\Prisma\Files\File
+     * @param UploadedFile $value Uploaded file
+     * @param class-string<T> $class Prisma file class, e.g. Image::class or Audio::class
+     * @param string $label Name of the upload used in error messages
+     * @return T Prisma media object
      */
-    protected function upload( mixed $value, string $type, string $label = 'file' ) : UploadedFile
+    protected function upload( UploadedFile $value, string $class, string $label = 'file' ) : \Aimeos\Prisma\Files\File
     {
-        $name = ucfirst( $label );
+        File::checkUpload( $value );
 
-        if( !$value instanceof UploadedFile || !$value->isValid() ) {
-            throw new Error( sprintf( 'Invalid %s upload', $label ) );
-        }
+        $type = strtolower( class_basename( $class ) );
 
-        if( !Utils::isValidUpload( $value ) ) {
-            throw new Error( sprintf( '%s size exceeds the maximum of %s MB',
-                $name, config( 'cms.upload.filesize', 50 ) ) );
-        }
-
-        $mime = (string) $value->getMimeType();
-
-        if( !str_starts_with( $mime, $type . '/' ) || !Utils::isValidMimetype( $mime ) ) {
-            throw new Error( sprintf( '%s type "%s" is not allowed', $name, $mime ) );
+        if( !str_starts_with( $mime = (string) $value->getMimeType(), $type . '/' ) ) {
+            throw new Error( sprintf( '%s type "%s" is not allowed', ucfirst( $label ), $mime ) );
         }
 
         if( $type === 'image' ) {
-            $this->pixels( $value, $name );
+            File::checkPixels( $value );
         }
 
-        return $value;
-    }
-
-
-    /**
-     * Rejects raster images whose decoded dimensions exceed the configured limit.
-     */
-    private function pixels( UploadedFile $upload, string $label ) : void
-    {
-        $path = $upload->getRealPath();
-        $info = is_string( $path ) ? @getimagesize( $path ) : false;
-
-        if( !$info ) {
-            throw new Error( sprintf( 'Invalid %s image', strtolower( $label ) ) );
-        }
-
-        $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
-        $width = (int) $info[0];
-        $height = (int) $info[1];
-
-        if( $height < 1 || $width < 1 || $width > intdiv( $max, $height ) ) {
-            throw new Error( sprintf( '%s image exceeds the maximum size of %d pixels', $label, $max ) );
-        }
+        return $this->ai( fn() => $class::fromBinary( $value->getContent(), $mime ) );
     }
 }

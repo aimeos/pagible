@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\CmsContact;
-use Aimeos\Cms\Listeners\ContactLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\AbstractLogger;
@@ -47,7 +47,7 @@ class ContactLogListenerTest extends TestCase
         };
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new ContactLogListener )->handle( new CmsContact( 'sender@google.com', '127.0.0.1' ) );
+        ( new LogListener )->handle( new CmsContact( 'sender@google.com', '127.0.0.1' ) );
 
         $this->assertSame( 'cms.contact', $logger->entries[0]['message'] );
         $this->assertSame(

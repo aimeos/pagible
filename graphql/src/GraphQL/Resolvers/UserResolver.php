@@ -11,7 +11,6 @@ use Aimeos\Cms\Access;
 use Aimeos\Cms\Events\UserChanged;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Watch;
 use GraphQL\Error\Error;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -71,7 +70,9 @@ class UserResolver
      */
     public function cmsUser( mixed $root, array $args ) : ?Authenticatable
     {
-        return $this->find( (string) ( $args['email'] ?? '' ) );
+        $email = $this->email( (string) ( $args['email'] ?? '' ) );
+
+        return $this->tenantUser( $this->provider()->retrieveByCredentials( ['email' => $email] ) );
     }
 
 
@@ -90,11 +91,6 @@ class UserResolver
         }
 
         $user = $provider->createModel();
-
-        if( !$user instanceof Authenticatable ) {
-            throw new \LogicException( 'The Eloquent authentication model must implement Authenticatable.' );
-        }
-
         $attributes = [
             'cmsperms' => [],
             'email' => $email,
@@ -120,7 +116,7 @@ class UserResolver
             throw new Error( 'User already exists' );
         }
 
-        $this->changed( 'create', $user );
+        UserChanged::fire( 'create', $user );
 
         return $user;
     }
@@ -136,22 +132,22 @@ class UserResolver
 
 
     /**
-     * @param array<string, mixed> $args
-     * @param mixed $context
+     * Returns the effective CMS permissions of the user.
+     *
      * @return array<string, mixed>
      */
-    public function permission( Authenticatable $user, array $args, mixed $context ): array
+    public function permission( Authenticatable $user ) : array
     {
         return Permission::get( $user );
     }
 
 
     /**
-     * @param array<string, mixed> $args
-     * @param mixed $context
+     * Returns the CMS roles directly assigned to the user.
+     *
      * @return array<int, string>
      */
-    public function roles( Authenticatable $user, array $args, mixed $context ): array
+    public function roles( Authenticatable $user ) : array
     {
         return array_values( array_filter(
             Permission::assigned( $user ),
@@ -171,7 +167,7 @@ class UserResolver
         $user = $this->findId( $args['id'] ?? null ) ?? throw new Error( 'User not found' );
         $result = app( Access::class )->set( $user, $args['access'] ?? [] );
 
-        $this->changed( 'access', $user, $result );
+        UserChanged::fire( 'access', $user, $result );
 
         return $result;
     }
@@ -202,11 +198,11 @@ class UserResolver
 
 
     /**
-     * @param array<string, mixed> $args
-     * @param mixed $context
+     * Returns the stored admin settings of the user.
+     *
      * @return array<string, mixed>|null
      */
-    public function settings( Authenticatable $user, array $args, mixed $context ): array|null
+    public function settings( Authenticatable $user ) : ?array
     {
         return json_decode( (string) data_get( $user, 'cmsdata', '' ), true ) ?: null;
     }
@@ -224,42 +220,6 @@ class UserResolver
         ] )->validate();
 
         return $email;
-    }
-
-
-    /**
-     * Dispatches a structured administrative user audit event.
-     *
-     * @param array<int, string> $assignments
-     */
-    private function changed( string $action, Authenticatable $target, array $assignments = [] ) : void
-    {
-        Watch::dispatch( UserChanged::class, function() use ( $action, $assignments, $target ) {
-            $actor = Auth::user();
-            $request = request();
-
-            return new UserChanged(
-                action: $action,
-                actorEmail: (string) data_get( $actor, 'email' ),
-                targetEmail: (string) data_get( $target, 'email' ),
-                targetId: (string) $target->getAuthIdentifier(),
-                assignments: $assignments,
-                ip: (string) $request->ip(),
-                userAgent: (string) $request->userAgent(),
-                tenant: Tenancy::value(),
-            );
-        } );
-    }
-
-
-    /**
-     * Resolves one user through the configured auth provider and enforces tenancy.
-     */
-    private function find( string $email ) : ?Authenticatable
-    {
-        $user = $this->provider()->retrieveByCredentials( ['email' => $this->email( $email )] );
-
-        return $this->tenantUser( $user );
     }
 
 

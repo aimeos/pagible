@@ -91,11 +91,7 @@ class PageController extends Controller
         $page = $this->published( $path, $domain, $user, $route );
 
         if( $page->access_exists && !$page->access_allowed ) {
-            if( !$user ) {
-                throw new AuthenticationException();
-            }
-
-            abort( 403 );
+            $this->deny( $user );
         }
 
         if( $to = $page->to ) {
@@ -117,11 +113,7 @@ class PageController extends Controller
             ->findOrFail( $page->id );
 
         if( $access->access_exists && !$access->access_allowed ) {
-            if( !$user ) {
-                throw new AuthenticationException();
-            }
-
-            abort( 403 );
+            $this->deny( $user );
         }
 
         $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
@@ -155,7 +147,7 @@ class PageController extends Controller
             'latest',
             'latest.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.files.latest',
-            'latest.elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
+            'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'latest.elements.latest',
             'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.elements.files.latest',
@@ -208,7 +200,7 @@ class PageController extends Controller
     {
         $query = Page::with( [
             'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-            'elements' => fn( $q ) => $q->select( [...Element::SELECT_COLUMNS, 'name'] ),
+            'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
         ] )
             ->withGlobalScope( 'status', new Status() )
@@ -241,5 +233,21 @@ class PageController extends Controller
         $nav = new Navigation( $page, $user );
 
         return view()->first( $views, compact( 'page', 'content', 'theme', 'nav' ) )->render();
+    }
+
+
+    /**
+     * Rejects a denied page request.
+     *
+     * @param Authenticatable|null $user Frontend user
+     * @throws AuthenticationException If no user is authenticated
+     */
+    private function deny( ?Authenticatable $user ) : never
+    {
+        if( !$user ) {
+            throw new AuthenticationException();
+        }
+
+        abort( 403 );
     }
 }

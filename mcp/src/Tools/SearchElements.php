@@ -8,17 +8,13 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Filter;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -29,18 +25,14 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches shared content elements. Optional: term (full-text search), type, lang, trashed, publish, editor. Without term, returns all matching elements. Returns up to 25 results.')]
 class SearchElements extends Tool
 {
-    use Metadata;
+    protected const PERMISSIONS = ['element:view'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'term' => 'string|max:255',
             'type' => 'string|max:50',
@@ -50,10 +42,9 @@ class SearchElements extends Tool
             'editor' => 'string|max:255',
         ] );
 
-        $search = Element::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+        $search = Filter::search( Element::class, $v['term'] ?? '' )
             ->query( fn( $q ) => $q->select( 'cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.created_at', 'cms_elements.updated_at', 'cms_elements.deleted_at', 'cms_elements.latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
-            ->searchFields( 'draft' )
             ->take( 25 );
 
         $result = [];
@@ -61,11 +52,7 @@ class SearchElements extends Tool
         foreach( Filter::elements( $search, $v )->get() as $item )
         {
             /** @var Element $item */
-            $data = $item->latest->data ?? new \stdClass();
-            $result[] = $this->result( $item, [
-                'type' => $data->type ?? null,
-                'name' => $data->name ?? null,
-            ] );
+            $result[] = Presenter::element( $item, false );
         }
 
         return Response::structured( ['elements' => $result] );
@@ -93,17 +80,5 @@ class SearchElements extends Tool
             'editor' => $schema->string()
                 ->description('Filter by editor name.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'element:view', $request->user() );
     }
 }

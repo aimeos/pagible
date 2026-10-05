@@ -170,6 +170,18 @@ class GraphqlTest extends AiTestAbstract
     }
 
 
+    public function testDescribeMissingFile()
+    {
+        config( ['app.debug' => false] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                describe(file: "00000000-0000-0000-0000-000000000000", lang: "en")
+            }
+        ' )->assertGraphQLErrorMessage( 'File not found' );
+    }
+
+
     public function testDescribeNoPermission()
     {
         $user = new \App\Models\User( [

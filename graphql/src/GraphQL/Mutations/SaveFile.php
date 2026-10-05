@@ -9,7 +9,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Resource;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -21,14 +20,12 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
-        $upload = $args['file'] ?? null;
-
         return Resource::saveFile(
             $args['id'],
             $args['input'] ?? [],
             Auth::user(),
             $args['latestId'] ?? null,
-            $upload instanceof UploadedFile ? $upload : null,
+            $args['file'] ?? null,
             $args['preview'] ?? null,
         );
     }

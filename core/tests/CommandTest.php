@@ -367,6 +367,23 @@ class CoreCommandTest extends CoreTestAbstract
     }
 
 
+    public function testUserPasswordPrompt(): void
+    {
+        $this->artisan( 'cms:user', ['--password' => null, '-q' => true, 'email' => 'prompt@example.com'] )
+            ->expectsQuestion( 'Password', 'secret' )
+            ->assertExitCode( 0 );
+
+        $user = User::where( 'email', 'prompt@example.com' )->firstOrFail();
+        $this->assertTrue( \Illuminate\Support\Facades\Hash::check( 'secret', $user->password ) );
+
+        $this->artisan( 'cms:user', ['--password' => null, '-q' => true, 'email' => 'prompt@example.com'] )
+            ->expectsQuestion( 'Password', 'changed' )
+            ->assertExitCode( 0 );
+
+        $this->assertTrue( \Illuminate\Support\Facades\Hash::check( 'changed', $user->fresh()?->password ) );
+    }
+
+
     public function testUserWithoutTenancyConfiguration(): void
     {
         Tenancy::$callback = null;

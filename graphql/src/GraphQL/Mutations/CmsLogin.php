@@ -8,8 +8,6 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Watch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -26,16 +24,9 @@ final class CmsLogin
 	{
 		$email = (string) $args['email'];
 		$key = 'cms-login:' . request()->ip() . '|' . strtolower( $email );
-		$watchAuth = fn( string $action ) => Watch::dispatch( Authed::class, fn() => new Authed(
-			$action,
-			$email,
-			(string) request()->ip(),
-			(string) request()->userAgent(),
-			Tenancy::value()
-		) );
 
 		if( RateLimiter::tooManyAttempts( $key, 3 ) ) {
-			$watchAuth( 'login-fail' );
+			Authed::fire( 'login-fail', $email );
 			throw new Error( "Too many login attempts" );
 		}
 
@@ -44,7 +35,7 @@ final class CmsLogin
 		if( !$guard->attempt( $args ) )
 		{
 			RateLimiter::hit( $key, 60 );
-			$watchAuth( 'login-fail' );
+			Authed::fire( 'login-fail', $email );
 			throw new Error( 'Invalid credentials' );
 		}
 
@@ -57,7 +48,7 @@ final class CmsLogin
 
 		$user = $guard->user() ?? throw new Error( 'Login failed' );
 
-		$watchAuth( 'login' );
+		Authed::fire( 'login', $email );
 
 		return $user;
 	}

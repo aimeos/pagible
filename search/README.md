@@ -34,25 +34,6 @@ php artisan cms:index
 
 Processes all records (including trashed) in chunks, updating the search index. Each model stores two index rows per item: one for draft content (`latest=true`) and one for published content (`latest=false`).
 
-### cms:benchmark:search
-
-Runs search performance benchmarks.
-
-```bash
-php artisan cms:benchmark:search [options]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--tenant` | `benchmark` | Tenant ID |
-| `--domain` | | Domain name |
-| `--seed` | | Seed benchmark data first |
-| `--pages` | `10000` | Number of pages to generate |
-| `--tries` | `100` | Iterations per benchmark |
-| `--chunk` | `50` | Rows per bulk insert batch |
-| `--unseed` | | Remove benchmark data and exit |
-| `--force` | | Run in production |
-
 ## License
 
 MIT

@@ -35,13 +35,6 @@ class IndexModels implements ShouldQueue
 
     public function handle(): void
     {
-        $current = app( Tenancy::class );
-        app()->instance( Tenancy::class, new Tenancy( $this->tenant ) );
-
-        try {
-            Scout::sync( $this->model, $this->ids );
-        } finally {
-            app()->instance( Tenancy::class, $current );
-        }
+        Tenancy::run( $this->tenant, fn() => Scout::sync( $this->model, $this->ids ) );
     }
 }

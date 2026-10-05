@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "aimeos/laravel-analytics-bridge": "~1.0",
         "aimeos/laravel-nestedset": "~7.0",
         "ezyang/htmlpurifier": "^4.18",
         "intervention/image": "^3.11",
