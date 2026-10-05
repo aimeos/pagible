@@ -214,7 +214,7 @@ msgstr "متوقف مؤقتًا حتى"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "التحميل"
+msgstr "جارٍ التحميل"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -234,7 +234,7 @@ msgstr "سر خطاف الويب"
 #: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
-msgstr "تعديل خطاف الويب"
+msgstr "تحرير خطاف الويب"
 
 #: src/views/WebhookList.vue:750
 msgctxt "webhooks"
@@ -245,7 +245,9 @@ msgstr "انسخ هذا السر الآن. لن يظهر مرة أخرى."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "خطافات الويب غير النشطة لا تتلقى أي أحداث ويتم إسقاط عمليات التسليم المتراكمة الخاصة بها"
+msgstr ""
+"خطافات الويب غير النشطة لا تتلقى أي أحداث ويتم إسقاط عمليات التسليم "
+"المتراكمة الخاصة بها"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -266,7 +268,9 @@ msgstr "الأحداث"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "الأحداث المرسلة إلى خطاف الويب، يتم إلغاء عمليات التسليم المتراكمة للأحداث التي تمت إزالتها"
+msgstr ""
+"الأحداث المرسلة إلى خطاف الويب، يتم إلغاء عمليات التسليم المتراكمة للأحداث "
+"التي تمت إزالتها"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -278,7 +282,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "اسم اختياري للتمييز بين خطافات الويب التي تستخدم نفس نقطة النهاية، مرئي لجميع محرري خطافات الويب"
+msgstr ""
+"اسم اختياري للتمييز بين خطافات الويب التي تستخدم نفس نقطة النهاية، مرئي "
+"لجميع محرري خطافات الويب"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -290,20 +296,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "نسخ السر"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "اختبار"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "إلغاء"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "الحفظ"
+msgstr "حفظ"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

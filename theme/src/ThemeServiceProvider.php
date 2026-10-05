@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider as Provider;
+use Illuminate\Translation\Translator;
 
 class ThemeServiceProvider extends Provider
 {
@@ -75,6 +76,12 @@ class ThemeServiceProvider extends Provider
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/theme.php', 'cms.theme' );
+
+        // Page languages are BCP 47 tags ("pt-BR") but Laravel's plural rules expect "pt_BR"
+        $this->app->extend( 'translator', function( Translator $translator ) {
+            $translator->setSelector( new MessageSelector() );
+            return $translator;
+        } );
     }
 
     protected function rateLimiter(): void
@@ -95,11 +102,26 @@ class ThemeServiceProvider extends Provider
     protected function loadBladeDirectives(): void
     {
         Blade::directive( 'localDate', function( $expression ) {
+            // Style names and the default use ICU, other formats are Carbon isoFormat() patterns
             return "<?php
                 \$__args = [$expression];
-                echo \\Carbon\\Carbon::parse(\$__args[0] ?? 'now')
-                    ->locale(app()->getLocale())
-                    ->isoFormat(\$__args[1] ?? 'D MMMM');
+
+                try {
+                    \$__date = \\Carbon\\Carbon::parse(\$__args[0] ?? 'now');
+                    \$__locale = app()->getLocale();
+                    \$__styles = ['short' => \\IntlDateFormatter::SHORT, 'medium' => \\IntlDateFormatter::MEDIUM, 'long' => \\IntlDateFormatter::LONG, 'full' => \\IntlDateFormatter::FULL];
+
+                    if( isset(\$__args[1]) && !isset(\$__styles[\$__args[1]]) ) {
+                        // Carbon uses Latin script for Serbian but the theme translations are Cyrillic
+                        echo e(\$__date->locale(strtolower(\$__locale) === 'sr' ? 'sr_Cyrl' : \$__locale)->isoFormat(\$__args[1]));
+                    } else {
+                        echo e((new \\IntlDateFormatter(\$__locale, \$__styles[\$__args[1] ?? ''] ?? \\IntlDateFormatter::NONE, \\IntlDateFormatter::NONE, \$__date->getTimezone(), null,
+                            isset(\$__args[1]) ? null : (new \\IntlDatePatternGenerator(\$__locale))->getBestPattern('dMMMM')))->format(\$__date));
+                    }
+                } catch( \\Carbon\\Exceptions\\InvalidFormatException \$e ) {
+                    // Element data isn't validated against the field type, so show unparsable values as they are
+                    echo e((string) \$__args[0]);
+                }
             ?>";
         } );
 

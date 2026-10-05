@@ -964,7 +964,7 @@ export default {
                 </v-list-item>
                 <v-list-item v-if="el.type === 'reference'">
                   <v-btn :prepend-icon="mdiLinkOff" variant="text" @click="unshare(idx)">{{
-                    $gettext('Merge copy')
+                    $gettext('Replace with local copy')
                   }}</v-btn>
                 </v-list-item>
                 <v-list-item v-if="el.type !== 'reference'">

@@ -35,7 +35,7 @@ msgstr "סטטוס"
 #: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
-msgstr "כל"
+msgstr "הכל"
 
 #: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
 #: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
@@ -245,7 +245,8 @@ msgstr "יש להעתיק את הסוד עכשיו. הוא לא יוצג שוב.
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "רכיבי Webhook לא פעילים אינם מקבלים אירועים והמסירות הממתינות שלהם נמחקות"
+msgstr ""
+"רכיבי Webhook לא פעילים אינם מקבלים אירועים והמסירות הממתינות שלהם נמחקות"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -278,7 +279,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "שם אופציונלי להבחנה בין רכיבי Webhook בעלי אותה נקודת קצה, גלוי לכל עורכי ה-Webhook"
+msgstr ""
+"שם אופציונלי להבחנה בין רכיבי Webhook בעלי אותה נקודת קצה, גלוי לכל עורכי "
+"ה-Webhook"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -290,17 +293,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "העתקת הסוד"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "בדיקה"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "ביטול"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "שמור"

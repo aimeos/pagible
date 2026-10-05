@@ -95,7 +95,7 @@ document.querySelectorAll('.contact form').forEach(form => {
                     field?.classList?.remove('error');
                 })
 
-                container.innerHTML = [container.innerHTML, ...errors[key]].filter(v => !!v).join('<br/>')
+                container.textContent = [container.textContent, ...errors[key]].filter(v => !!v).join('\n')
             })
 
             if(container?.textContent?.trim()) {

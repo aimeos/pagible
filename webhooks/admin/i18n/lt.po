@@ -64,14 +64,12 @@ msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
-msgstr ""
-"Atnaujinti šio webhooko slaptąjį raktą? Gavėjams reikės nurodyti naują "
-"slaptąjį raktą."
+msgstr "Pakeisti šio webhooko slaptąjį raktą? Gavėjams reikės nurodyti naują slaptąjį raktą."
 
 #: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
-msgstr "Klaida atnaujinant webhooko slaptąjį raktą"
+msgstr "Klaida keičiant webhooko slaptąjį raktą"
 
 #: src/views/WebhookList.vue:358
 msgctxt "webhooks"
@@ -116,12 +114,12 @@ msgstr "Prieiga uždrausta"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "Nepavyksta iššifruoti slaptojo rakto, atnaujinkite jį"
+msgstr "Nepavyksta iššifruoti slaptojo rakto, pakeiskite jį"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
-msgstr "Užblokuota serverio konfigūracijos"
+msgstr "Užblokuota serverio konfigūracijoje"
 
 #: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
@@ -197,7 +195,7 @@ msgstr "Redaguoti"
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
-msgstr "Atnaujinti"
+msgstr "Pakeisti"
 
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
@@ -217,7 +215,7 @@ msgstr "Pristabdyta iki"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "Pakrovimas"
+msgstr "Įkeliama"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -248,7 +246,9 @@ msgstr "Nukopijuokite šį slaptąjį raktą dabar. Jis daugiau nebus rodomas."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Neaktyvūs webhookai negauna jokių įvykių, o jų laukiantys pristatymai atmetami"
+msgstr ""
+"Neaktyvūs webhookai negauna jokių įvykių, o jų laukiantys pristatymai "
+"atmetami"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -269,7 +269,9 @@ msgstr "Įvykiai"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Webhookui siunčiami įvykiai, pašalintų įvykių laukiantys pristatymai atšaukiami"
+msgstr ""
+"Webhookui siunčiami įvykiai, pašalintų įvykių laukiantys pristatymai "
+"atšaukiami"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +283,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Neprivalomas pavadinimas, skiriantis vienodą galinį tašką turinčius webhookus, matomas visiems webhookų redaktoriams"
+msgstr ""
+"Neprivalomas pavadinimas, skiriantis vienodą galinį tašką turinčius "
+"webhookus, matomas visiems webhookų redaktoriams"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +297,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopijuoti slaptąjį raktą"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testuoti"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Atšaukti"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Išsaugoti"

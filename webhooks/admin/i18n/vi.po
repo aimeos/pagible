@@ -196,7 +196,7 @@ msgstr "Chỉnh sửa"
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
-msgstr "Làm mới"
+msgstr "Đổi khóa"
 
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
@@ -247,7 +247,9 @@ msgstr "Hãy sao chép khóa bí mật này ngay. Khóa sẽ không được hi�
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Webhook không hoạt động sẽ không nhận sự kiện nào và các lượt gửi đang chờ trong hàng đợi sẽ bị hủy"
+msgstr ""
+"Webhook không hoạt động sẽ không nhận sự kiện nào và các lượt gửi đang chờ "
+"trong hàng đợi sẽ bị hủy"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -268,7 +270,9 @@ msgstr "Sự kiện"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Các sự kiện được gửi đến webhook, các lượt gửi đang chờ của sự kiện đã xóa sẽ bị hủy"
+msgstr ""
+"Các sự kiện được gửi đến webhook, các lượt gửi đang chờ của sự kiện đã xóa "
+"sẽ bị hủy"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -280,7 +284,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Tên tùy chọn để phân biệt các webhook có cùng điểm cuối, hiển thị với tất cả người chỉnh sửa webhook"
+msgstr ""
+"Tên tùy chọn để phân biệt các webhook có cùng điểm cuối, hiển thị với tất cả "
+"người chỉnh sửa webhook"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -292,17 +298,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Sao chép khóa bí mật"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Kiểm tra"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Hủy"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Lưu"

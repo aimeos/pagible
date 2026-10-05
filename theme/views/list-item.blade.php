@@ -13,7 +13,7 @@
                         <span class="date-day">@localDate($item->created_at, 'D')</span>
                         <span class="date-month">@localDate($item->created_at, 'MMM')</span>
                     @else
-                        @localDate($item->created_at, 'D. MMM. YYYY')
+                        @localDate($item->created_at, 'long')
                     @endif
                 </div>
             @endif

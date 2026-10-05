@@ -47,7 +47,7 @@ msgstr "Aktiivinen"
 #: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
 msgctxt "webhooks"
 msgid "Inactive"
-msgstr "Ei aktiivinen"
+msgstr "Ei-aktiivinen"
 
 #: src/views/WebhookList.vue:250
 msgctxt "webhooks"
@@ -101,7 +101,7 @@ msgstr "Salaisuuden kopiointi epäonnistui"
 #: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
-msgstr "Ei ole"
+msgstr "Ei mitään"
 
 #: src/views/WebhookList.vue:447
 msgctxt "webhooks"
@@ -116,17 +116,17 @@ msgstr "Pääsy evätty"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "Salaisuuden salausta ei voi purkaa, vaihda se"
+msgstr "Salaisuuden salausta ei voi purkaa, vaihda salaisuus"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
 msgid "Blocked by server configuration"
-msgstr "Palvelimen asetukset estivät"
+msgstr "Estetty palvelimen määrityksellä"
 
 #: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
-msgstr "Ei kelvollinen URL-osoite"
+msgstr "Virheellinen URL-osoite"
 
 #: src/views/WebhookList.vue:452
 msgctxt "webhooks"
@@ -212,7 +212,7 @@ msgstr "Viimeisin virhe"
 #: src/views/WebhookList.vue:699
 msgctxt "webhooks"
 msgid "Paused until"
-msgstr "Keskeytetty asti"
+msgstr "Tauko päättyy"
 
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
@@ -248,7 +248,9 @@ msgstr "Kopioi tämä salaisuus nyt. Sitä ei näytetä uudelleen."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Ei-aktiiviset webhookit eivät vastaanota tapahtumia, ja niiden jonossa olevat toimitukset hylätään"
+msgstr ""
+"Ei-aktiiviset webhookit eivät vastaanota tapahtumia, ja niiden jonossa "
+"olevat toimitukset hylätään"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -258,7 +260,9 @@ msgstr "HTTPS-päätepisteen URL-osoite"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Osoite, joka vastaanottaa allekirjoitetut tapahtumat, sitä ei voi muuttaa myöhemmin"
+msgstr ""
+"Osoite, joka vastaanottaa allekirjoitetut tapahtumat, sitä ei voi muuttaa "
+"myöhemmin"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -269,7 +273,9 @@ msgstr "Tapahtumat"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Webhookiin lähetetyt tapahtumat, poistettujen tapahtumien jonossa olevat toimitukset peruutetaan"
+msgstr ""
+"Webhookiin lähetetyt tapahtumat, poistettujen tapahtumien jonossa olevat "
+"toimitukset peruutetaan"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +287,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Valinnainen nimi, jolla erottaa saman päätepisteen webhookit toisistaan, näkyy kaikille webhookien muokkaajille"
+msgstr ""
+"Valinnainen nimi, jolla erottaa saman päätepisteen webhookit toisistaan, "
+"näkyy kaikille webhookien muokkaajille"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +301,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopioi salaisuus"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testaa"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Tallenna"

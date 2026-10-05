@@ -248,7 +248,9 @@ msgstr "Skopírujte tento tajný kľúč teraz. Už sa znova nezobrazí."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Neaktívne webhooky nedostávajú žiadne udalosti a ich čakajúce doručenia sa zahadzujú"
+msgstr ""
+"Neaktívne webhooky nedostávajú žiadne udalosti a ich čakajúce doručenia sa "
+"zahadzujú"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -269,7 +271,9 @@ msgstr "Udalosti"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Udalosti odosielané na webhook, čakajúce doručenia odstránených udalostí sa rušia"
+msgstr ""
+"Udalosti odosielané na webhook, čakajúce doručenia odstránených udalostí sa "
+"rušia"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +285,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Voliteľný názov na odlíšenie webhookov s rovnakým koncovým bodom, viditeľný pre všetkých editorov webhookov"
+msgstr ""
+"Voliteľný názov na odlíšenie webhookov s rovnakým koncovým bodom, viditeľný "
+"pre všetkých editorov webhookov"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +299,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopírovať tajný kľúč"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Otestovať"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Zrušiť"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Uložiť"

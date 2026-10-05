@@ -237,7 +237,7 @@
                 "table": {
                     "type": "table",
                     "label": "table",
-                    "hint": "Table data as comma separated values, one row per line",
+                    "hint": "Enter data in the cells; add or remove rows and columns as needed",
                     "required": true
                 }
             }

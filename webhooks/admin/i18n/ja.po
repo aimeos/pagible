@@ -126,7 +126,7 @@ msgstr "サーバー設定によりブロックされました"
 #: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
-msgstr "有効なURLではない"
+msgstr "有効な URL ではありません"
 
 #: src/views/WebhookList.vue:452
 msgctxt "webhooks"
@@ -151,7 +151,7 @@ msgstr "リクエストがタイムアウトしました"
 #: src/views/WebhookList.vue:460
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
-msgstr "リダイレクトはたどりません"
+msgstr "リダイレクトには追従しません"
 
 #: src/views/WebhookList.vue:461
 msgctxt "webhooks"
@@ -217,7 +217,7 @@ msgstr "一時停止の期限"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "ローディング"
+msgstr "読み込み中"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -269,7 +269,9 @@ msgstr "イベント"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Webhook に送信されるイベントで、削除されたイベントのキュー内の配信はキャンセルされます"
+msgstr ""
+"Webhook に送信されるイベントで、削除されたイベントのキュー内の配信はキャンセ"
+"ルされます"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +283,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "同じエンドポイントを持つ Webhook を区別するための任意の名前で、すべての Webhook 編集者に表示されます"
+msgstr ""
+"同じエンドポイントを持つ Webhook を区別するための任意の名前で、すべての "
+"Webhook 編集者に表示されます"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,20 +297,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "シークレットをコピー"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "テスト"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "セーブ"
+msgstr "保存"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

@@ -180,6 +180,6 @@ describe('SchemaItems', () => {
         page: { nogroup: { label: 'NoGroup', icon: '' } },
       })
     })
-    cy.get('.v-tab').should('contain', 'uncategorized')
+    cy.get('.v-tab').should('contain', 'Uncategorized')
   })
 })

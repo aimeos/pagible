@@ -202,7 +202,7 @@ msgstr "Ganti rahasia"
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
-msgstr "Keberhasilan terakhir"
+msgstr "Terakhir berhasil"
 
 #: src/views/WebhookList.vue:692
 msgctxt "webhooks"
@@ -237,7 +237,7 @@ msgstr "Rahasia webhook"
 #: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
-msgstr "Edit webhook"
+msgstr "Sunting webhook"
 
 #: src/views/WebhookList.vue:750
 msgctxt "webhooks"
@@ -248,7 +248,9 @@ msgstr "Salin rahasia ini sekarang. Rahasia ini tidak akan ditampilkan lagi."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Webhook yang tidak aktif tidak menerima peristiwa apa pun dan pengiriman yang mengantre akan dibatalkan"
+msgstr ""
+"Webhook yang tidak aktif tidak menerima peristiwa apa pun dan pengiriman "
+"yang mengantre akan dibatalkan"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -258,7 +260,8 @@ msgstr "URL titik akhir HTTPS"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Alamat yang menerima peristiwa bertanda tangan, tidak dapat diubah setelahnya"
+msgstr ""
+"Alamat yang menerima peristiwa bertanda tangan, tidak dapat diubah setelahnya"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -269,7 +272,9 @@ msgstr "Peristiwa"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Peristiwa yang dikirim ke webhook, pengiriman yang mengantre untuk peristiwa yang dihapus akan dibatalkan"
+msgstr ""
+"Peristiwa yang dikirim ke webhook, pengiriman yang mengantre untuk peristiwa "
+"yang dihapus akan dibatalkan"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +286,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Nama opsional untuk membedakan webhook dengan titik akhir yang sama, terlihat oleh semua editor webhook"
+msgstr ""
+"Nama opsional untuk membedakan webhook dengan titik akhir yang sama, "
+"terlihat oleh semua editor webhook"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +300,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Salin rahasia"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Uji"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Batal"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Simpan"

@@ -35,5 +35,18 @@
     "Successfully sent": "Successfully sent",
     "Error sending e-mail": "Error sending e-mail",
     "Source page": "Source page",
-    "Unknown product": "Unknown product"
+    "Unknown product": "Unknown product",
+    ":attribute: This field is required.": ":attribute: This field is required.",
+    ":attribute: Please enter a valid e-mail address.": ":attribute: Please enter a valid e-mail address.",
+    ":attribute: The text is too long.": ":attribute: The text is too long.",
+    ":attribute: The value is invalid.": ":attribute: The value is invalid.",
+    "Captcha validation failed. Please try again.": "Captcha validation failed. Please try again.",
+    "Contact mail from :name": "Contact mail from :name",
+    "Contact message": "Contact message",
+    "Pagination": "Pagination",
+    "Previous page": "Previous page",
+    "Next page": "Next page",
+    "Load more": "Load more",
+    "No results found": "No results found",
+    "Search failed": "Search failed"
 }

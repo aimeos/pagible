@@ -855,7 +855,7 @@ export default {
     <v-form v-else ref="form" @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
         <v-tab v-if="app.urlpage" value="editor" @click="aside = editorElement ? 'editor' : ''">
-          {{ $gettext('Editor') }}
+          {{ $pgettext('editing interface', 'Editor') }}
         </v-tab>
         <v-tab
           value="content"

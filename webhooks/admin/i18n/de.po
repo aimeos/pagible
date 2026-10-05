@@ -117,7 +117,7 @@ msgstr "Zugriff verweigert"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "Geheimnis nicht entschlüsselbar, erneuern"
+msgstr "Geheimnis kann nicht entschlüsselt werden, bitte erneuern"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
@@ -169,7 +169,7 @@ msgstr ""
 #: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
-msgstr "Auswahl invertieren"
+msgstr "Auswahl umschalten"
 
 #: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
@@ -195,7 +195,7 @@ msgstr "Aktualisieren"
 #: src/views/WebhookList.vue:635
 msgctxt "webhooks"
 msgid "Edit"
-msgstr "bearbeiten"
+msgstr "Bearbeiten"
 
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
@@ -251,7 +251,9 @@ msgstr "Dieses Geheimnis jetzt kopieren. Es wird nicht erneut angezeigt."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Inaktive Webhooks erhalten keine Ereignisse, und ihre wartenden Zustellungen werden verworfen"
+msgstr ""
+"Inaktive Webhooks erhalten keine Ereignisse, und ihre wartenden Zustellungen "
+"werden verworfen"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -261,7 +263,7 @@ msgstr "URL des HTTPS-Endpunkts"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Adresse, die die signierten Ereignisse empfängt, kann später nicht mehr geändert werden"
+msgstr "Adresse, die die signierten Ereignisse empfängt; sie kann später nicht mehr geändert werden"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -272,7 +274,7 @@ msgstr "Ereignisse"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Ereignisse, die an den Webhook gesendet werden, wartende Zustellungen entfernter Ereignisse werden storniert"
+msgstr "Ereignisse, die an den Webhook gesendet werden; wartende Zustellungen entfernter Ereignisse werden storniert"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -284,7 +286,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Optionaler Name, um Webhooks mit demselben Endpunkt zu unterscheiden, sichtbar für alle Webhook-Bearbeiter"
+msgstr ""
+"Optionaler Name, um Webhooks mit demselben Endpunkt zu unterscheiden, "
+"sichtbar für alle Webhook-Bearbeiter"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -296,17 +300,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Geheimnis kopieren"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testen"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Speichern"

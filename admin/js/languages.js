@@ -130,6 +130,7 @@ export default {
   pl: 'Polski',
   ps: 'پښتو',
   pt: 'Português',
+  'pt-BR': 'Português (Brasil)',
   qu: 'Runa Simi',
   rm: 'Rumantsch',
   rn: 'Kirundi',
@@ -185,5 +186,6 @@ export default {
   za: 'Cuengh',
   zg: 'ⵜⴰⵎⴰⵣⵉⵖⵜ',
   zh: '中文',
+  'zh-TW': '繁體中文',
   zu: 'isiZulu'
 }

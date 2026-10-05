@@ -45,7 +45,7 @@ class ContactController extends Controller
         ];
 
         Mail::to(config('mail.from.address'))->send(
-            new ContactMail( $data )
+            ( new ContactMail( $data ) )->locale( config( 'app.locale' ) )
         );
 
         $duration = Watch::duration( $start );

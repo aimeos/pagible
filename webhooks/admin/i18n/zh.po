@@ -30,7 +30,7 @@ msgstr "所有投递均被服务器配置阻止"
 #: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "Status"
-msgstr "现状"
+msgstr "状态"
 
 #: src/views/WebhookList.vue:187
 msgctxt "webhooks"
@@ -163,7 +163,7 @@ msgstr "已发布内容发生变化时发送签名通知。"
 #: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
 msgctxt "webhooks"
 msgid "Toggle selection"
-msgstr "切换选项"
+msgstr "切换选中状态"
 
 #: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
 msgctxt "webhooks"
@@ -290,20 +290,20 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "复制密钥"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "测试"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "取消"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
-msgstr "节省"
+msgstr "保存"
 
 #~ msgctxt "webhooks"
 #~ msgid "Purge this webhook?"

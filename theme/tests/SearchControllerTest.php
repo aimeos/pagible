@@ -92,6 +92,16 @@ class SearchControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testIndexRejectsNonStringLocale()
+    {
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $request = Request::create('/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => ['en'], 'size' => 10]);
+
+        ( new \Aimeos\Cms\Controllers\SearchController() )->index($request, 'mydomain.tld');
+    }
+
+
     public function testIndexHonorsConfiguredMinimum()
     {
         config(['cms.theme.min-search' => 4]);
