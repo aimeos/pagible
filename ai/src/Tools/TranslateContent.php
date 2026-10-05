@@ -55,6 +55,13 @@ class TranslateContent extends Tool
         $config = config( 'cms.ai.translate', [] );
         $model = config( 'cms.ai.translate.model' );
 
+        $config += [
+            'ignore_tags' => ['x'],
+            'tag_handling' => 'xml',
+            'preserve_formatting' => true,
+            'model_type' => 'prefer_quality_optimized',
+        ];
+
         $texts = $validated['texts'];
         $to = $validated['to'];
         $from = $validated['from'] ?? null;
