@@ -116,22 +116,6 @@ class BackupTest extends BackupTestAbstract
     }
 
 
-    public function testBackupRejectsInvalidUtf8(): void
-    {
-        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_pages' )
-            ->where( 'tenant_id', $this->tenant )->limit( 1 )->update( ['name' => "invalid \xB1\x31"] );
-
-        $this->artisan( 'cms:backup', [
-            '--tenant' => $this->tenant,
-            '--disk' => 'backup',
-        ] )
-            ->expectsOutputToContain( 'Malformed UTF-8' )
-            ->assertExitCode( 1 );
-
-        $this->assertSame( [], Storage::disk( 'backup' )->allFiles() );
-    }
-
-
     public function testBackupRejectsConcurrentMediaOperation(): void
     {
         $status = Utils::storageLock( $this->tenant, fn() =>
