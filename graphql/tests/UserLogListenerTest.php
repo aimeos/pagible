@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\UserChanged;
-use Aimeos\Cms\Listeners\UserLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -46,7 +46,7 @@ class UserLogListenerTest extends TestCase
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new UserLogListener )->handle( new UserChanged(
+        ( new LogListener )->handle( new UserChanged(
             action: 'permission',
             actorEmail: 'admin@example.com',
             targetEmail: 'member@example.com',
@@ -70,7 +70,7 @@ class UserLogListenerTest extends TestCase
             && $ctx['target'] === 'member@example.com'
         ) );
 
-        ( new UserLogListener )->handle( new UserChanged(
+        ( new LogListener )->handle( new UserChanged(
             action: 'permission',
             actorEmail: 'admin@example.com',
             targetEmail: 'member@example.com',

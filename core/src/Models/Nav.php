@@ -75,6 +75,34 @@ class Nav extends Page
 
 
     /**
+     * Returns the first non-null config value of the published root pages, in tree order.
+     *
+     * @param string $domain Requested domain, empty to match all domains
+     * @param \Closure(self): mixed $fn Receives each partial, read-only root page and returns its value or NULL
+     * @return mixed First non-null value or NULL if no root page provides one
+     */
+    public static function rootConfig( string $domain, \Closure $fn ) : mixed
+    {
+        $pages = self::query()
+            ->select( 'config' )
+            ->whereNull( 'parent_id' )
+            ->whereIn( 'status', [1, 2] )
+            ->when( $domain !== '', fn( $q ) => $q->where( 'domain', $domain ) )
+            ->orderBy( NestedSet::LFT )
+            ->cursor();
+
+        foreach( $pages as $page )
+        {
+            if( ( $value = $fn( $page ) ) !== null ) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
      * Returns the text content of the page.
      *
      * @return string Text content

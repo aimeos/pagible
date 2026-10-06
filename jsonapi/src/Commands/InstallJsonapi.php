@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallJsonapi extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -50,17 +54,6 @@ class InstallJsonapi extends Command
      */
     protected function exception() : int
     {
-        $done = 0;
-        $filename = 'bootstrap/app.php';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        $search = "->withExceptions(function (Exceptions \$exceptions) {\n";
-
         $string = '
         $exceptions->dontReport(
             \LaravelJsonApi\Core\Exceptions\JsonApiException::class,
@@ -69,20 +62,8 @@ class InstallJsonapi extends Command
             \LaravelJsonApi\Exceptions\ExceptionParser::renderer(),
         );';
 
-        if( strpos( $content, '\LaravelJsonApi\Exceptions\ExceptionParser' ) === false )
-        {
-            $content = str_replace( $search, $search . $string, $content );
-            $this->line( sprintf( '  Added JSON:API exception handler to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
-
-        if( $done ) {
-            file_put_contents( base_path( $filename ), $content );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->insert( 'bootstrap/app.php', "->withExceptions(function (Exceptions \$exceptions) {\n", $string,
+            '\LaravelJsonApi\Exceptions\ExceptionParser', '  Added JSON:API exception handler to [%1$s]' . PHP_EOL );
     }
 
 
@@ -93,32 +74,11 @@ class InstallJsonapi extends Command
      */
     protected function jsonapi() : int
     {
-        $done = 0;
-        $filename = 'config/jsonapi.php';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
         $string = "
         'cms' => \Aimeos\Cms\JsonApi\V1\Server::class,
         ";
 
-        if( strpos( $content, '\Aimeos\Cms\JsonApi\V1\Server::class' ) === false )
-        {
-            $done++;
-            $content = str_replace( "'servers' => [", "'servers' => [" . $string, $content );
-            $this->line( sprintf( '  Added CMS JSON:API server to [%1$s]' . PHP_EOL, $filename ) );
-        }
-
-        if( $done ) {
-            file_put_contents( base_path( $filename ), $content );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->insert( 'config/jsonapi.php', "'servers' => [", $string,
+            '\Aimeos\Cms\JsonApi\V1\Server::class', '  Added CMS JSON:API server to [%1$s]' . PHP_EOL );
     }
 }

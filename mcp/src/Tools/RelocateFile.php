@@ -6,13 +6,11 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -22,15 +20,14 @@ use Laravel\Mcp\Request;
 #[Description('Moves a managed file and all of its previews and versions between public and private storage. Private files are delivered through page access checks. Remote hot-linked files cannot be relocated.')]
 class RelocateFile extends Tool
 {
+    protected const PERMISSIONS = ['file:relocate'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:relocate', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate( [
             'id' => 'required|string|max:36',
             'disk' => 'required|string|in:public,private',
@@ -66,14 +63,5 @@ class RelocateFile extends Tool
                 ->description('Target storage: "public" or "private".')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'file:relocate', $request->user() );
     }
 }

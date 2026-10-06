@@ -9,8 +9,6 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
@@ -18,7 +16,6 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
-use Aimeos\Nestedset\NestedSet;
 
 
 class BenchmarkGraphql extends Command
@@ -30,10 +27,7 @@ class BenchmarkGraphql extends Command
     protected $signature = 'cms:benchmark:graphql
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--seed : Seed benchmark data before running benchmarks}
-        {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -54,49 +48,16 @@ class BenchmarkGraphql extends Command
             return self::FAILURE;
         }
 
-        $this->tenant( $tenant );
-
-        if( !$this->hasSeededData() )
-        {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
-            return self::FAILURE;
-        }
-
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
-        $conn = config( 'cms.db', 'sqlite' );
 
         config( ['scout.driver' => 'cms'] );
 
-        // Wrap everything in a transaction for user cleanup
-        DB::connection( $conn )->beginTransaction();
-
-        try
-        {
-            $user = $this->user();
-            Auth::login( $user );
-
-            $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
-
-            $count = Page::where( 'tag', '!=', 'root' )->count();
-            $page = Page::where( 'tag', '!=', 'root' )
-                ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
-
-            $moveParent = Page::where( NestedSet::DEPTH, 1 )
-                ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
-
-            // Query pre-seeded soft-deleted page for KeepPage
-            $trashedPage = Page::onlyTrashed()->firstOrFail();
-
-            // Create unpublished version for PubPage
-            $unpubVersion = $page->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => (array) $page->latest?->data,
-                'aux' => (array) $page->latest?->aux,
-                'published' => false,
-                'editor' => 'benchmark',
-            ] );
-            $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
-            $page->setRelation( 'latest', $unpubVersion );
+        // Run everything in a rolled back transaction for user cleanup
+        $this->sandbox( function() use ( $domain, $tries ) {
+            [
+                'root' => $root, 'page' => $page, 'parent' => $moveParent, 'element' => $element, 'file' => $file,
+                'trashed' => ['page' => $trashedPage],
+            ] = $this->fixtures( $domain );
 
             $this->header();
 
@@ -146,7 +107,7 @@ class BenchmarkGraphql extends Command
             }, tries: $tries );
 
             $this->benchmark( 'Page list', function() {
-                ( new Query )->pages( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
+                ( new Query )->pages( null, ['first' => 100] )->items();
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
@@ -194,8 +155,6 @@ class BenchmarkGraphql extends Command
                 ( new Query )->elements( null, ['first' => 100, 'filter' => ['lang' => 'en']] )->items();
             }, readOnly: true, tries: $tries );
 
-            $element = Element::firstOrFail();
-
             $this->benchmark( 'Element get', function() use ( $element ) {
                 Element::with( 'latest.files', 'bypages' )->find( $element->id );
             }, readOnly: true, tries: $tries );
@@ -227,14 +186,12 @@ class BenchmarkGraphql extends Command
                 ( new Query )->files( null, ['first' => 100, 'filter' => [], 'sort' => [['column' => 'name', 'order' => 'asc']]] )->items();
             }, readOnly: true, tries: $tries );
 
-            $file = File::firstOrFail();
-
             $this->benchmark( 'File get', function() use ( $file ) {
                 File::with( 'latest', 'bypages', 'byelements' )->find( $file->id );
             }, readOnly: true, tries: $tries );
 
 
-            $imagePath = (string) realpath( __DIR__ . '/../../tests/assets/image.png' );
+            $imagePath = (string) realpath( __DIR__ . '/../../assets/image.png' );
 
             $this->benchmark( 'File add', function() use ( $imagePath ) {
                 ( new Mutations\AddFile )( null, [
@@ -246,13 +203,7 @@ class BenchmarkGraphql extends Command
             }, tries: $tries );
 
             $this->line( '' );
-        }
-        finally
-        {
-            Auth::logout();
-            Auth::guard()->forgetUser();
-            DB::connection( $conn )->rollBack();
-        }
+        } );
 
         return self::SUCCESS;
     }

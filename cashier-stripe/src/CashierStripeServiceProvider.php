@@ -7,8 +7,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Http\Middleware\CashierWebhook;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider as Provider;
 use Laravel\Cashier\Console\WebhookCommand;
 use Laravel\Cashier\Events\WebhookReceived;
@@ -25,16 +23,9 @@ class CashierStripeServiceProvider extends Provider
 
         config( ['cashier.webhook.events' => array_values( array_unique( [...$events, ...CashierStripe::EVENTS] ) )] );
 
-        Event::listen( WebhookReceived::class, function( WebhookReceived $event ) {
-            if( trim( (string) config( 'cashier.webhook.secret' ) ) !== '' ) {
-                app( CashierStripe::class )->webhook( $event->payload );
-            }
-        } );
-
-        $this->app->booted( fn() => Route::getRoutes()->getByName( 'cashier.webhook' )
-            ?->middleware( CashierWebhook::class . ':cashier.webhook.secret' )
+        CashierWebhook::register( 'cashier.webhook.secret', WebhookReceived::class,
+            fn( WebhookReceived $event ) => app( CashierStripe::class )->webhook( $event->payload )
         );
-
     }
 
 

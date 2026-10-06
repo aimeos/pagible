@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class StyleDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'atelier' => 'Step inside the Veyra atelier in Berlin and see how limited-edition garments move from paper pattern to final hand finish.',
         'collection' => 'Discover Veyra Collection No. 08: limited-edition coats, tailoring, dresses, and separates cut in Berlin from traceable European cloth.',
         'journal' => 'Read Veyra Journal notes from the cutting room on proportion, bias cutting, fittings, undyed wool, and clothes made to stay in rotation.',
@@ -37,7 +36,7 @@ class StyleDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'atelier' => ['photo-1718184021018-d2158af6b321', 'Veyra cutting room', 'Tailor measuring and cutting dark cloth by hand on the atelier table'],
         'coat' => ['photo-1613915617430-8ab0fd7c6baf', 'Veyra Orbit Coat', 'Monochrome editorial portrait of a model in a structured grey coat'],
         'collection' => ['photo-1613909671501-f9678ffc1d33', 'Veyra Collection No. 08', 'Runway model presenting a pale layered look beneath a single spotlight'],
@@ -58,12 +57,6 @@ class StyleDemo extends AbstractDemo
 
     private string $element;
     private string $logoFile;
-    /** @var array<string, string> File IDs for fixed-ratio portrait images */
-    private array $portraitImages = [];
-    /** @var array<string, string> File IDs for fixed-ratio pricing images */
-    private array $pricingImages = [];
-    /** @var array<string, string> File IDs for fixed-ratio slideshow images */
-    private array $slideImages = [];
 
 
     /**
@@ -584,24 +577,6 @@ class StyleDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing collection call to action for a journal article.
      *
      * @param string $title Hero title
@@ -629,40 +604,12 @@ class StyleDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Collection', 'text' => "- [Collection No. 08](/collection)\n- [After Dark lookbook](/lookbook)\n- [Book a fitting](/visit)"],
-                ['title' => 'The house', 'text' => "- [Atelier](/atelier)\n- [Journal](/journal)\n- [Visit the boutique](/visit)"],
-                ['title' => 'Client care', 'text' => "- [Sizing and alterations](/collection#pieces)\n- [Remote appointments](/visit)\n- [Delivery questions](/visit)"],
-                ['title' => 'Contact', 'text' => "- [boutique@veyra.example](mailto:boutique@veyra.example)\n- [atelier@veyra.example](mailto:atelier@veyra.example)\n- +49 30 0000 0000\n- Berlin-Mitte"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Veyra footer',
-                'data' => ['type' => 'cards', 'data' => ['title' => 'Veyra', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Veyra footer',
-                    'data' => ['title' => 'Veyra', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Veyra footer', ['title' => 'Veyra', 'cards' => [
+            ['title' => 'Collection', 'text' => "- [Collection No. 08](/collection)\n- [After Dark lookbook](/lookbook)\n- [Book a fitting](/visit)"],
+            ['title' => 'The house', 'text' => "- [Atelier](/atelier)\n- [Journal](/journal)\n- [Visit the boutique](/visit)"],
+            ['title' => 'Client care', 'text' => "- [Sizing and alterations](/collection#pieces)\n- [Remote appointments](/visit)\n- [Delivery questions](/visit)"],
+            ['title' => 'Contact', 'text' => "- [boutique@veyra.example](mailto:boutique@veyra.example)\n- [atelier@veyra.example](mailto:atelier@veyra.example)\n- +49 30 0000 0000\n- Berlin-Mitte"],
+        ]] );
     }
 
 
@@ -691,17 +638,7 @@ class StyleDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Veyra'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -784,83 +721,7 @@ class StyleDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'Veyra | Independent Berlin Fashion Label',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'Veyra | Independent Berlin Fashion Label',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => ['config' => $config, 'meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'Veyra | Independent Berlin Fashion Label', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -912,49 +773,13 @@ SVG;
     protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
     {
         $elementId = $this->element();
-        $contentIds = $this->ids( $content );
-        $fileId = $contentIds[0] ?? $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
+        $fileId = $this->ids( $content )[0] ?? $this->file();
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Veyra, Berlin fashion label, independent designer, womenswear, limited edition clothing',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $contentIds, $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Veyra, Berlin fashion label, independent designer, womenswear, limited edition clothing', $fileIds, $meta );
     }
 
 
@@ -982,25 +807,7 @@ SVG;
      */
     protected function portraitImg( string $key ) : string
     {
-        if( !isset( $this->portraitImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1200, 1800 ),
-                'previews' => ['500' => $url( 500, 750 ), '1000' => $url( 1000, 1500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->portraitImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->portraitImages[$key];
+        return $this->cropped( $key, 1200, 1800, true );
     }
 
 
@@ -1012,25 +819,7 @@ SVG;
      */
     protected function priceImg( string $key ) : string
     {
-        if( !isset( $this->pricingImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 1000 ),
-                'previews' => ['500' => $url( 500, 333 ), '1000' => $url( 1000, 667 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->pricingImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->pricingImages[$key];
+        return $this->cropped( $key, 1500, 1000, true );
     }
 
 
@@ -1042,24 +831,6 @@ SVG;
      */
     protected function slideImg( string $key ) : string
     {
-        if( !isset( $this->slideImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 750 ),
-                'previews' => ['500' => $url( 500, 250 ), '1000' => $url( 1000, 500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->slideImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->slideImages[$key];
+        return $this->cropped( $key, 1500, 750, true );
     }
 }

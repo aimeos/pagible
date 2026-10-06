@@ -226,7 +226,7 @@ class AiToolsTest extends AiTestAbstract
         CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\GenerateImage::class, [
             'prompt' => 'Use the stored image as a reference',
             'files' => ['00000000-0000-0000-0000-000000000000'],
-        ] )->assertHasErrors();
+        ] )->assertOk()->assertStructuredContent( ['error' => 'Insufficient permissions'] );
     }
 
 
@@ -332,10 +332,43 @@ class AiToolsTest extends AiTestAbstract
         $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
             'file' => $file->id,
             'prompt' => 'Make the sky a sunset',
+            'latest_id' => $file->latest_id,
         ] );
 
         $response->assertOk()->assertSee( ['id'] );
         $this->assertGreaterThan( $before, $file->versions()->count() );
+    }
+
+
+    public function testRepaintImageInvalidUpload()
+    {
+        Storage::fake( 'public' );
+        config( ['cms.upload.filesize' => 0] );
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+
+        Prisma::fake( [FileResponse::fromBinary( $this->pngBinary(), 'image/png' )] );
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
+            'file' => $file->id,
+            'prompt' => 'Make the sky a sunset',
+            'latest_id' => $file->latest_id,
+        ] );
+
+        $response->assertOk()->assertSee( ['error', 'exceeds the maximum'] );
+    }
+
+
+    public function testRepaintImageRequiresLatestId()
+    {
+        Prisma::fake( [] );
+        $file = File::where( 'name', 'Test image' )->firstOrFail();
+
+        $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
+            'file' => $file->id,
+            'prompt' => 'Make the sky a sunset',
+        ] );
+
+        $response->assertHasErrors( ['latest_id'] );
     }
 
 
@@ -346,6 +379,7 @@ class AiToolsTest extends AiTestAbstract
         $response = CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RepaintImage::class, [
             'file' => '00000000-0000-0000-0000-000000000000',
             'prompt' => 'Make the sky a sunset',
+            'latest_id' => '00000000-0000-0000-0000-000000000000',
         ] );
 
         $response->assertOk()->assertStructuredContent( ['error' => 'Image file not found or not an image.'] );
@@ -415,6 +449,6 @@ class AiToolsTest extends AiTestAbstract
             'file' => $file->id,
         ] );
 
-        $response->assertOk()->assertSee( ['error'] );
+        $response->assertOk()->assertStructuredContent( ['error' => 'Audio file not found or not an audio file.'] );
     }
 }

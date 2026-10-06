@@ -31,6 +31,9 @@ use Illuminate\Support\Collection;
  */
 class Element extends Base
 {
+    public const PERM = 'element';
+    protected const REFS = ['files'];
+
     /** @var list<string> Columns for eager-loading element relations */
     public const SELECT_COLUMNS = [
         'cms_elements.id', 'cms_elements.tenant_id', 'cms_elements.latest_id', 'type', 'name', 'data',

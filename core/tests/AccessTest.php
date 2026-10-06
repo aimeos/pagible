@@ -327,6 +327,25 @@ class AccessTest extends CoreTestAbstract
     }
 
 
+    public function testNumericValuesStayStrings(): void
+    {
+        $this->assertSame( ['123', '45', 'alpha'], Access::normalize( ['45', ' 123 ', 'alpha', '123'] ) );
+
+        Access::using( fn() => ['123', 'alpha'] );
+        Gate::define( '123', fn() => true );
+        Gate::define( 'alpha', fn() => false );
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $access = app( Access::class );
+
+        $this->assertSame( ['123', 'alpha'], $access->list() );
+        $this->assertSame( ['123'], $access->search( '12' ) );
+        $this->assertSame( ['123'], $access->known( ['123', '999'] ) );
+        $this->assertSame( ['123'], $access->allowed( $user ) );
+        $this->assertSame( ['123'], $access->allowed( $user, ['123', 'alpha', '123'] ) );
+    }
+
+
     public function testRejectsNonStringValues(): void
     {
         $this->expectException( Exception::class );

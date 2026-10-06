@@ -7,18 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Ai;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Refiner;
-use Aimeos\Cms\Utils;
-use Aimeos\Prisma\Tools;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -28,19 +22,14 @@ use Laravel\Mcp\Request;
 #[Description('Improves or restructures existing page content using AI based on a prompt. Pass the page ID and a prompt describing the changes. Returns the refined content elements as a JSON array.')]
 class RefineContent extends Tool
 {
-    use ObservesPrisma;
+    protected const PERMISSIONS = ['page:refine', 'page:view'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:refine', $request->user() )
-            || !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $validated = $request->validate([
             'id' => 'required|string|max:36',
             'prompt' => 'required|string|max:2000',
@@ -51,53 +40,18 @@ class RefineContent extends Tool
             'prompt.required' => 'You must provide a prompt describing how to refine the content.',
         ] );
 
-        /** @var Page|null $page */
-        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'type', 'content', 'latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] )
-            ->find( $validated['id'] );
+        /** @var Page $page */
+        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'type', 'latest_id' )
+            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux', 'data->type as type' )] )
+            ->findOrFail( $validated['id'] );
 
-        if( !$page ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
+        // the published content is only loaded if there's no draft content
+        $content = (array) ( $page->latest->aux->content
+            ?? Page::withTrashed()->select( 'id', 'content' )->find( $page->id )->content ?? [] );
 
-        $content = (array) ( $page->latest?->aux->content ?? $page->content ?? [] );
-
-        $provider = config( 'cms.ai.refine.provider' );
-        $config = config( 'cms.ai.refine', [] );
-        $model = config( 'cms.ai.refine.model' );
-
-        $system = view( 'cms::prompts.refine' )->render();
-        $schema = \Aimeos\Prisma\Schema\Schema::fromArray( 'response', \Aimeos\Cms\JsonSchema::build( 'content', $page->type ) );
-        $limit = (int) ini_get( 'max_execution_time' );
-
-        set_time_limit( (int) config( 'cms.ai.timeout' ) ); // long AI call; lift PHP's default 30s execution limit
-
-        try
-        {
-            $response = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-                ->using( $provider, $config )
-                ->model( $model )
-                ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
-                ->withSystemPrompt( $system . "\n" . ( $validated['context'] ?? '' ) . ( !empty( $validated['lang'] ) ? "\nWrite the content in language: " . $validated['lang'] : '' ) )
-                ->withClientOptions( [
-                    'timeout' => (int) config( 'cms.ai.timeout' ),
-                    'connect_timeout' => 10,
-                ] )
-                ->ensure( 'structure' )
-                ->structure( $validated['prompt'] . "\n\nContent as JSON:\n" . json_encode( $content ), $schema ); // @phpstan-ignore-line method.notFound
-        }
-        finally
-        {
-            set_time_limit( $limit );
-        }
-
-        $structured = $response->structured();
-
-        if( !$structured || $schema->validate( $structured ) ) {
-            return Response::structured( ['error' => 'Invalid content in refine response.'] );
-        }
-
-        $result = Refiner::merge( $content, $structured['contents'] ?? [], $page->type );
+        $type = $page->latest->type ?? $page->type;
+        $result = Ai::refine( $validated['prompt'], $content, 'content', $type, $validated['context'] ?? null,
+            $validated['lang'] ?? null );
 
         return Response::structured( ['content' => $result] );
     }
@@ -122,18 +76,5 @@ class RefineContent extends Tool
             'lang' => $schema->string()
                 ->description('Language code the refined content should be written in, e.g. "en" or "de".'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:refine', $request->user() )
-            && Permission::can( 'page:view', $request->user() );
     }
 }

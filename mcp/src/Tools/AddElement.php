@@ -7,13 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 
@@ -23,15 +21,14 @@ use Laravel\Mcp\Response;
 #[Description('Creates a reusable content element. Requires type (use get-schemas), name (max 100 chars), and data (object with type-specific fields). Files are attached automatically from the file items in the data. Optional: lang (ISO code). Returns the created element as JSON, including the latest_id to pass to save-element when editing it.')]
 class AddElement extends Tool
 {
+    protected const PERMISSIONS = ['element:add'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:add', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'type' => 'required|string|max:50',
             'name' => 'required|string|max:100',
@@ -45,7 +42,7 @@ class AddElement extends Tool
 
         $element = Resource::addElement( $v, $request->user() );
 
-        return Response::structured( ['id' => $element->id, 'latest_id' => $element->latest_id] + $element->toArray() );
+        return Response::structured( Presenter::item( $element ) );
     }
 
 
@@ -69,17 +66,5 @@ class AddElement extends Tool
                 ->description('The element data as a JSON object. Fields depend on the type. For "text": {"text": "markdown content"}. For "heading": {"text": "Title", "level": "2"}. Use get-schemas to see field definitions.')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'element:add', $request->user() );
     }
 }

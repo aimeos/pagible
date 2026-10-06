@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Generated;
-use Aimeos\Cms\Listeners\AiLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -41,7 +41,7 @@ class AiLogListenerTest extends TestCase
         } ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new AiLogListener )->handle( new Generated(
+        ( new LogListener )->handle( new Generated(
             mutation: 'write',
             provider: 'openai',
             success: false,
@@ -55,7 +55,7 @@ class AiLogListenerTest extends TestCase
         config( ['cms.watch.channel' => null] );
         Log::shouldReceive( 'channel' )->never();
 
-        ( new AiLogListener )->handle( new Generated( mutation: 'write' ) );
+        ( new LogListener )->handle( new Generated( mutation: 'write' ) );
 
         $this->assertTrue( true );
     }

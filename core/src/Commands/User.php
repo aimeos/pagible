@@ -58,7 +58,8 @@ class User extends Command
             return;
         }
 
-        if( !$user ) {
+        // New users get their password in create(), so it isn't asked and saved again below
+        if( $created = !$user ) {
             $user = $this->create( $email );
             $user->save();
         }
@@ -102,7 +103,7 @@ class User extends Command
         // Only save when the password actually changed; an unconditional save() would
         // re-issue an UPDATE (bumping updated_at / firing saved hooks) even for
         // pure-permission invocations, on top of set()'s own locked write.
-        if( $this->input->hasParameterOption( '--password' ) ) {
+        if( !$created && $this->input->hasParameterOption( '--password' ) ) {
             $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
             $user->save();
         }
@@ -162,13 +163,8 @@ class User extends Command
         {
             $this->info( sprintf( '%1$s:', $group ) );
 
-            foreach( $names as $name )
-            {
-                if( Permission::can( $name, $user ) ) {
-                    $this->line( sprintf( '  [x] %1$s', $name ) );
-                } else {
-                    $this->line( sprintf( '  [ ] %1$s', $name ) );
-                }
+            foreach( $names as $name ) {
+                $this->line( sprintf( '  [%1$s] %2$s', Permission::can( $name, $user ) ? 'x' : ' ', $name ) );
             }
         }
     }

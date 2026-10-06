@@ -32,18 +32,13 @@ final class Query
     public function elements( $rootValue, array $args ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
-        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
-        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
-        $search = Element::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
-            ->searchFields( 'draft' );
+        $search = Filter::search( Element::class, $filter['any'] ?? '' );
 
         Filter::elements( $search, $filter + $args );
 
         $allowed = ['id', 'latest_id', 'lang', 'name', 'type', 'editor'];
-        $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
-
-        return $search->paginate( $limit, 'page', $page );
+        return $this->paginate( $search, $args, $allowed, 'id', 'desc' );
     }
 
 
@@ -60,8 +55,6 @@ final class Query
         ?ResolveInfo $resolveInfo = null ) : LengthAwarePaginator
     {
         $filter = $args['filter'] ?? [];
-        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
-        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
         $available = ['disk', 'lang', 'name', 'mime', 'path', 'previews', 'description', 'transcription', 'editor',
             'created_at', 'updated_at', 'deleted_at'];
         $fields = $resolveInfo
@@ -74,8 +67,7 @@ final class Query
             $columns[] = 'cms_files.latest_id';
         }
 
-        $search = File::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
-            ->searchFields( 'draft' );
+        $search = Filter::search( File::class, $filter['any'] ?? '' );
 
         $search->query( function( $query ) use ( $args, $columns, $fields ) {
             $query->select( array_values( array_unique( $columns ) ) );
@@ -88,9 +80,7 @@ final class Query
         Filter::files( $search, $filter + $args );
 
         $allowed = ['id', 'latest_id', 'name', 'mime', 'lang', 'editor', 'byversions_count'];
-        $this->sort( $search, $args['sort'] ?? [], $allowed, 'id', 'desc' );
-
-        return $search->paginate( $limit, 'page', $page );
+        return $this->paginate( $search, $args, $allowed, 'id', 'desc' );
     }
 
 
@@ -107,11 +97,8 @@ final class Query
         $route = array_key_exists( 'path', $filter )
             ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
             : [];
-        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
-        $page = max( (int) ( $args['page'] ?? 1 ), 1 );
 
-        $search = Page::search( mb_substr( trim( (string) ( $filter['any'] ?? '' ) ), 0, 200 ) )
-            ->searchFields( 'draft' );
+        $search = Filter::search( Page::class, $filter['any'] ?? '' );
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 
@@ -124,26 +111,25 @@ final class Query
         }
 
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
-        $this->sort( $search, $args['sort'] ?? [], $allowed, NestedSet::LFT, 'asc' );
-
-        return $search->paginate( $limit, 'page', $page );
+        return $this->paginate( $search, $args, $allowed, NestedSet::LFT, 'asc' );
     }
 
 
     /**
-     * Apply sort clauses from @orderBy to the Scout builder.
+     * Applies the allowlisted sort clauses and returns the requested page of results.
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $search
-     * @param array<int, array{column: string, order: string}> $clauses
+     * @param array<string, mixed> $args GraphQL arguments with "first", "page" and "sort"
      * @param array<int, string> $allowed Allowlisted column names
-     * @param string $defaultColumn Default sort column
-     * @param string $defaultDirection Default sort direction
+     * @param string $column Default sort column
+     * @param string $dir Default sort direction
+     * @return LengthAwarePaginator<int, mixed>
      */
-    private function sort( $search, array $clauses, array $allowed, string $defaultColumn, string $defaultDirection ) : void
+    private function paginate( $search, array $args, array $allowed, string $column, string $dir ) : LengthAwarePaginator
     {
         $applied = false;
 
-        foreach( $clauses as $clause )
+        foreach( $args['sort'] ?? [] as $clause )
         {
             if( in_array( $clause['column'], $allowed ) ) {
                 $search->orderBy( $clause['column'], $clause['order'] );
@@ -152,7 +138,11 @@ final class Query
         }
 
         if( !$applied ) {
-            $search->orderBy( $defaultColumn, $defaultDirection );
+            $search->orderBy( $column, $dir );
         }
+
+        $limit = min( max( (int) ( $args['first'] ?? 100 ), 1 ), 100 );
+
+        return $search->paginate( $limit, 'page', max( (int) ( $args['page'] ?? 1 ), 1 ) );
     }
 }

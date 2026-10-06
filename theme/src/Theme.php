@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -116,18 +117,6 @@ class Theme
 
 
     /**
-     * Returns the layout types for a theme.
-     *
-     * @param string $name Theme name
-     * @return array<string, mixed> Layout types from schema.json
-     */
-    public static function layouts( string $name ) : array
-    {
-        return Schema::get( $name )['types'] ?? [];
-    }
-
-
-    /**
      * Resolves the view namespace for a theme.
      *
      * For Composer themes, registers the view namespace and returns the name.
@@ -147,7 +136,7 @@ class Theme
         }
 
         // Tenant theme names are concatenated into a local storage path that is
-        // synced and recursively cleaned up (see sync()/cleanup()). Reject anything
+        // synced and recursively cleaned up (see sync()). Reject anything
         // outside the strict identifier charset (same whitelist as Theme::discover())
         // so a crafted page theme can never traverse out of the cms-themes directory.
         if( !preg_match( '/^[a-zA-Z0-9-]+$/', $name ) ) {
@@ -185,32 +174,6 @@ class Theme
 
 
     /**
-     * Recursively removes a directory and its contents.
-     *
-     * @param string $dir Directory path to remove
-     */
-    private static function cleanup( string $dir ) : void
-    {
-        if( !is_dir( $dir ) ) {
-            return;
-        }
-
-        $items = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach( $items as $item )
-        {
-            $path = $item->getPathname();
-            $item->isDir() ? rmdir( $path ) : unlink( $path );
-        }
-
-        rmdir( $dir );
-    }
-
-
-    /**
      * Syncs theme views from shared disk to local filesystem.
      *
      * @param \Illuminate\Contracts\Filesystem\Filesystem $disk Storage disk
@@ -226,11 +189,8 @@ class Theme
             return;
         }
 
-        if( is_dir( $dir ) ) {
-            self::cleanup( $dir );
-        }
-
-        $viewsDir = $dir . '/views';
+        File::deleteDirectory( $dir );
+        File::ensureDirectoryExists( $dir );
 
         foreach( $disk->allFiles( $themePath . '/views' ) as $file )
         {
@@ -240,18 +200,9 @@ class Theme
                 continue;
             }
 
-            $target = $viewsDir . '/' . $relative;
-            $dir = dirname( $target );
-
-            if( !is_dir( $dir ) ) {
-                mkdir( $dir, 0755, true );
-            }
-
+            $target = $dir . '/views/' . $relative;
+            File::ensureDirectoryExists( dirname( $target ) );
             file_put_contents( $target, $disk->get( $file ) );
-        }
-
-        if( !is_dir( $dir ) ) {
-            mkdir( $dir, 0755, true );
         }
 
         file_put_contents( $versionFile, (string) $version );

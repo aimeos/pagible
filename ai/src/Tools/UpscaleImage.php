@@ -7,15 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Permission;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Ai;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -26,46 +23,9 @@ use Laravel\Mcp\Request;
 class UpscaleImage extends Tool
 {
     use HandlesMedia;
-    use ObservesPrisma;
 
 
-    /**
-     * Handle the tool request.
-     */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
-    {
-        if( !Permission::can( 'image:upscale', $request->user() )
-            || !Permission::can( 'file:save', $request->user() )
-            || !Permission::can( 'file:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        $v = $request->validate( [
-            'file' => 'required|string|max:36',
-            'factor' => 'required|integer|min:2|max:4',
-            'latestId' => 'string|max:36',
-        ], [
-            'file.required' => 'You must specify the UUID of the image file to upscale.',
-            'factor.required' => 'You must specify the upscale factor, e.g., 2 or 4.',
-        ] );
-
-        if( !( $image = $this->image( $v['file'] ) ) ) {
-            return Response::structured( ['error' => 'Image file not found or not an image.'] );
-        }
-
-        $provider = config( 'cms.ai.upscale.provider' );
-        $config = config( 'cms.ai.upscale', [] );
-        $model = config( 'cms.ai.upscale.model' );
-
-        $base64 = Prisma::image()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'upscale' )
-            ->upscale( $image, $v['factor'], $config ) // @phpstan-ignore-line method.notFound
-            ->base64();
-
-        return Response::structured( $this->update( $v['file'], (string) $base64, $v['latestId'] ?? null, $request->user() ) );
-    }
+    protected const PERMISSIONS = ['image:upscale', 'file:save', 'file:view'];
 
 
     /**
@@ -82,22 +42,31 @@ class UpscaleImage extends Tool
             'factor' => $schema->integer()
                 ->description( 'Upscale factor between 2 and 4.' )
                 ->required(),
-            'latestId' => $schema->string()
-                ->description( 'Version ID the caller last retrieved. Enables conflict detection.' ),
+            'latest_id' => $schema->string()
+                ->description( 'Required. The latest_id value returned by get-file, add-file, or your previous save-file for this file. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+                ->required(),
         ];
     }
 
 
     /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
+     * Handle the tool request.
      */
-    public function shouldRegister( Request $request ) : bool
+    protected function run( Request $request ) : ResponseFactory
     {
-        return Permission::can( 'image:upscale', $request->user() )
-            && Permission::can( 'file:save', $request->user() )
-            && Permission::can( 'file:view', $request->user() );
+        $v = $request->validate( [
+            'file' => 'required|string|max:36',
+            'factor' => 'required|integer|min:2|max:4',
+            'latest_id' => 'required|string|max:36',
+        ], [
+            'file.required' => 'You must specify the UUID of the image file to upscale.',
+            'factor.required' => 'You must specify the upscale factor, e.g., 2 or 4.',
+            'latest_id.required' => 'You must pass the latest_id returned by get-file, add-file, or a previous save-file so concurrent edits are detected.',
+        ] );
+
+        $image = $this->image( $v['file'] );
+        $base64 = Ai::upscale( $image, $v['factor'] );
+
+        return Response::structured( $this->update( $v['file'], $base64, $v['latest_id'], $request->user() ) );
     }
 }

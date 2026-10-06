@@ -15,24 +15,20 @@ class ContactRequest extends FormRequest
     private const DEFAULT_MANDATORY_FIELDS = ['name', 'email'];
     private const STANDARD_FIELDS = ['name', 'company', 'telephone', 'email', 'subject'];
 
+    /** @var array{mandatory: array<int, string>, optional: array<int, string>}|null */
+    private ?array $sets = null;
+
 
     /** @return array<string, string> */
     public function attributes(): array
     {
         $attributes = ['message' => __( 'Message' ), 'source' => __( 'Source page' )];
 
-        foreach( $this->fields() as $field ) {
+        foreach( [...$this->mandatory(), ...$this->optional()] as $field ) {
             $attributes[self::key( $field )] = __( $field === 'email' ? 'E-Mail' : \Illuminate\Support\Str::headline( $field ) );
         }
 
         return $attributes;
-    }
-
-
-    /** @return array<int, string> */
-    public function fields(): array
-    {
-        return [...$this->mandatory(), ...$this->optional()];
     }
 
 
@@ -47,14 +43,14 @@ class ContactRequest extends FormRequest
     /** @return array<int, string> */
     public function mandatory(): array
     {
-        return $this->sets()['mandatory'];
+        return $this->sets()['mandatory'] ?? [];
     }
 
 
     /** @return array<int, string> */
     public function optional(): array
     {
-        return $this->sets()['optional'];
+        return $this->sets()['optional'] ?? [];
     }
 
 
@@ -86,14 +82,7 @@ class ContactRequest extends FormRequest
                 'string',
                 'max:8192',
                 function( string $attribute, mixed $value, \Closure $fail ) : void {
-                    $signature = $this->input( 'signature' );
-                    $sets = is_string( $value ) ? json_decode( $value, true ) : null;
-
-                    if( !is_string( $value ) || !is_string( $signature )
-                        || !hash_equals( self::signature( $value ), $signature )
-                        || !is_array( $sets )
-                        || self::schema( $sets['mandatory'] ?? null, $sets['optional'] ?? null ) !== $value
-                    ) {
+                    if( $this->sets() === null ) {
                         $fail( 'validation.in' )->translate( ['attribute' => $attribute] );
                     }
                 },
@@ -113,16 +102,14 @@ class ContactRequest extends FormRequest
             ],
         ];
 
-        foreach( $this->mandatory() as $field ) {
-            $rules[self::key( $field )] = $field === 'email'
-                ? ['required', 'email:rfc,dns', 'max:254']
-                : ['required', 'string', 'max:255'];
-        }
+        $mandatory = $this->mandatory();
 
-        foreach( $this->optional() as $field ) {
+        foreach( [...$mandatory, ...$this->optional()] as $field )
+        {
+            $rule = in_array( $field, $mandatory, true ) ? 'required' : 'nullable';
             $rules[self::key( $field )] = $field === 'email'
-                ? ['nullable', 'email:rfc,dns', 'max:254']
-                : ['nullable', 'string', 'max:255'];
+                ? [$rule, 'email:rfc,dns', 'max:254']
+                : [$rule, 'string', 'max:255'];
         }
 
         if( !app()->environment('local') && config('services.hcaptcha.secret') ) {
@@ -164,31 +151,37 @@ class ContactRequest extends FormRequest
     }
 
 
-    /** @return array{mandatory: array<int, string>, optional: array<int, string>} */
-    private function sets(): array
+    /**
+     * Returns the verified field sets or NULL if the submitted schema is invalid.
+     *
+     * @return array{mandatory: array<int, string>, optional: array<int, string>}|null
+     */
+    private function sets(): ?array
     {
         if( !$this->has( 'schema' ) ) {
             return ['mandatory' => self::DEFAULT_MANDATORY_FIELDS, 'optional' => []];
         }
 
-        $schema = $this->input( 'schema' );
-        $signature = $this->input( 'signature' );
+        return $this->sets ??= ( function() : ?array {
+            $schema = $this->input( 'schema' );
+            $signature = $this->input( 'signature' );
 
-        if( !is_string( $schema ) || !is_string( $signature )
-            || !hash_equals( self::signature( $schema ), $signature )
-        ) {
-            return ['mandatory' => [], 'optional' => []];
-        }
+            if( !is_string( $schema ) || !is_string( $signature )
+                || !hash_equals( self::signature( $schema ), $signature )
+            ) {
+                return null;
+            }
 
-        $sets = json_decode( $schema, true );
+            $sets = json_decode( $schema, true );
 
-        if( !is_array( $sets )
-            || self::schema( $sets['mandatory'] ?? null, $sets['optional'] ?? null ) !== $schema
-        ) {
-            return ['mandatory' => [], 'optional' => []];
-        }
+            if( !is_array( $sets )
+                || self::schema( $sets['mandatory'] ?? null, $sets['optional'] ?? null ) !== $schema
+            ) {
+                return null;
+            }
 
-        return ['mandatory' => $sets['mandatory'], 'optional' => $sets['optional']];
+            return ['mandatory' => $sets['mandatory'], 'optional' => $sets['optional']];
+        } )();
     }
 
 

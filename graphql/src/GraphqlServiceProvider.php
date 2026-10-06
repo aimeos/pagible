@@ -5,20 +5,17 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Events\Authed;
 use Aimeos\Cms\Events\UserChanged;
 use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
-use Aimeos\Cms\Listeners\AuthLogListener;
-use Aimeos\Cms\Listeners\UserLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use GraphQL\Language\AST\FieldNode;
 use GraphQL\Utils\AST;
 use GraphQL\Validator\Rules\DisableIntrospection;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 use Nuwave\Lighthouse\Events\EndExecution;
 use Nuwave\Lighthouse\Events\StartExecution;
 
 class GraphqlServiceProvider extends Provider
 {
-    private const PENDING = 'cms-graphql-requests';
+    private const PENDING = 'cms-graphql-request';
 
 
     public function boot(): void
@@ -33,7 +30,8 @@ class GraphqlServiceProvider extends Provider
 
         $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql' );
         $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-config' );
-        $this->rateLimiter();
+        Utils::limit( 'cms-graphql', 120 );
+        Utils::limit( 'cms-login', 10, false );
 
         \Aimeos\Cms\Permission::register( [
             'cache:clear',
@@ -64,23 +62,12 @@ class GraphqlServiceProvider extends Provider
         }
 
         if( !config( 'lighthouse.security.max_query_complexity' ) ) {
-            config( ['lighthouse.security.max_query_complexity' => (int) config( 'cms.graphql.maxcomplexity', 300 )] );
+            config( ['lighthouse.security.max_query_complexity' => (int) config( 'cms.graphql.maxcomplexity', 10000 )] );
         }
 
         if( !config( 'app.debug' ) ) {
             config( ['lighthouse.security.disable_introspection' => DisableIntrospection::ENABLED] );
         }
-    }
-
-    protected function rateLimiter() : void
-    {
-        RateLimiter::for( 'cms-graphql', fn( $request ) =>
-            Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-login', fn( $request ) =>
-            Limit::perMinute( 10 )->by( $request->ip() )
-        );
     }
 
     protected function watch() : void
@@ -94,37 +81,26 @@ class GraphqlServiceProvider extends Provider
             function( StartExecution $event ) {
                 Utils::source( 'graphql' );
 
-                $pending = request()->attributes->get( self::PENDING, [] );
-                $pending = is_array( $pending ) ? $pending : [];
-                $pending[] = ['start' => hrtime( true ), 'action' => $this->action( $event )];
-
-                request()->attributes->set( self::PENDING, $pending );
+                request()->attributes->set( self::PENDING, ['start' => hrtime( true ), 'action' => $this->action( $event )] );
             }
         );
 
         $events->listen(
             EndExecution::class,
             function( EndExecution $event ) {
-                $pending = request()->attributes->get( self::PENDING, [] );
+                /** @var array{start: int, action: string}|null $current */
+                $current = request()->attributes->get( self::PENDING );
 
-                if( !is_array( $pending ) || $pending === [] ) {
+                if( $current === null ) {
                     return;
                 }
 
-                $current = array_shift( $pending );
-                request()->attributes->set( self::PENDING, $pending );
-
-                if( !is_array( $current ) || !is_string( $current['action'] ?? null ) ) {
-                    return;
-                }
-
-                $start = $current['start'] ?? null;
-                $start = is_int( $start ) || is_float( $start ) ? $start : null;
+                request()->attributes->remove( self::PENDING );
 
                 Watch::observe(
                     source: 'graphql',
                     action: $current['action'],
-                    durationMs: Watch::duration( $start ),
+                    durationMs: Watch::duration( $current['start'] ),
                     dimensions: [
                         'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
                         'success' => $event->result->errors === [],
@@ -133,15 +109,13 @@ class GraphqlServiceProvider extends Provider
             }
         );
 
-        Watch::listen( [
-            Authed::class => AuthLogListener::class,
-        ] );
+        Watch::listen( [Authed::class] );
 
         // User creation / access changes are security-relevant and must always be
         // audited, so this listener is registered unconditionally — NOT through the
-        // watch-channel-gated Watch::listen() above. UserLogListener falls back to the
-        // default log channel when no cms.watch.channel is configured.
-        \Illuminate\Support\Facades\Event::listen( UserChanged::class, [UserLogListener::class, 'handle'] );
+        // watch-channel-gated Watch::listen() above. Warnings fall back to the default
+        // log channel when no cms.watch.channel is configured.
+        \Illuminate\Support\Facades\Event::listen( UserChanged::class, [LogListener::class, 'handle'] );
     }
 
 
@@ -165,7 +139,6 @@ class GraphqlServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\BenchmarkGraphql::class,
                 \Aimeos\Cms\Commands\InstallGraphql::class,
             ] );
         }

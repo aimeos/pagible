@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class LuxuryDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'stay' => 'Explore Avelune Retreat rooms and suites, from quiet garden rooms to a private limestone house with its own pool and terrace.',
         'experiences' => 'Discover Avelune wellness rituals, restorative treatments, private retreats, island sails, guided ridge walks, and unhurried Mallorca experiences.',
         'journal' => 'Read the Avelune Journal: field notes on sleep, bathing, Mallorca landscapes, seasonal cooking, and the quiet details of the retreat.',
@@ -39,7 +38,7 @@ class LuxuryDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'bath' => ['photo-1600566753086-00f18fb6b3ea', 'Avelune stone bath', 'Quiet stone bathroom with warm natural light and a deep soaking bath'],
         'chef' => ['photo-1577219491135-ce391730fb2c', 'Avelune kitchen', 'Chef preparing the evening menu in a calm professional kitchen'],
         'coast' => ['photo-1507525428034-b723cf961d3e', 'Mallorca cove', 'Clear blue water meeting a quiet pale-sand cove'],
@@ -59,10 +58,6 @@ class LuxuryDemo extends AbstractDemo
 
     private string $element;
     private string $logoFile;
-    /** @var array<string, string> File IDs for fixed-ratio pricing images */
-    private array $pricingImages = [];
-    /** @var array<string, string> File IDs for fixed-ratio slideshow images */
-    private array $slideImages = [];
 
 
     /**
@@ -656,21 +651,6 @@ class LuxuryDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @return array<string, mixed>
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing call to action for a journal article.
      *
      * @return array<string, mixed>
@@ -694,40 +674,12 @@ class LuxuryDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Avelune', 'text' => "- [Stay](/stay)\n- [Experiences](/experiences)"],
-                ['title' => 'Plan', 'text' => "- [Reserve](/reserve)\n- [Guest guide](/guest-guide)\n- [Arrival](/guest-guide/arrival)\n- [Wellness visits](/guest-guide/wellness)"],
-                ['title' => 'Stories', 'text' => "- [Journal](/journal)\n- [The old grove at first light](/the-old-grove-at-first-light)\n- [A kitchen led by the island](/a-kitchen-led-by-the-island)"],
-                ['title' => 'Contact', 'text' => "- [stay@avelune.example](mailto:stay@avelune.example)\n- [wellness@avelune.example](mailto:wellness@avelune.example)\n- +34 971 000 000\n- Mallorca, Spain"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Avelune footer',
-                'data' => ['type' => 'cards', 'data' => ['title' => 'Avelune Retreat', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Avelune footer',
-                    'data' => ['title' => 'Avelune Retreat', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Avelune footer', ['title' => 'Avelune Retreat', 'cards' => [
+            ['title' => 'Avelune', 'text' => "- [Stay](/stay)\n- [Experiences](/experiences)"],
+            ['title' => 'Plan', 'text' => "- [Reserve](/reserve)\n- [Guest guide](/guest-guide)\n- [Arrival](/guest-guide/arrival)\n- [Wellness visits](/guest-guide/wellness)"],
+            ['title' => 'Stories', 'text' => "- [Journal](/journal)\n- [The old grove at first light](/the-old-grove-at-first-light)\n- [A kitchen led by the island](/a-kitchen-led-by-the-island)"],
+            ['title' => 'Contact', 'text' => "- [stay@avelune.example](mailto:stay@avelune.example)\n- [wellness@avelune.example](mailto:wellness@avelune.example)\n- +34 971 000 000\n- Mallorca, Spain"],
+        ]] );
     }
 
 
@@ -751,17 +703,7 @@ class LuxuryDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Avelune Retreat'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -830,79 +772,7 @@ class LuxuryDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'Avelune Retreat | Boutique Hotel and Wellness in Mallorca',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'Avelune Retreat | Boutique Hotel and Wellness in Mallorca',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => ['config' => $config, 'meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @return array<int, string>
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'Avelune Retreat | Boutique Hotel and Wellness in Mallorca', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -951,47 +821,12 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Avelune Retreat, Mallorca boutique hotel, luxury wellness retreat, spa, island dining',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Avelune Retreat, Mallorca boutique hotel, luxury wellness retreat, spa, island dining', $fileIds, $meta );
     }
 
 
@@ -1016,25 +851,7 @@ SVG;
      */
     protected function priceImg( string $key ) : string
     {
-        if( !isset( $this->pricingImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 1000 ),
-                'previews' => ['500' => $url( 500, 333 ), '1000' => $url( 1000, 667 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->pricingImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->pricingImages[$key];
+        return $this->cropped( $key, 1500, 1000, true );
     }
 
 
@@ -1043,24 +860,6 @@ SVG;
      */
     protected function slideImg( string $key ) : string
     {
-        if( !isset( $this->slideImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 750 ),
-                'previews' => ['500' => $url( 500, 250 ), '1000' => $url( 1000, 500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->slideImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->slideImages[$key];
+        return $this->cropped( $key, 1500, 750, true );
     }
 }

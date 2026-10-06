@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Listeners\ContentListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\AbstractLogger;
@@ -52,7 +52,7 @@ class ContentListenerTest extends TestCase
 
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new ContentListener )->handle(
+        ( new LogListener )->handle(
             new Saved( 'page', 'id1', 'v1', 'ed', ['path' => 'about', 'domain' => ''], tenant: 'test', source: 'graphql' )
         );
 
@@ -71,7 +71,7 @@ class ContentListenerTest extends TestCase
         config( ['cms.watch.channel' => null] );
         Log::shouldReceive( 'channel' )->never();
 
-        ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+        ( new LogListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
         $this->addToAssertionCount( 1 );
     }
@@ -94,7 +94,7 @@ class ContentListenerTest extends TestCase
 
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new ContentListener )->handle( new Published(
+        ( new LogListener )->handle( new Published(
             'page', 'id1', 'future', 'scheduler', [
                 'path' => 'future-route', 'domain' => 'future.example',
             ], false, tenant: 'test', source: 'cli', projection: [
@@ -124,7 +124,7 @@ class ContentListenerTest extends TestCase
         ini_set( 'error_log', $logfile );
 
         try {
-            ( new ContentListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
+            ( new LogListener )->handle( new Saved( 'page', 'id1', 'v1', 'ed', [] ) );
 
             $this->assertStringContainsString( 'CMS watch listener error: boom',
                 (string) file_get_contents( $logfile ) );

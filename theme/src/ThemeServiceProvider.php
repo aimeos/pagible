@@ -5,13 +5,9 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Events\CmsContact;
 use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Events\PageInvalidated;
-use Aimeos\Cms\Listeners\ContactLogListener;
-use Aimeos\Cms\Listeners\SearchLogListener;
 use Aimeos\Cms\Schema;
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -24,7 +20,9 @@ class ThemeServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadBladeDirectives();
-        $this->rateLimiter();
+        Utils::limit( 'cms-contact', 2, false );
+        Utils::limit( 'cms-search', 60, false );
+        Utils::limit( 'cms-sitemap', 10, false );
         Schema::source( fn() => Theme::discover() );
         Schema::register( $basedir, 'cms' );
 
@@ -55,10 +53,7 @@ class ThemeServiceProvider extends Provider
 
     protected function watch() : void
     {
-        Watch::listen( [
-            CmsSearch::class => SearchLogListener::class,
-            CmsContact::class => ContactLogListener::class,
-        ], 'cms.theme.watch' );
+        Watch::listen( [CmsSearch::class, CmsContact::class], 'cms.theme.watch' );
     }
 
     protected function console() : void
@@ -66,7 +61,6 @@ class ThemeServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\BenchmarkTheme::class,
                 \Aimeos\Cms\Commands\Demo::class,
                 \Aimeos\Cms\Commands\InstallTheme::class,
             ] );
@@ -82,21 +76,6 @@ class ThemeServiceProvider extends Provider
             $translator->setSelector( new MessageSelector() );
             return $translator;
         } );
-    }
-
-    protected function rateLimiter(): void
-    {
-        RateLimiter::for( 'cms-contact', fn( $request ) =>
-            Limit::perMinute( 2 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-search', fn( $request ) =>
-            Limit::perMinute( 60 )->by( $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-sitemap', fn( $request ) =>
-            Limit::perMinute( 10 )->by( $request->ip() )
-        );
     }
 
     protected function loadBladeDirectives(): void

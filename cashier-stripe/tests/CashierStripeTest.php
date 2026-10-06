@@ -292,6 +292,39 @@ class CashierStripeTest extends CashierTestAbstract
     }
 
 
+    public function testRefundOfInvoicedOneTimePaymentRevokesAccess(): void
+    {
+        $token = $this->token( 'once', 'frontend.course' );
+        $webhooks = app( CashierStripe::class );
+
+        $webhooks->webhook( [
+            'created' => 100,
+            'type' => 'checkout.session.completed',
+            'data' => ['object' => [
+                'mode' => 'payment',
+                'payment_status' => 'paid',
+                'payment_intent' => 'pi_1',
+                'metadata' => ['cms' => $token],
+            ]],
+        ] );
+        $webhooks->webhook( [
+            'created' => 200,
+            'type' => 'charge.refunded',
+            'data' => ['object' => [
+                'invoice' => ['id' => 'in_1'],
+                'payment_intent' => 'pi_1',
+                'amount' => 1000,
+                'amount_refunded' => 1000,
+                'metadata' => ['cms' => $token],
+            ]],
+        ] );
+
+        $stored = $this->storedAccess();
+        $this->assertIsArray( $stored );
+        $this->assertNull( $stored['test|stripe|pi_1']['role'] );
+    }
+
+
     public function testDisputeResolvesChargeBeforeRevokingSubscription(): void
     {
         \Illuminate\Support\Facades\Schema::table( 'users', function( \Illuminate\Database\Schema\Blueprint $table ) {

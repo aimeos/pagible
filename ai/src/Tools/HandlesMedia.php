@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Ai;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -26,34 +28,14 @@ trait HandlesMedia
      * Loads a stored image file and returns it as a Prisma image object.
      *
      * @param string $id UUID of the image file
-     * @return Image|null Prisma image or NULL if the file is missing or not an image
+     * @param string $label Label used in the error message, e.g. "Image" or "Mask"
+     * @return Image Prisma image
+     * @throws \Aimeos\Cms\Exception If the file is missing or not an image
      */
-    protected function image( string $id ) : ?Image
+    protected function image( string $id, string $label = 'Image' ) : Image
     {
-        /** @var File|null $file */
-        $file = File::select( 'id', 'disk', 'path', 'mime' )->find( $id );
-
-        return $file ? $this->toImage( $file ) : null;
-    }
-
-
-    /**
-     * Loads multiple stored image files as Prisma image objects.
-     *
-     * Files that don't exist or aren't images are silently skipped.
-     *
-     * @param array<int, string> $ids UUIDs of the image files
-     * @return array<int, Image> List of Prisma images
-     */
-    protected function images( array $ids ) : array
-    {
-        if( empty( $ids ) ) {
-            return [];
-        }
-
-        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get()
-            ->map( fn( File $file ) => $this->toImage( $file ) )
-            ->filter()->values()->all();
+        return Ai::files( [$id], Image::class )[0]
+            ?? throw new \Aimeos\Cms\Exception( "$label file not found or not an image." );
     }
 
 
@@ -73,8 +55,6 @@ trait HandlesMedia
 
             $file = new File();
             $file->lang = $lang;
-            $file->mime = $upload->getClientMimeType();
-            $file->name = $upload->getClientOriginalName();
 
             if( $description ) {
                 $file->description = $description;
@@ -82,56 +62,10 @@ trait HandlesMedia
 
             // Store the file and generate previews outside the transaction to
             // keep slow disk and image work off the database connection.
-            try {
-                $file->ingest( $upload );
-            } catch( \Aimeos\Cms\Exception $e ) {
-                if( str_starts_with( $e->getMessage(), 'File type ' ) ) {
-                    return ['error' => sprintf( 'File type "%s" is not allowed.', $file->mime )];
-                }
+            $file->ingest( $upload );
 
-                throw $e;
-            }
-
-            $file = Resource::addFile( $file, $user );
-
-            return [
-                'id' => $file->id,
-                'name' => $file->name,
-                'mime' => $file->mime,
-                'lang' => $file->lang,
-                'path' => $file->path,
-                'previews' => $file->previews,
-                'description' => $file->description,
-            ];
+            return Presenter::item( Resource::addFile( $file, $user ) );
         } );
-    }
-
-
-    /**
-     * Builds a Prisma image object from a stored file model.
-     *
-     * @param File $file File model with at least path and mime loaded
-     * @return Image|null Prisma image or NULL if the file isn't an image
-     */
-    protected function toImage( File $file ) : ?Image
-    {
-        if( !str_starts_with( (string) $file->mime, 'image/' ) ) {
-            return null;
-        }
-
-        if( str_starts_with( (string) $file->path, 'http' ) ) {
-            return Image::fromUrl(
-                (string) $file->path,
-                $file->mime,
-                !(bool) config( 'cms.allow-internal' ),
-            );
-        }
-
-        return Image::fromStoragePath(
-            (string) $file->path,
-            File::diskName( (string) $file->disk ),
-            $file->mime,
-        );
     }
 
 
@@ -140,28 +74,16 @@ trait HandlesMedia
      *
      * @param string $id UUID of the file to update
      * @param string $base64 Base64 encoded image data of the edited image
-     * @param string|null $latestId Version ID the caller last retrieved (conflict detection)
+     * @param string $latestId Version ID the caller last retrieved (conflict detection)
      * @param Authenticatable|null $user Authenticated user updating the file
      * @return array<string, mixed> The updated file as array
      */
-    protected function update( string $id, string $base64, ?string $latestId, ?Authenticatable $user ) : array
+    protected function update( string $id, string $base64, string $latestId, ?Authenticatable $user ) : array
     {
         return $this->upload( $base64, 'image', function( UploadedFile $upload ) use ( $id, $latestId, $user ) {
 
             $file = Resource::saveFile( $id, [], $user, $latestId, $upload );
-            $data = (array) ( $file->latest->data ?? [] );
-            $aux = (array) ( $file->latest->aux ?? [] );
-
-            return [
-                'id' => $file->id,
-                'name' => $data['name'] ?? $file->name,
-                'mime' => $data['mime'] ?? $file->mime,
-                'lang' => $data['lang'] ?? $file->lang,
-                'path' => $data['path'] ?? $file->path,
-                'previews' => $data['previews'] ?? $file->previews,
-                'description' => $aux['description'] ?? $file->description,
-                'changed' => $file->changed,
-            ];
+            return Presenter::saved( Presenter::file( $file ), $file );
         } );
     }
 
@@ -191,14 +113,6 @@ trait HandlesMedia
             default => 'png',
         };
 
-        $path = (string) tempnam( sys_get_temp_dir(), 'cms_ai_' );
-        file_put_contents( $path, $binary );
-        unset( $binary );
-
-        try {
-            return $callback( new UploadedFile( $path, $name . '.' . $ext, $mime, null, true ) );
-        } finally {
-            @unlink( $path );
-        }
+        return Utils::upload( $binary, $name . '.' . $ext, $mime, $callback );
     }
 }

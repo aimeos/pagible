@@ -123,6 +123,19 @@ class Filter
 
 
     /**
+     * Creates a Scout builder searching the draft texts of the given model.
+     *
+     * @param class-string<\Aimeos\Cms\Models\Base> $class Model class, e.g. Page::class
+     * @param mixed $term Search term, trimmed and limited to 200 characters
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     */
+    public static function search( string $class, mixed $term ) : Builder
+    {
+        return $class::search( mb_substr( trim( (string) $term ), 0, 200 ) )->searchFields( 'draft' );
+    }
+
+
+    /**
      * Apply publish-status filter.
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder

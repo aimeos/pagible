@@ -99,8 +99,7 @@ class CashierMolliePlan implements PlanRepository
      */
     private function binding( string $type ) : string
     {
-        $hash = substr( hash( 'sha256', $type, true ), 0, 16 );
-        return rtrim( strtr( base64_encode( $hash ), '+/', '-_' ), '=' );
+        return CashierToken::encode( substr( hash( 'sha256', $type, true ), 0, 16 ) );
     }
 
 

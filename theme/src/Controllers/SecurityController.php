@@ -30,45 +30,30 @@ class SecurityController extends Controller
             abort( 404 );
         }
 
-        $lines = ['Contact: ' . $contact];
+        $email = $this->email( $data['email'] ?? null );
+        $lines = [];
 
-        if( $email = $this->email( $data['email'] ?? null ) ) {
-            $lines[] = 'Contact: mailto:' . $email;
+        foreach( [
+            ['Contact', $contact],
+            ['Contact', $email ? 'mailto:' . $email : null],
+            ['Expires', $expires],
+            ['Encryption', $this->url( $data['encryption'] ?? null )],
+            ['Acknowledgments', $this->url( $data['acknowledgments'] ?? null )],
+            ['Preferred-Languages', $this->languages( $data['preferred-languages'] ?? null )],
+            ['Canonical', $this->url( $data['canonical'] ?? null )],
+            ['Policy', $this->url( $data['policy'] ?? null )],
+            ['Hiring', $this->url( $data['hiring'] ?? null )],
+            ['CSAF', $this->url( $data['csaf'] ?? null )],
+        ] as [$name, $value] ) {
+            if( $value ) {
+                $lines[] = $name . ': ' . $value;
+            }
         }
-
-        $lines[] = 'Expires: ' . $expires;
-
-        $this->append( $lines, 'Encryption', $this->url( $data['encryption'] ?? null ) );
-        $this->append( $lines, 'Acknowledgments', $this->url( $data['acknowledgments'] ?? null ) );
-
-        if( $languages = $this->languages( $data['preferred-languages'] ?? null ) ) {
-            $lines[] = 'Preferred-Languages: ' . $languages;
-        }
-
-        $this->append( $lines, 'Canonical', $this->url( $data['canonical'] ?? null ) );
-        $this->append( $lines, 'Policy', $this->url( $data['policy'] ?? null ) );
-        $this->append( $lines, 'Hiring', $this->url( $data['hiring'] ?? null ) );
-        $this->append( $lines, 'CSAF', $this->url( $data['csaf'] ?? null ) );
 
         return response( implode( "\n", $lines ) . "\n", 200, [
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'public, max-age=300',
         ] );
-    }
-
-
-    /**
-     * Appends an optional security.txt field.
-     *
-     * @param list<string> $lines Existing response lines
-     * @param string $name security.txt field name
-     * @param string|null $value Field value
-     */
-    protected function append( array &$lines, string $name, ?string $value ) : void
-    {
-        if( $value !== null ) {
-            $lines[] = $name . ': ' . $value;
-        }
     }
 
 
@@ -80,26 +65,7 @@ class SecurityController extends Controller
      */
     protected function data( string $domain ) : ?array
     {
-        $query = Nav::query()
-            ->select( 'config' )
-            ->whereNull( 'parent_id' )
-            ->whereIn( 'status', [1, 2] )
-            ->defaultOrder();
-
-        if( $domain !== '' ) {
-            $query->where( 'domain', $domain );
-        }
-
-        foreach( $query->cursor() as $page )
-        {
-            $data = $page->config->security->data ?? null;
-
-            if( is_object( $data ) ) {
-                return (array) $data;
-            }
-        }
-
-        return null;
+        return Nav::rootConfig( $domain, fn( $page ) => is_object( $data = $page->config->security->data ?? null ) ? (array) $data : null );
     }
 
 

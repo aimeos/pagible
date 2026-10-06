@@ -8,15 +8,12 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -26,47 +23,53 @@ use Laravel\Mcp\Request;
 #[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Meta and config must be canonical entries containing type, data, and files. Use get-schemas for field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
+    protected const PERMISSIONS = ['page:save'];
+
+    /**
+     * Validation rules shared with add-page.
+     */
+    public const RULES = [
+        'name' => 'string|max:50',
+        'title' => 'string|max:100',
+        'lang' => 'string|max:5',
+        'content' => 'array',
+        'content.*.id' => 'string|max:10',
+        'content.*.type' => 'required|string|max:50',
+        'content.*.group' => 'string|max:50',
+        'meta' => 'array',
+        'meta.*' => 'array:type,data,files',
+        'meta.*.type' => 'required|string|max:50',
+        'meta.*.data' => 'present|array',
+        'meta.*.files' => 'present|array',
+        'meta.*.files.*' => 'string|max:36',
+        'config' => 'array',
+        'config.*' => 'array:type,data,files',
+        'config.*.type' => 'required|string|max:50',
+        'config.*.data' => 'present|array',
+        'config.*.files' => 'present|array',
+        'config.*.files.*' => 'string|max:36',
+        'to' => 'string|max:2048',
+        'tag' => 'string|max:50',
+        'theme' => 'string|max:50',
+        'type' => 'string|max:50',
+        'domain' => 'string|max:255',
+        'path' => 'string|max:255',
+        'cache' => 'integer|min:0',
+        'related_id' => 'string|max:36',
+    ];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:save', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        $v = $request->validate([
+        $v = $request->validate( [
             'id' => 'required|string|max:36',
-            'name' => 'string|max:50',
-            'title' => 'string|max:100',
-            'lang' => 'string|max:5',
-            'content' => 'array',
-            'content.*.id' => 'string|max:10',
-            'content.*.type' => 'required|string|max:50',
-            'content.*.group' => 'string|max:50',
+            ...self::RULES,
             'content.*.data' => 'required_without:content.*.refid|array',
             'content.*.refid' => 'required_without:content.*.data|string|max:36',
-            'meta' => 'array',
-            'meta.*' => 'array:type,data,files',
-            'meta.*.type' => 'required|string|max:50',
-            'meta.*.data' => 'present|array',
-            'meta.*.files' => 'present|array',
-            'meta.*.files.*' => 'string|max:36',
-            'config' => 'array',
-            'config.*' => 'array:type,data,files',
-            'config.*.type' => 'required|string|max:50',
-            'config.*.data' => 'present|array',
-            'config.*.files' => 'present|array',
-            'config.*.files.*' => 'string|max:36',
-            'to' => 'string|max:2048',
-            'tag' => 'string|max:50',
-            'theme' => 'string|max:50',
-            'type' => 'string|max:50',
-            'domain' => 'string|max:255',
-            'path' => 'string|max:255',
             'status' => 'integer|in:0,1,2',
-            'cache' => 'integer|min:0',
-            'related_id' => 'string|max:36',
             'latest_id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the page to save.',
@@ -87,34 +90,9 @@ class SavePage extends Tool
         }
 
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
+        $page = Resource::savePage( $v['id'], $input, $request->user(), $v['latest_id'] );
 
-        try {
-            $page = Resource::savePage(
-                $v['id'], $input, $request->user(),
-                $v['latest_id'] ?? null,
-            );
-        } catch( ModelNotFoundException $e ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
-
-        $data = (array) ( $page->latest->data ?? [] );
-        $aux = (array) ( $page->latest->aux ?? [] );
-
-        return Response::structured( array_merge( $data, [
-            'id' => $page->id,
-            'latest_id' => $page->latest_id,
-            'meta' => $aux['meta'] ?? new \stdClass(),
-            'config' => $aux['config'] ?? new \stdClass(),
-            'content' => $aux['content'] ?? [],
-            'status' => $page->status,
-            'cache' => $page->cache,
-            'changed' => $page->changed,
-            'created_at' => (string) $page->created_at,
-            'updated_at' => (string) $page->updated_at,
-            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-                'domain' => ( $data['domain'] ?? null ) ?: request()->getHost(),
-            ] : [] ) + ['path' => $data['path'] ?? ''] ),
-        ] ) );
+        return Response::structured( Presenter::saved( Presenter::page( $page ), $page ) );
     }
 
 
@@ -127,7 +105,7 @@ class SavePage extends Tool
     {
         return [
             'id' => $schema->string()
-                ->description( 'The UUID of the page to save. Use search-pages or list-pages to find the ID.' )
+                ->description( 'The UUID of the page to save. Use search-pages or get-page-tree to find the ID.' )
                 ->required(),
             'name' => $schema->string()
                 ->description( 'New short name for the page (max 50 characters).' ),
@@ -176,17 +154,5 @@ class SavePage extends Tool
                 ->description( 'Required. The latest_id value returned by get-page, add-page, or your previous save-page for this page. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:save', $request->user() );
     }
 }

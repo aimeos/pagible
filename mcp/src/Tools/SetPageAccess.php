@@ -8,13 +8,11 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Models\PageAccess;
-use Aimeos\Cms\Permission;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -25,15 +23,14 @@ use Laravel\Mcp\Request;
 #[Description('Immediately replaces frontend access for up to 50 pages. Use null for public access, an empty array for authenticated users, or named access values. Optionally applies the change to one root page and all descendants.')]
 class SetPageAccess extends Tool
 {
+    protected const PERMISSIONS = ['page:access'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:access', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|array|min:1|max:50',
             'id.*' => 'string|max:36',
@@ -78,17 +75,5 @@ class SetPageAccess extends Tool
                 ->description('Apply the access state to the specified root page and all descendants.')
                 ->default( false ),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:access', $request->user() );
     }
 }

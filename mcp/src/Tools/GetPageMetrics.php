@@ -7,16 +7,13 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
-use Aimeos\AnalyticsBridge\Facades\Analytics;
-use Illuminate\Support\Facades\Cache;
+use Aimeos\Cms\Metrics;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -28,15 +25,14 @@ use Laravel\Mcp\Request;
 #[Description('Returns analytics data for a page URL including views, visits, conversions, bounce rate, page speed, search impressions, clicks, and top queries. Data is cached for 1 hour.')]
 class GetPageMetrics extends Tool
 {
+    protected const PERMISSIONS = ['page:metrics'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:metrics', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'url' => 'required|string|max:500',
             'days' => 'integer|min:1|max:90',
@@ -44,39 +40,14 @@ class GetPageMetrics extends Tool
             'url.required' => 'You must specify the full URL of the page, e.g., "https://example.com/blog/my-article".',
         ] );
 
-        $url = $v['url'];
-        $days = $v['days'] ?? 30;
-        $data = [];
+        $data = Metrics::get( $v['url'], $v['days'] ?? 30 );
 
-        try {
-            $data = (array) Cache::remember( "stats:$url:$days", 3600, fn() => Analytics::driver()->stats( $url, $days ) );
-        } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
-        }
-
-        try {
-            $data = array_merge( $data, Cache::remember( "search:$url:$days", 3600, fn() => Analytics::search( $url, $days ) ) ?? [] );
-        } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
-        }
-
-        try {
-            $queries = Cache::remember( "queries:$url:$days", 3600, fn() => Analytics::queries( $url, $days ) ) ?? [];
-
-            foreach( $queries as &$entry ) {
-                $entry['query'] = $entry['key'];
+        if( array_key_exists( 'queries', $data ) ) {
+            $data['queries'] = array_map( function( $entry ) {
+                $entry['query'] = $entry['key'] ?? null;
                 unset( $entry['key'] );
-            }
-
-            $data['queries'] = $queries;
-        } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
-        }
-
-        try {
-            $data['pagespeed'] = Cache::remember( "pagespeed:$url", 3600, fn() => Analytics::pagespeed( $url ) );
-        } catch ( \Throwable $e ) {
-            $data['errors'][] = $e->getMessage();
+                return $entry;
+            }, $data['queries'] ?? [] );
         }
 
         return Response::structured( $data );
@@ -97,17 +68,5 @@ class GetPageMetrics extends Tool
             'days' => $schema->integer()
                 ->description('Number of days to look back for analytics data (1-90, default: 30).'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:metrics', $request->user() );
     }
 }

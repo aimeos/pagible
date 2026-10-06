@@ -24,7 +24,10 @@ class CdnListener
     {
         try
         {
-            Cdn::purge( array_map( fn( string $path ) => Cdn::file( $path ), $event->paths ) );
+            // Without clients, building the URLs of the removed files is unnecessary work
+            if( Cdn::clients() ) {
+                Cdn::purge( array_map( fn( string $path ) => Cdn::file( $path ), $event->paths ) );
+            }
         }
         catch( \Throwable $e )
         {
@@ -79,7 +82,16 @@ class CdnListener
                 return;
             }
 
-            [$base, $params] = $this->base( $event->domain );
+            $base = Cdn::base();
+            $params = [];
+
+            // Routes are relative to the configured URL, not to the host of the current request
+            if( config( 'cms.multidomain' ) )
+            {
+                $domain = $event->domain ?: (string) parse_url( $base, PHP_URL_HOST );
+                $base = ( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . '://' . $domain;
+                $params = ['domain' => $domain];
+            }
 
             $urls = array_map(
                 fn( string $path ) => $base . URL::route( 'cms.page', ['path' => $path] + $params, false ),
@@ -92,25 +104,5 @@ class CdnListener
         {
             report( $e );
         }
-    }
-
-
-    /**
-     * Returns the scheme and host of the URLs and the route parameters for the domain.
-     *
-     * @param string $domain Page domain, empty for the host of the configured URL
-     * @return array{0: string, 1: array<string, string>} Base URL and route parameters
-     */
-    private function base( string $domain ) : array
-    {
-        $base = Cdn::base();
-
-        // Routes are relative to the configured URL, not to the host of the current request
-        if( !config( 'cms.multidomain' ) ) {
-            return [$base, []];
-        }
-
-        $domain = $domain ?: (string) parse_url( $base, PHP_URL_HOST );
-        return [( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . '://' . $domain, ['domain' => $domain]];
     }
 }

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Cms\Ai;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
@@ -156,15 +156,6 @@ class AiWatchTest extends AiTestAbstract
      */
     private function observe( Observation $observation, ?string $editor = null ) : void
     {
-        $obj = new class {
-            use ObservesPrisma;
-
-            public function fire( Observation $observation, ?string $editor ) : void
-            {
-                ( $this->observer( $editor ) )( $observation );
-            }
-        };
-
-        $obj->fire( $observation, $editor );
+        ( Ai::observer( $editor ) )( $observation );
     }
 }

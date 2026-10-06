@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Listeners\BulkListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -41,7 +41,7 @@ class BulkListenerTest extends TestCase
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new BulkListener )->handle(
+        ( new LogListener )->handle(
             new Bulk( 'element', ['a', 'b'], ['a' => 'v1', 'b' => 'v2'], ['lang' => 'de'], 'ed', 'test', 'graphql' )
         );
     }

@@ -43,7 +43,9 @@ if( !function_exists( 'cms' ) )
 
         foreach( $parts as $part )
         {
-            if( is_object( $val ) && ( $val = $val->{$part} ?? null ) === null ) {
+            $val = is_object( $val ) ? $val->{$part} ?? null : ( is_array( $val ) ? $val[$part] ?? null : null );
+
+            if( $val === null ) {
                 return $default;
             }
         }

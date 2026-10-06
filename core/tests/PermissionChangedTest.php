@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\PermissionChanged;
-use Aimeos\Cms\Listeners\PermissionLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Aimeos\Cms\Permission;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -66,7 +66,7 @@ class PermissionChangedTest extends CoreTestAbstract
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new PermissionLogListener )->handle( new PermissionChanged(
+        ( new LogListener )->handle( new PermissionChanged(
             actorEmail: 'admin@example.com',
             targetEmail: 'audit-log@example.com',
             targetId: '1',

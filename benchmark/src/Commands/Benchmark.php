@@ -7,8 +7,6 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Events\PageInvalidated;
-use Aimeos\Cms\Models\Page;
 use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -54,10 +52,7 @@ class Benchmark extends Command
             return self::FAILURE;
         }
 
-        // Set up tenancy
-        \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
-            return $tenant;
-        };
+        \Aimeos\Cms\Tenancy::set( $tenant );
 
         $domain = $this->option( 'domain' );
 
@@ -67,14 +62,15 @@ class Benchmark extends Command
             return self::FAILURE;
         }
 
+        // Discover sub-package benchmark commands
+        $commands = collect( Artisan::all() )
+            ->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:benchmark:' ) )
+            ->keys()
+            ->sort();
+
         // Unseed mode
         if( $this->option( 'unseed' ) )
         {
-            $commands = collect( Artisan::all() )
-                ->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:benchmark:' ) )
-                ->keys()
-                ->sort();
-
             foreach( $commands as $command )
             {
                 $this->call( $command, [
@@ -94,18 +90,11 @@ class Benchmark extends Command
             return $this->seed( $domain );
         }
 
-        // Discover and run sub-package benchmark commands
-        $commands = collect( Artisan::all() )
-            ->filter( fn( $cmd, $name ) => str_starts_with( $name, 'cms:benchmark:' ) )
-            ->keys()
-            ->sort();
-
+        // Run sub-package benchmark commands
         $sharedOptions = [
             '--tenant' => $tenant,
             '--domain' => $domain,
-            '--pages' => $this->option( 'pages' ),
             '--tries' => $this->option( 'tries' ),
-            '--chunk' => $this->option( 'chunk' ),
             '--force' => true,
         ];
 
@@ -141,16 +130,7 @@ class Benchmark extends Command
             $bar->advance( $count );
         } );
 
-        $paths = array_values( Page::withTrashed()
-            ->where( 'domain', $domain )
-            ->where( 'editor', 'benchmark' )
-            ->pluck( 'path' )
-            ->map( fn( $path ) => (string) $path )
-            ->all() );
-
-        if( $paths ) {
-            PageInvalidated::dispatch( $domain, $paths );
-        }
+        BenchmarkCore::invalidate( $domain );
 
         $bar->finish();
         $this->newLine();

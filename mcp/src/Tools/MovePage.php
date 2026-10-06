@@ -8,13 +8,10 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -24,15 +21,14 @@ use Laravel\Mcp\Request;
 #[Description('Moves a page to a new position in the page tree. You can place it before a sibling, append it to a parent, or make it a root page. Returns the moved page as a JSON object.')]
 class MovePage extends Tool
 {
+    protected const PERMISSIONS = ['page:move'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:move', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|string|max:36',
             'parent_id' => 'string|max:36',
@@ -41,17 +37,9 @@ class MovePage extends Tool
             'id.required' => 'You must specify the ID of the page to move.',
         ] );
 
-        try {
-            $page = Resource::movePage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
-        } catch( ModelNotFoundException $e ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
+        $page = Resource::movePage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
 
-        return Response::structured( ['id' => $page->id, 'parent_id' => $page->parent_id] + $page->toArray() + [
-            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-                'domain' => $page->domain ?: request()->getHost(),
-            ] : [] ) + ['path' => $page->path] ),
-        ] );
+        return Response::structured( Presenter::item( $page, true ) );
     }
 
 
@@ -71,17 +59,5 @@ class MovePage extends Tool
             'before_id' => $schema->string()
                 ->description('Move the page before this sibling page. Takes priority over parent_id if both are set.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:move', $request->user() );
     }
 }

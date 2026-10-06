@@ -7,17 +7,14 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -32,15 +29,14 @@ use Laravel\Mcp\Request;
 )]
 class GetPageTree extends Tool
 {
+    protected const PERMISSIONS = ['page:view'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'node_id' => 'string|max:36',
             'lang' => 'string|max:5',
@@ -81,18 +77,6 @@ class GetPageTree extends Tool
 
 
     /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:view', $request->user() );
-    }
-
-
-    /**
      * Recursively build a tree array from a nested set collection.
      *
      * @param \Aimeos\Nestedset\Collection|iterable<Nav> $nodes
@@ -106,7 +90,7 @@ class GetPageTree extends Tool
         {
             /** @var Nav $node */
             $data = $node->latest?->data;
-            $entry = [
+            $result[] = [
                 'id' => $node->id,
                 'latest_id' => $node->latest_id,
                 'name' => $data->name ?? '',
@@ -121,14 +105,8 @@ class GetPageTree extends Tool
                 'to' => $data->to ?? '',
                 'published' => (bool) $node->latest?->published,
                 'publish_at' => $node->latest?->publish_at,
-                'children' => [],
+                'children' => $this->buildTree( $node->children ),
             ];
-
-            if( $node->children->count() > 0 ) {
-                $entry['children'] = $this->buildTree( $node->children );
-            }
-
-            $result[] = $entry;
         }
 
         return $result;

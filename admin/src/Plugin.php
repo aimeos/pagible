@@ -80,15 +80,7 @@ class Plugin
             throw new \InvalidArgumentException( "Translation catalog URL '$url' for plugin '$key' requires one '{locale}' placeholder" );
         }
 
-        if( isset( self::$i18n[$key] ) ) {
-            if( self::$i18n[$key] === $url ) {
-                return;
-            }
-
-            throw new \LogicException( "Translation catalog '$key' is already registered" );
-        }
-
-        self::$i18n[$key] = $url;
+        self::add( self::$i18n, $key, $url, "Translation catalog '$key' is already registered" );
     }
 
 
@@ -126,6 +118,26 @@ class Plugin
 
 
     /**
+     * Adds an entry unless the same entry is already registered.
+     *
+     * @template T
+     * @param array<string, T> $list Registry to add the entry to
+     * @param string $key Registry key
+     * @param T $value Entry to add
+     * @param string $error Message if the key is registered with a different entry
+     * @throws \LogicException If the key is already registered differently
+     */
+    private static function add( array &$list, string $key, mixed $value, string $error ) : void
+    {
+        if( isset( $list[$key] ) && $list[$key] !== $value ) {
+            throw new \LogicException( $error );
+        }
+
+        $list[$key] = $value;
+    }
+
+
+    /**
      * Registers a top-level navigation panel.
      *
      * @param string $key Panel key matching "[a-z0-9_-]+"
@@ -157,15 +169,7 @@ class Plugin
             $panel['i18n'] = $definition['i18n'];
         }
 
-        if( isset( self::$panels[$key] ) ) {
-            if( self::$panels[$key] === $panel ) {
-                return;
-            }
-
-            throw new \LogicException( "Plugin '$key' is already registered" );
-        }
-
-        self::$panels[$key] = $panel;
+        self::add( self::$panels, $key, $panel, "Plugin '$key' is already registered" );
     }
 
 
@@ -194,15 +198,8 @@ class Plugin
             $panel['i18n'] = $definition['i18n'];
         }
 
-        if( isset( self::$subpanels[$host][$name] ) ) {
-            if( self::$subpanels[$host][$name] === $panel ) {
-                return;
-            }
-
-            throw new \LogicException( "Plugin '$key' is already registered" );
-        }
-
-        self::$subpanels[$host][$name] = $panel;
+        self::$subpanels[$host] ??= [];
+        self::add( self::$subpanels[$host], $name, $panel, "Plugin '$key' is already registered" );
     }
 
 

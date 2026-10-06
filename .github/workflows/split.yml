@@ -19,6 +19,7 @@ jobs:
           - { package: ai, repo: pagible-ai }
           - { package: admin, repo: pagible-admin }
           - { package: backup, repo: pagible-backup }
+          - { package: benchmark, repo: pagible-benchmark }
           - { package: cashier, repo: pagible-cashier }
           - { package: cashier-mollie, repo: pagible-cashier-mollie }
           - { package: cashier-paddle, repo: pagible-cashier-paddle }

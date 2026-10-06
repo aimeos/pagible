@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -19,7 +18,7 @@ use Aimeos\Cms\Validation;
 class TasteDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'kitchen' => 'Meet the cooks and suppliers behind Sumi, a modern neighborhood noodle bar built around slow broth, live fire and seasonal produce.',
         'menu' => "Explore Sumi's noodle bowls, grilled small plates, sake and highballs on Kastanienallee in Prenzlauer Berg, with vegetarian and allergen notes.",
         'visit' => "Find Sumi at Kastanienallee 48 in Berlin's Prenzlauer Berg, check Tuesday–Sunday opening hours, and send a table or group dining request.",
@@ -30,7 +29,7 @@ class TasteDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: array{en: string, de: string}}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'broth' => ['photo-1731460202531-bf8389d565f7', 'Citrus shio ramen', [
             'en' => 'Overhead view of a clear noodle broth with egg, sliced meat, vegetables and sesame',
             'de' => 'Draufsicht auf eine klare Nudelsuppe mit Ei, Fleischscheiben, Gemüse und Sesam',
@@ -302,40 +301,12 @@ class TasteDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Sumi', 'text' => "A Prenzlauer Berg noodle bar built around broth, live fire and a good seat at the counter."],
-                ['title' => 'Eat', 'text' => "- [Noodle and drinks menu](/menu)\n- [How the kitchen works](/kitchen)\n- [Dietary notes](/menu#dietary-notes)"],
-                ['title' => 'Visit', 'text' => "- [Opening hours and location](/visit)\n- [Send a table request](/visit#table-request)\n- +49 30 555 01 48"],
-                ['title' => 'Address', 'text' => "Kastanienallee 48\n10435 Berlin · Prenzlauer Berg\n\nTuesday–Sunday from 12:00"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Sumi footer',
-                'data' => ['type' => 'cards', 'data' => ['title' => 'Come hungry', 'cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Sumi footer',
-                    'data' => ['title' => 'Come hungry', 'cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Sumi footer', ['title' => 'Come hungry', 'cards' => [
+            ['title' => 'Sumi', 'text' => "A Prenzlauer Berg noodle bar built around broth, live fire and a good seat at the counter."],
+            ['title' => 'Eat', 'text' => "- [Noodle and drinks menu](/menu)\n- [How the kitchen works](/kitchen)\n- [Dietary notes](/menu#dietary-notes)"],
+            ['title' => 'Visit', 'text' => "- [Opening hours and location](/visit)\n- [Send a table request](/visit#table-request)\n- +49 30 555 01 48"],
+            ['title' => 'Address', 'text' => "Kastanienallee 48\n10435 Berlin · Prenzlauer Berg\n\nTuesday–Sunday from 12:00"],
+        ]] );
     }
 
 
@@ -363,16 +334,7 @@ class TasteDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Sumi Noodle Bar'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
+        ] + $this->logos( $logoId ) + [
             'taste::restaurant' => [
                 'type' => 'taste::restaurant',
                 'files' => [],
@@ -507,46 +469,6 @@ class TasteDemo extends AbstractDemo
 
 
     /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
-    }
-
-
-    /**
      * Creates the Sumi SVG logo and returns its file ID.
      *
      * @return string File ID
@@ -591,48 +513,13 @@ SVG;
     protected function page( array $data, array $content, Page $parent ) : Page
     {
         $elementId = $this->element();
-        $contentIds = $this->ids( $content );
-        $fileId = $contentIds[0] ?? $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
-        $meta = [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Sumi, Berlin noodle bar, restaurant, ramen, food, drinks, Japanese kitchen',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $fileId = $this->ids( $content )[0] ?? $this->file();
+
+        $footer = [
+            ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $contentIds, $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Sumi, Berlin noodle bar, restaurant, ramen, food, drinks, Japanese kitchen' );
     }
 
 

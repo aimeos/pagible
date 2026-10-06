@@ -10,7 +10,6 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Commands\InstallPulse;
 use Aimeos\Cms\Pulse\CmsMetricCard;
 use Aimeos\Cms\Pulse\Recorder;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider as Provider;
 use Livewire\Livewire;
@@ -41,7 +40,9 @@ class PulseServiceProvider extends Provider
         $this->loadViewsFrom( $basedir . '/views/pulse', 'cms-pulse' );
         Livewire::component( 'cms-metric-card', CmsMetricCard::class );
 
-        $this->console();
+        if( $this->app->runningInConsole() ) {
+            $this->commands( [InstallPulse::class] );
+        }
 
         $this->app->booted( fn() => $this->gate() );
     }
@@ -58,21 +59,6 @@ class PulseServiceProvider extends Provider
                 Recorder::class => true,
             ]] );
         } );
-    }
-
-
-    protected function canViewPulse( ?Authenticatable $user ) : bool
-    {
-        return Permission::can( self::VIEW_PERMISSION, $user )
-            && ( Tenancy::value() !== '' || Tenancy::$callback === null );
-    }
-
-
-    protected function console() : void
-    {
-        if( $this->app->runningInConsole() ) {
-            $this->commands( [InstallPulse::class] );
-        }
     }
 
 
@@ -95,7 +81,8 @@ class PulseServiceProvider extends Provider
     protected function gate() : void
     {
         if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
-            Gate::define( 'viewPulse', fn( $user ) => $this->canViewPulse( $user ) );
+            Gate::define( 'viewPulse', fn( $user ) => Permission::can( self::VIEW_PERMISSION, $user )
+                && ( Tenancy::value() !== '' || Tenancy::$callback === null ) );
         }
     }
 }

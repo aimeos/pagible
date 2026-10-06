@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Listeners\AuthLogListener;
+use Aimeos\Cms\Listeners\LogListener;
 use Illuminate\Support\Facades\Log;
 use Orchestra\Testbench\TestCase;
 use Psr\Log\LoggerInterface;
@@ -41,7 +41,7 @@ class AuthLogListenerTest extends TestCase
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new AuthLogListener )->handle( new Authed( 'login', 'editor@testbench', '127.0.0.1' ) );
+        ( new LogListener )->handle( new Authed( 'login', 'editor@testbench', '127.0.0.1' ) );
     }
 
 
@@ -55,6 +55,6 @@ class AuthLogListenerTest extends TestCase
         ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
-        ( new AuthLogListener )->handle( new Authed( 'login', 'editor@testbench', '127.0.0.1' ) );
+        ( new LogListener )->handle( new Authed( 'login', 'editor@testbench', '127.0.0.1' ) );
     }
 }

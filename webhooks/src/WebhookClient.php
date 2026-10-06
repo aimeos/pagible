@@ -204,7 +204,9 @@ class WebhookClient
                 if( str_starts_with( $line, 'HTTP/' ) ) {
                     $retryAfter = 0; // headers of a new response
                 } elseif( strncasecmp( $line, 'retry-after:', 12 ) === 0 ) {
-                    $retryAfter = $this->retryAfter( substr( $line, 12 ) );
+                    // HTTP dates are ignored and huge values are limited to PHP_INT_MAX
+                    $value = trim( substr( $line, 12 ) );
+                    $retryAfter = ctype_digit( $value ) ? (int) $value : 0;
                 }
 
                 return strlen( $line );
@@ -378,18 +380,6 @@ class WebhookClient
         }
 
         return $allowed;
-    }
-
-
-    /**
-     * Returns the seconds from a "Retry-After" header value, HTTP dates are ignored.
-     */
-    private function retryAfter( string $value ) : int
-    {
-        $value = trim( $value );
-
-        // Huge values are limited to PHP_INT_MAX
-        return ctype_digit( $value ) ? (int) $value : 0;
     }
 
 

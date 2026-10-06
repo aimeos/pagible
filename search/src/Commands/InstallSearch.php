@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallSearch extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -48,42 +52,25 @@ class InstallSearch extends Command
     protected function scout() : int
     {
         $filename = 'config/scout.php';
-        $content = file_get_contents( base_path( $filename ) );
 
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
+        return $this->patch( $filename, function( string $content ) use ( $filename ) {
 
-        $updated = false;
+            $search = "env('SCOUT_DRIVER', 'collection')";
+            $replace = "env('SCOUT_DRIVER', 'cms')";
 
-        $search = "env('SCOUT_DRIVER', 'collection')";
-        $replace = "env('SCOUT_DRIVER', 'cms')";
+            if( strpos( $content, $replace ) === false )
+            {
+                $content = str_replace( $search, $replace, $content );
+                $this->line( sprintf( '  Updated default Scout driver to "cms" in [%1$s]', $filename ) );
+            }
 
-        if( strpos( $content, $replace ) === false )
-        {
-            $content = str_replace( $search, $replace, $content );
-            $this->line( sprintf( '  Updated default Scout driver to "cms" in [%1$s]', $filename ) );
-            $updated = true;
-        }
+            if( strpos( $content, "'soft_delete' => true" ) === false && strpos( $content, "'soft_delete' => false" ) !== false )
+            {
+                $content = str_replace( "'soft_delete' => false", "'soft_delete' => true", $content );
+                $this->line( sprintf( '  Enabled Scout soft_delete in [%1$s]', $filename ) );
+            }
 
-        if( strpos( $content, "'soft_delete' => true" ) === false && strpos( $content, "'soft_delete' => false" ) !== false )
-        {
-            $content = str_replace( "'soft_delete' => false", "'soft_delete' => true", $content );
-            $this->line( sprintf( '  Enabled Scout soft_delete in [%1$s]', $filename ) );
-            $updated = true;
-        }
-
-        if( $updated )
-        {
-            file_put_contents( base_path( $filename ), $content );
-            $this->line( '' );
-        }
-        else
-        {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+            return $content;
+        }, '' );
     }
 }

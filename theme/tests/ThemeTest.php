@@ -1162,16 +1162,6 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testLayouts()
-	{
-		$layouts = Theme::layouts( 'cms' );
-
-		$this->assertArrayHasKey( 'page', $layouts );
-		$this->assertArrayHasKey( 'docs', $layouts );
-		$this->assertArrayHasKey( 'blog', $layouts );
-	}
-
-
 	public function testViewsGlobal()
 	{
 		$this->assertEquals( 'cms', Theme::views( 'cms' ) );

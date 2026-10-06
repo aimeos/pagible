@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools\Concerns;
 
-use Illuminate\Http\UploadedFile;
+use Aimeos\Cms\Utils;
 
 
 /**
@@ -38,16 +38,6 @@ trait Upload
             throw new \Aimeos\Cms\InvalidException( 'Invalid file content, must be base64 encoded' );
         }
 
-        if( ( $path = tempnam( sys_get_temp_dir(), 'cms' ) ) === false || file_put_contents( $path, $data ) === false ) {
-            throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-        }
-
-        unset( $data );
-
-        try {
-            return $fn( new UploadedFile( $path, basename( $input['name'] ?? '' ) ?: 'file', null, null, true ) );
-        } finally {
-            @unlink( $path );
-        }
+        return Utils::upload( $data, basename( $input['name'] ?? '' ) ?: 'file', null, $fn );
     }
 }

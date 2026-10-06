@@ -7,15 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Permission;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Ai;
+use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -27,19 +24,16 @@ Optionally pass IDs of existing image files as visual references. Returns the cr
 class GenerateImage extends Tool
 {
     use HandlesMedia;
-    use ObservesPrisma;
+
+
+    protected const PERMISSIONS = ['image:imagine', 'file:add'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'image:imagine', $request->user() )
-            || !Permission::can( 'file:add', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate( [
             'prompt' => 'required|string|max:2000',
             'context' => 'string|max:2000',
@@ -52,26 +46,10 @@ class GenerateImage extends Tool
             'prompt.required' => 'You must provide a prompt describing the image to generate.',
         ] );
 
-        if( !empty( $v['files'] ) && !Permission::can( 'file:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        $prompt = $v['prompt'] . ( !empty( $v['context'] ) ? "\n\n" . $v['context'] : '' );
-        $options = ['size' => ['1536x1024', '1792x1024', '1024x1024']];
-
-        $provider = config( 'cms.ai.imagine.provider' );
-        $config = config( 'cms.ai.imagine', [] );
-        $model = config( 'cms.ai.imagine.model' );
-
-        $base64 = Prisma::image()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'imagine' )
-            ->imagine( $prompt, $this->images( $v['files'] ?? [] ), $options ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        $base64 = Ai::imagine( $v['prompt'], Ai::files( $v['files'] ?? [], Image::class ), $v['context'] ?? null );
 
         return Response::structured( $this->store(
-            (string) $base64, $v['name'] ?? 'generated-image', $v['lang'] ?? null, $v['description'] ?? null, $request->user()
+            $base64, $v['name'] ?? 'generated-image', $v['lang'] ?? null, $v['description'] ?? null, $request->user()
         ) );
     }
 
@@ -98,18 +76,5 @@ class GenerateImage extends Tool
             'description' => $schema->object()
                 ->description( 'Multilingual alt text, e.g., {"en": "A blue hero banner"}.' ),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'image:imagine', $request->user() )
-            && Permission::can( 'file:add', $request->user() );
     }
 }

@@ -28,10 +28,7 @@ class BenchmarkCore extends Command
     protected $signature = 'cms:benchmark:core
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--seed : Seed benchmark data before running benchmarks}
-        {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -42,60 +39,24 @@ class BenchmarkCore extends Command
     {
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $force = (bool) $this->option( 'force' );
+        $unseed = (bool) $this->option( 'unseed' );
 
-        if( $this->option( 'unseed' ) )
+        if( !$this->checks( $tenant, $tries, $force, !$unseed ) ) {
+            return self::FAILURE;
+        }
+
+        if( $unseed )
         {
-            $this->tenant( $tenant);
             $this->unseed( config( 'cms.db', 'sqlite' ), $tenant, $domain );
             return self::SUCCESS;
         }
 
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-
-        if( !$this->checks( $tenant, $tries, $force ) ) {
-            return self::FAILURE;
-        }
-
-        $this->tenant( $tenant );
-
-        if( !$this->hasSeededData() )
-        {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
-            return self::FAILURE;
-        }
-
-        // Load one item per type (each benchmark iteration is rolled back)
-        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
-
-        $count = Page::where( 'tag', '!=', 'root' )->count();
-        $page = Page::where( 'tag', '!=', 'root' )
-            ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )
-            ->firstOrFail();
-
-        $parentIds = $page->ancestors()->get()->pluck( 'id' );
-        $moveParent = Page::where( NestedSet::DEPTH, 1 )
-            ->whereNotIn( 'id', $parentIds )
-            ->firstOrFail();
-
-        $element = Element::firstOrFail();
-        $file = File::firstOrFail();
-
-        // Create unpublished version for publish benchmark
-        $unpubVersion = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => (array) $page->latest?->data,
-            'aux' => (array) $page->latest?->aux,
-            'published' => false,
-            'editor' => 'benchmark',
-        ] );
-        $page->forceFill( ['latest_id' => $unpubVersion->id] )->saveQuietly();
-        $page->setRelation( 'latest', $unpubVersion );
-
-        // Query pre-seeded soft-deleted items for restore benchmarks
-        $trashedPage = Page::onlyTrashed()->firstOrFail();
-        $trashedElement = Element::onlyTrashed()->firstOrFail();
-        $trashedFile = File::onlyTrashed()->firstOrFail();
+        [
+            'root' => $root, 'page' => $page, 'parent' => $moveParent, 'element' => $element, 'file' => $file,
+            'trashed' => ['page' => $trashedPage, 'element' => $trashedElement, 'file' => $trashedFile],
+        ] = $this->fixtures( $domain );
 
         $this->header();
 
@@ -125,11 +86,7 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page ) {
-            $version = $page->versions()->forceCreate( [
-                'lang' => 'en', 'data' => (array) $page->latest?->data,
-                'aux' => (array) $page->latest?->aux, 'published' => false, 'editor' => 'benchmark',
-            ] );
-            $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $this->draft( $page );
         }, tries: $tries );
 
         $this->benchmark( 'Page move', function() use ( $page, $moveParent ) {
@@ -186,10 +143,7 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Element update', function() use ( $element ) {
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en', 'data' => (array) $element->latest?->data, 'published' => false, 'editor' => 'benchmark',
-            ] );
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $this->draft( $element );
         }, tries: $tries );
 
         $this->benchmark( 'Element delete', function() use ( $element ) {
@@ -208,7 +162,7 @@ class BenchmarkCore extends Command
          * File operations
          */
 
-        $imagePath = realpath( __DIR__ . '/../../tests/assets/image.png' );
+        $imagePath = realpath( __DIR__ . '/../../assets/image.png' );
         $this->benchmark( 'File create', function() use ( $imagePath ) {
             $f = File::forceCreate( [
                 'mime' => 'image/png', 'lang' => 'en', 'name' => 'Bench file',
@@ -234,11 +188,7 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'File update', function() use ( $file ) {
-            $version = $file->versions()->forceCreate( [
-                'lang' => 'en', 'data' => (array) $file->latest?->data, 'aux' => (array) $file->latest?->aux,
-                'published' => false, 'editor' => 'benchmark',
-            ] );
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            $this->draft( $file );
         }, tries: $tries );
 
         $this->benchmark( 'File delete', function() use ( $file ) {
@@ -273,13 +223,11 @@ class BenchmarkCore extends Command
 
 
     /**
-     * Remove all benchmark data for the tenant, respecting FK constraints.
+     * Remove the cached responses of all benchmark pages of the domain.
      */
-    protected function unseed( string $conn, string $tenant, string $domain ): void
+    public static function invalidate( string $domain ): void
     {
-        // Clear cache for benchmark pages
-        $paths = array_values( Page::query()
-            ->withTrashed()
+        $paths = array_values( Page::withTrashed()
             ->where( 'editor', 'benchmark' )
             ->where( 'domain', $domain )
             ->pluck( 'path' )
@@ -289,6 +237,15 @@ class BenchmarkCore extends Command
         if( $paths ) {
             PageInvalidated::dispatch( $domain, $paths );
         }
+    }
+
+
+    /**
+     * Remove all benchmark data for the tenant, respecting FK constraints.
+     */
+    protected function unseed( string $conn, string $tenant, string $domain ): void
+    {
+        self::invalidate( $domain );
 
         // Break circular page↔version FK by clearing latest_id first
         DB::connection( $conn )->table( 'cms_pages' )

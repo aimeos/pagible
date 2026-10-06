@@ -51,7 +51,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     {
         foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
-            $this->indexQuery( $group, $type )?->delete();
+            $this->indexQuery( $group, $type )->delete();
         }
     }
 
@@ -213,14 +213,10 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         foreach( $models->groupBy( fn( $m ) => get_class( $m ) ) as $type => $group )
         {
-            $db = $group->first()?->getConnection();
-
-            if( !$db ) {
-                continue;
-            }
+            $db = $group->firstOrFail()->getConnection();
 
             $db->transaction( function() use ( $db, $group, $type, $tenant ) {
-                $this->indexQuery( $group, $type )?->delete();
+                $this->indexQuery( $group, $type )->delete();
 
                 $rows = [];
 
@@ -336,17 +332,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
      * @template T of \Illuminate\Database\Eloquent\Model
      * @param  \Illuminate\Support\Collection<int, T>  $group
      * @param  string  $type Model class name
-     * @return \Illuminate\Database\Query\Builder|null
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function indexQuery( $group, string $type )
     {
-        $db = $group->first()?->getConnection();
-
-        if( !$db ) {
-            return null;
-        }
-
-        return $db->table( 'cms_index' )
+        return $group->firstOrFail()->getConnection()->table( 'cms_index' )
             ->whereIn( 'indexable_id', $group->pluck( 'id' )->all() )
             ->where( 'indexable_type', $type )
             ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );

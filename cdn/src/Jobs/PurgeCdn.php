@@ -53,12 +53,32 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
     }
 
 
+    /**
+     * Purges the URLs from the client.
+     *
+     * @throws ExceptionCollection If purging failed
+     * @throws UnsupportedProxyOperationException If the client can't remove all content
+     */
     public function handle() : void
     {
         // Removed or incomplete clients don't receive queued purges any more
-        if( $config = Cdn::clients()[$this->client] ?? null ) {
-            $this->flush( $config, $this->urls );
+        if( !( $config = Cdn::clients()[$this->client] ?? null ) ) {
+            return;
         }
+
+        $invalidator = Cdn::invalidator( $config );
+
+        if( in_array( Cdn::ALL, $this->urls, true ) ) {
+            $invalidator->clearCache();
+        }
+        else
+        {
+            foreach( $this->urls as $url ) {
+                $invalidator->invalidatePath( $url );
+            }
+        }
+
+        $invalidator->flush();
     }
 
 
@@ -70,29 +90,4 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
         return $this->client . ':' . md5( implode( "\n", $this->urls ) );
     }
 
-
-    /**
-     * Purges the URLs from the client.
-     *
-     * @param array<string, mixed> $config Client configuration
-     * @param list<string> $urls Absolute URLs or only Cdn::ALL to remove all content
-     * @throws ExceptionCollection If purging failed
-     * @throws UnsupportedProxyOperationException If the client can't remove all content
-     */
-    private function flush( array $config, array $urls ) : void
-    {
-        $invalidator = Cdn::invalidator( $config );
-
-        if( in_array( Cdn::ALL, $urls, true ) ) {
-            $invalidator->clearCache();
-        }
-        else
-        {
-            foreach( $urls as $url ) {
-                $invalidator->invalidatePath( $url );
-            }
-        }
-
-        $invalidator->flush();
-    }
 }

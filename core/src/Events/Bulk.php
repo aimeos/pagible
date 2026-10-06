@@ -7,11 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Foundation\Events\Dispatchable;
 
 
 /**
@@ -20,17 +16,9 @@ use Illuminate\Foundation\Events\Dispatchable;
  * Coalesces what would be one "saved" event per item into a single '{type}.bulk' message carrying
  * the saved ids, their new version ids and the shared fields applied to all of them.
  */
-class Bulk implements ShouldBroadcastNow
+class Bulk implements Loggable, ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets;
-
-    /**
-     * Whether this instance should be sent to the websocket broadcaster.
-     *
-     * Lets the model dispatch the event to in-process listeners via event() without
-     * broadcasting it, while the explicit broadcast()->toOthers() path sets it to true.
-     */
-    public bool $broadcasting = false;
+    use Broadcasting;
 
 
     /**
@@ -64,25 +52,6 @@ class Bulk implements ShouldBroadcastNow
 
 
     /**
-     * Only broadcast when dispatched through the broadcast path, not when dispatched to
-     * in-process listeners via event().
-     */
-    public function broadcastWhen() : bool
-    {
-        return $this->broadcasting;
-    }
-
-
-    /**
-     * @return array<int, PrivateChannel>
-     */
-    public function broadcastOn() : array
-    {
-        return [new PrivateChannel( Channel::type( $this->tenant, $this->contentType ) )];
-    }
-
-
-    /**
      * @return array<string, mixed>
      */
     public function broadcastWith() : array
@@ -94,5 +63,21 @@ class Bulk implements ShouldBroadcastNow
             'data' => $this->data,
             'editor' => $this->editor,
         ];
+    }
+
+
+    /**
+     * @return array{message: string, fields: array<string, mixed>}
+     */
+    public function log() : array
+    {
+        return ['message' => 'cms.' . $this->contentType, 'fields' => [
+            'type' => $this->contentType,
+            'source' => $this->source,
+            'action' => $this->action,
+            'ids' => array_values( $this->ids ),
+            'editor' => $this->editor,
+            'tenant_id' => $this->tenant,
+        ]];
     }
 }

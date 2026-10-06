@@ -10,6 +10,7 @@
   </php>
   <testsuites>
     <testsuite name="Root">
+      <file>./tests/InstallTest.php</file>
       <file>./tests/ServeTest.php</file>
     </testsuite>
     <testsuite name="Core">

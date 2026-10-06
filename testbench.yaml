@@ -1,4 +1,5 @@
 providers:
+  - Aimeos\Cms\BenchmarkServiceProvider
   - Aimeos\Cms\BoldServiceProvider
   - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\GlassServiceProvider

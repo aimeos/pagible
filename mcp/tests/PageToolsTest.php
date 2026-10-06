@@ -131,7 +131,17 @@ class PageToolsTest extends McpTestAbstract
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
 
-        $response->assertHasErrors( ['either an ID or a path'] );
+        $response->assertOk()->assertStructuredContent( ['error' => 'You must specify either an ID or a path.'] );
+    }
+
+
+    public function testGetPageMissingParamsWithoutDebug()
+    {
+        config( ['app.debug' => false] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
+
+        $response->assertOk()->assertStructuredContent( ['error' => 'You must specify either an ID or a path.'] );
     }
 
 
@@ -388,7 +398,7 @@ class PageToolsTest extends McpTestAbstract
             'meta' => $this->meta( 'A bad page test' ),
         ] );
 
-        $response->assertHasErrors( ['Unknown'] );
+        $response->assertOk()->assertStructuredContent( ['error' => 'Unknown content type "nonexistent"'] );
     }
 
 

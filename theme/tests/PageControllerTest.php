@@ -939,7 +939,11 @@ class PageControllerTest extends ThemeTestAbstract
 
     private function putCache( string $key, string $html, \DateTimeInterface $expires ): void
     {
-        ( new \ReflectionMethod( PageCache::class, 'put' ) )->invoke( null, $key, $html, $expires );
+        Cache::store( config( 'cms.theme.cache', 'file' ) )->put(
+            $key,
+            ['gzip' => gzencode( $html, 6 ), 'freshUntil' => $expires->getTimestamp()],
+            60,
+        );
     }
 
 

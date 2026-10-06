@@ -7,7 +7,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -20,7 +19,7 @@ use Illuminate\Support\Str;
 class PaperDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'about' => 'Meet the editors and contributors behind Margin & Matter, an independent journal of design, craft, place, and working life.',
         'a-chair-made-for-the-next-owner' => 'A visit to a furniture workshop where repairable joints, replaceable parts, and patient materials make a chair ready for its next owner.',
         'contribute' => 'Contributor guidance for writers, photographers, and illustrators who want to work with Margin & Matter.',
@@ -37,7 +36,7 @@ class PaperDemo extends AbstractDemo
      *
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'archive' => ['photo-1524995997946-a1c2e315a42f', 'Journal archive', 'Tall library shelves holding an extensive collection of books and journals'],
         'chair' => ['photo-1503602642458-232111445657', 'Repairable wooden chairs', 'A row of carefully made wooden chairs in a quiet interior'],
         'city' => ['photo-1477959858617-67f85cf4f1df', 'City after dark', 'Dense city streets and buildings seen in the blue light of evening'],
@@ -54,8 +53,6 @@ class PaperDemo extends AbstractDemo
 
     private string $element;
     private string $logoFile;
-    /** @var array<string, string> File IDs for fixed-ratio slideshow images */
-    private array $slideImages = [];
 
 
     /**
@@ -522,24 +519,6 @@ class PaperDemo extends AbstractDemo
 
 
     /**
-     * Creates an article lead element with the file reference used by previews.
-     *
-     * @param string $title Article title
-     * @param string $text Article introduction
-     * @param string $fileId Cover file ID
-     * @return array<string, mixed> Article content element
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
-    /**
      * Creates a closing subscription call to action for an article.
      *
      * @param string $title Hero title
@@ -567,40 +546,12 @@ class PaperDemo extends AbstractDemo
      */
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Journal', 'text' => "- [Current issue](/journal)\n- [About the journal](/about)"],
-                ['title' => 'Contribute', 'text' => "- [Contributor guide](/contribute)\n- [Pitching a story](/contribute/pitching-a-story)\n- [Write to the editors](/about#contact)"],
-                ['title' => 'Subscribe', 'text' => '- [Online and print options](/subscribe)'],
-                ['title' => 'Margin & Matter', 'text' => '- [editors@marginandmatter.example](mailto:editors@marginandmatter.example)'],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Margin & Matter footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Margin & Matter footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Margin & Matter footer', ['cards' => [
+            ['title' => 'Journal', 'text' => "- [Current issue](/journal)\n- [About the journal](/about)"],
+            ['title' => 'Contribute', 'text' => "- [Contributor guide](/contribute)\n- [Pitching a story](/contribute/pitching-a-story)\n- [Write to the editors](/about#contact)"],
+            ['title' => 'Subscribe', 'text' => '- [Online and print options](/subscribe)'],
+            ['title' => 'Margin & Matter', 'text' => '- [editors@marginandmatter.example](mailto:editors@marginandmatter.example)'],
+        ]] );
     }
 
 
@@ -629,17 +580,7 @@ class PaperDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Margin & Matter'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -701,87 +642,7 @@ class PaperDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'Margin & Matter | Independent Journal',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'Margin & Matter | Independent Journal',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * Returns file IDs referenced anywhere in the given data.
-     *
-     * @param mixed $value Content or metadata
-     * @return array<int, string> File IDs
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    /**
-     * Returns the file ID for a curated demo photo.
-     *
-     * @param string $key Photo key from self::PHOTOS
-     * @return string File ID
-     */
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'Margin & Matter | Independent Journal', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -835,48 +696,13 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Margin & Matter, independent journal, design, craft, architecture, public space',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
+        $footer = [
+            ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'Margin & Matter']],
+            ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        $content[] = ['id' => Utils::uid(), 'type' => 'heading', 'group' => 'footer', 'data' => ['level' => 2, 'title' => 'Margin & Matter']];
-        $content[] = ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Margin & Matter, independent journal, design, craft, architecture, public space', $fileIds, $meta );
     }
 
 
@@ -903,24 +729,6 @@ SVG;
      */
     protected function slideImg( string $key ) : string
     {
-        if( !isset( $this->slideImages[$key] ) )
-        {
-            [$photo, $name, $desc] = self::PHOTOS[$key];
-            $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
-
-            $data = [
-                'mime' => 'image/jpeg',
-                'lang' => 'en',
-                'name' => $name,
-                'path' => $url( 1500, 750 ),
-                'previews' => ['500' => $url( 500, 250 ), '1000' => $url( 1000, 500 )],
-                'description' => ['en' => $desc],
-            ];
-
-            $this->slideImages[$key] = $this->saveFile( $data, published: true );
-        }
-
-        return $this->slideImages[$key];
+        return $this->cropped( $key, 1500, 750, true );
     }
 }

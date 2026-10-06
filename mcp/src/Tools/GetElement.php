@@ -7,16 +7,13 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -27,50 +24,27 @@ use Laravel\Mcp\Request;
 #[Description('Retrieves a single shared content element by its ID. Returns the full element data including type, name, language, content data, and the latest draft version as a JSON object. The returned latest_id identifies the version you read — pass it back to save-element so concurrent edits are merged instead of overwritten.')]
 class GetElement extends Tool
 {
+    protected const PERMISSIONS = ['element:view'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to retrieve.',
         ] );
 
-        /** @var Element|null $element */
+        /** @var Element $element */
         $element = Element::withTrashed()->with( [
             'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )
-        ] )->find( $v['id'] );
+        ] )->findOrFail( $v['id'] );
 
-        if( !$element ) {
-            return Response::structured( ['error' => 'Element not found.'] );
-        }
-
-        $version = $element->latest;
-        $vdata = $version?->data;
-        $usedByPages = $element->bypages()->toBase()
-            ->select( 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' )
-            ->cursor()->map( fn( $p ) => (array) $p )->all();
-
-        $data = [
-            'id' => $element->id,
-            'latest_id' => $element->latest_id,
-            'type' => $element->type,
-            'deleted' => $element->trashed(),
-            'lang' => $version->lang ?? '',
-            'editor' => $version->editor ?? '',
-            'name' => $vdata->name ?? '',
-            'data' => $vdata->data ?? new \stdClass(),
-            'published' => $version->published ?? false,
-            'publish_at' => $version->publish_at ?? null,
-            'created_at' => $element->created_at?->format( 'Y-m-d H:i:s' ),
-            'updated_at' => $version?->created_at?->format( 'Y-m-d H:i:s' ),
-            'used_by_pages' => $usedByPages,
+        $data = Presenter::element( $element ) + [
+            'used_by_pages' => Presenter::rows( $element->bypages(), 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' ),
         ];
 
         return Response::structured( $data );
@@ -89,17 +63,5 @@ class GetElement extends Tool
                 ->description('The UUID of the element to retrieve.')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'element:view', $request->user() );
     }
 }

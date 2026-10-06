@@ -97,7 +97,7 @@ class GraphqlMetricsTest extends GraphqlTestAbstract
                     views { key value }
                 }
             }
-        ')->assertGraphQLErrorMessage('URL must be a non-empty string');
+        ')->assertGraphQLValidationError('url', 'The url field is required.');
     }
 
 
@@ -109,7 +109,7 @@ class GraphqlMetricsTest extends GraphqlTestAbstract
                     views { key value }
                 }
             }
-        ')->assertGraphQLErrorMessage('Number of days must be an integer between 1 and 90, got "100"');
+        ')->assertGraphQLValidationError('days', 'The days field must not be greater than 90.');
     }
 
 

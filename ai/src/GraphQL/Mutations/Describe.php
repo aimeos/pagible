@@ -7,70 +7,20 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Models\File;
-use Aimeos\Prisma\Exceptions\PrismaException;
-use Illuminate\Support\Facades\Log;
-use GraphQL\Error\Error;
+use Aimeos\Cms\Ai;
 
 
 final class Describe
 {
-    use ObservesPrisma;
+    use ValidatesInputs;
 
 
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      */
-    public function __invoke( $rootValue, array $args ): string
+    public function __invoke( $rootValue, array $args ) : string
     {
-        if( empty( $id = $args['file'] ) ) {
-            throw new Error( 'File ID is required' );
-        }
-
-        $provider = config( 'cms.ai.describe.provider' );
-        $config = config( 'cms.ai.describe', [] );
-        $model = config( 'cms.ai.describe.model' );
-        try
-        {
-            /** @var File $file */
-            $file = File::select( 'id', 'disk', 'path', 'mime' )->findOrFail( $id );
-            $lang = $args['lang'] ?? null;
-            $type = explode( '/', $file->mime, 2 )[0];
-            $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
-
-            if( !class_exists( $class ) ) {
-                $msg = 'Unsupported file type "%s"';
-                throw new Error( sprintf( $msg, $file->mime ) );
-            }
-
-            if( !str_starts_with( (string) $file->path, 'http' ) ) {
-                $doc = $class::fromStoragePath(
-                    $file->path,
-                    File::diskName( (string) $file->disk ),
-                    $file->mime,
-                );
-            } else {
-                $doc = $class::fromUrl(
-                    $file->path,
-                    $file->mime,
-                    !(bool) config( 'cms.allow-internal' ),
-                );
-            }
-
-            return Prisma::type( $type )->observe( $this->observer() )
-                ->using( $provider, $config )
-                ->model( $model )
-                ->ensure( 'describe' )
-                ->describe( $doc, $lang, $config ) // @phpstan-ignore-line method.notFound
-                ->text();
-        }
-        catch( PrismaException $e )
-        {
-            Log::error( 'AI service error', ['mutation' => 'Describe', 'message' => $e->getMessage(), 'trace' => $e->getTraceAsString()] );
-            throw new Error( $e->getMessage() );
-        }
+        return $this->ai( fn() => Ai::describe( (string) $args['file'], $args['lang'] ?? null ) );
     }
 }

@@ -59,6 +59,44 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testFilePrunableSkipsReferencedFiles(): void
+    {
+        $data = ['mime' => 'image/png', 'path' => 'https://example.com/a.png', 'previews' => [], 'editor' => 'test'];
+        $file = File::forceCreate( ['name' => 'a'] + $data );
+        $file->versions()->forceCreate( ['data' => ['name' => 'a'], 'editor' => 'test'] );
+        $file->delete();
+
+        File::withTrashed()->whereKey( $file->id )->update( ['deleted_at' => now()->subDays( 31 )] );
+
+        $this->assertContains( $file->id, $file->prunable()->withTrashed()->pluck( 'id' )->all() );
+
+        File::forceCreate( ['name' => 'b'] + $data )->versions()
+            ->forceCreate( ['data' => ['name' => 'a'], 'editor' => 'test'] )->files()->attach( $file->id );
+
+        $this->assertNotContains( $file->id, $file->prunable()->withTrashed()->pluck( 'id' )->all() );
+    }
+
+
+    public function testFilePruneKeepsReferencedFilesOutsideTenant(): void
+    {
+        $data = ['mime' => 'image/png', 'path' => 'https://example.com/a.png', 'previews' => [], 'editor' => 'test'];
+        $file = File::forceCreate( ['name' => 'a'] + $data );
+        $file->versions()->forceCreate( ['data' => ['name' => 'a'], 'editor' => 'test'] );
+        File::forceCreate( ['name' => 'b'] + $data )->versions()
+            ->forceCreate( ['data' => ['name' => 'a'], 'editor' => 'test'] )->files()->attach( $file->id );
+        $file->delete();
+
+        File::withTrashed()->whereKey( $file->id )->update( ['deleted_at' => now()->subDays( 31 )] );
+
+        // model:prune runs without the tenant context of the files
+        $ids = \Aimeos\Cms\Tenancy::run( '', fn() => $file->prunable()->withTrashed()->pluck( 'id' )->all() );
+
+        $this->assertNotContains( $file->id, $ids );
+        $this->assertFalse( $file->prune() );
+        $this->assertTrue( File::withTrashed()->whereKey( $file->id )->exists() );
+    }
+
+
     public function testSavePageKeepsFilesWhenSectionOmitted()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -301,8 +339,6 @@ class ResourceTest extends CoreTestAbstract
     {
         // Tenancy::value() is "test" here, so the prefix is "cms/test/". Each of these
         // begins with the prefix yet resolves into another tenant's directory.
-        $method = new \ReflectionMethod( Resource::class, 'checkPath' );
-
         $paths = [
             'cms/test/../other/secret.jpg',
             'cms/test/..\\other\\secret.jpg',
@@ -314,7 +350,7 @@ class ResourceTest extends CoreTestAbstract
         foreach( $paths as $path )
         {
             try {
-                $method->invoke( null, $path );
+                File::checkPath( $path );
                 $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
             } catch( Exception $e ) {
                 $this->assertStringContainsString( 'Invalid file path', $e->getMessage() );
@@ -325,15 +361,14 @@ class ResourceTest extends CoreTestAbstract
 
     public function testCheckPathAllowsValidPaths()
     {
-        $method = new \ReflectionMethod( Resource::class, 'checkPath' );
         $id = ( new File() )->newUniqueId();
         $path = 'cms/test/' . $id . '/image_ab12.jpg';
 
-        $this->assertNull( $method->invoke( null, null ) );
-        $this->assertEquals( $path, $method->invoke( null, $path ) );
-        $this->assertEquals( $path, $method->invoke( null, 'cms//test/./' . $id . '/image_ab12.jpg' ) );
+        $this->assertNull( File::checkPath( null ) );
+        $this->assertEquals( $path, File::checkPath( $path ) );
+        $this->assertEquals( $path, File::checkPath( 'cms//test/./' . $id . '/image_ab12.jpg' ) );
         // External URLs bypass the tenant prefix and never touch the tenant disk.
-        $this->assertEquals( 'https://example.com/a/b.jpg', $method->invoke( null, 'https://example.com/a/b.jpg' ) );
+        $this->assertEquals( 'https://example.com/a/b.jpg', File::checkPath( 'https://example.com/a/b.jpg' ) );
     }
 
 
@@ -1180,6 +1215,7 @@ class ResourceTest extends CoreTestAbstract
             ], $this->user, parent: $this->root()->id )->id;
         }
 
+        // per 50 roots: subtree query; per 50 pages: prefetch latest refs; per page: load page and latest version, create version, update page
         $this->expectsDatabaseQueryCount( 223 );
 
         $saved = Resource::bulkPage( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
@@ -1205,6 +1241,78 @@ class ResourceTest extends CoreTestAbstract
 
         // depth-first pre-order: a whole subtree before the next sibling, parents before children
         $this->assertSame( [$p->id, $a->id, $a1->id, $b->id], $saved['ids'] );
+    }
+
+
+    public function testInputLimitsAreEnforced()
+    {
+        $long = str_repeat( 'a', 256 );
+        $page = $this->page( [] );
+        $element = Element::firstOrFail();
+        $file = File::firstOrFail();
+        $upload = new File();
+        $upload->forceFill( ['name' => $long, 'mime' => 'image/jpeg', 'lang' => 'en', 'path' => 'https://example.com/a.jpg'] );
+
+        $calls = [
+            fn() => Resource::addElement( ['lang' => 'en', 'type' => 'heading', 'name' => $long, 'data' => []], $this->user ),
+            fn() => Resource::saveElement( $element->id, ['name' => $long], $this->user ),
+            fn() => Resource::bulkElement( [$element->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::addFile( $upload, $this->user ),
+            fn() => Resource::saveFile( $file->id, ['name' => ['a']], $this->user ),
+            fn() => Resource::bulkFile( [$file->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::addPage( ['lang' => 'en', 'name' => 'A', 'title' => $long, 'path' => 'res-' . Utils::uid()], $this->user ),
+            fn() => Resource::savePage( $page->id, ['status' => 32768], $this->user ),
+            fn() => Resource::bulkPage( [$page->id], ['tag' => str_repeat( 'a', 31 )], $this->user ),
+        ];
+
+        foreach( $calls as $idx => $call )
+        {
+            try {
+                $call();
+                $this->fail( 'Limit not enforced in call ' . $idx );
+            } catch( Exception $e ) {
+                $this->assertStringContainsString( 'Invalid value', $e->getMessage() );
+            }
+        }
+    }
+
+
+    public function testBulkElementCopiesUnchangedReferences()
+    {
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $element = Resource::addElement( [
+            'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
+            'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
+        ], $this->user );
+        $previous = $element->latest_id;
+        $file->delete();
+
+        $saved = Resource::bulkElement( [$element->id], ['name' => 'Renamed'], $this->user );
+        $element = Element::findOrFail( $element->id );
+
+        $this->assertSame( 0, $saved['failed'] );
+        $this->assertNotSame( $previous, $element->latest_id );
+        $this->assertSame( [$file->id], $element->latest->files()->withTrashed()->pluck( 'cms_files.id' )->all() );
+    }
+
+
+    public function testBulkPageDescendantsOfOverlappingRoots()
+    {
+        $mk = fn( string $name, string $parent ) => Resource::addPage(
+            ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => 'res-' . Utils::uid(), 'content' => []],
+            $this->user, parent: $parent
+        );
+
+        $p = $mk( 'P', $this->root()->id );
+        $a = $mk( 'A', $p->id );
+        $a1 = $mk( 'A1', $a->id );
+        $q = $mk( 'Q', $this->root()->id );
+
+        // a child listed before its parent and a separate root are each saved once in tree order
+        $saved = Resource::bulkPage( [$a1->id, $p->id, $q->id], ['title' => 'Renamed'], $this->user, descendants: true );
+
+        $this->assertSame( [$p->id, $a->id, $a1->id, $q->id], $saved['ids'] );
+        $this->assertSame( 2, Page::findOrFail( $a1->id )->versions()->count() );
     }
 
 
@@ -1331,7 +1439,7 @@ class ResourceTest extends CoreTestAbstract
             $this->assertCount( 2, $ids[$model] );
         }
 
-        $this->expectsDatabaseQueryCount( 30 );
+        $this->expectsDatabaseQueryCount( 22 );
 
         foreach( $ids as $model => $modelIds ) {
             Resource::drop( $model, $modelIds, $this->user );
@@ -1972,8 +2080,12 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['file' => ['id' => $drop->id, 'type' => 'file']],
         ], $this->user );
 
-        // the file $bad references vanishes, so re-saving it re-collects a now-missing reference
-        $drop->delete();
+        // saving $bad fails; unchanged references are copied, so a vanished file wouldn't fail anymore
+        Element::saving( function( Element $element ) use ( $bad ) {
+            if( $element->id === $bad->id ) {
+                throw new \RuntimeException( 'Save failed' );
+            }
+        } );
 
         $saved = Resource::bulkElement( [$good->id, $bad->id], ['lang' => 'de'], $this->user );
 

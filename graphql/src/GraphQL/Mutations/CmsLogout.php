@@ -8,9 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Events\Authed;
-use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Watch;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -38,13 +36,7 @@ final class CmsLogout
             // No error if logout fails
         }
 
-        Watch::dispatch( Authed::class, fn() => new Authed(
-            'logout',
-            $user ? Utils::editor( $user ) : '',
-            (string) request()->ip(),
-            (string) request()->userAgent(),
-            Tenancy::value()
-        ) );
+        Authed::fire( 'logout', $user ? Utils::editor( $user ) : '' );
 
         return $user;
     }

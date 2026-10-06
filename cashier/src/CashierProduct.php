@@ -44,87 +44,41 @@ class CashierProduct
             ->access( $user )
             ->findOrFail( $pageId );
 
-        $data = $this->pricing( $page, $elementId );
-        $packages = array_values( array_filter(
-            (array) ( $data->items ?? [] ),
-            fn( mixed $item ) => is_object( $item ) && ( $item->id ?? null ) === $packageId,
-        ) );
+        $find = function( mixed $items, string $id ) : ?object {
+            $items = array_filter( (array) $items, fn( mixed $item ) => is_object( $item ) && ( $item->id ?? null ) === $id );
+            return count( $items ) === 1 ? reset( $items ) : null;
+        };
 
-        if( count( $packages ) !== 1 ) {
+        if( !$package = $find( $this->pricing( $page, $elementId )->items ?? [], $packageId ) ) {
             abort( 404, __( 'Unknown product' ) );
         }
 
-        $package = $packages[0];
         $role = $this->text( $package->access ?? null, 100 );
         $prices = (array) ( $package->prices ?? [] );
+        $price = count( $prices ) <= 5 ? $find( $prices, $priceId ) : null;
+        $kind = $price ? $this->text( $price->kind ?? null, 32 ) : '';
+        $currency = $price->currency ?? null;
+        $interval = $price->interval ?? 0;
 
-        if( !app( Access::class )->has( $role ) ) {
+        if( !$price || !app( Access::class )->has( $role ) || !in_array( $kind, ['once', 'subscription'], true )
+            || !is_string( $currency ) || !preg_match( '/^[A-Z]{3}$/D', $currency )
+            || !is_int( $interval ) || $interval < 0 || $interval > 365
+        ) {
             abort( 404, __( 'Unknown product' ) );
         }
 
-        if( count( $prices ) < 1 || count( $prices ) > 5 ) {
-            abort( 404, __( 'Unknown product' ) );
-        }
-
-        $prices = array_values( array_filter(
-            $prices,
-            fn( mixed $item ) => is_object( $item ) && ( $item->id ?? null ) === $priceId,
-        ) );
-
-        if( count( $prices ) !== 1 ) {
-            abort( 404, __( 'Unknown product' ) );
-        }
-
-        $price = $prices[0];
-        $kind = $this->text( $price->kind ?? null, 32 );
-
-        if( !in_array( $kind, ['once', 'subscription'], true ) ) {
-            abort( 404, __( 'Unknown product' ) );
-        }
-
-        $reference = $this->text( $price->reference ?? null, 255 );
         $url = $package->url ?? null;
         $url = is_string( $url ) ? trim( $url ) : '';
 
         return [
             'access' => $role,
-            'currency' => $this->currency( $price->currency ?? null ),
+            'currency' => $currency,
             'description' => is_string( $package->name ?? null ) ? trim( $package->name ) : '',
-            'interval' => $this->interval( $price->interval ?? null ),
+            'interval' => $interval,
             'kind' => $kind,
-            'reference' => $reference,
+            'reference' => $this->text( $price->reference ?? null, 255 ),
             'url' => str_starts_with( $url, '/' ) && Utils::isValidUrl( $url, false ) ? $url : '/',
         ];
-    }
-
-
-    /**
-     * Validates an ISO-style three-letter currency code.
-     */
-    private function currency( mixed $value ) : string
-    {
-        if( !is_string( $value ) || !preg_match( '/^[A-Z]{3}$/D', $value ) ) {
-            abort( 404, __( 'Unknown product' ) );
-        }
-
-        return $value;
-    }
-
-
-    /**
-     * Validates the optional billing interval in days.
-     */
-    private function interval( mixed $value ) : int
-    {
-        if( $value === null ) {
-            return 0;
-        }
-
-        if( !is_int( $value ) || $value < 0 || $value > 365 ) {
-            abort( 404, __( 'Unknown product' ) );
-        }
-
-        return $value;
     }
 
 

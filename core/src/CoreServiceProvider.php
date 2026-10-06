@@ -10,13 +10,11 @@ use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Listeners\BulkListener;
-use Aimeos\Cms\Listeners\ContentListener;
+use Aimeos\Cms\Events\PermissionChanged;
+use Aimeos\Cms\Listeners\LogListener;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class CoreServiceProvider extends Provider
@@ -37,7 +35,8 @@ class CoreServiceProvider extends Provider
         $this->broadcast();
         $this->watch();
         $this->flush();
-        $this->rateLimiter();
+        Utils::limit( 'cms-asset', 300 );
+        Utils::limit( 'cms-broadcast', 120 );
         $this->userCasts();
         $this->schedule();
         $this->console();
@@ -104,34 +103,29 @@ class CoreServiceProvider extends Provider
 
 
     /**
-     * Subscribes the content audit listener to the per-action events when watch logging is enabled.
+     * Subscribes the log listener to the per-action content events when watch logging is enabled.
      *
      * Gated on "cms.watch.channel" so nothing listens when logging is off, which keeps
      * Broadcasts::announce() short-circuiting (no event built, no latest version loaded).
      */
     protected function watch() : void
     {
-        $listener = ContentListener::class;
-
         Watch::listen( [
-            Added::class => $listener,
-            Saved::class => $listener,
-            Published::class => $listener,
-            Dropped::class => $listener,
-            Restored::class => $listener,
-            Purged::class => $listener,
-            Moved::class => $listener,
-            Bulk::class => BulkListener::class,
+            Added::class,
+            Saved::class,
+            Published::class,
+            Dropped::class,
+            Restored::class,
+            Purged::class,
+            Moved::class,
+            Bulk::class,
         ] );
 
         // Permission grants are security-relevant and must always be audited, so this
         // listener is registered unconditionally — NOT through the watch-channel-gated
-        // Watch::listen() above. The listener itself falls back to the default log
-        // channel when no cms.watch.channel is configured.
-        \Illuminate\Support\Facades\Event::listen(
-            \Aimeos\Cms\Events\PermissionChanged::class,
-            [\Aimeos\Cms\Listeners\PermissionLogListener::class, 'handle'],
-        );
+        // Watch::listen() above. Warnings fall back to the default log channel when
+        // no cms.watch.channel is configured.
+        \Illuminate\Support\Facades\Event::listen( PermissionChanged::class, [LogListener::class, 'handle'] );
     }
 
 
@@ -140,7 +134,6 @@ class CoreServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\BenchmarkCore::class,
                 \Aimeos\Cms\Commands\InstallCore::class,
                 \Aimeos\Cms\Commands\Previews::class,
                 \Aimeos\Cms\Commands\Publish::class,
@@ -200,17 +193,5 @@ class CoreServiceProvider extends Provider
                 ->withoutOverlapping()->onOneServer();
             $schedule->command( 'model:prune', ['--model' => Version::TYPES] )->daily();
         } );
-    }
-
-
-    protected function rateLimiter(): void
-    {
-        RateLimiter::for( 'cms-asset', fn( $request ) =>
-            Limit::perMinute( 300 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
-        );
-
-        RateLimiter::for( 'cms-broadcast', fn( $request ) =>
-            Limit::perMinute( 120 )->by( $request->user()?->getAuthIdentifier() ?: $request->ip() )
-        );
     }
 }

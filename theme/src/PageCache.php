@@ -18,6 +18,19 @@ use Symfony\Component\HttpFoundation\AcceptHeader;
 class PageCache
 {
     /**
+     * Tests whether a response is publicly cacheable (public, not private, not no-store).
+     */
+    public static function cacheable( Response $response ) : bool
+    {
+        $headers = $response->headers;
+
+        return $headers->hasCacheControlDirective( 'public' )
+            && !$headers->hasCacheControlDirective( 'private' )
+            && !$headers->hasCacheControlDirective( 'no-store' );
+    }
+
+
+    /**
      * Invalidates the cached responses for tenant- and domain-bound page paths.
      *
      * @param list<string> $paths
@@ -85,7 +98,14 @@ class PageCache
      */
     private static function cachedResponse( string $key, bool $fresh = false ) : ?Response
     {
-        if( !( $entry = self::get( $key, $fresh ) ) ) {
+        $entry = self::store()->get( $key );
+
+        // Values using other envelope formats are ignored and replaced on the next render.
+        if( !is_array( $entry )
+            || !is_string( $entry['gzip'] ?? null )
+            || !is_int( $entry['freshUntil'] ?? null )
+            || $fresh && $entry['freshUntil'] <= time()
+        ) {
             return null;
         }
 
@@ -106,28 +126,6 @@ class PageCache
             ->header( 'Vary', 'Accept-Encoding' );
 
         return $gzip ? $response->header( 'Content-Encoding', 'gzip' ) : $response;
-    }
-
-
-    /**
-     * Returns a validated cached-page envelope.
-     *
-     * @return array{gzip: string, freshUntil: int}|null
-     */
-    private static function get( string $key, bool $fresh = false ) : ?array
-    {
-        $value = self::store()->get( $key );
-
-        if( is_array( $value )
-            && is_string( $value['gzip'] ?? null )
-            && is_int( $value['freshUntil'] ?? null )
-        ) {
-            return !$fresh || $value['freshUntil'] > time() ? $value : null;
-        }
-
-        // Ignore values using other envelope formats. They will naturally be
-        // replaced on the next render.
-        return null;
     }
 
 
@@ -160,22 +158,6 @@ class PageCache
     private static function routeKey( string $tenant, string $domain, string $path ) : string
     {
         return hash( 'sha256', json_encode( [$tenant, $domain, $path], JSON_THROW_ON_ERROR ) );
-    }
-
-
-    /**
-     * Stores a page envelope through its fresh and stale lifetime.
-     */
-    private static function put( string $key, string $html, \DateTimeInterface $expires ) : void
-    {
-        $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
-        $freshUntil = $expires->getTimestamp();
-
-        self::store()->put(
-            $key,
-            ['gzip' => gzencode( $html, 6 ), 'freshUntil' => $freshUntil],
-            max( 1, $freshUntil + $grace - time() ),
-        );
     }
 
 
@@ -233,18 +215,20 @@ class PageCache
             return;
         }
 
-        $headers = $response->headers;
-
-        if( !$headers->hasCacheControlDirective( 'public' )
-            || $headers->hasCacheControlDirective( 'private' )
-            || $headers->hasCacheControlDirective( 'no-store' )
-            || $headers->hasCacheControlDirective( 'no-cache' )
+        if( !self::cacheable( $response )
+            || $response->headers->hasCacheControlDirective( 'no-cache' )
             || !( $expires = $response->getExpires() )
-            || $expires->getTimestamp() <= time()
+            || ( $freshUntil = $expires->getTimestamp() ) <= time()
         ) {
             return;
         }
 
-        self::put( $key, (string) $response->getContent(), $expires );
+        $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
+
+        self::store()->put(
+            $key,
+            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil],
+            max( 1, $freshUntil + $grace - time() ),
+        );
     }
 }

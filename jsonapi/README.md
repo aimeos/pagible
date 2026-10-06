@@ -44,25 +44,6 @@ php artisan cms:install:jsonapi
 
 Publishes the Laravel JSON:API config, registers the CMS server, and adds the JSON:API exception handler to `bootstrap/app.php`.
 
-### cms:benchmark:jsonapi
-
-Runs read-only JSON:API benchmarks.
-
-```bash
-php artisan cms:benchmark:jsonapi [options]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--tenant` | `benchmark` | Tenant ID |
-| `--domain` | | Domain name |
-| `--seed` | | Seed benchmark data first |
-| `--pages` | `10000` | Number of pages to generate |
-| `--tries` | `100` | Iterations per benchmark |
-| `--chunk` | `50` | Rows per bulk insert batch |
-| `--unseed` | | Remove benchmark data and exit |
-| `--force` | | Run in production |
-
 ## License
 
 MIT

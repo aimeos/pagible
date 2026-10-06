@@ -37,12 +37,10 @@ class CheckWebhooks extends Command
             return self::FAILURE;
         }
 
-        if( !(bool) config( 'cms.webhooks.enabled', false ) ) {
-            $this->warn( 'The webhook configuration is valid but webhooks are disabled' );
-            return self::SUCCESS;
-        }
+        (bool) config( 'cms.webhooks.enabled', false )
+            ? $this->info( 'The webhook configuration is valid' )
+            : $this->warn( 'The webhook configuration is valid but webhooks are disabled' );
 
-        $this->info( 'The webhook configuration is valid' );
         return self::SUCCESS;
     }
 

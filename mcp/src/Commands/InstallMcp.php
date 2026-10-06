@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallMcp extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -47,27 +51,10 @@ class InstallMcp extends Command
      */
     protected function limiter() : int
     {
-        $filename = 'routes/ai.php';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        $updated = preg_replace_callback(
+        return $this->patch( 'routes/ai.php', fn( string $content ) => preg_replace_callback(
             '/Mcp::web\([^;]*(?:\\\\Aimeos\\\\Cms\\\\Mcp\\\\)?CmsServer::class[^;]*;/s',
             fn( array $matches ) => str_replace( 'throttle:cms-admin', 'throttle:cms-mcp', $matches[0] ),
             $content
-        ) ?? $content;
-
-        if( $updated !== $content ) {
-            file_put_contents( base_path( $filename ), $updated );
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        ) ?? $content );
     }
 }

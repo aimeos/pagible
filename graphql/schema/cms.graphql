@@ -266,7 +266,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "file:publish") @throttle(name: "cms-graphql")
 
   "Get page metrics for the last X days"
-  metrics(url: String!, days: Int, lang: String): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql")
+  metrics(url: String! @rules(apply: ["required", "max:500"]), days: Int @rules(apply: ["nullable", "integer", "min:1", "max:90"])): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql")
 }
 
 type BulkResult {

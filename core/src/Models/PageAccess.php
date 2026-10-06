@@ -9,8 +9,8 @@ namespace Aimeos\Cms\Models;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -121,9 +121,7 @@ class PageAccess extends Model
     public static function set( iterable $ids, ?array $access, ?Authenticatable $user = null,
         bool $descendants = false ) : int
     {
-        if( $user && !Permission::can( 'page:access', $user ) ) {
-            throw new Exception( 'Insufficient permissions' );
-        }
+        Permission::check( 'page:access', $user );
 
         $ids = self::ids( $ids );
 
@@ -177,15 +175,7 @@ class PageAccess extends Model
 
         if( $changed )
         {
-            $paths = [];
-
-            foreach( $changed as $page ) {
-                $paths[(string) $page->domain][] = (string) $page->path;
-            }
-
-            foreach( $paths as $domain => $items ) {
-                PageInvalidated::dispatch( (string) $domain, $items );
-            }
+            Resource::invalidatePages( $changed );
 
             if( Scout::usesExternalSearch() ) {
                 Scout::reindex( Page::class, $reindex );

@@ -39,72 +39,58 @@ final class Navigation
      */
     public function ancestors() : Collection
     {
-        if( $this->ancestors !== null ) {
-            return $this->ancestors;
-        }
-
-        $query = Nav::select( Nav::SELECT_COLUMNS )
-            ->access( $this->user )
-            ->whereAncestorOf( $this->page )
-            ->defaultOrder();
-
-        if( Permission::can( 'page:view', $this->user ) ) {
-            $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
-        }
-
-        $this->ancestors = $this->visible( $query->get() );
-
-        return $this->ancestors;
+        return $this->ancestors ??= $this->visible( $this->query()->whereAncestorOf( $this->page )->defaultOrder()->get() );
     }
 
 
     /**
      * Returns and memoizes the visible navigation tree for a root level.
      *
+     * @param int $level Zero-based ancestor level
      * @return Collection<int, Page>
      */
     public function items( int $level = 0 ) : Collection
     {
-        return $this->items[$level] ??= $this->visible(
-            $this->loadItems( $level ),
-            true,
-        );
+        if( isset( $this->items[$level] ) ) {
+            return $this->items[$level];
+        }
+
+        $start = $this->ancestors()->concat( [$this->page] )->skip( $level )->first();
+
+        if( !$start instanceof Page ) {
+            return $this->items[$level] = collect();
+        }
+
+        $lft = $this->page->getLftName();
+        $items = $this->query()
+            ->where( $lft, '>', $start->getLft() )
+            ->where( $this->page->getRgtName(), '<', $start->getRgt() )
+            ->whereIn( $this->page->getDepthName(), range(
+                (int) $start->getDepth(),
+                ( $start->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 ),
+            ) )
+            ->orderBy( $lft )
+            ->get()
+            ->toTree( $start );
+
+        return $this->items[$level] = $this->visible( $items, true );
     }
 
 
     /**
-     * Returns the lightweight navigation tree rooted at the requested level.
+     * Returns the base navigation query including the latest versions for editors.
      *
-     * @param int $level Zero-based ancestor level
-     * @return \Aimeos\Nestedset\Collection
+     * @return \Aimeos\Nestedset\QueryBuilder<Nav>
      */
-    private function loadItems( int $level ) : \Aimeos\Nestedset\Collection
+    private function query() : \Aimeos\Nestedset\QueryBuilder
     {
-        $start = $this->ancestors()->concat( [$this->page] )->skip( $level )->first();
-
-        if( !$start instanceof Page ) {
-            return new \Aimeos\Nestedset\Collection();
-        }
-
-        $lft = $this->page->getLftName();
-        $rgt = $this->page->getRgtName();
-        $depth = $this->page->getDepthName();
-
-        $query = Nav::select( Nav::SELECT_COLUMNS )
-            ->access( $this->user )
-            ->where( $lft, '>', $start->getLft() )
-            ->where( $rgt, '<', $start->getRgt() )
-            ->whereIn( $depth, range(
-                (int) $start->getDepth(),
-                ( $start->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 ),
-            ) )
-            ->orderBy( $lft );
+        $query = Nav::select( Nav::SELECT_COLUMNS )->access( $this->user );
 
         if( Permission::can( 'page:view', $this->user ) ) {
             $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
         }
 
-        return $query->get()->toTree( $start );
+        return $query;
     }
 
 

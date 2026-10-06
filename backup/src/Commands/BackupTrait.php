@@ -7,11 +7,32 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
 
 
 trait BackupTrait
 {
+    /**
+     * Returns the sorted backup files of the tenant on the disk.
+     *
+     * @param Filesystem $storage Storage disk
+     * @param string $tenant Tenant ID
+     * @return Collection<int, string> Backup file paths
+     */
+    protected function backups( Filesystem $storage, string $tenant ): Collection
+    {
+        $prefix = 'pagible-' . $tenant . '-';
+
+        /** @var Collection<int, string> */
+        return collect( $storage->files() )
+            ->filter( fn( string $f ) => str_starts_with( basename( $f ), $prefix ) && str_ends_with( $f, '.zip' ) )
+            ->sort()
+            ->values();
+    }
+
+
     /**
      * Returns column listings for the given tables.
      *
@@ -35,6 +56,19 @@ trait BackupTrait
         }
 
         return $columns;
+    }
+
+
+    /**
+     * Returns the stored path and preview paths of an archived File row.
+     *
+     * @param array<string, mixed> $row File record
+     * @return list<mixed> Path and preview paths
+     */
+    protected static function filePaths( array $row ): array
+    {
+        $previews = json_decode( (string) ( $row['previews'] ?? '{}' ), true );
+        return [$row['path'] ?? null, ...array_values( is_array( $previews ) ? $previews : [] )];
     }
 
 
@@ -72,5 +106,20 @@ trait BackupTrait
     {
         $dir = storage_path( 'app' );
         return is_writable( $dir ) ? $dir : sys_get_temp_dir();
+    }
+
+
+    /**
+     * Returns the stored path and preview paths of an archived File version row.
+     *
+     * @param array<string, mixed> $row Version record
+     * @return list<mixed> Path and preview paths
+     */
+    protected static function versionPaths( array $row ): array
+    {
+        $data = json_decode( (string) ( $row['data'] ?? '{}' ), true );
+        $data = is_array( $data ) ? $data : [];
+
+        return [$data['path'] ?? null, ...array_values( is_array( $data['previews'] ?? null ) ? $data['previews'] : [] )];
     }
 }

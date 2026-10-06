@@ -6,13 +6,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Files;
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Console\Command;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -107,9 +109,11 @@ class T3Import extends Command
         $this->createdFileUrls = Collection::make();
         $this->sharedElements = Collection::make();
 
-        $this->setupTenant();
+        if ($tenant = (string) $this->option('tenant')) { // @phpstan-ignore cast.string
+            Tenancy::set($tenant);
+        }
 
-        if (! $this->check()) {
+        if (! Database::check($this, $this->t3Connection, 'TYPO3', 'T3', 'typo3')) {
             return;
         }
 
@@ -151,8 +155,8 @@ class T3Import extends Command
         );
         $this->fileRefs = $this->fetchFileReferences();
         $this->t3Pages = $pages->keyBy(fn ($page) => (int) $page->uid);
-        $this->accordionItems = $this->fetchAccordionItems();
-        $this->carouselItems = $this->fetchCarouselItems();
+        $this->accordionItems = $this->fetchItems('tx_bootstrappackage_accordion_item');
+        $this->carouselItems = $this->fetchItems('tx_bootstrappackage_carousel_item');
         $this->carouselFileRefs = $this->fetchCarouselFileReferences();
         $this->backendLayouts = $this->fetchBackendLayouts();
         $contentElements = $this->fetchContentElements();
@@ -213,6 +217,40 @@ class T3Import extends Command
     }
 
     /**
+     * Runs the callback in a transaction and rolls back created files on failure.
+     *
+     * Stored files of the failed callback are removed and the command-level
+     * file caches are restored before the exception is rethrown.
+     *
+     * @template T
+     *
+     * @param  callable(): T  $callback
+     * @return T
+     */
+    protected function atomic(callable $callback): mixed
+    {
+        $filesBefore = clone $this->createdFiles;
+        $urlsBefore = clone $this->createdFileUrls;
+
+        try {
+            return DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($callback, $filesBefore) {
+                try {
+                    return $callback();
+                } catch (\Throwable $e) {
+                    $this->removeFilesCreatedAfter($filesBefore);
+
+                    throw $e;
+                }
+            });
+        } catch (\Throwable $e) {
+            $this->createdFiles = $filesBefore;
+            $this->createdFileUrls = $urlsBefore;
+
+            throw $e;
+        }
+    }
+
+    /**
      * Builds content elements array from TYPO3 tt_content records.
      *
      * @param  Collection<int, mixed>  $records
@@ -226,52 +264,42 @@ class T3Import extends Command
         $elementIds = [];
 
         foreach ($records as $record) {
-            $filesBefore = clone $this->createdFiles;
-            $urlsBefore = clone $this->createdFileUrls;
             $this->contentUid = (string) ($record->uid ?? '?');
 
             try {
-                $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($record, $filesBefore) {
-                    try {
-                        $result = $this->convertContentElement($record);
+                $result = $this->atomic(function () use ($record) {
+                    $result = $this->convertContentElement($record);
 
-                        if (! $result) {
-                            return null;
-                        }
-
-                        foreach ($result['elements'] as &$element) {
-                            $element['group'] = 'main';
-                        }
-                        unset($element);
-
-                        if (! isset($record->_pagible_shared)) {
-                            return $result + ['elementIds' => []];
-                        }
-
-                        $references = [];
-                        $elementIds = [];
-
-                        foreach ($result['elements'] as $position => $element) {
-                            $id = $this->storeSharedElement(
-                                $record,
-                                $element,
-                                $result['fileIds'] ?? [],
-                                $position,
-                            );
-                            $references[] = ['type' => 'reference', 'refid' => $id, 'group' => 'main'];
-                            $elementIds[] = $id;
-                        }
-
-                        return ['elements' => $references, 'fileIds' => [], 'elementIds' => $elementIds];
-                    } catch (\Throwable $e) {
-                        $this->removeFilesCreatedAfter($filesBefore);
-
-                        throw $e;
+                    if (! $result) {
+                        return null;
                     }
+
+                    foreach ($result['elements'] as &$element) {
+                        $element['group'] = 'main';
+                    }
+                    unset($element);
+
+                    if (! isset($record->_pagible_shared)) {
+                        return $result + ['elementIds' => []];
+                    }
+
+                    $references = [];
+                    $elementIds = [];
+
+                    foreach ($result['elements'] as $position => $element) {
+                        $id = $this->storeSharedElement(
+                            $record,
+                            $element,
+                            $result['fileIds'] ?? [],
+                            $position,
+                        );
+                        $references[] = ['type' => 'reference', 'refid' => $id, 'group' => 'main'];
+                        $elementIds[] = $id;
+                    }
+
+                    return ['elements' => $references, 'fileIds' => [], 'elementIds' => $elementIds];
                 });
             } catch (\Throwable $e) {
-                $this->createdFiles = $filesBefore;
-                $this->createdFileUrls = $urlsBefore;
                 $uid = (string) ($record->uid ?? '?');
                 $this->warn("  Skipped content element [{$uid}]: {$e->getMessage()}");
 
@@ -304,8 +332,8 @@ class T3Import extends Command
     {
         $key = $this->sharedElementKey($record, $position);
         $cached = $this->sharedElements?->get($key);
-        $lang = isset($this->lang) ? $this->lang : 'en';
-        $editor = isset($this->editor) ? $this->editor : 't3-import';
+        $lang = $this->lang;
+        $editor = $this->editor;
 
         if ($cached && Element::whereKey($cached['id'])->where('latest_id', $cached['latest'])->exists()) {
             return $cached['id'];
@@ -361,15 +389,12 @@ class T3Import extends Command
      */
     protected function sharedElementKey(object $record, int $position): string
     {
-        $connection = isset($this->t3Connection) ? $this->t3Connection : 'typo3';
-        $lang = isset($this->lang) ? $this->lang : 'en';
-
         return implode(':', [
-            sha1($connection),
+            sha1($this->t3Connection),
             (int) ($record->_pagible_shared_page ?? $record->pid ?? 0),
             (int) ($record->_pagible_shared_uid ?? $record->uid ?? 0),
             $position,
-            $lang,
+            $this->lang,
         ]);
     }
 
@@ -434,22 +459,9 @@ class T3Import extends Command
      */
     protected function importFileSafely(callable $callback): mixed
     {
-        $filesBefore = clone $this->createdFiles;
-        $urlsBefore = clone $this->createdFileUrls;
-
         try {
-            return DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($callback, $filesBefore) {
-                try {
-                    return $callback();
-                } catch (\Throwable $e) {
-                    $this->removeFilesCreatedAfter($filesBefore);
-
-                    throw $e;
-                }
-            });
+            return $this->atomic($callback);
         } catch (\Throwable $e) {
-            $this->createdFiles = $filesBefore;
-            $this->createdFileUrls = $urlsBefore;
             $this->warn("  Skipped file in content element [{$this->contentUid}]: {$e->getMessage()}");
 
             return null;
@@ -479,30 +491,6 @@ class T3Import extends Command
     }
 
     /**
-     * Tests the TYPO3 database connection.
-     */
-    protected function check(): bool
-    {
-        try {
-            DB::connection($this->t3Connection)->getPdo();
-
-            return true;
-        } catch (\Exception $e) {
-            $this->error("Cannot connect to TYPO3 database using connection \"{$this->t3Connection}\".");
-            $this->error("Add a \"{$this->t3Connection}\" connection to config/database.php, e.g.:");
-            $this->line("  '{$this->t3Connection}' => [");
-            $this->line("      'driver' => 'mysql',");
-            $this->line("      'host' => env('T3_DB_HOST', '127.0.0.1'),");
-            $this->line("      'database' => env('T3_DB_DATABASE', 'typo3'),");
-            $this->line("      'username' => env('T3_DB_USERNAME', 'root'),");
-            $this->line("      'password' => env('T3_DB_PASSWORD', ''),");
-            $this->line('  ]');
-
-            return false;
-        }
-    }
-
-    /**
      * Converts a TYPO3 tt_content record into Pagible content elements.
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds?: string[]}|null
@@ -511,47 +499,13 @@ class T3Import extends Command
     {
         return match ((string) ($record->CType ?? '')) {
             'header' => $this->convertHeader($record),
-            'text' => $this->convertText($record),
             'textpic', 'textmedia' => $this->convertTextpic($record),
             'image' => $this->convertImage($record),
             'html' => $this->convertHtml($record),
             'accordion' => $this->convertAccordion($record),
             'carousel' => $this->convertCarousel($record),
-            'shortcut' => $this->convertShortcut($record),
             default => $this->convertDefault($record),
         };
-    }
-
-    /**
-     * Converts a TYPO3 content shortcut by importing its referenced records.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertShortcut(object $record): ?array
-    {
-        preg_match_all('/\d+/', (string) ($record->records ?? ''), $matches);
-        $elements = [];
-        $fileIds = [];
-
-        foreach (array_unique(array_map('intval', $matches[0])) as $uid) {
-            $target = $this->contentRecords?->get($uid);
-
-            if (! $target || (int) ($target->uid ?? 0) === (int) ($record->uid ?? 0)) {
-                continue;
-            }
-
-            $result = $this->convertContentElement($target);
-
-            if ($result) {
-                $elements = array_merge($elements, $result['elements']);
-                $fileIds = array_merge($fileIds, $result['fileIds'] ?? []);
-            }
-        }
-
-        return empty($elements) ? null : [
-            'elements' => $elements,
-            'fileIds' => array_values(array_unique($fileIds)),
-        ];
     }
 
     /**
@@ -767,20 +721,8 @@ class T3Import extends Command
      */
     protected function convertDefault(object $record): ?array
     {
-        $elements = [];
+        $elements = $this->heading($record);
         $fileIds = [];
-
-        if (! empty($record->header) && ($record->header_layout ?? '0') !== '100') {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'heading',
-                'group' => 'main',
-                'data' => [
-                    'level' => $this->headerLevel($record->header_layout), // @phpstan-ignore property.notFound
-                    'title' => $record->header,
-                ],
-            ];
-        }
 
         if (! empty($record->bodytext)) {
             $text = trim($record->bodytext);
@@ -859,20 +801,7 @@ class T3Import extends Command
             return null;
         }
 
-        $elements = [];
-
-        if (! empty($record->header) && ($record->header_layout ?? '0') !== '100') {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'heading',
-                'group' => 'main',
-                'data' => [
-                    'level' => $this->headerLevel($record->header_layout), // @phpstan-ignore property.notFound
-                    'title' => $record->header,
-                ],
-            ];
-        }
-
+        $elements = $this->heading($record);
         $elements[] = [
             'id' => Utils::uid(),
             'type' => 'image',
@@ -884,69 +813,14 @@ class T3Import extends Command
     }
 
     /**
-     * Converts a text content element into heading + html elements.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertText(object $record): ?array
-    {
-        $elements = [];
-        $fileIds = [];
-
-        if (! empty($record->header) && ($record->header_layout ?? '0') !== '100') {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'heading',
-                'group' => 'main',
-                'data' => [
-                    'level' => $this->headerLevel($record->header_layout), // @phpstan-ignore property.notFound
-                    'title' => $record->header,
-                ],
-            ];
-        }
-
-        if (! empty($record->bodytext)) {
-            $text = trim($record->bodytext);
-            if (! empty($text)) {
-                $result = $this->rewriteHtmlFiles($text);
-                $elements[] = [
-                    'id' => Utils::uid(),
-                    'type' => 'html',
-                    'group' => 'main',
-                    'data' => ['text' => Utils::html($result['html'])],
-                ];
-                $fileIds = array_merge($fileIds, $result['fileIds']);
-            }
-        }
-
-        if (empty($elements)) {
-            return null;
-        }
-
-        return ['elements' => $elements, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
      * Converts a textpic/textmedia content element into an image-text element.
      *
      * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
      */
     protected function convertTextpic(object $record): ?array
     {
-        $elements = [];
+        $elements = $this->heading($record);
         $fileIds = [];
-
-        if (! empty($record->header) && ($record->header_layout ?? '0') !== '100') {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'heading',
-                'group' => 'main',
-                'data' => [
-                    'level' => $this->headerLevel($record->header_layout), // @phpstan-ignore property.notFound
-                    'title' => $record->header,
-                ],
-            ];
-        }
 
         $fileId = $this->importFileForContent($record->uid); // @phpstan-ignore property.notFound
         $text = ! empty($record->bodytext) ? trim($record->bodytext) : '';
@@ -1286,214 +1160,21 @@ class T3Import extends Command
             $this->createdFileUrls->forget($path);
         }
 
-        $file = new File;
-        $resource = null;
+        $file = Files::create($mime, $name, $path, $this->editor, str_starts_with($path, 'http'));
+        $id = $file->id ?? '';
+        $this->createdFiles->put($path, $id);
+        $disk = File::diskName((string) $file->disk);
+        $url = Storage::disk($disk)->url((string) $file->path);
 
-        try {
-            $file->name = $name;
-            $file->mime = $mime;
-            $file->editor = $this->editor;
-
-            if (str_starts_with($path, 'http')) {
-                $resource = $this->downloadFile($path);
-
-                if ($mime === 'image/svg+xml') {
-                    $this->prepareSvgResource($resource);
-                }
-
-                $tmp = stream_get_meta_data($resource)['uri'] ?? null;
-                $filename = basename((string) parse_url($path, PHP_URL_PATH)) ?: $name;
-
-                if (! is_string($tmp)) {
-                    throw new \Aimeos\Cms\Exception('Unable to create temporary file');
-                }
-
-                $file->ingest(new UploadedFile($tmp, $filename, $mime, null, true));
-            } else {
-                $file->path = $path;
-                $file->previews = [];
-            }
-
-            $file->save();
-
-            $snapshot = File::snapshot($file->toArray());
-            $version = $file->versions()->forceCreate([
-                'lang' => $file->lang,
-                'data' => $snapshot['data'],
-                'aux' => $snapshot['aux'],
-                'editor' => $this->editor,
-            ]);
-
-            $file->forceFill(['latest_id' => $version->id])->saveQuietly();
-            $file->publish($version);
-
-            $id = $file->id ?? '';
-            $this->createdFiles->put($path, $id);
-            $disk = File::diskName((string) $file->disk);
-            $url = Storage::disk($disk)->url((string) $file->path);
-
-            // Local managed files must remain portable across hosts and preview ports.
-            // Remote disks keep their absolute provider URL.
-            if (config('filesystems.disks.'.$disk.'.driver') === 'local') {
-                $url = parse_url($url, PHP_URL_PATH) ?: $url;
-            }
-
-            $this->createdFileUrls->put($path, $url);
-
-            return $id;
-        } catch (\Throwable $e) {
-            $file->removePreviews()->removeFile();
-            throw $e;
-        } finally {
-            if (is_resource($resource)) {
-                fclose($resource);
-            }
-        }
-    }
-
-    /**
-     * Downloads a remote file into a bounded temporary stream.
-     *
-     * @return resource
-     */
-    protected function downloadFile(string $url)
-    {
-        $response = Utils::http($url, ['stream' => true]);
-
-        if (! $response->successful()) {
-            throw new \Aimeos\Cms\Exception(sprintf('Failed to download "%s"', $url));
+        // Local managed files must remain portable across hosts and preview ports.
+        // Remote disks keep their absolute provider URL.
+        if (config('filesystems.disks.'.$disk.'.driver') === 'local') {
+            $url = parse_url($url, PHP_URL_PATH) ?: $url;
         }
 
-        $limit = max(0, (float) config('cms.upload.filesize', 50));
-        $max = (int) ($limit * 1024 * 1024);
-        $body = $response->toPsrResponse()->getBody();
-        $length = trim($response->header('Content-Length'));
+        $this->createdFileUrls->put($path, $url);
 
-        if ($length !== '' && ctype_digit($length) && (int) $length > $max) {
-            $body->close();
-            throw new \Aimeos\Cms\Exception('Remote file exceeds the maximum upload size');
-        }
-
-        if (! ($tmp = tmpfile())) {
-            $body->close();
-            throw new \Aimeos\Cms\Exception('Unable to create temporary file');
-        }
-
-        $size = 0;
-
-        while (! $body->eof()) {
-            $chunk = $body->read(min(1048576, $max - $size + 1));
-            $size += strlen($chunk);
-
-            if ($size > $max) {
-                $body->close();
-                fclose($tmp);
-                throw new \Aimeos\Cms\Exception('Remote file exceeds the maximum upload size');
-            }
-
-            fwrite($tmp, $chunk);
-        }
-
-        $body->close();
-        fseek($tmp, 0);
-
-        return $tmp;
-    }
-
-    /**
-     * Adds the XML declaration needed by fileinfo to recognize plain SVG markup.
-     *
-     * @param  resource  $resource
-     */
-    protected function prepareSvgResource($resource): void
-    {
-        rewind($resource);
-        $content = stream_get_contents($resource);
-
-        if (! is_string($content)) {
-            throw new \Aimeos\Cms\Exception('Unable to read SVG file');
-        }
-
-        $normalized = (string) preg_replace('/^\xEF\xBB\xBF/', '', $content);
-        $normalized = strtr($normalized, [
-            '&ns_extend;' => 'http://ns.adobe.com/Extensibility/1.0/',
-            '&ns_ai;' => 'http://ns.adobe.com/AdobeIllustrator/10.0/',
-            '&ns_graphs;' => 'http://ns.adobe.com/Graphs/1.0/',
-            '&ns_vars;' => 'http://ns.adobe.com/Variables/1.0/',
-            '&ns_imrep;' => 'http://ns.adobe.com/ImageReplacement/1.0/',
-            '&ns_sfw;' => 'http://ns.adobe.com/SaveForWeb/1.0/',
-            '&ns_custom;' => 'http://ns.adobe.com/GenericCustomNamespace/1.0/',
-            '&ns_adobe_xpath;' => 'http://ns.adobe.com/AdobeXPath/1.0/',
-        ]);
-
-        if (preg_match('/^\s*<\?xml\b/i', $normalized) !== 1) {
-            $normalized = '<?xml version="1.0" encoding="UTF-8"?>'."\n".$normalized;
-        }
-
-        if ($normalized !== $content) {
-            rewind($resource);
-
-            if (! ftruncate($resource, 0) || fwrite($resource, $normalized) !== strlen($normalized)) {
-                throw new \Aimeos\Cms\Exception('Unable to normalize SVG file');
-            }
-        }
-
-        rewind($resource);
-    }
-
-    /**
-     * Creates a Pagible page with content, version, and search index.
-     *
-     * @param  array<string, mixed>  $pageData
-     * @param  array<int, array<string, mixed>>  $contentElements
-     */
-    protected function createPage(array $pageData, array $contentElements, Page $parent): Page
-    {
-        $page = Page::forceCreate($pageData + ['content' => $contentElements]);
-        $page->appendToNode($parent)->save();
-
-        return $page;
-    }
-
-    /**
-     * Builds the Pagible page version payload.
-     *
-     * @param  array<string, mixed>  $pageData
-     * @param  array<int, array<string, mixed>>  $contentElements
-     * @return array<string, mixed>
-     */
-    protected function buildVersionData(array $pageData, array $contentElements): array
-    {
-        return [
-            'lang' => $this->lang,
-            'data' => $pageData,
-            'aux' => ['content' => $contentElements],
-            'editor' => $this->editor,
-        ];
-    }
-
-    /**
-     * Creates a version for a page and publishes it.
-     *
-     * @param  array<string, mixed>  $pageData
-     * @param  array<int, array<string, mixed>>  $contentElements
-     * @param  string[]  $fileIds
-     * @param  string[]  $elementIds
-     */
-    protected function createVersion(Page $page, array $pageData, array $contentElements, array $fileIds, array $elementIds = []): void
-    {
-        $version = $page->versions()->forceCreate($this->buildVersionData($pageData, $contentElements));
-
-        if (! empty($fileIds)) {
-            $version->files()->attach($fileIds);
-        }
-
-        if (! empty($elementIds)) {
-            $version->elements()->attach($elementIds);
-        }
-
-        $page->forceFill(['latest_id' => $version->id])->saveQuietly();
-        $page->publish($version);
+        return $id;
     }
 
     /**
@@ -1522,58 +1203,27 @@ class T3Import extends Command
      */
     protected function fetchBackendLayouts(): Collection
     {
-        if (! Schema::connection($this->t3Connection)->hasTable('backend_layout')) {
-            return Collection::make();
-        }
-
-        return DB::connection($this->t3Connection)
-            ->table('backend_layout')
-            ->where('deleted', 0)
+        return $this->t3table('backend_layout')
+            ?->where('deleted', 0)
             ->where('hidden', 0)
             ->get()
-            ->keyBy('uid');
+            ->keyBy('uid') ?? Collection::make();
     }
 
     /**
-     * Fetches visible Bootstrap Package accordion items grouped by content UID.
+     * Fetches visible Bootstrap Package accordion or carousel items grouped by content UID.
      *
      * @return Collection<int|string, mixed>
      */
-    protected function fetchAccordionItems(): Collection
+    protected function fetchItems(string $table): Collection
     {
-        if (! Schema::connection($this->t3Connection)->hasTable('tx_bootstrappackage_accordion_item')) {
-            return Collection::make();
-        }
-
-        return DB::connection($this->t3Connection)
-            ->table('tx_bootstrappackage_accordion_item')
-            ->where('deleted', 0)
+        return $this->t3table($table)
+            ?->where('deleted', 0)
             ->where('hidden', 0)
             ->whereIn('sys_language_uid', [0, -1])
             ->orderBy('sorting', 'asc')
             ->get()
-            ->groupBy('tt_content');
-    }
-
-    /**
-     * Fetches visible Bootstrap Package carousel items grouped by content UID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchCarouselItems(): Collection
-    {
-        if (! Schema::connection($this->t3Connection)->hasTable('tx_bootstrappackage_carousel_item')) {
-            return Collection::make();
-        }
-
-        return DB::connection($this->t3Connection)
-            ->table('tx_bootstrappackage_carousel_item')
-            ->where('deleted', 0)
-            ->where('hidden', 0)
-            ->whereIn('sys_language_uid', [0, -1])
-            ->orderBy('sorting', 'asc')
-            ->get()
-            ->groupBy('tt_content');
+            ->groupBy('tt_content') ?? Collection::make();
     }
 
     /**
@@ -1586,18 +1236,13 @@ class T3Import extends Command
      */
     protected function fetchDomains(): array
     {
-        if (! Schema::connection($this->t3Connection)->hasTable('sys_domain')) {
-            return [];
-        }
-
         $domains = [];
-        $records = DB::connection($this->t3Connection)
-            ->table('sys_domain')
-            ->where('hidden', 0)
+        $records = $this->t3table('sys_domain')
+            ?->where('hidden', 0)
             ->where('domainName', '<>', '')
             ->orderBy('sorting', 'asc')
             ->orderBy('uid', 'asc')
-            ->get(['pid', 'domainName']);
+            ->get(['pid', 'domainName']) ?? [];
 
         foreach ($records as $record) {
             $domains[(int) $record->pid] ??= (string) $record->domainName;
@@ -1631,7 +1276,7 @@ class T3Import extends Command
      */
     protected function fetchCarouselFileReferences(): Collection
     {
-        if (! Schema::connection($this->t3Connection)->hasTable('tx_bootstrappackage_carousel_item')) {
+        if (! $this->t3table('tx_bootstrappackage_carousel_item')) {
             return Collection::make();
         }
 
@@ -1683,7 +1328,7 @@ class T3Import extends Command
      */
     protected function getRootPage(object $t3Root, string $domain, Collection $contentElements): Page
     {
-        $page = $this->findRootPage($domain);
+        $page = Pages::find(['tag' => 'root', 'domain' => $domain]);
 
         if ($page) {
             $this->info("Using existing root page: {$page->name} ({$domain})");
@@ -1692,59 +1337,9 @@ class T3Import extends Command
         }
 
         $slug = $this->slugFromPath($t3Root->slug); // @phpstan-ignore property.notFound
-        $pageData = $this->buildPageData($t3Root, $slug, $domain);
-        $pageData['tag'] = 'root';
-        $records = $this->recordsForPage($t3Root, $contentElements);
-        $pageData['theme'] = $this->theme;
-        $content = $this->buildContent($records);
-        $page = $this->createRootPage($pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
+        $page = $this->save($t3Root, ['tag' => 'root'] + $this->buildPageData($t3Root, $slug, $domain), $contentElements);
 
         $this->info("Created root page: {$t3Root->title} ({$domain})"); // @phpstan-ignore property.notFound
-
-        return $page;
-    }
-
-    /**
-     * Finds an imported root page for a domain.
-     */
-    protected function findRootPage(string $domain): ?Page
-    {
-        $page = Page::withTrashed()->where('tag', 'root')->where('domain', $domain)->first();
-
-        if ($page?->trashed()) {
-            $page->restore();
-        }
-
-        return $page;
-    }
-
-    /**
-     * Finds an imported non-root page by its unique destination route.
-     */
-    protected function findPage(string $domain, string $path): ?Page
-    {
-        $page = Page::withTrashed()->where('domain', $domain)->where('path', $path)->first();
-
-        if ($page?->trashed()) {
-            $page->restore();
-        }
-
-        return $page;
-    }
-
-    /**
-     * Creates and publishes a root page.
-     *
-     * @param  array<string, mixed>  $pageData
-     * @param  array<int, array<string, mixed>>  $contentElements
-     * @param  string[]  $fileIds
-     * @param  string[]  $elementIds
-     */
-    protected function createRootPage(array $pageData, array $contentElements, array $fileIds, array $elementIds = []): Page
-    {
-        $page = Page::forceCreate($pageData + ['content' => $contentElements]);
-
-        $this->createVersion($page, $pageData, $contentElements, $fileIds, $elementIds);
 
         return $page;
     }
@@ -1950,17 +1545,7 @@ class T3Import extends Command
      */
     protected function redirectTarget(object $t3Page, Collection $pages): string
     {
-        if ($t3Page->doktype == 3) { // @phpstan-ignore property.notFound
-            return trim((string) $t3Page->url); // @phpstan-ignore property.notFound
-        }
-
-        if ($t3Page->doktype != 4 || $t3Page->shortcut_mode != 0) { // @phpstan-ignore property.notFound, property.notFound
-            return '';
-        }
-
-        $target = $pages->get((int) $t3Page->shortcut); // @phpstan-ignore property.notFound
-
-        return $target ? $this->redirectDestination($target, $pages, [(int) $t3Page->uid => true]) : ''; // @phpstan-ignore property.notFound
+        return in_array((int) $t3Page->doktype, [3, 4], true) ? $this->redirectDestination($t3Page, $pages, []) : ''; // @phpstan-ignore property.notFound
     }
 
     /**
@@ -2001,14 +1586,29 @@ class T3Import extends Command
      */
     protected function headerLevel(?string $layout): int
     {
-        return match ($layout) {
-            '1' => 1,
-            '2' => 2,
-            '3' => 3,
-            '4' => 4,
-            '5' => 5,
-            default => 2,
-        };
+        return in_array($layout, ['1', '2', '3', '4', '5'], true) ? (int) $layout : 2;
+    }
+
+    /**
+     * Returns the heading element of a content record unless its header is hidden.
+     *
+     * @return list<array<string, mixed>>
+     */
+    protected function heading(object $record): array
+    {
+        if (empty($record->header) || ($record->header_layout ?? '0') === '100') {
+            return [];
+        }
+
+        return [[
+            'id' => Utils::uid(),
+            'type' => 'heading',
+            'group' => 'main',
+            'data' => [
+                'level' => $this->headerLevel($record->header_layout ?? null),
+                'title' => $record->header,
+            ],
+        ]];
     }
 
     /**
@@ -2047,11 +1647,8 @@ class T3Import extends Command
     protected function imagePosition(int $orient): string
     {
         return match ($orient) {
-            0, 1, 2 => 'auto',
-            17, 18 => 'start',
-            25, 26 => 'end',
-            126 => 'start',
-            125 => 'end',
+            17, 18, 126 => 'start',
+            25, 26, 125 => 'end',
             default => 'auto',
         };
     }
@@ -2114,22 +1711,9 @@ class T3Import extends Command
         )->values();
 
         foreach ($selectedPages as $t3Page) {
-            $filesBefore = clone $this->createdFiles;
-            $urlsBefore = clone $this->createdFileUrls;
-
             try {
-                $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($t3Page, $pagesById, $contentElements, $processed, $filesBefore) {
-                    try {
-                        return $this->importSelectedPage($t3Page, $pagesById, $contentElements, $processed);
-                    } catch (\Throwable $e) {
-                        $this->removeFilesCreatedAfter($filesBefore);
-
-                        throw $e;
-                    }
-                });
+                $result = $this->atomic(fn () => $this->importSelectedPage($t3Page, $pagesById, $contentElements, $processed));
             } catch (\Throwable $e) {
-                $this->createdFiles = $filesBefore;
-                $this->createdFileUrls = $urlsBefore;
                 $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
 
                 continue;
@@ -2164,7 +1748,7 @@ class T3Import extends Command
         $pageData = $this->buildPageData($t3Page, $path, $domain, $to);
         $isRoot = (int) ($t3Page->pid ?? 0) === 0 || ! empty($t3Page->is_siteroot);
         $pageData['tag'] = $isRoot ? 'root' : $pageData['tag'];
-        $page = $isRoot ? $this->findRootPage($domain) : $this->findPage($domain, $path);
+        $page = $this->findSourcePage($t3Page, $domain);
         $updated = $page !== null;
         $parent = null;
 
@@ -2187,23 +1771,7 @@ class T3Import extends Command
             }
         }
 
-        $records = $this->recordsForPage($t3Page, $contentElements);
-        $pageData['theme'] = $this->theme;
-        $content = $this->buildContent($records);
-
-        if ($page) {
-            $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
-        } elseif ($isRoot) {
-            $page = $this->createRootPage($pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
-        } else {
-            /** @var Page $parent */
-            $page = $this->createPage($pageData, $content['elements'], $parent);
-            $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
-
-            if ((int) ($t3Page->crdate ?? 0) > 0) {
-                $page->update(['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))]);
-            }
-        }
+        $page = $this->save($t3Page, $pageData, $contentElements, $page, $parent);
 
         return ['page' => $page, 'updated' => $updated, 'path' => $path, 'domain' => $domain];
     }
@@ -2214,10 +1782,31 @@ class T3Import extends Command
     protected function findSourcePage(object $t3Page, string $domain): ?Page
     {
         if ((int) ($t3Page->pid ?? 0) === 0 || ! empty($t3Page->is_siteroot)) {
-            return $this->findRootPage($domain);
+            return Pages::find(['tag' => 'root', 'domain' => $domain]);
         }
 
-        return $this->findPage($domain, $this->slugFromPath($t3Page->slug)); // @phpstan-ignore property.notFound
+        return Pages::find(['domain' => $domain, 'path' => $this->slugFromPath($t3Page->slug)]); // @phpstan-ignore property.notFound
+    }
+
+    /**
+     * Creates or updates a page from a TYPO3 page record and publishes its content.
+     *
+     * @param  array<string, mixed>  $pageData
+     * @param  Collection<int|string, mixed>  $contentElements
+     */
+    protected function save(object $t3Page, array $pageData, Collection $contentElements, ?Page $page = null, ?Page $parent = null): Page
+    {
+        $content = $this->buildContent($this->recordsForPage($t3Page, $contentElements));
+        $new = $page === null;
+        $page ??= Pages::create($pageData, $content['elements'], $parent);
+
+        Pages::publish($page, $pageData, ['content' => $content['elements']], $content['fileIds'], $content['elementIds'], $this->lang, $this->editor);
+
+        if ($new && $parent && (int) ($t3Page->crdate ?? 0) > 0) {
+            $page->update(['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))]);
+        }
+
+        return $page;
     }
 
     /**
@@ -2231,26 +1820,32 @@ class T3Import extends Command
         $seen = [];
 
         while ((int) ($page->pid ?? 0) > 0 && empty($page->is_siteroot)) {
-            $uid = (int) ($page->uid ?? 0);
-
-            if (isset($seen[$uid])) {
-                throw new \RuntimeException("Cycle detected in TYPO3 page tree at page [{$uid}].");
-            }
-
-            $seen[$uid] = true;
-            $parent = $pagesById->get((int) $page->pid);
-
-            if (! $parent) {
-                throw new \RuntimeException(sprintf(
-                    'TYPO3 parent page [%d] is missing from the source tree.',
-                    (int) $page->pid,
-                ));
-            }
-
-            $page = $parent;
+            $page = $this->sourceParent($page, $pagesById, $seen);
         }
 
         return $page;
+    }
+
+    /**
+     * Returns the parent record of a TYPO3 page and detects cycles in the page tree.
+     *
+     * @param  Collection<int, mixed>  $pagesById
+     * @param  array<int, bool>  $seen  UIDs of the pages already visited
+     */
+    protected function sourceParent(object $page, Collection $pagesById, array &$seen): object
+    {
+        $uid = (int) ($page->uid ?? 0);
+
+        if (isset($seen[$uid])) {
+            throw new \RuntimeException("Cycle detected in TYPO3 page tree at page [{$uid}].");
+        }
+
+        $seen[$uid] = true;
+
+        return $pagesById->get((int) ($page->pid ?? 0)) ?? throw new \RuntimeException(sprintf(
+            'TYPO3 parent page [%d] is missing from the source tree.',
+            (int) ($page->pid ?? 0),
+        ));
     }
 
     /**
@@ -2265,18 +1860,7 @@ class T3Import extends Command
         $depth = 0;
 
         while ((int) ($page->pid ?? 0) > 0) {
-            $uid = (int) ($page->uid ?? 0);
-
-            if (isset($seen[$uid])) {
-                throw new \RuntimeException("Cycle detected in TYPO3 page tree at page [{$uid}].");
-            }
-
-            $seen[$uid] = true;
-            $page = $pagesById->get((int) $page->pid)
-                ?? throw new \RuntimeException(sprintf(
-                    'TYPO3 parent page [%d] is missing from the source tree.',
-                    (int) $page->pid,
-                ));
+            $page = $this->sourceParent($page, $pagesById, $seen);
             $depth++;
         }
 
@@ -2300,41 +1884,21 @@ class T3Import extends Command
             $children = $pageMap->get($parentUid, Collection::make());
 
             foreach ($children as $t3Page) {
-                $filesBefore = clone $this->createdFiles;
-                $urlsBefore = clone $this->createdFileUrls;
-
                 try {
-                    $result = DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($t3Page, $parentPage, $domain, $pagesById, $contentElements, $filesBefore) {
-                        try {
-                            $slug = $this->slugFromPath($t3Page->slug);
+                    $result = $this->atomic(function () use ($t3Page, $parentPage, $domain, $pagesById, $contentElements) {
+                        $slug = $this->slugFromPath($t3Page->slug);
 
-                            if ($page = $this->findPage($domain, $slug)) {
-                                return ['page' => $page, 'path' => $slug, 'reused' => true];
-                            }
-
-                            $to = $this->redirectTarget($t3Page, $pagesById);
-                            $pageData = $this->buildPageData($t3Page, $slug, $domain, $to);
-                            $records = $this->recordsForPage($t3Page, $contentElements);
-                            $pageData['theme'] = $this->theme;
-                            $content = $this->buildContent($records);
-
-                            $page = $this->createPage($pageData, $content['elements'], $parentPage);
-                            $this->createVersion($page, $pageData, $content['elements'], $content['fileIds'], $content['elementIds']);
-
-                            if ($t3Page->crdate > 0) {
-                                $page->update(['created_at' => date('Y-m-d H:i:s', $t3Page->crdate)]);
-                            }
-
-                            return ['page' => $page, 'path' => $slug, 'reused' => false];
-                        } catch (\Throwable $e) {
-                            $this->removeFilesCreatedAfter($filesBefore);
-
-                            throw $e;
+                        if ($page = Pages::find(['domain' => $domain, 'path' => $slug])) {
+                            return ['page' => $page, 'path' => $slug, 'reused' => true];
                         }
+
+                        $to = $this->redirectTarget($t3Page, $pagesById);
+                        $pageData = $this->buildPageData($t3Page, $slug, $domain, $to);
+                        $page = $this->save($t3Page, $pageData, $contentElements, null, $parentPage);
+
+                        return ['page' => $page, 'path' => $slug, 'reused' => false];
                     });
                 } catch (\Throwable $e) {
-                    $this->createdFiles = $filesBefore;
-                    $this->createdFileUrls = $urlsBefore;
                     $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
 
                     continue;
@@ -2375,30 +1939,12 @@ class T3Import extends Command
     }
 
     /**
-     * Guesses MIME type from file extension.
-     */
-    protected function guessMimeFromExtension(string $ext): string
-    {
-        return match (strtolower($ext)) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'webp' => 'image/webp',
-            'svg' => 'image/svg+xml',
-            'pdf' => 'application/pdf',
-            'mp4' => 'video/mp4',
-            'mp3' => 'audio/mpeg',
-            default => 'application/octet-stream',
-        };
-    }
-
-    /**
      * Corrects generic TYPO3 MIME values when the file extension is definitive.
      */
     protected function normalizeMime(string $mime, string $extension): string
     {
         $mime = strtolower(trim($mime));
-        $guessed = $this->guessMimeFromExtension($extension);
+        $guessed = Files::mime('file.'.$extension);
 
         if ($mime === '' || $mime === 'application/octet-stream'
             || ($mime === 'text/plain' && $guessed === 'image/svg+xml')) {
@@ -2507,15 +2053,13 @@ class T3Import extends Command
     }
 
     /**
-     * Sets up multi-tenancy if a tenant option is provided.
+     * Returns a query for the TYPO3 table or NULL if the table doesn't exist.
      */
-    protected function setupTenant(): void
+    protected function t3table(string $name): ?\Illuminate\Database\Query\Builder
     {
-        if ($tenant = $this->option('tenant')) {
-            Tenancy::$callback = function () use ($tenant) {
-                return $tenant;
-            };
-        }
+        return Schema::connection($this->t3Connection)->hasTable($name)
+            ? DB::connection($this->t3Connection)->table($name)
+            : null;
     }
 
     /**

@@ -9,14 +9,12 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Page;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -26,46 +24,24 @@ use Laravel\Mcp\Request;
 #[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and canonical meta entries with meta-tags.data.description for SEO. Meta and config entries must contain type, data, and files. Files and shared elements are attached automatically. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
 class AddPage extends Tool
 {
+    protected const PERMISSIONS = ['page:add'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:add', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
-        $v = $request->validate([
+        $v = $request->validate( [
+            ...SavePage::RULES,
             'lang' => 'required|string|max:5',
             'name' => 'required|string|max:50',
             'title' => 'required|string|max:100',
             'content' => 'required|array',
-            'content.*.id' => 'string|max:10',
-            'content.*.type' => 'required|string|max:50',
-            'content.*.group' => 'string|max:50',
             'content.*.data' => 'required|array',
             'meta' => 'required|array',
             'meta.meta-tags' => 'required|array:type,data,files',
-            'meta.*' => 'array:type,data,files',
-            'meta.*.type' => 'required|string|max:50',
-            'meta.*.data' => 'present|array',
-            'meta.*.files' => 'present|array',
-            'meta.*.files.*' => 'string|max:36',
             'meta.meta-tags.data.description' => 'required|string|max:300',
-            'config' => 'array',
-            'config.*' => 'array:type,data,files',
-            'config.*.type' => 'required|string|max:50',
-            'config.*.data' => 'present|array',
-            'config.*.files' => 'present|array',
-            'config.*.files.*' => 'string|max:36',
-            'to' => 'string|max:2048',
-            'tag' => 'string|max:50',
-            'theme' => 'string|max:50',
-            'type' => 'string|max:50',
-            'domain' => 'string|max:255',
-            'path' => 'string|max:255',
-            'cache' => 'integer|min:0',
-            'related_id' => 'string|max:36',
             'parent_id' => 'string|max:36',
             'ref' => 'string|max:36',
         ], [
@@ -83,7 +59,7 @@ class AddPage extends Tool
         /** @var Page|null $parent */
         $parent = $pid
             ? Page::withTrashed()
-                ->select( 'id', 'tenant_id', 'latest_id', 'lang' )
+                ->select( 'id', 'tenant_id', 'latest_id' )
                 ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] )
                 ->find( $pid )
             : null;
@@ -92,16 +68,13 @@ class AddPage extends Tool
         $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
         $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
-        $v['lang'] = $v['lang'] ?? $parent?->lang ?: '';
 
-        if( isset( $v['content'] ) ) {
-            // Use the raw request input, not the validated copy: validate() rebuilds
-            // wildcard arrays via rule expansion, which materializes elements matched
-            // by content.*.id first and appends id-less elements at the end, scrambling
-            // the author's order. The raw input preserves it; Validation::content()
-            // still whitelists each element's keys.
-            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
-        }
+        // Use the raw request input, not the validated copy: validate() rebuilds
+        // wildcard arrays via rule expansion, which materializes elements matched
+        // by content.*.id first and appends id-less elements at the end, scrambling
+        // the author's order. The raw input preserves it; Validation::content()
+        // still whitelists each element's keys.
+        $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
         $v['related_id'] = $v['related_id'] ?? null;
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
@@ -117,7 +90,7 @@ class AddPage extends Tool
             $pid,
         );
 
-        return Response::structured( ['id' => $page->id, 'latest_id' => $page->latest_id] + $page->toArray() );
+        return Response::structured( Presenter::item( $page ) );
     }
 
 
@@ -171,8 +144,6 @@ class AddPage extends Tool
                 ->description( 'Domain name the page is assigned to. Inherited from parent if omitted.' ),
             'path' => $schema->string()
                 ->description( 'Unique URL segment. Auto-generated from title if omitted.' ),
-            'status' => $schema->integer()
-                ->description( 'Visibility: 0=inactive (default), 1=visible, 2=hidden in navigation.' ),
             'cache' => $schema->integer()
                 ->description( 'Cache lifetime in minutes. Default: 5.' ),
             'related_id' => $schema->string()
@@ -182,17 +153,5 @@ class AddPage extends Tool
             'ref' => $schema->string()
                 ->description( 'ID of a sibling page to insert before. Takes priority over parent_id positioning.' ),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:add', $request->user() );
     }
 }

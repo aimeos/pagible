@@ -33,10 +33,7 @@ class BenchmarkTheme extends Command
     protected $signature = 'cms:benchmark:theme
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
-        {--seed : Seed benchmark data before running benchmarks}
-        {--pages=10000 : Total number of pages}
         {--tries=100 : Number of iterations per benchmark}
-        {--chunk=50 : Rows per bulk insert batch}
         {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -54,14 +51,6 @@ class BenchmarkTheme extends Command
         $force = (bool) $this->option( 'force' );
 
         if( !$this->checks( $tenant, $tries, $force ) ) {
-            return self::FAILURE;
-        }
-
-        $this->tenant( $tenant );
-
-        if( !$this->hasSeededData() )
-        {
-            $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
             return self::FAILURE;
         }
 

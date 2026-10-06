@@ -7,16 +7,11 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Cms\Permission;
-use Aimeos\Cms\Utils;
-use Illuminate\Support\Facades\Http;
+use Aimeos\Cms\Ai;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -28,18 +23,14 @@ Formatting and parts that should not be translated must be removed and added aga
 Returns the translated texts as a JSON array in the same order as the input.')]
 class TranslateContent extends Tool
 {
-    use ObservesPrisma;
+    protected const PERMISSIONS = ['text:translate'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'text:translate', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $validated = $request->validate([
             'texts' => 'required|array|min:1|max:50',
             'texts.*' => 'string|max:10000',
@@ -51,28 +42,8 @@ class TranslateContent extends Tool
             'to.required' => 'You must specify the target language code, e.g., "de" or "fr".',
         ] );
 
-        $provider = config( 'cms.ai.translate.provider' );
-        $config = config( 'cms.ai.translate', [] );
-        $model = config( 'cms.ai.translate.model' );
-
-        $config += [
-            'ignore_tags' => ['x'],
-            'tag_handling' => 'xml',
-            'preserve_formatting' => true,
-            'model_type' => 'prefer_quality_optimized',
-        ];
-
-        $texts = $validated['texts'];
-        $to = $validated['to'];
-        $from = $validated['from'] ?? null;
-        $context = $validated['context'] ?? null;
-
-        $translations = Prisma::text()->observe( $this->observer( Utils::editor( $request->user() ) ) )
-            ->using( $provider, $config )
-            ->model( $model )
-            ->ensure( 'translate' )
-            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-            ->texts();
+        $translations = Ai::translate( $validated['texts'], $validated['to'], $validated['from'] ?? null,
+            $validated['context'] ?? null );
 
         return Response::structured( ['translations' => $translations] );
     }
@@ -97,17 +68,5 @@ class TranslateContent extends Tool
             'context' => $schema->string()
                 ->description('Additional context to improve translation quality, e.g., the topic or domain of the text.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'text:translate', $request->user() );
     }
 }

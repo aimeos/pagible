@@ -135,25 +135,6 @@ php artisan cms:install:theme
 
 Publishes theme files and adds hCaptcha configuration to `config/services.php`. Requires `HCAPTCHA_SITEKEY` and `HCAPTCHA_SECRET` environment variables for contact form spam protection.
 
-### cms:benchmark:theme
-
-Runs page rendering and controller benchmarks.
-
-```bash
-php artisan cms:benchmark:theme [options]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--tenant` | `benchmark` | Tenant ID |
-| `--domain` | | Domain name |
-| `--seed` | | Seed benchmark data first |
-| `--pages` | `10000` | Number of pages to generate |
-| `--tries` | `100` | Iterations per benchmark |
-| `--chunk` | `50` | Rows per bulk insert batch |
-| `--unseed` | | Remove benchmark data and exit |
-| `--force` | | Run in production |
-
 ## Blade Directives
 
 | Directive | Description |

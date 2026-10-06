@@ -7,11 +7,15 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 
 class InstallGraphql extends Command
 {
+    use PatchesFiles;
+
+
     /**
      * Command name
      */
@@ -59,88 +63,57 @@ class InstallGraphql extends Command
      */
     protected function lighthouse() : int
     {
-        $done = 0;
         $filename = 'config/lighthouse.php';
-        $content = file_get_contents( base_path( $filename ) );
 
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
+        return $this->patch( $filename, function( string $content ) use ( $filename ) {
 
-        $string = ", 'Aimeos\\\\Cms\\\\Models'";
+            $string = ", 'Aimeos\\\\Cms\\\\Models'";
 
-        if( strpos( $content, $string ) === false )
-        {
-            $content = str_replace( "'App\\\\Models'", "'App\\\\Models'" . $string, $content );
-            $this->line( sprintf( '  Added CMS models directory to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
+            if( strpos( $content, $string ) === false )
+            {
+                $content = str_replace( "'App\\\\Models'", "'App\\\\Models'" . $string, $content );
+                $this->line( sprintf( '  Added CMS models directory to [%1$s]' . PHP_EOL, $filename ) );
+            }
 
-        $string = ", 'Aimeos\\\\Cms\\\\GraphQL\\\\Mutations'";
+            $string = ", 'Aimeos\\\\Cms\\\\GraphQL\\\\Mutations'";
 
-        if( strpos( $content, $string ) === false )
-        {
-            $content = str_replace( " 'App\\\\GraphQL\\\\Mutations'", " ['App\\\\GraphQL\\\\Mutations'" . $string . "]", $content );
-            $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
+            if( strpos( $content, $string ) === false )
+            {
+                $content = str_replace( " 'App\\\\GraphQL\\\\Mutations'", " ['App\\\\GraphQL\\\\Mutations'" . $string . "]", $content );
+                $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
+            }
 
-        if( strpos( $content, $string ) === false )
-        {
-            $content = str_replace( "['App\\\\GraphQL\\\\Mutations'", "['App\\\\GraphQL\\\\Mutations'" . $string, $content );
-            $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
+            if( strpos( $content, $string ) === false )
+            {
+                $content = str_replace( "['App\\\\GraphQL\\\\Mutations'", "['App\\\\GraphQL\\\\Mutations'" . $string, $content );
+                $this->line( sprintf( '  Added CMS mutations directory to [%1$s]' . PHP_EOL, $filename ) );
+            }
 
-        $string = ", 'Aimeos\\\\Cms\\\\GraphQL\\\\Queries'";
-
-        if( strpos( $content, $string ) === false )
-        {
-            $content = str_replace( " 'App\\\\GraphQL\\\\Queries'", " ['App\\\\GraphQL\\\\Queries'" . $string . "]", $content );
-            $this->line( sprintf( '  Added CMS queries directory to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
-
-        if( strpos( $content, $string ) === false )
-        {
-            $content = str_replace( "['App\\\\GraphQL\\\\Queries'", "['App\\\\GraphQL\\\\Queries'" . $string, $content );
-            $this->line( sprintf( '  Added CMS queries directory to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
-
-        $string = "
+            $string = "
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ";
 
-        if( strpos( $content, '\Illuminate\Session\Middleware\StartSession::class' ) === false )
-        {
-            $content = str_replace( "'middleware' => [", "'middleware' => [" . $string, $content );
-            $this->line( sprintf( '  Added EncryptCookies/AddQueuedCookiesToResponse/StartSession/ValidateCsrfToken middlewares to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
-        elseif( strpos( $content, 'ValidateCsrfToken::class' ) === false && strpos( $content, 'VerifyCsrfToken::class' ) === false )
-        {
-            // Session middleware was added by an earlier version without CSRF protection
-            $content = str_replace(
-                "\Illuminate\Session\Middleware\StartSession::class,",
-                "\Illuminate\Session\Middleware\StartSession::class,\n            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,",
-                $content
-            );
-            $this->line( sprintf( '  Added ValidateCsrfToken middleware to [%1$s]' . PHP_EOL, $filename ) );
-            $done++;
-        }
+            if( strpos( $content, '\Illuminate\Session\Middleware\StartSession::class' ) === false )
+            {
+                $content = str_replace( "'middleware' => [", "'middleware' => [" . $string, $content );
+                $this->line( sprintf( '  Added EncryptCookies/AddQueuedCookiesToResponse/StartSession/ValidateCsrfToken middlewares to [%1$s]' . PHP_EOL, $filename ) );
+            }
+            elseif( strpos( $content, 'ValidateCsrfToken::class' ) === false && strpos( $content, 'VerifyCsrfToken::class' ) === false )
+            {
+                // Session middleware was added by an earlier version without CSRF protection
+                $content = str_replace(
+                    "\Illuminate\Session\Middleware\StartSession::class,",
+                    "\Illuminate\Session\Middleware\StartSession::class,\n            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,",
+                    $content
+                );
+                $this->line( sprintf( '  Added ValidateCsrfToken middleware to [%1$s]' . PHP_EOL, $filename ) );
+            }
 
-        if( $done ) {
-            file_put_contents( base_path( $filename ), $content );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+            return $content;
+        }, null );
     }
 
 
@@ -151,24 +124,7 @@ class InstallGraphql extends Command
      */
     protected function limiter() : int
     {
-        $filename = 'graphql/cms.graphql';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        $updated = str_replace( 'cms-admin', 'cms-graphql', $content );
-
-        if( $updated !== $content ) {
-            file_put_contents( base_path( $filename ), $updated );
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        } else {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->patch( 'graphql/cms.graphql', fn( string $content ) => str_replace( 'cms-admin', 'cms-graphql', $content ) );
     }
 
 
@@ -179,26 +135,6 @@ class InstallGraphql extends Command
      */
     protected function schema() : int
     {
-        $filename = 'graphql/schema.graphql';
-        $content = file_get_contents( base_path( $filename ) );
-
-        if( $content === false ) {
-            $this->error( "  File [$filename] not found!" );
-            return 1;
-        }
-
-        $string = '#import cms.graphql';
-
-        if( strpos( $content, $string ) === false )
-        {
-            file_put_contents( base_path( $filename ), $content . "\n\n" . $string );
-            $this->line( sprintf( '  File [%1$s] updated' . PHP_EOL, $filename ) );
-        }
-        else
-        {
-            $this->line( sprintf( '  File [%1$s] already up to date' . PHP_EOL, $filename ) );
-        }
-
-        return 0;
+        return $this->append( 'graphql/schema.graphql', '#import cms.graphql' );
     }
 }

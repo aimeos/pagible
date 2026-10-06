@@ -8,17 +8,13 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Filter;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Tools\Concerns\Metadata;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -29,18 +25,14 @@ use Laravel\Mcp\Request;
 #[Description('Lists and searches media files. Optional: term (full-text search), mime, lang, trashed, publish, editor. Without term, returns all matching files. Returns up to 25 results.')]
 class SearchFiles extends Tool
 {
-    use Metadata;
+    protected const PERMISSIONS = ['file:view'];
 
 
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'term' => 'string|max:255',
             'mime' => 'string|max:50',
@@ -50,10 +42,9 @@ class SearchFiles extends Tool
             'editor' => 'string|max:255',
         ] );
 
-        $search = File::search( mb_substr( trim( (string) ( $v['term'] ?? '' ) ), 0, 200 ) )
+        $search = Filter::search( File::class, $v['term'] ?? '' )
             ->query( fn( $q ) => $q->select( 'cms_files.id', 'cms_files.tenant_id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
-            ->searchFields( 'draft' )
             ->take( 25 );
 
         $result = [];
@@ -61,12 +52,7 @@ class SearchFiles extends Tool
         foreach( Filter::files( $search, $v )->get() as $item )
         {
             /** @var File $item */
-            $data = $item->latest->data ?? new \stdClass();
-            $result[] = $this->result( $item, [
-                'name' => $data->name ?? null,
-                'mime' => $data->mime ?? null,
-                'path' => $data->path ?? null,
-            ] );
+            $result[] = Presenter::file( $item, false );
         }
 
         return Response::structured( ['files' => $result] );
@@ -94,17 +80,5 @@ class SearchFiles extends Tool
             'editor' => $schema->string()
                 ->description('Filter by editor name.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'file:view', $request->user() );
     }
 }

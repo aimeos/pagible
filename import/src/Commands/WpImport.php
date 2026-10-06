@@ -7,11 +7,14 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Files;
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 
 
@@ -76,33 +79,28 @@ class WpImport extends Command
      */
     public function handle(): void
     {
-        $optConn = $this->option( 'connection' );
-        $this->wpConnection = is_string( $optConn ) ? $optConn : 'wordpress';
-        $optDomain = $this->option( 'domain' );
-        $this->domain = is_string( $optDomain ) ? $optDomain : '';
-        $optLang = $this->option( 'lang' );
-        $this->lang = is_string( $optLang ) ? $optLang : 'en';
-        $optType = $this->option( 'type' );
-        $this->type = is_string( $optType ) ? $optType : 'blog';
-        $optTheme = $this->option( 'theme' );
-        $this->theme = is_string( $optTheme ) ? $optTheme : '';
-        $optMedia = $this->option( 'media-url' );
+        $this->wpConnection = (string) $this->option( 'connection' ); // @phpstan-ignore cast.string
+        $this->domain = (string) $this->option( 'domain' ); // @phpstan-ignore cast.string
+        $this->lang = (string) $this->option( 'lang' ); // @phpstan-ignore cast.string
+        $this->type = (string) $this->option( 'type' ); // @phpstan-ignore cast.string
+        $this->theme = (string) $this->option( 'theme' ); // @phpstan-ignore cast.string
+        $this->editor = (string) $this->option( 'editor' ); // @phpstan-ignore cast.string
+        $this->createdFileIds = [];
         $this->mediaUrls = [];
 
-        foreach( is_array( $optMedia ) ? $optMedia : [$optMedia] as $url )
+        foreach( (array) $this->option( 'media-url' ) as $url )
         {
             if( is_string( $url ) && ( $url = rtrim( trim( $url ), '/' ) ) !== ''
                 && !in_array( $url, $this->mediaUrls, true ) ) {
                 $this->mediaUrls[] = $url;
             }
         }
-        $optEditor = $this->option( 'editor' );
-        $this->editor = is_string( $optEditor ) ? $optEditor : 'wp-import';
-        $this->createdFileIds = [];
 
-        $this->setupTenant();
+        if( $tenant = (string) $this->option( 'tenant' ) ) { // @phpstan-ignore cast.string
+            Tenancy::set( $tenant );
+        }
 
-        if( !$this->check() ) {
+        if( !Database::check( $this, $this->wpConnection, 'WordPress', 'WP', 'wordpress' ) ) {
             return;
         }
 
@@ -204,29 +202,6 @@ class WpImport extends Command
 
 
     /**
-     * Tests the WordPress database connection.
-     */
-    protected function check(): bool
-    {
-        try {
-            DB::connection( $this->wpConnection )->getPdo();
-            return true;
-        } catch( \Exception $e ) {
-            $this->error( "Cannot connect to WordPress database using connection \"{$this->wpConnection}\"." );
-            $this->error( "Add a \"{$this->wpConnection}\" connection to config/database.php, e.g.:" );
-            $this->line( "  '{$this->wpConnection}' => [" );
-            $this->line( "      'driver' => 'mysql'," );
-            $this->line( "      'host' => env('WP_DB_HOST', '127.0.0.1')," );
-            $this->line( "      'database' => env('WP_DB_DATABASE', 'wordpress')," );
-            $this->line( "      'username' => env('WP_DB_USERNAME', 'root')," );
-            $this->line( "      'password' => env('WP_DB_PASSWORD', '')," );
-            $this->line( "  ]" );
-            return false;
-        }
-    }
-
-
-    /**
      * Cleans a code block by removing HTML tags and decoding entities.
      */
     protected function cleanCodeBlock( string $code ): string
@@ -236,69 +211,6 @@ class WpImport extends Command
         $code = html_entity_decode( $code, ENT_QUOTES, 'UTF-8' );
 
         return trim( $code );
-    }
-
-
-    /**
-     * Merges body file IDs with an optional cover file ID.
-     *
-     * @param array<string> $bodyFileIds
-     * @return array<string>
-     */
-    protected function collectFileIds( array $bodyFileIds, ?string $coverFileId ): array
-    {
-        if( $coverFileId ) {
-            $bodyFileIds[] = $coverFileId;
-        }
-
-        return $bodyFileIds;
-    }
-
-
-    /**
-     * Creates the article page and attaches files.
-     *
-     * @param array<string, mixed> $pageData
-     * @param array<int|string, mixed> $contentElements
-     * @param Page $blogPage
-     * @return Page The created article page
-     */
-    protected function createArticlePage( array $pageData, array $contentElements, Page $blogPage ): Page
-    {
-        $page = Page::forceCreate( $pageData + ['content' => $contentElements] );
-        $page->appendToNode( $blogPage )->save();
-
-        return $page;
-    }
-
-
-    /**
-     * Creates a version for the article page and publishes it.
-     *
-     * @param array<string, mixed> $pageData
-     * @param array<int|string, mixed> $contentElements
-     * @param array<string> $fileIds
-     * @param array<string> $elementIds
-     */
-    protected function createArticleVersion( Page $page, array $pageData, array $contentElements, array $fileIds,
-        array $elementIds
-    ): void {
-        $version = $page->versions()->forceCreate( [
-            'lang' => $this->lang,
-            'data' => $pageData,
-            'aux' => ['content' => $contentElements],
-            'editor' => $this->editor,
-        ] );
-
-        if( !empty( $fileIds ) ) {
-            $version->files()->attach( $fileIds );
-        }
-        if( !empty( $elementIds ) ) {
-            $version->elements()->attach( $elementIds );
-        }
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
     }
 
 
@@ -317,178 +229,25 @@ class WpImport extends Command
             return $id;
         }
 
-        $file = new File();
-        $resource = null;
+        $id = Files::create( $mime, $name, $path, $this->editor, $download )->id ?? '';
+        $this->createdFileIds[$path] = $id;
 
-        try
-        {
-            $file->mime = $mime;
-            $file->name = $name;
-            $file->editor = $this->editor;
-
-            if( $download )
-            {
-                $resource = $this->downloadFile( $path );
-
-                if( $mime === 'image/svg+xml' ) {
-                    $this->prepareSvgResource( $resource );
-                }
-
-                $tmp = stream_get_meta_data( $resource )['uri'] ?? null;
-                $filename = basename( rawurldecode( (string) parse_url( $path, PHP_URL_PATH ) ) ) ?: $name;
-
-                if( !is_string( $tmp ) ) {
-                    throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-                }
-
-                $file->ingest( new UploadedFile( $tmp, $filename, $mime, null, true ) );
-            }
-            else
-            {
-                $file->path = $path;
-                $file->previews = [];
-            }
-
-            $file->save();
-
-            $snapshot = File::snapshot( $file->toArray() );
-            $version = $file->versions()->forceCreate( [
-                'lang' => $file->lang,
-                'data' => $snapshot['data'],
-                'aux' => $snapshot['aux'],
-                'editor' => $this->editor,
-            ] );
-
-            $file->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $file->publish( $version );
-
-            $id = $file->id ?? '';
-            $this->createdFileIds[$path] = $id;
-
-            return $id;
-        }
-        catch( \Throwable $e )
-        {
-            $file->removePreviews()->removeFile();
-            throw $e;
-        }
-        finally
-        {
-            if( is_resource( $resource ) ) {
-                fclose( $resource );
-            }
-        }
+        return $id;
     }
 
 
     /**
-     * Creates a Pagible File record from a WordPress attachment.
+     * Creates a Pagible File record from a URL, e.g. the guid of a WordPress attachment.
      *
-     * @param array<string, string> $attachment
+     * @param string $url File URL
+     * @param string $name File name, the URL basename if empty
+     * @param string $mime MIME type, detected from the URL if empty
      */
-    protected function createFileFromAttachment( array $attachment, string $alt = '' ): ?string
+    protected function createFileFromUrl( string $url, string $name = '', string $mime = '' ): ?string
     {
-        $url = $attachment['guid'];
-        $name = $alt ?: $attachment['title'] ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
-        $mime = $attachment['mime'] ?: $this->guessMimeFromUrl( $url );
+        $name = $name ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
 
-        return $this->createFile( $mime, $name, $url, $this->isManagedMediaUrl( $url ) );
-    }
-
-
-    /**
-     * Creates a Pagible File record from a URL.
-     */
-    protected function createFileFromUrl( string $url, string $alt = '' ): ?string
-    {
-        $name = $alt ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
-        $mime = $this->guessMimeFromUrl( $url );
-
-        return $this->createFile( $mime, $name, $url, $this->isManagedMediaUrl( $url ) );
-    }
-
-
-    /**
-     * Downloads a remote file into a bounded temporary stream.
-     *
-     * @return resource
-     */
-    protected function downloadFile( string $url )
-    {
-        $response = Utils::http( $url, ['stream' => true] );
-
-        if( !$response->successful() ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Failed to download "%s"', $url ) );
-        }
-
-        $limit = max( 0, (float) config( 'cms.upload.filesize', 50 ) );
-        $max = (int) ( $limit * 1024 * 1024 );
-        $body = $response->toPsrResponse()->getBody();
-        $length = trim( $response->header( 'Content-Length' ) );
-
-        if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
-            $body->close();
-            throw new \Aimeos\Cms\Exception( 'Remote file exceeds the maximum upload size' );
-        }
-
-        if( !( $tmp = tmpfile() ) ) {
-            $body->close();
-            throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-        }
-
-        $size = 0;
-
-        while( !$body->eof() )
-        {
-            $chunk = $body->read( min( 1048576, $max - $size + 1 ) );
-            $size += strlen( $chunk );
-
-            if( $size > $max ) {
-                $body->close();
-                fclose( $tmp );
-                throw new \Aimeos\Cms\Exception( 'Remote file exceeds the maximum upload size' );
-            }
-
-            fwrite( $tmp, $chunk );
-        }
-
-        $body->close();
-        fseek( $tmp, 0 );
-
-        return $tmp;
-    }
-
-
-    /**
-     * Adds an XML declaration so fileinfo recognizes plain SVG markup.
-     *
-     * @param resource $resource
-     */
-    protected function prepareSvgResource( $resource ): void
-    {
-        rewind( $resource );
-        $content = stream_get_contents( $resource );
-
-        if( !is_string( $content ) ) {
-            throw new \Aimeos\Cms\Exception( 'Unable to read SVG file' );
-        }
-
-        $normalized = (string) preg_replace( '/^\xEF\xBB\xBF/', '', $content );
-
-        if( preg_match( '/^\s*<\?xml\b/i', $normalized ) !== 1 ) {
-            $normalized = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $normalized;
-        }
-
-        if( $normalized !== $content )
-        {
-            rewind( $resource );
-
-            if( !ftruncate( $resource, 0 ) || fwrite( $resource, $normalized ) !== strlen( $normalized ) ) {
-                throw new \Aimeos\Cms\Exception( 'Unable to normalize SVG file' );
-            }
-        }
-
-        rewind( $resource );
+        return $this->createFile( $mime ?: Files::mime( $url ), $name, $url, $this->isManagedMediaUrl( $url ) );
     }
 
 
@@ -544,35 +303,20 @@ class WpImport extends Command
 
 
     /**
-     * Fetches published WordPress posts.
+     * Returns a single-file element (audio, image or video) with its file ID.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
      */
-    protected function fetchPosts(): \Illuminate\Database\Query\Builder
+    protected function fileElement( string $type, string $fileId ): array
     {
-        return DB::connection( $this->wpConnection )
-            ->table( 'wp_posts' )
-            ->where( 'post_type', 'post' )
-            ->where( 'post_status', 'publish' )
-            ->orderBy( 'post_date', 'asc' );
-    }
-
-
-    /**
-     * Finds an existing article by its unique destination route.
-     */
-    protected function findArticlePage( string $slug ): ?Page
-    {
-        $page = Page::withTrashed()
-            ->where( 'domain', $this->domain )
-            ->where( 'path', $slug )
-            ->first();
-
-        if( $page?->trashed() ) {
-            $page->restore();
-        }
-
-        return $page;
+        return [
+            'elements' => [[
+                'id' => Utils::uid(),
+                'type' => $type,
+                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
+            ]],
+            'fileIds' => [$fileId],
+        ];
     }
 
 
@@ -620,8 +364,7 @@ class WpImport extends Command
 
     /**
      * Finds a WordPress attachment matching the given image URL.
-     */
-    /**
+     *
      * @return array{guid: string, title: string, mime: string}|null
      */
     protected function findAttachmentByUrl( string $src ): ?array
@@ -648,21 +391,10 @@ class WpImport extends Command
 
         $data = $page->toArray();
         $data['theme'] = $this->theme;
-        $version = $page->versions()->forceCreate( [
-            'lang' => $page->lang ?: $this->lang,
-            'data' => $data,
-            'aux' => [
-                'content' => (array) $page->content,
-                'config' => $page->config,
-                'meta' => $page->meta,
-            ],
-            'editor' => $this->editor,
-        ] );
+        $aux = ['content' => (array) $page->content, 'config' => $page->config, 'meta' => $page->meta];
 
-        $version->files()->attach( $page->files->keys()->all() );
-        $version->elements()->attach( $page->elements->keys()->all() );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
+        Pages::publish( $page, $data, $aux, $page->files->pluck( 'id' )->all(), $page->elements->pluck( 'id' )->all(),
+            $page->lang ?: $this->lang, $this->editor );
     }
 
 
@@ -671,96 +403,29 @@ class WpImport extends Command
      */
     protected function getBlogPage(): Page
     {
-        $optPath = $this->option( 'blog-path' );
-        $blogPath = is_string( $optPath ) ? $optPath : 'blog';
-        $optName = $this->option( 'blog-name' );
-        $blogName = is_string( $optName ) ? $optName : 'Blog';
+        $blogPath = (string) $this->option( 'blog-path' ); // @phpstan-ignore cast.string
+        $blogName = (string) $this->option( 'blog-name' ); // @phpstan-ignore cast.string
 
-        $page = Page::withTrashed()
-            ->where( 'domain', $this->domain )
-            ->where( 'path', $blogPath )
-            ->first();
-
-        if( $page ) {
-            if( $page->trashed() ) {
-                $page->restore();
-            }
-
+        if( $page = Pages::find( ['domain' => $this->domain, 'path' => $blogPath] ) )
+        {
             $this->updateBlogTheme( $page );
 
             $this->info( "Using existing blog page: {$page->name} (/{$blogPath})" );
             return $page;
         }
 
-        $page = Page::forceCreate( [
-            'name' => $blogName,
-            'title' => $blogName,
-            'path' => $blogPath,
-            'domain' => $this->domain,
-            'lang' => $this->lang,
-            'type' => $this->type,
-            'theme' => $this->theme,
-            'status' => 1,
-            'editor' => $this->editor,
-            'content' => [
-                ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
-            ],
-        ] );
+        $content = [
+            ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
+        ];
 
-        if( $root = Page::where( 'tag', 'root' )->where( 'domain', $this->domain )->first() ) {
-            $page->appendToNode( $root )->save();
-        }
+        $data = ['tag' => ''] + $this->buildPageData( $blogName, $blogPath );
 
-        $version = $page->versions()->forceCreate( [
-            'lang' => $this->lang,
-            'data' => [
-                'name' => $blogName,
-                'title' => $blogName,
-                'path' => $blogPath,
-                'domain' => $this->domain,
-                'type' => $this->type,
-                'theme' => $this->theme,
-                'status' => 1,
-                'editor' => $this->editor,
-            ],
-            'aux' => [
-                'content' => [
-                    ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
-                ],
-            ],
-            'editor' => $this->editor,
-        ] );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
+        $root = Page::where( 'tag', 'root' )->where( 'domain', $this->domain )->first();
+        $page = Pages::create( $data, $content, $root );
+        Pages::publish( $page, $data, ['content' => $content], [], [], $this->lang, $this->editor );
 
         $this->info( "Created blog page: {$blogName} (/{$blogPath})" );
         return $page;
-    }
-
-
-    /**
-     * Guesses MIME type from a URL file extension.
-     */
-    protected function guessMimeFromUrl( string $url ): string
-    {
-        $ext = strtolower( pathinfo( parse_url( $url, PHP_URL_PATH ) ?: '', PATHINFO_EXTENSION ) );
-
-        return match( $ext ) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'webp' => 'image/webp',
-            'svg' => 'image/svg+xml',
-            'mp4' => 'video/mp4',
-            'webm' => 'video/webm',
-            'ogv' => 'video/ogg',
-            'mp3' => 'audio/mpeg',
-            'ogg', 'oga' => 'audio/ogg',
-            'wav' => 'audio/wav',
-            'flac' => 'audio/flac',
-            default => 'application/octet-stream',
-        };
     }
 
 
@@ -829,6 +494,40 @@ class WpImport extends Command
 
 
     /**
+     * Creates an image-text element from an imported image and HTML text.
+     *
+     * Falls back to an image element without text or to a text element without image.
+     *
+     * @return array<string, mixed>
+     */
+    protected function imageText( ?string $fileId, string $html, ?string $position = null ): array
+    {
+        $html = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $html );
+        $text = $this->htmlToMarkdown( $html );
+
+        if( $fileId && !empty( $text ) )
+        {
+            $data = ['text' => $text, 'file' => ['id' => $fileId, 'type' => 'file']];
+
+            return [
+                'elements' => [[
+                    'id' => Utils::uid(),
+                    'type' => 'image-text',
+                    'data' => $position ? $data + ['position' => $position] : $data,
+                ]],
+                'fileIds' => [$fileId],
+            ];
+        }
+
+        if( $fileId ) {
+            return $this->fileElement( 'image', $fileId );
+        }
+
+        return ( !empty( $text ) ? $this->parseTextBlock( $text ) : null ) ?? ['elements' => [], 'fileIds' => []];
+    }
+
+
+    /**
      * Imports the featured image (post thumbnail) for a WordPress post.
      */
     protected function importFeaturedImage( int $postId ): ?string
@@ -839,11 +538,11 @@ class WpImport extends Command
             ->where( 'meta_key', '_thumbnail_id' )
             ->value( 'meta_value' );
 
-        if( !$thumbnailId || !isset( $this->attachmentsById[$thumbnailId] ) ) {
+        if( !$thumbnailId || !( $attachment = $this->attachmentsById[$thumbnailId] ?? null ) ) {
             return null;
         }
 
-        return $this->createFileFromAttachment( $this->attachmentsById[$thumbnailId] );
+        return $this->createFileFromUrl( $attachment['guid'], $attachment['title'], $attachment['mime'] );
     }
 
 
@@ -863,7 +562,7 @@ class WpImport extends Command
         }
 
         if( $attachment = $this->findAttachmentByUrl( $src ) ) {
-            return $this->createFileFromAttachment( $attachment, $alt );
+            return $this->createFileFromUrl( $attachment['guid'], $alt ?: $attachment['title'], $attachment['mime'] );
         }
 
         return $this->createFileFromUrl( $src, $alt );
@@ -880,7 +579,7 @@ class WpImport extends Command
         $slug = $post->post_name ?: Utils::slugify( $post->post_title );
         $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' );
         $intro = $post->post_excerpt ?: $this->extractIntro( $post->post_content );
-        $page = $this->findArticlePage( $slug );
+        $page = Pages::find( ['domain' => $this->domain, 'path' => $slug] );
         $updated = $page !== null;
 
         $content = $this->parseContent( $post->post_content );
@@ -892,16 +591,17 @@ class WpImport extends Command
             $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId ),
             $footer['elements']
         );
-        $fileIds = $this->collectFileIds( $content['fileIds'], $coverFileId );
+        $fileIds = $coverFileId ? [...$content['fileIds'], $coverFileId] : $content['fileIds'];
         $pageData = $this->buildPageData( $title, $slug );
 
         if( !$page ) {
-            $page = $this->createArticlePage( $pageData, $contentElements, $blogPage );
+            $page = Pages::create( $pageData, $contentElements, $blogPage );
         } elseif( $page->parent_id !== $blogPage->id ) {
             $page->appendToNode( $blogPage )->save();
         }
 
-        $this->createArticleVersion( $page, $pageData, $contentElements, $fileIds, $footer['elementIds'] );
+        Pages::publish( $page, $pageData, ['content' => $contentElements], $fileIds, $footer['elementIds'],
+            $this->lang, $this->editor );
 
         $date = $post->post_date_gmt ?? null;
 
@@ -936,9 +636,7 @@ class WpImport extends Command
 
                 try {
                     $post = $this->post( $post );
-                    $existing = DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $post, $blogPage ) {
-                        return $this->importPost( $post, $blogPage );
-                    } );
+                    $existing = Utils::transaction( fn() => $this->importPost( $post, $blogPage ) );
 
                     $existing ? $updated++ : $imported++;
                     $action = $existing ? 'Updated' : 'Imported';
@@ -1159,28 +857,12 @@ class WpImport extends Command
         // If we have exactly one image column and at least one text column, create image-text
         if( $imageCol !== null && !empty( $textParts ) )
         {
-            $fileId = $this->importImageFromHtml( $imageCol );
-            $textHtml = implode( "\n", $textParts );
-            $textHtml = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $textHtml );
-            $text = $this->htmlToMarkdown( $textHtml );
+            // Image after text = end position, image before text = start position
+            $position = $imageColIndex === 0 ? 'start' : 'end';
+            $result = $this->imageText( $this->importImageFromHtml( $imageCol ), implode( "\n", $textParts ), $position );
 
-            if( $fileId && !empty( $text ) )
-            {
-                // Image after text = end position, image before text = start position
-                $position = $imageColIndex === 0 ? 'start' : 'end';
-
-                return [
-                    'elements' => [[
-                        'id' => Utils::uid(),
-                        'type' => 'image-text',
-                        'data' => [
-                            'text' => $text,
-                            'file' => ['id' => $fileId, 'type' => 'file'],
-                            'position' => $position,
-                        ],
-                    ]],
-                    'fileIds' => [$fileId],
-                ];
+            if( ( $result['elements'][0]['type'] ?? null ) === 'image-text' ) {
+                return $result;
             }
         }
 
@@ -1190,27 +872,19 @@ class WpImport extends Command
 
         foreach( $columns[1] as $colContent )
         {
-            $colContent = trim( $this->stripWpComments( $colContent ) );
-            if( empty( $colContent ) ) {
-                continue;
-            }
+            // Unwrap the column div but keep the block comments so the inner block types survive
+            $colContent = (string) preg_replace( '/^<div[^>]*>(.*)<\/div>$/is', '$1', trim( $colContent ) );
 
-            // Try to parse inner Gutenberg blocks within the column
-            $innerBlocks = $this->splitGutenbergBlocks( $colContent );
-
-            foreach( $innerBlocks as $inner )
+            foreach( $this->splitGutenbergBlocks( $colContent ) as $inner )
             {
                 $innerHtml = trim( $this->stripWpComments( $inner['html'] ) );
                 if( empty( $innerHtml ) ) {
                     continue;
                 }
 
-                $result = $this->parseBlock( $innerHtml, $inner['type'] );
-                if( $result ) {
+                if( $result = $this->parseBlock( $innerHtml, $inner['type'] ) ) {
                     array_push( $elements, ...$result['elements'] );
-                    if( !empty( $result['fileIds'] ) ) {
-                        array_push( $fileIds, ...$result['fileIds'] );
-                    }
+                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
                 }
             }
         }
@@ -1275,14 +949,7 @@ class WpImport extends Command
             return null;
         }
 
-        return [
-            'elements' => [[
-                'id' => Utils::uid(),
-                'type' => 'audio',
-                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-            ]],
-            'fileIds' => [$fileId],
-        ];
+        return $this->fileElement( 'audio', $fileId );
     }
 
 
@@ -1332,39 +999,9 @@ class WpImport extends Command
                         }
                     }
 
-                    $text = implode( "\n", $textParts );
-                    $text = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $text );
-                    $text = $this->htmlToMarkdown( $text );
-
-                    if( $fileId && !empty( $text ) ) {
-                        $position = $align === 'left' ? 'start' : 'end';
-                        $elements[] = [
-                            'id' => Utils::uid(),
-                            'type' => 'image-text',
-                            'data' => [
-                                'text' => $text,
-                                'file' => ['id' => $fileId, 'type' => 'file'],
-                                'position' => $position,
-                            ],
-                        ];
-                        $fileIds[] = $fileId;
-                        continue;
-                    } elseif( $fileId ) {
-                        $elements[] = [
-                            'id' => Utils::uid(),
-                            'type' => 'image',
-                            'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-                        ];
-                        $fileIds[] = $fileId;
-                    }
-
-                    // Process collected text blocks that weren't merged
-                    if( !empty( $text ) ) {
-                        $result = $this->parseTextBlock( $text );
-                        if( $result ) {
-                            array_push( $elements, ...$result['elements'] );
-                        }
-                    }
+                    $result = $this->imageText( $fileId, implode( "\n", $textParts ), $align === 'left' ? 'start' : 'end' );
+                    array_push( $elements, ...$result['elements'] );
+                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
                     continue;
                 }
 
@@ -1479,45 +1116,11 @@ class WpImport extends Command
      */
     protected function parseImageTextBlock( string $html ): array
     {
-        $elements = [];
-        $fileIds = [];
-
         if( !preg_match( '/(?:<a[^>]*>\s*)?<img[^>]+>(?:\s*<\/a>)?/i', $html, $imgMatch ) ) {
-            return ['elements' => $elements, 'fileIds' => $fileIds];
+            return ['elements' => [], 'fileIds' => []];
         }
 
-        $fileId = $this->importImageFromHtml( $imgMatch[0] );
-        $remaining = trim( str_replace( $imgMatch[0], '', $html ) );
-        $remaining = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $remaining );
-        $text = $this->htmlToMarkdown( $remaining );
-
-        if( $fileId && !empty( $text ) )
-        {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'image-text',
-                'data' => [
-                    'text' => $text,
-                    'file' => ['id' => $fileId, 'type' => 'file'],
-                ],
-            ];
-            $fileIds[] = $fileId;
-        }
-        elseif( $fileId )
-        {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'image',
-                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-            ];
-            $fileIds[] = $fileId;
-        }
-        elseif( !empty( $text ) )
-        {
-            return $this->parseTextBlock( $text ) ?? ['elements' => [], 'fileIds' => []];
-        }
-
-        return ['elements' => $elements, 'fileIds' => $fileIds];
+        return $this->imageText( $this->importImageFromHtml( $imgMatch[0] ), str_replace( $imgMatch[0], '', $html ) );
     }
 
 
@@ -1565,14 +1168,7 @@ class WpImport extends Command
             return null;
         }
 
-        return [
-            'elements' => [[
-                'id' => Utils::uid(),
-                'type' => 'image',
-                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-            ]],
-            'fileIds' => [$fileId],
-        ];
+        return $this->fileElement( 'image', $fileId );
     }
 
 
@@ -1602,14 +1198,7 @@ class WpImport extends Command
             $fileId = $this->createFileFromUrl( $url );
 
             if( $fileId ) {
-                return [
-                    'elements' => [[
-                        'id' => Utils::uid(),
-                        'type' => 'video',
-                        'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-                    ]],
-                    'fileIds' => [$fileId],
-                ];
+                return $this->fileElement( 'video', $fileId );
             }
         }
 
@@ -1760,9 +1349,6 @@ class WpImport extends Command
 
 
     /**
-     * Sets up multi-tenancy if a tenant option is provided.
-     */
-    /**
      * Rewrites a WordPress media URL using the configured base URL.
      */
     protected function rewriteMediaUrl( string $url ): string
@@ -1780,17 +1366,6 @@ class WpImport extends Command
         }
 
         return $url;
-    }
-
-
-    protected function setupTenant(): void
-    {
-        if( $tenant = $this->option( 'tenant' ) )
-        {
-            \Aimeos\Cms\Tenancy::$callback = function() use ( $tenant ) {
-                return $tenant;
-            };
-        }
     }
 
 
@@ -1841,7 +1416,6 @@ class WpImport extends Command
             }
 
             // Find matching closing comment, tracking depth for nested blocks
-            $closePattern = '/<!--\s*(?:(wp:' . preg_quote( $type, '/' ) . ')(?:\s+\{[^}]*\})?\s*-->|(\/?wp:' . preg_quote( $type, '/' ) . ')\s*-->)/i';
             $searchPos = $matchPos + strlen( $m[0][0] );
             $depth = 1;
             $closeEnd = null;

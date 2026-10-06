@@ -37,9 +37,7 @@ class Properties
             'property_types' => $schema['property_type']['options'] ?? [],
             'offer_types' => $schema['offer_type']['options'] ?? [],
         ];
-        $propertyTypes = collect( (array) $options->property_types )->pluck( 'value' )
-            ->map( fn( $value ) => strtolower( (string) $value ) )->all();
-        $offerTypes = collect( (array) $options->offer_types )->pluck( 'value' )
+        $values = fn( mixed $list ) => collect( (array) $list )->pluck( 'value' )
             ->map( fn( $value ) => strtolower( (string) $value ) )->all();
 
         [$sort, $sortBy, $sortDir] = match( $requestedSort !== '' ? $requestedSort : $defaultSort ) {
@@ -54,15 +52,13 @@ class Properties
         $city = $enabled ? trim( (string) $request->query( 'city', '' ) ) : '';
         $type = $enabled ? strtolower( trim( (string) $request->query( 'type', '' ) ) ) : '';
         $offer = $enabled ? strtolower( trim( (string) $request->query( 'offer', '' ) ) ) : '';
-        $roomsMin = $enabled && is_numeric( $request->query( 'rooms_min' ) )
-            ? (float) $request->query( 'rooms_min' )
-            : null;
-        $roomsMin = $roomsMin !== null && $roomsMin >= 1 && $roomsMin <= 999 ? $roomsMin : null;
+        $roomsMin = $enabled && is_numeric( $rooms = $request->query( 'rooms_min' ) ) ? (float) $rooms : null;
+        $roomsMin = $roomsMin >= 1 && $roomsMin <= 999 ? $roomsMin : null;
         $availableBy = $enabled ? trim( (string) $request->query( 'available_by', '' ) ) : '';
 
         $city = mb_strlen( $city ) <= 255 ? $city : '';
-        $type = in_array( $type, $propertyTypes, true ) ? $type : '';
-        $offer = in_array( $offer, $offerTypes, true ) ? $offer : '';
+        $type = in_array( $type, $values( $options->property_types ), true ) ? $type : '';
+        $offer = in_array( $offer, $values( $options->offer_types ), true ) ? $offer : '';
         $availableDate = preg_match( '/^\d{4}-\d{2}-\d{2}$/', $availableBy )
             ? \DateTimeImmutable::createFromFormat( '!Y-m-d', $availableBy )
             : false;
@@ -108,7 +104,11 @@ class Properties
         }
 
         $request->attributes->set( 'cms.pagination', $result->currentPage() );
-        $enabled ? $result->appends( array_filter( $filters, fn( $value ) => $value !== null && $value !== '' ) ) : null;
+
+        if( $enabled ) {
+            $result->appends( array_filter( $filters, fn( $value ) => $value !== null && $value !== '' ) );
+        }
+
         $this->attachFiles( $result, $editor );
 
         return (object) [

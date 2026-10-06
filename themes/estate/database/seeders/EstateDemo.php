@@ -6,7 +6,6 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -18,7 +17,7 @@ use Aimeos\Cms\Validation;
 class EstateDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
-    private const DESCRIPTIONS = [
+    protected const DESCRIPTIONS = [
         'properties' => 'Current residential, rental, and commercial properties, presented together for direct comparison.',
         'exposes' => 'Detailed presentations for every current residential and commercial property.',
         'exposes/urban-penthouse-berlin' => 'Luxury penthouse with rooftop access and premium interior context in central Berlin.',
@@ -32,7 +31,7 @@ class EstateDemo extends AbstractDemo
     /**
      * @var array<string, array{0: string, 1: string, 2: string}>
      */
-    private const PHOTOS = [
+    protected const PHOTOS = [
         'advisory' => ['photo-1450101499163-c8848c66ca85', 'Property advisory documents', 'Advisor annotating documents during a property consultation'],
         'city' => ['photo-1449824913935-59a10b8d2000', 'International property market', 'Broad city avenue framed by dense commercial and residential towers'],
         'home' => ['photo-1600585154340-be6161a56a0c', 'Contemporary residence', 'Dark-clad contemporary residence with floor-to-ceiling glazing and a landscaped garden'],
@@ -484,55 +483,14 @@ class EstateDemo extends AbstractDemo
     }
 
 
-    /**
-     * @return array<string, mixed>
-     */
-    protected function article( string $title, string $text, string $fileId ) : array
-    {
-        return ['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => [$fileId], 'data' => [
-            'title' => $title,
-            'file' => ['id' => $fileId, 'type' => 'file'],
-            'text' => $text,
-        ]];
-    }
-
-
     protected function element() : string
     {
-        if( !isset( $this->element ) )
-        {
-            $cards = [
-                ['title' => 'Explore', 'text' => "- [Home](/)\n- [Current properties](/properties)\n- [Property news](/news)"],
-                ['title' => 'Property search', 'text' => "- [Properties for sale](/properties?offer=sale)\n- [Properties for rent](/properties?offer=rent)\n- [Commercial properties](/properties?type=office)"],
-                ['title' => 'Advisory services', 'text' => "- [Request a sales valuation](/#home-contact)\n- [Discuss a commercial property](/#home-contact)\n- [Plan a relocation](/#home-contact)"],
-                ['title' => 'Contact', 'text' => "- [hello@estate.example](mailto:hello@estate.example)\n- [Request a private consultation](/#home-contact)\n- Berlin · Hamburg"],
-            ];
-
-            $element = Element::forceCreate( [
-                'lang' => 'en',
-                'type' => 'cards',
-                'name' => 'Estate footer',
-                'data' => ['type' => 'cards', 'data' => ['cards' => $cards]],
-                'editor' => 'demo',
-            ] );
-
-            $version = $element->versions()->forceCreate( [
-                'lang' => 'en',
-                'data' => [
-                    'lang' => 'en',
-                    'type' => 'cards',
-                    'name' => 'Estate footer',
-                    'data' => ['cards' => $cards],
-                ],
-                'editor' => 'demo',
-            ] );
-
-            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-            $element->publish( $version );
-            $this->element = (string) $element->refresh()->id;
-        }
-
-        return $this->element;
+        return $this->element ??= $this->saveElement( 'cards', 'Estate footer', ['cards' => [
+            ['title' => 'Explore', 'text' => "- [Home](/)\n- [Current properties](/properties)\n- [Property news](/news)"],
+            ['title' => 'Property search', 'text' => "- [Properties for sale](/properties?offer=sale)\n- [Properties for rent](/properties?offer=rent)\n- [Commercial properties](/properties?type=office)"],
+            ['title' => 'Advisory services', 'text' => "- [Request a sales valuation](/#home-contact)\n- [Discuss a commercial property](/#home-contact)\n- [Plan a relocation](/#home-contact)"],
+            ['title' => 'Contact', 'text' => "- [hello@estate.example](mailto:hello@estate.example)\n- [Request a private consultation](/#home-contact)\n- Berlin · Hamburg"],
+        ]] );
     }
 
 
@@ -550,17 +508,7 @@ class EstateDemo extends AbstractDemo
 
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Estate'], 'config' ),
-            'logo' => [
-                'type' => 'logo',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-            'logo-alternative' => [
-                'type' => 'logo-alternative',
-                'files' => [$logoId],
-                'data' => ['file' => ['id' => $logoId, 'type' => 'file']],
-            ],
-        ];
+        ] + $this->logos( $logoId );
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
@@ -634,74 +582,7 @@ class EstateDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
-            'lang' => 'en',
-            'name' => 'Home',
-            'title' => 'Estate | Properties and Real Estate News',
-            'path' => '',
-            'tag' => 'root',
-            'theme' => $this->theme,
-            'status' => 1,
-            'cache' => 5,
-            'editor' => 'demo',
-            'config' => $config,
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => 'Estate | Properties and Real Estate News',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => ['config' => $config, 'meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
-    }
-
-
-    /**
-     * @return list<string>
-     */
-    protected function ids( mixed $value ) : array
-    {
-        $ids = [];
-
-        if( is_array( $value ) )
-        {
-            if( ( $value['type'] ?? null ) === 'file' && is_string( $value['id'] ?? null )
-                && !isset( $value['data'] ) && !isset( $value['group'] )
-            ) {
-                $ids[] = $value['id'];
-            }
-
-            foreach( $value as $item ) {
-                $ids = array_merge( $ids, $this->ids( $item ) );
-            }
-        }
-
-        return $ids;
-    }
-
-
-    protected function img( string $key ) : string
-    {
-        [$photo, $name, $desc] = self::PHOTOS[$key];
-        return $this->image( $photo, $name, $desc );
+        return $this->saveRoot( 'Estate | Properties and Real Estate News', $config, $meta, $content, $elementId, $fileId );
     }
 
 
@@ -754,49 +635,10 @@ SVG;
     {
         $elementId = $this->element();
         $fileId = $this->file();
-        $description = self::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
-        $meta = $data['meta'] ?? $meta ?: [
-            'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => $description,
-                'keywords' => 'Estate Group, real estate, buy, rent, sell, commercial',
-            ], 'meta' ),
-            'social-media' => Validation::entry( 'social-media', [
-                'title' => $data['title'] ?? '',
-                'description' => $description,
-                'file' => ['id' => $fileId, 'type' => 'file'],
-            ], 'meta' ),
-        ];
+        $footer = empty( $data['to'] ) ? [['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer']] : [];
 
-        if( empty( $data['to'] ) ) {
-            $content[] = ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'];
-        }
-
-        $page = Page::forceCreate( $data + [
-            'theme' => $this->theme,
-            'editor' => 'demo',
-            'meta' => $meta,
-            'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
-
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
-
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Estate Group, real estate, buy, rent, sell, commercial', $fileIds, $meta );
     }
 
 

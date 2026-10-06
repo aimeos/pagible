@@ -7,14 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -24,37 +22,30 @@ use Laravel\Mcp\Request;
 #[Description('Restores a previously soft-deleted shared content element. Returns the restored element as a JSON object.')]
 class RestoreElement extends Tool
 {
+    protected const PERMISSIONS = ['element:keep'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'element:keep', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'required|string|max:36',
         ], [
             'id.required' => 'You must specify the ID of the element to restore.',
         ] );
 
-        /** @var Element|null $element */
-        $element = Element::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->find( $v['id'] );
+        /** @var Element $item */
+        $item = Element::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
 
-        if( !$element ) {
-            return Response::structured( ['error' => 'Element not found.'] );
-        }
-
-        if( !$element->trashed() ) {
+        if( !$item->trashed() ) {
             return Response::structured( ['error' => 'Element is not deleted.'] );
         }
 
         $items = Resource::restore( Element::class, [$v['id']], $request->user() );
 
-        $item = $items->firstOrFail();
-
-        return Response::structured( ['id' => $item->id] + $item->toArray() );
+        return Response::structured( Presenter::item( $items->firstOrFail() ) );
     }
 
 
@@ -70,17 +61,5 @@ class RestoreElement extends Tool
                 ->description('The UUID of the soft-deleted element to restore.')
                 ->required(),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'element:keep', $request->user() );
     }
 }

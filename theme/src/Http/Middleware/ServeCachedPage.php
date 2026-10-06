@@ -90,11 +90,7 @@ class ServeCachedPage
         // rendered cache-miss response must not carry per-visitor cookies (session,
         // XSRF). Stripping them keeps the response and the stored HTML cacheable by a
         // CDN. Uncached pages (private response) and editor previews keep their cookies.
-        if( $response instanceof Response
-            && $response->headers->hasCacheControlDirective( 'public' )
-            && !$response->headers->hasCacheControlDirective( 'private' )
-            && !$response->headers->hasCacheControlDirective( 'no-store' )
-        ) {
+        if( $response instanceof Response && PageCache::cacheable( $response ) ) {
             foreach( $response->headers->getCookies() as $cookie ) {
                 $response->headers->removeCookie( $cookie->getName(), $cookie->getPath(), $cookie->getDomain() );
             }

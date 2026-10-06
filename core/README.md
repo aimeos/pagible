@@ -225,25 +225,6 @@ php artisan cms:previews [--tenant=ID] [--id=ID]... [--force]
 
 If the command is stopped, run it again to update the remaining files. Only one instance runs at a time (per tenant for tenants managed by stancl/tenancy); the lock expires after one day if the command has been killed and is stored in the cache, so use a cache store shared by all servers if it can be started on more than one. Files changed or locked while the command is running are skipped and updated by the next run. If the storage is locked, e.g. by a running backup, the tenant is stopped. Skipped files, files which can't be updated and stopped tenants are logged as `cms.previews` warning, only the latter two make the command fail. If tenants are managed by stancl/tenancy, use `php artisan tenants:run cms:previews` to process all tenants.
 
-### cms:benchmark:core
-
-Runs core model performance benchmarks.
-
-```bash
-php artisan cms:benchmark:core [options]
-```
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `--tenant` | `benchmark` | Tenant ID |
-| `--domain` | | Domain name |
-| `--seed` | | Seed benchmark data first |
-| `--pages` | `10000` | Number of pages to generate |
-| `--tries` | `100` | Iterations per benchmark |
-| `--chunk` | `50` | Rows per bulk insert batch |
-| `--unseed` | | Remove benchmark data and exit |
-| `--force` | | Run in production |
-
 ## License
 
 MIT

@@ -7,7 +7,8 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Concerns\ObservesPrisma;
+use Aimeos\Cms\Ai;
+use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
@@ -25,7 +26,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ChatController extends Controller
 {
-    use ObservesPrisma;
+    /**
+     * MCP tools not offered in the chat or added separately with a call limit.
+     */
+    private const EXCLUDE = [
+        CmsTools\GetAccess::class,
+        CmsTools\GetLocales::class,
+        CmsTools\GetSchemas::class,
+        CmsTools\RelocateFile::class,
+        CmsTools\SetPageAccess::class,
+    ];
 
 
     /**
@@ -52,7 +62,12 @@ class ChatController extends Controller
             abort( 403 );
         }
 
-        $this->limit( $request->all() );
+        try {
+            Ai::checkInput( $request->all(), 'Chat input' );
+        } catch( \Aimeos\Cms\Exception $e ) {
+            abort( 422, $e->getMessage() );
+        }
+
         $prompt = trim( (string) $request->input( 'prompt', '' ) );
 
         if( $prompt === '' ) {
@@ -64,7 +79,7 @@ class ChatController extends Controller
         $history = $this->history( $request->input( 'messages' ) );
         $system = view( 'cms::prompts.chat' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
-        $prisma = Prisma::text()->observe( $this->observer( $editor, 'chat' ) )
+        $prisma = Prisma::text()->observe( Ai::observer( $editor, 'chat' ) )
             ->using( config( 'cms.ai.write.provider' ), $config )
             ->model( config( 'cms.ai.write.model' ) )
             ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
@@ -73,35 +88,7 @@ class ChatController extends Controller
             ->withTools( [
                 Tools::laravel( CmsTools\GetLocales::class )->max( 1 ),
                 Tools::laravel( CmsTools\GetSchemas::class )->max( 1 ),
-
-                Tools::laravel( CmsTools\AddPage::class ),
-                Tools::laravel( CmsTools\DropPage::class ),
-                Tools::laravel( CmsTools\GetPage::class ),
-                Tools::laravel( CmsTools\GetPageHistory::class ),
-                Tools::laravel( CmsTools\GetPageMetrics::class ),
-                Tools::laravel( CmsTools\GetPageTree::class ),
-                Tools::laravel( CmsTools\MovePage::class ),
-                Tools::laravel( CmsTools\PublishPage::class ),
-                Tools::laravel( CmsTools\RestorePage::class ),
-                Tools::laravel( CmsTools\SavePage::class ),
-                Tools::laravel( CmsTools\SearchPages::class ),
-
-                Tools::laravel( CmsTools\AddElement::class ),
-                Tools::laravel( CmsTools\DropElement::class ),
-                Tools::laravel( CmsTools\GetElement::class ),
-                Tools::laravel( CmsTools\PublishElement::class ),
-                Tools::laravel( CmsTools\RestoreElement::class ),
-                Tools::laravel( CmsTools\SaveElement::class ),
-                Tools::laravel( CmsTools\SearchElements::class ),
-
-                Tools::laravel( CmsTools\AddFile::class ),
-                Tools::laravel( CmsTools\DropFile::class ),
-                Tools::laravel( CmsTools\GetFile::class ),
-                Tools::laravel( CmsTools\PublishFile::class ),
-                Tools::laravel( CmsTools\RestoreFile::class ),
-                Tools::laravel( CmsTools\SaveFile::class ),
-                Tools::laravel( CmsTools\SearchFiles::class ),
-
+                ...array_map( fn( $class ) => Tools::laravel( $class ), array_diff( CmsServer::TOOLS, self::EXCLUDE ) ),
                 Tools::provider( 'web_search' ),
                 Tools::provider( 'web_fetch' ),
             ] )
@@ -330,21 +317,5 @@ class ChatController extends Controller
         }
 
         return $result;
-    }
-
-
-    /**
-     * Rejects chat requests whose complete serialized input exceeds the server-side budget.
-     *
-     * @param array<string, mixed> $input
-     */
-    protected function limit( array $input ) : void
-    {
-        $max = max( 1, (int) config( 'cms.ai.maxinput', 1024 * 1024 ) );
-        $json = json_encode( $input );
-
-        if( $json === false || strlen( $json ) > $max ) {
-            abort( 422, sprintf( 'Chat input exceeds the maximum input size of %d bytes', $max ) );
-        }
     }
 }

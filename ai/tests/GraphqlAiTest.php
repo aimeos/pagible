@@ -730,7 +730,7 @@ class GraphqlAiTest extends AiTestAbstract
         $this->isolateUpload( UploadedFile::fake()->createWithContent(
             'test.png',
             $this->pngBinary(),
-        ) )->assertGraphQLErrorMessage( 'File type "image/png" is not allowed' );
+        ) )->assertGraphQLErrorMessage( 'File type "image/png" not allowed, permitted types: image/jpeg' );
     }
 
 
@@ -741,7 +741,7 @@ class GraphqlAiTest extends AiTestAbstract
         $this->isolateUpload( UploadedFile::fake()->createWithContent(
             'test.png',
             $this->pngBinary(),
-        ) )->assertGraphQLErrorMessage( 'File image exceeds the maximum size of 10 pixels' );
+        ) )->assertGraphQLErrorMessage( 'Image exceeds the maximum size of 10 pixels' );
     }
 
 
@@ -752,7 +752,7 @@ class GraphqlAiTest extends AiTestAbstract
         $this->isolateUpload( UploadedFile::fake()->createWithContent(
             'test.png',
             $this->pngBinary(),
-        ) )->assertGraphQLErrorMessage( 'File size exceeds the maximum of 0 MB' );
+        ) )->assertGraphQLErrorMessage( 'File size of 0 MB exceeds the maximum of 0 MB' );
     }
 
 
@@ -777,7 +777,7 @@ class GraphqlAiTest extends AiTestAbstract
             mutation {
                 imagine(prompt: "")
             }
-        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+        ' )->assertGraphQLValidationError( 'prompt', 'The prompt field is required.' );
     }
 
 
@@ -860,7 +860,7 @@ class GraphqlAiTest extends AiTestAbstract
             mutation {
                 write(prompt: "")
             }
-        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+        ' )->assertGraphQLValidationError( 'prompt', 'The prompt field is required.' );
     }
 
 
@@ -870,7 +870,7 @@ class GraphqlAiTest extends AiTestAbstract
             mutation {
                 refine(prompt: "", content: "[]")
             }
-        ' )->assertGraphQLErrorMessage( 'Prompt must not be empty' );
+        ' )->assertGraphQLValidationError( 'prompt', 'The prompt field is required.' );
     }
 
 
@@ -880,7 +880,7 @@ class GraphqlAiTest extends AiTestAbstract
             mutation {
                 describe(file: "", lang: "en")
             }
-        ' )->assertGraphQLErrorMessage( 'File ID is required' );
+        ' )->assertGraphQLValidationError( 'file', 'The file field is required.' );
     }
 
 

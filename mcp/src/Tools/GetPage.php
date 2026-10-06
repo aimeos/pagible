@@ -12,11 +12,9 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -27,15 +25,14 @@ use Laravel\Mcp\Request;
 #[Description('Retrieves a single page by its ID or URL path. Returns the full page data including its frontend restriction state, content, meta, config, and URL. Callers with page:access also receive the immediate access values. The returned latest_id identifies the version you read — pass it back to save-page so concurrent edits are merged instead of overwritten.')]
 class GetPage extends Tool
 {
+    protected const PERMISSIONS = ['page:view'];
+
+
     /**
      * Handle the tool request.
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'page:view', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'id' => 'nullable|string|max:36',
             'path' => 'nullable|string|max:255',
@@ -59,50 +56,12 @@ class GetPage extends Tool
             ->withCount( 'access' )
             ->with( $with );
 
-        if( !empty( $v['id'] ) ) {
-            $page = $query->find( $v['id'] );
-        } else {
-            $page = $query->where( 'path', $v['path'] ?? '' )->first();
-        }
-
-        if( !$page ) {
-            return Response::structured( ['error' => 'Page not found.'] );
-        }
-
         /** @var Page $page */
-        $version = $page->latest;
-        $vdata = $version?->data;
-        $vaux = $version?->aux;
+        $page = !empty( $v['id'] )
+            ? $query->findOrFail( $v['id'] )
+            : $query->where( 'path', $v['path'] ?? '' )->firstOrFail();
 
-        $data = [
-            'id' => $page->id,
-            'restricted' => $page->restricted(),
-            'latest_id' => $page->latest_id,
-            'parent_id' => $page->parent_id,
-            'deleted' => $page->trashed(),
-            'lang' => $version->lang ?? '',
-            'editor' => $version->editor ?? '',
-            'tag' => $vdata->tag ?? '',
-            'path' => $vdata->path ?? '',
-            'domain' => $vdata->domain ?? '',
-            'to' => $vdata->to ?? '',
-            'name' => $vdata->name ?? '',
-            'title' => $vdata->title ?? '',
-            'type' => $vdata->type ?? '',
-            'theme' => $vdata->theme ?? '',
-            'status' => $vdata->status ?? 0,
-            'cache' => $vdata->cache ?? 0,
-            'content' => $vaux->content ?? [],
-            'meta' => $vaux->meta ?? new \stdClass(),
-            'config' => $vaux->config ?? new \stdClass(),
-            'published' => $version->published ?? false,
-            'publish_at' => $version->publish_at ?? null,
-            'created_at' => $page->created_at?->format( 'Y-m-d H:i:s' ),
-            'updated_at' => $version?->created_at?->format( 'Y-m-d H:i:s' ),
-            'url' => route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-                'domain' => ( $vdata->domain ?? null ) ?: request()->getHost(),
-            ] : [] ) + ['path' => $vdata->path ?? ''] ),
-        ];
+        $data = ['restricted' => $page->restricted()] + Presenter::page( $page );
 
         if( $canAccess ) {
             $data['access'] = $page->accessValues();
@@ -125,17 +84,5 @@ class GetPage extends Tool
             'path' => $schema->string()
                 ->description('The URL path of the page to retrieve, e.g., "blog/my-article".'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'page:view', $request->user() );
     }
 }

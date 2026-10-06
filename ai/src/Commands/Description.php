@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Ai;
 use Illuminate\Console\Command;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -100,9 +101,6 @@ class Description extends Command
     protected function files() : void
     {
         $lang = current( config( 'cms.locales', ['en'] ) );
-        $provider = config( 'cms.ai.describe.provider' );
-        $model = config( 'cms.ai.describe.model' );
-        $config = config( 'cms.ai.describe', [] );
 
         File::select(
                 'id', 'tenant_id', 'disk', 'path', 'mime', 'name', 'description', 'transcription',
@@ -114,42 +112,21 @@ class Description extends Command
                     ->orWhere( 'mime', 'like', 'video/%' )
                     ->orWhereIn( 'mime', ['image/jpeg', 'image/png', 'image/webp'] );
             } )
-            ->chunk( 50, function( $files ) use ( $provider, $model, $config, $lang ) {
+            ->chunk( 50, function( $files ) use ( $lang ) {
 
                 foreach( $files as $file )
                 {
-                    $type = explode( '/', $file->mime, 2 )[0];
-
                     try
                     {
-                        $doc = str_starts_with( (string) $file->path, 'http' )
-                            ? \Aimeos\Prisma\Files\File::fromUrl(
-                                (string) $file->path,
-                                $file->mime,
-                                !(bool) config( 'cms.allow-internal' ),
-                            )
-                            : \Aimeos\Prisma\Files\File::fromStoragePath(
-                                (string) $file->path,
-                                File::diskName( (string) $file->disk ),
-                                $file->mime,
-                            );
-
-                        $text = Prisma::type( $type )
-                            ->using( $provider, $config )
-                            ->model( $model )
-                            ->ensure( 'describe' )
-                            ->describe( $doc, $lang, $config ) // @phpstan-ignore-line method.notFound
-                            ->text();
-
-                        $file->description = (object) [$lang => $text];
+                        $file->description = (object) [$lang => Ai::describe( $file, $lang )];
                         $file->save();
                     }
-                    catch( PrismaException $e )
+                    catch( PrismaException|\Aimeos\Cms\Exception $e )
                     {
                         $this->error( $file->name . ': ' . $e->getMessage() );
                     }
 
-                    unset( $file, $doc );
+                    unset( $file );
                 }
             } );
     }

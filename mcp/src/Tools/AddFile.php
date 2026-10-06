@@ -8,14 +8,12 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Server\Attributes\Name;
-use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
@@ -27,6 +25,8 @@ class AddFile extends Tool
 {
     use Concerns\Upload;
 
+    protected const PERMISSIONS = ['file:add'];
+
 
     /**
      * Validates, ingests, and stores the remote or uploaded File requested by the MCP client.
@@ -34,12 +34,8 @@ class AddFile extends Tool
      * @param Request $request Authorized MCP tool request
      * @return \Laravel\Mcp\ResponseFactory Structured File data or validation error
      */
-    public function handle( Request $request ): \Laravel\Mcp\ResponseFactory
+    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        if( !Permission::can( 'file:add', $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
-        }
-
         $v = $request->validate([
             'url' => 'required_without:content|prohibits:content|string|max:500|url:http,https',
             'content' => 'string|max:8388608',
@@ -63,15 +59,11 @@ class AddFile extends Tool
 
         // Fetch the file and generate previews outside the transaction to keep
         // slow network and image work off the database connection.
-        try {
-            $this->source( $v, fn( UploadedFile|string $source ) => $file->ingest( $source ) );
-        } catch( \Aimeos\Cms\InvalidException $e ) {
-            return Response::structured( ['error' => $e->getMessage()] );
-        }
+        $this->source( $v, fn( UploadedFile|string $source ) => $file->ingest( $source ) );
 
         $file = Resource::addFile( $file, $request->user() );
 
-        return Response::structured( ['id' => $file->id, 'latest_id' => $file->latest_id] + $file->toArray() );
+        return Response::structured( Presenter::item( $file ) );
     }
 
 
@@ -97,17 +89,5 @@ class AddFile extends Tool
             'description' => $schema->object()
                 ->description('Multilingual description object, e.g., {"en": "A sunset photo", "de": "Ein Sonnenuntergangsfoto"}. Used as alt text for images.'),
         ];
-    }
-
-
-    /**
-     * Determine if the tool should be registered.
-     *
-     * @param Request $request The incoming request to check permissions for.
-     * @return bool TRUE if the tool should be registered, FALSE otherwise.
-     */
-    public function shouldRegister( Request $request ) : bool
-    {
-        return Permission::can( 'file:add', $request->user() );
     }
 }

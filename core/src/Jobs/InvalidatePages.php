@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Jobs;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Bus\Queueable;
@@ -40,6 +41,8 @@ class InvalidatePages implements ShouldQueue
      */
     public function handle(): void
     {
-        Tenancy::run( $this->tenant, fn() => Resource::invalidateIds( $this->ids ) );
+        Tenancy::run( $this->tenant, fn() => Resource::invalidatePages(
+            Page::whereIn( 'id', $this->ids )->select( 'id', 'domain', 'path' )->get()
+        ) );
     }
 }

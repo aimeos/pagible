@@ -776,24 +776,6 @@ class BackupTest extends BackupTestAbstract
     }
 
 
-    public function testRestoreFindsDiskWithoutTransformingUuid(): void
-    {
-        $command = new class extends RestoreCommand {
-            public function disk( array $current, string $id ): ?string
-            {
-                $ids = array_keys( $current );
-                usort( $ids, fn( string $a, string $b ) => strcasecmp( $a, $b ) );
-
-                return $this->findDisk( $current, $ids, $id );
-            }
-        };
-        $upper = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
-        $lower = '019f8abc-def0-7abc-8abc-abcdef123456';
-
-        $this->assertSame( 'private', $command->disk( [$upper => 'private'], $lower ) );
-    }
-
-
     public function testRestoreManagedTenantMismatchFailsBeforeWriting(): void
     {
         $conn = config( 'cms.db', 'sqlite' );
@@ -862,6 +844,40 @@ class BackupTest extends BackupTestAbstract
         ], 'test', 'public' );
 
         $this->assertSame( 'https://example.com/file.pdf', json_decode( $row['data'], true )['path'] );
+    }
+
+
+    public function testRestoreRewritesOnlyManagedTenantPaths(): void
+    {
+        $command = new class extends RestoreCommand {
+            public function row( array $row, string $table, array $files = [] ): array
+            {
+                return $this->rewrite( $row, $table, 'other', 'test', true, $files );
+            }
+        };
+        $id = (string) \Illuminate\Support\Str::uuid7();
+        $file = $command->row( [
+            'id' => $id,
+            'disk' => 'public',
+            'path' => 'cms/test/' . $id . '/file.pdf',
+            'previews' => json_encode( ['100' => 'cms/test/' . $id . '/preview.jpg'] ),
+        ], 'cms_files' );
+        $version = $command->row( [
+            'versionable_id' => $id,
+            'versionable_type' => File::class,
+            'data' => json_encode( ['path' => 'cms/test/' . $id . '/file.pdf', 'description' => ['en' => 'see cms/test/'] ] ),
+        ], 'cms_versions', [$id => ['disk' => 'public', 'paths' => []]] );
+        $page = $command->row( [
+            'versionable_type' => \Aimeos\Cms\Models\Page::class,
+            'data' => json_encode( ['title' => 'cms/test/ docs'] ),
+        ], 'cms_versions' );
+
+        $this->assertSame( 'cms/other/' . $id . '/file.pdf', $file['path'] );
+        $this->assertSame( ['100' => 'cms/other/' . $id . '/preview.jpg'], json_decode( $file['previews'], true ) );
+        $this->assertSame( 'cms/other/' . $id . '/file.pdf', json_decode( $version['data'], true )['path'] );
+        $this->assertSame( ['en' => 'see cms/test/'], json_decode( $version['data'], true )['description'] );
+        $this->assertSame( ['title' => 'cms/test/ docs'], json_decode( $page['data'], true ) );
+        $this->assertSame( 'other', $page['tenant_id'] );
     }
 
 

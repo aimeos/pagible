@@ -9,11 +9,13 @@ namespace Aimeos\Cms;
 
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -100,6 +102,23 @@ class Utils
 
 
     /**
+     * Rejects MIME types which aren't allowed for uploads.
+     *
+     * @param string $mime MIME type to check
+     * @param string $label Name of the checked item used in the error message
+     * @param string $prefix Additionally required MIME type prefix, e.g. "image/"
+     * @throws InvalidException If the MIME type isn't allowed
+     */
+    public static function checkMimetype( string $mime, string $label = 'File', string $prefix = '' ) : void
+    {
+        if( !str_starts_with( $mime, $prefix ) || !self::isValidMimetype( $mime ) ) {
+            throw new InvalidException( sprintf( '%s type "%s" not allowed, permitted types: %s',
+                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+        }
+    }
+
+
+    /**
      * Sanitizes SVG/SVGZ content, returns NULL for non-SVG or invalid input.
      *
      * @param mixed $content Raw SVG or gzip-compressed SVGZ content
@@ -113,28 +132,36 @@ class Utils
 
         $isZip = str_starts_with( $content, "\x1f\x8b" );
         $sanitizer = new \enshrined\svgSanitize\Sanitizer();
+
+        if( !( $content = self::gunzip( $content ) ) || !( $clean = $sanitizer->sanitize( $content ) ) ) {
+            return null;
+        }
+
+        return ( $isZip ? gzencode( $clean ) : $clean ) ?: null;
+    }
+
+
+    /**
+     * Decompresses gzip content up to the maximum upload size, other content is returned unchanged.
+     *
+     * @param string $content Raw or gzip-compressed content
+     * @return string Decompressed content
+     * @throws InvalidException If the decompressed content exceeds the maximum upload size
+     */
+    public static function gunzip( string $content ) : string
+    {
+        if( !str_starts_with( $content, "\x1f\x8b" ) ) {
+            return $content;
+        }
+
         $max = max( 0, (int) ( (float) config( 'cms.upload.filesize', 50 ) * 1024 * 1024 ) );
+        $result = @gzdecode( $content, $max + 1 );
 
-        if( $isZip )
-        {
-            $content = @gzdecode( $content, $max + 1 );
-
-            if( $content === false || strlen( $content ) > $max ) {
-                throw new InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
-            }
+        if( $result === false || strlen( $result ) > $max ) {
+            throw new InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
         }
 
-        if( !$content || !( $clean = $sanitizer->sanitize( $content ) ) ) {
-            return null;
-        }
-
-        $clean = $isZip ? gzencode( $clean ) : $clean;
-
-        if( !$clean ) {
-            return null;
-        }
-
-        return $clean;
+        return $result;
     }
 
 
@@ -217,19 +244,20 @@ class Utils
 
 
     /**
-     * Sends a GET request while resolving and pinning every redirect target.
+     * Sends a request while resolving and pinning every redirect target.
      *
      * @param string $url Initial http(s) URL
      * @param array<string, mixed> $options Additional safe HTTP client options
      * @param array<string, string> $headers Request headers
+     * @param string $method HTTP method, e.g. "GET" or "HEAD"
      * @return Response Final response, including unsuccessful non-redirect responses
      */
-    public static function http( string $url, array $options = [], array $headers = [] ) : Response
+    public static function http( string $url, array $options = [], array $headers = [], string $method = 'GET' ) : Response
     {
         for( $redirects = 0; ; $redirects++ )
         {
             $response = Http::withHeaders( $headers )
-                ->withOptions( self::safeHttp( $url ) + $options )->get( $url );
+                ->withOptions( self::safeHttp( $url ) + $options )->send( $method, $url );
 
             if( !in_array( $response->status(), [301, 302, 303, 307, 308], true ) ) {
                 return $response;
@@ -243,6 +271,52 @@ class Utils
             }
 
             $url = (string) UriResolver::resolve( new Uri( $url ), new Uri( $location ) );
+        }
+    }
+
+
+    /**
+     * Registers a per-minute rate limiter keyed by the user ID or the client IP.
+     *
+     * @param string $name Rate limiter name used by the "throttle" middleware
+     * @param int $perMinute Maximum number of requests per minute
+     * @param bool $user TRUE to key by the authenticated user ID if available, FALSE to key by IP only
+     */
+    public static function limit( string $name, int $perMinute, bool $user = true ) : void
+    {
+        RateLimiter::for( $name, fn( $request ) => Limit::perMinute( $perMinute )->by(
+            $user ? ( $request->user()?->getAuthIdentifier() ?: $request->ip() ) : $request->ip()
+        ) );
+    }
+
+
+    /**
+     * Writes binary content into a temporary upload and passes it to the callback.
+     *
+     * The temporary file is removed again after the callback returns.
+     *
+     * @param string $binary File content
+     * @param string $filename Client file name of the upload
+     * @param string|null $mime Client MIME type or NULL to guess it from the content
+     * @param \Closure(UploadedFile): mixed $fn Receives the temporary upload
+     * @return mixed Return value of the callback
+     * @throws \Aimeos\Cms\Exception If the temporary file can't be written
+     */
+    public static function upload( string $binary, string $filename, ?string $mime, \Closure $fn ) : mixed
+    {
+        if( ( $path = tempnam( sys_get_temp_dir(), 'cms' ) ) === false || file_put_contents( $path, $binary ) === false )
+        {
+            if( $path !== false ) {
+                @unlink( $path );
+            }
+
+            throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
+        }
+
+        try {
+            return $fn( new UploadedFile( $path, $filename, $mime, null, true ) );
+        } finally {
+            @unlink( $path );
         }
     }
 
@@ -281,19 +355,7 @@ class Utils
     public static function isValidMimetype( string $mime ) : bool
     {
         $allowed = config( 'cms.upload.mimetypes', [] );
-
-        if( empty( $allowed ) ) {
-            return true;
-        }
-
-        foreach( $allowed as $prefix )
-        {
-            if( str_starts_with( $mime, $prefix ) ) {
-                return true;
-            }
-        }
-
-        return false;
+        return empty( $allowed ) || Str::startsWith( $mime, $allowed );
     }
 
 
@@ -458,7 +520,7 @@ class Utils
             explode( '/', $path ),
             static fn( string $part ) : bool => $part !== '' && $part !== '.',
         ) );
-        $prefix = $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
+        $prefix = self::prefix( $tenant );
 
         if( !str_starts_with( $path, $prefix ) ) {
             return null;
@@ -472,6 +534,18 @@ class Utils
         }
 
         return $path;
+    }
+
+
+    /**
+     * Returns the storage path prefix of managed files for the tenant.
+     *
+     * @param string $tenant Tenant ID
+     * @return string Path prefix with trailing slash, e.g. "cms/" or "cms/{tenant}/"
+     */
+    public static function prefix( string $tenant ) : string
+    {
+        return $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
     }
 
 
@@ -510,7 +584,7 @@ class Utils
      */
     public static function resolve( string $host ) : ?string
     {
-        $flags = config( 'cms.allow-internal', true )
+        $flags = config( 'cms.allow-internal', false )
             ? 0 : FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
 
         // Literal IP host: validate directly, a DNS lookup would never resolve it

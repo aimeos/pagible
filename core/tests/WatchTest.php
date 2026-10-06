@@ -118,10 +118,10 @@ class WatchTest extends CoreTestAbstract
 
         $built = false;
 
-        Watch::dispatchWhen( 'cms.theme.watch', Observed::class, function() use ( &$built ) {
+        Watch::dispatch( Observed::class, function() use ( &$built ) {
             $built = true;
             return new Observed( source: 'graphql', action: 'pages', tenant: 'test' );
-        } );
+        }, 'cms.theme.watch' );
 
         $this->assertFalse( $built );
     }
