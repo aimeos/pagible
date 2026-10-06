@@ -1,0 +1,1 @@
+var e=`af ar az bg ca cs da de el en es et fa fi fr he hr hu id it ja km ko lt lv nl no pl pt pt-BR ro ru sk sl sr sv th tr uk vi zh zh-TW`;export{e as default};

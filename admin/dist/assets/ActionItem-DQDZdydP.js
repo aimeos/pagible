@@ -1,0 +1,1 @@
+import{At as e,J as t,Wt as n,Zt as r,rt as i,wn as a}from"./charts-qBJJ9lq9.js";import{t as o}from"./VBtn-CtGXdTrb.js";import{M as s,c}from"./index-A9timXeh.js";var l={inheritAttrs:!1};function u(s,l,u,d,f,p){return n(),t(c,null,{default:a(()=>[i(o,e({variant:`text`},s.$attrs),{default:a(()=>[r(s.$slots,`default`)]),_:3},16)]),_:3})}var d=s(l,[[`render`,u]]);export{d as t};

@@ -1,1 +1,0 @@
-import e from"./File-Cxiw1rp0.js";var t={extends:e,setup:e.setup,computed:{kind(){return`media`}}};export{t as default};
