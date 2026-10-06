@@ -30,6 +30,20 @@ describe('ConfirmDialog', () => {
     cy.get('.v-dialog.v-overlay--active').should('not.exist')
   })
 
+  it('shows the action and question of generic confirmations', () => {
+    let result
+
+    cy.mount(ConfirmDialog).then(() => {
+      result = useConfirmStore().ask('Rotate', 'Rotate the secret?', [{ name: 'Shop', info: '/hook' }])
+    })
+
+    cy.contains('.v-dialog:visible .v-toolbar-title', 'Rotate').should('exist')
+    cy.contains('.v-dialog:visible', 'Rotate the secret?').should('not.contain', 'permanently deleted')
+    cy.contains('.v-dialog:visible .v-list-item', 'Shop').should('contain', '/hook')
+    cy.contains('.v-dialog:visible .btn-confirm', 'Rotate').click()
+    cy.then(() => result).should('equal', true)
+  })
+
   it('resolves false on cancel', () => {
     let result
 

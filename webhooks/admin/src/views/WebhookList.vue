@@ -95,6 +95,9 @@ const PURGE = gql`
   }
 `;
 
+// default values of the webhook form
+const blank = () => ({ url: "", name: "", events: [], status: false });
+
 export default {
   name: "WebhookList",
 
@@ -120,10 +123,7 @@ export default {
       selected: null,
       term: "",
       filter: this.pluginAside?.(() => this.asideContent, defaults) ?? defaults,
-      url: "",
-      name: "",
-      events: [],
-      status: false,
+      form: blank(),
       secret: "",
       server: { enabled: true, blocked: null },
     };
@@ -224,14 +224,38 @@ export default {
       try {
         await callback();
       } catch (error) {
-        this.messages.add(failure + ":\n" + error, "error");
+        this.messages.error(failure, error);
       } finally {
         this.saving = false;
       }
     },
 
+    async copySecret() {
+      try {
+        await navigator.clipboard.writeText(this.secret);
+        this.messages.add(
+          this.$pgettext("webhooks", "Secret copied"),
+          "success",
+        );
+      } catch (_error) {
+        this.messages.add(
+          this.$pgettext("webhooks", "Unable to copy secret"),
+          "error",
+        );
+      }
+    },
+
     dateText(value) {
       return new Date(value).toLocaleString(this.$vuetify.locale.current);
+    },
+
+    errorText(item) {
+      const error = item.last_error;
+
+      if (!error) return this.$pgettext("webhooks", "None");
+
+      const text = this.reasonText(error.reason, error.status);
+      return error.at ? `${text} · ${this.dateText(error.at)}` : text;
     },
 
     async load() {
@@ -246,10 +270,7 @@ export default {
         this.names = data.cmsWebhookEvents;
         this.server = data.cmsWebhookServer;
       } catch (error) {
-        this.messages.add(
-          this.$pgettext("webhooks", "Error fetching webhooks") + ":\n" + error,
-          "error",
-        );
+        this.messages.error(this.$pgettext("webhooks", "Error fetching webhooks"), error);
       } finally {
         this.loading = false;
       }
@@ -257,120 +278,54 @@ export default {
 
     openAdd() {
       this.selected = null;
-      this.url = "";
-      this.name = "";
-      this.events = [];
-      this.status = false;
+      this.form = blank();
       this.secret = "";
       this.dialog = true;
     },
 
     openEdit(item) {
       this.selected = item;
-      this.name = item.name;
-      this.events = [...item.events];
-      this.status = item.status;
+      this.form = { url: "", name: item.name, events: [...item.events], status: item.status };
       this.secret = "";
       this.dialog = true;
     },
 
-    async save() {
-      if (!this.events.length || (!this.selected && !this.validUrl(this.url)))
-        return;
-
-      await this.change(
-        async () => {
-          if (this.selected) {
-            const { data } = await this.apollo.mutate({
-              mutation: SAVE,
-              variables: {
-                id: this.selected.id,
-                input: {
-                  name: this.name.trim(),
-                  events: this.events,
-                  status: this.status,
-                },
-              },
-            });
-            this.put(data.saveWebhook);
-            this.dialog = false;
-          } else {
-            const { data } = await this.apollo.mutate({
-              mutation: ADD,
-              variables: {
-                input: {
-                  url: this.url.trim(),
-                  name: this.name.trim(),
-                  events: this.events,
-                  status: this.status,
-                },
-              },
-            });
-            // keep the dialog open to show the one-time secret
-            this.put(data.addWebhook.webhook);
-            this.secret = data.addWebhook.secret;
-          }
-        },
-        this.$pgettext("webhooks", "Error saving webhook"),
-      );
-    },
-
-    async rotate(item) {
-      const question = this.$pgettext(
-        "webhooks",
-        "Rotate the secret of this webhook? Receivers must be updated with the new secret.",
-      );
-
-      if (this.saving || !window.confirm(`${question}\n\n${this.label(item)}`))
-        return;
-
-      await this.change(
-        async () => {
-          const { data } = await this.apollo.mutate({
-            mutation: ROTATE,
-            variables: { id: item.id },
-          });
-          // shows the one-time secret in the webhook dialog
-          this.put(data.rotateWebhook.webhook);
-          this.secret = data.rotateWebhook.secret;
-          this.dialog = true;
-        },
-        this.$pgettext("webhooks", "Error rotating webhook secret"),
-      );
-    },
-
     async ping(item) {
       this.testing = true;
-      await this.change(
-        async () => {
-          const { data } = await this.apollo.mutate({
-            mutation: PING,
-            variables: { id: item.id },
-          });
-          const result = data.pingWebhook;
 
-          if (result.success) {
-            // a successful test event resumes paused deliveries
-            this.items = this.items.map((entry) =>
-              entry.id === item.id ? { ...entry, paused_until: null } : entry,
-            );
-            this.messages.add(
-              this.$pgettext("webhooks", "Test event delivered") +
-                ` (${result.status})`,
-              "success",
-            );
-          } else {
-            this.messages.add(
-              this.$pgettext("webhooks", "Test event failed") +
-                ": " +
-                this.reasonText(result.reason, result.status),
-              "error",
-            );
-          }
-        },
-        this.$pgettext("webhooks", "Test event failed"),
-      );
-      this.testing = false;
+      try {
+        await this.change(
+          async () => {
+            const { data } = await this.apollo.mutate({
+              mutation: PING,
+              variables: { id: item.id },
+            });
+            const result = data.pingWebhook;
+
+            if (result.success) {
+              // a successful test event resumes paused deliveries
+              this.items = this.items.map((entry) =>
+                entry.id === item.id ? { ...entry, paused_until: null } : entry,
+              );
+              this.messages.add(
+                this.$pgettext("webhooks", "Test event delivered") +
+                  ` (${result.status})`,
+                "success",
+              );
+            } else {
+              this.messages.add(
+                this.$pgettext("webhooks", "Test event failed") +
+                  ": " +
+                  this.reasonText(result.reason, result.status),
+                "error",
+              );
+            }
+          },
+          this.$pgettext("webhooks", "Test event failed"),
+        );
+      } finally {
+        this.testing = false;
+      }
     },
 
     async purge(item = null) {
@@ -382,10 +337,7 @@ export default {
         this.saving ||
         !list.length ||
         !(await this.confirm.purge(
-          list.map((entry) => ({
-            name: entry.name || entry.endpoint,
-            info: entry.name ? entry.endpoint : "",
-          })),
+          list.map((entry) => this.summary(entry)),
         ))
       ) {
         return;
@@ -413,33 +365,15 @@ export default {
       );
     },
 
-    async copySecret() {
-      try {
-        await navigator.clipboard.writeText(this.secret);
-        this.messages.add(
-          this.$pgettext("webhooks", "Secret copied"),
-          "success",
-        );
-      } catch (_error) {
-        this.messages.add(
-          this.$pgettext("webhooks", "Unable to copy secret"),
-          "error",
-        );
-      }
-    },
+    put(item) {
+      const checked = new Set(this.checked);
+      checked.delete(item.id);
 
-    errorText(item) {
-      const error = item.last_error;
-
-      if (!error) return this.$pgettext("webhooks", "None");
-
-      const text = this.reasonText(error.reason, error.status);
-      return error.at ? `${text} · ${this.dateText(error.at)}` : text;
-    },
-
-    // endpoints lack the last path segment, so the name tells webhooks apart
-    label(item) {
-      return item.name ? `${item.name} · ${item.endpoint}` : item.endpoint;
+      // changed webhooks keep their position, new ones are shown first
+      this.items = this.items.some((entry) => entry.id === item.id)
+        ? this.items.map((entry) => (entry.id === item.id ? item : entry))
+        : [item, ...this.items];
+      this.checked = checked;
     },
 
     reasonText(reason, status) {
@@ -463,15 +397,80 @@ export default {
       return status ? `${text} (${status})` : text;
     },
 
+    async rotate(item) {
+      const question = this.$pgettext(
+        "webhooks",
+        "Rotate the secret of this webhook? Receivers must be updated with the new secret.",
+      );
+
+      if (
+        this.saving ||
+        !(await this.confirm.ask(this.$pgettext("webhooks", "Rotate"), question, [
+          this.summary(item),
+        ]))
+      ) {
+        return;
+      }
+
+      await this.change(
+        async () => {
+          const { data } = await this.apollo.mutate({
+            mutation: ROTATE,
+            variables: { id: item.id },
+          });
+          // shows the one-time secret in the webhook dialog
+          this.put(data.rotateWebhook.webhook);
+          this.secret = data.rotateWebhook.secret;
+          this.dialog = true;
+        },
+        this.$pgettext("webhooks", "Error rotating webhook secret"),
+      );
+    },
+
+    async save() {
+      const form = this.form;
+
+      if (!form.events.length || (!this.selected && !this.validUrl(form.url)))
+        return;
+
+      const input = {
+        name: form.name.trim(),
+        events: form.events,
+        status: form.status,
+      };
+
+      await this.change(
+        async () => {
+          if (this.selected) {
+            const { data } = await this.apollo.mutate({
+              mutation: SAVE,
+              variables: { id: this.selected.id, input },
+            });
+            this.put(data.saveWebhook);
+            this.dialog = false;
+          } else {
+            const { data } = await this.apollo.mutate({
+              mutation: ADD,
+              variables: { input: { ...input, url: form.url.trim() } },
+            });
+            // keep the dialog open to show the one-time secret
+            this.put(data.addWebhook.webhook);
+            this.secret = data.addWebhook.secret;
+          }
+        },
+        this.$pgettext("webhooks", "Error saving webhook"),
+      );
+    },
+
     successText(item) {
       return item.last_success_at
         ? this.dateText(item.last_success_at)
         : this.$pgettext("webhooks", "None");
     },
 
-    // deliveries fail until the secret is rotated
-    undecryptable(item) {
-      return item?.last_error?.reason === "invalid_encryption";
+    // endpoints lack the last path segment, so the name tells webhooks apart
+    summary(item) {
+      return { name: item.name || item.endpoint, info: item.name ? item.endpoint : "" };
     },
 
     toggle() {
@@ -482,22 +481,13 @@ export default {
 
     toggleCheck(item) {
       const checked = new Set(this.checked);
-
-      if (checked.has(item.id)) checked.delete(item.id);
-      else checked.add(item.id);
-
+      if (!checked.delete(item.id)) checked.add(item.id);
       this.checked = checked;
     },
 
-    put(item) {
-      const checked = new Set(this.checked);
-      checked.delete(item.id);
-
-      // changed webhooks keep their position, new ones are shown first
-      this.items = this.items.some((entry) => entry.id === item.id)
-        ? this.items.map((entry) => (entry.id === item.id ? item : entry))
-        : [item, ...this.items];
-      this.checked = checked;
+    // deliveries fail until the secret is rotated
+    undecryptable(item) {
+      return item?.last_error?.reason === "invalid_encryption";
     },
 
     validUrl(value) {
@@ -766,7 +756,7 @@ export default {
           {{ $pgettext("webhooks", "Active") }}
         </div>
         <v-switch
-          v-model="status"
+          v-model="form.status"
           :aria-label="$pgettext('webhooks', 'Active')"
           :hint="$pgettext('webhooks', 'Inactive webhooks receive no events and their queued deliveries are dropped')"
           color="primary"
@@ -776,7 +766,7 @@ export default {
       </div>
       <v-text-field
         v-if="!selected"
-        v-model="url"
+        v-model="form.url"
         :label="$pgettext('webhooks', 'HTTPS endpoint URL')"
         :hint="$pgettext('webhooks', 'Address receiving the signed events, it cannot be changed later')"
         :rules="[
@@ -800,7 +790,7 @@ export default {
         </v-alert>
       </template>
       <v-select
-        v-model="events"
+        v-model="form.events"
         :items="names"
         :label="$pgettext('webhooks', 'Events')"
         :hint="$pgettext('webhooks', 'Events sent to the webhook, queued deliveries of removed events are cancelled')"
@@ -809,7 +799,7 @@ export default {
         chips
       />
       <v-text-field
-        v-model="name"
+        v-model="form.name"
         :label="$pgettext('webhooks', 'Name')"
         :hint="$pgettext('webhooks', 'Optional name to tell webhooks with the same endpoint apart, visible to all webhook editors')"
         class="webhook-name"
@@ -846,7 +836,7 @@ export default {
           color="primary"
           variant="tonal"
           :disabled="
-            testing || !events.length || (!selected && !validUrl(url))
+            testing || !form.events.length || (!selected && !validUrl(form.url))
           "
           :loading="saving && !testing"
           @click="save"

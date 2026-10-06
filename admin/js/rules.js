@@ -14,6 +14,9 @@
 // 0 and false are values, empty lists are not
 const empty = (v) => v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length)
 
+export const domain = ($gettext) => (v) =>
+  !v || /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/.test(v) || $gettext('Domain name is invalid')
+
 export const required = ($gettext, flag) => (v) =>
   !flag || !empty(v) || $gettext('Value is required')
 

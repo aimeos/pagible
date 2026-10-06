@@ -3,79 +3,21 @@
 <script>
 import gql from 'graphql-tag'
 import {
-  mdiDotsVertical,
-  mdiPublish,
-  mdiDelete,
-  mdiDeleteRestore,
-  mdiDeleteForever,
-  mdiPlus,
-  mdiMagnify,
-  mdiViewGridOutline,
   mdiFormatListBulletedSquare,
-  mdiClockOutline,
   mdiLock,
+  mdiMusic,
   mdiPlusLock,
-  mdiRefresh,
-  mdiPencil,
-  mdiCloseCircleOutline
+  mdiViewGridOutline,
+  mdiYoutube
 } from '@mdi/js'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
-import ListSkeleton from './ListSkeleton.vue'
-import LoadingSpinner from './LoadingSpinner.vue'
+import ListStatus from './ListStatus.vue'
 import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
-import { invalidateList, listFetchPolicy } from '../graphql'
-import {
-  useAppStore,
-  useUserStore,
-  useMessageStore,
-  useChangeStore,
-  useConfirmStore
-} from '../stores'
-import { tally, useListKeys, useListShortcuts } from '../lists'
-import { debounce, fileurl, filesrcset } from '../utils'
-import { setupEcho, cleanEcho, listEcho } from '../echo'
-
-const DROP_FILE = gql`
-  mutation ($id: [ID!]!) {
-    dropFile(id: $id) {
-      id
-    }
-  }
-`
-
-const KEEP_FILE = gql`
-  mutation ($id: [ID!]!) {
-    keepFile(id: $id) {
-      id
-    }
-  }
-`
-
-const PUB_FILE = gql`
-  mutation ($id: [ID!]!) {
-    pubFile(id: $id) {
-      id
-    }
-  }
-`
-
-const PURGE_FILE = gql`
-  mutation ($id: [ID!]!) {
-    purgeFile(id: $id) {
-      id
-    }
-  }
-`
-
-const SAVE_FILES = gql`
-  mutation ($id: [ID!]!, $input: FileInput!) {
-    bulkFile(id: $id, input: $input) {
-      ids
-    }
-  }
-`
+import { listBase, useList } from '../lists'
+import { fileurl, filesrcset } from '../utils'
 
 const FETCH_FILES = gql`
   ${FILE_FIELDS}
@@ -127,156 +69,44 @@ const SORT_OPTIONS = Object.freeze([
 ])
 
 export default {
+  extends: listBase,
+
   components: {
+    ActionItem,
     ActionMenu,
     EditBulkDialog,
-    ListSkeleton,
-    LoadingSpinner,
+    ListStatus,
     ListSort
   },
 
   props: {
-    grid: { type: Boolean, default: false },
-    embed: { type: Boolean, default: false },
-    defaults: { type: Object, default: null },
-    filter: { type: Object, default: () => ({}) }
+    grid: { type: Boolean, default: false }
   },
-
-  emits: ['select'],
 
   data() {
     return {
-      items: [],
-      checked: new Set(),
-      term: '',
-      sort: this.user.setting('file', 'sort', { column: 'ID', order: 'DESC' }),
-      page: 1,
-      last: 1,
-      limit: 100,
-      editDialog: false,
-      editIds: [],
-      editSelected: false,
-      loading: true,
-      vgrid: false,
-      destroyed: false,
-      echoCleanup: null,
-      echoPromise: null,
-      outdated: false
+      vgrid: this.user.getData('file', 'grid') ?? this.grid
     }
   },
 
   setup() {
-    useListShortcuts('file', (vm) => vm.$refs.upload?.click())
-
-    const listKey = useListKeys()
-
-    const messages = useMessageStore()
-    const user = useUserStore()
-    const app = useAppStore()
-    const changes = useChangeStore()
-    const confirm = useConfirmStore()
-
     return {
-      app,
-      listKey,
-      user,
-      changes,
-      confirm,
-      messages,
-      mdiDotsVertical,
-      mdiPublish,
-      mdiDelete,
-      mdiDeleteRestore,
-      mdiDeleteForever,
-      mdiPlus,
-      mdiMagnify,
+      ...useList('file', FETCH_FILES, (vm) => vm.$refs.upload?.click()),
       mdiViewGridOutline,
       mdiFormatListBulletedSquare,
-      mdiClockOutline,
       mdiLock,
+      mdiMusic,
       mdiPlusLock,
-      mdiRefresh,
-      mdiPencil,
-      mdiCloseCircleOutline,
+      mdiYoutube,
       sortOptions: SORT_OPTIONS,
-      debounce,
       fileurl,
       filesrcset
     }
   },
 
-  created() {
-    this.searchd = this.debounce(this.search, 500)
-    this.vgrid = this.user.getData('file', 'grid') ?? this.grid
-    this.search()
-
-    if (!this.embed) {
-      // patch the matching row when another user changes a file; subscribe for
-      // the whole lifetime (not per activation) so the list keeps patching in
-      // the background while the editor is in a detail or another view and is up
-      // to date when they return
-      setupEcho(this, 'file', (event, name) => listEcho(this, event, name))
-    }
-  },
-
-  beforeUnmount() {
-    this.destroyed = true
-    cleanEcho(this)
-
-    this.items = null
-    this.checked = null
-  },
-
-  activated() {
-    this.sync()
-    this.revalidate()
-  },
-
-  computed: {
-    filtered() {
-      if (this.term || !this.defaults) {
-        return true
-      }
-
-      return Object.keys({ ...this.filter, ...this.defaults }).some((key) => {
-        return (
-          key !== 'view' &&
-          JSON.stringify(this.filter[key] ?? null) !== JSON.stringify(this.defaults[key] ?? null)
-        )
-      })
-    },
-
-    counts() {
-      return tally(this.items.filter((item) => this.checked.has(item.id)))
-    },
-
-    isChecked() {
-      return this.checked.size > 0
-    }
-  },
-
   methods: {
-    resetFilter() {
-      this.term = ''
-
-      if (this.defaults) {
-        const filter = {}
-
-        for (const key in this.filter) {
-          if (key !== 'view') {
-            filter[key] = this.defaults[key] ?? null
-          }
-        }
-
-        Object.assign(this.filter, filter)
-      }
-    },
-
     add(ev, disk = 'public') {
-      if (this.embed || !this.user.can('file:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (this.embed || !this.user.can('file:add')) return this.messages.denied()
 
       const promises = []
       const files = ev.target.files || ev.dataTransfer.files || []
@@ -303,11 +133,7 @@ export default {
               return data
             })
             .catch((error) => {
-              this.messages.add(
-                this.$gettext(`Error adding file %{path}`, { path: file.name }) + ':\n' + error,
-                'error'
-              )
-              this.$log(`FileListItems::add(): Error adding file`, file, error)
+              this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
             })
         )
       }
@@ -317,412 +143,36 @@ export default {
       })
     },
 
-    drop(item) {
-      if (!this.user.can('file:drop')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: DROP_FILE,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-          this.messages.add(
-            this.$ngettext('Moved to trash', '%{num} entries moved to trash', list.length, {
-              num: list.length
-            }),
-            'success',
-            null,
-            this.user.can('file:keep')
-              ? { label: this.$gettext('Undo'), handler: () => this.keep(list) }
-              : null
-          )
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error trashing file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::drop(): Error trashing file`, item, error)
-        })
-    },
-
-    reload() {
-      this.outdated = false
-      this.items = []
-      this.loading = true
-      return this.$apollo.provider.defaultClient.clearStore().then(() => this.search())
-    },
-
-    revalidate() {
-      if (this.loading) return
-
-      const options = this.options()
-      const cache = this.$apollo.provider.defaultClient.cache
-
-      if (
-        options.fetchPolicy === 'network-only' ||
-        !cache.diff({
-          query: options.query,
-          variables: options.variables,
-          returnPartialData: true
-        }).complete
-      ) {
-        return this.search()
-      }
-    },
-
-    patch(item) {
-      const node = this.items?.find((node) => node.id === item.id)
-
-      if (!node) {
-        return false
-      }
-
-      for (const key in item) {
-        if (key in node) {
-          node[key] = item[key]
-        }
-      }
-
-      return true
-    },
-
-    patchItems(items) {
-      // index the patches by id so the bulk update is a single pass over the loaded rows
-      const byId = new Map(items.map((item) => [item.id, item]))
-
-      this.items?.forEach((node) => {
-        const item = byId.get(node.id)
-
-        if (item) {
-          for (const key in item) {
-            if (key in node) {
-              node[key] = item[key]
-            }
-          }
-        }
-      })
-    },
-
-    sync() {
-      const ids = this.changes
-        .get('file')
-        .filter((item) => this.patch(item))
-        .map((item) => item.id)
-
-      this.changes.patched('file', ids)
-    },
-
-    invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-    },
-
-    options() {
-      const publish = this.filter.publish || null
-      const trashed = this.filter.trashed || 'WITHOUT'
-      const filter = { ...this.filter }
-
-      delete filter.trashed
-      delete filter.publish
-
-      for (const key in filter) {
-        if (filter[key] === null) {
-          delete filter[key]
-        }
-      }
-
-      if (this.term) {
-        filter.any = this.term
-      }
-
+    failed(action) {
       return {
-        query: FETCH_FILES,
-        fetchPolicy: listFetchPolicy(),
-        variables: {
-          filter: filter,
-          page: this.page,
-          limit: this.limit,
-          sort: [this.sort],
-          trashed: trashed,
-          publish: publish
-        }
-      }
+        drop: this.$gettext('Error trashing file'),
+        keep: this.$gettext('Error restoring file'),
+        pub: this.$gettext('Error publishing file'),
+        purge: this.$gettext('Error purging file'),
+        save: this.$gettext('Error saving file'),
+        search: this.$gettext('Error fetching files')
+      }[action]
     },
 
-    keep(item) {
-      if (!this.user.can('file:keep')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+    hydrate(entry) {
+      const latest = entry.latest
 
-      const list = Array.isArray(item)
-        ? item
-        : item
-          ? [item]
-          : this.items.filter((item) => this.checked.has(item.id))
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: KEEP_FILE,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error restoring file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::keep(): Error restoring file`, item, error)
-        })
-    },
-
-    publish(item) {
-      if (!this.user.can('file:publish')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = item
-        ? [item]
-        : this.items.filter((item) => {
-            return this.checked.has(item.id) && item.id && !item.published
-          })
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: PUB_FILE,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error publishing file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::publish(): Error publishing file`, item, error)
-        })
-    },
-
-    async purge(item) {
-      if (!this.user.can('file:purge')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
-
-      if (
-        !list.length ||
-        !(await this.confirm.purge(list.map((item) => ({ name: item.name, info: item.mime }))))
-      ) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: PURGE_FILE,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error purging file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::purge(): Error purging file`, item, error)
-        })
-    },
-
-    edit(item = null) {
-      this.editIds = item ? [item.id] : [...this.checked]
-      this.editSelected = !item
-      this.editDialog = this.editIds.length > 0
-    },
-
-    save(lang) {
-      if (!this.user.can('file:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const ids = this.editIds
-      const selected = this.editSelected ? null : new Set(this.checked)
-
-      if (!ids.length || lang === null) {
-        return
-      }
-
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_FILES,
-          variables: {
-            id: ids,
-            input: { lang: lang }
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.editIds = []
-          if (this.editSelected) {
-            this.checked = new Set()
-          }
-          this.editSelected = false
-          this.invalidate()
-
-          return this.search().then(() => {
-            if (selected) {
-              this.checked = selected
-            }
-          })
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log(`FileListItems::save(): Error saving files`, ids, lang, error)
-        })
-    },
-
-    search() {
-      if (!this.user.can('file:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      this.loading = true
-
-      return this.$apollo
-        .query(this.options())
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          const files = result.data.files || {}
-          this.last = files.paginatorInfo?.lastPage || 1
-          this.items = [...(files.data || [])].map((entry) => {
-            const latest = entry.latest
-            const item = normalizeFile(entry)
-
-            return Object.assign(item, {
-              disk: entry.disk,
-              id: entry.id,
-              deleted_at: entry.deleted_at,
-              created_at: entry.created_at,
-              updated_at: latest?.created_at || entry.updated_at,
-              editor: latest?.editor || entry.editor,
-              published: latest?.published ?? true,
-              publish_at: latest?.publish_at || null,
-              latest_id: latest?.id || null,
-              usage: entry.byversions_count
-            })
-          })
-          this.checked = new Set()
-          this.outdated = false
-          this.loading = false
-
-          return this.items
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching files') + ':\n' + error, 'error')
-          this.$log(`FileListItems::search(): Error fetching files`, error)
-        })
-    },
-
-    title(item) {
-      const list = []
-
-      if (item.publish_at) {
-        list.push('Publish at: ' + new Date(item.publish_at).toLocaleDateString())
-      }
-
-      return list.join('\n')
-    },
-
-    toggle() {
-      if (this.checked.size > 0) {
-        this.checked = new Set()
-      } else {
-        this.checked = new Set(this.items.map((item) => item.id))
-      }
-    },
-
-    toggleCheck(item) {
-      const next = new Set(this.checked)
-      if (next.has(item.id)) {
-        next.delete(item.id)
-      } else {
-        next.add(item.id)
-      }
-      this.checked = next
+      return Object.assign(normalizeFile(entry), {
+        disk: entry.disk,
+        id: entry.id,
+        deleted_at: entry.deleted_at,
+        created_at: entry.created_at,
+        updated_at: latest?.created_at || entry.updated_at,
+        editor: latest?.editor || entry.editor,
+        published: latest?.published ?? true,
+        publish_at: latest?.publish_at || null,
+        latest_id: latest?.id || null,
+        usage: entry.byversions_count
+      })
     }
   },
 
   watch: {
-    'changes.changed.file'() {
-      this.sync()
-    },
-
-    filter: {
-      deep: true,
-      handler() {
-        this.search()
-      }
-    },
-
-    term() {
-      this.searchd()
-    },
-
-    page() {
-      this.search()
-    },
-
-    sort() {
-      this.search()
-    },
-
     vgrid(val) {
       this.user.saveData('file', 'grid', val)
     }
@@ -750,31 +200,21 @@ export default {
               variant="text"
             />
           </template>
-          <v-list-item v-if="counts.draft && user.can('file:publish')">
-            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()"
-              >{{ $gettext('Publish') }} ({{ counts.draft }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('file:save')">
-            <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()"
-              >{{ $gettext('Edit properties') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="counts.live && user.can('file:drop')">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()"
-              >{{ $gettext('Delete') }} ({{ counts.live }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="counts.trashed && user.can('file:keep')">
-            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()"
-              >{{ $gettext('Restore') }} ({{ counts.trashed }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('file:purge')">
-            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()"
-              >{{ $gettext('Purge') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
+          <ActionItem v-if="counts.draft && user.can('file:publish')" :prepend-icon="mdiPublish" @click="publish()">
+            {{ $gettext('Publish') }} ({{ counts.draft }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('file:save')" :prepend-icon="mdiPencil" @click="edit()">
+            {{ $gettext('Edit properties') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem v-if="counts.live && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop()">
+            {{ $gettext('Delete') }} ({{ counts.live }})
+          </ActionItem>
+          <ActionItem v-if="counts.trashed && user.can('file:keep')" :prepend-icon="mdiDeleteRestore" @click="keep()">
+            {{ $gettext('Restore') }} ({{ counts.trashed }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
+            {{ $gettext('Purge') }} ({{ counts.all }})
+          </ActionItem>
         </ActionMenu>
       </span>
 
@@ -882,11 +322,12 @@ export default {
             variant="text"
           />
         </template>
-        <v-list-item v-show="!item.deleted_at && !item.published && user.can('file:publish')">
-          <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(item)">{{
-            $gettext('Publish')
-          }}</v-btn>
-        </v-list-item>
+        <ActionItem
+          v-show="!item.deleted_at && !item.published && user.can('file:publish')"
+          :prepend-icon="mdiPublish"
+          @click="publish(item)"
+          >{{ $gettext('Publish') }}</ActionItem
+        >
 
         <v-divider
           v-if="
@@ -894,29 +335,24 @@ export default {
           "
         ></v-divider>
 
-        <v-list-item v-if="user.can('file:save')">
-          <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit(item)">{{
-            $gettext('Edit properties')
-          }}</v-btn>
-        </v-list-item>
+        <ActionItem v-if="user.can('file:save')" :prepend-icon="mdiPencil" @click="edit(item)">
+          {{ $gettext('Edit properties') }}
+        </ActionItem>
 
         <v-divider v-if="user.can('file:save')"></v-divider>
 
-        <v-list-item v-if="!item.deleted_at && user.can('file:drop')">
-          <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
-            $gettext('Delete')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item v-if="item.deleted_at && user.can('file:keep')">
-          <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(item)">{{
-            $gettext('Restore')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item v-if="user.can('file:purge')">
-          <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(item)">{{
-            $gettext('Purge')
-          }}</v-btn>
-        </v-list-item>
+        <ActionItem v-if="!item.deleted_at && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop(item)">
+          {{ $gettext('Delete') }}
+        </ActionItem>
+        <ActionItem
+          v-if="item.deleted_at && user.can('file:keep')"
+          :prepend-icon="mdiDeleteRestore"
+          @click="keep(item)"
+          >{{ $gettext('Restore') }}</ActionItem
+        >
+        <ActionItem v-if="user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
+          {{ $gettext('Purge') }}
+        </ActionItem>
       </ActionMenu>
 
       <a
@@ -931,7 +367,7 @@ export default {
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
-          v-if="item.mime?.startsWith('image/')"
+          v-if="item.mime?.startsWith('image/') || (item.mime?.startsWith('video/') && Object.values(item.previews).length)"
           :src="fileurl(item, Object.values(item.previews)[0] ?? item.path)"
           :srcset="filesrcset(item)"
           :title="item.name"
@@ -939,35 +375,13 @@ export default {
           class="checkered"
         ></v-img>
 
-        <v-img
-          v-else-if="item.mime?.startsWith('video/') && Object.values(item.previews).length"
-          :src="fileurl(item, Object.values(item.previews)[0] ?? '')"
-          :srcset="filesrcset(item)"
-          :title="item.name"
-          :alt="item.name"
-          class="checkered"
-        ></v-img>
-
         <svg
-          v-else-if="item.mime?.startsWith('video/') && !Object.values(item.previews).length"
+          v-else-if="item.mime?.startsWith('video/') || item.mime?.startsWith('audio/')"
           viewBox="0 0 24 24"
           fill="currentColor"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <path
-            d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.5,18.78 17.18,18.84C15.88,18.91 14.69,18.94 13.59,18.94L12,19C7.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.31,16.36 2.22,15.73 2.16,14.93C2.09,14.13 2.06,13.44 2.06,12.84L2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C4.64,5.31 5.5,5.22 6.82,5.16C8.12,5.09 9.31,5.06 10.41,5.06L12,5C16.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"
-          />
-        </svg>
-
-        <svg
-          v-else-if="item.mime?.startsWith('audio/')"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z"
-          />
+          <path :d="item.mime.startsWith('audio/') ? mdiMusic : mdiYoutube" />
         </svg>
 
         <svg
@@ -1019,34 +433,19 @@ export default {
     </v-list-item>
   </v-list>
 
-  <ListSkeleton v-if="loading && !items?.length" />
-  <p v-else-if="loading" class="loading">
-    {{ $gettext('Loading') }}
-    <LoadingSpinner width="32" height="32" />
-  </p>
-
-  <p v-if="!loading && !items.length" class="notfound">
-    <template v-if="filtered">
-      {{ $gettext('No entries found') }}
-      <v-btn
-        v-if="term || defaults"
-        class="btn-reset-filter"
-        variant="text"
-        :prepend-icon="mdiCloseCircleOutline"
-        @click="resetFilter()"
-        >{{ $gettext('Reset') }}</v-btn
-      >
-    </template>
-    <template v-else>{{ $gettext('No entries yet') }}</template>
-  </p>
+  <ListStatus
+    :empty="!items?.length"
+    :filtered="filtered"
+    :loading="loading"
+    :resettable="!!(term || defaults)"
+    @reset="resetFilter()"
+  />
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
   <div v-if="!this.embed && user.can('file:add')" class="btn-group upload-actions">
-    <input @change="add($event, 'public')" ref="uploadBottom" type="file" multiple hidden />
-    <input @change="add($event, 'private')" ref="uploadPrivateBottom" type="file" multiple hidden />
     <v-btn
-      @click="$refs.uploadBottom.click()"
+      @click="$refs.upload.click()"
       :title="$gettext('Add files')"
       :disabled="loading"
       :icon="mdiPlus"
@@ -1056,7 +455,7 @@ export default {
     />
     <v-btn
       v-if="user.can('file:relocate')"
-      @click="$refs.uploadPrivateBottom.click()"
+      @click="$refs.uploadPrivate.click()"
       :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
       :disabled="loading"
       :icon="mdiPlusLock"

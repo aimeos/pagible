@@ -25,14 +25,14 @@ import {
   mdiCached,
   mdiLock,
   mdiKeyVariant,
-  mdiPencil,
-  mdiCloseCircleOutline
+  mdiPencil
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
-import ListSkeleton from './ListSkeleton.vue'
+import ListStatus from './ListStatus.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
@@ -45,10 +45,10 @@ import {
   useMessageStore,
   useChangeStore
 } from '../stores'
-import { tally, useListShortcuts } from '../lists'
+import { listBase, mutation, tally, useListShortcuts } from '../lists'
 import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
-import { setupEcho, cleanEcho, listEcho } from '../echo'
+import { setupEcho, listEcho } from '../echo'
 import { invalidateList, listFetchPolicy } from '../graphql'
 
 const PAGE_TREE_FIELDS = new Set([
@@ -84,25 +84,9 @@ function patchData(data, item) {
   }
 }
 
-const ADD_PAGE = gql`
-  mutation ($input: PageInput!) {
-    addPage(input: $input) {
-      id
-    }
-  }
-`
-
 const CLEAR_CACHE = gql`
   mutation ($ids: [ID!]!) {
     clearCache(ids: $ids)
-  }
-`
-
-const DROP_PAGE = gql`
-  mutation ($id: [ID!]!) {
-    dropPage(id: $id) {
-      id
-    }
   }
 `
 
@@ -127,33 +111,9 @@ const INSERT_PAGE = gql`
   }
 `
 
-const KEEP_PAGE = gql`
-  mutation ($id: [ID!]!) {
-    keepPage(id: $id) {
-      id
-    }
-  }
-`
-
 const MOVE_PAGE = gql`
   mutation ($id: ID!, $parent: ID, $ref: ID) {
     movePage(id: $id, parent: $parent, ref: $ref) {
-      id
-    }
-  }
-`
-
-const PUB_PAGE = gql`
-  mutation ($id: [ID!]!) {
-    pubPage(id: $id) {
-      id
-    }
-  }
-`
-
-const PURGE_PAGE = gql`
-  mutation ($id: [ID!]!) {
-    purgePage(id: $id) {
       id
     }
   }
@@ -187,33 +147,6 @@ const PAGE_FIELDS = `id
             created_at
           }`
 
-const FETCH_CHILD_PAGES = gql`
-  query(
-    $filter: PageFilter,
-    $limit: Int!,
-    $page: Int!,
-    $trashed: Trashed,
-    $publish: Publish,
-    $access: Boolean!
-  ) {
-    pages(
-      filter: $filter,
-      first: $limit,
-      page: $page,
-      trashed: $trashed,
-      publish: $publish
-    ) {
-      data {
-        ${PAGE_FIELDS}
-      }
-      paginatorInfo {
-        currentPage
-        lastPage
-      }
-    }
-  }
-`
-
 const PASTE_PAGE = gql`
   mutation ($input: PageInput!, $parent: ID, $ref: ID, $access: Boolean!) {
     addPage(input: $input, parent: $parent, ref: $ref) {
@@ -222,7 +155,7 @@ const PASTE_PAGE = gql`
   }
 `
 
-const SEARCH_PAGES = gql`
+const FETCH_PAGES = gql`
   query(
     $filter: PageFilter,
     $sort: [QueryPagesSortOrderByClause!],
@@ -263,23 +196,20 @@ const SORT_OPTIONS = Object.freeze([
 
 export default {
   components: {
+    ActionItem,
     ActionMenu,
     CmsDialog,
     Draggable,
     ListSort,
-    ListSkeleton,
+    ListStatus,
     LoadingSpinner,
     PageAccess,
     PageBulkDialog
   },
 
-  props: {
-    embed: { type: Boolean, default: false },
-    defaults: { type: Object, default: null },
-    filter: { type: Object, default: () => ({}) }
-  },
+  props: listBase.props,
 
-  emits: ['select'],
+  emits: listBase.emits,
 
   data() {
     return {
@@ -300,8 +230,6 @@ export default {
       sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
-      echoCleanup: null,
-      echoPromise: null,
       loadId: 0,
       origin: null,
       outdated: false
@@ -319,6 +247,7 @@ export default {
     const confirm = useConfirmStore()
 
     return {
+      type: 'page',
       app,
       user,
       changes,
@@ -340,23 +269,17 @@ export default {
       mdiContentCut,
       mdiContentCopy,
       mdiContentPaste,
-      mdiArrowUp,
-      mdiArrowRight,
-      mdiArrowDown,
       mdiClockOutline,
       mdiCached,
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
-      mdiCloseCircleOutline,
-      sortOptions: SORT_OPTIONS,
-      debounce
+      sortOptions: SORT_OPTIONS
     }
   },
 
   created() {
-    this.searchd = this.debounce(this.search, 500)
-    this.reloadd = this.debounce(() => this.reload(false), 300)
+    this.reloadd = debounce(() => this.reload(false), 300)
 
     const initial = this.refresh()
 
@@ -366,14 +289,14 @@ export default {
       // the background while the editor is in a detail or another view and is
       // up to date when they return. The tab that made the change is excluded
       // server-side via toOthers(), so no editor filter is needed here
-      setupEcho(this, 'page', (event, name) => listEcho(this, event, name))
+      this.unsubscribe = setupEcho('page', (event, name) => listEcho(this, event, name))
 
       // Reconcile once when a reconnect or structural event invalidates the tree while its
       // initial query is still in flight. Evict only the page lists so the follow-up cache-first
       // query reaches the server without discarding unrelated detail data.
       initial.finally(() => {
         if (this.outdated && !this.destroyed) {
-          invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
+          invalidateList('pages')
           return this.reload(false)
         }
       })
@@ -394,48 +317,47 @@ export default {
 
   beforeUnmount() {
     this.destroyed = true
-    cleanEcho(this)
-
-    this.items = null
-    this.clip = null
+    this.unsubscribe?.()
   },
 
   computed: {
-    filtered() {
-      if (this.term || !this.defaults) {
-        return true
-      }
-
-      return Object.keys({ ...this.filter, ...this.defaults }).some((key) => {
-        return (
-          key !== 'view' &&
-          JSON.stringify(this.filter[key] ?? null) !== JSON.stringify(this.defaults[key] ?? null)
-        )
-      })
-    },
+    filtered: listBase.computed.filtered,
 
     isChecked() {
       return this.checked || this.$refs.tree?.statsFlat.some((stat) => stat._checked)
+    },
+
+    // submenus of a page node, each applied before, into or after the page
+    menus() {
+      const list = []
+
+      if (this.embed) {
+        return list
+      }
+
+      if (this.clip?.type === 'copy' && this.user.can('page:add')) {
+        list.push({ label: this.$gettext('Paste'), fn: this.paste })
+      } else if (this.clip?.type === 'cut' && this.user.can('page:move')) {
+        list.push({ label: this.$gettext('Paste'), fn: this.move })
+      }
+
+      if (this.user.can('page:add')) {
+        list.push({ label: this.$gettext('Insert'), fn: this.insert })
+      }
+
+      return list
+    },
+
+    places() {
+      return [
+        { icon: mdiArrowUp, label: this.$gettext('Before'), idx: 0 },
+        { icon: mdiArrowRight, label: this.$gettext('Into'), idx: null },
+        { icon: mdiArrowDown, label: this.$gettext('After'), idx: 1 }
+      ]
     }
   },
 
   methods: {
-    resetFilter() {
-      this.term = ''
-
-      if (this.defaults) {
-        const filter = {}
-
-        for (const key in this.filter) {
-          if (key !== 'view') {
-            filter[key] = this.defaults[key] ?? null
-          }
-        }
-
-        Object.assign(this.filter, filter)
-      }
-    },
-
     accessApplied(access, descendants = false) {
       const stats = this.$refs.tree?.statsFlat || []
       const ids = new Set(this.accessIds)
@@ -460,6 +382,8 @@ export default {
       this.accessSelected = false
     },
 
+    allowed: listBase.methods.allowed,
+
     accessTitle(access) {
       if (!Array.isArray(access)) return this.$gettext('Restricted')
 
@@ -469,25 +393,16 @@ export default {
     },
 
     add() {
-      if (this.embed || !this.user.can('page:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (this.embed || !this.allowed('add')) {
         return
       }
 
-      const item = this.create()
-
       this.$apollo
         .mutate({
-          mutation: ADD_PAGE,
-          variables: {
-            input: item
-          }
+          mutation: INSERT_PAGE,
+          variables: { input: this.create(), parent: null, ref: null }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           if (!result.data.addPage) {
             throw new Error('No data in addPage mutation result')
           }
@@ -499,8 +414,7 @@ export default {
           this.$emit('select', page)
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error adding root page') + ':\n' + error, 'error')
-          this.$log(`PageList::add(): Error adding root page`, error)
+          this.messages.error(this.$gettext('Error adding root page'), error)
         })
     },
 
@@ -569,8 +483,7 @@ export default {
     },
 
     clear(stat = null) {
-      if (!this.user.can('cache:clear')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('clear', 'cache')) {
         return
       }
 
@@ -589,10 +502,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const done = result.data?.clearCache || ids.length
           this.messages.add(
             done === 1
@@ -607,8 +516,7 @@ export default {
           )
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error clearing cache') + ':\n' + error, 'error')
-          this.$log(`PageList::clear(): Error clearing cache`, list, error)
+          this.messages.error(this.$gettext('Error clearing cache'), error, list)
         })
     },
 
@@ -644,47 +552,33 @@ export default {
     },
 
     drop(stat) {
-      if (!this.user.can('page:drop')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = stat ? [stat] : this.selected()
+      const list = this.allowed('drop') ? (stat ? [stat] : this.selected()) : []
+      const ids = list.map((item) => item.data.id)
 
       if (!list.length) {
         return
       }
 
-      this.$apollo
-        .mutate({
-          mutation: DROP_PAGE,
-          variables: {
-            id: list.map((item) => item.data.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
+      this.mutate('drop', ids, this.$gettext('Error trashing page')).then((ok) => {
+        if (!ok) {
+          return
+        }
 
-          for (const item of list) {
-            this.update(item, (item) => {
-              item.data.deleted_at = new Date().toISOString().replace(/T/, ' ').substring(0, 19)
-              item.check = false
+        const date = new Date().toISOString().replace(/T/, ' ').substring(0, 19)
 
-              if (this.filter.trashed === 'WITHOUT') {
-                this.$refs.tree.remove(item)
-              }
-            })
+        for (const item of this.tops(list)) {
+          this.update(item, (item) => {
+            item.data.deleted_at = date
+            item._checked = false
+          })
+
+          if (this.filter.trashed === 'WITHOUT') {
+            this.$refs.tree.remove(item)
           }
+        }
 
-          this.invalidate()
-          this.trashed(list.map((item) => item.data.id))
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error trashing page') + ':\n' + error, 'error')
-          this.$log(`PageList::drop(): Error trashing page`, list, error)
-        })
+        this.trashed(ids)
+      })
     },
 
     trashed(ids) {
@@ -692,20 +586,9 @@ export default {
         ? {
             label: this.$gettext('Undo'),
             handler: () => {
-              this.$apollo
-                .mutate({ mutation: KEEP_PAGE, variables: { id: ids } })
-                .then((result) => {
-                  if (result.errors) {
-                    throw result.errors
-                  }
-
-                  this.invalidate()
-                  this.reload(false)
-                })
-                .catch((error) => {
-                  this.messages.add(this.$gettext('Error restoring page') + ':\n' + error, 'error')
-                  this.$log(`PageList::trashed(): Error restoring page`, ids, error)
-                })
+              this.mutate('keep', ids, this.$gettext('Error restoring page')).then((ok) => {
+                ok && this.reload(false)
+              })
             }
           }
         : null
@@ -763,55 +646,7 @@ export default {
     },
 
     fetch(parent = null, page = 1, limit = 100) {
-      if (!this.user.can('page:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      const publish = this.filter.publish || null
-      const trashed = this.filter.trashed || 'WITHOUT'
-      const filter = { ...this.filter }
-
-      delete filter.trashed
-      delete filter.publish
-      delete filter.view
-
-      for (const key in filter) {
-        if (filter[key] === null) {
-          delete filter[key]
-        }
-      }
-
-      filter.parent_id = parent
-
-      return this.$apollo
-        .query({
-          query: FETCH_CHILD_PAGES,
-          fetchPolicy: listFetchPolicy(),
-          variables: {
-            filter: filter,
-            page: page,
-            limit: limit,
-            trashed: trashed,
-            publish: publish,
-            access: this.user.can('page:access')
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          return this.transform(result.data.pages)
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching pages') + ':\n' + error, 'error')
-          this.$log(`PageList::fetch(): Error fetching page`, parent, page, limit, error)
-        })
-    },
-
-    fields() {
-      return PAGE_FIELDS
+      return this.pages({ parent_id: parent }, page, limit, undefined, this.$gettext('Error fetching pages'))
     },
 
     hydrate(entry) {
@@ -834,47 +669,23 @@ export default {
     },
 
     insert(stat, idx = null) {
-      if (!this.user.can('page:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('add')) {
         return
       }
 
-      const siblings = this.$refs.tree.getSiblings(stat)
-      const parent = idx !== null ? stat.parent : stat
-      const pos = siblings.indexOf(stat)
+      const { parent, pos, ref } = this.target(stat, idx)
       const node = this.create(parent ? { theme: parent.data.theme, type: parent.data.type } : {})
-      let refid = null
 
       if (idx === null && !stat.open) {
         this.load(stat, stat.data)
       }
 
-      switch (idx) {
-        case 0:
-          refid = stat.data.id
-          break
-        case null:
-          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
-          break
-        case 1:
-          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
-          break
-      }
-
       return this.$apollo
         .mutate({
           mutation: INSERT_PAGE,
-          variables: {
-            input: node,
-            parent: parent ? parent.data.id : null,
-            ref: refid
-          }
+          variables: { input: node, parent: parent?.data.id ?? null, ref }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           node.id = result.data.addPage.id
 
           if (idx !== null || stat.open) {
@@ -886,13 +697,12 @@ export default {
           this.invalidate()
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error inserting page') + ':\n' + error, 'error')
-          this.$log(`PageList::insert(): Error inserting page`, error)
+          this.messages.error(this.$gettext('Error inserting page'), error)
         })
     },
 
     invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
+      invalidateList('pages')
     },
 
     newPage() {
@@ -907,67 +717,23 @@ export default {
     },
 
     keep(stat) {
-      if (!this.user.can('page:keep')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      const list = this.allowed('keep') ? this.tops(stat ? [stat] : this.selected((page) => page.deleted_at)) : []
 
-      const stats = stat ? [stat] : this.selected((page) => page.deleted_at)
-      const list = stats.filter((stat) => {
-        return stats.indexOf(stat.parent) === -1
-      })
       if (!list.length) {
         return
       }
 
-      this.$apollo
-        .mutate({
-          mutation: KEEP_PAGE,
-          variables: {
-            id: list.map((item) => item.data.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
+      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring page')).then((ok) => {
+        for (const item of ok ? list : []) {
+          const deleted_at = item.data.deleted_at || null
 
-          for (const item of list) {
-            const deleted_at = item.data.deleted_at || null
-
-            this.update(item, (item) => {
-              if (deleted_at >= item.data.deleted_at) {
-                item.data.deleted_at = null
-                item.check = false
-              }
-            })
-          }
-
-          this.invalidate()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error restoring page') + ':\n' + error, 'error')
-          this.$log(`PageList::keep(): Error restoring page`, list, error)
-        })
-    },
-
-    label(node) {
-      const name = node.name || this.$gettext('New')
-      const path = '/' + (node.path || '')
-
-      if (node.domain) {
-        return this.$gettext('%{name} (%{lang}, path: %{path}, domain: %{domain})', {
-          name,
-          lang: node.lang || '',
-          path,
-          domain: node.domain
-        })
-      }
-
-      return this.$gettext('%{name} (%{lang}, path: %{path})', {
-        name,
-        lang: node.lang || '',
-        path
+          this.update(item, (item) => {
+            if (deleted_at >= item.data.deleted_at) {
+              item.data.deleted_at = null
+              item._checked = false
+            }
+          })
+        }
       })
     },
 
@@ -992,24 +758,9 @@ export default {
     move(stat, idx = null) {
       const clip = this.clip
       const origin = this.position(clip.stat)
-      const siblings = this.$refs.tree.getSiblings(stat)
-      const parent = idx !== null ? stat.parent : stat
-      const pos = siblings.indexOf(stat)
-      let refid = null
+      const { parent, pos, ref } = this.target(stat, idx)
 
-      switch (idx) {
-        case 0:
-          refid = stat.data.id
-          break
-        case null:
-          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
-          break
-        case 1:
-          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
-          break
-      }
-
-      return this.movePage(clip.node.id, parent ? parent.data.id : null, refid).then((success) => {
+      return this.movePage(clip.node.id, parent?.data.id ?? null, ref).then((success) => {
         if (!success) {
           return false
         }
@@ -1036,8 +787,7 @@ export default {
     },
 
     movePage(id, parentId, refId) {
-      if (!this.user.can('page:move')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('move')) {
         return Promise.resolve(false)
       }
 
@@ -1047,46 +797,73 @@ export default {
           variables: { id, parent: parentId, ref: refId }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           this.invalidate()
           return true
         })
         .catch((error) => {
           if (error) {
-            this.messages.add(this.$gettext('Error moving page') + ':\n' + error, 'error')
-            this.$log(`PageList::movePage(): Error moving page`, error)
+            this.messages.error(this.$gettext('Error moving page'), error)
           }
 
           return false
         })
     },
 
+    // runs the mutation for the page IDs and resolves true on success
+    mutate(action, ids, msg) {
+      return this.$apollo
+        .mutate({ mutation: mutation(action, 'page'), variables: { id: ids } })
+        .then(() => {
+          this.invalidate()
+          return true
+        })
+        .catch((error) => {
+          this.messages.error(msg, error, ids)
+          return false
+        })
+    },
+
+    // queries the pages matching the list filters and the given filter values
+    pages(values, page, limit, sort, msg) {
+      if (!this.allowed('view')) {
+        return Promise.resolve([])
+      }
+
+      const filter = {}
+
+      for (const key in this.filter) {
+        if (!['publish', 'trashed', 'view'].includes(key) && this.filter[key] !== null) {
+          filter[key] = this.filter[key]
+        }
+      }
+
+      return this.$apollo
+        .query({
+          query: FETCH_PAGES,
+          fetchPolicy: listFetchPolicy(),
+          variables: {
+            filter: Object.assign(filter, values),
+            sort,
+            page,
+            limit,
+            trashed: this.filter.trashed || 'WITHOUT',
+            publish: this.filter.publish || null,
+            access: this.user.can('page:access')
+          }
+        })
+        .then((result) => this.transform(result.data.pages))
+        .catch((error) => {
+          this.messages.error(msg, error, filter, page, limit)
+        })
+    },
+
     paste(stat, idx = null) {
-      if (!this.user.can('page:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('add')) {
         return
       }
 
-      const siblings = this.$refs.tree.getSiblings(stat)
-      const parent = idx !== null ? stat.parent : stat
-      const pos = siblings.indexOf(stat)
+      const { parent, ref } = this.target(stat, idx)
       const node = { ...this.clip.node }
-      let refid = null
-
-      switch (idx) {
-        case 0:
-          refid = stat.data.id
-          break
-        case null:
-          refid = stat.children && stat.children[0] ? stat.children[0].data.id : null
-          break
-        case 1:
-          refid = siblings[pos + 1] ? siblings[pos + 1].data.id : null
-          break
-      }
 
       return this.$apollo
         .query({
@@ -1097,10 +874,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const latest = result?.data?.page?.latest
           const data = Object.assign({}, node, safeParse(latest?.data))
           const aux = safeParse(latest?.aux)
@@ -1126,16 +899,12 @@ export default {
                   content: JSON.stringify(aux?.content || []),
                   path: data.path + '_' + Math.floor(Math.random() * 10000)
                 },
-                parent: parent ? parent.data.id : null,
-                ref: refid,
+                parent: parent?.data.id ?? null,
+                ref,
                 access: this.user.can('page:access')
               }
             })
             .then((result) => {
-              if (result.errors) {
-                throw result.errors
-              }
-
               if (!result.data.addPage) {
                 throw new Error('No page data returned')
               }
@@ -1147,13 +916,11 @@ export default {
               this.invalidate()
             })
             .catch((error) => {
-              this.messages.add(this.$gettext('Error copying page') + ':\n' + error, 'error')
-              this.$log(`PageList::paste(): Error copying page`, stat, idx, error)
+              this.messages.error(this.$gettext('Error copying page'), error, stat, idx)
             })
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching page') + ':\n' + error, 'error')
-          this.$log(`PageList::paste(): Error fetching page`, node.id, error)
+          this.messages.error(this.$gettext('Error fetching page'), error, node.id)
         })
     },
 
@@ -1191,49 +958,22 @@ export default {
     },
 
     publish(stat) {
-      if (!this.user.can('page:publish')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = stat ? [stat] : this.selected((page) => !page.published)
+      const list = this.allowed('publish') ? (stat ? [stat] : this.selected((page) => !page.published)) : []
 
       if (!list.length) {
         return
       }
 
-      this.$apollo
-        .mutate({
-          mutation: PUB_PAGE,
-          variables: {
-            id: list.map((item) => item.data.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          for (const item of list) {
-            item.data.published = true
-            item.check = false
-          }
-
-          this.invalidate()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error publishing page') + ':\n' + error, 'error')
-          this.$log(`PageList::publish(): Error publishing page`, list, error)
-        })
+      this.mutate('pub', list.map((item) => item.data.id), this.$gettext('Error publishing page')).then((ok) => {
+        for (const item of ok ? list : []) {
+          item.data.published = true
+          item._checked = false
+        }
+      })
     },
 
     async purge(stat) {
-      if (!this.user.can('page:purge')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = stat ? [stat] : this.selected()
+      const list = this.allowed('purge') ? (stat ? [stat] : this.selected()) : []
 
       if (
         !list.length ||
@@ -1250,32 +990,17 @@ export default {
         return
       }
 
-      this.$apollo
-        .mutate({
-          mutation: PURGE_PAGE,
-          variables: {
-            id: list.map((item) => item.data.id).reverse()
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
+      const ids = list.map((item) => item.data.id).reverse()
 
-          for (const item of list) {
-            const parent = item.parent
-            const removed = (item.data.has || 0) + 1
+      this.mutate('purge', ids, this.$gettext('Error purging page')).then((ok) => {
+        for (const item of ok ? this.tops(list) : []) {
+          const parent = item.parent
+          const removed = (item.data.has || 0) + 1
 
-            this.$refs.tree.remove(item)
-            this.updateHas(parent, -removed)
-          }
-
-          this.invalidate()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error purging page') + ':\n' + error, 'error')
-          this.$log(`PageList::purge(): Error purging page`, list, error)
-        })
+          this.$refs.tree.remove(item)
+          this.updateHas(parent, -removed)
+        }
+      })
     },
 
     refresh() {
@@ -1345,8 +1070,7 @@ export default {
     },
 
     saveProps({ input, descendants }) {
-      if (!this.user.can('page:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('save')) {
         return
       }
 
@@ -1366,10 +1090,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const res = result.data.bulkPage || {}
           const ids = new Set(res.ids || [])
           // data/latest are JSON scalar strings; sanitize drops prototype-pollution keys
@@ -1417,60 +1137,18 @@ export default {
           }
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
-          this.$log(`PageList::saveProps(): Error saving pages`, ids, input, error)
+          this.messages.error(this.$gettext('Error saving page'), error, ids, input)
         })
     },
 
     search(page = 1, limit = 100) {
-      if (!this.user.can('page:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      const publish = this.filter.publish || null
-      const trashed = this.filter.trashed || 'WITHOUT'
-      const filter = { ...this.filter }
-
-      delete filter.trashed
-      delete filter.publish
-      delete filter.view
-
-      for (const key in filter) {
-        if (filter[key] === null) {
-          delete filter[key]
-        }
-      }
-
-      if (this.term) {
-        filter.any = this.term
-      }
-
-      return this.$apollo
-        .query({
-          query: SEARCH_PAGES,
-          fetchPolicy: listFetchPolicy(),
-          variables: {
-            filter: filter,
-            sort: this.sort ? [this.sort] : null,
-            page: page,
-            limit: limit,
-            trashed: trashed,
-            publish: publish,
-            access: this.user.can('page:access')
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          return this.transform(result.data.pages)
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error searching pages') + ':\n' + error, 'error')
-          this.$log(`PageList::search(): Error searching pages`, page, limit, error)
-        })
+      return this.pages(
+        this.term ? { any: this.term } : {},
+        page,
+        limit,
+        this.sort ? [this.sort] : null,
+        this.$gettext('Error searching pages')
+      )
     },
 
     selected(fn = () => true) {
@@ -1480,8 +1158,7 @@ export default {
     },
 
     status(stat, val) {
-      if (!this.user.can('page:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+      if (!this.allowed('save')) {
         return
       }
 
@@ -1502,10 +1179,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const ids = new Set(result.data.bulkPage?.ids || [])
 
           list.forEach((stat) => {
@@ -1517,41 +1190,42 @@ export default {
           this.invalidate()
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
-          this.$log(`PageList::status(): Error saving page`, list, val, error)
+          this.messages.error(this.$gettext('Error saving page'), error, list, val)
         })
     },
 
-    sync() {
-      const ids = this.changes
-        .get('page')
-        .filter((item) => this.patch(item))
-        .map((item) => item.id)
+    sync: listBase.methods.sync,
 
-      this.changes.patched('page', ids)
+    // returns the parent, the position and the reference page for adding before (0), into (null) or after (1) the page
+    target(stat, idx) {
+      const siblings = this.$refs.tree.getSiblings(stat)
+      const pos = siblings.indexOf(stat)
+      const next = idx === null ? stat.children?.[0] : idx ? siblings[pos + 1] : stat
+
+      return { parent: idx === null ? stat : stat.parent, pos, ref: next?.data.id || null }
     },
 
     title(item) {
       const list = []
 
       if (item.publish_at) {
-        list.push('Publish at: ' + new Date(item.publish_at).toLocaleDateString())
+        list.push(this.$gettext('Scheduled for %{date}', { date: new Date(item.publish_at).toLocaleDateString() }))
       }
 
       if (item.theme) {
-        list.push('Theme: ' + item.theme)
+        list.push(this.$gettext('Theme') + ': ' + item.theme)
       }
 
       if (item.type) {
-        list.push('Page type: ' + item.type)
+        list.push(this.$gettext('Page type') + ': ' + item.type)
       }
 
       if (item.tag) {
-        list.push('Tag: ' + item.tag)
+        list.push(this.$gettext('Page tag') + ': ' + item.tag)
       }
 
       if (item.cache) {
-        list.push('Cache: ' + item.cache + ' min')
+        list.push(this.$gettext('Cache time') + ': ' + this.$ngettext('%{num} minute', '%{num} minutes', item.cache, { num: item.cache }))
       }
 
       return list.join('\n')
@@ -1562,6 +1236,12 @@ export default {
         stat._checked = !stat._checked
       })
       this.$forceUpdate()
+    },
+
+    // returns the pages without those whose ancestors are in the list too
+    tops(list) {
+      const set = new Set(list)
+      return list.filter((stat) => !this.checkedAncestor(stat, set))
     },
 
     tree(open, parent = null) {
@@ -1612,14 +1292,8 @@ export default {
     },
 
     update(stat, fcn) {
-      if (typeof fcn !== 'function') {
-        throw new Error('Second paramter must be a function')
-      }
-
       fcn(stat)
-      stat.children?.forEach((stat) => {
-        fcn(stat, fcn)
-      })
+      stat.children?.forEach((child) => this.update(child, fcn))
     },
 
     url(node) {
@@ -1674,55 +1348,37 @@ export default {
               variant="text"
             />
           </template>
-          <v-list-item v-if="counts.draft && user.can('page:publish')">
-            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()"
-              >{{ $gettext('Publish') }} ({{ counts.draft }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiEye" variant="text" @click="status(null, 1)"
-              >{{ $pgettext('page status', 'Enable') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(null, 0)"
-              >{{ $pgettext('page status', 'Disable') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
+          <ActionItem v-if="counts.draft && user.can('page:publish')" :prepend-icon="mdiPublish" @click="publish()">
+            {{ $gettext('Publish') }} ({{ counts.draft }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEye" @click="status(null, 1)">
+            {{ $pgettext('page status', 'Enable') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="status(null, 0)">
+            {{ $pgettext('page status', 'Disable') }} ({{ counts.all }})
+          </ActionItem>
           <v-divider></v-divider>
-          <v-list-item v-if="isChecked && user.can('page:save')">
-            <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps()"
-              >{{ $gettext('Edit properties') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('page:access')">
-            <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess()"
-              >{{ $gettext('Access') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('cache:clear')">
-            <v-btn :prepend-icon="mdiCached" variant="text" @click="clear()"
-              >{{ $gettext('Clear cache') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
+          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps()">
+            {{ $gettext('Edit properties') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess()">
+            {{ $gettext('Access') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('cache:clear')" :prepend-icon="mdiCached" @click="clear()">
+            {{ $gettext('Clear cache') }} ({{ counts.all }})
+          </ActionItem>
 
           <v-divider></v-divider>
 
-          <v-list-item v-if="counts.live && user.can('page:drop')">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()"
-              >{{ $gettext('Delete') }} ({{ counts.live }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="counts.trashed && user.can('page:keep')">
-            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()"
-              >{{ $gettext('Restore') }} ({{ counts.trashed }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="isChecked && user.can('page:purge')">
-            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()"
-              >{{ $gettext('Purge') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
+          <ActionItem v-if="counts.live && user.can('page:drop')" :prepend-icon="mdiDelete" @click="drop()">
+            {{ $gettext('Delete') }} ({{ counts.live }})
+          </ActionItem>
+          <ActionItem v-if="counts.trashed && user.can('page:keep')" :prepend-icon="mdiDeleteRestore" @click="keep()">
+            {{ $gettext('Restore') }} ({{ counts.trashed }})
+          </ActionItem>
+          <ActionItem v-if="isChecked && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
+            {{ $gettext('Purge') }} ({{ counts.all }})
+          </ActionItem>
         </ActionMenu>
       </span>
 
@@ -1819,148 +1475,76 @@ export default {
             <template #activator="{ props, label }">
               <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
             </template>
-            <v-list-item v-if="!node.deleted_at && !node.published && user.can('page:publish')">
-              <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(stat)">{{
-                $gettext('Publish')
-              }}</v-btn>
-            </v-list-item>
+            <ActionItem
+              v-if="!node.deleted_at && !node.published && user.can('page:publish')"
+              :prepend-icon="mdiPublish"
+              @click="publish(stat)"
+              >{{ $gettext('Publish') }}</ActionItem
+            >
 
-            <v-list-item v-if="!node.deleted_at && user.can('page:save') && !node.status">
-              <v-btn :prepend-icon="mdiEye" variant="text" @click="status(stat, 1)">
-                {{ $pgettext('page status', 'Enable') }}
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="!node.deleted_at && user.can('page:save') && node.status">
-              <v-btn :prepend-icon="mdiEyeOff" variant="text" @click="status(stat, 0)">
-                {{ $pgettext('page status', 'Disable') }}
-              </v-btn>
-            </v-list-item>
+            <ActionItem
+              v-if="!node.deleted_at && user.can('page:save') && !node.status"
+              :prepend-icon="mdiEye"
+              @click="status(stat, 1)"
+              >{{ $pgettext('page status', 'Enable') }}</ActionItem
+            >
+            <ActionItem
+              v-if="!node.deleted_at && user.can('page:save') && node.status"
+              :prepend-icon="mdiEyeOff"
+              @click="status(stat, 0)"
+              >{{ $pgettext('page status', 'Disable') }}</ActionItem
+            >
 
             <v-divider
               v-if="!node.deleted_at && !node.published && user.can('page:publish')"
             ></v-divider>
 
-            <v-list-item v-if="user.can('page:save')">
-              <v-btn :prepend-icon="mdiPencil" variant="text" @click="editProps(stat)">{{
-                $gettext('Edit properties')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="user.can('page:access')">
-              <v-btn :prepend-icon="mdiKeyVariant" variant="text" @click="editAccess(stat)">{{
-                $gettext('Access')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="user.can('cache:clear')">
-              <v-btn :prepend-icon="mdiCached" variant="text" @click="clear(stat)">{{
-                $gettext('Clear cache')
-              }}</v-btn>
-            </v-list-item>
+            <ActionItem v-if="user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
+              {{ $gettext('Edit properties') }}
+            </ActionItem>
+            <ActionItem v-if="user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess(stat)">
+              {{ $gettext('Access') }}
+            </ActionItem>
+            <ActionItem v-if="user.can('cache:clear')" :prepend-icon="mdiCached" @click="clear(stat)">
+              {{ $gettext('Clear cache') }}
+            </ActionItem>
 
             <v-divider></v-divider>
 
-            <v-list-item v-if="user.can('page:move')">
-              <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(stat, node)"
-                >{{ $pgettext('clipboard', 'Cut') }}</v-btn
-              >
-            </v-list-item>
-            <v-list-item v-if="!embed && user.can('page:add')">
-              <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(stat, node)"
-                >{{ $pgettext('clipboard', 'Copy') }}</v-btn
-              >
-            </v-list-item>
+            <ActionItem v-if="user.can('page:move')" :prepend-icon="mdiContentCut" @click="cut(stat, node)">
+              {{ $pgettext('clipboard', 'Cut') }}
+            </ActionItem>
+            <ActionItem v-if="!embed && user.can('page:add')" :prepend-icon="mdiContentCopy" @click="copy(stat, node)">
+              {{ $pgettext('clipboard', 'Copy') }}
+            </ActionItem>
 
-            <v-list-group v-if="clip?.type == 'copy' && !this.embed && user.can('page:add')">
+            <v-list-group v-for="(menu, i) in menus" :key="i">
               <template v-slot:activator="{ props }">
                 <v-list-item v-bind="props" @click.stop>
-                  <v-btn :prepend-icon="mdiContentPaste" variant="text"
-                    >{{ $gettext('Paste') }}</v-btn
-                  >
+                  <v-btn :prepend-icon="mdiContentPaste" variant="text">{{ menu.label }}</v-btn>
                 </v-list-item>
               </template>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(stat, 0)">{{
-                  $gettext('Before')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="paste(stat)">{{
-                  $gettext('Into')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(stat, 1)">{{
-                  $gettext('After')
-                }}</v-btn>
-              </v-list-item>
-            </v-list-group>
-
-            <v-list-group v-if="clip?.type == 'cut' && !this.embed && user.can('page:move')">
-              <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" @click.stop>
-                  <v-btn :prepend-icon="mdiContentPaste" variant="text"
-                    >{{ $gettext('Paste') }}</v-btn
-                  >
-                </v-list-item>
-              </template>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="move(stat, 0)">{{
-                  $gettext('Before')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="move(stat)">{{
-                  $gettext('Into')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="move(stat, 1)">{{
-                  $gettext('After')
-                }}</v-btn>
-              </v-list-item>
-            </v-list-group>
-
-            <v-list-group v-if="!this.embed && user.can('page:add')">
-              <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" @click.stop>
-                  <v-btn :prepend-icon="mdiContentPaste" variant="text">{{
-                    $gettext('Insert')
-                  }}</v-btn>
-                </v-list-item>
-              </template>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(stat, 0)">{{
-                  $gettext('Before')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowRight" variant="text" @click="insert(stat)">{{
-                  $gettext('Into')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(stat, 1)">{{
-                  $gettext('After')
+              <v-list-item v-for="place in places" :key="place.label">
+                <v-btn :prepend-icon="place.icon" variant="text" @click="menu.fn(stat, place.idx)">{{
+                  place.label
                 }}</v-btn>
               </v-list-item>
             </v-list-group>
 
             <v-divider></v-divider>
 
-            <v-list-item v-if="!node.deleted_at && user.can('page:drop')">
-              <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(stat)">{{
-                $gettext('Delete')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="node.deleted_at && user.can('page:keep')">
-              <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(stat)">{{
-                $gettext('Restore')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="user.can('page:purge')">
-              <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(stat)">{{
-                $gettext('Purge')
-              }}</v-btn>
-            </v-list-item>
+            <ActionItem v-if="!node.deleted_at && user.can('page:drop')" :prepend-icon="mdiDelete" @click="drop(stat)">
+              {{ $gettext('Delete') }}
+            </ActionItem>
+            <ActionItem
+              v-if="node.deleted_at && user.can('page:keep')"
+              :prepend-icon="mdiDeleteRestore"
+              @click="keep(stat)"
+              >{{ $gettext('Restore') }}</ActionItem
+            >
+            <ActionItem v-if="user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
+              {{ $gettext('Purge') }}
+            </ActionItem>
           </ActionMenu>
         </span>
       </div>
@@ -2007,26 +1591,13 @@ export default {
     </template>
   </Draggable>
 
-  <ListSkeleton v-if="loading && !items?.length" />
-  <p v-else-if="loading" class="loading">
-    {{ $gettext('Loading') }}
-    <LoadingSpinner width="32" height="32" />
-  </p>
-
-  <p v-if="!loading && !items.length" class="notfound">
-    <template v-if="filtered">
-      {{ $gettext('No entries found') }}
-      <v-btn
-        v-if="term || defaults"
-        class="btn-reset-filter"
-        variant="text"
-        :prepend-icon="mdiCloseCircleOutline"
-        @click="resetFilter()"
-        >{{ $gettext('Reset') }}</v-btn
-      >
-    </template>
-    <template v-else>{{ $gettext('No entries yet') }}</template>
-  </p>
+  <ListStatus
+    :empty="!items?.length"
+    :filtered="filtered"
+    :loading="loading"
+    :resettable="!!(term || defaults)"
+    @reset="resetFilter()"
+  />
 
   <div v-if="!this.embed && this.user.can('page:add')" class="btn-group">
     <v-btn
@@ -2189,14 +1760,5 @@ export default {
   .tree-node-inner {
     padding: 4px 0;
   }
-}
-
-.sr-only {
-  position: absolute;
-  clip-path: inset(50%);
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  white-space: nowrap;
 }
 </style>

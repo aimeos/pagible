@@ -6,7 +6,7 @@ import ConfirmDialog from './components/ConfirmDialog.vue'
 import ShortcutDialog from './components/ShortcutDialog.vue'
 import ReloginDialog from './components/ReloginDialog.vue'
 import UnsavedDialog from './components/UnsavedDialog.vue'
-import { cleanEcho, setupEcho } from './echo'
+import { setupEcho } from './echo'
 import { invalidateList } from './graphql'
 import { keydown, setNavigate } from './shortcuts'
 import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './stores'
@@ -15,12 +15,6 @@ const CONTENT_TYPES = ['page', 'element', 'file']
 
 export default {
   components: { CommandPalette, ConfirmDialog, ReloginDialog, ShortcutDialog, UnsavedDialog },
-
-  data: () => ({
-    destroyed: true,
-    echoCleanup: null,
-    echoPromise: null
-  }),
 
   setup() {
     const dirtyStore = useDirtyStore()
@@ -38,8 +32,7 @@ export default {
   },
 
   beforeUnmount() {
-    this.destroyed = true
-    cleanEcho(this)
+    this.unsubscribe?.()
     window.removeEventListener('beforeunload', this.beforeUnload)
     window.removeEventListener('keydown', keydown, true)
     setNavigate(null)
@@ -48,16 +41,13 @@ export default {
   watch: {
     'user.me': {
       handler(user) {
-        this.destroyed = !user
-        cleanEcho(this)
+        this.unsubscribe?.()
 
         const types = user ? CONTENT_TYPES.filter((type) => this.user.can(`${type}:view`)) : []
 
-        if (types.length) {
-          setupEcho(this, types, (_event, _name, type) => {
-            invalidateList(this.$apollo.provider.defaultClient.cache, `${type}s`)
-          })
-        }
+        this.unsubscribe = types.length ? setupEcho(types, (_event, _name, type) => {
+          invalidateList(`${type}s`)
+        }) : null
       },
       immediate: true
     }

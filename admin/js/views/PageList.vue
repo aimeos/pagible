@@ -2,47 +2,28 @@
 
 <script>
 import {
-  mdiPlaylistCheck,
-  mdiTranslate,
-  mdiClose,
-  mdiMenu,
-  mdiChevronRight,
-  mdiChevronLeft,
+  mdiClockAlertOutline,
+  mdiEye,
+  mdiEyeOff,
+  mdiEyeOffOutline,
   mdiFileTree,
   mdiFormatListBulletedSquare,
-  mdiPublish,
-  mdiClockOutline,
-  mdiPencil,
-  mdiDeleteOff,
-  mdiDelete,
-  mdiEye,
-  mdiEyeOffOutline,
-  mdiEyeOff,
-  mdiClockAlertOutline,
-  mdiAccount,
-  mdiHelpCircleOutline,
-  mdiArrowRightCircle,
-  mdiMicrophone,
-  mdiMicrophoneOutline
+  mdiPlaylistCheck
 } from '@mdi/js'
-import { markRaw } from 'vue'
-import User from '../components/User.vue'
-import AsideList from '../components/AsideList.vue'
-import Navigation from '../components/Navigation.vue'
 import PageListItems from '../components/PageListItems.vue'
-import ChatDialog from '../components/ChatDialog.vue'
-import { useUserStore, useDrawerStore, useMessageStore } from '../stores'
-import { languageFilter } from '../utils'
+import { listViewBase, useListView } from '../listview'
 
 export default {
   name: 'PageList',
 
+  extends: listViewBase,
+
+  // vue-router only reads route guards from the component itself, not from "extends"
+  beforeRouteLeave: listViewBase.beforeRouteLeave,
+
   components: {
-    PageListItems,
-    Navigation,
-    AsideList,
-    ChatDialog,
-    User
+    ...listViewBase.components,
+    PageListItems
   },
 
   data() {
@@ -57,80 +38,19 @@ export default {
     }
 
     return {
-      chat: '',
-      chatOpen: false,
-      chatPending: false,
-      audio: null,
-      help: false,
-      scrollTop: 0,
-      dictating: false,
       defaults: defaults,
       filter: this.user.filter('page', defaults)
     }
   },
 
-  watch: {
-    chatOpen(val) {
-      // Refresh the list once when the chat closes after a turn (it may have created/changed pages).
-      // Reload the current filter rather than overwriting the editor's saved filter.
-      if (!val && this.chatPending) {
-        this.chatPending = false
-        this.$refs.pagelist?.reload()
-      }
-    }
-  },
-
   setup() {
-    const messages = useMessageStore()
-    const drawer = useDrawerStore()
-    const user = useUserStore()
-
-    return {
-      user,
-      drawer,
-      messages,
-      mdiPlaylistCheck,
-      mdiTranslate,
-      mdiClose,
-      mdiMenu,
-      mdiChevronRight,
-      mdiChevronLeft,
-      mdiFileTree,
-      mdiFormatListBulletedSquare,
-      mdiPublish,
-      mdiClockOutline,
-      mdiPencil,
-      mdiDeleteOff,
-      mdiDelete,
-      mdiEye,
-      mdiEyeOffOutline,
-      mdiEyeOff,
-      mdiClockAlertOutline,
-      mdiAccount,
-      mdiHelpCircleOutline,
-      mdiArrowRightCircle,
-      mdiMicrophone,
-      mdiMicrophoneOutline,
-      languageFilter
-    }
-  },
-
-  activated() {
-    this.$nextTick(() => {
-      this.$refs.scroll.$el.scrollTop = this.scrollTop
-    })
-  },
-
-  beforeRouteLeave() {
-    this.scrollTop = this.$refs.scroll.$el.scrollTop
-  },
-
-  beforeUnmount() {
-    this.user.flush()
+    return useListView('page')
   },
 
   computed: {
     asideContent() {
+      const aside = this.aside()
+
       return [
         {
           key: 'view',
@@ -140,25 +60,8 @@ export default {
             { title: this.$gettext('List'), icon: mdiFormatListBulletedSquare, value: { view: 'list' } }
           ]
         },
-        {
-          key: 'publish',
-          title: this.$gettext('publish'),
-          items: [
-            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { publish: null } },
-            { title: this.$gettext('Published'), icon: mdiPublish, value: { publish: 'PUBLISHED' } },
-            { title: this.$gettext('Scheduled'), icon: mdiClockOutline, value: { publish: 'SCHEDULED' } },
-            { title: this.$gettext('Drafts'), icon: mdiPencil, value: { publish: 'DRAFT' } }
-          ]
-        },
-        {
-          key: 'trashed',
-          title: this.$gettext('trashed'),
-          items: [
-            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { trashed: 'WITH' } },
-            { title: this.$gettext('Available only'), icon: mdiDeleteOff, value: { trashed: 'WITHOUT' } },
-            { title: this.$gettext('Only trashed'), icon: mdiDelete, value: { trashed: 'ONLY' } }
-          ]
-        },
+        aside.publish,
+        aside.trashed,
         {
           key: 'status',
           title: this.$gettext('status'),
@@ -177,75 +80,9 @@ export default {
             { title: this.$gettext('No cache'), icon: mdiClockAlertOutline, value: { cache: 0 } }
           ]
         },
-        {
-          key: 'editor',
-          title: this.$gettext('editor'),
-          items: [
-            { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { editor: null } },
-            { title: this.$gettext('Edited by me'), icon: mdiAccount, value: { editor: this.user.me?.email } }
-          ]
-        },
-        {
-          key: 'lang',
-          title: this.$gettext('languages'),
-          items: languageFilter(mdiPlaylistCheck, mdiTranslate)
-        }
+        aside.editor,
+        aside.lang
       ]
-    }
-  },
-
-  methods: {
-    chatDone() {
-      this.chatPending = true // a turn completed; reload the list when the dialog closes
-    },
-
-    onEnter(e) {
-      if (e.isComposing || e.shiftKey) {
-        return // let IME compose, and Shift+Enter insert a newline instead of opening the chat
-      }
-      e.preventDefault()
-      this.openChat()
-    },
-
-    open(item) {
-      this.$router.push({ name: 'page:detail', params: { id: item.id } })
-    },
-
-    openChat() {
-      if (!this.user.can('page:chat')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const prompt = this.chat.trim()
-      this.chatOpen = true
-
-      if (prompt) {
-        this.chat = ''
-        this.$nextTick(() => this.$refs.chat?.send(prompt))
-      }
-    },
-
-    record() {
-      if (!this.audio) {
-        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
-      }
-
-      this.audio.then((rec) => {
-        this.dictating = true
-        this.audio = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.chat = transcription.asText()
-            })
-            .finally(() => {
-              this.dictating = false
-            })
-        })
-      })
     }
   }
 }

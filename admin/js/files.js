@@ -3,7 +3,8 @@
  */
 
 import gql from 'graphql-tag'
-import { safeParse, sanitize } from './utils'
+import { invalidateList } from './graphql'
+import { fileurl, safeParse, sanitize } from './utils'
 
 export const FILE_FIELDS = gql`
   fragment CmsFileFields on File {
@@ -45,14 +46,10 @@ export async function createFile(apollo, variables) {
 
   const response = await apollo.mutate(options)
 
-  if (response.errors) {
-    throw response.errors
-  }
-
   return normalizeFile(response.data?.addFile)
 }
 
-export const RELOCATE_FILE = gql`
+const RELOCATE_FILE = gql`
   mutation ($id: [ID!]!, $disk: FileDisk!) {
     relocateFile(id: $id, disk: $disk) {
       disk
@@ -100,4 +97,20 @@ export function normalizeFile(data = {}) {
   delete item.latest
 
   return item
+}
+
+export function previewUrl(file) {
+  return fileurl(file, Object.values(file.previews || {})[0] ?? file.path)
+}
+
+export async function relocateFiles(apollo, ids, disk) {
+  const response = await apollo.mutate({ mutation: RELOCATE_FILE, variables: { id: ids, disk } })
+  invalidateList('files')
+  return response.data?.relocateFile || []
+}
+
+export function revokeBlob(item) {
+  if (item?.path?.startsWith('blob:')) {
+    URL.revokeObjectURL(item.path)
+  }
 }

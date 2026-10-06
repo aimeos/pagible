@@ -2,26 +2,16 @@
 
 <script>
 import { required } from '../rules'
+import { fieldBase } from '../field'
 
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: [String, Array] },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: [String, Array] }
   },
 
-  emits: ['update:modelValue', 'error'],
-
-  data: () => ({ lastError: null }),
-
   computed: {
-    hasError() {
-      const val = this.modelValue ?? this.config.default ?? ''
-      return !this.rules.every((rule) => rule(val) === true)
-    },
-
     /**
      * Returns provider-neutral option labels translated in option context.
      */
@@ -34,21 +24,6 @@ export default {
 
     rules() {
       return [required(this.$gettext, this.config.required)]
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every(
-          (rule) => rule(val ?? this.config.default ?? '') === true
-        )
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

@@ -3,7 +3,8 @@
 <script>
 import gql from 'graphql-tag'
 import { invalidateList } from '../graphql'
-import { useUserStore, useMessageStore } from '../stores'
+import { previewUrl } from '../files'
+import { useMessageStore } from '../stores'
 import { fileurl, safeParse } from '../utils'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
@@ -37,8 +38,6 @@ export default {
     readonly: { type: Boolean, default: false }
   },
 
-  emits: ['update:item'],
-
   data() {
     return {
       loading: {}
@@ -47,9 +46,8 @@ export default {
 
   setup() {
     const messages = useMessageStore()
-    const user = useUserStore()
 
-    return { user, messages, fileurl, mdiTooltipImage, mdiImagePlus }
+    return { messages, fileurl, previewUrl, mdiTooltipImage, mdiImagePlus }
   },
 
   beforeUnmount() {
@@ -59,14 +57,11 @@ export default {
       video.removeAttribute('src')
       video.load()
     }
-    this.loading = {}
   },
 
   methods: {
     addCover() {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
       const video = this.$refs.video
 
@@ -90,69 +85,28 @@ export default {
           canvas.width = 0
           canvas.height = 0
 
-          const file = new File([blob], filename, { type: 'image/png' })
-
-          this.loading.cover = true
-
-          this.$apollo
-            .mutate({
-              mutation: SAVE_FILE_PREVIEW,
-              variables: {
-                id: this.item.id,
-                preview: file
-              },
-              context: {
-                hasUpload: true
-              }
-            })
-            .then((response) => {
-              if (response.errors) {
-                throw response.errors
-              }
-
-              invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-              const latest = response.data?.saveFile?.latest
-
-              if (latest) {
-                this.item.previews = safeParse(latest.data)?.previews || {}
-                this.item.updated_at = latest.created_at
-              }
-            })
-            .catch((error) => {
-              this.messages.add(this.$gettext('Error saving video cover') + ':\n' + error, 'error')
-              this.$log(`FileDetailItemVideo::addCover(): Error saving video cover`, error)
-            })
-            .finally(() => {
-              this.loading.cover = false
-            })
+          this.cover(
+            new File([blob], filename, { type: 'image/png' }),
+            this.$gettext('Error saving video cover')
+          )
         },
         'image/png',
         1
       )
     },
 
-    removeCover() {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
-
+    // saves the uploaded cover image or removes the cover if "preview" is false
+    cover(preview, error) {
       this.loading.cover = true
-      this.item.previews = {}
 
-      this.$apollo
+      return this.$apollo
         .mutate({
-          mutation: REMOVE_FILE_PREVIEW,
-          variables: {
-            id: this.item.id,
-            preview: false
-          }
+          mutation: preview === false ? REMOVE_FILE_PREVIEW : SAVE_FILE_PREVIEW,
+          variables: { id: this.item.id, preview },
+          context: { hasUpload: preview !== false }
         })
         .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
-          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+          invalidateList('files')
           const latest = response.data?.saveFile?.latest
 
           if (latest) {
@@ -160,19 +114,21 @@ export default {
             this.item.updated_at = latest.created_at
           }
         })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error removing video cover') + ':\n' + error, 'error')
-          this.$log(`FileDetailItemVideo::removeCover(): Error removing video cover`, error)
-        })
+        .catch((err) => this.messages.error(error, err))
         .finally(() => {
           this.loading.cover = false
         })
     },
 
+    removeCover() {
+      if (this.readonly) return this.messages.denied()
+
+      this.item.previews = {}
+      this.cover(false, this.$gettext('Error removing video cover'))
+    },
+
     uploadCover(ev) {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
       const file = ev.target.files[0]
 
@@ -180,39 +136,7 @@ export default {
         return this.messages.add(this.$gettext('No file selected'), 'error')
       }
 
-      this.loading.cover = true
-
-      this.$apollo
-        .mutate({
-          mutation: SAVE_FILE_PREVIEW,
-          variables: {
-            id: this.item.id,
-            preview: file
-          },
-          context: {
-            hasUpload: true
-          }
-        })
-        .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
-          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-          const latest = response.data?.saveFile?.latest
-
-          if (latest) {
-            this.item.previews = safeParse(latest.data)?.previews || {}
-            this.item.updated_at = latest.created_at
-          }
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error uploading video cover') + ':\n' + error, 'error')
-          this.$log(`FileDetailItemVideo::uploadCover(): Error uploading video cover`, error)
-        })
-        .finally(() => {
-          this.loading.cover = false
-        })
+      this.cover(file, this.$gettext('Error uploading video cover'))
     }
   }
 }
@@ -232,7 +156,7 @@ export default {
       <img
         v-if="Object.values(item.previews).length"
         class="video-preview"
-        :src="fileurl(item, Object.values(item.previews).shift())"
+        :src="previewUrl(item)"
         :alt="item.name"
         @click="removeCover()"
       />

@@ -30,11 +30,6 @@ export default {
     return { schemas }
   },
 
-  beforeUnmount() {
-    this.dirty = null
-    this.errors = null
-  },
-
   computed: {
     changedGroups() {
       const groups = {}

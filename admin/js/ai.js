@@ -41,7 +41,7 @@ export function transcribe(input) {
   const { $gettext } = gettext
 
   if (!user.can('audio:transcribe')) {
-    messages.add($gettext('Permission denied'), 'error')
+    messages.denied()
     return Promise.resolve(transcription())
   }
 
@@ -58,15 +58,10 @@ export function transcribe(input) {
       })
     })
     .then((result) => {
-      if (result.errors) {
-        throw result
-      }
-
       return transcription(safeParse(result.data?.transcribe || '[]', []))
     })
     .catch((error) => {
-      messages.add($gettext('Error transcribing file') + ':\n' + error, 'error')
-      console.error(`useAi::transcribe(): Error transcribing from media URL`, error)
+      messages.error($gettext('Error transcribing file'), error)
       return transcription()
     })
 }
@@ -80,17 +75,14 @@ export function transcribe(input) {
  * @param {string} to Target language code (e.g. 'DE', 'FR')
  * @param {string|null} from Source language code or null for auto-detection
  * @param {string|null} context Additional context to improve translation quality
- * @returns {Promise<string[]>|undefined} Translated texts or undefined if permission denied
+ * @returns {Promise<string[]>|false} Translated texts or false if permission denied
  */
 export function translate(texts, to, from = null, context = null) {
   const user = useUserStore()
   const messages = useMessageStore()
   const { $gettext } = gettext
 
-  if (!user.can('text:translate')) {
-    messages.add($gettext('Permission denied'), 'error')
-    return
-  }
+  if (!user.can('text:translate')) return messages.denied()
 
   if (!Array.isArray(texts)) {
     texts = [texts].filter((v) => !!v)
@@ -115,15 +107,10 @@ export function translate(texts, to, from = null, context = null) {
       }
     })
     .then((result) => {
-      if (result.errors) {
-        throw result
-      }
-
       return result.data?.translate || []
     })
     .catch((error) => {
-      messages.add($gettext('Error translating texts') + ':\n' + error, 'error')
-      console.error(`useAi::translate(): Error translating texts`, error)
+      messages.error($gettext('Error translating texts'), error)
     })
 }
 
@@ -135,17 +122,14 @@ export function translate(texts, to, from = null, context = null) {
  * @param {string} prompt Instructions for text generation
  * @param {string|string[]} context Additional context strings joined with newlines
  * @param {string[]} files File URLs to include as context for the AI
- * @returns {Promise<string>|undefined} Generated text or undefined if permission denied
+ * @returns {Promise<string>|false} Generated text or false if permission denied
  */
 export function write(prompt, context = [], files = []) {
   const user = useUserStore()
   const messages = useMessageStore()
   const { $gettext } = gettext
 
-  if (!user.can('text:write')) {
-    messages.add($gettext('Permission denied'), 'error')
-    return
-  }
+  if (!user.can('text:write')) return messages.denied()
 
   prompt = String(prompt).trim()
 
@@ -170,14 +154,9 @@ export function write(prompt, context = [], files = []) {
       }
     })
     .then((result) => {
-      if (result.errors) {
-        throw result
-      }
-
       return result.data?.write?.replace(/^"(.*)"$/, '$1') || ''
     })
     .catch((error) => {
-      messages.add($gettext('Error generating text') + ':\n' + error, 'error')
-      console.error(`useAi::write(): Error generating text`, error)
+      messages.error($gettext('Error generating text'), error)
     })
 }

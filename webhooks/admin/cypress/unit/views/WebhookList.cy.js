@@ -4,12 +4,17 @@ import BuiltWebhookList from '../../../dist/WebhookList.js'
 import { pluginUi } from '@/plugin'
 import '@/assets/base.css'
 
+// admin message store stub, error() adds the message like the real one
+function messageStub() {
+  return { add: cy.stub(), error(msg, error) { this.add(msg + ':\n' + error, 'error') } }
+}
+
 // component state like "this" in the view, methods are bound unless a test replaces them
 function vm(data = {}) {
   const state = {
     $pgettext: (context, value) => value,
     confirm: { purge: cy.stub().resolves(true) },
-    messages: { add: cy.stub() },
+    messages: messageStub(),
     saving: false,
     ...data
   }
@@ -23,9 +28,8 @@ function vm(data = {}) {
 
 // returns the messages stub to check the notifications of the view
 function mount(component, apollo, pluginAside = null) {
-  const messages = { add: cy.stub() }
-
-  const confirm = { purge: cy.stub().resolves(false) }
+  const messages = messageStub()
+  const confirm = { ask: cy.stub().resolves(true), purge: cy.stub().resolves(false) }
 
   cy.mount(pluginUi(component), { global: { provide: { apollo, confirm, messages, pluginAside } } })
 
@@ -205,13 +209,10 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      events: ['page.published'],
+      form: { url: 'https://example.com/hook', name: ' Orders ', events: ['page.published'], status: true },
       items: webhooks,
-      name: ' Orders ',
       secret: '',
-      selected: null,
-      status: true,
-      url: 'https://example.com/hook'
+      selected: null
     })
 
     await state.save()
@@ -235,11 +236,9 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      events: ['page.published'],
+      form: { name: ' Orders ', events: ['page.published'], status: false },
       items: [],
-      name: ' Orders ',
-      selected: { id: 'first' },
-      status: false
+      selected: { id: 'first' }
     })
 
     await state.save()
@@ -328,19 +327,20 @@ describe('WebhookList', () => {
   })
 
   it('asks before rotating', async () => {
-    const confirm = cy.stub(window, 'confirm').returns(false)
+    const question = 'Rotate the secret of this webhook? Receivers must be updated with the new secret.'
+    const confirm = { ask: cy.stub().resolves(false) }
     const item = { id: 'first', name: 'Shop', endpoint: 'https://example.com/' }
-    const state = vm({ apollo: { mutate: cy.stub() }, change: cy.stub().resolves() })
+    const state = vm({ apollo: { mutate: cy.stub() }, change: cy.stub().resolves(), confirm })
 
     // the webhook is named because endpoints without the last path segment look the same
     await state.rotate(item)
-    expect(confirm.lastCall.args[0]).to.equal('Rotate the secret of this webhook? Receivers must be updated with the new secret.\n\nShop · https://example.com/')
+    expect(confirm.ask.lastCall.args).to.deep.equal(['Rotate', question, [{ name: 'Shop', info: 'https://example.com/' }]])
 
     await state.rotate({ ...item, name: '' })
-    expect(confirm.lastCall.args[0]).to.equal('Rotate the secret of this webhook? Receivers must be updated with the new secret.\n\nhttps://example.com/')
+    expect(confirm.ask.lastCall.args).to.deep.equal(['Rotate', question, [{ name: 'https://example.com/', info: '' }]])
     expect(state.change).not.to.have.been.called
 
-    confirm.returns(true)
+    confirm.ask.resolves(true)
     await state.rotate(item)
     expect(state.change).to.have.been.calledOnce
   })
@@ -581,7 +581,6 @@ describe('WebhookList', () => {
   it('shows the new secret after rotating it', () => {
     const { mutate } = mountList()
 
-    cy.stub(window, 'confirm').returns(true)
     cy.get('[role="listitem"] button[aria-haspopup]').first().click()
     cy.get('.v-overlay--active .btn-rotate').should('not.be.disabled').click()
     cy.contains('.v-dialog:visible .v-toolbar-title', 'Webhook secret').should('exist')

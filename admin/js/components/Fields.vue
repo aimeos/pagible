@@ -1,13 +1,11 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
-import { markRaw } from 'vue'
 import ActionMenu from './ActionMenu.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
-import { fieldTypes, hintTypes, protectTypes } from '../fieldtypes'
-import { hasTrue, txlocales } from '../utils'
+import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
+import { dictate, hasTrue, txlocales } from '../utils'
 import {
   mdiTranslate,
   mdiArrowRightThin,
@@ -63,6 +61,7 @@ export default {
       mdiUndoVariant,
       hintTypes,
       protectTypes,
+      toName,
       txlocales
     }
   },
@@ -73,14 +72,6 @@ export default {
         this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
       }
     }
-
-    this.audio = null
-    this.dirty = null
-    this.original = null
-    this.translating = null
-    this.dictating = null
-    this.composing = null
-    this.errors = null
   },
 
   methods: {
@@ -115,29 +106,9 @@ export default {
     },
 
     record(code) {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
-      if (!this.audio[code]) {
-        return (this.audio[code] = markRaw(import('../audio').then((mod) => mod.recording().start())))
-      }
-
-      this.audio[code].then((rec) => {
-        this.dictating[code] = true
-        this.audio[code] = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.update(code, transcription.asText())
-            })
-            .finally(() => {
-              this.dictating[code] = false
-            })
-        })
-      })
+      this.audio[code] = dictate(this.audio[code], (busy) => (this.dictating[code] = busy), (text) => this.update(code, text))
     },
 
     removeFile(id) {
@@ -154,11 +125,6 @@ export default {
       }
 
       this.$emit('update:files', files)
-    },
-
-    toName(type) {
-      const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
-      return fieldTypes.has(name) ? name : 'Hidden'
     },
 
     translateText(code, lang) {
@@ -224,15 +190,7 @@ export default {
     },
 
     writeText(code) {
-      const context = [
-        'generate for field "' + (this.fields[code].label || code) + '"',
-        'required output format is "' + this.fields[code].type + '"',
-        this.fields[code].min ? 'minimum characters: ' + this.fields[code].min : null,
-        this.fields[code].max ? 'maximum characters: ' + this.fields[code].max : null,
-        this.fields[code].placeholder ? 'hint text: ' + this.fields[code].placeholder : null,
-        this.fields[code].hint ? 'field description: ' + this.fields[code].hint : null,
-        'context information as JSON: ' + JSON.stringify(this.data)
-      ]
+      const context = aiContext(this.fields[code], code, this.data)
 
       this.composing[code] = true
 

@@ -2,24 +2,15 @@
 
 <script>
 import gql from 'graphql-tag'
-import AsideMeta from '../components/AsideMeta.vue'
-import DetailAppBar from '../components/DetailAppBar.vue'
-import ElementDetailRefs from '../components/ElementDetailRefs.vue'
+import DetailRefs from '../components/DetailRefs.vue'
 import ElementDetailItem from '../components/ElementDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useSchemaStore, useViewStack, useChangeStore } from '../stores'
-import { applyResult, hasUnresolved } from '../merge'
+import { useSchemaStore } from '../stores'
+import { applyResult } from '../merge'
+import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
-import { invalidateList } from '../graphql'
 import { references } from '../history'
-import { pluginLabel } from '../i18n'
-import { publishDate, publishItem } from '../publish'
-import { setupReload, cleanEcho } from '../echo'
-import { loadVersions, reloadVersion } from '../version'
-import { defineAsyncComponent, markRaw } from 'vue'
-import { focusInvalid, frozenParse, itemTitle, safeParse } from '../utils'
-
-const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
-const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
+import { markRaw } from 'vue'
+import { frozenParse, itemTitle, safeParse } from '../utils'
 
 const FETCH_ELEMENT = gql`
   ${FILE_FIELDS}
@@ -74,106 +65,34 @@ const FETCH_ELEMENT_VERSIONS = gql`
 `
 
 export default {
+  extends: detailBase,
+
   components: {
-    AsideMeta,
-    ChangesDialog,
-    DetailAppBar,
-    HistoryDialog,
-    ElementDetailRefs,
+    ...detailBase.components,
+    DetailRefs,
     ElementDetailItem
-  },
-
-  props: {
-    item: { type: Object, required: true },
-    stacked: { type: Boolean, default: false }
-  },
-
-  provide() {
-    return {
-      write: this.writeText,
-      translate: this.translateText
-    }
   },
 
   data: () => ({
     assets: {},
-    changed: null,
-    destroyed: false,
-    dirty: false,
-    echoCleanup: null,
-    echoPromise: null,
-    error: false,
-    latestId: null,
-    loading: true,
-    publishAt: null,
-    publishTime: null,
-    publishing: false,
-    saving: false,
-    vchanged: false,
-    vhistory: false,
-    tab: 'element'
+    latestId: null
   }),
 
   setup() {
-    const dirtyStore = useDirtyStore()
-    const messages = useMessageStore()
-    const schemas = useSchemaStore()
-    const side = useSideStore()
-    const user = useUserStore()
-    const viewStack = useViewStack()
-    const changes = useChangeStore()
-
-    return {
-      dirtyStore,
-      schemas,
-      side,
-      user,
-      messages,
-      viewStack,
-      changes
-    }
+    return { ...useDetail('element'), schemas: useSchemaStore() }
   },
 
   created() {
-    this.dirtyStore.register(() => this.save(true))
     this.schemas.load()
-
-    if (!this.item?.id || !this.user.can('element:view')) {
-      this.loading = false
-      return
-    }
-
-    this.reload().then((ok) => {
-      if (!ok) return
-
-      // reload the open element when its own item is saved elsewhere or after a reconnect that
-      // may have missed a save, unless the user has unsaved edits
-      setupReload(this, 'element', this.item.id, () => this.reload(), () => !this.dirty && this.user.can('element:view'))
-    })
   },
 
   beforeUnmount() {
-    this.dirtyStore.unregister()
-    this.side.$reset()
-
     this.assets = markRaw({})
-    this.destroyed = true
-    this.changed = null
-
-    cleanEcho(this)
   },
 
   computed: {
     changeTargets() {
       return markRaw({ data: this.item })
-    },
-
-    subpanels() {
-      return usePluginStore().subpanels.element || {}
-    },
-
-    hasConflict() {
-      return hasUnresolved(this.changed)
     },
 
     historyCurrent() {
@@ -195,14 +114,10 @@ export default {
   },
 
   methods: {
-    label(panel) {
-      return pluginLabel(panel, this)
-    },
-
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
-      return reloadVersion(this, FETCH_ELEMENT, 'element', this.$gettext('Error fetching element'), (element) => {
+      return this.reloadVersion(FETCH_ELEMENT, this.$gettext('Error fetching element'), (element) => {
         Object.assign(this.item, safeParse(element.latest?.data))
         this.item.published = element.latest?.published
         this.item.editor = element.latest?.editor
@@ -223,52 +138,10 @@ export default {
       this.vhistory = false
     },
 
-    errorUpdated(event) {
-      this.error = event
-    },
-
     files: fileMap,
 
-    invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
-    },
-
-    itemUpdated() {
-      this.$emit('update:item', this.item)
-      this.dirty = true
-    },
-
-    publish(at = null, close = false) {
-      publishItem(this, 'element', {
-        success: this.$gettext('Element published successfully'),
-        scheduled: (d) => this.$gettext('Element scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing element')
-      }, at, close)
-    },
-
-    schedule(close = false) {
-      this.publish(publishDate(this.publishAt, this.publishTime), close)
-    },
-
-    reset() {
-      this.dirty = false
-      this.changed = null
-      this.error = false
-    },
-
     save(quiet = false) {
-      if (!this.user.can('element:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve(false)
-      }
-
-      if (this.error) {
-        this.messages.add(
-          this.$gettext('There are invalid fields, please resolve the errors first'),
-          'error'
-        )
-        this.tab = 'element'
-        this.$nextTick(() => focusInvalid(this.$refs.form))
+      if (!this.saveable()) {
         return Promise.resolve(false)
       }
 
@@ -277,7 +150,7 @@ export default {
       }
 
       if (!this.item.name) {
-        this.item.name = this.title(this.item.data)
+        this.item.name = itemTitle(this.item.data)
       }
 
       this.saving = true
@@ -297,10 +170,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const el = result.data?.saveElement
           const changed = el?.changed ? markRaw(safeParse(el.changed)) : null
 
@@ -310,39 +179,17 @@ export default {
 
           applyResult(this, changed, this.$gettext('Element saved successfully'), quiet)
 
-          const version = el?.latest
-          this.item.published = version?.published ?? false
-          this.item.publish_at = version?.publish_at ?? null
-          this.item.editor = version?.editor ?? this.item.editor
-          this.item.updated_at = version?.created_at ?? this.item.updated_at
           this.item.latestId = this.latestId
-          this.invalidate()
-          this.changes.notify('element', this.item)
+          this.saved(el?.latest)
 
           return true
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving element') + ':\n' + error, 'error')
-          this.$log(`ElementDetail::save(): Error saving element`, error)
+          this.messages.error(this.$gettext('Error saving element'), error)
         })
         .finally(() => {
           this.saving = false
         })
-    },
-
-    title(data) {
-      return itemTitle(data)
-    },
-
-    writeText(prompt, context = [], files = []) {
-      if (!Array.isArray(context)) {
-        context = [context]
-      }
-
-      context.push('element data as JSON: ' + JSON.stringify(this.item.data))
-      context.push('required output language: ' + (this.item.lang || 'en'))
-
-      return import('../ai').then(({ write }) => write(prompt, context, files))
     },
 
     use(version, clean = false) {
@@ -356,12 +203,8 @@ export default {
       if (clean) this.reset()
     },
 
-    translateText(texts, to, from = null) {
-      return import('../ai').then(({ translate }) => translate(texts, to, from || this.item.lang))
-    },
-
     versions(id) {
-      return loadVersions(this, FETCH_ELEMENT_VERSIONS, 'element', id, v => {
+      return this.loadVersions(FETCH_ELEMENT_VERSIONS, id, v => {
         return Object.freeze({
           ...v,
           data: frozenParse(v.data),
@@ -369,38 +212,12 @@ export default {
         })
       })
     }
-  },
-
-  watch: {
-    dirty(value) {
-      this.dirtyStore.set(value)
-    }
   }
 }
 </script>
 
 <template>
-  <DetailAppBar
-    type="element"
-    :label="$gettext('Element')"
-    :name="item.name"
-    :stacked="stacked"
-    :dirty="dirty"
-    :error="error"
-    :conflict="hasConflict"
-    :changed="changed"
-    :published="item.published"
-    :has-latest="!!latestId"
-    :saving="saving"
-    :publishing="publishing"
-    v-model:publish-at="publishAt"
-    v-model:publish-time="publishTime"
-    @save="save()"
-    @publish="publish(null, $event)"
-    @schedule="schedule"
-    @history="vhistory = true"
-    @changes="vchanged = true"
-  />
+  <DetailAppBar v-bind="bar" :label="$gettext('Element')" :has-latest="!!latestId" />
 
   <v-main class="element-details" :aria-label="$gettext('Element')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />
@@ -419,14 +236,14 @@ export default {
         <v-window-item value="element">
           <ElementDetailItem
             @update:item="itemUpdated"
-            @error="errorUpdated"
+            @error="error = $event"
             :assets="assets"
             :item="item"
           />
         </v-window-item>
 
         <v-window-item value="refs">
-          <ElementDetailRefs :item="item" />
+          <DetailRefs :item="item" type="element" />
         </v-window-item>
 
         <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">

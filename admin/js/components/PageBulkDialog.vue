@@ -3,9 +3,9 @@
 <script>
 import CmsDialog from './Dialog.vue'
 import { useAppStore, useSchemaStore } from '../stores'
-import { locales, PAGE_BULK_LIMIT } from '../utils'
+import { domain } from '../rules'
+import { cacheItems, locales, PAGE_BULK_LIMIT, statusItems } from '../utils'
 
-const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
 
 export default {
   components: {
@@ -32,9 +32,7 @@ export default {
         lang: false,
         domain: false
       },
-      values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' },
-      cacheItems: [],
-      statusItems: []
+      values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
     }
   },
 
@@ -42,36 +40,18 @@ export default {
     const schemas = useSchemaStore()
     const app = useAppStore()
 
-    return { app, schemas, locales }
+    return { app, schemas, locales, cacheItems: cacheItems(), statusItems: statusItems() }
   },
 
   created() {
     // the page list view never loads theme schemas (only the detail view does),
     // so the theme/type dropdowns would be empty without this
     this.schemas.load()
-
-    this.cacheItems = [
-      { key: 0, val: this.$gettext('No cache') },
-      { key: 1, val: this.$ngettext('%{num} minute', '%{num} minutes', 1, { num: 1 }) },
-      { key: 5, val: this.$ngettext('%{num} minute', '%{num} minutes', 5, { num: 5 }) },
-      { key: 15, val: this.$ngettext('%{num} minute', '%{num} minutes', 15, { num: 15 }) },
-      { key: 30, val: this.$ngettext('%{num} minute', '%{num} minutes', 30, { num: 30 }) },
-      { key: 60, val: this.$ngettext('%{num} hour', '%{num} hours', 1, { num: 1 }) },
-      { key: 180, val: this.$ngettext('%{num} hour', '%{num} hours', 3, { num: 3 }) },
-      { key: 360, val: this.$ngettext('%{num} hour', '%{num} hours', 6, { num: 6 }) },
-      { key: 720, val: this.$ngettext('%{num} hour', '%{num} hours', 12, { num: 12 }) },
-      { key: 1440, val: this.$ngettext('%{num} hour', '%{num} hours', 24, { num: 24 }) }
-    ]
-    this.statusItems = [
-      { key: 0, val: this.$gettext('Disabled') },
-      { key: 1, val: this.$gettext('Enabled') },
-      { key: 2, val: this.$gettext('Hidden in navigation') }
-    ]
   },
 
   computed: {
     domainRules() {
-      return [(v) => !v || DOMAIN_REGEX.test(v) || this.$gettext('Domain name is invalid')]
+      return [domain(this.$gettext)]
     },
 
     hasInput() {

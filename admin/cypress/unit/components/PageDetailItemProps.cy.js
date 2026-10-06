@@ -23,7 +23,6 @@ function mountProps(props = {}, perms = {}, apollo = {}) {
   return cy.mount(PageDetailItemProps, {
     props: {
       item: { ...item },
-      assets: {},
       ...props,
     },
     global: {

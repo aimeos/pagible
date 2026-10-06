@@ -1,26 +1,12 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import {
-  mdiButtonCursor,
-  mdiLinkVariantPlus,
-  mdiCreation,
-  mdiTrayArrowDown,
-  mdiUpload
-} from '@mdi/js'
 import { VueDraggable } from 'vue-draggable-plus'
-import { createFile, FETCH_FILE_DISKS, RELOCATE_FILE } from '../files'
+import { createFile, FETCH_FILE_DISKS, relocateFiles, revokeBlob } from '../files'
 import { required, minEntries, maxEntries } from '../rules'
 import { invalidateList } from '../graphql'
-import { useUserStore, useMessageStore, useViewStack } from '../stores'
-import { fileurl, filesrcset, IMAGE_MIME_FILTER } from '../utils'
-import { defineAsyncComponent } from 'vue'
-import FileActionMenu from '../components/FileActionMenu.vue'
-import FileProtect from '../components/FileProtect.vue'
-
-const FileAiDialog = defineAsyncComponent(() => import('../components/FileAiDialog.vue'))
-const FileUrlDialog = defineAsyncComponent(() => import('../components/FileUrlDialog.vue'))
-const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.vue'))
+import { IMAGE_MIME_FILTER } from '../utils'
+import FileField, { components, useFileField } from '../filefield'
 
 /**
  * Configuration:
@@ -31,65 +17,32 @@ const FileDialog = defineAsyncComponent(() => import('../components/FileDialog.v
  * - `required`: boolean, if true, at least one image is required
  */
 export default {
-  inheritAttrs: false,
+  extends: FileField,
 
   components: {
-    FileActionMenu,
-    FileProtect,
-    FileDialog,
-    FileAiDialog,
-    FileUrlDialog,
+    ...components,
     VueDraggable
   },
 
   props: {
-    modelValue: { type: Array, default: () => [] },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    label: { type: String, default: '' },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
-
-  emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
-
-  inject: {
-    update: { default: null }
+    modelValue: { type: Array, default: () => [] }
   },
 
   setup() {
-    const viewStack = useViewStack()
-    const messages = useMessageStore()
-    const user = useUserStore()
-
-    return {
-      messages,
-      user,
-      viewStack,
-      fileurl,
-      filesrcset,
-      IMAGE_MIME_FILTER,
-      mdiButtonCursor,
-      mdiLinkVariantPlus,
-      mdiCreation,
-      mdiTrayArrowDown,
-      mdiUpload
-    }
+    return { ...useFileField(), IMAGE_MIME_FILTER }
   },
 
   data() {
     return {
-      dragging: false,
-      images: [],
-      protect: false,
-      protecting: false,
-      vcreate: false,
-      vfiles: false,
-      vurls: false
+      images: []
     }
   },
 
   computed: {
+    allPrivate() {
+      return this.images.length > 0 && this.images.every((item) => item.disk === 'private')
+    },
+
     isPrivate() {
       return this.images.some((item) => item.disk === 'private')
     },
@@ -104,20 +57,13 @@ export default {
   },
 
   beforeUnmount() {
-    this.images.forEach((item) => {
-      if (item.path?.startsWith('blob:')) {
-        URL.revokeObjectURL(item.path)
-      }
-    })
+    this.images.forEach(revokeBlob)
     this.images = []
   },
 
   methods: {
     add(files) {
-      if (!this.user.can('file:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!this.user.can('file:add')) return this.messages.denied()
 
       const promises = []
 
@@ -146,11 +92,7 @@ export default {
             if (idx !== -1) {
               this.images.splice(idx, 1)
             }
-            this.messages.add(
-              this.$gettext(`Error adding file %{path}`, { path: file.name }) + ':\n' + error,
-              'error'
-            )
-            this.$log(`Images::addFile(): Error adding file`, file, error)
+            this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
           })
           .finally(() => {
             URL.revokeObjectURL(path)
@@ -160,17 +102,9 @@ export default {
       }
 
       return Promise.all(promises).then(() => {
-        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
-        this.$emit(
-          'update:modelValue',
-          this.images.map((item) => ({ id: item.id, type: 'file' }))
-        )
+        invalidateList('files')
+        this.change()
       })
-    },
-
-    addFromAi(event) {
-      this.select(event)
-      this.vcreate = false
     },
 
     change() {
@@ -184,45 +118,17 @@ export default {
       return Object.values(file.description || {}).shift()
     },
 
-    drop(event) {
-      this.dragging = false
-
-      const files = event.dataTransfer?.files
-
-      if (files?.length) {
-        this.add(files)
-      }
-    },
-
-    async open(item) {
-      // Editing an image in the stacked FileDetail only updates the file's own
-      // (already persisted) draft, not the page content, so just refresh the
-      // preview when FileDetail saves.
-      const { default: FileDetail } = await import('../views/FileDetail.vue')
-
-      this.viewStack.openView(FileDetail, {
-        item: item,
-        stacked: true,
-        onSaved: () => this.update?.()
-      })
-    },
-
     remove(idx) {
       const item = this.images[idx]
 
-      if (item?.path?.startsWith('blob:')) {
-        URL.revokeObjectURL(item.path)
-      }
+      revokeBlob(item)
 
       if (item?.id) {
         this.$emit('removeFile', item.id)
       }
 
       this.images.splice(idx, 1)
-      this.$emit(
-        'update:modelValue',
-        this.images.map((item) => ({ id: item.id, type: 'file' }))
-      )
+      this.change()
     },
 
     select(items) {
@@ -235,17 +141,13 @@ export default {
         this.$emit('addFile', item)
       })
 
-      this.$emit(
-        'update:modelValue',
-        this.images.map((item) => ({ id: item.id, type: 'file' }))
-      )
+      this.change()
       this.vfiles = false
-      this.vurls = false
 
       if (this.protect) {
         this.setProtect(true)
       } else {
-        this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
+        this.protect = this.allPrivate
       }
     },
 
@@ -264,19 +166,8 @@ export default {
       this.protecting = true
 
       try {
-        const response = await this.$apollo.mutate({
-          mutation: RELOCATE_FILE,
-          variables: {
-            id: files.map((item) => item.id),
-            disk: protect ? 'private' : 'public'
-          }
-        })
-        if (response.errors) {
-          throw response.errors
-        }
-
-        this.sync(files, response.data?.relocateFile)
-        invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+        const items = await relocateFiles(this.$apollo, files.map((item) => item.id), protect ? 'private' : 'public')
+        this.sync(files, items)
       } catch (error) {
         try {
           const response = await this.$apollo.query({
@@ -285,20 +176,13 @@ export default {
             fetchPolicy: 'no-cache'
           })
 
-          if (response.errors) {
-            throw response.errors
-          }
-
           this.sync(files, response.data?.files?.data)
         } catch (reloadError) {
           this.$log(`Images::setProtect(): Error reloading files`, reloadError)
         }
 
-        this.protect =
-          this.images.length > 0 &&
-          this.images.every((item) => item.disk === 'private')
-        this.messages.add(this.$gettext(`Error saving file`) + ':\n' + error, 'error')
-        this.$log(`Images::setProtect(): Error relocating files`, error)
+        this.protect = this.allPrivate
+        this.messages.error(this.$gettext(`Error saving file`), error)
       } finally {
         this.protecting = false
       }
@@ -334,7 +218,7 @@ export default {
             }
           }
 
-          this.protect = this.images.length > 0 && this.images.every((item) => item.disk === 'private')
+          this.protect = this.allPrivate
         }
 
         this.$emit(
@@ -390,7 +274,7 @@ export default {
       >
         <v-img
           :srcset="filesrcset(item)"
-          :src="fileurl(item, Object.values(item.previews || {})[0] ?? item.path)"
+          :src="previewUrl(item)"
           :alt="description(item)"
           draggable="false"
         />
@@ -470,18 +354,12 @@ export default {
 
   <Teleport to="body">
     <FileDialog v-model="vfiles" @add="select($event)" :filter="IMAGE_MIME_FILTER" grid />
-  </Teleport>
-
-  <Teleport to="body">
     <FileAiDialog
       v-model="vcreate"
       :context="context"
       :disk="protect ? 'private' : 'public'"
-      @add="addFromAi"
+      @add="select($event); vcreate = false"
     />
-  </Teleport>
-
-  <Teleport to="body">
     <FileUrlDialog
       v-model="vurls"
       :disk="protect ? 'private' : 'public'"
@@ -558,20 +436,7 @@ export default {
   gap: 4px;
   width: 100%;
   font-size: 0.75rem;
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
   border-top: 1px dashed rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));
-  cursor: copy;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-}
-
-.images .add .dropzone.dragover {
-  border-color: rgb(var(--v-theme-primary));
-  background-color: rgba(var(--v-theme-primary), 0.06);
-  color: rgb(var(--v-theme-primary));
-}
-
-.images .add .dropzone * {
-  pointer-events: none;
 }
 
 .images .add :deep(.v-icon) {

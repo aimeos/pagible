@@ -1,13 +1,13 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { fieldBase } from '../field'
+
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: String, default: '' },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: String, default: '' }
   },
 
   created() {

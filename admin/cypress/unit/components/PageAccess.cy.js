@@ -1,4 +1,5 @@
 import PageAccess from '../../../js/components/PageAccess.vue'
+import { apolloClient } from '../../../js/graphql'
 
 function mountAccess(access, props = {}) {
   const query = cy
@@ -9,8 +10,6 @@ function mountAccess(access, props = {}) {
     .stub()
     .resolves({ data: { setPageAccess: 1 } })
     .as('mutate')
-  const evict = cy.stub().as('evict')
-  const gc = cy.stub().as('gc')
   const input = {
     ids: ['page-1'],
     descendants: 0,
@@ -25,8 +24,7 @@ function mountAccess(access, props = {}) {
       mocks: {
         $apollo: {
           query,
-          mutate,
-          provider: { defaultClient: { cache: { evict, gc } } }
+          mutate
         }
       }
     }
@@ -34,6 +32,11 @@ function mountAccess(access, props = {}) {
 }
 
 describe('PageAccess', () => {
+  beforeEach(() => {
+    cy.stub(apolloClient.cache, 'evict').as('evict')
+    cy.stub(apolloClient.cache, 'gc').as('gc')
+  })
+
   it('explains cache expiry using high-contrast text', () => {
     mountAccess(null)
 

@@ -57,7 +57,7 @@ export default {
         }
       })
       .catch((error) => {
-        this.messages.add(this.$gettext('Failed to load user') + ':\n' + error, 'error')
+        this.messages.error(this.$gettext('Failed to load user'), error)
       })
   },
 

@@ -2,13 +2,7 @@
 
 <script>
 import Fields from './Fields.vue'
-import {
-  useAppStore,
-  useUserStore,
-  useLanguageStore,
-  useSchemaStore,
-  useSideStore
-} from '../stores'
+import { useSchemaStore, useUserStore } from '../stores'
 import { locales } from '../utils'
 
 export default {
@@ -24,13 +18,10 @@ export default {
   emits: ['update:item', 'error'],
 
   setup() {
-    const languages = useLanguageStore()
     const schemas = useSchemaStore()
-    const side = useSideStore()
     const user = useUserStore()
-    const app = useAppStore()
 
-    return { app, user, languages, schemas, side, locales }
+    return { user, schemas, locales }
   },
 
   computed: {

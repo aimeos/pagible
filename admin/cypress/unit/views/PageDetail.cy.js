@@ -1,4 +1,5 @@
 import { h } from 'vue'
+import { apolloClient } from '../../../js/graphql'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
 import { useUserStore } from '../../../js/stores'
@@ -281,12 +282,10 @@ describe('PageDetail', () => {
   })
 
   it('invalidates page lists', () => {
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
 
-    mountDetail({}, {}, {
-      provider: { defaultClient: { cache: { evict, gc } } },
-    }).then(() => {
+    mountDetail().then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
       vm.invalidate()
 
@@ -356,25 +355,6 @@ describe('PageDetail', () => {
           title: 'Example',
           url: 'https://example.com',
         })
-      })
-    })
-  })
-
-  describe('update()', () => {
-    it('sets changed flag for the given key', () => {
-      mountDetail().then(() => {
-        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-        vm.update('content', [])
-        expect(vm.dirty.content).to.be.true
-      })
-    })
-
-    it('assigns value to item when key is "page"', () => {
-      mountDetail({}, { name: 'Old' }).then(() => {
-        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-        vm.update('page', { name: 'New' })
-        expect(vm.item.name).to.equal('New')
-        expect(vm.dirty.page).to.be.true
       })
     })
   })

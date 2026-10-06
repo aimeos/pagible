@@ -148,7 +148,7 @@ router.afterEach((to, from) => {
   const fromSection = from.name?.split(':')[0]
 
   if (toSection !== fromSection) {
-    useClipboardStore().clear()
+    useClipboardStore().$reset()
   }
 })
 

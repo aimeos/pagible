@@ -56,18 +56,14 @@ export default {
             }
           })
             .catch((error) => {
-              this.messages.add(
-                this.$gettext(`Error adding file %{path}`, { path: item.path }) + ':\n' + error,
-                'error'
-              )
-              this.$log('FileUrlDialog::add(): Error adding file', item, error)
+              this.messages.error(this.$gettext(`Error adding file %{path}`, { path: item.path }), error, item)
             })
         )
       )
         .then((items) => items.filter((item) => item?.id))
         .then((items) => {
           if (items.length) {
-            invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+            invalidateList('files')
             this.$emit('update:modelValue', false)
             this.$emit('add', items)
             this.input = ''
@@ -159,11 +155,7 @@ export default {
           .catch((error) => {
             if (error.name === 'AbortError') return
 
-            this.messages.add(
-              this.$gettext(`Error adding file %{path}`, { path: url }) + ':\n' + error,
-              'error'
-            )
-            this.$log(`FileUrlDialog::update(): Error fetching ${url}`, error)
+            this.messages.error(this.$gettext(`Error adding file %{path}`, { path: url }), error)
           })
       })
     },
@@ -241,14 +233,7 @@ export default {
           :icon="mdiDelete"
         />
 
-        <div
-          class="item-preview"
-          @click="$emit('select', item)"
-          @keydown.enter="$emit('select', item)"
-          @keydown.space.prevent="$emit('select', item)"
-          role="button"
-          tabindex="0"
-        >
+        <div class="item-preview">
           <img v-if="item.mime?.startsWith('image/')" :src="item.path" :alt="item.name" />
           <video
             v-else-if="item.mime?.startsWith('video/')"
@@ -265,21 +250,14 @@ export default {
           <a v-else :href="item.path" target="_blank" rel="noopener noreferrer">{{ item.path }}</a>
         </div>
 
-        <div
-          class="item-content"
-          @click="$emit('select', item)"
-          @keydown.enter="$emit('select', item)"
-          @keydown.space.prevent="$emit('select', item)"
-          role="button"
-          tabindex="0"
-        >
+        <div class="item-content">
           <div class="item-text">
             <span class="item-title">{{ item.name }}</span>
             <div class="item-mime item-subtitle">{{ item.mime }}</div>
           </div>
 
           <div class="item-aux">
-            <div class="item-size">Size: {{ size(item.size) }}</div>
+            <div class="item-size">{{ $gettext('Size') }}: {{ size(item.size) }}</div>
           </div>
         </div>
       </v-list-item>

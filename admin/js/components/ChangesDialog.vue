@@ -1,12 +1,11 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-let diffLinesFn = null
-let diffWordsFn = null
-
+import { diffLines } from 'diff'
 import { mdiUndoVariant } from '@mdi/js'
 import CmsDialog from './Dialog.vue'
-import { empty, itemTitle, stringify } from '../utils'
+import { fields, words } from '../history'
+import { itemTitle, stringify } from '../utils'
 
 export default {
   components: {
@@ -26,7 +25,6 @@ export default {
   },
 
   data: () => ({
-    diffReady: !!diffLinesFn,
     resolved: new Set()
   }),
 
@@ -65,51 +63,31 @@ export default {
     },
 
     changes() {
-      if (!this.diffReady) return {}
-
       const map = {}
 
       for (const [name, section] of Object.entries(this.conflicts)) {
         for (const [key, info] of Object.entries(section)) {
-          const id = `${name}.${key}`
           const isObj = typeof info.overwritten === 'object' && typeof (info.current ?? info.overwritten) === 'object'
-          const unwrap = (o) => o?.data ?? o
-
-          let theirsDiff = null
-          let mineDiff = null
-          if (info.previous != null) {
-            if (isObj) {
-              theirsDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.previous), unwrap(info.overwritten)))
-              mineDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.previous), unwrap(info.current)))
-            } else {
-              const fmtTheirs = this.formatDiffPair(info.previous, info.overwritten)
-              const fmtMine = this.formatDiffPair(info.previous, info.current)
-
-              theirsDiff = this.buildDiff(fmtTheirs.old, fmtTheirs.new)
-              mineDiff = this.buildDiff(fmtMine.old, fmtMine.new)
-            }
-          } else {
-            if (isObj) {
-              theirsDiff = this.buildFieldDiffs(this.getChangedFields(unwrap(info.overwritten), unwrap(info.current)))
-            } else {
-              const fmt = this.formatDiffPair(info.overwritten, info.current)
-              theirsDiff = this.buildDiff(fmt.old, fmt.new)
-            }
-          }
-
+          const prev = info.previous != null
+          const theirsDiff = prev ? this.diff(info.previous, info.overwritten, isObj) : this.diff(info.overwritten, info.current, isObj)
+          const mineDiff = prev ? this.diff(info.previous, info.current, isObj) : null
           const merge = info.merged ?? null
-          let mergeFields = null
+          let merged = []
 
-          if (merge != null) {
-            if (typeof info.current === 'object' && typeof merge === 'object') {
-              const hasData = info.current.data && merge.data
-              const a = hasData ? (info.previous?.data || {}) : info.previous
-              const b = hasData ? merge.data : merge
-              mergeFields = this.getChangedFields(a, b).map(f => ({ label: f.label, value: f.new }))
-            }
+          if (isObj && merge && typeof merge === 'object' && typeof info.current === 'object') {
+            const data = info.current?.data && merge.data
+            merged = this.getChangedFields(data ? info.previous?.data : info.previous, data ? merge.data : merge)
+              .map(f => ({ label: f.label, value: f.new }))
+          } else if (!isObj && merge != null) {
+            merged = [{ value: stringify(merge) }]
           }
 
-          map[id] = { theirsDiff, mineDiff, merge, mergeFields, isObj }
+          const sides = [
+            { symbol: '−', css: 'change-theirs', diff: theirsDiff },
+            { symbol: '+', css: 'change-mine', diff: mineDiff }
+          ].filter((side) => side.diff)
+
+          map[`${name}.${key}`] = { theirsDiff, mineDiff, merge, merged, isObj, sides }
         }
       }
       return map
@@ -127,17 +105,6 @@ export default {
         this.$emit('update:modelValue', v)
       }
     }
-  },
-
-  async created() {
-    if (!diffWordsFn) {
-      const mod = await import('diff')
-
-      diffWordsFn = mod.diffWords
-      diffLinesFn = mod.diffLines
-    }
-
-    this.diffReady = true
   },
 
   watch: {
@@ -162,85 +129,56 @@ export default {
   },
 
   methods: {
-    buildFieldDiffs(fields) {
-      return fields.map(({ label, old: oldVal, new: newVal }) => {
-        return {
+    // field word diffs for objects, line diffs with word highlights for other values
+    diff(a, b, isObj) {
+      if (isObj) {
+        return this.getChangedFields(a?.data ?? a, b?.data ?? b).map(({ label, old, new: next }) => ({
           label,
-          words: diffWordsFn(oldVal || '', newVal || '').map(this.wordDiff),
-        }
-      })
-    },
+          words: words(old || '', next || '').map(this.wordDiff)
+        }))
+      }
 
-    buildDiff(oldStr, newStr) {
-      const lines = diffLinesFn(oldStr, newStr)
+      const lines = diffLines(stringify(a), stringify(b))
       const diff = []
-      let i = 0
 
-      while (i < lines.length) {
+      for (let i = 0; i < lines.length; i++) {
         const part = lines[i]
+        const next = lines[i + 1]
 
-        if (part.removed) {
-          const next = lines[i + 1]
+        if (part.removed && next?.added) {
+          const parts = words(part.value, next.value)
 
-          if (next?.added) {
-            const words = diffWordsFn(part.value, next.value)
-
-            diff.push({
-              removed: words.filter(w => !w.added).map(w => this.highlightDiff(w, w.removed)),
-              added: words.filter(w => !w.removed).map(w => this.highlightDiff(w, w.added)),
-              words: words.map(this.wordDiff),
-            })
-            i++
-          } else {
-            diff.push({ removed: [{ value: part.value, highlight: true }], added: null })
-          }
+          diff.push({
+            removed: parts.filter(w => !w.added).map(w => ({ value: w.value, highlight: !!w.removed })),
+            added: parts.filter(w => !w.removed).map(w => ({ value: w.value, highlight: !!w.added })),
+            words: parts.map(this.wordDiff),
+          })
+          i++
+        } else if (part.removed) {
+          diff.push({ removed: [{ value: part.value, highlight: true }], added: null })
         } else if (part.added) {
           diff.push({ removed: null, added: [{ value: part.value, highlight: true }] })
         }
-
-        i++
       }
 
       return diff
     },
 
-    highlightDiff(w, flag) {
-      return { value: w.value, highlight: !!flag }
-    },
-
-    formatDiffPair(a, b) {
-      return { old: stringify(a), new: stringify(b) }
-    },
-
+    // changed (nested) fields of both objects with their translated labels
     getChangedFields(a, b) {
-      const fields = []
-      const aObj = a || {}
-      const bObj = b || {}
-      const seen = {}
+      return fields(a || {}, b || {}).map((field) => ({
+        label: field.path.map((key) => this.$pgettext('fn', key)).join(' › '),
+        old: stringify(field.before),
+        new: stringify(field.after)
+      }))
+    },
 
-      for (const k in aObj) seen[k] = true
-      for (const k in bObj) seen[k] = true
+    label(name, key, info) {
+      const block = info.current || info.overwritten
 
-      for (const k in seen) {
-        const aVal = aObj[k]
-        const bVal = bObj[k]
-
-        if (JSON.stringify(aVal) === JSON.stringify(bVal)) continue
-        if (empty(aVal) && empty(bVal)) continue
-
-        const label = this.$pgettext('fn', k)
-
-        if (aVal && bVal && typeof aVal === 'object' && !Array.isArray(aVal) && typeof bVal === 'object' && !Array.isArray(bVal)) {
-          for (const f of this.getChangedFields(aVal, bVal)) {
-            f.label = `${label} › ${f.label}`
-            fields.push(f)
-          }
-        } else {
-          fields.push({ label, old: stringify(aVal), new: stringify(bVal) })
-        }
-      }
-
-      return fields
+      return block?.type
+        ? this.$pgettext('st', block.type).replace('::', ' ') + ': ' + this.title(block)
+        : this.$pgettext('fn', key)
     },
 
     merge(section, key) {
@@ -253,20 +191,11 @@ export default {
 
     resolve(section, key, value) {
       const info = this.changed[section][key]
-      const target = this.targets[section]
+      const [target, idx] = this.target(section, key)
 
       if (target) {
-        if (Array.isArray(target)) {
-          const idx = target.findIndex((b) => (b.id || b.refid) === key)
-
-          if (idx >= 0) {
-            info.snapshot = target[idx]
-            target[idx] = value
-          }
-        } else {
-          info.snapshot = target[key]
-          target[key] = value
-        }
+        info.snapshot = target[idx]
+        target[idx] = value
       }
 
       info.resolved = value
@@ -274,31 +203,16 @@ export default {
       this.$emit('resolve')
     },
 
-    unresolve(section, key) {
-      const info = this.changed[section][key]
+    // target list or object of the section and the index or key of the entry, no target if not found
+    target(section, key) {
       const target = this.targets[section]
 
-      if (target && 'snapshot' in info) {
-        if (Array.isArray(target)) {
-          const idx = target.findIndex((b) => (b.id || b.refid) === key)
-
-          if (idx >= 0) target[idx] = info.snapshot
-        } else {
-          target[key] = info.snapshot
-        }
-        delete info.snapshot
+      if (Array.isArray(target)) {
+        const idx = target.findIndex((b) => (b.id || b.refid) === key)
+        return idx >= 0 ? [target, idx] : [null, -1]
       }
 
-      delete info.resolved
-      this.resolved.delete(`${section}.${key}`)
-    },
-
-    label(name, key, info) {
-      const block = info.current || info.overwritten
-
-      return block?.type
-        ? this.$pgettext('st', block.type).replace('::', ' ') + ': ' + this.title(block)
-        : this.$pgettext('fn', key)
+      return [target, key]
     },
 
     title(block) {
@@ -306,10 +220,23 @@ export default {
       return itemTitle(block.data) || this.$pgettext('st', block.type).replace('::', ' ') || ''
     },
 
-    wordDiff(w) {
-      return { value: w.value, removed: !!w.removed, added: !!w.added }
+    unresolve(section, key) {
+      const info = this.changed[section][key]
+      const [target, idx] = this.target(section, key)
+
+      if (target && 'snapshot' in info) {
+        target[idx] = info.snapshot
+      }
+
+      delete info.snapshot
+
+      delete info.resolved
+      this.resolved.delete(`${section}.${key}`)
     },
 
+    wordDiff(w) {
+      return { value: w.value, removed: !!w.removed, added: !!w.added }
+    }
   }
 }
 </script>
@@ -348,53 +275,23 @@ export default {
           >{{ $gettext('Revert') }}</v-btn>
         </v-card-title>
         <v-card-text class="pt-0">
-          <div v-if="changes[`${name}.${key}`]?.isObj" class="conflict-diff field-diff" role="group" :aria-label="$gettext('Changes')">
-            <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="'t' + idx">
-              <span class="diff-symbol">−</span>
-              <span class="diff-label">{{ entry.label }}</span>
-              <div class="change-theirs"><span
-                v-for="(word, wi) in entry.words" :key="wi"
-                :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-              >{{ word.value }}</span></div>
-            </template>
-            <template v-if="changes[`${name}.${key}`]?.mineDiff">
-              <template v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff" :key="'m' + idx">
-                <span class="diff-symbol">+</span>
-                <span class="diff-label">{{ entry.label }}</span>
-                <div class="change-mine"><span
-                  v-for="(word, wi) in entry.words" :key="wi"
-                  :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                >{{ word.value }}</span></div>
-              </template>
-            </template>
-            <template v-if="changes[`${name}.${key}`]?.mergeFields">
-              <template v-for="(field, idx) in changes[`${name}.${key}`].mergeFields" :key="'g' + idx">
-                <span class="diff-symbol">⇒</span>
-                <span class="diff-label">{{ field.label }}</span>
-                <div class="merged">{{ field.value }}</div>
-              </template>
-            </template>
-          </div>
-          <div v-else class="conflict-diff" role="group" :aria-label="$gettext('Changes')">
-            <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="'t' + idx">
-              <template v-if="changes[`${name}.${key}`]?.mineDiff">
-                <template v-if="entry.words">
-                  <span class="diff-symbol">−</span>
-                  <div class="change-theirs"><span
+          <div class="conflict-diff" :class="{ 'field-diff': changes[`${name}.${key}`]?.isObj }" role="group" :aria-label="$gettext('Changes')">
+            <template v-if="changes[`${name}.${key}`]?.mineDiff || changes[`${name}.${key}`]?.isObj">
+              <template v-for="side in changes[`${name}.${key}`].sides" :key="side.css">
+                <template v-for="(entry, idx) in side.diff" :key="idx">
+                  <span class="diff-symbol">{{ side.symbol }}</span>
+                  <span v-if="changes[`${name}.${key}`].isObj" class="diff-label">{{ entry.label }}</span>
+                  <div v-if="entry.words" :class="side.css"><span
                     v-for="(word, wi) in entry.words" :key="wi"
                     :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
                   >{{ word.value }}</span></div>
-                </template>
-                <template v-else-if="entry.removed">
-                  <span class="diff-symbol">−</span>
-                  <div class="change-theirs highlight-removed">{{ entry.removed[0].value }}</div>
-                </template>
-                <template v-else-if="entry.added">
-                  <span class="diff-symbol">−</span>
-                  <div class="change-theirs highlight-added">{{ entry.added[0].value }}</div>
+                  <div v-else :class="[side.css, entry.removed ? 'highlight-removed' : 'highlight-added']"
+                  >{{ (entry.removed || entry.added)[0].value }}</div>
                 </template>
               </template>
-              <template v-else>
+            </template>
+            <template v-else>
+              <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="idx">
                 <template v-if="entry.removed">
                   <span class="diff-symbol">−</span>
                   <div class="removed" :aria-label="$gettext('Removed')"><span
@@ -411,28 +308,10 @@ export default {
                 </template>
               </template>
             </template>
-            <template v-if="changes[`${name}.${key}`]?.mineDiff">
-              <template v-for="(entry, idx) in changes[`${name}.${key}`].mineDiff" :key="'m' + idx">
-                <template v-if="entry.words">
-                  <span class="diff-symbol">+</span>
-                  <div class="change-mine"><span
-                    v-for="(word, wi) in entry.words" :key="wi"
-                    :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
-                  >{{ word.value }}</span></div>
-                </template>
-                <template v-else-if="entry.removed">
-                  <span class="diff-symbol">+</span>
-                  <div class="change-mine highlight-removed">{{ entry.removed[0].value }}</div>
-                </template>
-                <template v-else-if="entry.added">
-                  <span class="diff-symbol">+</span>
-                  <div class="change-mine highlight-added">{{ entry.added[0].value }}</div>
-                </template>
-              </template>
-            </template>
-            <template v-if="changes[`${name}.${key}`]?.merge != null && !changes[`${name}.${key}`]?.isObj">
+            <template v-for="(field, idx) in changes[`${name}.${key}`]?.merged" :key="'g' + idx">
               <span class="diff-symbol">⇒</span>
-              <div class="merged">{{ stringify(changes[`${name}.${key}`].merge) }}</div>
+              <span v-if="changes[`${name}.${key}`].isObj" class="diff-label">{{ field.label }}</span>
+              <div class="merged">{{ field.value }}</div>
             </template>
           </div>
         </v-card-text>
@@ -556,21 +435,13 @@ h3.section-header:first-child {
   background-color: rgba(var(--v-theme-primary), 0.2);
 }
 
-.removed .highlight {
+.removed .highlight,
+:is(.change-theirs, .change-mine) .highlight-removed {
   background-color: rgba(var(--v-theme-error), 0.4);
 }
 
-.added .highlight {
-  background-color: rgba(var(--v-theme-success), 0.4);
-}
-
-.change-theirs .highlight-removed,
-.change-mine .highlight-removed {
-  background-color: rgba(var(--v-theme-error), 0.4);
-}
-
-.change-theirs .highlight-added,
-.change-mine .highlight-added {
+.added .highlight,
+:is(.change-theirs, .change-mine) .highlight-added {
   background-color: rgba(var(--v-theme-success), 0.4);
 }
 

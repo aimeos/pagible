@@ -9,6 +9,7 @@ import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect, resubscribe } from './echo'
 import gettext from './i18n'
 import { safeParse, sanitize } from './json'
+import languages from './languages'
 import {
   urladmin,
   urlasset,
@@ -47,14 +48,6 @@ const LOGOUT = gql`
     cmsLogout {
       email
       name
-    }
-  }
-`
-
-const FETCH_TOKEN = gql`
-  query {
-    me {
-      token
     }
   }
 `
@@ -126,6 +119,14 @@ function reauthSettle(ok) {
   const waiting = reauthWaiting
   reauthWaiting = []
   waiting.forEach(({ resolve, reject }) => (ok ? resolve() : reject(new Error('Unauthenticated'))))
+}
+
+function fetchMe(relogin = true) {
+  return apolloClient.query({
+    query: FETCH_ME,
+    fetchPolicy: 'network-only',
+    context: { relogin }
+  })
 }
 
 function csrf() {
@@ -224,10 +225,7 @@ export const useUserStore = defineStore('user', {
     refreshToken() {
       if (!this.me) return
 
-      apolloClient.query({
-        query: FETCH_TOKEN,
-        fetchPolicy: 'network-only'
-      }).then((response) => {
+      fetchMe(false).then((response) => {
         if (response.data?.me?.token) {
           this.me.token = response.data.me.token
           this.applyProxyToken()
@@ -246,10 +244,6 @@ export const useUserStore = defineStore('user', {
         query: FETCH_ME,
         fetchPolicy: force ? 'network-only' : 'cache-first'
       }).then((response) => {
-        if (response.errors) {
-          throw response
-        }
-
         this.me = response.data.me
           ? { ...response.data.me, permission: safeParse(response.data.me.permission), settings: safeParse(response.data.me.settings) }
           : false
@@ -272,10 +266,6 @@ export const useUserStore = defineStore('user', {
             password: password
           }
         }).then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
           if (!response.data.cmsLogin) {
             this.me = false
             return this.me
@@ -302,10 +292,6 @@ export const useUserStore = defineStore('user', {
       return apolloClient.mutate({
         mutation: LOGOUT
       }).then((response) => {
-        if (response.errors) {
-          throw response.errors
-        }
-
         return response.data.cmsLogout || false
       }).finally(() => {
         this.me = null
@@ -342,10 +328,6 @@ export const useUserStore = defineStore('user', {
           context: { relogin: true }
         })
       }).then((response) => {
-        if (response.errors) {
-          throw response.errors
-        }
-
         return this.resume()
       }).then((resumed) => {
         // not resumed but no longer expired: another tab renewed the session meanwhile
@@ -369,11 +351,7 @@ export const useUserStore = defineStore('user', {
 
       const email = this.me?.email
 
-      return apolloClient.query({
-        query: FETCH_ME,
-        fetchPolicy: 'network-only',
-        context: { relogin: true }
-      }).then((response) => {
+      return fetchMe().then((response) => {
         const me = response.data?.me
 
         if (!this.expired || !me || me.email !== email) {
@@ -406,11 +384,7 @@ export const useUserStore = defineStore('user', {
 
       const email = this.me.email
 
-      return apolloClient.query({
-        query: FETCH_ME,
-        fetchPolicy: 'network-only',
-        context: { relogin: true }
-      }).then((response) => {
+      return fetchMe().then((response) => {
         return response.data?.me?.email === email
       }, (error) => {
         // offline or server errors don't mean the session expired
@@ -516,13 +490,8 @@ export const useUserStore = defineStore('user', {
         variables: {
           settings: JSON.stringify(this.me.settings)
         }
-      }).then((response) => {
-        if (response.errors) {
-          throw response.errors
-        }
       }).catch((error) => {
-        messages.add('Failed to save user settings:\n' + error, 'error')
-        console.error('Failed to save user data', error)
+        messages.error(gettext.$gettext('Failed to save user settings'), error)
       })
     }
   }
@@ -532,10 +501,6 @@ export const useClipboardStore = defineStore('clipboard', {
   state: () => ({}),
 
   actions: {
-    clear() {
-      this.$reset()
-    },
-
     get(key, defval = null) {
       return this[key] ?? defval
     },
@@ -618,8 +583,6 @@ export const usePluginStore = defineStore('plugin', {
   }
 })
 
-import languages from './languages'
-
 export const useLanguageStore = defineStore('language', {
   state: () => ({
     available: appLocales
@@ -683,6 +646,28 @@ export const useMessageStore = defineStore('message', {
 
     action(id) {
       return messageActions.get(id) || null
+    },
+
+    /**
+     * Adds the "Permission denied" error message
+     *
+     * @returns {Boolean} Always false
+     */
+    denied() {
+      this.add(gettext.$gettext('Permission denied'), 'error')
+      return false
+    },
+
+    /**
+     * Adds an error message for the failed operation and logs the details
+     *
+     * @param {String} msg Translated description of the failed operation
+     * @param {Error|String} error Error that occurred
+     * @param {...any} args Additional values written to the console
+     */
+    error(msg, error, ...args) {
+      this.add(msg + ':\n' + error, 'error')
+      console.error(msg, ...args, error)
     },
 
     run(id) {
@@ -807,13 +792,33 @@ export const useSideStore = defineStore('side', {
 
 export const useConfirmStore = defineStore('confirm', {
   state: () => ({
+    action: '',
     hint: '',
     items: [],
     pendingResolve: null,
-    show: false
+    show: false,
+    text: ''
   }),
 
   actions: {
+    /**
+     * Asks the user to confirm an action
+     *
+     * @param {String} action Translated action name used as title and button label
+     * @param {String} text Translated question
+     * @param {Array} items Affected entries as { name, info } objects
+     * @param {String} hint Optional translated hint below the entries
+     * @returns {Promise<Boolean>} True if the user confirmed the action
+     */
+    ask(action, text, items = [], hint = '') {
+      this.close(false)
+      Object.assign(this, { action, hint, items, show: true, text })
+
+      return new Promise((resolve) => {
+        this.pendingResolve = resolve
+      })
+    },
+
     close(value) {
       const fn = this.pendingResolve
       this.pendingResolve = null
@@ -823,12 +828,7 @@ export const useConfirmStore = defineStore('confirm', {
     },
 
     purge(items, hint = '') {
-      this.close(false)
-      Object.assign(this, { items, hint, show: true })
-
-      return new Promise((resolve) => {
-        this.pendingResolve = resolve
-      })
+      return this.ask('', '', items, hint)
     }
   }
 })
@@ -853,10 +853,6 @@ export const useDirtyStore = defineStore('dirty', {
         this.show = true
         this._action = action
       })
-    },
-
-    async discard() {
-      await this.finalize()
     },
 
     async finalize() {
@@ -894,9 +890,7 @@ export const useDirtyStore = defineStore('dirty', {
     },
 
     set(value) {
-      if (value !== this.dirty) {
-        this.dirty = value
-      }
+      this.dirty = value
     },
 
     unregister() {

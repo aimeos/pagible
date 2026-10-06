@@ -20,11 +20,14 @@ import {
 } from 'ckeditor5'
 import { markRaw } from 'vue'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
-import { translationCache, TRANSLATION_CACHE_MAX } from '../ckcache'
 import { minChars, maxChars, required } from '../rules'
 import 'ckeditor5/ckeditor5.css'
+import { fieldBase } from '../field'
 
-const ckPlugins = [
+const translationCache = {}
+const TRANSLATION_CACHE_MAX = 1
+
+const plugins = [
   Markdown,
   Essentials,
   PasteFromOffice,
@@ -41,7 +44,7 @@ const ckPlugins = [
   Link
 ]
 
-const ckToolbar = [
+const toolbar = [
   'undo',
   'redo',
   'removeFormat',
@@ -63,25 +66,20 @@ const ckToolbar = [
  * - `required`: boolean, if true, the field must not be empty
  */
 export default {
+  extends: fieldBase,
+
   components: {
     Ckeditor
   },
 
-  props: {
-    modelValue: { type: String },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+  setup() {
+    return { plugins, toolbar }
   },
-
-  emits: ['update:modelValue', 'error'],
 
   data() {
     return {
       destroyed: false,
       editor: markRaw(ClassicEditor),
-      lastError: null,
       visible: false,
       translations: undefined
     }
@@ -116,8 +114,8 @@ export default {
     ckconfig() {
       return markRaw({
         licenseKey: 'GPL',
-        plugins: ckPlugins,
-        toolbar: ckToolbar,
+        plugins: this.plugins,
+        toolbar: this.toolbar,
         translations: this.translations,
         language: {
           ui: this.$vuetify.locale.current
@@ -146,19 +144,6 @@ export default {
         this.$emit('update:modelValue', value)
       }
     }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
-    }
   }
 }
 </script>
@@ -176,5 +161,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style></style>

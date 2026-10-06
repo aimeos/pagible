@@ -1,4 +1,5 @@
 import PageListItems from '../../../js/components/PageListItems.vue'
+import { apolloClient } from '../../../js/graphql'
 import { isMac } from '../../../js/commands'
 import { useUserStore } from '../../../js/stores'
 
@@ -192,16 +193,11 @@ describe('PageListItems', () => {
     const query = cy.stub()
     query.onFirstCall().returns(new Promise((resolve) => { finishInitial = resolve }))
     query.onSecondCall().resolves(response)
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
 
     mountList({ filter: { view: 'list' } }, { 'page:view': true }, {
       query,
-      provider: {
-        defaultClient: {
-          cache: { evict, gc },
-        },
-      },
     }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
 
@@ -276,8 +272,8 @@ describe('PageListItems', () => {
         data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
       })
     })
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
     const clearStore = cy.stub().callsFake(() => {
       calls.push('clearStore')
       return Promise.resolve()
@@ -287,7 +283,6 @@ describe('PageListItems', () => {
       query,
       provider: {
         defaultClient: {
-          cache: { evict, gc },
           clearStore,
         },
       },
@@ -304,16 +299,10 @@ describe('PageListItems', () => {
   })
 
   it('removes every page list query', () => {
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
 
-    mountList({}, { 'page:view': true }, {
-      provider: {
-        defaultClient: {
-          cache: { evict, gc },
-        },
-      },
-    }).then(({ wrapper }) => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
       wrapper.findComponent(PageListItems).vm.invalidate()
 
       expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'pages' })
@@ -798,6 +787,24 @@ describe('PageListItems', () => {
         })
         expect(node.data.status).to.equal(0)
         expect(selected._checked).to.equal(true)
+      })
+    })
+  })
+
+  it('marks the whole subtree as trashed when dropping a page', () => {
+    const mutate = cy.stub().resolves({ data: { dropPage: [{ id: 'page-1' }] } })
+
+    mountList({ filter: { trashed: 'WITH' } }, { 'page:drop': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const grandchild = { data: { id: 'page-3' }, children: [] }
+      const child = { data: { id: 'page-2' }, children: [grandchild] }
+      const root = { data: { id: 'page-1' }, children: [child] }
+
+      vm.drop(root)
+
+      cy.wrap(null).should(() => {
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'] })
+        expect([root, child, grandchild].every((stat) => stat.data.deleted_at)).to.equal(true)
       })
     })
   })

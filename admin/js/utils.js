@@ -3,7 +3,7 @@
  */
 
 import gettext from './i18n'
-import { toRaw } from 'vue'
+import { markRaw, toRaw } from 'vue'
 import { useAppStore, useLanguageStore } from './stores'
 
 export { frozenParse, safeParse, sanitize } from './json'
@@ -24,6 +24,19 @@ export const browser = {
   assign(url) {
     window.location.assign(url)
   }
+}
+
+/**
+ * Returns the translated cache duration options of pages in minutes
+ */
+export function cacheItems() {
+  const { $gettext, $ngettext } = gettext
+
+  return [
+    { key: 0, val: $gettext('No cache') },
+    ...[1, 5, 15, 30].map((num) => ({ key: num, val: $ngettext('%{num} minute', '%{num} minutes', num, { num }) })),
+    ...[1, 3, 6, 12, 24].map((num) => ({ key: num * 60, val: $ngettext('%{num} hour', '%{num} hours', num, { num }) }))
+  ]
 }
 
 /**
@@ -88,6 +101,31 @@ export function debounce(func, delay) {
   debounced.cancel = () => clearTimeout(timer)
 
   return debounced
+}
+
+/**
+ * Starts a recording if none is running, otherwise stops it and passes the transcribed text to "done"
+ *
+ * @param {Promise|null} audio Running recording returned by the previous call
+ * @param {Function} busy Called with true while transcribing and with false afterwards
+ * @param {Function} done Called with the transcribed text
+ * @returns {Promise|null} New recording state the caller must store
+ */
+export function dictate(audio, busy, done) {
+  if (!audio) {
+    return markRaw(import('./audio').then((mod) => mod.recording().start()))
+  }
+
+  busy(true)
+
+  audio
+    .then((rec) => rec.stop())
+    .then((buffer) => import('./ai').then((mod) => mod.transcribe(buffer)))
+    .then((transcription) => done(transcription.asText()))
+    .catch((error) => console.error('dictate(): Error recording audio', error))
+    .finally(() => busy(false))
+
+  return null
 }
 
 /**
@@ -181,14 +219,66 @@ export function itemTitle(data) {
   )
 }
 
+let langCache = null
+
+const supported = new Set([
+  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
+  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
+  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
+  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
+])
+
+/**
+ * Returns the cached locale lists, rebuilt when the available languages change
+ *
+ * @returns {Object} { locales, tx, filter } lists of the available languages
+ */
+function langs() {
+  const languages = useLanguageStore()
+
+  if (langCache?.key !== languages.available) {
+    const all = languages.available.map((code) => ({
+      code,
+      name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
+    }))
+
+    langCache = {
+      key: languages.available,
+      locales: all.map(({ code, name }) => ({ value: code, title: name })),
+      tx: all.filter(({ code }) => supported.has(code)),
+      filter: {}
+    }
+  }
+
+  return langCache
+}
+
+/**
+ * Returns filter dropdown items for language selection in list views
+ *
+ * @param {String} allIcon Icon for the "All" item
+ * @param {String} langIcon Icon for each language item
+ * @returns {Array} List of { title, icon, value } objects
+ */
+export function languageFilter(allIcon, langIcon) {
+  const cache = langs()
+
+  return (cache.filter[allIcon + langIcon] ??= [
+    { title: gettext.$gettext('All'), icon: allIcon, value: { lang: null } },
+    ...cache.locales.map((entry) => ({ title: entry.title, icon: langIcon, value: { lang: entry.value } }))
+  ])
+}
+
 /**
  * Returns available locales as a list for dropdown menus
  *
  * @param {boolean} none If true, prepends a "None" option with null value
  * @returns {Array<{value: string|null, title: string}>} Locale options
  */
-let localesCache = null
-let localesCacheKey = null
+export function locales(none = false) {
+  const list = langs().locales
+  return none ? [{ value: null, title: gettext.$gettext('None') }, ...list] : list
+}
 
 /**
  * Returns the URL of the login page of the application for single sign-on
@@ -199,98 +289,6 @@ let localesCacheKey = null
  */
 export function loginUrl(template, back = window.location.href) {
   return template.replace('_url_', encodeURIComponent(back))
-}
-
-
-export function locales(none = false) {
-  const languages = useLanguageStore()
-
-  if (none) {
-    const list = [{ value: null, title: gettext.$gettext('None') }]
-
-    languages.available.forEach((code) => {
-      list.push({
-        value: code,
-        title: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-      })
-    })
-
-    return list
-  }
-
-  if (localesCache && localesCacheKey === languages.available) {
-    return localesCache
-  }
-
-  const list = []
-  languages.available.forEach((code) => {
-    list.push({
-      value: code,
-      title: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-    })
-  })
-
-  localesCacheKey = languages.available
-  localesCache = list
-
-  return list
-}
-
-/**
- * Returns filter dropdown items for language selection in list views
- *
- * @param {String} allIcon Icon for the "All" item
- * @param {String} langIcon Icon for each language item
- * @returns {Array} List of { title, icon, value } objects
- */
-let langFilterCache = null
-let langFilterCacheKey = null
-let langFilterCacheIcons = null
-
-export function languageFilter(allIcon, langIcon) {
-  const languages = useLanguageStore()
-
-  if (langFilterCache && langFilterCacheKey === languages.available && langFilterCacheIcons === allIcon) {
-    return langFilterCache
-  }
-
-  const list = [
-    {
-      title: gettext.$gettext('All'),
-      icon: allIcon,
-      value: { lang: null }
-    }
-  ]
-
-  for (const entry of locales()) {
-    list.push({
-      title: entry.title,
-      icon: langIcon,
-      value: { lang: entry.value }
-    })
-  }
-
-  langFilterCacheKey = languages.available
-  langFilterCacheIcons = allIcon
-  langFilterCache = list
-
-  return list
-}
-
-/**
- * Builds an HTML srcset string from a width-to-path map
- *
- * @param {Object} map Object mapping widths to file paths, e.g. {200: 'img/small.jpg', 800: 'img/large.jpg'}
- * @returns {string} Srcset string for use in <img> elements
- */
-export function srcset(map) {
-  let list = []
-
-  for (const key in map || {}) {
-    list.push(`${url(map[key])} ${key}w`)
-  }
-
-  return list.join(', ')
 }
 
 /**
@@ -307,6 +305,19 @@ export function slugify(text) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toLowerCase()
+}
+
+/**
+ * Returns the translated status options of pages
+ */
+export function statusItems() {
+  const { $gettext } = gettext
+
+  return [
+    { key: 0, val: $gettext('Disabled') },
+    { key: 1, val: $gettext('Enabled') },
+    { key: 2, val: $gettext('Hidden in navigation') }
+  ]
 }
 
 /**
@@ -349,40 +360,9 @@ export function toBlob(base64, mimeType = 'image/png') {
  * @param {string|null} current Locale code to exclude from the list
  * @returns {Array<{code: string, name: string}>} Translation-supported locale options
  */
-let txCache = null
-let txCacheKey = null
-
-const supported = new Set([
-  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
-  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
-  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
-  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
-])
-
 export function txlocales(current = null) {
-  const languages = useLanguageStore()
-
-  if (!txCache || txCacheKey !== languages.available) {
-    const list = []
-
-    languages.available.forEach((code) => {
-      if (supported.has(code)) {
-        list.push({
-          code: code,
-          name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-        })
-      }
-    })
-
-    txCacheKey = languages.available
-    txCache = list
-  }
-
-  if (current) {
-    return txCache.filter((entry) => entry.code !== current)
-  }
-
-  return txCache
+  const list = langs().tx
+  return current ? list.filter((entry) => entry.code !== current) : list
 }
 
 /**
@@ -412,7 +392,7 @@ export { uid }
 
 /**
  * Returns the CSRF header derived from Laravel's XSRF-TOKEN cookie for cookie-authenticated
- * requests, or an empty object when the cookie is absent. Used directly by Apollo's csrfLink and
+ * requests, or an empty object when the cookie is absent. Used directly by Apollo's headersLink and
  * (via postHeaders) by raw fetch POSTs, so the cookie/header contract lives in one place.
  *
  * @returns {Object} { 'X-XSRF-TOKEN': token } or {}

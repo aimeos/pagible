@@ -62,9 +62,7 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
     if (response.ok) {
       // the chat request extends the session like GraphQL requests do
       user.touch()
-    }
-
-    if (!response.ok) {
+    } else {
       // Two distinct "busy" cases the caller shows verbatim in the bubble: 409 = the per-user
       // concurrency lock is held (a stream is already running), 429 = the cms-ai rate limit.
       let message = 'HTTP ' + response.status
@@ -81,16 +79,17 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
       throw error
     }
 
+    const emit = (chunk) => {
+      if (chunk) {
+        text += chunk
+        onDelta?.({ text: chunk })
+      }
+    }
+
     if (!response.body) {
       // A 2xx response with no readable stream (a proxy buffered/stripped the body): nothing to
       // stream, so deliver the whole text in one chunk instead of failing.
-      const full = await response.text()
-
-      if (full) {
-        text = full
-        onDelta?.({ text: full })
-      }
-
+      emit(await response.text())
       return text
     }
 
@@ -105,21 +104,11 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
         break
       }
 
-      const chunk = decoder.decode(value, { stream: true })
-
-      if (chunk) {
-        text += chunk
-        onDelta?.({ text: chunk })
-      }
+      emit(decoder.decode(value, { stream: true }))
     }
 
     // Flush any bytes the decoder buffered for a multibyte char split across the final chunk
-    const last = decoder.decode()
-
-    if (last) {
-      text += last
-      onDelta?.({ text: last })
-    }
+    emit(decoder.decode())
 
     return text
   } catch (error) {

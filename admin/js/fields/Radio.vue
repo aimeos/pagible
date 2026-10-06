@@ -2,6 +2,7 @@
 
 <script>
 import { required } from '../rules'
+import { fieldBase } from '../field'
 
 /**
  * Configuration:
@@ -11,39 +12,15 @@ import { required } from '../rules'
  * - `required`: boolean, if true, an option must be selected
  */
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: [String, Number] },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: [String, Number] }
   },
-
-  emits: ['update:modelValue', 'error'],
-
-  data: () => ({ lastError: null }),
 
   computed: {
-    hasError() {
-      const val = this.modelValue ?? this.config.default ?? ''
-      return !this.rules.every((rule) => rule(val) === true)
-    },
-
     rules() {
       return [required(this.$gettext, this.config.required)]
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

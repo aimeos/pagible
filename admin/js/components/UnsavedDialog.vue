@@ -46,7 +46,7 @@ export default {
     </div>
 
     <template #actions-start>
-      <v-btn @click="dirtyStore.discard()" variant="tonal" color="error">
+      <v-btn @click="dirtyStore.finalize()" variant="tonal" color="error">
         {{ $gettext('Discard') }}
       </v-btn>
     </template>

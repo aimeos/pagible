@@ -3,31 +3,15 @@
 <script>
 import { markRaw } from 'vue'
 import gql from 'graphql-tag'
-import {
-  mdiDotsVertical,
-  mdiPublish,
-  mdiDelete,
-  mdiDeleteRestore,
-  mdiDeleteForever,
-  mdiPlus,
-  mdiMagnify,
-  mdiClockOutline,
-  mdiRefresh,
-  mdiPencil,
-  mdiCloseCircleOutline
-} from '@mdi/js'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
-import ListSkeleton from './ListSkeleton.vue'
-import LoadingSpinner from './LoadingSpinner.vue'
+import ListStatus from './ListStatus.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
 import ListSort from './ListSort.vue'
 import { FILE_FIELDS, normalizeFile } from '../files'
-import { invalidateList, listFetchPolicy } from '../graphql'
-import { useUserStore, useMessageStore, useChangeStore, useConfirmStore } from '../stores'
-import { tally, useListKeys, useListShortcuts } from '../lists'
-import { debounce, frozenParse, safeParse } from '../utils'
-import { setupEcho, cleanEcho, listEcho } from '../echo'
+import { listBase, useList } from '../lists'
+import { frozenParse, safeParse } from '../utils'
 
 const ADD_ELEMENT = gql`
   mutation ($input: ElementInput!) {
@@ -41,46 +25,6 @@ const ADD_ELEMENT = gql`
       created_at
       updated_at
       deleted_at
-    }
-  }
-`
-
-const DROP_ELEMENT = gql`
-  mutation ($id: [ID!]!) {
-    dropElement(id: $id) {
-      id
-    }
-  }
-`
-
-const KEEP_ELEMENT = gql`
-  mutation ($id: [ID!]!) {
-    keepElement(id: $id) {
-      id
-    }
-  }
-`
-
-const PUB_ELEMENT = gql`
-  mutation ($id: [ID!]!) {
-    pubElement(id: $id) {
-      id
-    }
-  }
-`
-
-const PURGE_ELEMENT = gql`
-  mutation ($id: [ID!]!) {
-    purgeElement(id: $id) {
-      id
-    }
-  }
-`
-
-const SAVE_ELEMENTS = gql`
-  mutation ($id: [ID!]!, $input: ElementInput!) {
-    bulkElement(id: $id, input: $input) {
-      ids
     }
   }
 `
@@ -146,148 +90,33 @@ const SORT_OPTIONS = Object.freeze([
 ])
 
 export default {
+  extends: listBase,
+
   components: {
+    ActionItem,
     ActionMenu,
-    ListSkeleton,
-    LoadingSpinner,
+    ListStatus,
     SchemaDialog,
     EditBulkDialog,
     ListSort
   },
 
-  props: {
-    embed: { type: Boolean, default: false },
-    defaults: { type: Object, default: null },
-    filter: { type: Object, default: () => ({}) }
-  },
-
-  emits: ['select'],
-
   data() {
     return {
-      items: [],
-      checked: new Set(),
-      term: '',
-      sort: this.user.setting('element', 'sort', { column: 'ID', order: 'DESC' }),
-      page: 1,
-      last: 1,
-      limit: 100,
-      vschemas: false,
-      editDialog: false,
-      editIds: [],
-      editSelected: false,
-      loading: true,
-      trash: false,
-      destroyed: false,
-      echoCleanup: null,
-      echoPromise: null,
-      outdated: false
+      vschemas: false
     }
   },
 
   setup() {
-    useListShortcuts('element', (vm) => (vm.vschemas = true))
-
-    const listKey = useListKeys()
-
-    const messages = useMessageStore()
-    const user = useUserStore()
-    const changes = useChangeStore()
-    const confirm = useConfirmStore()
-
     return {
-      listKey,
-      user,
-      changes,
-      confirm,
-      messages,
-      mdiDotsVertical,
-      mdiPublish,
-      mdiDelete,
-      mdiDeleteRestore,
-      mdiDeleteForever,
-      mdiPlus,
-      mdiMagnify,
-      mdiClockOutline,
-      mdiRefresh,
-      mdiPencil,
-      mdiCloseCircleOutline,
-      sortOptions: SORT_OPTIONS,
-      debounce
-    }
-  },
-
-  created() {
-    this.search()
-    this.searchd = this.debounce(this.search, 500)
-
-    if (!this.embed) {
-      // patch the matching row when another user changes an element; subscribe
-      // for the whole lifetime (not per activation) so the list keeps patching
-      // in the background while the editor is in a detail or another view and is
-      // up to date when they return
-      setupEcho(this, 'element', (event, name) => listEcho(this, event, name))
-    }
-  },
-
-  beforeUnmount() {
-    this.destroyed = true
-    cleanEcho(this)
-
-    this.items = null
-    this.checked = null
-  },
-
-  activated() {
-    this.sync()
-    this.revalidate()
-  },
-
-  computed: {
-    filtered() {
-      if (this.term || !this.defaults) {
-        return true
-      }
-
-      return Object.keys({ ...this.filter, ...this.defaults }).some((key) => {
-        return (
-          key !== 'view' &&
-          JSON.stringify(this.filter[key] ?? null) !== JSON.stringify(this.defaults[key] ?? null)
-        )
-      })
-    },
-
-    counts() {
-      return tally(this.items.filter((item) => this.checked.has(item.id)))
-    },
-
-    isChecked() {
-      return this.checked.size > 0
+      ...useList('element', FETCH_ELEMENTS, (vm) => (vm.vschemas = true)),
+      sortOptions: SORT_OPTIONS
     }
   },
 
   methods: {
-    resetFilter() {
-      this.term = ''
-
-      if (this.defaults) {
-        const filter = {}
-
-        for (const key in this.filter) {
-          if (key !== 'view') {
-            filter[key] = this.defaults[key] ?? null
-          }
-        }
-
-        Object.assign(this.filter, filter)
-      }
-    },
-
     add(item) {
-      if (this.embed || !this.user.can('element:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (this.embed || !this.user.can('element:add')) return this.messages.denied()
 
       return this.$apollo
         .mutate({
@@ -301,10 +130,6 @@ export default {
           }
         })
         .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
           const data = response.data?.addElement || {}
           data.data = frozenParse(data.data)
           data.published = true
@@ -322,431 +147,41 @@ export default {
         })
     },
 
-    drop(item) {
-      if (!this.user.can('element:drop')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: DROP_ELEMENT,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-          this.messages.add(
-            this.$ngettext('Moved to trash', '%{num} entries moved to trash', list.length, {
-              num: list.length
-            }),
-            'success',
-            null,
-            this.user.can('element:keep')
-              ? { label: this.$gettext('Undo'), handler: () => this.keep(list) }
-              : null
-          )
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error trashing shared element') + ':\n' + error, 'error')
-          this.$log(`ElementListItems::drop(): Error trashing shared element`, list, error)
-        })
-    },
-
-    reload() {
-      this.outdated = false
-      this.items = []
-      this.loading = true
-      return this.$apollo.provider.defaultClient.clearStore().then(() => this.search())
-    },
-
-    revalidate() {
-      if (this.loading) return
-
-      const options = this.options()
-      const cache = this.$apollo.provider.defaultClient.cache
-
-      if (
-        options.fetchPolicy === 'network-only' ||
-        !cache.diff({
-          query: options.query,
-          variables: options.variables,
-          returnPartialData: true
-        }).complete
-      ) {
-        return this.search()
-      }
-    },
-
-    patch(item) {
-      const node = this.items?.find((node) => node.id === item.id)
-
-      if (!node) {
-        return false
-      }
-
-      for (const key in item) {
-        if (key in node) {
-          node[key] = item[key]
-        }
-      }
-
-      return true
-    },
-
-    patchItems(items) {
-      // index the patches by id so the bulk update is a single pass over the loaded rows
-      const byId = new Map(items.map((item) => [item.id, item]))
-
-      this.items?.forEach((node) => {
-        const item = byId.get(node.id)
-
-        if (item) {
-          for (const key in item) {
-            if (key in node) {
-              node[key] = item[key]
-            }
-          }
-        }
-      })
-    },
-
-    sync() {
-      const ids = this.changes
-        .get('element')
-        .filter((item) => this.patch(item))
-        .map((item) => item.id)
-
-      this.changes.patched('element', ids)
-    },
-
-    invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
-    },
-
-    options() {
-      const publish = this.filter.publish || null
-      const trashed = this.filter.trashed || 'WITHOUT'
-      const filter = { ...this.filter }
-
-      delete filter.publish
-      delete filter.trashed
-
-      for (const key in filter) {
-        if (filter[key] === null) {
-          delete filter[key]
-        }
-      }
-
-      if (this.term) {
-        filter.any = this.term
-      }
-
+    failed(action) {
       return {
-        query: FETCH_ELEMENTS,
-        fetchPolicy: listFetchPolicy(),
-        variables: {
-          filter: filter,
-          page: this.page,
-          limit: this.limit,
-          sort: [this.sort],
-          trashed: trashed,
-          publish: publish
-        }
-      }
+        drop: this.$gettext('Error trashing shared element'),
+        keep: this.$gettext('Error restoring shared element'),
+        pub: this.$gettext('Error publishing shared element'),
+        purge: this.$gettext('Error purging shared element'),
+        save: this.$gettext('Error saving shared element'),
+        search: this.$gettext('Error fetching shared elements')
+      }[action]
     },
 
-    keep(item) {
-      if (!this.user.can('element:keep')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = Array.isArray(item)
-        ? item
-        : item
-          ? [item]
-          : this.items.filter((item) => this.checked.has(item.id))
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: KEEP_ELEMENT,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
+    hydrate(entry) {
+      const latest = entry.latest
+      const item = latest?.data
+        ? safeParse(latest.data)
+        : {
+            ...entry,
+            data: safeParse(entry.data)
           }
 
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(
-            this.$gettext('Error restoring shared element') + ':\n' + error,
-            'error'
-          )
-          this.$log(`ElementListItems::keep(): Error restoring shared element`, list, error)
-        })
-    },
-
-    publish(item) {
-      if (!this.user.can('element:publish')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
+      if (item.data && typeof item.data === 'object') {
+        item.data = markRaw(item.data)
       }
 
-      const list = item
-        ? [item]
-        : this.items.filter((item) => {
-            return this.checked.has(item.id) && item.id && !item.published
-          })
-
-      if (!list.length) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: PUB_ELEMENT,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(
-            this.$gettext('Error publishing shared element') + ':\n' + error,
-            'error'
-          )
-          this.$log(`ElementListItems::publish(): Error publishing shared element`, list, error)
-        })
-    },
-
-    async purge(item) {
-      if (!this.user.can('element:purge')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const list = item ? [item] : this.items.filter((item) => this.checked.has(item.id))
-
-      if (
-        !list.length ||
-        !(await this.confirm.purge(list.map((item) => ({ name: item.name, info: item.type }))))
-      ) {
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: PURGE_ELEMENT,
-          variables: {
-            id: list.map((item) => item.id)
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.invalidate()
-          this.search()
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error purging shared element') + ':\n' + error, 'error')
-          this.$log(`ElementListItems::purge(): Error purging shared element`, list, error)
-        })
-    },
-
-    edit(item = null) {
-      this.editIds = item ? [item.id] : [...this.checked]
-      this.editSelected = !item
-      this.editDialog = this.editIds.length > 0
-    },
-
-    save(lang) {
-      if (!this.user.can('element:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      const ids = this.editIds
-      const selected = this.editSelected ? null : new Set(this.checked)
-
-      if (!ids.length || lang === null) {
-        return
-      }
-
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_ELEMENTS,
-          variables: {
-            id: ids,
-            input: { lang: lang }
-          }
-        })
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          this.editIds = []
-          if (this.editSelected) {
-            this.checked = new Set()
-          }
-          this.editSelected = false
-          this.invalidate()
-
-          return this.search().then(() => {
-            if (selected) {
-              this.checked = selected
-            }
-          })
-        })
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error saving shared element') + ':\n' + error, 'error')
-          this.$log(`ElementListItems::save(): Error saving shared elements`, ids, lang, error)
-        })
-    },
-
-    search() {
-      if (!this.user.can('element:view')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve([])
-      }
-
-      this.loading = true
-
-      return this.$apollo
-        .query(this.options())
-        .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
-          const elements = result.data.elements || {}
-
-          this.last = elements.paginatorInfo?.lastPage || 1
-          this.items = [...(elements.data || [])].map((entry) => {
-            const latest = entry.latest
-            const item = latest?.data
-              ? safeParse(latest.data)
-              : {
-                  ...entry,
-                  data: safeParse(entry.data)
-                }
-
-            if (item.data && typeof item.data === 'object') {
-              item.data = markRaw(item.data)
-            }
-
-            return Object.assign(item, {
-              id: entry.id,
-              deleted_at: entry.deleted_at,
-              created_at: entry.created_at,
-              updated_at: entry.latest?.created_at || entry.updated_at,
-              editor: entry.latest?.editor || entry.editor,
-              published: entry.latest?.published ?? true,
-              publish_at: entry.latest?.publish_at || null,
-              latest_id: entry.latest?.id || null,
-              files: Object.freeze((latest?.files || entry.files || []).map(normalizeFile))
-            })
-          })
-
-          this.checked = new Set()
-          this.outdated = false
-          this.loading = false
-
-          return this.items
-        })
-        .catch((error) => {
-          this.messages.add(
-            this.$gettext('Error fetching shared elements') + ':\n' + error,
-            'error'
-          )
-          this.$log(`ElementListItems::search(): Error fetching shared element`, error)
-        })
-    },
-
-    title(item) {
-      const list = []
-
-      if (item.publish_at) {
-        list.push('Publish at: ' + new Date(item.publish_at).toLocaleDateString())
-      }
-
-      return list.join('\n')
-    },
-
-    toggle() {
-      if (this.checked.size > 0) {
-        this.checked = new Set()
-      } else {
-        this.checked = new Set(this.items.map((item) => item.id))
-      }
-    },
-
-    toggleCheck(item) {
-      const next = new Set(this.checked)
-
-      if (next.has(item.id)) {
-        next.delete(item.id)
-      } else {
-        next.add(item.id)
-      }
-
-      this.checked = next
-    }
-  },
-
-  watch: {
-    'changes.changed.element'() {
-      this.sync()
-    },
-
-    filter: {
-      deep: true,
-      handler() {
-        this.search()
-      }
-    },
-
-    term() {
-      this.searchd()
-    },
-
-    page() {
-      this.search()
-    },
-
-    sort() {
-      this.search()
+      return Object.assign(item, {
+        id: entry.id,
+        deleted_at: entry.deleted_at,
+        created_at: entry.created_at,
+        updated_at: entry.latest?.created_at || entry.updated_at,
+        editor: entry.latest?.editor || entry.editor,
+        published: entry.latest?.published ?? true,
+        publish_at: entry.latest?.publish_at || null,
+        latest_id: entry.latest?.id || null,
+        files: Object.freeze((latest?.files || entry.files || []).map(normalizeFile))
+      })
     }
   }
 }
@@ -772,31 +207,27 @@ export default {
               variant="text"
             />
           </template>
-          <v-list-item v-show="counts.draft && user.can('element:publish')">
-            <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish()"
-              >{{ $gettext('Publish') }} ({{ counts.draft }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-show="isChecked && user.can('element:save')">
-            <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit()"
-              >{{ $gettext('Edit properties') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-show="counts.live && user.can('element:drop')">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop()"
-              >{{ $gettext('Delete') }} ({{ counts.live }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-show="counts.trashed && user.can('element:keep')">
-            <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep()"
-              >{{ $gettext('Restore') }} ({{ counts.trashed }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-show="isChecked && user.can('element:purge')">
-            <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge()"
-              >{{ $gettext('Purge') }} ({{ counts.all }})</v-btn
-            >
-          </v-list-item>
+          <ActionItem
+            v-show="counts.draft && user.can('element:publish')"
+            :prepend-icon="mdiPublish"
+            @click="publish()"
+            >{{ $gettext('Publish') }} ({{ counts.draft }})</ActionItem
+          >
+          <ActionItem v-show="isChecked && user.can('element:save')" :prepend-icon="mdiPencil" @click="edit()">
+            {{ $gettext('Edit properties') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem v-show="counts.live && user.can('element:drop')" :prepend-icon="mdiDelete" @click="drop()">
+            {{ $gettext('Delete') }} ({{ counts.live }})
+          </ActionItem>
+          <ActionItem
+            v-show="counts.trashed && user.can('element:keep')"
+            :prepend-icon="mdiDeleteRestore"
+            @click="keep()"
+            >{{ $gettext('Restore') }} ({{ counts.trashed }})</ActionItem
+          >
+          <ActionItem v-show="isChecked && user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
+            {{ $gettext('Purge') }} ({{ counts.all }})
+          </ActionItem>
         </ActionMenu>
       </span>
 
@@ -866,13 +297,12 @@ export default {
             <template #activator="{ props, label }">
               <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
             </template>
-            <v-list-item
+            <ActionItem
               v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
+              :prepend-icon="mdiPublish"
+              @click="publish(item)"
+              >{{ $gettext('Publish') }}</ActionItem
             >
-              <v-btn :prepend-icon="mdiPublish" variant="text" @click="publish(item)">{{
-                $gettext('Publish')
-              }}</v-btn>
-            </v-list-item>
 
             <v-divider
               v-if="
@@ -883,29 +313,27 @@ export default {
               "
             ></v-divider>
 
-            <v-list-item v-if="user.can('element:save')">
-              <v-btn :prepend-icon="mdiPencil" variant="text" @click="edit(item)">{{
-                $gettext('Edit properties')
-              }}</v-btn>
-            </v-list-item>
+            <ActionItem v-if="user.can('element:save')" :prepend-icon="mdiPencil" @click="edit(item)">
+              {{ $gettext('Edit properties') }}
+            </ActionItem>
 
             <v-divider v-if="user.can('element:save')"></v-divider>
 
-            <v-list-item v-if="!item.deleted_at && this.user.can('element:drop')">
-              <v-btn :prepend-icon="mdiDelete" variant="text" @click="drop(item)">{{
-                $gettext('Delete')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="item.deleted_at && this.user.can('element:keep')">
-              <v-btn :prepend-icon="mdiDeleteRestore" variant="text" @click="keep(item)">{{
-                $gettext('Restore')
-              }}</v-btn>
-            </v-list-item>
-            <v-list-item v-if="this.user.can('element:purge')">
-              <v-btn :prepend-icon="mdiDeleteForever" variant="text" @click="purge(item)">{{
-                $gettext('Purge')
-              }}</v-btn>
-            </v-list-item>
+            <ActionItem
+              v-if="!item.deleted_at && this.user.can('element:drop')"
+              :prepend-icon="mdiDelete"
+              @click="drop(item)"
+              >{{ $gettext('Delete') }}</ActionItem
+            >
+            <ActionItem
+              v-if="item.deleted_at && this.user.can('element:keep')"
+              :prepend-icon="mdiDeleteRestore"
+              @click="keep(item)"
+              >{{ $gettext('Restore') }}</ActionItem
+            >
+            <ActionItem v-if="this.user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
+              {{ $gettext('Purge') }}
+            </ActionItem>
           </ActionMenu>
         </span>
       </div>
@@ -936,25 +364,13 @@ export default {
     </v-list-item>
   </v-list>
 
-  <ListSkeleton v-if="loading && !items?.length" />
-  <p v-else-if="loading" class="loading">
-    {{ $gettext('Loading') }}
-    <LoadingSpinner width="32" height="32" />
-  </p>
-  <p v-if="!loading && !items.length" class="notfound">
-    <template v-if="filtered">
-      {{ $gettext('No entries found') }}
-      <v-btn
-        v-if="term || defaults"
-        class="btn-reset-filter"
-        variant="text"
-        :prepend-icon="mdiCloseCircleOutline"
-        @click="resetFilter()"
-        >{{ $gettext('Reset') }}</v-btn
-      >
-    </template>
-    <template v-else>{{ $gettext('No entries yet') }}</template>
-  </p>
+  <ListStatus
+    :empty="!items?.length"
+    :filtered="filtered"
+    :loading="loading"
+    :resettable="!!(term || defaults)"
+    @reset="resetFilter()"
+  />
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 

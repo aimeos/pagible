@@ -98,20 +98,38 @@ export default {
 
   beforeUnmount() {
     this.destroyed = true
-    this.views = null
-    this.visits = null
-    this.conversions = null
-    this.durations = null
-    this.impressions = null
-    this.clicks = null
-    this.ctrs = null
-    this.countries = null
-    this.referrers = null
-    this.queries = null
-    this.pagespeed = null
   },
 
   computed: {
+    charts() {
+      const p = this.palette
+
+      return [{
+        show: this.views.length || this.visits.length || this.conversions.length,
+        title: this.$gettext('Views & Visits'),
+        data: this.chart(this.views,
+          [p.primary, this.$gettext('Views'), this.views],
+          [p.secondary, this.$gettext('Visits'), this.visits],
+          [p.success, this.$gettext('Conversions'), this.conversions]
+        )
+      }, {
+        show: this.durations.length,
+        title: this.$gettext('Visit Durations (minutes)'),
+        data: this.chart(this.durations, [p.primary, this.$gettext('Duration'), this.durations])
+      }, {
+        show: this.impressions.length || this.clicks.length,
+        title: this.$gettext('Google Search: Impressions & Clicks'),
+        data: this.chart(this.impressions,
+          [p.primary, this.$gettext('Impressions'), this.impressions],
+          [p.secondary, this.$gettext('Clicks'), this.clicks]
+        )
+      }, {
+        show: this.ctrs.length,
+        title: this.$gettext('Google Search: Click-through rate'),
+        data: this.chart(this.ctrs, [p.success, this.$gettext('Percentage'), this.ctrs])
+      }]
+    },
+
     colors() {
       return this.$vuetify.theme.current.colors
     },
@@ -143,47 +161,6 @@ export default {
       })
     },
 
-    viewsData() {
-      return markRaw({
-        labels: this.views.map((d) => d.key),
-        grouped: true,
-        datasets: [
-          this.dataset(this.palette.primary, this.$gettext('Views'), this.views.map((d) => d.value)),
-          this.dataset(this.palette.secondary, this.$gettext('Visits'), this.visits.map((d) => d.value)),
-          this.dataset(this.palette.success, this.$gettext('Conversions'), this.conversions.map((d) => d.value))
-        ]
-      })
-    },
-
-    durationsData() {
-      return markRaw({
-        labels: this.durations.map((d) => d.key),
-        datasets: [
-          this.dataset(this.palette.primary, this.$gettext('Duration'), this.durations.map((d) => d.value))
-        ]
-      })
-    },
-
-    impressionsData() {
-      return markRaw({
-        labels: this.impressions.map((d) => d.key),
-        grouped: true,
-        datasets: [
-          this.dataset(this.palette.primary, this.$gettext('Impressions'), this.impressions.map((d) => d.value)),
-          this.dataset(this.palette.secondary, this.$gettext('Clicks'), this.clicks.map((d) => d.value))
-        ]
-      })
-    },
-
-    ctrsData() {
-      return markRaw({
-        labels: this.ctrs.map((d) => d.key),
-        datasets: [
-          this.dataset(this.palette.success, this.$gettext('Percentage'), this.ctrs.map((d) => d.value))
-        ]
-      })
-    },
-
     insightColumns() {
       const hasConversions = this.conversions.reduce((acc, item) => acc + Number(item.value), 0)
 
@@ -212,8 +189,15 @@ export default {
   },
 
   methods: {
-    dataset(color, label, data) {
-      return { borderWidth: 2, borderColor: color, backgroundColor: color, label, data, pointRadius: 0, tension: 0.2 }
+    // chart data with the keys of the rows as labels and one dataset per [color, label, items] series
+    chart(rows, ...series) {
+      return markRaw({
+        labels: rows.map((d) => d.key),
+        ...(series.length > 1 ? { grouped: true } : {}),
+        datasets: series.map(([color, label, items]) => ({
+          borderWidth: 2, borderColor: color, backgroundColor: color, label, data: items.map((d) => d.value), pointRadius: 0, tension: 0.2
+        }))
+      })
     },
 
     insightValue(col) {
@@ -278,13 +262,12 @@ export default {
         this.clicks = Object.freeze(this.sortAndFormat(stats.clicks))
         this.ctrs = Object.freeze(this.sortAndFormat(stats.ctrs, this.toPercent))
 
-        this.countries = Object.freeze(
-          this.sortAndTransform(stats.countries, this.sortByValue, this.formatValue)
-            .map(item => Object.freeze(item))
-        )
+        const ranked = (data) => (data || []).sort(this.sortByValue).map(this.formatValue)
+
+        this.countries = Object.freeze(ranked(stats.countries).map(item => Object.freeze(item)))
 
         this.referrers = Object.freeze(
-          this.sortAndTransform(stats.referrers, this.sortByValue, this.formatValue)
+          ranked(stats.referrers)
             .map(item => Object.freeze({
               ...item,
               rows: Object.freeze((item.rows || []).map(r => Object.freeze(r)))
@@ -313,16 +296,6 @@ export default {
       for (let i = 0; i < arr.length; i++) {
         this.formatDate(arr[i])
         if (transform) transform(arr[i])
-      }
-
-      return arr
-    },
-
-    sortAndTransform(data, sortFn, transformFn) {
-      const arr = (data || []).sort(sortFn)
-
-      for (let i = 0; i < arr.length; i++) {
-        transformFn(arr[i])
       }
 
       return arr
@@ -460,23 +433,16 @@ export default {
 
       <!-- Analytics Charts -->
       <v-row>
-        <v-col v-if="views.length || visits.length || conversions.length" cols="12" md="6">
-          <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Views & Visits') }}</v-card-title>
-            <v-card-text>
-              <LineChart :options="chartOptions" :data="viewsData" />
-            </v-card-text>
-          </v-card>
-        </v-col>
-
-        <v-col v-if="durations.length" cols="12" md="6">
-          <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Visit Durations (minutes)') }}</v-card-title>
-            <v-card-text>
-              <LineChart :options="chartOptions" :data="durationsData" />
-            </v-card-text>
-          </v-card>
-        </v-col>
+        <template v-for="c in charts.slice(0, 2)" :key="c.title">
+          <v-col v-if="c.show" cols="12" md="6">
+            <v-card class="panel chart">
+              <v-card-title>{{ c.title }}</v-card-title>
+              <v-card-text>
+                <LineChart :options="chartOptions" :data="c.data" />
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </template>
       </v-row>
 
       <!-- Top lists -->
@@ -601,23 +567,16 @@ export default {
 
       <!-- GSC Charts -->
       <v-row>
-        <v-col v-if="impressions.length || clicks.length" cols="12" md="6">
-          <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Google Search: Impressions & Clicks') }}</v-card-title>
-            <v-card-text>
-              <LineChart :options="chartOptions" :data="impressionsData" />
-            </v-card-text>
-          </v-card>
-        </v-col>
-
-        <v-col v-if="ctrs.length" cols="12" md="6">
-          <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Google Search: Click-through rate') }}</v-card-title>
-            <v-card-text>
-              <LineChart :options="chartOptions" :data="ctrsData" />
-            </v-card-text>
-          </v-card>
-        </v-col>
+        <template v-for="c in charts.slice(2)" :key="c.title">
+          <v-col v-if="c.show" cols="12" md="6">
+            <v-card class="panel chart">
+              <v-card-title>{{ c.title }}</v-card-title>
+              <v-card-text>
+                <LineChart :options="chartOptions" :data="c.data" />
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </template>
       </v-row>
     </v-sheet>
   </v-container>

@@ -1,7 +1,6 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { markRaw } from 'vue'
 import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 import {
@@ -14,6 +13,7 @@ import {
   mdiStop
 } from '@mdi/js'
 import { useUserStore } from '../stores'
+import { dictate } from '../utils'
 import { chat } from '../chat'
 import CmsDialog from './Dialog.vue'
 
@@ -141,25 +141,8 @@ export default {
     },
 
     record() {
-      if (!this.audio) {
-        this.audio = markRaw(import('../audio').then((mod) => mod.recording().start()))
-        return
-      }
-
-      this.audio.then((rec) => {
-        this.dictating = true
-        this.audio = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.input = (this.input ? this.input + ' ' : '') + transcription.asText()
-            })
-            .finally(() => {
-              this.dictating = false
-            })
-        })
+      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => {
+        this.input = (this.input ? this.input + ' ' : '') + text
       })
     },
 

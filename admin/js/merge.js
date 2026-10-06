@@ -4,19 +4,6 @@
 
 
 /**
- * Applies conflict info from a save response to a detail view
- *
- * @param {Object} vm Vue component instance with item, changed, vchanged, hasConflict
- * @param {Object} changed Parsed conflict info from save response
- */
-export function applyConflict(vm, changed) {
-  Object.assign(vm.item, changed.latest?.data ?? {})
-  vm.changed = changed
-  vm.vchanged = vm.hasConflict
-}
-
-
-/**
  * Handles save result: resets state, applies conflicts or shows success message
  *
  * @param {Object} vm Vue component instance
@@ -29,7 +16,9 @@ export function applyResult(vm, changed, successMsg, quiet) {
   vm.reset()
 
   if (changed) {
-    applyConflict(vm, changed)
+    Object.assign(vm.item, changed.latest?.data ?? {})
+    vm.changed = changed
+    vm.vchanged = vm.hasConflict
     vm.messages.add(
       vm.$gettext('Merged with changes from %{editor}', { editor: changed.editor || '' }),
       vm.hasConflict ? 'warning' : 'info'

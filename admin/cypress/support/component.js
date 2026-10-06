@@ -238,7 +238,6 @@ Cypress.Commands.add('mount', (Component, options = {}) => {
         transcribe: () => Promise.resolve(''),
         txlocales: [],
         url: (path) => path,
-        srcset: () => '',
         openView: () => {},
         ...restOptions.global?.provide,
       },

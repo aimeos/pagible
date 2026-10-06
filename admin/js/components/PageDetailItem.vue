@@ -70,14 +70,6 @@ export default {
     update(what) {
       this.changed[what] = true
       this.$emit('update:item', this.item)
-    },
-
-    validate() {
-      const promises = Object.values(this.$refs).filter(ref => ref).map((ref) => ref.validate())
-
-      return Promise.all(promises).then((results) => {
-        return results.every((result) => result)
-      })
     }
   }
 }
@@ -122,7 +114,6 @@ export default {
           <PageDetailItemProps
             ref="props"
             :item="item"
-            :assets="assets"
             @change="update('details')"
             @error="error('details', $event)"
           />

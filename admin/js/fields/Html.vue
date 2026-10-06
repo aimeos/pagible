@@ -2,6 +2,7 @@
 
 <script>
 import { minChars, maxChars, required } from '../rules'
+import { fieldBase } from '../field'
 
 /**
  * Configuration:
@@ -12,17 +13,7 @@ import { minChars, maxChars, required } from '../rules'
  * - `required`: boolean, if true, the field must not be empty
  */
 export default {
-  props: {
-    modelValue: { type: String },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
-
-  emits: ['update:modelValue', 'error'],
-
-  data: () => ({ lastError: null }),
+  extends: fieldBase,
 
   computed: {
     rules() {
@@ -31,19 +22,6 @@ export default {
         minChars(this.$ngettext, this.config.min),
         maxChars(this.$ngettext, this.config.max)
       ]
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

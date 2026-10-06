@@ -3,8 +3,9 @@
 <script>
 import gql from 'graphql-tag'
 import Fields from './Fields.vue'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
-import { defineAsyncComponent, markRaw } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import VirtualList from 'vue-virtual-sortable'
 import {
   useUserStore,
@@ -17,7 +18,7 @@ import { changedState } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList } from '../graphql'
 import { editable } from '../shortcuts'
-import { clone, debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
+import { clone, debounce, dictate, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
 import {
   mdiMenuDown,
@@ -26,6 +27,7 @@ import {
   mdiContentPaste,
   mdiSetMerge,
   mdiDelete,
+  mdiDragVertical,
   mdiMagnify,
   mdiDotsVertical,
   mdiArrowUp,
@@ -70,6 +72,7 @@ const ADD_ELEMENT = gql`
 
 export default {
   components: {
+    ActionItem,
     ActionMenu,
     Fields,
     SchemaDialog,
@@ -89,7 +92,6 @@ export default {
 
   data: () => ({
     chat: '',
-    response: '',
     audio: null,
     dictating: false,
     help: false,
@@ -100,9 +102,7 @@ export default {
     scroller: null,
     checked: false,
     vchange: false,
-    vschemas: false,
-    currentPage: 1,
-    lastPage: 1
+    vschemas: false
   }),
 
   setup() {
@@ -125,6 +125,7 @@ export default {
       mdiContentPaste,
       mdiSetMerge,
       mdiDelete,
+      mdiDragVertical,
       mdiMagnify,
       mdiDotsVertical,
       mdiArrowUp,
@@ -161,8 +162,8 @@ export default {
   methods: {
     add(item, idx) {
       const entry = item.id
-        ? { id: uid(), group: this.section, type: 'reference', refid: item.id }
-        : { id: uid(), group: this.section, type: item.type, data: {} }
+        ? this.entry('reference', { refid: item.id })
+        : this.entry(item.type, { data: {} })
 
       if (item.id) {
         for (const file of item.files || []) {
@@ -180,7 +181,7 @@ export default {
 
       this.panel.push(entry.id)
       this.vschemas = false
-      this.$emit('update:content', this.content)
+      this.flush()
       reveal(this.$refs.list, entry.id, idx === null ? 'bottom' : 'auto')
     },
 
@@ -202,7 +203,7 @@ export default {
 
       this.vchange = false
       this.content[idx].type = item.type
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     copy(idx) {
@@ -226,7 +227,7 @@ export default {
 
       list.forEach((el) => this.take(this.content.indexOf(el)))
       this.clipboard.set('page-content', list.map((el) => ({ ...el, id: null, _checked: false })))
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     error(el, value) {
@@ -242,6 +243,10 @@ export default {
       this.stored()
     },
 
+    entry(type, props = {}) {
+      return { id: uid(), group: this.section, type, ...props }
+    },
+
     fields(type) {
       if (!this.schemas.content[type]?.fields) {
         console.warn(`No definition of fields for "${type}" schemas`)
@@ -249,6 +254,10 @@ export default {
       }
 
       return this.schemas.content[type]?.fields
+    },
+
+    flush() {
+      this.$emit('update:content', this.content)
     },
 
     insert(idx) {
@@ -268,14 +277,8 @@ export default {
       const text = entries.map((el) => this.createMarkdown(el) + '\n\n').join('')
 
       entries.forEach((el) => this.take(this.content.indexOf(el)))
-      this.content.splice(idx, 0, {
-        id: uid(),
-        group: this.section,
-        type: 'text',
-        data: { text },
-        _changed: true
-      })
-      this.$emit('update:content', this.content)
+      this.content.splice(idx, 0, this.entry('text', { data: { text }, _changed: true }))
+      this.flush()
     },
 
     move(ev, el) {
@@ -309,7 +312,7 @@ export default {
       }
 
       this.content.splice(pos, 0, this.content.splice(idx, 1)[0])
-      this.$emit('update:content', this.content)
+      this.flush()
 
       this.$nextTick(() => {
         const key = CSS.escape(String(el.id))
@@ -335,43 +338,22 @@ export default {
       })
 
       this.content.splice(idx, 0, ...entries)
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     purge() {
       this.selection().forEach((el) => this.take(this.content.indexOf(el)))
 
       this.error()
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     record() {
-      if (!this.audio) {
-        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
-      }
-
-      this.audio.then((rec) => {
-        this.dictating = true
-        this.audio = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.chat = transcription.asText()
-            })
-            .finally(() => {
-              this.dictating = false
-            })
-        })
-      })
+      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
     },
 
     refine() {
-      if (!this.user.can('page:refine')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!this.user.can('page:refine')) return this.messages.denied()
 
       const prompt = this.chat.trim()
 
@@ -394,10 +376,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result
-          }
-
           const content = safeParse(result.data?.refine || '[]', [])
 
           if (content.length) {
@@ -416,12 +394,10 @@ export default {
           }
 
           this.refining = null
-          this.response = ''
           this.chat = ''
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error refining content') + ':\n' + error, 'error')
-          this.$log(`PageDetailContentList::refine(): Error refining content`, error)
+          this.messages.error(this.$gettext('Error refining content'), error)
         })
         .finally(() => {
           setTimeout(() => {
@@ -433,7 +409,7 @@ export default {
     remove(idx) {
       this.take(idx)
       this.error()
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     reset() {
@@ -468,10 +444,7 @@ export default {
     },
 
     share(idx) {
-      if (!this.user.can('element:add')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!this.user.can('element:add')) return this.messages.denied()
 
       const entry = this.content[idx]
 
@@ -498,10 +471,6 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const element = result.data.addElement
 
           const files = (element.files || []).map(normalizeFile)
@@ -514,18 +483,12 @@ export default {
           element.files = Object.freeze(files)
 
           this.elements[element.id] = element
-          this.content[idx] = {
-            id: uid(),
-            group: this.section,
-            type: 'reference',
-            refid: element.id
-          }
-          invalidateList(this.$apollo.provider.defaultClient.cache, 'elements')
-          this.$emit('update:content', this.content)
+          this.content[idx] = this.entry('reference', { refid: element.id })
+          invalidateList('elements')
+          this.flush()
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Unable to make element shared') + ':\n' + error, 'error')
-          this.$log(`PageDetailContentList::share(): Error making element shared`, idx, error)
+          this.messages.error(this.$gettext('Unable to make element shared'), error, idx)
         })
     },
 
@@ -573,24 +536,12 @@ export default {
 
       for (const node of ast.children) {
         switch (node.type) {
-          case 'code': {
-            list.push({
-              id: uid(),
-              type: 'code',
-              group: this.section,
-              data: { lang: node.lang || null, text: node.value.trim() }
-            })
+          case 'code':
+            list.push(this.entry('code', { data: { lang: node.lang || null, text: node.value.trim() } }))
             break
-          }
-          case 'heading': {
-            list.push({
-              id: uid(),
-              type: 'heading',
-              group: this.section,
-              data: { title: toString(node).trim(), level: String(node.depth) }
-            })
+          case 'heading':
+            list.push(this.entry('heading', { data: { title: toString(node).trim(), level: String(node.depth) } }))
             break
-          }
           case 'table': {
             const rows = node.children
               .map((row) =>
@@ -599,27 +550,16 @@ export default {
                   .join(';')
               )
               .join('\n')
-            list.push({
-              id: uid(),
-              type: 'table',
-              group: this.section,
-              data: { text: rows.trim() }
-            })
+            list.push(this.entry('table', { data: { text: rows.trim() } }))
             break
           }
-          default: {
-            list.push({
-              id: uid(),
-              type: 'text',
-              group: this.section,
-              data: { text: toMarkdown(node).trim() }
-            })
-          }
+          default:
+            list.push(this.entry('text', { data: { text: toMarkdown(node).trim() } }))
         }
       }
 
       this.content.splice(idx, 1, ...list)
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     store(isVisible = true) {
@@ -629,20 +569,13 @@ export default {
 
       const types = {}
       const state = {}
+      const inc = (map, key) => (map[key] = (map[key] || 0) + 1)
 
       this.content.forEach((el) => {
-        if (el.type) {
-          types[el.type] = (types[el.type] || 0) + 1
-        }
-        if (!el._changed && !el._error) {
-          state['valid'] = (state['valid'] || 0) + 1
-        }
-        if (el._changed) {
-          state['changed'] = (state['changed'] || 0) + 1
-        }
-        if (el._error) {
-          state['error'] = (state['error'] || 0) + 1
-        }
+        el.type && inc(types, el.type)
+        !el._changed && !el._error && inc(state, 'valid')
+        el._changed && inc(state, 'changed')
+        el._error && inc(state, 'error')
       })
 
       return (this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) }))
@@ -690,7 +623,7 @@ export default {
         refid: undefined
       }
 
-      this.$emit('update:content', this.content)
+      this.flush()
     },
 
     update(el) {
@@ -702,16 +635,12 @@ export default {
       }
 
       this.emitContent()
-    },
-
-    flush() {
-      this.$emit('update:content', this.content)
     }
   },
 
   created() {
     this.stored = debounce(() => this.store(), 200)
-    this.emitContent = debounce(() => this.$emit('update:content', this.content), 150)
+    this.emitContent = debounce(this.flush, 150)
   },
 
   mounted() {
@@ -723,11 +652,6 @@ export default {
       this.audio.then((rec) => rec?.stop?.()).catch(() => {})
       this.audio = null
     }
-
-    this.panel = null
-    this.scroller = null
-    this.response = ''
-    this.chat = ''
   },
 
   watch: {
@@ -761,7 +685,6 @@ export default {
       hide-details
       auto-grow
       clearable
-      outlined
       rows="1"
     >
       <template #prepend>
@@ -818,31 +741,21 @@ export default {
               >{{ label }}</v-btn
             >
           </template>
-          <v-list-item v-if="checkedCount">
-            <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy()"
-              >{{ $pgettext('clipboard', 'Copy') }} ({{ checkedCount }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="checkedCount">
-            <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut()"
-              >{{ $pgettext('clipboard', 'Cut') }} ({{ checkedCount }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="clipboard.get('page-content')">
-            <v-btn :prepend-icon="mdiContentPaste" variant="text" @click="paste()"
-              >{{ $gettext('Paste') }} ({{ clipCount }})</v-btn
-            >
-          </v-list-item>
-          <v-list-item v-if="checkedCount > 1">
-            <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
-              $gettext('Merge')
-            }}</v-btn>
-          </v-list-item>
-          <v-list-item v-if="checkedCount">
-            <v-btn :prepend-icon="mdiDelete" variant="text" @click="purge()">{{
-              $gettext('Remove')
-            }}</v-btn>
-          </v-list-item>
+          <ActionItem v-if="checkedCount" :prepend-icon="mdiContentCopy" @click="copy()">
+            {{ $pgettext('clipboard', 'Copy') }} ({{ checkedCount }})
+          </ActionItem>
+          <ActionItem v-if="checkedCount" :prepend-icon="mdiContentCut" @click="cut()">
+            {{ $pgettext('clipboard', 'Cut') }} ({{ checkedCount }})
+          </ActionItem>
+          <ActionItem v-if="clipboard.get('page-content')" :prepend-icon="mdiContentPaste" @click="paste()">
+            {{ $gettext('Paste') }} ({{ clipCount }})
+          </ActionItem>
+          <ActionItem >
+            1" :prepend-icon="mdiSetMerge" @click="merge()"> {{ $gettext('Merge') }}
+          </ActionItem>
+          <ActionItem v-if="checkedCount" :prepend-icon="mdiDelete" @click="purge()">
+            {{ $gettext('Remove') }}
+          </ActionItem>
         </ActionMenu>
       </div>
 
@@ -897,8 +810,8 @@ export default {
               aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
               icon
             >
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z" />
+              <svg height="24" width="24" viewBox="0 0 24 24" fill="currentColor">
+                <path :d="mdiDragVertical" />
               </svg>
             </v-btn>
 
@@ -914,74 +827,51 @@ export default {
                   <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-list-item v-if="!el._error">
-                  <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)"
-                    >{{ $pgettext('clipboard', 'Copy') }}{{ el._checked ? ` (${checkedCount})` : '' }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item v-if="!el._error">
-                  <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)"
-                    >{{ $pgettext('clipboard', 'Cut') }}{{ el._checked ? ` (${checkedCount})` : '' }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                    $gettext('Remove')
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-if="!el._error" :prepend-icon="mdiContentCopy" @click="copy(idx)">
+                  {{ $pgettext('clipboard', 'Copy') }}{{ el._checked ? ` (${checkedCount})` : '' }}
+                </ActionItem>
+                <ActionItem v-if="!el._error" :prepend-icon="mdiContentCut" @click="cut(idx)">
+                  {{ $pgettext('clipboard', 'Cut') }}{{ el._checked ? ` (${checkedCount})` : '' }}
+                </ActionItem>
+                <ActionItem :prepend-icon="mdiDelete" @click="remove(idx)">
+                  {{ $gettext('Remove') }}
+                </ActionItem>
 
                 <v-divider></v-divider>
 
-                <v-list-item v-if="clipboard.get('page-content')">
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)"
-                    >{{ $gettext('Paste before') }} ({{ clipCount }})</v-btn
-                  >
-                </v-list-item>
-                <v-list-item v-if="clipboard.get('page-content')">
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)"
-                    >{{ $gettext('Paste after') }} ({{ clipCount }})</v-btn
-                  >
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
-                    $gettext('Insert before')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item>
-                  <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
-                    $gettext('Insert after')
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-if="clipboard.get('page-content')" :prepend-icon="mdiArrowUp" @click="paste(idx)">
+                  {{ $gettext('Paste before') }} ({{ clipCount }})
+                </ActionItem>
+                <ActionItem v-if="clipboard.get('page-content')" :prepend-icon="mdiArrowDown" @click="paste(idx + 1)">
+                  {{ $gettext('Paste after') }} ({{ clipCount }})
+                </ActionItem>
+                <ActionItem :prepend-icon="mdiArrowUp" @click="insert(idx)">
+                  {{ $gettext('Insert before') }}
+                </ActionItem>
+                <ActionItem :prepend-icon="mdiArrowDown" @click="insert(idx + 1)">
+                  {{ $gettext('Insert after') }}
+                </ActionItem>
 
                 <v-divider></v-divider>
 
-                <v-list-item
+                <ActionItem
                   v-if="!el._error && el.type !== 'reference' && user.can('element:add')"
+                  :prepend-icon="mdiLink"
+                  @click="share(idx)"
+                  >{{ $gettext('Make shared') }}</ActionItem
                 >
-                  <v-btn :prepend-icon="mdiLink" variant="text" @click="share(idx)">{{
-                    $gettext('Make shared')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="el.type === 'reference'">
-                  <v-btn :prepend-icon="mdiLinkOff" variant="text" @click="unshare(idx)">{{
-                    $gettext('Replace with local copy')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="el.type !== 'reference'">
-                  <v-btn :prepend-icon="mdiSwapHorizontal" variant="text" @click="change(idx)">{{
-                    $gettext('Change to')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="el.type === 'text'">
-                  <v-btn :prepend-icon="mdiSetSplit" variant="text" @click="split(idx)">{{
-                    $pgettext('text element', 'Split')
-                  }}</v-btn>
-                </v-list-item>
-                <v-list-item v-if="el._checked && checkedCount > 1">
-                  <v-btn :prepend-icon="mdiSetMerge" variant="text" @click="merge()">{{
-                    $gettext('Merge')
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-if="el.type === 'reference'" :prepend-icon="mdiLinkOff" @click="unshare(idx)">
+                  {{ $gettext('Replace with local copy') }}
+                </ActionItem>
+                <ActionItem v-if="el.type !== 'reference'" :prepend-icon="mdiSwapHorizontal" @click="change(idx)">
+                  {{ $gettext('Change to') }}
+                </ActionItem>
+                <ActionItem v-if="el.type === 'text'" :prepend-icon="mdiSetSplit" @click="split(idx)">
+                  {{ $pgettext('text element', 'Split') }}
+                </ActionItem>
+                <ActionItem >
+                  1" :prepend-icon="mdiSetMerge" @click="merge()" > {{ $gettext('Merge') }}
+                </ActionItem>
               </ActionMenu>
             </span>
 

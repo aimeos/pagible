@@ -1,17 +1,9 @@
 /** @license MIT, https://opensource.org/license/mit */
 
-<script>
-export default {
-  props: {
-    rows: { type: Number, default: 6 }
-  }
-}
-</script>
-
 <template>
   <div class="list-skeleton" role="status">
     <span class="v-sr-only">{{ $gettext('Loading') }}</span>
-    <div v-for="i in rows" :key="i" class="skeleton-row" :style="{ '--i': i }" aria-hidden="true">
+    <div v-for="i in 6" :key="i" class="skeleton-row" :style="{ '--i': i }" aria-hidden="true">
       <span class="skeleton-box"></span>
       <span class="skeleton-lines">
         <span class="skeleton-line"></span>
