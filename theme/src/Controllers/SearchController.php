@@ -33,9 +33,10 @@ class SearchController extends Controller
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.theme.min-search' ) . '|max:200',
             'size' => 'integer|between:5,100',
+            'locale' => 'nullable|string|max:16',
         ] );
 
-        $lang = (string) ( $request->locale ?? app()->getLocale() );
+        $lang = (string) ( $vals['locale'] ?? app()->getLocale() );
 
         $external = Scout::usesExternalSearch();
         $builder = Page::search( $vals['q'] )

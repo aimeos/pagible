@@ -14,6 +14,7 @@ function unquote(lines) {
 
 function parse(po) {
   return po
+    .trim()
     .split(/\n\s*\n/)
     .map((block) => {
       const entry = {}
@@ -65,7 +66,7 @@ function catalog(entries) {
 
 describe('translations', () => {
   const langs = Object.entries(files)
-    .map(([path, po]) => [path.match(/(\w+)\.po$/)[1], parse(po)])
+    .map(([path, po]) => [path.match(/([\w-]+)\.po$/)[1], parse(po)])
     .filter(([lang]) => lang !== 'en') // English uses the msgids
 
   it('finds the translation files', () => {

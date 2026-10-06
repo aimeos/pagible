@@ -51,6 +51,7 @@
     toolname="contact" tooldescription="{{ __('Send a message to the site owner through the contact form') }}">
     <input type="hidden" name="_token" value="">
     <input type="hidden" name="schema" value="{{ $schema }}">
+    <input type="hidden" name="locale" value="{{ app()->getLocale() }}">
     <input type="hidden" name="signature" value="{{ \Aimeos\Cms\Requests\ContactRequest::signature($schema) }}">
     @if($source ?? null)
         <input type="hidden" name="source" value="{{ $source }}">

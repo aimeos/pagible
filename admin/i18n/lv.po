@@ -1,6 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: lv\n"
@@ -17,7 +20,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:557
 #: js/components/ElementListItems.vue:599
 #: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
-#: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
+#: js/components/FileAiDialog.vue:145 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
@@ -41,14 +44,14 @@ msgstr ""
 #: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
+#: js/views/PageDetail.vue:558 js/views/PageDetail.vue:649
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "Atļauja liegta"
 
 #: js/ai.js:68
 msgid "Error transcribing file"
-msgstr "Kļūda transkribējot failu"
+msgstr "Kļūda, transkribējot failu"
 
 #: js/ai.js:125
 msgid "Error translating texts"
@@ -74,107 +77,108 @@ msgstr "Atbilde jau tiek ģenerēta. Lūdzu, uzgaidiet, līdz tā būs pabeigta.
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Pārāk daudz pieprasījumu. Lūdzu, uzgaidiet brīdi un mēģiniet vēlreiz."
 
-#: js/commands.js:53
+#: js/commands.js:54
 msgid "Open commands"
 msgstr "Atvērt komandas"
 
-#: js/commands.js:60
+#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Apstiprināt dialogu"
 
-#: js/commands.js:67
+#: js/commands.js:69
 msgid "Save changes"
 msgstr "Saglabāt izmaiņas"
 
-#: js/commands.js:75
+#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Atvērt publicēšanas izvēlni"
 
-#: js/commands.js:81
+#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Jauna lapa, fails vai elements"
 
-#: js/commands.js:87
+#: js/commands.js:91
 msgid "Search in list"
 msgstr "Meklēt sarakstā"
 
-#: js/commands.js:93
+#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Iepriekšējā cilne"
 
-#: js/commands.js:99
+#: js/commands.js:103
 msgid "Next tab"
 msgstr "Nākamā cilne"
 
-#: js/commands.js:105
+#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Rādīt vai paslēpt sānu paneli"
 
-#: js/commands.js:111 js/components/DetailAppBar.vue:168
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Atgriezties pie saraksta skata"
 
-#: js/commands.js:118
+#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Rādīt īsinājumtaustiņus"
 
-#: js/commands.js:124
+#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Atlasīt fokusēto lapu, failu vai elementu"
 
-#: js/commands.js:130
+#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Dzēst fokusēto lapu, failu vai elementu"
 
-#: js/commands.js:137
+#: js/commands.js:143
 msgid "Copy page"
 msgstr "Kopēt lapu"
 
-#: js/commands.js:144
+#: js/commands.js:151
 msgid "Cut page"
 msgstr "Izgriezt lapu"
 
-#: js/commands.js:151
+#: js/commands.js:159
 msgid "Paste page"
 msgstr "Ielīmēt lapu"
 
-#: js/commands.js:170 js/components/CommandPalette.vue:106
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
+#: js/commands.js:178 js/components/CommandPalette.vue:106
+#: js/components/ElementDetailRefs.vue:141 js/components/FileDetailRefs.vue:145
+#: js/components/Navigation.vue:30 js/views/PageList.vue:265
+#: js/views/PageList.vue:282
 msgid "Pages"
 msgstr "Lapas"
 
-#: js/commands.js:171
+#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Pāriet uz lapām"
 
-#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/commands.js:184 js/components/CommandPalette.vue:107
 #: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
 #: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "Multivide"
 
-#: js/commands.js:177
+#: js/commands.js:185
 msgid "Go to media"
 msgstr "Pāriet uz multividi"
 
-#: js/commands.js:182 js/components/CommandPalette.vue:108
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+#: js/commands.js:190 js/components/CommandPalette.vue:108
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/views/ElementList.vue:228
 msgid "Shared elements"
 msgstr "Koplietojamie elementi"
 
-#: js/commands.js:183
+#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Pāriet uz koplietojamajiem elementiem"
 
-#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/commands.js:196 js/components/Navigation.vue:33
 #: js/views/AccessList.vue:252
 msgid "Users"
 msgstr "Lietotāji"
 
-#: js/commands.js:189
+#: js/commands.js:197
 msgid "Go to users"
 msgstr "Pāriet uz lietotājiem"
 
@@ -236,28 +240,28 @@ msgstr "Konts"
 msgid "Assigned frontend roles"
 msgstr "Piešķirtās publiskās daļas lomas"
 
-#: js/components/AccessUsers.vue:484
+#: js/components/AccessUsers.vue:483
 msgid "Roles granting access to restricted pages"
 msgstr "Lomas, kas piešķir piekļuvi ierobežotām lapām"
 
-#: js/components/AccessUsers.vue:497
+#: js/components/AccessUsers.vue:496
 msgid "Assigned backend roles"
 msgstr "Piešķirtās administrācijas daļas lomas"
 
-#: js/components/AccessUsers.vue:501
+#: js/components/AccessUsers.vue:500
 msgid "Custom"
 msgstr "Pielāgots"
 
-#: js/components/AccessUsers.vue:507
+#: js/components/AccessUsers.vue:506
 msgid "Available roles"
 msgstr "Pieejamās lomas"
 
-#: js/components/AccessUsers.vue:508
+#: js/components/AccessUsers.vue:506
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "Lomas, kas nosaka, ko lietotājs var darīt administrēšanas panelī"
 
-#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
-#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1034 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Nav atrasts neviens ieraksts"
@@ -280,7 +284,7 @@ msgid "Filters"
 msgstr "Filtri"
 
 #: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
-#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
+#: js/components/FileListItems.vue:1041 js/components/PageListItems.vue:2053
 msgid "Reset"
 msgstr "Atiestatīt"
 
@@ -291,11 +295,11 @@ msgid "ID"
 msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
-#: js/fields/File.vue:502
+#: js/fields/File.vue:503
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/fields/File.vue:506
+#: js/components/AsideMeta.vue:29 js/fields/File.vue:507
 #: js/views/ElementList.vue:140 js/views/FileList.vue:139
 #: js/views/PageList.vue:182
 msgid "editor"
@@ -305,7 +309,7 @@ msgstr "redaktors"
 msgid "created"
 msgstr "izveidots"
 
-#: js/components/AsideMeta.vue:39 js/fields/File.vue:510
+#: js/components/AsideMeta.vue:39 js/fields/File.vue:511
 msgid "updated"
 msgstr "atjaunināts"
 
@@ -316,7 +320,7 @@ msgstr "dzēsts"
 #: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
 #: js/components/HistoryDialog.vue:40
 msgid "Meta data"
-msgstr "Meta dati"
+msgstr "Metadati"
 
 #: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
 #: js/components/HistoryDialog.vue:40
@@ -332,7 +336,7 @@ msgid "Configuration"
 msgstr "Konfigurācija"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:850
+#: js/views/PageDetail.vue:865
 msgid "Content"
 msgstr "Saturs"
 
@@ -410,8 +414,8 @@ msgid "Send a message ..."
 msgstr "Nosūtīt ziņu..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:485
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:252
+#: js/components/FileDetailItem.vue:483
 #: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
 #: js/views/ElementList.vue:284 js/views/FileList.vue:283
 #: js/views/PageList.vue:321
@@ -420,7 +424,7 @@ msgstr "Diktēt"
 
 #: js/components/ChatDialog.vue:410 js/components/ChatDialog.vue:411
 msgid "Stop"
-msgstr "Stop"
+msgstr "Apturēt"
 
 #: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
 #: js/views/ElementList.vue:277 js/views/FileList.vue:276
@@ -438,7 +442,7 @@ msgid "New"
 msgstr "Jauns"
 
 #: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:38
 msgid "Commands"
 msgstr "Komandas"
 
@@ -450,7 +454,7 @@ msgstr "Ievadiet komandu vai meklējiet lapas, failus un elementus"
 msgid "Command or search term"
 msgstr "Komanda vai meklēšanas vārds"
 
-#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:98
 msgid "then"
 msgstr "tad"
 
@@ -483,7 +487,7 @@ msgstr[2] ""
 "Šie %{num} ieraksti tiks neatgriezeniski dzēsti, un tos nevarēs atjaunot:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
-#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
 msgstr "Atcelt"
 
@@ -532,7 +536,7 @@ msgstr "Pārslēgt sānu izvēlni"
 #: js/components/FileListItems.vue:903 js/components/PageBulkDialog.vue:155
 #: js/components/PageListItems.vue:1723 js/components/PageListItems.vue:1873
 msgid "Edit properties"
-msgstr "Rediģēt īpašības"
+msgstr "Rediģēt rekvizītus"
 
 #: js/components/EditBulkDialog.vue:63
 msgid "Apply the selected properties to %{num} entry."
@@ -541,19 +545,19 @@ msgstr[0] "Lietot atlasītos rekvizītus %{num} ierakstam."
 msgstr[1] "Lietot atlasītos rekvizītus %{num} ierakstiem."
 msgstr[2] "Lietot atlasītos rekvizītus %{num} ierakstiem."
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
-#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:259
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language"
 msgstr "Valoda"
 
-#: js/components/EditBulkDialog.vue:77
+#: js/components/EditBulkDialog.vue:76
 msgid "Language of the content"
 msgstr "Satura valoda"
 
-#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
-#: js/components/PageBulkDialog.vue:277
+#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "Lietot"
 
@@ -564,11 +568,11 @@ msgstr "Lietot"
 msgid "Name"
 msgstr "Nosaukums"
 
-#: js/components/ElementDetailItem.vue:76
+#: js/components/ElementDetailItem.vue:75
 msgid "Name to find the shared element in the element list"
-msgstr "Nosaukums, pēc kura atrast koplietoto elementu elementu sarakstā"
+msgstr "Nosaukums, pēc kura atrast koplietojamo elementu elementu sarakstā"
 
-#: js/components/ElementDetailItem.vue:90
+#: js/components/ElementDetailItem.vue:88
 msgid "Language of the element content, choose none if used in all languages"
 msgstr "Elementa satura valoda, izvēlieties nav, ja izmanto visās valodās"
 
@@ -581,6 +585,7 @@ msgid "no"
 msgstr "nē"
 
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
+#: js/components/FileUrlDialog.vue:227
 msgid "URL"
 msgstr "URL"
 
@@ -608,17 +613,17 @@ msgstr "Publicēts"
 #: js/components/PageListItems.vue:729
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
-msgstr[0] "%{num} ieraksts pārvietots uz miskasti"
-msgstr[1] "%{num} ieraksti pārvietoti uz miskasti"
-msgstr[2] "%{num} ierakstu pārvietoti uz miskasti"
+msgstr[0] "%{num} ieraksts pārvietots uz atkritni"
+msgstr[1] "%{num} ieraksti pārvietoti uz atkritni"
+msgstr[2] "%{num} ieraksti pārvietoti uz atkritni"
 
 #: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:943
 #: js/components/FileDetailItemImage.vue:948
-#: js/components/FileDetailItemImage.vue:953
 #: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
 #: js/components/PageListItems.vue:708
 msgid "Undo"
-msgstr "Atcelt"
+msgstr "Atsaukt"
 
 #: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
@@ -690,16 +695,16 @@ msgstr "Atsvaidzināt"
 
 #: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
 msgid "Reload elements"
-msgstr "Atjaunot elementus"
+msgstr "Atkārtoti ielādēt elementus"
 
-#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1028
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
 #: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
 #: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
-msgstr "Ielāde"
+msgstr "Notiek ielāde"
 
-#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1044
 #: js/components/PageListItems.vue:2056
 msgid "No entries yet"
 msgstr "Vēl nav ierakstu"
@@ -768,49 +773,49 @@ msgstr "Mainīt uz"
 msgid "Edit"
 msgstr "Rediģēt"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
-#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:275
+#: js/components/FileAiDialog.vue:302 js/components/FileUrlDialog.vue:239
 #: js/components/PageDetailContentList.vue:877
 #: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
 #: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "Noņemt"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
+#: js/components/FileAiDialog.vue:133 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
 #: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
-msgstr "Kļūda pievienojot failu %{path}"
+msgstr "Kļūda, pievienojot failu %{path}"
 
-#: js/components/FileAiDialog.vue:182
+#: js/components/FileAiDialog.vue:185
 msgid "Error creating file"
 msgstr "Kļūda, veidojot failu"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:241
 msgid "Create image"
 msgstr "Izveidot attēlu"
 
-#: js/components/FileAiDialog.vue:256
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the image content"
 msgstr "Aprakstiet attēla saturu"
 
-#: js/components/FileAiDialog.vue:257
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Aprakstiet ģenerējamā attēla tematu, stilu un krāsas"
 
-#: js/components/FileAiDialog.vue:264
+#: js/components/FileAiDialog.vue:266
 msgid "New image"
 msgstr "Jauns attēls"
 
-#: js/components/FileAiDialog.vue:268
+#: js/components/FileAiDialog.vue:270
 msgid "Current images"
 msgstr "Pašreizējie attēli"
 
-#: js/components/FileAiDialog.vue:293
+#: js/components/FileAiDialog.vue:295
 msgid "Images used"
 msgstr "Izmantotie attēli"
 
-#: js/components/FileAiDialog.vue:310
+#: js/components/FileAiDialog.vue:312
 msgid "Select images"
 msgstr "Atlasiet attēlus"
 
@@ -829,56 +834,56 @@ msgstr "Kļūda, saglabājot failu"
 
 #: js/components/FileDetailItem.vue:239
 msgid "Transcription is only available for audio and video files"
-msgstr "Transkripcija ir pieejama tikai audio un video failiem."
+msgstr "Transkripcija ir pieejama tikai audio un video failiem"
 
-#: js/components/FileDetailItem.vue:392
+#: js/components/FileDetailItem.vue:391
 msgid "Name to find the file in the media list"
 msgstr "Nosaukums, pēc kura atrast failu multivides sarakstā"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:404
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "Faila satura valoda, izvēlieties nav, ja izmanto visās valodās"
 
-#: js/components/FileDetailItem.vue:416
+#: js/components/FileDetailItem.vue:414
 msgid "Copy URL"
 msgstr "Kopēt URL"
 
-#: js/components/FileDetailItem.vue:459
+#: js/components/FileDetailItem.vue:457
 msgid "Descriptions"
 msgstr "Apraksti"
 
-#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
+#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
 msgid "Translate text"
 msgstr "Tulkot tekstu"
 
-#: js/components/FileDetailItem.vue:475
+#: js/components/FileDetailItem.vue:473
 msgid "Generate description"
-msgstr "Izveidot aprakstu"
+msgstr "Ģenerēt aprakstu"
 
-#: js/components/FileDetailItem.vue:502
+#: js/components/FileDetailItem.vue:500
 msgid "Description (%{lang})"
 msgstr "Apraksts (%{lang})"
 
-#: js/components/FileDetailItem.vue:503
+#: js/components/FileDetailItem.vue:500
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Alternatīvais teksts ekrāna lasītājiem un meklētājprogrammām, izmantots arī "
 "kā paraksts"
 
-#: js/components/FileDetailItem.vue:519
+#: js/components/FileDetailItem.vue:516
 msgid "Transcriptions"
 msgstr "Transkripcijas"
 
-#: js/components/FileDetailItem.vue:535
+#: js/components/FileDetailItem.vue:532
 msgid "Transcribe file content"
 msgstr "Transkribēt faila saturu"
 
-#: js/components/FileDetailItem.vue:553
+#: js/components/FileDetailItem.vue:550
 msgid "Transcription (%{lang})"
 msgstr "Transkripcija (%{lang})"
 
-#: js/components/FileDetailItem.vue:554
+#: js/components/FileDetailItem.vue:550
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 "Runātais teksts WebVTT formātā, tiek rādīts kā subtitri un transkripcija"
@@ -910,7 +915,7 @@ msgstr "Kļūda, palielinot attēla izšķirtspēju"
 #: js/components/FileDetailItemImage.vue:647
 #: js/components/FileDetailItemImage.vue:652
 msgid "Select area"
-msgstr "Izvēlieties apgabalu"
+msgstr "Atlasīt apgabalu"
 
 #: js/components/FileDetailItemImage.vue:664
 msgid "Original ratio"
@@ -934,7 +939,7 @@ msgstr "Izdzēst atlasīto apgabalu"
 
 #: js/components/FileDetailItemImage.vue:743
 #: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:765
 msgid "Edit image"
 msgstr "Rediģēt attēlu"
 
@@ -942,88 +947,88 @@ msgstr "Rediģēt attēlu"
 msgid "Describe the changes"
 msgstr "Aprakstiet izmaiņas"
 
-#: js/components/FileDetailItemImage.vue:757
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "Aprakstiet, kas jāmaina attēlā, piemēram, padariet debesis zilas"
 
-#: js/components/FileDetailItemImage.vue:775
+#: js/components/FileDetailItemImage.vue:774
 msgid "Remove background"
 msgstr "Noņemt fonu"
 
-#: js/components/FileDetailItemImage.vue:785
-#: js/components/FileDetailItemImage.vue:792
-#: js/components/FileDetailItemImage.vue:850
+#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:791
+#: js/components/FileDetailItemImage.vue:845
 msgid "Expand image"
 msgstr "Paplašināt attēlu"
 
-#: js/components/FileDetailItemImage.vue:803
+#: js/components/FileDetailItemImage.vue:802
 msgctxt "image edge"
 msgid "Top"
 msgstr "Augšā"
 
-#: js/components/FileDetailItemImage.vue:804
-#: js/components/FileDetailItemImage.vue:817
-#: js/components/FileDetailItemImage.vue:828
-#: js/components/FileDetailItemImage.vue:841
+#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:836
 msgid "Number of pixels added at this side of the image"
 msgstr "Šai attēla malai pievienoto pikseļu skaits"
 
-#: js/components/FileDetailItemImage.vue:816
+#: js/components/FileDetailItemImage.vue:814
 msgctxt "image edge"
 msgid "Left"
 msgstr "Pa kreisi"
 
-#: js/components/FileDetailItemImage.vue:827
+#: js/components/FileDetailItemImage.vue:824
 msgctxt "image edge"
 msgid "Right"
 msgstr "Pa labi"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:836
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Apakšā"
 
-#: js/components/FileDetailItemImage.vue:858
-#: js/components/FileDetailItemImage.vue:865
+#: js/components/FileDetailItemImage.vue:853
+#: js/components/FileDetailItemImage.vue:860
 msgid "Upscale image"
 msgstr "Palielināt attēla izšķirtspēju"
 
-#: js/components/FileDetailItemImage.vue:878
-#: js/components/FileDetailItemImage.vue:888
-#: js/components/FileDetailItemImage.vue:898
-#: js/components/FileDetailItemImage.vue:908
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:883
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
 msgid "Scale %{factor}"
 msgstr "Mērogs %{factor}"
 
-#: js/components/FileDetailItemImage.vue:917
+#: js/components/FileDetailItemImage.vue:912
 msgid "Rotate counter-clockwise"
 msgstr "Pagriezt pretēji pulksteņrādītāja virzienam"
 
-#: js/components/FileDetailItemImage.vue:923
+#: js/components/FileDetailItemImage.vue:918
 msgid "Rotate clockwise"
 msgstr "Pagriezt pulksteņrādītāja virzienā"
 
-#: js/components/FileDetailItemImage.vue:930
+#: js/components/FileDetailItemImage.vue:925
 msgid "Flip horizontally"
 msgstr "Apvērst horizontāli"
 
-#: js/components/FileDetailItemImage.vue:936
+#: js/components/FileDetailItemImage.vue:931
 msgid "Flip vertically"
 msgstr "Apvērst vertikāli"
 
-#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:938
 msgid "Convert to monochrome"
 msgstr "Pārvērst melnbaltā attēlā"
 
-#: js/components/FileDetailItemImage.vue:946
+#: js/components/FileDetailItemImage.vue:941
 msgid "Download"
 msgstr "Lejupielādēt"
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:957
 msgid "Previous edit"
 msgstr "Iepriekšējā rediģēšana"
 
-#: js/components/FileDetailItemImage.vue:967
+#: js/components/FileDetailItemImage.vue:962
 msgid "Original"
 msgstr "Oriģināls"
 
@@ -1069,7 +1074,7 @@ msgstr "Kļūda, atjaunojot failu"
 
 #: js/components/FileListItems.vue:539 js/views/FileDetail.vue:253
 msgid "Error publishing file"
-msgstr "Kļūda publicējot failu"
+msgstr "Kļūda, publicējot failu"
 
 #: js/components/FileListItems.vue:575
 msgid "Error purging file"
@@ -1077,17 +1082,17 @@ msgstr "Kļūda, neatgriezeniski dzēšot failu"
 
 #: js/components/FileListItems.vue:672
 msgid "Error fetching files"
-msgstr "Kļūda failu iegūšanā"
+msgstr "Kļūda, ielādējot failus"
 
 #: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
-#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
+#: js/components/FileListItems.vue:1054 js/components/FileListItems.vue:1064
 #: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
 #: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "Pievienot failus"
 
-#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
-#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1009
+#: js/components/FileListItems.vue:1064 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Aizsargāt ar lapas piekļuvi"
 
@@ -1115,23 +1120,27 @@ msgstr "Vismaz viens URL ir garāks par 255 rakstzīmēm"
 
 #: js/components/FileUrlDialog.vue:152
 msgid "At least one file is not of type \"%{mime}*\""
-msgstr "Vismaz viens fails nav \"%{mime}*\" tipa."
+msgstr "Vismaz viens fails nav \"%{mime}*\" tipa"
 
 #: js/components/FileUrlDialog.vue:156
 msgid "The file is not of type \"%{mime}*\""
-msgstr "Failam nav tipa \"%{mime}*\""
+msgstr "Fails nav \"%{mime}*\" tipa"
 
 #: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
-msgstr "Failu pievienošana no URL"
+msgstr "Pievienot failus no URL"
 
-#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:441
+#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:442
 msgid "Add file"
 msgstr "Pievienot failu"
 
 #: js/components/FileUrlDialog.vue:209
 msgid "Enter one URL per line"
 msgstr "Ievadiet vienu URL katrā rindā"
+
+#: js/components/FileUrlDialog.vue:210
+msgid "URLs"
+msgstr "URL adreses"
 
 #: js/components/FileUrlDialog.vue:210
 msgid "Files are downloaded from these URLs and added to the media list"
@@ -1232,11 +1241,11 @@ msgstr "Vēsture"
 
 #: js/components/HistoryDialog.vue:203
 msgid "Error fetching versions"
-msgstr "Ienesot versijas, radās kļūda"
+msgstr "Kļūda, ielādējot versijas"
 
 #: js/components/HistoryDialog.vue:204
 msgid "Retry"
-msgstr "Mēģiniet vēlreiz"
+msgstr "Mēģināt vēlreiz"
 
 #: js/components/HistoryDialog.vue:218
 msgid "Current changes"
@@ -1244,7 +1253,7 @@ msgstr "Pašreizējās izmaiņas"
 
 #: js/components/HistoryDialog.vue:224
 msgid "Scheduled for %{date}"
-msgstr "Paredzēts %{date}"
+msgstr "Ieplānots %{date}"
 
 #: js/components/HistoryDialog.vue:232
 msgid "Select all"
@@ -1280,7 +1289,7 @@ msgstr "%{selected} no %{total} atlasīts atgriešanai"
 
 #: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
-msgstr "Atsaukt atlasītās izmaiņas"
+msgstr "Atgriezt atlasītās izmaiņas"
 
 #: js/components/HistoryDialog.vue:320
 msgid "Restore previous version"
@@ -1329,7 +1338,8 @@ msgstr[0] "%{num} rinda ir izlaista"
 msgstr[1] "%{num} rindas ir izlaistas"
 msgstr[2] "%{num} rindas ir izlaistas"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
+#: js/components/ListSort.vue:27
+msgctxt "editor person"
 msgid "Editor"
 msgstr "Redaktors"
 
@@ -1369,7 +1379,7 @@ msgstr "Kārtot pēc"
 msgid "Panels"
 msgstr "Paneļi"
 
-#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:88
 msgid "Keyboard shortcuts"
 msgstr "Īsinājumtaustiņi"
 
@@ -1381,6 +1391,10 @@ msgstr "Mainot piekļuvi lapai, radās kļūda"
 msgid "Access changes take effect immediately after cache expiry"
 msgstr ""
 "Piekļuves izmaiņas stājas spēkā tūlīt pēc kešatmiņas derīguma termiņa beigām"
+
+#: js/components/PageAccess.vue:174
+msgid "Visibility"
+msgstr "Redzamība"
 
 #: js/components/PageAccess.vue:174
 msgid ""
@@ -1405,22 +1419,22 @@ msgstr "Autentificēti lietotāji"
 msgid "Access"
 msgstr "Piekļuve"
 
-#: js/components/PageAccess.vue:188
+#: js/components/PageAccess.vue:187
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Lapu var skatīt tikai apmeklētāji ar kādu no šīm lomām"
 
-#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
+#: js/components/PageAccess.vue:197 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Lapu lielapjoma izmaiņas ir ierobežotas līdz 1000 lapām"
 
-#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "Lietot rekursīvi"
 
 #: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:56
 #: js/views/PageList.vue:177
 msgid "No cache"
-msgstr "Nav kešatmiņas"
+msgstr "Bez kešatmiņas"
 
 #: js/components/PageBulkDialog.vue:55 js/components/PageBulkDialog.vue:56
 #: js/components/PageBulkDialog.vue:57 js/components/PageBulkDialog.vue:58
@@ -1455,7 +1469,7 @@ msgstr "Atspējots"
 #: js/components/PageBulkDialog.vue:67 js/components/PageDetailItemProps.vue:69
 #: js/views/PageList.vue:167
 msgid "Enabled"
-msgstr "Ieslēgts"
+msgstr "Iespējots"
 
 #: js/components/PageBulkDialog.vue:68 js/components/PageDetailItemProps.vue:70
 msgid "Hidden in navigation"
@@ -1481,8 +1495,8 @@ msgstr "Mainīt statusu"
 msgid "Status"
 msgstr "Statuss"
 
-#: js/components/PageBulkDialog.vue:178
-#: js/components/PageDetailItemProps.vue:245
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1490,84 +1504,84 @@ msgstr ""
 "Atspējotas lapas ir bezsaistē, slēptas lapas ir tiešsaistē, bet netiek "
 "rādītas navigācijā"
 
-#: js/components/PageBulkDialog.vue:187
+#: js/components/PageBulkDialog.vue:186
 msgid "Change cache time"
 msgstr "Mainīt kešatmiņas laiku"
 
-#: js/components/PageBulkDialog.vue:192
-#: js/components/PageDetailItemProps.vue:370
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "Cache time"
 msgstr "Kešatmiņas laiks"
 
-#: js/components/PageBulkDialog.vue:193
-#: js/components/PageDetailItemProps.vue:371
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Cik ilgi ģenerētā lapa tiek glabāta kešatmiņā, pirms tā tiek izveidota no "
 "jauna"
 
-#: js/components/PageBulkDialog.vue:202
+#: js/components/PageBulkDialog.vue:200
 msgid "Change language"
 msgstr "Mainīt valodu"
 
-#: js/components/PageBulkDialog.vue:208
-#: js/components/PageDetailItemProps.vue:260
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language of the page content"
 msgstr "Lapas satura valoda"
 
-#: js/components/PageBulkDialog.vue:215
+#: js/components/PageBulkDialog.vue:212
 msgid "Change theme"
 msgstr "Mainīt tēmu"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:336
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Theme"
 msgstr "Tēma"
 
-#: js/components/PageBulkDialog.vue:221
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Design used to display the page"
 msgstr "Dizains, ko izmanto lapas attēlošanai"
 
-#: js/components/PageBulkDialog.vue:228
+#: js/components/PageBulkDialog.vue:224
 msgid "Change page type"
 msgstr "Mainīt lapas tipu"
 
-#: js/components/PageBulkDialog.vue:233
-#: js/components/PageDetailItemProps.vue:346
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Page type"
 msgstr "Lapas tips"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:347
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Template of the theme which defines the page layout"
 msgstr "Tēmas veidne, kas nosaka lapas izkārtojumu"
 
-#: js/components/PageBulkDialog.vue:241
+#: js/components/PageBulkDialog.vue:236
 msgid "Change tag"
-msgstr "Mainīt tagu"
+msgstr "Mainīt birku"
 
-#: js/components/PageBulkDialog.vue:245
-#: js/components/PageDetailItemProps.vue:358
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Page tag"
 msgstr "Lapas birka"
 
-#: js/components/PageBulkDialog.vue:246
-#: js/components/PageDetailItemProps.vue:359
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Iekšējais identifikators lapas atrašanai veidnēs, piemēram, blog"
 
-#: js/components/PageBulkDialog.vue:255
+#: js/components/PageBulkDialog.vue:249
 msgid "Change domain"
 msgstr "Mainīt domēnu"
 
-#: js/components/PageBulkDialog.vue:260
-#: js/components/PageDetailItemProps.vue:320
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain"
 msgstr "Domēns"
 
-#: js/components/PageBulkDialog.vue:261
-#: js/components/PageDetailItemProps.vue:321
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domēns, kurā lapa ir pieejama, piemēram, example.com"
 
@@ -1617,7 +1631,7 @@ msgstr "Rādīt palīdzību"
 
 #: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
-msgstr "Pilnveido..."
+msgstr "Precizē ..."
 
 #: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
@@ -1632,11 +1646,11 @@ msgstr "Palīdzība"
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "Mākslīgais intelekts var pievienot vai uzlabot saturu, pamatojoties uz jūsu "
-"ievadītajiem datiem."
+"ievadītajiem datiem"
 
 #: js/components/PageDetailContentList.vue:837
 msgid "It can take a long time depending on the task and content size"
-msgstr "Tas var aizņemt ilgu laiku atkarībā no uzdevuma un satura apjoma."
+msgstr "Tas var aizņemt ilgu laiku atkarībā no uzdevuma un satura apjoma"
 
 #: js/components/PageDetailContentList.vue:862
 #: js/components/PageDetailContentList.vue:958
@@ -1682,25 +1696,25 @@ msgid "Make shared"
 msgstr "Padarīt koplietojamu"
 
 #: js/components/PageDetailContentList.vue:1001
-msgid "Merge copy"
-msgstr "Apvienot kopiju"
+msgid "Replace with local copy"
+msgstr "Aizstāt ar lokālu kopiju"
 
 #: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "Sadalīt"
 
-#: js/components/PageDetailEditor.vue:78
+#: js/components/PageDetailEditor.vue:80
 msgid "Double-click to edit"
 msgstr "Divreiz noklikšķiniet, lai rediģētu"
 
-#: js/components/PageDetailEditor.vue:266
+#: js/components/PageDetailEditor.vue:269
 msgid "Preview mode"
 msgstr "Priekšskatījuma režīms"
 
-#: js/components/PageDetailEditor.vue:269
+#: js/components/PageDetailEditor.vue:272
 msgid "Not CMS content"
-msgstr "Ne CMS saturs"
+msgstr "Nav CMS saturs"
 
 #: js/components/PageDetailItem.vue:95
 msgid "Detail"
@@ -1712,7 +1726,7 @@ msgstr "Meta"
 
 #: js/components/PageDetailItem.vue:109
 msgid "Config"
-msgstr "Konfigurēšana"
+msgstr "Konfigurācija"
 
 #: js/components/PageDetailItemProps.vue:78
 #: js/components/PageDetailItemProps.vue:100
@@ -1733,35 +1747,35 @@ msgstr "URL nav derīgs"
 msgid "The path is already in use by another page"
 msgstr "Ceļš jau tiek izmantots citā lapā"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:272
 msgid "Page title"
 msgstr "Lapas virsraksts"
 
-#: js/components/PageDetailItemProps.vue:275
+#: js/components/PageDetailItemProps.vue:272
 msgid "Shown in the browser tab and search results"
 msgstr "Tiek rādīts pārlūka cilnē un meklēšanas rezultātos"
 
-#: js/components/PageDetailItemProps.vue:286
+#: js/components/PageDetailItemProps.vue:283
 msgid "Page name"
 msgstr "Lapas nosaukums"
 
-#: js/components/PageDetailItemProps.vue:287
+#: js/components/PageDetailItemProps.vue:283
 msgid "Short name shown in the navigation menus"
 msgstr "Īss nosaukums, kas tiek rādīts navigācijas izvēlnēs"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:298
 msgid "URL path"
 msgstr "URL ceļš"
 
-#: js/components/PageDetailItemProps.vue:303
+#: js/components/PageDetailItemProps.vue:298
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Lapas URL daļa pēc domēna, piemēram, about-us"
 
-#: js/components/PageDetailItemProps.vue:387
+#: js/components/PageDetailItemProps.vue:377
 msgid "Redirect URL"
 msgstr "Pārvirzīšanas URL"
 
-#: js/components/PageDetailItemProps.vue:388
+#: js/components/PageDetailItemProps.vue:377
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Apmeklētāji tiek pārvirzīti uz šo URL, nevis redz lapu"
 
@@ -1793,7 +1807,7 @@ msgstr "Ilgums"
 #: js/components/PageDetailMetrics.vue:172
 #: js/components/PageDetailMetrics.vue:576
 msgid "Impressions"
-msgstr "Seansi"
+msgstr "Parādījumi"
 
 #: js/components/PageDetailMetrics.vue:173
 #: js/components/PageDetailMetrics.vue:577
@@ -1818,15 +1832,15 @@ msgstr "Apmeklējuma ilgums (minūtes)"
 
 #: js/components/PageDetailMetrics.vue:196
 msgid "Google Impressions"
-msgstr "Google seansi"
+msgstr "Google parādījumi"
 
 #: js/components/PageDetailMetrics.vue:197
 msgid "Google Clicks"
 msgstr "Google klikšķi"
 
 #: js/components/PageDetailMetrics.vue:198
-msgid "Google Conversion Rate"
-msgstr "Google konversijas koeficients"
+msgid "Google click-through rate"
+msgstr "Google vidējais klikšķu skaits"
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
@@ -1886,7 +1900,7 @@ msgstr "Lapas ātrums"
 
 #: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
-msgstr "Meklēšana pakalpojumā Google: Pieprasījumi"
+msgstr "Google meklēšana: vaicājumi"
 
 #: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
@@ -1899,15 +1913,15 @@ msgstr "Pozīcija"
 
 #: js/components/PageDetailMetrics.vue:606
 msgid "Google Search: Impressions & Clicks"
-msgstr "Google meklēšana: seansi un klikšķi"
+msgstr "Google meklēšana: parādījumi un klikšķi"
 
 #: js/components/PageDetailMetrics.vue:615
-msgid "Google Search: Conversions"
-msgstr "Meklēšana pakalpojumā Google: Konversijas"
+msgid "Google Search: Click-through rate"
+msgstr "Google meklēšana: vidējais klikšķu skaits"
 
 #: js/components/PageListItems.vue:515
 msgid "Error adding root page"
-msgstr "Kļūda pievienojot saknes lapu"
+msgstr "Kļūda, pievienojot saknes lapu"
 
 #: js/components/PageListItems.vue:536
 msgid "Page moved"
@@ -1938,7 +1952,7 @@ msgstr "Kļūda, atjaunojot lapu"
 
 #: js/components/PageListItems.vue:827
 msgid "Error fetching pages"
-msgstr "Kļūda lapu ielādēšanā"
+msgstr "Kļūda, ielādējot lapas"
 
 #: js/components/PageListItems.vue:908
 msgid "Error inserting page"
@@ -1962,7 +1976,7 @@ msgstr "Kļūda, kopējot lapu"
 
 #: js/components/PageListItems.vue:1178 js/views/PageDetail.vue:281
 msgid "Error fetching page"
-msgstr "Kļūda lapas iegūšanā"
+msgstr "Kļūda, ielādējot lapu"
 
 #: js/components/PageListItems.vue:1252 js/views/PageDetail.vue:499
 msgid "Error publishing page"
@@ -1984,7 +1998,7 @@ msgstr[1] "%{num} lapas nevarēja atjaunināt"
 msgstr[2] "%{num} lapas nevarēja atjaunināt"
 
 #: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
-#: js/views/PageDetail.vue:624
+#: js/views/PageDetail.vue:639
 msgid "Error saving page"
 msgstr "Kļūda, saglabājot lapu"
 
@@ -1995,12 +2009,12 @@ msgstr "Kļūda, meklējot lapas"
 #: js/components/PageListItems.vue:1712 js/components/PageListItems.vue:1858
 msgctxt "page status"
 msgid "Enable"
-msgstr "Ieslēgt"
+msgstr "Iespējot"
 
 #: js/components/PageListItems.vue:1717 js/components/PageListItems.vue:1863
 msgctxt "page status"
 msgid "Disable"
-msgstr "Atslēgt"
+msgstr "Atspējot"
 
 #: js/components/PageListItems.vue:1733 js/components/PageListItems.vue:1883
 msgid "Clear cache"
@@ -2062,11 +2076,11 @@ msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Lietot piekļuves iestatījumus %{num} lapai."
 msgstr[1] "Lietot piekļuves iestatījumus %{num} lapām."
-msgstr[2] "Lietot piekļuves iestatījumus %{num} lapu."
+msgstr[2] "Lietot piekļuves iestatījumus %{num} lapām."
 
 #: js/components/ReloginDialog.vue:95
 msgid "You are not signed in yet"
-msgstr "Jūs vēl neesat pierakstījies"
+msgstr "Jūs vēl neesat pieteicies"
 
 #: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
 #: js/stores.js:353 js/views/Login.vue:146
@@ -2080,14 +2094,14 @@ msgstr "Sesija ir beigusies"
 #: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
 #: js/components/User.vue:134
 msgid "Logout"
-msgstr "Izrakstīšanās"
+msgstr "Izrakstīties"
 
 #: js/components/ReloginDialog.vue:148
 msgid ""
 "Please sign in again in the new tab and return here to continue. Your "
 "unsaved changes are kept."
 msgstr ""
-"Lūdzu, pierakstieties vēlreiz jaunajā cilnē un atgriezieties šeit, lai "
+"Lūdzu, piesakieties vēlreiz jaunajā cilnē un atgriezieties šeit, lai "
 "turpinātu. Jūsu nesaglabātās izmaiņas tiek saglabātas."
 
 #: js/components/ReloginDialog.vue:154
@@ -2096,9 +2110,9 @@ msgstr ""
 "Lai turpinātu, lūdzu, piesakieties vēlreiz. Jūsu nesaglabātās izmaiņas tiek "
 "saglabātas."
 
-#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:237
 msgid "Sign in"
-msgstr "Pierakstīties"
+msgstr "Pieteikties"
 
 #: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
 msgid "E-Mail"
@@ -2120,9 +2134,9 @@ msgstr "Rādīt paroli"
 msgid "Continue"
 msgstr "Turpināt"
 
-#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:240
 msgid "Login"
-msgstr "Pieteikšanās"
+msgstr "Pieteikties"
 
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
@@ -2133,84 +2147,84 @@ msgid "New elements"
 msgstr "Jauni elementi"
 
 #: js/components/SchemaItems.vue:106
-msgid "uncategorized"
-msgstr "neklasificēts"
+msgid "Uncategorized"
+msgstr "Neklasificēts"
 
 #: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "Kļūda, ielādējot satura elementus"
 
-#: js/components/ShortcutDialog.vue:23
+#: js/components/ShortcutDialog.vue:29
 msgid "General"
 msgstr "Vispārīgi"
 
-#: js/components/ShortcutDialog.vue:28
+#: js/components/ShortcutDialog.vue:34
 msgid "Close dialog or menu"
 msgstr "Aizvērt dialogu vai izvēlni"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:40
 msgid "Move between commands and results"
 msgstr "Pārvietoties starp komandām un rezultātiem"
 
-#: js/components/ShortcutDialog.vue:35
+#: js/components/ShortcutDialog.vue:41
 msgid "Run command or open result"
 msgstr "Izpildīt komandu vai atvērt rezultātu"
 
-#: js/components/ShortcutDialog.vue:36
+#: js/components/ShortcutDialog.vue:42
 msgid "Close command palette"
 msgstr "Aizvērt komandu paleti"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:46
 msgid "Lists"
 msgstr "Saraksti"
 
-#: js/components/ShortcutDialog.vue:44
+#: js/components/ShortcutDialog.vue:50
 msgid "Edit views"
 msgstr "Rediģēšanas skati"
 
-#: js/components/ShortcutDialog.vue:48
+#: js/components/ShortcutDialog.vue:54
 msgid "Page content"
 msgstr "Lapas saturs"
 
-#: js/components/ShortcutDialog.vue:49
+#: js/components/ShortcutDialog.vue:55
 msgid "Move content element up or down"
 msgstr "Pārvietot satura elementu augšup vai lejup"
 
-#: js/components/ShortcutDialog.vue:52
+#: js/components/ShortcutDialog.vue:58
 msgid "Page tree"
 msgstr "Lapu koks"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:61
 msgid "Move between pages"
 msgstr "Pārvietoties starp lapām"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:62
 msgid "Expand page"
 msgstr "Izvērst lapu"
 
-#: js/components/ShortcutDialog.vue:56
+#: js/components/ShortcutDialog.vue:63
 msgid "Add subpage to focused page"
 msgstr "Pievienot apakšlapu fokusētajai lapai"
 
-#: js/components/ShortcutDialog.vue:57
+#: js/components/ShortcutDialog.vue:64
 msgid "Reorder or re-nest page"
 msgstr "Pārkārtot lapu vai mainīt tās līmeni"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:70
 msgid "AI chat"
 msgstr "AI tērzēšana"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:73
 msgid "Send message"
 msgstr "Sūtīt ziņu"
 
-#: js/components/ShortcutDialog.vue:65
+#: js/components/ShortcutDialog.vue:74
 msgid "New line"
 msgstr "Jauna rinda"
 
-#: js/components/ShortcutDialog.vue:66
+#: js/components/ShortcutDialog.vue:75
 msgid "Recall previous messages"
-msgstr "Atgriezt iepriekšējās ziņas"
+msgstr "Izsaukt iepriekšējās ziņas"
 
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
@@ -2221,11 +2235,11 @@ msgid "You have unsaved changes that will be lost if you leave."
 msgstr ""
 "Jums ir nesaglabātas izmaiņas, kas tiks zaudētas, ja jūs aizvērsiet lapu."
 
-#: js/components/UnsavedDialog.vue:49
+#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
-msgstr "Atcelt"
+msgstr "Atmest"
 
-#: js/components/UnsavedDialog.vue:58
+#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "Saglabāt un aiziet"
 
@@ -2257,27 +2271,27 @@ msgstr "Vērtībai jābūt heksadecimālam krāsas kodam"
 msgid "File is required"
 msgstr "Fails ir obligāts"
 
-#: js/fields/File.vue:448
+#: js/fields/File.vue:449
 msgid "Add file from URL"
-msgstr "Failu pievienošana no URL"
+msgstr "Pievienot failu no URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:430
+#: js/fields/File.vue:457 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "Izveidot failu"
 
-#: js/fields/File.vue:462
+#: js/fields/File.vue:463
 msgid "Upload file"
 msgstr "Augšupielādēt failu"
 
-#: js/fields/File.vue:487
+#: js/fields/File.vue:488
 msgid "Drop file here to upload"
 msgstr "Nometiet failu šeit, lai augšupielādētu"
 
-#: js/fields/File.vue:494
+#: js/fields/File.vue:495
 msgid "name"
 msgstr "nosaukums"
 
-#: js/fields/File.vue:498
+#: js/fields/File.vue:499
 msgid "description"
 msgstr "apraksts"
 
@@ -2299,7 +2313,7 @@ msgstr "Vērtībai ir nederīgs formāts"
 
 #: js/fields/Table.vue:168
 msgid "Move column"
-msgstr "Pārvietot sleju"
+msgstr "Pārvietot kolonnu"
 
 #: js/fields/Table.vue:185
 msgid "Column actions"
@@ -2319,7 +2333,7 @@ msgstr "Nav"
 
 #: js/fields/Url.vue:60
 msgid "Sponsored"
-msgstr "Sponsorēta"
+msgstr "Sponsorēts"
 
 #: js/fields/Url.vue:61
 msgid "Nofollow"
@@ -2399,817 +2413,812 @@ msgstr[2] "Atļautas ne vairāk kā %{num} kolonnas"
 msgid "Failed to load plugin"
 msgstr "Neizdevās ielādēt spraudni"
 
-#: js/strings.js:30
-msgctxt "cs"
-msgid "main"
-msgstr "galvenais"
-
-#: js/strings.js:31
-msgctxt "cs"
-msgid "header"
-msgstr "galvene"
-
 #: js/strings.js:32
 msgctxt "cs"
-msgid "footer"
-msgstr "kājene"
+msgid "main"
+msgstr "Galvenais"
 
 #: js/strings.js:33
 msgctxt "cs"
-msgid "sidebar"
-msgstr "sānu josla"
+msgid "header"
+msgstr "Galvene"
 
 #: js/strings.js:34
 msgctxt "cs"
-msgid "aside"
-msgstr "sānu bloks"
+msgid "footer"
+msgstr "Kājene"
 
-#: js/strings.js:37
+#: js/strings.js:35
+msgctxt "cs"
+msgid "sidebar"
+msgstr "Sānu josla"
+
+#: js/strings.js:36
+msgctxt "cs"
+msgid "aside"
+msgstr "Sānu bloks"
+
+#: js/strings.js:39
 msgctxt "sg"
 msgid "basic"
 msgstr "pamata"
 
-#: js/strings.js:38
+#: js/strings.js:40
 msgctxt "sg"
 msgid "content"
 msgstr "saturs"
 
-#: js/strings.js:39
+#: js/strings.js:41
 msgctxt "sg"
 msgid "media"
 msgstr "multivide"
 
-#: js/strings.js:40
+#: js/strings.js:42
 msgctxt "sg"
 msgid "forms"
 msgstr "veidlapas"
 
-#: js/strings.js:43
+#: js/strings.js:45
 msgctxt "as"
 msgid "type"
 msgstr "tips"
 
-#: js/strings.js:44
+#: js/strings.js:46
 msgctxt "as"
 msgid "state"
 msgstr "statuss"
 
-#: js/strings.js:47
+#: js/strings.js:49
 msgctxt "st"
 msgid "valid"
 msgstr "derīgs"
 
-#: js/strings.js:48
+#: js/strings.js:50
 msgctxt "st"
 msgid "changed"
 msgstr "mainīts"
 
-#: js/strings.js:49
+#: js/strings.js:51
 msgctxt "st"
 msgid "error"
 msgstr "kļūda"
 
-#: js/strings.js:52
+#: js/strings.js:54
 msgctxt "st"
 msgid "reference"
 msgstr "atsauce"
 
-#: js/strings.js:53
+#: js/strings.js:55
 msgctxt "st"
 msgid "heading"
 msgstr "virsraksts"
 
-#: js/strings.js:54
+#: js/strings.js:56
 msgctxt "st"
 msgid "text"
 msgstr "teksts"
 
-#: js/strings.js:55
+#: js/strings.js:57
 msgctxt "st"
 msgid "image-text"
 msgstr "attēls-teksts"
 
-#: js/strings.js:56
+#: js/strings.js:58
 msgctxt "st"
 msgid "slideshow"
-msgstr "diapozitīvu šovs"
+msgstr "slaidrāde"
 
-#: js/strings.js:57
+#: js/strings.js:59
 msgctxt "st"
 msgid "code"
 msgstr "kods"
 
-#: js/strings.js:58
+#: js/strings.js:60
 msgctxt "st"
 msgid "table"
 msgstr "tabula"
 
-#: js/strings.js:59
+#: js/strings.js:61
 msgctxt "st"
 msgid "map"
 msgstr "karte"
 
-#: js/strings.js:60
+#: js/strings.js:62
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:61
+#: js/strings.js:63
 msgctxt "st"
 msgid "image"
 msgstr "attēls"
 
-#: js/strings.js:62
+#: js/strings.js:64
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:63
+#: js/strings.js:65
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:64
+#: js/strings.js:66
 msgctxt "st"
 msgid "file"
 msgstr "fails"
 
-#: js/strings.js:65
+#: js/strings.js:67
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:66
+#: js/strings.js:68
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:67
+#: js/strings.js:69
 msgctxt "st"
 msgid "cards"
 msgstr "Kartītes"
 
-#: js/strings.js:68
+#: js/strings.js:70
 msgctxt "st"
 msgid "blog"
 msgstr "Blogs"
 
-#: js/strings.js:69
+#: js/strings.js:71
 msgctxt "st"
 msgid "article"
 msgstr "Raksts"
 
-#: js/strings.js:70
+#: js/strings.js:72
 msgctxt "st"
 msgid "questions"
 msgstr "BUJ"
 
-#: js/strings.js:71
+#: js/strings.js:73
 msgctxt "st"
 msgid "toc"
-msgstr "saturs"
+msgstr "satura rādītājs"
 
-#: js/strings.js:72
+#: js/strings.js:74
 msgctxt "st"
 msgid "contact"
 msgstr "Kontakti"
 
-#: js/strings.js:73
+#: js/strings.js:75
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metatagi"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "social-media"
 msgstr "Sociālie tīkli"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanoniskais URL"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "robots"
 msgstr "Meklētājprogrammas"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "theme"
 msgstr "Tēma"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "styles"
 msgstr "stili"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "news"
 msgstr "Jaunumi"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "pricing"
 msgstr "Cenu plāni"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "security"
 msgstr "Drošība"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "testimonial"
 msgstr "Atsauksmes"
 
-#: js/strings.js:88
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Sadaļas virsraksts no H1 līdz H6"
 
-#: js/strings.js:89
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatēts teksts ar rindkopām, sarakstiem un saitēm"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Attēls blakus formatētam tekstam"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Pirmkods ar sintakses izcelšanu"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Datu tabula ar neobligātu galvenes rindu vai kolonnu"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktīva karte ar atrašanās vietu, tekstu un saiti"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Pielāgots HTML iegulšanai un logrīkiem"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Single responsive image"
-msgstr "Viens pielāgojams attēls"
+msgstr "Viens adaptīvs attēls"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Mainīgi slaidi ar vairākiem attēliem"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Iegults video ar atskaņošanas vadīklām"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Iegults audio ar atskaņošanas vadīklām"
 
-#: js/strings.js:99
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Lejupielādējams fails, piemēram, PDF dokuments"
 
-#: js/strings.js:100
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Liels ievads ar virsrakstu, tekstu, pogām un fonu"
 
-#: js/strings.js:101
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Aicinājums uz darbību ar tekstu un pogām"
 
-#: js/strings.js:102
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Karšu režģis ar attēlu, virsrakstu un tekstu"
 
-#: js/strings.js:103
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Klientu citāti ar vārdu, amatu un fotoattēlu"
 
-#: js/strings.js:104
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Raksta ievads ar attēlu galeriju un autoru"
 
-#: js/strings.js:105
+#: js/strings.js:107
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Vecāklapas emuāra rakstu saraksts"
 
-#: js/strings.js:106
+#: js/strings.js:108
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Vecāklapas ziņu rakstu saraksts"
 
-#: js/strings.js:107
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Izcelta apakšlapa, kam seko citas apakšlapas"
 
-#: js/strings.js:108
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Cenu plāni ar abonementiem vai vienreizējiem maksājumiem"
 
-#: js/strings.js:109
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Bieži uzdotie jautājumi ar atbildēm"
 
-#: js/strings.js:110
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Satura rādītājs ar saitēm uz lapas virsrakstiem"
 
-#: js/strings.js:111
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Saziņas veidlapa ar konfigurējamiem laukiem"
 
-#: js/strings.js:114
+#: js/strings.js:116
 msgctxt "fn"
 msgid "button"
 msgstr "poga"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "fn"
 msgid "buttons"
 msgstr "pogas"
 
-#: js/strings.js:116
+#: js/strings.js:118
 msgctxt "fn"
 msgid "cards"
 msgstr "Kartītes"
 
-#: js/strings.js:117
+#: js/strings.js:119
 msgctxt "fn"
 msgid "description"
 msgstr "apraksts"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "file"
 msgstr "fails"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "files"
 msgstr "faili"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "follow"
 msgstr "Sekošana saitēm"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "header"
 msgstr "galvene"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksēšana"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "keywords"
 msgstr "atslēgas vārdi"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "language"
 msgstr "valoda"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "label"
-msgstr "etiķete"
+msgstr "uzraksts"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "level"
 msgstr "līmenis"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "limit"
 msgstr "ierobežojums"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "location"
 msgstr "atrašanās vieta"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "main"
 msgstr "Galv. attēls"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "order"
 msgstr "secība"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "parent-page"
-msgstr "vecāku lapa"
+msgstr "vecāklapa"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "position"
 msgstr "pozīcija"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "text"
 msgstr "teksts"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "table"
 msgstr "tabula"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "title"
 msgstr "virsraksts"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "url"
-msgstr "url"
+msgstr "URL"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "image"
 msgstr "attēls"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "images"
 msgstr "attēli"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "items"
 msgstr "vienumi"
 
-#: js/strings.js:141
+#: js/strings.js:143
 msgctxt "fn"
 msgid "introduction"
 msgstr "ievads"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "load immediately"
 msgstr "nekavējoties ielādēt"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "source code"
-msgstr "avota kods"
+msgstr "pirmkods"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Publiskās daļas piekļuves loma"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Maksājumu cenas"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Maksājuma atsauce"
 
-#: js/strings.js:147
-msgctxt "fn"
-msgid "Payment kind"
-msgstr "Maksājuma veids"
-
-#: js/strings.js:148
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valūta"
 
-#: js/strings.js:149
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Norēķinu intervāls"
 
-#: js/strings.js:150
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Cenas vienība"
 
-#: js/strings.js:151
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Mērķa lapa vai saite"
 
-#: js/strings.js:152
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Form fields"
-msgstr "Formas lauki"
+msgstr "Veidlapas lauki"
 
-#: js/strings.js:153
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Field"
 msgstr "Lauks"
 
-#: js/strings.js:154
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Required"
 msgstr "Obligāts"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Link label"
 msgstr "Saites teksts"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontakta URL"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Contact email"
-msgstr "Kontakta epasts"
+msgstr "Kontakta e-pasts"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Description"
 msgstr "Apraksts"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Redzamā cena"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galerija"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Izcēluma teksts"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Izcelts"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Language"
 msgstr "Valoda"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Maksājuma veids"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Vēlamās valodas"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Apakšvirsraksts"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Pateicības"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "amount"
 msgstr "Summa"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "background"
 msgstr "Fons"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "background animation"
 msgstr "Fona animācija"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatīvā poga"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanoniskais URL"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "columns"
 msgstr "Kolonnas"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "encryption"
 msgstr "Šifrēšana"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "expires"
 msgstr "Derīguma termiņš"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "features"
 msgstr "Īpašības"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "hiring"
 msgstr "Vakances"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "layout"
 msgstr "Izkārtojums"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "name"
 msgstr "Nosaukums"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "policy"
 msgstr "Drošības politika"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "ratio"
 msgstr "Attiecība"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "role"
 msgstr "Amats"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Apakšvirsraksts"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatīvā saite"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Teksta fonts"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Virsraksta fonts"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Teksta krāsa"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Fona krāsa"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Atlases krāsa"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrasta krāsa"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "--pico-contrast-hover"
-msgstr "Kontrasta hover krāsa"
+msgstr "Kontrasta krāsa, novietojot kursoru"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrasta teksta krāsa"
 
-#: js/strings.js:194
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Galvenā krāsa"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Galvenais fons"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-primary-hover"
-msgstr "Galvenā hover krāsa"
+msgstr "Galvenā krāsa, novietojot kursoru"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
-msgstr "Galvenais hover fons"
+msgstr "Galvenais fons, novietojot kursoru"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Sekundārā krāsa"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Sekundārais fons"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-secondary-hover"
-msgstr "Sekundārā hover krāsa"
+msgstr "Sekundārā krāsa, novietojot kursoru"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
-msgstr "Sekundārais hover fons"
+msgstr "Sekundārais fons, novietojot kursoru"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Stūra rādiuss"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Navigācijas ceļa atdalītājs"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Virsraksta teksts"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3217,453 +3226,454 @@ msgstr ""
 "1. līmenis ir galvenais lapas virsraksts, augstāki līmeņi strukturē zemāk "
 "esošās sadaļas"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatēts teksts ar rindkopām, sarakstiem un saitēm"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Formatēts teksts, kas redzams blakus attēlam"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Attēls, kas redzams blakus tekstam"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Attēla novietojums attiecībā pret tekstu"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Attēla un teksta platuma attiecība"
 
-#: js/strings.js:213
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Programmēšanas valoda, ko izmanto sintakses izcelšanai"
 
-#: js/strings.js:214
+#: js/strings.js:216
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Pirmkods ar sintakses izcelšanu"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Neobligāts paraksts virs tabulas"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Izmantot pirmo rindu, pirmo kolonnu vai abas kā tabulas galvenes"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
-msgid "Table data as comma separated values, one row per line"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
-"Tabulas dati kā ar komatu atdalītas vērtības, viena rinda katrā rindiņā"
+"Ievadiet datus šūnās; pēc vajadzības pievienojiet vai noņemiet rindas un "
+"kolonnas"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Neobligāts virsraksts virs kartes"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Apraksts, kas redzams blakus kartei, piemēram, adrese vai norādes"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr ""
 "Meklējiet vietu vai noklikšķiniet uz kartes, lai iestatītu atrašanās vietu"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Saites teksts, kas atver atrašanās vietu kartes pakalpojumā"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML kods, kas tiek iekļauts lapā nemainīts, piemēram, iegultiem elementiem "
 "un logrīkiem"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Attēls visā satura zonas platumā"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Ielādēt attēlu bez aizkaves, ja tas ir redzams lapas augšdaļā"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Neobligāts virsraksts virs slaidrādes"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Attēli tiek rādīti cits pēc cita, velciet, lai mainītu secību"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Ielādēt pirmo attēlu bez aizkaves, ja tas ir redzams lapas augšdaļā"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Lapā atskaņots video fails"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Lapā atskaņots audio fails"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Lejupielādei piedāvāts fails"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Galvenais lapas virsraksts"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Īsa rindiņa virs virsraksta"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Ievads zem virsraksta"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Lapa vai saite, uz kuru ved galvenā poga"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Galvenās pogas teksts"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Lapa vai saite, uz kuru ved otrā poga"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Otrās pogas teksts"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Attēls aiz teksta"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Fona attēla animācijas efekts"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Attēli, kas redzami blakus tekstam"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Virsraksts, kas piesaista apmeklētāju uzmanību"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Teksts, kas mudina apmeklētājus rīkoties"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Pogas, kas ved apmeklētājus uz nākamo soli"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Pogas teksts"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Lapa vai saite, uz kuru ved poga"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Neobligāts virsraksts virs kartītēm"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Kartīšu skaits rindā, \"auto\" pielāgojas ekrāna platumam"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Režģī redzamās kartītes"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kartītes virsraksts"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Attēls kartītes augšdaļā"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kartītes teksts"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Lapa vai saite, uz kuru ved kartīte"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Neobligāts virsraksts virs citātiem"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Klientu vai partneru citāti"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Personas citāts"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Personas vārds"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Personas amats vai uzņēmums"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Personas fotoattēls"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Raksta ievads, kas redzams zem lapas virsraksta"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Raksta attēli, pirmais tiek izmantots kā priekšskatījuma attēls"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Raksta autora vārds"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Saite uz autora profila lapu"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Neobligāts virsraksts virs saraksta"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Rādīt lapas kā kartītes vai kā kompaktu sarakstu"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Lapa, kuras apakšlapas tiek uzskaitītas"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Uzskaitīto lapu kārtošanas secība"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Maksimālais vienlaikus redzamo lapu skaits"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Rādīt pārējās apakšlapas kā kartītes vai kā kompaktu sarakstu"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Neobligāts virsraksts virs cenu plāniem"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Īss teksts zem virsraksta"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Blakus rādīti cenu plāni"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Cenu plāna nosaukums"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Loma, kas piešķirta klientiem pēc maksājuma, lai piekļūtu aizsargātām lapām"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Plāna cenas, piemēram, mēneša un gada"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Atkārtots abonements vai vienreizējs maksājums"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Dienu skaits starp diviem maksājumiem, piemēram, 30 ikmēneša plānam"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Trīs burtu ISO valūtas kods, piemēram, EUR vai USD"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Maksājumu pakalpojuma sniedzēja izmantotais cenas ID vai summa"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Apmeklētājiem redzamā formatētā cena, piemēram, 9,99 €"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Skaitliska cena, kas redzama, ja nav iestatīta formatēta cena"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Teksts aiz cenas, piemēram, mēnesī"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Cenu plāna īss apraksts"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Plānā iekļauto funkciju saraksts"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Izcelt šo plānu salīdzinājumā ar pārējiem"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
-msgstr "Īsa etiķete uz izceltā plāna, piemēram, Populārs"
+msgstr "Īss uzraksts uz izceltā plāna, piemēram, Populārs"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Neobligāts virsraksts virs jautājumiem"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Jautājumi un atbildes izvēršamā sarakstā"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Apmeklētāju uzdots jautājums"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Atbilde uz jautājumu"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Neobligāts virsraksts virs satura rādītāja"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Neobligāts virsraksts virs saziņas veidlapas"
 
-#: js/strings.js:292
-msgctxt "fh"
-msgid "Optional text shown between headline and contact form"
-msgstr "Neobligāts teksts starp virsrakstu un kontaktformu"
-
 #: js/strings.js:294
 msgctxt "fh"
-msgid "Form fields shown to visitors in this order"
-msgstr "Formas lauki, kas apmeklētājiem tiek rādīti šādā secībā"
+msgid "Optional text shown between headline and contact form"
+msgstr "Neobligāts teksts starp virsrakstu un saziņas veidlapu"
 
 #: js/strings.js:295
 msgctxt "fh"
-msgid "Select a form field or enter your own name"
-msgstr "Izvēlieties formas lauku vai ievadiet savu nosaukumu"
+msgid "Form fields shown to visitors in this order"
+msgstr "Veidlapas lauki, kas apmeklētājiem tiek rādīti šādā secībā"
 
 #: js/strings.js:296
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Izvēlieties veidlapas lauku vai ievadiet savu nosaukumu"
+
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Apmeklētājiem jāaizpilda šis lauks"
 
-#: js/strings.js:294
+#: js/strings.js:298
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3672,392 +3682,392 @@ msgstr ""
 "Lapas kopsavilkums, kas redzams meklēšanas rezultātos, ieteicami 150–160 "
 "rakstzīmes"
 
-#: js/strings.js:295
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Ar komatu atdalīts lapu raksturojošu atslēgvārdu saraksts"
 
-#: js/strings.js:296
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Virsraksts, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:297
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Kopsavilkums, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:298
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Priekšskatījuma attēls, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:299
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Sākotnējais URL, ja tas pats saturs ir pieejams vairākās adresēs"
 
-#: js/strings.js:300
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Atļaut vai liegt meklētājprogrammām iekļaut šo lapu sarakstā"
 
-#: js/strings.js:301
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Atļaut vai liegt meklētājprogrammām sekot saitēm šajā lapā"
 
-#: js/strings.js:302
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Vietnes nosaukums, kas redzams pārlūkprogrammas cilnē un meklēšanas "
 "rezultātos"
 
-#: js/strings.js:303
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotips, kas redzams lapas galvenē"
 
-#: js/strings.js:304
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Logotipa variants, ko izmanto tumšiem foniem"
 
-#: js/strings.js:305
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Neliels kvadrātveida attēls, kas redzams pārlūkprogrammas cilnēs un "
 "grāmatzīmēs"
 
-#: js/strings.js:306
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Ar komatu atdalīts tekstam izmantoto fontu saraksts"
 
-#: js/strings.js:307
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Noklusējuma teksta krāsa"
 
-#: js/strings.js:308
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Lapu fona krāsa"
 
-#: js/strings.js:309
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Iezīmētā teksta fona krāsa"
 
-#: js/strings.js:310
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Elementu krāsa ar spēcīgu kontrastu pret fonu"
 
-#: js/strings.js:311
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrasta krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:312
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Teksta krāsa elementiem, kas izmanto kontrasta krāsu"
 
-#: js/strings.js:313
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Galvenā zīmola krāsa, ko izmanto saitēm un pogām"
 
-#: js/strings.js:314
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Galveno pogu un izcēlumu fona krāsa"
 
-#: js/strings.js:315
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Galvenā krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:316
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Galvenā fona krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:317
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Papildu krāsa, ko izmanto mazāk svarīgām saitēm un pogām"
 
-#: js/strings.js:318
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Sekundāro pogu fona krāsa"
 
-#: js/strings.js:319
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Sekundārā krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:320
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Sekundārā fona krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:321
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Stūru noapaļojums kā CSS garums, piemēram, 0.25rem vai 0 asiem stūriem"
 
-#: js/strings.js:322
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Rakstzīme, kas redzama starp navigācijas ceļa saitēm"
 
-#: js/strings.js:323
+#: js/strings.js:327
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS saite, lai sazinātos ar drošības komandu, piemēram, veidlapa"
 
-#: js/strings.js:324
+#: js/strings.js:328
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "E-pasta adrese drošības problēmu ziņošanai"
 
-#: js/strings.js:325
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Datums, pēc kura drošības informācija tiek uzskatīta par novecojušu"
 
-#: js/strings.js:326
+#: js/strings.js:330
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS saite uz publisko atslēgu šifrētiem ziņojumiem"
 
-#: js/strings.js:327
+#: js/strings.js:331
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS saite uz lapu, kas pateicas drošības pētniekiem"
 
-#: js/strings.js:328
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Ar komatu atdalīti valodu kodi drošības ziņojumiem, piemēram, en, de"
 
-#: js/strings.js:329
+#: js/strings.js:333
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL, kur publicēts security.txt fails"
 
-#: js/strings.js:330
+#: js/strings.js:334
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS saite uz drošības un atklāšanas politiku"
 
-#: js/strings.js:331
+#: js/strings.js:335
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS saite uz atvērtajām ar drošību saistītajām vakancēm"
 
-#: js/strings.js:332
+#: js/strings.js:336
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS saite uz CSAF nodrošinātāja metadatiem"
 
-#: js/strings.js:333
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Papildu noteikumi, kas pievienoti robots.txt failam tīmekļa robotiem"
 
-#: js/strings.js:334
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Pielāgots CSS kods, kas pievienots visām lapām"
 
-#: js/strings.js:335
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pielāgots JavaScript kods, kas pievienots visām lapām"
 
-#: js/strings.js:336
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Ar komatu atdalīts virsrakstiem izmantoto fontu saraksts"
 
-#: js/strings.js:339
+#: js/strings.js:343
 msgctxt "op"
 msgid "Name"
 msgstr "Vārds"
 
-#: js/strings.js:340
+#: js/strings.js:344
 msgctxt "op"
 msgid "Company"
 msgstr "Uzņēmums"
 
-#: js/strings.js:341
+#: js/strings.js:345
 msgctxt "op"
 msgid "Telephone"
 msgstr "Tālrunis"
 
-#: js/strings.js:342
+#: js/strings.js:346
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-pasts"
 
-#: js/strings.js:343
+#: js/strings.js:347
 msgctxt "op"
 msgid "Subject"
 msgstr "Temats"
 
-#: js/strings.js:344
+#: js/strings.js:348
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekot saitēm"
 
-#: js/strings.js:345
+#: js/strings.js:349
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksēt"
 
-#: js/strings.js:346
+#: js/strings.js:350
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekot saitēm"
 
-#: js/strings.js:347
+#: js/strings.js:351
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksēt"
 
-#: js/strings.js:348
+#: js/strings.js:352
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abonements"
 
-#: js/strings.js:349
+#: js/strings.js:353
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienreizējs maksājums"
 
-#: js/strings.js:350
+#: js/strings.js:354
 msgctxt "op"
 msgid "Auto"
 msgstr "Automātisks"
 
-#: js/strings.js:351
+#: js/strings.js:355
 msgctxt "op"
 msgid "Cards"
 msgstr "Kartītes"
 
-#: js/strings.js:352
+#: js/strings.js:356
 msgctxt "op"
 msgid "Default"
 msgstr "Noklusējuma"
 
-#: js/strings.js:353
+#: js/strings.js:357
 msgctxt "op"
 msgid "End"
 msgstr "Beigas"
 
-#: js/strings.js:354
+#: js/strings.js:358
 msgctxt "op"
 msgid "First column"
 msgstr "Pirmā kolonna"
 
-#: js/strings.js:355
+#: js/strings.js:359
 msgctxt "op"
 msgid "First row"
 msgstr "Pirmā rinda"
 
-#: js/strings.js:356
+#: js/strings.js:360
 msgctxt "op"
 msgid "First row and column"
 msgstr "Pirmā rinda un kolonna"
 
-#: js/strings.js:357
+#: js/strings.js:361
 msgctxt "op"
 msgid "Grid end"
 msgstr "Režģa beigas"
 
-#: js/strings.js:358
+#: js/strings.js:362
 msgctxt "op"
 msgid "Grid start"
 msgstr "Režģa sākums"
 
-#: js/strings.js:359
+#: js/strings.js:363
 msgctxt "op"
 msgid "Latest"
 msgstr "Jaunākie"
 
-#: js/strings.js:360
+#: js/strings.js:364
 msgctxt "op"
 msgid "List"
 msgstr "Saraksts"
 
-#: js/strings.js:361
+#: js/strings.js:365
 msgctxt "op"
 msgid "None"
 msgstr "Nav"
 
-#: js/strings.js:362
+#: js/strings.js:366
 msgctxt "op"
 msgid "Oldest"
 msgstr "Vecākie"
 
-#: js/strings.js:363
+#: js/strings.js:367
 msgctxt "op"
 msgid "Position"
 msgstr "Pozīcija"
 
-#: js/strings.js:364
+#: js/strings.js:368
 msgctxt "op"
 msgid "Start"
 msgstr "Sākums"
 
-#: js/strings.js:365
+#: js/strings.js:369
 msgctxt "op"
 msgid "Zoom"
 msgstr "Tuvinājums"
 
-#: js/strings.js:368
+#: js/strings.js:372
 msgctxt "ai"
 msgid "Done"
 msgstr "Paveikts"
 
-#: js/strings.js:369
+#: js/strings.js:373
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau pastāv"
 
-#: js/strings.js:372
+#: js/strings.js:376
 msgctxt "sg"
 msgid "expert"
 msgstr "Papildu"
 
-#: js/strings.js:373
+#: js/strings.js:377
 msgctxt "sg"
 msgid "theme"
 msgstr "Tēma"
 
-#: js/strings.js:374
+#: js/strings.js:378
 msgctxt "st"
 msgid "website"
 msgstr "tīmekļa vietne"
 
-#: js/strings.js:375
+#: js/strings.js:379
 msgctxt "st"
 msgid "logo"
 msgstr "Logotips"
 
-#: js/strings.js:376
+#: js/strings.js:380
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatīvs logotips"
 
-#: js/strings.js:377
+#: js/strings.js:381
 msgctxt "st"
 msgid "icon"
 msgstr "Ikona"
@@ -4111,34 +4121,34 @@ msgstr "Pievienot piekļuves vērtību"
 msgid "Access value"
 msgstr "Piekļuves vērtība"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:337
 msgid "Role name which can be assigned to pages and users"
 msgstr "Lomas nosaukums, ko var piešķirt lapām un lietotājiem"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:353
 msgid "Add"
 msgstr "Pievienot"
 
 #: js/views/ElementDetail.vue:205
 msgid "Error fetching element"
-msgstr "Kļūda, iegūstot elementu"
+msgstr "Kļūda, ielādējot elementu"
 
 #: js/views/ElementDetail.vue:243
 msgid "Element published successfully"
-msgstr "Veiksmīgi publicēts elements"
+msgstr "Elements veiksmīgi publicēts"
 
 #: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
-msgstr "Elements plānots publicēšanai %{date}"
+msgstr "Elements ieplānots publicēšanai %{date}"
 
 #: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
 msgstr "Kļūda, publicējot elementu"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:549
+#: js/views/PageDetail.vue:564
 msgid "There are invalid fields, please resolve the errors first"
-msgstr "Ir nederīgi lauki, lūdzu, vispirms novērsiet kļūdas."
+msgstr "Ir nederīgi lauki, lūdzu, vispirms novērsiet kļūdas"
 
 #: js/views/ElementDetail.vue:311
 msgid "Element saved successfully"
@@ -4160,12 +4170,12 @@ msgstr "Izmanto"
 #: js/views/ElementList.vue:121 js/views/FileList.vue:120
 #: js/views/PageList.vue:145
 msgid "publish"
-msgstr "publicēt"
+msgstr "publicēšana"
 
 #: js/views/ElementList.vue:125 js/views/FileList.vue:124
 #: js/views/PageList.vue:149
 msgid "Scheduled"
-msgstr "Plānotais"
+msgstr "Ieplānotie"
 
 #: js/views/ElementList.vue:126 js/views/FileList.vue:125
 #: js/views/PageList.vue:150
@@ -4206,13 +4216,13 @@ msgstr "Nospiediet Enter, lai atvērtu tērzēšanu"
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 "Mākslīgais intelekts var atrast un pārvaldīt koplietojamos elementus, "
-"pamatojoties uz jūsu ievadītajiem datiem."
+"pamatojoties uz jūsu ievadītajiem datiem"
 
 #: js/views/ElementList.vue:294 js/views/FileList.vue:293
 #: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
-"Nospiediet Enter vai bultiņu, lai atvērtu AI asistentu un pilnveidotu saturu "
+"Nospiediet Enter vai bultiņu, lai atvērtu AI palīgu un precizētu saturu "
 "tērzēšanā"
 
 #: js/views/FileDetail.vue:191
@@ -4221,7 +4231,7 @@ msgstr "Kļūda, ielādējot failu"
 
 #: js/views/FileDetail.vue:251
 msgid "File published successfully"
-msgstr "Veiksmīgi publicēts fails"
+msgstr "Fails veiksmīgi publicēts"
 
 #: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
@@ -4240,7 +4250,7 @@ msgstr "Fails"
 msgid "AI can find and manage media files based on your input"
 msgstr ""
 "Mākslīgais intelekts var atrast un pārvaldīt multivides failus, pamatojoties "
-"uz jūsu ievadītajiem datiem."
+"uz jūsu ievadītajiem datiem"
 
 #: js/views/Login.vue:55
 msgid "Invalid e-mail address"
@@ -4254,7 +4264,7 @@ msgstr "Nav CMS redaktors"
 msgid "Access denied"
 msgstr "Piekļuve liegta"
 
-#: js/views/Login.vue:228
+#: js/views/Login.vue:231
 msgid "Error"
 msgstr "Kļūda"
 
@@ -4272,30 +4282,35 @@ msgstr "Lapa publicēta veiksmīgi"
 
 #: js/views/PageDetail.vue:498
 msgid "Page scheduled for publishing at %{date}"
-msgstr "Lapu plānots publicēt %{date}"
+msgstr "Lapa ieplānota publicēšanai %{date}"
 
-#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
+#: js/views/PageDetail.vue:550 js/views/PageDetail.vue:825
 msgid "Rate this page and suggest improvements"
 msgstr "Novērtējiet šo lapu un iesakiet uzlabojumus"
 
-#: js/views/PageDetail.vue:602
+#: js/views/PageDetail.vue:617
 msgid "Page saved successfully"
 msgstr "Lapa veiksmīgi saglabāta"
 
-#: js/views/PageDetail.vue:639
+#: js/views/PageDetail.vue:654
 msgid "No page schema for \"content\" found"
 msgstr "Nav atrasta neviena \"content\" lapas shēma"
 
-#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
-#: js/views/PageDetail.vue:857
+#: js/views/PageDetail.vue:802 js/views/PageDetail.vue:853
+#: js/views/PageDetail.vue:872
 msgid "Page"
 msgstr "Lapa"
 
-#: js/views/PageDetail.vue:815
+#: js/views/PageDetail.vue:830
 msgid "Translate page"
 msgstr "Tulkot lapu"
 
-#: js/views/PageDetail.vue:860
+#: js/views/PageDetail.vue:858
+msgctxt "editing interface"
+msgid "Editor"
+msgstr "Redaktors"
+
+#: js/views/PageDetail.vue:875
 msgid "Metrics"
 msgstr "Metrikas"
 
@@ -4313,7 +4328,7 @@ msgstr "statuss"
 
 #: js/views/PageList.vue:168
 msgid "Hidden"
-msgstr "Slēptais"
+msgstr "Slēpts"
 
 #: js/views/PageList.vue:174
 msgid "cache"
@@ -4321,7 +4336,7 @@ msgstr "kešatmiņa"
 
 #: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
-msgstr "Izveidot lapu, pamatojoties uz uzvedni"
+msgstr "Ģenerēt lapu, pamatojoties uz uzvedni"
 
 #: js/views/PageList.vue:332
 msgid ""
@@ -4329,119 +4344,4 @@ msgid ""
 "tree"
 msgstr ""
 "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un "
-"pievienot to lapas kokam."
-
-#~ msgid "Open command palette"
-#~ msgstr "Atvērt komandu paleti"
-
-#~ msgid "Conflict resolution"
-#~ msgstr "Konfliktu risināšana"
-
-#~ msgid "Command palette"
-#~ msgstr "Komandu palete"
-
-#~ msgid "Confirm"
-#~ msgstr "Apstiprināt"
-
-#~ msgid "Selection is required"
-#~ msgstr "Nepieciešama atlase"
-
-#~ msgid "Minimum is %{num} entries"
-#~ msgstr "Minimālais ir %{num} ieraksti"
-
-#~ msgid "Maximum is %{num} entries"
-#~ msgstr "Maksimālais skaits ir %{num} ieraksti"
-
-#~ msgid "Minimum length is %{num} characters"
-#~ msgstr "Minimālais garums ir %{num} rakstzīmes"
-
-#~ msgid "Maximum length is %{num} characters"
-#~ msgstr "Maksimālais garums ir %{num} zīmes"
-
-#~ msgid "id"
-#~ msgstr "id"
-
-#~ msgid "Copy"
-#~ msgstr "Kopēt"
-
-#~ msgid "Top"
-#~ msgstr "Augšā"
-
-#~ msgid "Left"
-#~ msgstr "Pa kreisi"
-
-#~ msgid "Right"
-#~ msgstr "Pa labi"
-
-#~ msgid "Bottom"
-#~ msgstr "Apakšā"
-
-#~ msgid "Cut"
-#~ msgstr "Izgriezt"
-
-#~ msgid "Split"
-#~ msgstr "Sadalīt"
-
-#~ msgid "Enable"
-#~ msgstr "Ieslēgt"
-
-#~ msgid "Disable"
-#~ msgstr "Atslēgt"
-
-#~ msgid "Minimum are %{num} columns"
-#~ msgstr "Minimums ir %{num} kolonnas"
-
-#~ msgid "Maximum are %{num} columns"
-#~ msgstr "Maksimums ir %{num} kolonnas"
-
-#~ msgid "Error deleting access values"
-#~ msgstr "Dzēšot piekļuves vērtības, radās kļūda"
-
-#~ msgid "Upscale"
-#~ msgstr "Palielināt izšķirtspēju"
-
-#~ msgid "Files"
-#~ msgstr "Faili"
-
-#~ msgid "Current"
-#~ msgstr "Pašreizējais"
-
-#~ msgid "Apply changes"
-#~ msgstr "Piemērot izmaiņas"
-
-#~ msgid "Toggle all"
-#~ msgstr "Izvēlēties visus"
-
-#~ msgid "Revert to version"
-#~ msgstr "Atgriezties pie iepriekšējās versijas"
-
-#~ msgid "Edit element"
-#~ msgstr "Rediģēt elementu"
-
-#~ msgid "Fullscreen mode"
-#~ msgstr "Pilnekrāna režīms"
-
-#~ msgid "Exit fullscreen mode"
-#~ msgstr "Iziet no pilnekrāna režīma"
-
-#~ msgid "Open menu"
-#~ msgstr "Atvērt izvēlni"
-
-#~ msgid "Delete access values"
-#~ msgstr "Dzēst piekļuves vērtības"
-
-#~ msgid ""
-#~ "Existing restrictions are not changed and will continue to reference the "
-#~ "deleted access values."
-#~ msgstr ""
-#~ "Esošie ierobežojumi netiek mainīti un turpinās atsaukties uz dzēstajām "
-#~ "piekļuves vērtībām."
-
-#~ msgid "Error fetching element versions"
-#~ msgstr "Kļūda elementa versiju iegūšanā"
-
-#~ msgid "Error fetching file versions"
-#~ msgstr "Kļūda failu versiju iegūšanā"
-
-#~ msgid "Error fetching page versions"
-#~ msgstr "Kļūda lapu versiju iegūšanā"
+"pievienot to lapu kokam"

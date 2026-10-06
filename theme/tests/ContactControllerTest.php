@@ -237,6 +237,55 @@ class ContactControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testSendErrorsUsePageLanguage()
+    {
+        Mail::fake();
+
+        try {
+            $response = $this->postJson( route( 'cms.api.contact' ), [
+                'email' => 'invalid',
+                'message' => 'Hallo.',
+                'locale' => 'de-AT',
+            ] );
+        } finally {
+            app( 'translator' )->setLocale( 'en' );
+        }
+
+        $response->assertStatus( 422 );
+        $response->assertJsonPath( 'errors.name.0', 'Name: Dieses Feld ist erforderlich.' );
+        $response->assertJsonPath( 'errors.email.0', 'E-Mail: Ungültige E-Mail-Adresse.' );
+        $this->assertEquals( 'en', config( 'app.locale' ) );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendMailUsesSiteLanguage()
+    {
+        Mail::fake();
+
+        try {
+            $response = $this->post( route( 'cms.api.contact' ), [
+                'name' => 'Test User',
+                'email' => 'sender@google.com',
+                'message' => 'Bonjour.',
+                'locale' => 'fr',
+            ] );
+        } finally {
+            app( 'translator' )->setLocale( 'en' );
+        }
+
+        $response->assertStatus( 200 );
+
+        Mail::assertSent( ContactMail::class, function( $mail ) {
+            $html = $mail->render();
+
+            return $mail->locale === 'en'
+                && $mail->subject === 'Contact mail from ' . config( 'app.name' )
+                && str_contains( $html, 'Contact message' );
+        } );
+    }
+
+
     public function testSendInvalidEmail()
     {
         Mail::fake();

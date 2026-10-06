@@ -30,6 +30,6 @@ class Hcaptcha implements Rule
 
     public function message(): string
     {
-        return 'Captcha validation failed. Please try again.';
+        return __( 'Captcha validation failed. Please try again.' );
     }
 }

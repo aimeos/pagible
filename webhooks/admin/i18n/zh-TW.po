@@ -1,0 +1,306 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhook"
+
+#: src/views/WebhookList.vue:147
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr "伺服器設定已停用 Webhook，不會傳送任何事件"
+
+#: src/views/WebhookList.vue:154
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "伺服器設定已封鎖所有傳送作業"
+
+#: src/views/WebhookList.vue:183
+msgctxt "webhooks"
+msgid "Status"
+msgstr "狀態"
+
+#: src/views/WebhookList.vue:187
+msgctxt "webhooks"
+msgid "All"
+msgstr "全部"
+
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
+msgctxt "webhooks"
+msgid "Active"
+msgstr "啟用"
+
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "停用"
+
+#: src/views/WebhookList.vue:250
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "取得 Webhook 時發生錯誤"
+
+#: src/views/WebhookList.vue:314
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "儲存 Webhook 時發生錯誤"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr "要更換此 Webhook 的密鑰嗎？接收端必須更新為新的密鑰。"
+
+#: src/views/WebhookList.vue:338
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "更換 Webhook 密鑰時發生錯誤"
+
+#: src/views/WebhookList.vue:358
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "測試事件已送達"
+
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "測試事件失敗"
+
+#: src/views/WebhookList.vue:412
+msgctxt "webhooks"
+msgid "Error purging webhook"
+msgstr "永久刪除 Webhook 時發生錯誤"
+
+#: src/views/WebhookList.vue:420
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "已複製密鑰"
+
+#: src/views/WebhookList.vue:425
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "無法複製密鑰"
+
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
+msgctxt "webhooks"
+msgid "None"
+msgstr "無"
+
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "連線失敗"
+
+#: src/views/WebhookList.vue:448
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "拒絕存取"
+
+#: src/views/WebhookList.vue:449
+msgctxt "webhooks"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "無法解密密鑰，請更換密鑰"
+
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "已被伺服器設定封鎖"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "不是有效的網址"
+
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "佇列無法使用"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "找不到主機"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "回應過大"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "請求逾時"
+
+#: src/views/WebhookList.vue:460
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "不會跟隨重新導向"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "傳送失敗"
+
+#: src/views/WebhookList.vue:523
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "已發佈的內容變更時，傳送帶有簽章的通知。"
+
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "切換選取"
+
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "永久刪除"
+
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "新增 Webhook"
+
+#: src/views/WebhookList.vue:585
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "搜尋"
+
+#: src/views/WebhookList.vue:594
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "重新整理"
+
+#: src/views/WebhookList.vue:635
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "編輯"
+
+#: src/views/WebhookList.vue:645
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "更換密鑰"
+
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "上次成功"
+
+#: src/views/WebhookList.vue:692
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "上次錯誤"
+
+#: src/views/WebhookList.vue:699
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "暫停至"
+
+#: src/views/WebhookList.vue:709
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "載入中"
+
+#: src/views/WebhookList.vue:715
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "找不到項目"
+
+#: src/views/WebhookList.vue:716
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "尚未設定任何 Webhook。"
+
+#: src/views/WebhookList.vue:738
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Webhook 密鑰"
+
+#: src/views/WebhookList.vue:740
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "編輯 Webhook"
+
+#: src/views/WebhookList.vue:750
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "請立即複製此密鑰。之後將不再顯示。"
+
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr "已停用的 Webhook 不會接收任何事件，其佇列中的傳送作業也會被捨棄"
+
+#: src/views/WebhookList.vue:780
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "HTTPS 端點網址"
+
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "接收簽章事件的位址，建立後無法變更"
+
+#: src/views/WebhookList.vue:805
+msgctxt "webhooks"
+msgid "Events"
+msgstr "事件"
+
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr "傳送至 Webhook 的事件；已移除事件在佇列中的傳送作業將被取消"
+
+#: src/views/WebhookList.vue:813
+msgctxt "webhooks"
+msgid "Name"
+msgstr "名稱"
+
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr "用於區分相同端點之 Webhook 的選填名稱，所有 Webhook 編輯者皆可看見"
+
+#: src/views/WebhookList.vue:824
+msgctxt "webhooks"
+msgid "Done"
+msgstr "完成"
+
+#: src/views/WebhookList.vue:827
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "複製密鑰"
+
+#: src/views/WebhookList.vue:840
+msgctxt "webhooks"
+msgid "Test"
+msgstr "測試"
+
+#: src/views/WebhookList.vue:843
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "取消"
+
+#: src/views/WebhookList.vue:853
+msgctxt "webhooks"
+msgid "Save"
+msgstr "儲存"

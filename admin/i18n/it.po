@@ -1,6 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -16,7 +19,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:557
 #: js/components/ElementListItems.vue:599
 #: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
-#: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
+#: js/components/FileAiDialog.vue:145 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
@@ -40,7 +43,7 @@ msgstr ""
 #: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
+#: js/views/PageDetail.vue:558 js/views/PageDetail.vue:649
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "Autorizzazione negata"
@@ -73,107 +76,108 @@ msgstr "È già in corso la generazione di una risposta. Attendi che termini."
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Troppe richieste. Attendi un attimo e riprova."
 
-#: js/commands.js:53
+#: js/commands.js:54
 msgid "Open commands"
 msgstr "Apri i comandi"
 
-#: js/commands.js:60
+#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Conferma la finestra di dialogo"
 
-#: js/commands.js:67
+#: js/commands.js:69
 msgid "Save changes"
 msgstr "Salva modifiche"
 
-#: js/commands.js:75
+#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Apri il menu di pubblicazione"
 
-#: js/commands.js:81
+#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Nuova pagina, file o elemento"
 
-#: js/commands.js:87
+#: js/commands.js:91
 msgid "Search in list"
 msgstr "Cerca nell'elenco"
 
-#: js/commands.js:93
+#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Scheda precedente"
 
-#: js/commands.js:99
+#: js/commands.js:103
 msgid "Next tab"
 msgstr "Scheda successiva"
 
-#: js/commands.js:105
+#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Mostra o nascondi il pannello laterale"
 
-#: js/commands.js:111 js/components/DetailAppBar.vue:168
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Torna alla visualizzazione dell'elenco"
 
-#: js/commands.js:118
+#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Mostra scorciatoie da tastiera"
 
-#: js/commands.js:124
+#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Seleziona la pagina, il file o l'elemento attivo"
 
-#: js/commands.js:130
+#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Elimina la pagina, il file o l'elemento attivo"
 
-#: js/commands.js:137
+#: js/commands.js:143
 msgid "Copy page"
 msgstr "Copia pagina"
 
-#: js/commands.js:144
+#: js/commands.js:151
 msgid "Cut page"
 msgstr "Taglia pagina"
 
-#: js/commands.js:151
+#: js/commands.js:159
 msgid "Paste page"
 msgstr "Incolla pagina"
 
-#: js/commands.js:170 js/components/CommandPalette.vue:106
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
+#: js/commands.js:178 js/components/CommandPalette.vue:106
+#: js/components/ElementDetailRefs.vue:141 js/components/FileDetailRefs.vue:145
+#: js/components/Navigation.vue:30 js/views/PageList.vue:265
+#: js/views/PageList.vue:282
 msgid "Pages"
 msgstr "Pagine"
 
-#: js/commands.js:171
+#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Vai alle pagine"
 
-#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/commands.js:184 js/components/CommandPalette.vue:107
 #: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
 #: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "Media"
 
-#: js/commands.js:177
+#: js/commands.js:185
 msgid "Go to media"
 msgstr "Vai ai media"
 
-#: js/commands.js:182 js/components/CommandPalette.vue:108
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+#: js/commands.js:190 js/components/CommandPalette.vue:108
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/views/ElementList.vue:228
 msgid "Shared elements"
 msgstr "Elementi condivisi"
 
-#: js/commands.js:183
+#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Vai agli elementi condivisi"
 
-#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/commands.js:196 js/components/Navigation.vue:33
 #: js/views/AccessList.vue:252
 msgid "Users"
 msgstr "Utenti"
 
-#: js/commands.js:189
+#: js/commands.js:197
 msgid "Go to users"
 msgstr "Vai agli utenti"
 
@@ -235,29 +239,29 @@ msgstr "Account"
 msgid "Assigned frontend roles"
 msgstr "Ruoli frontend assegnati"
 
-#: js/components/AccessUsers.vue:484
+#: js/components/AccessUsers.vue:483
 msgid "Roles granting access to restricted pages"
 msgstr "Ruoli che concedono l'accesso alle pagine con restrizioni"
 
-#: js/components/AccessUsers.vue:497
+#: js/components/AccessUsers.vue:496
 msgid "Assigned backend roles"
 msgstr "Ruoli di backend assegnati"
 
-#: js/components/AccessUsers.vue:501
+#: js/components/AccessUsers.vue:500
 msgid "Custom"
 msgstr "Personalizzato"
 
-#: js/components/AccessUsers.vue:507
+#: js/components/AccessUsers.vue:506
 msgid "Available roles"
 msgstr "Ruoli disponibili"
 
-#: js/components/AccessUsers.vue:508
+#: js/components/AccessUsers.vue:506
 msgid "Roles defining what the user can do in the admin panel"
 msgstr ""
 "Ruoli che definiscono cosa può fare l'utente nel pannello di amministrazione"
 
-#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
-#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1034 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Nessuna voce trovata"
@@ -280,9 +284,9 @@ msgid "Filters"
 msgstr "Filtri"
 
 #: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
-#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
+#: js/components/FileListItems.vue:1041 js/components/PageListItems.vue:2053
 msgid "Reset"
-msgstr "Reset"
+msgstr "Reimposta"
 
 #: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
 #: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
@@ -291,11 +295,11 @@ msgid "ID"
 msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
-#: js/fields/File.vue:502
+#: js/fields/File.vue:503
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/fields/File.vue:506
+#: js/components/AsideMeta.vue:29 js/fields/File.vue:507
 #: js/views/ElementList.vue:140 js/views/FileList.vue:139
 #: js/views/PageList.vue:182
 msgid "editor"
@@ -305,13 +309,13 @@ msgstr "redattore"
 msgid "created"
 msgstr "creato"
 
-#: js/components/AsideMeta.vue:39 js/fields/File.vue:510
+#: js/components/AsideMeta.vue:39 js/fields/File.vue:511
 msgid "updated"
 msgstr "aggiornato"
 
 #: js/components/AsideMeta.vue:45
 msgid "deleted"
-msgstr "cancellato"
+msgstr "eliminato"
 
 #: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
 #: js/components/HistoryDialog.vue:40
@@ -332,7 +336,7 @@ msgid "Configuration"
 msgstr "Configurazione"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:850
+#: js/views/PageDetail.vue:865
 msgid "Content"
 msgstr "Contenuto"
 
@@ -347,7 +351,7 @@ msgstr "%{count} / %{total}"
 #: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
 #: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
 msgid "Revert"
-msgstr "Ripristina"
+msgstr "Annulla modifiche"
 
 #: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
 msgid "Changes"
@@ -363,15 +367,15 @@ msgstr "Aggiunto"
 
 #: js/components/ChangesDialog.vue:445
 msgid "Use theirs"
-msgstr "Usa il loro"
+msgstr "Usa la loro versione"
 
 #: js/components/ChangesDialog.vue:451
 msgid "Keep mine"
-msgstr "Tieni il mio"
+msgstr "Mantieni la mia versione"
 
 #: js/components/ChangesDialog.vue:458
 msgid "Merge both"
-msgstr "Unisci entrambi"
+msgstr "Unisci entrambe"
 
 #: js/components/ChatDialog.vue:270
 msgid "Done"
@@ -410,8 +414,8 @@ msgid "Send a message ..."
 msgstr "Invia un messaggio..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:485
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:252
+#: js/components/FileDetailItem.vue:483
 #: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
 #: js/views/ElementList.vue:284 js/views/FileList.vue:283
 #: js/views/PageList.vue:321
@@ -438,7 +442,7 @@ msgid "New"
 msgstr "Nuovo"
 
 #: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:38
 msgid "Commands"
 msgstr "Comandi"
 
@@ -450,7 +454,7 @@ msgstr "Digita un comando o cerca pagine, file ed elementi"
 msgid "Command or search term"
 msgstr "Comando o termine di ricerca"
 
-#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:98
 msgid "then"
 msgstr "poi"
 
@@ -483,7 +487,7 @@ msgstr[1] ""
 "essere ripristinate:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
-#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -540,19 +544,19 @@ msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Applica le proprietà selezionate a %{num} voce."
 msgstr[1] "Applica le proprietà selezionate a %{num} voci."
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
-#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:259
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language"
 msgstr "Lingua"
 
-#: js/components/EditBulkDialog.vue:77
+#: js/components/EditBulkDialog.vue:76
 msgid "Language of the content"
 msgstr "Lingua del contenuto"
 
-#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
-#: js/components/PageBulkDialog.vue:277
+#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "Applica"
 
@@ -563,11 +567,11 @@ msgstr "Applica"
 msgid "Name"
 msgstr "Nome"
 
-#: js/components/ElementDetailItem.vue:76
+#: js/components/ElementDetailItem.vue:75
 msgid "Name to find the shared element in the element list"
 msgstr "Nome per trovare l'elemento condiviso nell'elenco degli elementi"
 
-#: js/components/ElementDetailItem.vue:90
+#: js/components/ElementDetailItem.vue:88
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Lingua del contenuto dell'elemento, scegli Nessuno se usato in tutte le "
@@ -582,13 +586,14 @@ msgid "no"
 msgstr "no"
 
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
+#: js/components/FileUrlDialog.vue:227
 msgid "URL"
 msgstr "URL"
 
 #: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
 #: js/components/PageAccess.vue:180 js/components/PageListItems.vue:477
 msgid "Restricted"
-msgstr "Limitato"
+msgstr "Con restrizioni"
 
 #: js/components/ElementDetailRefs.vue:171 js/components/FileDetailRefs.vue:197
 msgid "Versions"
@@ -613,12 +618,12 @@ msgstr[0] "Spostato nel cestino"
 msgstr[1] "%{num} voci spostate nel cestino"
 
 #: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:943
 #: js/components/FileDetailItemImage.vue:948
-#: js/components/FileDetailItemImage.vue:953
 #: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
 #: js/components/PageListItems.vue:708
 msgid "Undo"
-msgstr "Annulla"
+msgstr "Annulla modifica"
 
 #: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
@@ -677,7 +682,7 @@ msgstr "Aggiungi elemento"
 #: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
 #: js/views/AccessList.vue:302
 msgid "Search for"
-msgstr "Ricerca di"
+msgstr "Cerca"
 
 #: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
 msgid "Updated by another user"
@@ -690,16 +695,16 @@ msgstr "Aggiorna"
 
 #: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
 msgid "Reload elements"
-msgstr "Aggiorna gli elementi"
+msgstr "Ricarica gli elementi"
 
-#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1028
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
 #: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
 #: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "Caricamento"
 
-#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1044
 #: js/components/PageListItems.vue:2056
 msgid "No entries yet"
 msgstr "Ancora nessuna voce"
@@ -768,49 +773,49 @@ msgstr "Cambia in"
 msgid "Edit"
 msgstr "Modifica"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
-#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:275
+#: js/components/FileAiDialog.vue:302 js/components/FileUrlDialog.vue:239
 #: js/components/PageDetailContentList.vue:877
 #: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
 #: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "Rimuovi"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
+#: js/components/FileAiDialog.vue:133 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
 #: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "Errore nell'aggiunta del file %{path}"
 
-#: js/components/FileAiDialog.vue:182
+#: js/components/FileAiDialog.vue:185
 msgid "Error creating file"
 msgstr "Errore nella creazione del file"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:241
 msgid "Create image"
 msgstr "Crea immagine"
 
-#: js/components/FileAiDialog.vue:256
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the image content"
-msgstr "Descrivere il contenuto dell'immagine"
+msgstr "Descrivi il contenuto dell'immagine"
 
-#: js/components/FileAiDialog.vue:257
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Descrivi il soggetto, lo stile e i colori dell'immagine da generare"
 
-#: js/components/FileAiDialog.vue:264
+#: js/components/FileAiDialog.vue:266
 msgid "New image"
 msgstr "Nuova immagine"
 
-#: js/components/FileAiDialog.vue:268
+#: js/components/FileAiDialog.vue:270
 msgid "Current images"
 msgstr "Immagini attuali"
 
-#: js/components/FileAiDialog.vue:293
+#: js/components/FileAiDialog.vue:295
 msgid "Images used"
 msgstr "Immagini utilizzate"
 
-#: js/components/FileAiDialog.vue:310
+#: js/components/FileAiDialog.vue:312
 msgid "Select images"
 msgstr "Seleziona immagini"
 
@@ -831,55 +836,55 @@ msgstr "Errore nel salvataggio del file"
 msgid "Transcription is only available for audio and video files"
 msgstr "La trascrizione è disponibile solo per i file audio e video."
 
-#: js/components/FileDetailItem.vue:392
+#: js/components/FileDetailItem.vue:391
 msgid "Name to find the file in the media list"
 msgstr "Nome per trovare il file nell'elenco dei media"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:404
 msgid "Language of the file content, choose none if used in all languages"
 msgstr ""
 "Lingua del contenuto del file, scegli Nessuno se usato in tutte le lingue"
 
-#: js/components/FileDetailItem.vue:416
+#: js/components/FileDetailItem.vue:414
 msgid "Copy URL"
 msgstr "Copia l'URL"
 
-#: js/components/FileDetailItem.vue:459
+#: js/components/FileDetailItem.vue:457
 msgid "Descriptions"
 msgstr "Descrizioni"
 
-#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
+#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
 msgid "Translate text"
 msgstr "Traduci testo"
 
-#: js/components/FileDetailItem.vue:475
+#: js/components/FileDetailItem.vue:473
 msgid "Generate description"
 msgstr "Genera descrizione"
 
-#: js/components/FileDetailItem.vue:502
+#: js/components/FileDetailItem.vue:500
 msgid "Description (%{lang})"
 msgstr "Descrizione (%{lang})"
 
-#: js/components/FileDetailItem.vue:503
+#: js/components/FileDetailItem.vue:500
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Testo alternativo per screen reader e motori di ricerca, usato anche come "
 "didascalia"
 
-#: js/components/FileDetailItem.vue:519
+#: js/components/FileDetailItem.vue:516
 msgid "Transcriptions"
 msgstr "Trascrizioni"
 
-#: js/components/FileDetailItem.vue:535
+#: js/components/FileDetailItem.vue:532
 msgid "Transcribe file content"
 msgstr "Trascrivi il contenuto del file"
 
-#: js/components/FileDetailItem.vue:553
+#: js/components/FileDetailItem.vue:550
 msgid "Transcription (%{lang})"
 msgstr "Trascrizione (%{lang})"
 
-#: js/components/FileDetailItem.vue:554
+#: js/components/FileDetailItem.vue:550
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 "Testo parlato in formato WebVTT, mostrato come sottotitoli e trascrizione"
@@ -935,97 +940,97 @@ msgstr "Cancella l'area selezionata"
 
 #: js/components/FileDetailItemImage.vue:743
 #: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:765
 msgid "Edit image"
 msgstr "Modifica immagine"
 
 #: js/components/FileDetailItemImage.vue:756
 msgid "Describe the changes"
-msgstr "Descrivere i cambiamenti"
+msgstr "Descrivi le modifiche"
 
-#: js/components/FileDetailItemImage.vue:757
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr ""
-"Descrivi cosa deve essere cambiato nell'immagine, ad es. rendere il cielo blu"
+"Descrivi cosa deve essere cambiato nell'immagine, ad es. rendi il cielo blu"
 
-#: js/components/FileDetailItemImage.vue:775
+#: js/components/FileDetailItemImage.vue:774
 msgid "Remove background"
 msgstr "Rimuovi sfondo"
 
-#: js/components/FileDetailItemImage.vue:785
-#: js/components/FileDetailItemImage.vue:792
-#: js/components/FileDetailItemImage.vue:850
+#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:791
+#: js/components/FileDetailItemImage.vue:845
 msgid "Expand image"
 msgstr "Espandi immagine"
 
-#: js/components/FileDetailItemImage.vue:803
+#: js/components/FileDetailItemImage.vue:802
 msgctxt "image edge"
 msgid "Top"
 msgstr "In alto"
 
-#: js/components/FileDetailItemImage.vue:804
-#: js/components/FileDetailItemImage.vue:817
-#: js/components/FileDetailItemImage.vue:828
-#: js/components/FileDetailItemImage.vue:841
+#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:836
 msgid "Number of pixels added at this side of the image"
 msgstr "Numero di pixel aggiunti su questo lato dell'immagine"
 
-#: js/components/FileDetailItemImage.vue:816
+#: js/components/FileDetailItemImage.vue:814
 msgctxt "image edge"
 msgid "Left"
 msgstr "A sinistra"
 
-#: js/components/FileDetailItemImage.vue:827
+#: js/components/FileDetailItemImage.vue:824
 msgctxt "image edge"
 msgid "Right"
 msgstr "A destra"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:836
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "In basso"
 
-#: js/components/FileDetailItemImage.vue:858
-#: js/components/FileDetailItemImage.vue:865
+#: js/components/FileDetailItemImage.vue:853
+#: js/components/FileDetailItemImage.vue:860
 msgid "Upscale image"
 msgstr "Aumenta risoluzione immagine"
 
-#: js/components/FileDetailItemImage.vue:878
-#: js/components/FileDetailItemImage.vue:888
-#: js/components/FileDetailItemImage.vue:898
-#: js/components/FileDetailItemImage.vue:908
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:883
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
 msgid "Scale %{factor}"
 msgstr "Scala %{factor}"
 
-#: js/components/FileDetailItemImage.vue:917
+#: js/components/FileDetailItemImage.vue:912
 msgid "Rotate counter-clockwise"
 msgstr "Ruota in senso antiorario"
 
-#: js/components/FileDetailItemImage.vue:923
+#: js/components/FileDetailItemImage.vue:918
 msgid "Rotate clockwise"
 msgstr "Ruota in senso orario"
 
-#: js/components/FileDetailItemImage.vue:930
+#: js/components/FileDetailItemImage.vue:925
 msgid "Flip horizontally"
 msgstr "Capovolgi orizzontalmente"
 
-#: js/components/FileDetailItemImage.vue:936
+#: js/components/FileDetailItemImage.vue:931
 msgid "Flip vertically"
 msgstr "Capovolgi verticalmente"
 
-#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:938
 msgid "Convert to monochrome"
 msgstr "Converti in bianco e nero"
 
-#: js/components/FileDetailItemImage.vue:946
+#: js/components/FileDetailItemImage.vue:941
 msgid "Download"
 msgstr "Scarica"
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:957
 msgid "Previous edit"
 msgstr "Modifica precedente"
 
-#: js/components/FileDetailItemImage.vue:967
+#: js/components/FileDetailItemImage.vue:962
 msgid "Original"
 msgstr "Originale"
 
@@ -1082,14 +1087,14 @@ msgid "Error fetching files"
 msgstr "Errore nel recupero dei file"
 
 #: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
-#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
+#: js/components/FileListItems.vue:1054 js/components/FileListItems.vue:1064
 #: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
 #: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "Aggiungi file"
 
-#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
-#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1009
+#: js/components/FileListItems.vue:1064 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Proteggi con l'accesso alla pagina"
 
@@ -1127,13 +1132,17 @@ msgstr "Il file non è di tipo \"%{mime}*\"."
 msgid "Add files from URLs"
 msgstr "Aggiungi file da URL"
 
-#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:441
+#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:442
 msgid "Add file"
 msgstr "Aggiungi file"
 
 #: js/components/FileUrlDialog.vue:209
 msgid "Enter one URL per line"
 msgstr "Inserire un URL per riga"
+
+#: js/components/FileUrlDialog.vue:210
+msgid "URLs"
+msgstr "URL"
 
 #: js/components/FileUrlDialog.vue:210
 msgid "Files are downloaded from these URLs and added to the media list"
@@ -1154,7 +1163,7 @@ msgstr "Elemento condiviso"
 
 #: js/components/HistoryDialog.vue:63
 msgid "Content block"
-msgstr "Blocco del contenuto"
+msgstr "Blocco di contenuto"
 
 #: js/components/HistoryDialog.vue:68
 msgid "Group: %{group} · Position %{num}"
@@ -1172,7 +1181,7 @@ msgstr[1] "%{num} campi modificati"
 
 #: js/components/HistoryDialog.vue:78
 msgid "%{selected} of %{total} selected"
-msgstr "%{selected} di %{total} selezionato"
+msgstr "%{selected} di %{total} selezionati"
 
 #: js/components/HistoryDialog.vue:85
 msgid "Unknown date"
@@ -1235,11 +1244,11 @@ msgstr "Riprova"
 
 #: js/components/HistoryDialog.vue:218
 msgid "Current changes"
-msgstr "Cambiamenti attuali"
+msgstr "Modifiche attuali"
 
 #: js/components/HistoryDialog.vue:224
 msgid "Scheduled for %{date}"
-msgstr "Previsto per %{date}"
+msgstr "Pianificato per il %{date}"
 
 #: js/components/HistoryDialog.vue:232
 msgid "Select all"
@@ -1271,7 +1280,7 @@ msgstr "Versione precedente: %{date}"
 
 #: js/components/HistoryDialog.vue:314
 msgid "%{selected} of %{total} selected for reverting"
-msgstr "%{selected} di %{total} selezionato per il ripristino"
+msgstr "%{selected} di %{total} selezionati per il ripristino"
 
 #: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
@@ -1323,13 +1332,14 @@ msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} riga omessa"
 msgstr[1] "%{num} righe omesse"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
+#: js/components/ListSort.vue:27
+msgctxt "editor person"
 msgid "Editor"
 msgstr "Redattore"
 
 #: js/components/ListSort.vue:29
 msgid "Latest"
-msgstr "Ultimo"
+msgstr "Più recenti"
 
 #: js/components/ListSort.vue:30
 msgid "Latest edit"
@@ -1337,7 +1347,7 @@ msgstr "Ultima modifica"
 
 #: js/components/ListSort.vue:33
 msgid "Oldest"
-msgstr "Più antico"
+msgstr "Meno recenti"
 
 #: js/components/ListSort.vue:34
 msgid "Oldest edit"
@@ -1363,7 +1373,7 @@ msgstr "Ordina per"
 msgid "Panels"
 msgstr "Pannelli"
 
-#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:88
 msgid "Keyboard shortcuts"
 msgstr "Scorciatoie da tastiera"
 
@@ -1376,6 +1386,10 @@ msgid "Access changes take effect immediately after cache expiry"
 msgstr ""
 "Le modifiche all'accesso diventano effettive immediatamente dopo la scadenza "
 "della cache"
+
+#: js/components/PageAccess.vue:174
+msgid "Visibility"
+msgstr "Visibilità"
 
 #: js/components/PageAccess.vue:174
 msgid ""
@@ -1400,15 +1414,15 @@ msgstr "Utenti autenticati"
 msgid "Access"
 msgstr "Accesso"
 
-#: js/components/PageAccess.vue:188
+#: js/components/PageAccess.vue:187
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Solo i visitatori con uno di questi ruoli possono vedere la pagina"
 
-#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
+#: js/components/PageAccess.vue:197 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Le modifiche collettive alle pagine sono limitate a 1.000 pagine"
 
-#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "Applica ricorsivamente"
 
@@ -1473,8 +1487,8 @@ msgstr "Cambia stato"
 msgid "Status"
 msgstr "Stato"
 
-#: js/components/PageBulkDialog.vue:178
-#: js/components/PageDetailItemProps.vue:245
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1482,84 +1496,84 @@ msgstr ""
 "Le pagine disabilitate sono offline, le pagine nascoste sono online ma non "
 "mostrate nella navigazione"
 
-#: js/components/PageBulkDialog.vue:187
+#: js/components/PageBulkDialog.vue:186
 msgid "Change cache time"
 msgstr "Modifica la durata della cache"
 
-#: js/components/PageBulkDialog.vue:192
-#: js/components/PageDetailItemProps.vue:370
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "Cache time"
-msgstr "Tempo di cache"
+msgstr "Durata della cache"
 
-#: js/components/PageBulkDialog.vue:193
-#: js/components/PageDetailItemProps.vue:371
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Per quanto tempo la pagina generata viene messa in cache prima di essere "
 "ricreata"
 
-#: js/components/PageBulkDialog.vue:202
+#: js/components/PageBulkDialog.vue:200
 msgid "Change language"
 msgstr "Cambia lingua"
 
-#: js/components/PageBulkDialog.vue:208
-#: js/components/PageDetailItemProps.vue:260
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language of the page content"
 msgstr "Lingua del contenuto della pagina"
 
-#: js/components/PageBulkDialog.vue:215
+#: js/components/PageBulkDialog.vue:212
 msgid "Change theme"
 msgstr "Cambia tema"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:336
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageBulkDialog.vue:221
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Design used to display the page"
 msgstr "Tema usato per visualizzare la pagina"
 
-#: js/components/PageBulkDialog.vue:228
+#: js/components/PageBulkDialog.vue:224
 msgid "Change page type"
 msgstr "Cambia tipo di pagina"
 
-#: js/components/PageBulkDialog.vue:233
-#: js/components/PageDetailItemProps.vue:346
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Page type"
 msgstr "Tipo di pagina"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:347
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Template of the theme which defines the page layout"
 msgstr "Modello del tema che definisce il layout della pagina"
 
-#: js/components/PageBulkDialog.vue:241
+#: js/components/PageBulkDialog.vue:236
 msgid "Change tag"
-msgstr "Cambia etichetta"
+msgstr "Cambia tag"
 
-#: js/components/PageBulkDialog.vue:245
-#: js/components/PageDetailItemProps.vue:358
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Page tag"
 msgstr "Tag della pagina"
 
-#: js/components/PageBulkDialog.vue:246
-#: js/components/PageDetailItemProps.vue:359
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Identificatore interno per trovare la pagina nei modelli, ad es. blog"
 
-#: js/components/PageBulkDialog.vue:255
+#: js/components/PageBulkDialog.vue:249
 msgid "Change domain"
 msgstr "Cambia dominio"
 
-#: js/components/PageBulkDialog.vue:260
-#: js/components/PageDetailItemProps.vue:320
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain"
 msgstr "Dominio"
 
-#: js/components/PageBulkDialog.vue:261
-#: js/components/PageDetailItemProps.vue:321
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Dominio su cui è disponibile la pagina, ad es. example.com"
 
@@ -1595,7 +1609,7 @@ msgstr "L'elemento non è condiviso"
 
 #: js/components/PageDetailContentList.vue:791
 msgid "Describe the task you want to perform"
-msgstr "Descrivere l'attività che si desidera eseguire"
+msgstr "Descrivi l'attività che vuoi eseguire"
 
 #: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
 #: js/views/FileList.vue:265 js/views/PageList.vue:303
@@ -1609,7 +1623,7 @@ msgstr "Mostra aiuto"
 
 #: js/components/PageDetailContentList.vue:818
 msgid "Refining ..."
-msgstr "Ottimizzazione..."
+msgstr "Perfezionamento in corso..."
 
 #: js/components/PageDetailContentList.vue:818
 msgid "Refine content based on prompt"
@@ -1676,25 +1690,25 @@ msgid "Make shared"
 msgstr "Rendi condiviso"
 
 #: js/components/PageDetailContentList.vue:1001
-msgid "Merge copy"
-msgstr "Unisci copia"
+msgid "Replace with local copy"
+msgstr "Sostituisci con una copia locale"
 
 #: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "Dividi"
 
-#: js/components/PageDetailEditor.vue:78
+#: js/components/PageDetailEditor.vue:80
 msgid "Double-click to edit"
 msgstr "Fare doppio clic per modificare"
 
-#: js/components/PageDetailEditor.vue:266
+#: js/components/PageDetailEditor.vue:269
 msgid "Preview mode"
 msgstr "Modalità anteprima"
 
-#: js/components/PageDetailEditor.vue:269
+#: js/components/PageDetailEditor.vue:272
 msgid "Not CMS content"
-msgstr "Non contenuti CMS"
+msgstr "Contenuto non CMS"
 
 #: js/components/PageDetailItem.vue:95
 msgid "Detail"
@@ -1727,35 +1741,35 @@ msgstr "L'URL non è valido"
 msgid "The path is already in use by another page"
 msgstr "Il percorso è già utilizzato da un'altra pagina"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:272
 msgid "Page title"
 msgstr "Titolo della pagina"
 
-#: js/components/PageDetailItemProps.vue:275
+#: js/components/PageDetailItemProps.vue:272
 msgid "Shown in the browser tab and search results"
 msgstr "Mostrato nella scheda del browser e nei risultati di ricerca"
 
-#: js/components/PageDetailItemProps.vue:286
+#: js/components/PageDetailItemProps.vue:283
 msgid "Page name"
 msgstr "Nome della pagina"
 
-#: js/components/PageDetailItemProps.vue:287
+#: js/components/PageDetailItemProps.vue:283
 msgid "Short name shown in the navigation menus"
 msgstr "Nome breve mostrato nei menu di navigazione"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:298
 msgid "URL path"
 msgstr "Percorso URL"
 
-#: js/components/PageDetailItemProps.vue:303
+#: js/components/PageDetailItemProps.vue:298
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Parte dell'URL della pagina dopo il dominio, ad es. about-us"
 
-#: js/components/PageDetailItemProps.vue:387
+#: js/components/PageDetailItemProps.vue:377
 msgid "Redirect URL"
 msgstr "URL di reindirizzamento"
 
-#: js/components/PageDetailItemProps.vue:388
+#: js/components/PageDetailItemProps.vue:377
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr ""
 "I visitatori vengono reindirizzati a questo URL invece di vedere la pagina"
@@ -1820,8 +1834,8 @@ msgid "Google Clicks"
 msgstr "Clic di Google"
 
 #: js/components/PageDetailMetrics.vue:198
-msgid "Google Conversion Rate"
-msgstr "Tasso di conversione di Google"
+msgid "Google click-through rate"
+msgstr "Percentuale di clic di Google"
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
@@ -1881,7 +1895,7 @@ msgstr "Velocità della pagina"
 
 #: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
-msgstr "Ricerca su Google: Query"
+msgstr "Ricerca Google: query"
 
 #: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
@@ -1897,8 +1911,8 @@ msgid "Google Search: Impressions & Clicks"
 msgstr "Ricerca su Google: Impressioni e clic"
 
 #: js/components/PageDetailMetrics.vue:615
-msgid "Google Search: Conversions"
-msgstr "Ricerca su Google: Conversioni"
+msgid "Google Search: Click-through rate"
+msgstr "Ricerca Google: Percentuale di clic"
 
 #: js/components/PageListItems.vue:515
 msgid "Error adding root page"
@@ -1910,13 +1924,13 @@ msgstr "Pagina spostata"
 
 #: js/components/PageListItems.vue:616
 msgid "Cache cleared"
-msgstr "Cache cancellata"
+msgstr "Cache svuotata"
 
 #: js/components/PageListItems.vue:617
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] "Cache cancellata per %{num} pagina."
-msgstr[1] "Cache cancellata per %{num} pagine."
+msgstr[0] "Cache svuotata per %{num} pagina."
+msgstr[1] "Cache svuotata per %{num} pagine."
 
 #: js/components/PageListItems.vue:627
 msgid "Error clearing cache"
@@ -1979,7 +1993,7 @@ msgstr[0] "Impossibile aggiornare %{num} pagina"
 msgstr[1] "Impossibile aggiornare %{num} pagine"
 
 #: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
-#: js/views/PageDetail.vue:624
+#: js/views/PageDetail.vue:639
 msgid "Error saving page"
 msgstr "Errore nel salvataggio della pagina"
 
@@ -2007,7 +2021,7 @@ msgstr "Aggiungi pagina"
 
 #: js/components/PageListItems.vue:1785
 msgid "Reload page tree"
-msgstr "Ricarica l'albero della pagina"
+msgstr "Ricarica l'albero delle pagine"
 
 #: js/components/PageListItems.vue:1809
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
@@ -2073,7 +2087,7 @@ msgstr "Sessione scaduta"
 #: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
 #: js/components/User.vue:134
 msgid "Logout"
-msgstr "Disconnessione"
+msgstr "Esci"
 
 #: js/components/ReloginDialog.vue:148
 msgid ""
@@ -2088,13 +2102,13 @@ msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr ""
 "Accedi di nuovo per continuare. Le modifiche non salvate vengono mantenute."
 
-#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:237
 msgid "Sign in"
 msgstr "Accedi"
 
 #: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
 msgid "E-Mail"
-msgstr "Posta elettronica"
+msgstr "E-mail"
 
 #: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
 msgid "Password"
@@ -2112,9 +2126,9 @@ msgstr "Mostra password"
 msgid "Continue"
 msgstr "Continua"
 
-#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:240
 msgid "Login"
-msgstr "Accesso"
+msgstr "Accedi"
 
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
@@ -2125,82 +2139,82 @@ msgid "New elements"
 msgstr "Nuovi elementi"
 
 #: js/components/SchemaItems.vue:106
-msgid "uncategorized"
-msgstr "non classificato"
+msgid "Uncategorized"
+msgstr "Non classificato"
 
 #: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "Errore durante il recupero degli elementi di contenuto"
 
-#: js/components/ShortcutDialog.vue:23
+#: js/components/ShortcutDialog.vue:29
 msgid "General"
 msgstr "Generale"
 
-#: js/components/ShortcutDialog.vue:28
+#: js/components/ShortcutDialog.vue:34
 msgid "Close dialog or menu"
 msgstr "Chiudi finestra di dialogo o menu"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:40
 msgid "Move between commands and results"
 msgstr "Spostati tra comandi e risultati"
 
-#: js/components/ShortcutDialog.vue:35
+#: js/components/ShortcutDialog.vue:41
 msgid "Run command or open result"
 msgstr "Esegui comando o apri risultato"
 
-#: js/components/ShortcutDialog.vue:36
+#: js/components/ShortcutDialog.vue:42
 msgid "Close command palette"
 msgstr "Chiudi la palette dei comandi"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:46
 msgid "Lists"
 msgstr "Elenchi"
 
-#: js/components/ShortcutDialog.vue:44
+#: js/components/ShortcutDialog.vue:50
 msgid "Edit views"
 msgstr "Viste di modifica"
 
-#: js/components/ShortcutDialog.vue:48
+#: js/components/ShortcutDialog.vue:54
 msgid "Page content"
 msgstr "Contenuto della pagina"
 
-#: js/components/ShortcutDialog.vue:49
+#: js/components/ShortcutDialog.vue:55
 msgid "Move content element up or down"
 msgstr "Sposta l'elemento di contenuto su o giù"
 
-#: js/components/ShortcutDialog.vue:52
+#: js/components/ShortcutDialog.vue:58
 msgid "Page tree"
 msgstr "Albero delle pagine"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:61
 msgid "Move between pages"
 msgstr "Spostati tra le pagine"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:62
 msgid "Expand page"
 msgstr "Espandi pagina"
 
-#: js/components/ShortcutDialog.vue:56
+#: js/components/ShortcutDialog.vue:63
 msgid "Add subpage to focused page"
 msgstr "Aggiungi sottopagina alla pagina attiva"
 
-#: js/components/ShortcutDialog.vue:57
+#: js/components/ShortcutDialog.vue:64
 msgid "Reorder or re-nest page"
 msgstr "Riordina o sposta la pagina nell'albero"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:70
 msgid "AI chat"
 msgstr "Chat AI"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:73
 msgid "Send message"
 msgstr "Invia messaggio"
 
-#: js/components/ShortcutDialog.vue:65
+#: js/components/ShortcutDialog.vue:74
 msgid "New line"
 msgstr "Nuova riga"
 
-#: js/components/ShortcutDialog.vue:66
+#: js/components/ShortcutDialog.vue:75
 msgid "Recall previous messages"
 msgstr "Richiama i messaggi precedenti"
 
@@ -2212,13 +2226,13 @@ msgstr "Modifiche non salvate"
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "Ci sono modifiche non salvate che andranno perse se esci."
 
-#: js/components/UnsavedDialog.vue:49
+#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "Scarta"
 
-#: js/components/UnsavedDialog.vue:58
+#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
-msgstr "Salva e esci"
+msgstr "Salva ed esci"
 
 #: js/components/User.vue:60
 msgid "Failed to load user"
@@ -2246,29 +2260,29 @@ msgstr "Il valore deve essere un codice colore esadecimale"
 
 #: js/fields/File.vue:140
 msgid "File is required"
-msgstr "Il file è necessario"
+msgstr "Il file è obbligatorio"
 
-#: js/fields/File.vue:448
+#: js/fields/File.vue:449
 msgid "Add file from URL"
 msgstr "Aggiungi un file da URL"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:430
+#: js/fields/File.vue:457 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "Crea file"
 
-#: js/fields/File.vue:462
+#: js/fields/File.vue:463
 msgid "Upload file"
 msgstr "Carica file"
 
-#: js/fields/File.vue:487
+#: js/fields/File.vue:488
 msgid "Drop file here to upload"
 msgstr "Rilascia il file qui per caricarlo"
 
-#: js/fields/File.vue:494
+#: js/fields/File.vue:495
 msgid "name"
 msgstr "nome"
 
-#: js/fields/File.vue:498
+#: js/fields/File.vue:499
 msgid "description"
 msgstr "descrizione"
 
@@ -2334,7 +2348,7 @@ msgstr "Attributo del link"
 
 #: js/merge.js:34
 msgid "Merged with changes from %{editor}"
-msgstr "Incorporate le modifiche da %{editor}"
+msgstr "Modifiche di %{editor} incorporate"
 
 #: js/routes.js:126
 msgid "You do not have permission to access %{path}"
@@ -2342,7 +2356,7 @@ msgstr "Non hai l'autorizzazione per accedere a %{path}"
 
 #: js/rules.js:18
 msgid "Value is required"
-msgstr "Il valore è richiesto"
+msgstr "Il valore è obbligatorio"
 
 #: js/rules.js:23
 msgid "At least %{num} entry is required"
@@ -2384,817 +2398,812 @@ msgstr[1] "Sono consentite al massimo %{num} colonne"
 msgid "Failed to load plugin"
 msgstr "Impossibile caricare il plug-in"
 
-#: js/strings.js:30
-msgctxt "cs"
-msgid "main"
-msgstr "principale"
-
-#: js/strings.js:31
-msgctxt "cs"
-msgid "header"
-msgstr "intestazione"
-
 #: js/strings.js:32
 msgctxt "cs"
-msgid "footer"
-msgstr "piè di pagina"
+msgid "main"
+msgstr "Principale"
 
 #: js/strings.js:33
 msgctxt "cs"
-msgid "sidebar"
-msgstr "barra laterale"
+msgid "header"
+msgstr "Intestazione"
 
 #: js/strings.js:34
 msgctxt "cs"
-msgid "aside"
-msgstr "riquadro"
+msgid "footer"
+msgstr "Piè di pagina"
 
-#: js/strings.js:37
+#: js/strings.js:35
+msgctxt "cs"
+msgid "sidebar"
+msgstr "Barra laterale"
+
+#: js/strings.js:36
+msgctxt "cs"
+msgid "aside"
+msgstr "Riquadro"
+
+#: js/strings.js:39
 msgctxt "sg"
 msgid "basic"
 msgstr "di base"
 
-#: js/strings.js:38
+#: js/strings.js:40
 msgctxt "sg"
 msgid "content"
 msgstr "contenuto"
 
-#: js/strings.js:39
+#: js/strings.js:41
 msgctxt "sg"
 msgid "media"
 msgstr "media"
 
-#: js/strings.js:40
+#: js/strings.js:42
 msgctxt "sg"
 msgid "forms"
 msgstr "moduli"
 
-#: js/strings.js:43
+#: js/strings.js:45
 msgctxt "as"
 msgid "type"
 msgstr "tipo"
 
-#: js/strings.js:44
+#: js/strings.js:46
 msgctxt "as"
 msgid "state"
 msgstr "Stato"
 
-#: js/strings.js:47
+#: js/strings.js:49
 msgctxt "st"
 msgid "valid"
 msgstr "valido"
 
-#: js/strings.js:48
+#: js/strings.js:50
 msgctxt "st"
 msgid "changed"
 msgstr "modificato"
 
-#: js/strings.js:49
+#: js/strings.js:51
 msgctxt "st"
 msgid "error"
 msgstr "errore"
 
-#: js/strings.js:52
+#: js/strings.js:54
 msgctxt "st"
 msgid "reference"
 msgstr "riferimento"
 
-#: js/strings.js:53
+#: js/strings.js:55
 msgctxt "st"
 msgid "heading"
 msgstr "titolo"
 
-#: js/strings.js:54
+#: js/strings.js:56
 msgctxt "st"
 msgid "text"
 msgstr "testo"
 
-#: js/strings.js:55
+#: js/strings.js:57
 msgctxt "st"
 msgid "image-text"
 msgstr "testo-immagine"
 
-#: js/strings.js:56
+#: js/strings.js:58
 msgctxt "st"
 msgid "slideshow"
 msgstr "slideshow"
 
-#: js/strings.js:57
+#: js/strings.js:59
 msgctxt "st"
 msgid "code"
 msgstr "codice"
 
-#: js/strings.js:58
+#: js/strings.js:60
 msgctxt "st"
 msgid "table"
 msgstr "tabella"
 
-#: js/strings.js:59
+#: js/strings.js:61
 msgctxt "st"
 msgid "map"
 msgstr "mappa"
 
-#: js/strings.js:60
+#: js/strings.js:62
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:61
+#: js/strings.js:63
 msgctxt "st"
 msgid "image"
 msgstr "immagine"
 
-#: js/strings.js:62
+#: js/strings.js:64
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:63
+#: js/strings.js:65
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:64
+#: js/strings.js:66
 msgctxt "st"
 msgid "file"
 msgstr "file"
 
-#: js/strings.js:65
+#: js/strings.js:67
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:66
+#: js/strings.js:68
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:67
+#: js/strings.js:69
 msgctxt "st"
 msgid "cards"
 msgstr "Schede"
 
-#: js/strings.js:68
+#: js/strings.js:70
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:69
+#: js/strings.js:71
 msgctxt "st"
 msgid "article"
 msgstr "Articolo"
 
-#: js/strings.js:70
+#: js/strings.js:72
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:71
+#: js/strings.js:73
 msgctxt "st"
 msgid "toc"
 msgstr "Indice"
 
-#: js/strings.js:72
+#: js/strings.js:74
 msgctxt "st"
 msgid "contact"
 msgstr "contatto"
 
-#: js/strings.js:73
+#: js/strings.js:75
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Meta tag"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "social-media"
 msgstr "Social media"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "canonical"
 msgstr "URL canonico"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "robots"
 msgstr "Motori di ricerca"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "styles"
 msgstr "stili"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "news"
 msgstr "Notizie"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "pricing"
 msgstr "Prezzi"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "security"
 msgstr "Sicurezza"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "testimonial"
 msgstr "Testimonianze"
 
-#: js/strings.js:88
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Titolo di sezione da H1 a H6"
 
-#: js/strings.js:89
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Testo formattato con paragrafi, elenchi e link"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Immagine accanto a testo formattato"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Codice sorgente con evidenziazione della sintassi"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Tabella dati con riga o colonna di intestazione opzionale"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Mappa interattiva con posizione, testo e link"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "HTML personalizzato per incorporamenti e widget"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Singola immagine responsive"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Diapositive a rotazione con più immagini"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Video incorporato con controlli di riproduzione"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Audio incorporato con controlli di riproduzione"
 
-#: js/strings.js:99
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "File scaricabile come un documento PDF"
 
-#: js/strings.js:100
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Ampia introduzione con titolo, testo, pulsanti e sfondo"
 
-#: js/strings.js:101
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Invito all'azione con testo e pulsanti"
 
-#: js/strings.js:102
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Griglia di schede con immagine, titolo e testo"
 
-#: js/strings.js:103
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Citazioni di clienti con nome, ruolo e foto"
 
-#: js/strings.js:104
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Introduzione dell'articolo con galleria di immagini e autore"
 
-#: js/strings.js:105
+#: js/strings.js:107
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Elenco di articoli del blog da una pagina padre"
 
-#: js/strings.js:106
+#: js/strings.js:108
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Elenco di notizie da una pagina padre"
 
-#: js/strings.js:107
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Sottopagina in evidenza seguita da altre sottopagine"
 
-#: js/strings.js:108
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Piani tariffari con abbonamenti o pagamenti una tantum"
 
-#: js/strings.js:109
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Domande frequenti con risposte"
 
-#: js/strings.js:110
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Indice con link ai titoli della pagina"
 
-#: js/strings.js:111
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Modulo di contatto con campi configurabili"
 
-#: js/strings.js:114
+#: js/strings.js:116
 msgctxt "fn"
 msgid "button"
 msgstr "pulsante"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "fn"
 msgid "buttons"
 msgstr "pulsanti"
 
-#: js/strings.js:116
+#: js/strings.js:118
 msgctxt "fn"
 msgid "cards"
 msgstr "Schede"
 
-#: js/strings.js:117
+#: js/strings.js:119
 msgctxt "fn"
 msgid "description"
 msgstr "descrizione"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "file"
 msgstr "file"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "files"
 msgstr "file"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "follow"
 msgstr "Link da seguire"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "header"
 msgstr "intestazione"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "index"
 msgstr "Indicizzazione"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "keywords"
 msgstr "parole chiave"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "language"
 msgstr "lingua"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "label"
 msgstr "etichetta"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "level"
 msgstr "livello"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "limit"
 msgstr "limite"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "location"
 msgstr "posizione"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "main"
 msgstr "Immagine principale"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "order"
 msgstr "ordine"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "parent-page"
 msgstr "pagina padre"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "position"
 msgstr "posizione"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "text"
 msgstr "testo"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "table"
 msgstr "tabella"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "title"
 msgstr "titolo"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "url"
-msgstr "url"
+msgstr "URL"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "image"
 msgstr "immagine"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "images"
 msgstr "immagini"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "items"
 msgstr "voci"
 
-#: js/strings.js:141
+#: js/strings.js:143
 msgctxt "fn"
 msgid "introduction"
 msgstr "introduzione"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "load immediately"
-msgstr "caricare immediatamente"
+msgstr "Carica immediatamente"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "source code"
 msgstr "codice sorgente"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Ruolo di accesso al frontend"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Prezzi di pagamento"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Riferimento pagamento"
 
-#: js/strings.js:147
-msgctxt "fn"
-msgid "Payment kind"
-msgstr "Tipo di pagamento"
-
-#: js/strings.js:148
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valuta"
 
-#: js/strings.js:149
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Intervallo di fatturazione"
 
-#: js/strings.js:150
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Unità di prezzo"
 
-#: js/strings.js:151
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Target page or link"
-msgstr "Pagina o collegamento di destinazione"
+msgstr "Pagina o link di destinazione"
 
-#: js/strings.js:152
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Campi del modulo"
 
-#: js/strings.js:153
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Field"
 msgstr "Campo"
 
-#: js/strings.js:154
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Required"
 msgstr "Obbligatorio"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Link label"
 msgstr "Testo del link"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Link di contatto"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Contact email"
-msgstr "Email di contatto"
+msgstr "E-mail di contatto"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Description"
 msgstr "Descrizione"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Prezzo visualizzato"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galleria"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Testo in evidenza"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "In evidenza"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Language"
 msgstr "Lingua"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Tipo di pagamento"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Lingue preferite"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Ringraziamenti"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "amount"
 msgstr "Importo"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "background"
 msgstr "Sfondo"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "background animation"
 msgstr "Animazione di sfondo"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Pulsante alternativo"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "canonical"
 msgstr "URL canonico"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "columns"
 msgstr "Colonne"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "csaf"
 msgstr "Link CSAF"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "encryption"
 msgstr "Crittografia"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "expires"
 msgstr "Data di scadenza"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "features"
-msgstr "Caratteristiche"
+msgstr "Funzionalità"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "hiring"
 msgstr "Posizioni aperte"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "layout"
 msgstr "Layout"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "name"
 msgstr "Nome"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "policy"
 msgstr "Policy"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "ratio"
 msgstr "Proporzione"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "role"
 msgstr "Ruolo"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Sottotitolo"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "url-alternative"
-msgstr "URL alternativa"
+msgstr "URL alternativo"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Font del testo"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Font del titolo"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Colore del testo"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Colore di sfondo"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Colore di selezione"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Colore di contrasto"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Colore di contrasto (hover)"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Colore del testo di contrasto"
 
-#: js/strings.js:194
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Colore principale"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Sfondo principale"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Colore principale (hover)"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Sfondo principale (hover)"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Colore secondario"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Sfondo secondario"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Colore secondario (hover)"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Sfondo secondario (hover)"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Raggio degli angoli"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Separatore breadcrumb"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Testo del titolo"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3202,113 +3211,113 @@ msgstr ""
 "Il livello 1 è il titolo principale della pagina, i livelli superiori "
 "strutturano le sezioni sottostanti"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Testo formattato con paragrafi, elenchi e link"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Testo formattato mostrato accanto all'immagine"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Immagine mostrata accanto al testo"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Posizione dell'immagine rispetto al testo"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Rapporto di larghezza tra immagine e testo"
 
-#: js/strings.js:213
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr ""
 "Linguaggio di programmazione utilizzato per l'evidenziazione della sintassi"
 
-#: js/strings.js:214
+#: js/strings.js:216
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Codice sorgente mostrato con evidenziazione della sintassi"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Didascalia facoltativa mostrata sopra la tabella"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 "Usare la prima riga, la prima colonna o entrambe come intestazioni della "
 "tabella"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
-msgid "Table data as comma separated values, one row per line"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
-"Dati della tabella come valori separati da virgola, una riga della tabella "
-"per riga di testo"
+"Inserisci i dati nelle celle; aggiungi o rimuovi righe e colonne secondo "
+"necessità"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Titolo facoltativo mostrato sopra la mappa"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr ""
 "Descrizione mostrata accanto alla mappa, ad es. indirizzo o indicazioni "
 "stradali"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Cercare un luogo o fare clic sulla mappa per impostare la posizione"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Testo del link che apre la posizione in un servizio di mappe"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "Codice HTML inserito così com'è nella pagina, ad es. per incorporamenti e "
 "widget"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Immagine mostrata a tutta larghezza dell'area dei contenuti"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr ""
 "Caricare l'immagine immediatamente se è visibile nella parte superiore della "
 "pagina"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Titolo facoltativo mostrato sopra le diapositive"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Immagini mostrate una dopo l'altra, trascinare per modificare l'ordine"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
@@ -3316,351 +3325,351 @@ msgstr ""
 "Caricare la prima immagine immediatamente se è visibile nella parte "
 "superiore della pagina"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "File video riprodotto nella pagina"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "File audio riprodotto nella pagina"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "File offerto per il download"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Titolo principale della pagina"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Breve riga mostrata sopra il titolo"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Introduzione mostrata sotto il titolo"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Pagina o link a cui rimanda il pulsante principale"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Testo del pulsante principale"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Pagina o link a cui rimanda il secondo pulsante"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Testo del secondo pulsante"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Immagine mostrata dietro il testo"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Effetto di animazione dell'immagine di sfondo"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Immagini mostrate accanto al testo"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Titolo che cattura l'attenzione dei visitatori"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Testo che motiva i visitatori ad agire"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Pulsanti che guidano i visitatori al passaggio successivo"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Testo del pulsante"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Pagina o link a cui rimanda il pulsante"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Titolo facoltativo mostrato sopra le schede"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr ""
 "Numero di schede per riga, \"auto\" si adatta alla larghezza dello schermo"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Schede mostrate nella griglia"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Titolo della scheda"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Immagine mostrata nella parte superiore della scheda"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Testo della scheda"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Pagina o link a cui rimanda la scheda"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Titolo facoltativo mostrato sopra le citazioni"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Citazioni di clienti o partner"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Citazione della persona"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Nome della persona"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Ruolo o azienda della persona"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Foto della persona"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Introduzione dell'articolo mostrata sotto il titolo della pagina"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr ""
 "Immagini dell'articolo, la prima viene usata come immagine di anteprima"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Nome dell'autore dell'articolo"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Link alla pagina del profilo dell'autore"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Titolo facoltativo mostrato sopra l'elenco"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Mostrare le pagine come schede o come elenco compatto"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Pagina di cui sono elencate le sottopagine"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Ordine di visualizzazione delle pagine elencate"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Numero massimo di pagine mostrate contemporaneamente"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Mostrare le altre sottopagine come schede o come elenco compatto"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Titolo facoltativo mostrato sopra i piani tariffari"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Breve testo mostrato sotto il titolo"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Piani tariffari mostrati uno accanto all'altro"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Nome del piano tariffario"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Ruolo assegnato ai clienti dopo il pagamento per accedere alle pagine "
 "protette"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Prezzi del piano, ad es. mensile e annuale"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Abbonamento ricorrente o pagamento una tantum"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Numero di giorni tra due pagamenti, ad es. 30 per mensile"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Codice valuta ISO a tre lettere, ad es. EUR o USD"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID prezzo o importo utilizzato dal fornitore di pagamento"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Prezzo formattato mostrato ai visitatori, ad es. 9,99 €"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Prezzo numerico mostrato se non è impostato un prezzo formattato"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Testo mostrato dopo il prezzo, ad es. al mese"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Breve descrizione del piano tariffario"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Elenco delle funzionalità incluse nel piano"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Mettere in risalto questo piano rispetto agli altri"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Etichetta breve mostrata sul piano in evidenza, ad es. Popolare"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Titolo facoltativo mostrato sopra le domande"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Domande e risposte mostrate come elenco espandibile"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Domanda posta dai visitatori"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Risposta alla domanda"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Titolo facoltativo mostrato sopra l'indice"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Titolo facoltativo mostrato sopra il modulo di contatto"
 
-#: js/strings.js:292
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Testo facoltativo mostrato tra il titolo e il modulo di contatto"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Campi del modulo mostrati ai visitatori in questo ordine"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Seleziona un campo del modulo o inserisci un nome personalizzato"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "I visitatori devono compilare questo campo"
 
-#: js/strings.js:294
+#: js/strings.js:298
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3669,403 +3678,403 @@ msgstr ""
 "Riepilogo della pagina mostrato nei risultati di ricerca, si consigliano da "
 "150 a 160 caratteri"
 
-#: js/strings.js:295
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Elenco di parole chiave separate da virgola che descrivono la pagina"
 
-#: js/strings.js:296
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Titolo mostrato quando la pagina viene condivisa sui social media"
 
-#: js/strings.js:297
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Riepilogo mostrato quando la pagina viene condivisa sui social media"
 
-#: js/strings.js:298
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Immagine di anteprima mostrata quando la pagina viene condivisa sui social "
 "media"
 
-#: js/strings.js:299
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "URL originale se lo stesso contenuto è disponibile a più indirizzi"
 
-#: js/strings.js:300
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 "Consentire o impedire ai motori di ricerca di indicizzare questa pagina"
 
-#: js/strings.js:301
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Consentire o impedire ai motori di ricerca di seguire i link presenti in "
 "questa pagina"
 
-#: js/strings.js:302
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Nome del sito web mostrato nella scheda del browser e nei risultati di "
 "ricerca"
 
-#: js/strings.js:303
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logo mostrato nell'intestazione della pagina"
 
-#: js/strings.js:304
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Variante del logo utilizzata per gli sfondi scuri"
 
-#: js/strings.js:305
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Piccola immagine quadrata mostrata nelle schede del browser e nei preferiti"
 
-#: js/strings.js:306
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Elenco di font separati da virgola utilizzati per il testo"
 
-#: js/strings.js:307
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Colore del testo predefinito"
 
-#: js/strings.js:308
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Colore di sfondo delle pagine"
 
-#: js/strings.js:309
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Colore di sfondo del testo selezionato"
 
-#: js/strings.js:310
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Colore degli elementi con forte contrasto rispetto allo sfondo"
 
-#: js/strings.js:311
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Colore di contrasto al passaggio del mouse o al focus di un elemento"
 
-#: js/strings.js:312
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Colore del testo sugli elementi che usano il colore di contrasto"
 
-#: js/strings.js:313
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Colore principale del brand utilizzato per link e pulsanti"
 
-#: js/strings.js:314
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Colore di sfondo dei pulsanti principali e degli elementi in evidenza"
 
-#: js/strings.js:315
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Colore principale al passaggio del mouse o al focus di un elemento"
 
-#: js/strings.js:316
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr ""
 "Colore di sfondo principale al passaggio del mouse o al focus di un elemento"
 
-#: js/strings.js:317
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Colore aggiuntivo utilizzato per link e pulsanti meno importanti"
 
-#: js/strings.js:318
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Colore di sfondo dei pulsanti secondari"
 
-#: js/strings.js:319
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Colore secondario al passaggio del mouse o al focus di un elemento"
 
-#: js/strings.js:320
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr ""
 "Colore di sfondo secondario al passaggio del mouse o al focus di un elemento"
 
-#: js/strings.js:321
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Arrotondamento degli angoli come lunghezza CSS, ad es. 0.25rem o 0 per "
 "angoli netti"
 
-#: js/strings.js:322
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Carattere mostrato tra i link breadcrumb"
 
-#: js/strings.js:323
+#: js/strings.js:327
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "Link HTTPS per contattare il team di sicurezza, ad es. un modulo"
 
-#: js/strings.js:324
+#: js/strings.js:328
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Indirizzo e-mail per segnalare problemi di sicurezza"
 
-#: js/strings.js:325
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr ""
 "Data a partire dalla quale le informazioni sulla sicurezza sono considerate "
 "obsolete"
 
-#: js/strings.js:326
+#: js/strings.js:330
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "Link HTTPS alla chiave pubblica per i messaggi crittografati"
 
-#: js/strings.js:327
+#: js/strings.js:331
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "Link HTTPS alla pagina di ringraziamento ai ricercatori di sicurezza"
 
-#: js/strings.js:328
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Codici lingua separati da virgola per le segnalazioni di sicurezza, ad es. "
 "en, de"
 
-#: js/strings.js:329
+#: js/strings.js:333
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL HTTPS in cui viene pubblicato il file security.txt"
 
-#: js/strings.js:330
+#: js/strings.js:334
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "Link HTTPS alla policy di sicurezza e divulgazione"
 
-#: js/strings.js:331
+#: js/strings.js:335
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "Link HTTPS alle posizioni aperte relative alla sicurezza"
 
-#: js/strings.js:332
+#: js/strings.js:336
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "Link HTTPS ai metadati del provider CSAF"
 
-#: js/strings.js:333
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Regole aggiuntive aggiunte al file robots.txt per i crawler web"
 
-#: js/strings.js:334
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Codice CSS personalizzato aggiunto a tutte le pagine"
 
-#: js/strings.js:335
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Codice JavaScript personalizzato aggiunto a tutte le pagine"
 
-#: js/strings.js:336
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Elenco di font separati da virgola utilizzati per i titoli"
 
-#: js/strings.js:339
+#: js/strings.js:343
 msgctxt "op"
 msgid "Name"
 msgstr "Nome"
 
-#: js/strings.js:340
+#: js/strings.js:344
 msgctxt "op"
 msgid "Company"
 msgstr "Azienda"
 
-#: js/strings.js:341
+#: js/strings.js:345
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefono"
 
-#: js/strings.js:342
+#: js/strings.js:346
 msgctxt "op"
 msgid "E-Mail"
-msgstr "Posta elettronica"
+msgstr "E-mail"
 
-#: js/strings.js:343
+#: js/strings.js:347
 msgctxt "op"
 msgid "Subject"
 msgstr "Oggetto"
 
-#: js/strings.js:344
+#: js/strings.js:348
 msgctxt "op"
 msgid "Follow"
 msgstr "Segui i link"
 
-#: js/strings.js:345
+#: js/strings.js:349
 msgctxt "op"
 msgid "Index"
 msgstr "Indicizza"
 
-#: js/strings.js:346
+#: js/strings.js:350
 msgctxt "op"
 msgid "No follow"
 msgstr "Non seguire i link"
 
-#: js/strings.js:347
+#: js/strings.js:351
 msgctxt "op"
 msgid "No index"
 msgstr "Non indicizzare"
 
-#: js/strings.js:348
+#: js/strings.js:352
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abbonamento"
 
-#: js/strings.js:349
+#: js/strings.js:353
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pagamento una tantum"
 
-#: js/strings.js:350
+#: js/strings.js:354
 msgctxt "op"
 msgid "Auto"
 msgstr "Automatico"
 
-#: js/strings.js:351
+#: js/strings.js:355
 msgctxt "op"
 msgid "Cards"
 msgstr "Schede"
 
-#: js/strings.js:352
+#: js/strings.js:356
 msgctxt "op"
 msgid "Default"
 msgstr "Predefinito"
 
-#: js/strings.js:353
+#: js/strings.js:357
 msgctxt "op"
 msgid "End"
 msgstr "Fine"
 
-#: js/strings.js:354
+#: js/strings.js:358
 msgctxt "op"
 msgid "First column"
 msgstr "Prima colonna"
 
-#: js/strings.js:355
+#: js/strings.js:359
 msgctxt "op"
 msgid "First row"
 msgstr "Prima riga"
 
-#: js/strings.js:356
+#: js/strings.js:360
 msgctxt "op"
 msgid "First row and column"
 msgstr "Prima riga e colonna"
 
-#: js/strings.js:357
+#: js/strings.js:361
 msgctxt "op"
 msgid "Grid end"
 msgstr "Fine griglia"
 
-#: js/strings.js:358
+#: js/strings.js:362
 msgctxt "op"
 msgid "Grid start"
 msgstr "Inizio griglia"
 
-#: js/strings.js:359
+#: js/strings.js:363
 msgctxt "op"
 msgid "Latest"
 msgstr "Più recenti"
 
-#: js/strings.js:360
+#: js/strings.js:364
 msgctxt "op"
 msgid "List"
 msgstr "Elenco"
 
-#: js/strings.js:361
+#: js/strings.js:365
 msgctxt "op"
 msgid "None"
 msgstr "Nessuno"
 
-#: js/strings.js:362
+#: js/strings.js:366
 msgctxt "op"
 msgid "Oldest"
 msgstr "Meno recenti"
 
-#: js/strings.js:363
+#: js/strings.js:367
 msgctxt "op"
 msgid "Position"
 msgstr "Posizione"
 
-#: js/strings.js:364
+#: js/strings.js:368
 msgctxt "op"
 msgid "Start"
 msgstr "Inizio"
 
-#: js/strings.js:365
+#: js/strings.js:369
 msgctxt "op"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: js/strings.js:368
+#: js/strings.js:372
 msgctxt "ai"
 msgid "Done"
 msgstr "Fatto"
 
-#: js/strings.js:369
+#: js/strings.js:373
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Esiste già"
 
-#: js/strings.js:372
+#: js/strings.js:376
 msgctxt "sg"
 msgid "expert"
 msgstr "Avanzato"
 
-#: js/strings.js:373
+#: js/strings.js:377
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:374
+#: js/strings.js:378
 msgctxt "st"
 msgid "website"
 msgstr "sito web"
 
-#: js/strings.js:375
+#: js/strings.js:379
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:376
+#: js/strings.js:380
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Logo alternativo"
 
-#: js/strings.js:377
+#: js/strings.js:381
 msgctxt "st"
 msgid "icon"
 msgstr "Icona"
@@ -4119,11 +4128,11 @@ msgstr "Aggiungi valore di accesso"
 msgid "Access value"
 msgstr "Valore di accesso"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:337
 msgid "Role name which can be assigned to pages and users"
 msgstr "Nome del ruolo assegnabile a pagine e utenti"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:353
 msgid "Add"
 msgstr "Aggiungi"
 
@@ -4137,14 +4146,14 @@ msgstr "Elemento pubblicato con successo"
 
 #: js/views/ElementDetail.vue:244
 msgid "Element scheduled for publishing at %{date}"
-msgstr "Elemento previsto per la pubblicazione a %{date}"
+msgstr "Elemento pianificato per la pubblicazione il %{date}"
 
 #: js/views/ElementDetail.vue:245
 msgid "Error publishing element"
 msgstr "Errore nella pubblicazione dell'elemento"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:549
+#: js/views/PageDetail.vue:564
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Ci sono campi non validi, risolvere prima gli errori"
 
@@ -4173,7 +4182,7 @@ msgstr "pubblicazione"
 #: js/views/ElementList.vue:125 js/views/FileList.vue:124
 #: js/views/PageList.vue:149
 msgid "Scheduled"
-msgstr "In programma"
+msgstr "Pianificati"
 
 #: js/views/ElementList.vue:126 js/views/FileList.vue:125
 #: js/views/PageList.vue:150
@@ -4220,7 +4229,7 @@ msgstr ""
 #: js/views/PageList.vue:339
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
-"Premi Invio o la freccia per aprire l’assistente IA e perfezionare il "
+"Premi Invio o la freccia per aprire l’assistente AI e perfezionare il "
 "contenuto in una chat"
 
 #: js/views/FileDetail.vue:191
@@ -4233,7 +4242,7 @@ msgstr "File pubblicato con successo"
 
 #: js/views/FileDetail.vue:252
 msgid "File scheduled for publishing at %{date}"
-msgstr "File programmato per la pubblicazione a %{date}"
+msgstr "File pianificato per la pubblicazione il %{date}"
 
 #: js/views/FileDetail.vue:325
 msgid "File saved successfully"
@@ -4256,13 +4265,13 @@ msgstr "Indirizzo e-mail non valido"
 
 #: js/views/Login.vue:115
 msgid "Not a CMS editor"
-msgstr "Non è un editor CMS"
+msgstr "Non è un redattore CMS"
 
 #: js/views/Login.vue:171
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: js/views/Login.vue:228
+#: js/views/Login.vue:231
 msgid "Error"
 msgstr "Errore"
 
@@ -4280,30 +4289,35 @@ msgstr "Pagina pubblicata con successo"
 
 #: js/views/PageDetail.vue:498
 msgid "Page scheduled for publishing at %{date}"
-msgstr "Pagina prevista per la pubblicazione a %{date}"
+msgstr "Pagina pianificata per la pubblicazione il %{date}"
 
-#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
+#: js/views/PageDetail.vue:550 js/views/PageDetail.vue:825
 msgid "Rate this page and suggest improvements"
 msgstr "Valuta questa pagina e suggerisci miglioramenti"
 
-#: js/views/PageDetail.vue:602
+#: js/views/PageDetail.vue:617
 msgid "Page saved successfully"
 msgstr "Pagina salvata con successo"
 
-#: js/views/PageDetail.vue:639
+#: js/views/PageDetail.vue:654
 msgid "No page schema for \"content\" found"
 msgstr "Nessuno schema di pagina per \"content\" trovato"
 
-#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
-#: js/views/PageDetail.vue:857
+#: js/views/PageDetail.vue:802 js/views/PageDetail.vue:853
+#: js/views/PageDetail.vue:872
 msgid "Page"
 msgstr "Pagina"
 
-#: js/views/PageDetail.vue:815
+#: js/views/PageDetail.vue:830
 msgid "Translate page"
 msgstr "Traduci pagina"
 
-#: js/views/PageDetail.vue:860
+#: js/views/PageDetail.vue:858
+msgctxt "editing interface"
+msgid "Editor"
+msgstr "Editor"
+
+#: js/views/PageDetail.vue:875
 msgid "Metrics"
 msgstr "Metriche"
 
@@ -4338,118 +4352,3 @@ msgid ""
 msgstr ""
 "L'intelligenza artificiale può creare una pagina e dei contenuti in base "
 "alle tue indicazioni e aggiungerli all'albero delle pagine."
-
-#~ msgid "Open command palette"
-#~ msgstr "Apri la palette dei comandi"
-
-#~ msgid "Conflict resolution"
-#~ msgstr "Risoluzione dei conflitti"
-
-#~ msgid "Command palette"
-#~ msgstr "Palette dei comandi"
-
-#~ msgid "Confirm"
-#~ msgstr "Conferma"
-
-#~ msgid "Selection is required"
-#~ msgstr "La selezione è necessaria"
-
-#~ msgid "Minimum is %{num} entries"
-#~ msgstr "Il minimo è %{num} voci"
-
-#~ msgid "Maximum is %{num} entries"
-#~ msgstr "Il massimo è %{num} voci"
-
-#~ msgid "Minimum length is %{num} characters"
-#~ msgstr "La lunghezza minima è %{num} caratteri"
-
-#~ msgid "Maximum length is %{num} characters"
-#~ msgstr "La lunghezza massima è %{num} caratteri"
-
-#~ msgid "id"
-#~ msgstr "id"
-
-#~ msgid "Copy"
-#~ msgstr "Copia"
-
-#~ msgid "Top"
-#~ msgstr "In alto"
-
-#~ msgid "Left"
-#~ msgstr "A sinistra"
-
-#~ msgid "Right"
-#~ msgstr "A destra"
-
-#~ msgid "Bottom"
-#~ msgstr "In basso"
-
-#~ msgid "Cut"
-#~ msgstr "Taglia"
-
-#~ msgid "Split"
-#~ msgstr "Dividi"
-
-#~ msgid "Enable"
-#~ msgstr "Abilita"
-
-#~ msgid "Disable"
-#~ msgstr "Disabilita"
-
-#~ msgid "Minimum are %{num} columns"
-#~ msgstr "Il minimo è %{num} colonne"
-
-#~ msgid "Maximum are %{num} columns"
-#~ msgstr "Il massimo è %{num} colonne"
-
-#~ msgid "Error deleting access values"
-#~ msgstr "Errore durante l'eliminazione dei valori di accesso"
-
-#~ msgid "Upscale"
-#~ msgstr "Aumenta risoluzione"
-
-#~ msgid "Files"
-#~ msgstr "File"
-
-#~ msgid "Current"
-#~ msgstr "Attuale"
-
-#~ msgid "Apply changes"
-#~ msgstr "Applica le modifiche"
-
-#~ msgid "Toggle all"
-#~ msgstr "Seleziona tutto"
-
-#~ msgid "Revert to version"
-#~ msgstr "Torna alla versione"
-
-#~ msgid "Edit element"
-#~ msgstr "Elemento di modifica"
-
-#~ msgid "Fullscreen mode"
-#~ msgstr "Modalità a schermo intero"
-
-#~ msgid "Exit fullscreen mode"
-#~ msgstr "Uscire dalla modalità a schermo intero"
-
-#~ msgid "Open menu"
-#~ msgstr "Aprire il menu"
-
-#~ msgid "Delete access values"
-#~ msgstr "Elimina i valori di accesso"
-
-#~ msgid ""
-#~ "Existing restrictions are not changed and will continue to reference the "
-#~ "deleted access values."
-#~ msgstr ""
-#~ "Le restrizioni esistenti non vengono modificate e continueranno a fare "
-#~ "riferimento ai valori di accesso eliminati."
-
-#~ msgid "Error fetching element versions"
-#~ msgstr "Errore nel recuperare le versioni degli elementi"
-
-#~ msgid "Error fetching file versions"
-#~ msgstr "Errore nel recuperare le versioni dei file"
-
-#~ msgid "Error fetching page versions"
-#~ msgstr "Errore nel recuperare le versioni delle pagine"

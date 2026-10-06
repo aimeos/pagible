@@ -303,7 +303,8 @@ export default {
 /*
  * WCAG 2.2 AAA (7:1) for text on the colored card: the light card uses the darker primary
  * shade with its foreground color, labels and input text are fully opaque and the error
- * color of the fields is the foreground color of the card as no theme color contrasts enough
+ * color of the fields is the foreground color of the card as no theme color contrasts enough.
+ * It's also set on .v-field because Vuetify adds the theme class there too, resetting the color
  */
 .login .v-card.v-theme--light {
   background: rgb(var(--v-theme-primary-darken-1, var(--v-theme-primary)));
@@ -315,11 +316,13 @@ export default {
   opacity: 1;
 }
 
-.login .v-card.v-theme--light .v-input {
+.login .v-card.v-theme--light .v-input,
+.login .v-card.v-theme--light .v-field {
   --v-theme-error: var(--v-theme-on-primary-darken-1, var(--v-theme-on-primary));
 }
 
-.login .v-card.v-theme--dark .v-input {
+.login .v-card.v-theme--dark .v-input,
+.login .v-card.v-theme--dark .v-field {
   --v-theme-error: var(--v-theme-on-primary);
 }
 

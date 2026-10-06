@@ -617,10 +617,12 @@ export default {
     },
 
     create(attr = {}) {
+      const current = this.$vuetify.locale.current
+
       return Object.assign(
         {
           path: '_' + Math.floor(Math.random() * 10000),
-          lang: this.$vuetify.locale.current || this.languages.default(),
+          lang: this.languages.available.includes(current) ? current : this.languages.default(),
           status: 0,
           cache: 5
         },

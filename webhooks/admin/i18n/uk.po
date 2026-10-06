@@ -36,7 +36,7 @@ msgstr "Статус"
 #: src/views/WebhookList.vue:187
 msgctxt "webhooks"
 msgid "All"
-msgstr "Усе."
+msgstr "Усі"
 
 #: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
 #: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
@@ -64,13 +64,12 @@ msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
-msgstr ""
-"Оновити секрет цього вебхука? Отримувачам потрібно передати новий секрет."
+msgstr "Змінити секрет цього вебхука? Отримувачам потрібно передати новий секрет."
 
 #: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
-msgstr "Помилка під час оновлення секрету вебхука"
+msgstr "Помилка під час зміни секрету вебхука"
 
 #: src/views/WebhookList.vue:358
 msgctxt "webhooks"
@@ -100,7 +99,7 @@ msgstr "Не вдалося скопіювати секрет"
 #: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
 msgctxt "webhooks"
 msgid "None"
-msgstr "Ні."
+msgstr "Немає"
 
 #: src/views/WebhookList.vue:447
 msgctxt "webhooks"
@@ -115,7 +114,7 @@ msgstr "У доступі відмовлено"
 #: src/views/WebhookList.vue:449
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
-msgstr "Не вдається розшифрувати секрет, оновіть його"
+msgstr "Не вдається розшифрувати секрет, змініть його"
 
 #: src/views/WebhookList.vue:450
 msgctxt "webhooks"
@@ -125,7 +124,7 @@ msgstr "Заблоковано конфігурацією сервера"
 #: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
 msgctxt "webhooks"
 msgid "Not a valid URL"
-msgstr "Невірна URL-адреса"
+msgstr "Недійсна URL-адреса"
 
 #: src/views/WebhookList.vue:452
 msgctxt "webhooks"
@@ -181,7 +180,7 @@ msgstr "Додати вебхук"
 #: src/views/WebhookList.vue:585
 msgctxt "webhooks"
 msgid "Search for"
-msgstr "Шукайте"
+msgstr "Шукати"
 
 #: src/views/WebhookList.vue:594
 msgctxt "webhooks"
@@ -196,12 +195,12 @@ msgstr "Редагувати"
 #: src/views/WebhookList.vue:645
 msgctxt "webhooks"
 msgid "Rotate"
-msgstr "Оновити"
+msgstr "Змінити"
 
 #: src/views/WebhookList.vue:688
 msgctxt "webhooks"
 msgid "Last success"
-msgstr "Останній успіх"
+msgstr "Остання успішна доставка"
 
 #: src/views/WebhookList.vue:692
 msgctxt "webhooks"
@@ -247,7 +246,8 @@ msgstr "Скопіюйте цей секрет зараз. Він більше �
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Неактивні вебхуки не отримують події, а їхні доставки в черзі скасовуються"
+msgstr ""
+"Неактивні вебхуки не отримують події, а їхні доставки в черзі скасовуються"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -268,7 +268,9 @@ msgstr "Події"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Події, що надсилаються на вебхук, доставки в черзі для видалених подій скасовуються"
+msgstr ""
+"Події, що надсилаються на вебхук, доставки в черзі для видалених подій "
+"скасовуються"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -280,7 +282,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Необов'язкова назва для розрізнення вебхуків з однаковою кінцевою точкою, видима всім редакторам вебхуків"
+msgstr ""
+"Необов'язкова назва для розрізнення вебхуків з однаковою кінцевою точкою, "
+"видима всім редакторам вебхуків"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -292,17 +296,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Копіювати секрет"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Перевірити"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Зберегти"

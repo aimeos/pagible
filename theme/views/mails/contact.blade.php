@@ -1,5 +1,5 @@
 @component('mail::message')
-# Contact message
+# {{ __('Contact message') }}
 
 @foreach($data['fields'] as $field)
 @if($field['required'] || (($field['value'] ?? null) !== null && $field['value'] !== ''))

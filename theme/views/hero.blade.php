@@ -68,8 +68,8 @@
                 @endforeach
             </div>
 
-            <button type="button" class="slider-nav slider-nav-prev" aria-label="Go to previous"></button>
-            <button type="button" class="slider-nav slider-nav-next" aria-label="Go to next"></button>
+            <button type="button" class="slider-nav slider-nav-prev" aria-label="{{ __('Go to previous') }}"></button>
+            <button type="button" class="slider-nav slider-nav-next" aria-label="{{ __('Go to next') }}"></button>
         </div>
     @else
         <div class="second">

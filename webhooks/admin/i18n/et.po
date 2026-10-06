@@ -20,7 +20,7 @@ msgstr "Veebikonksud"
 #: src/views/WebhookList.vue:147
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
-msgstr "Vebikonksud on serveri seadistusega keelatud, sündmusi ei saadeta"
+msgstr "Veebikonksud on serveri seadistusega keelatud, sündmusi ei saadeta"
 
 #: src/views/WebhookList.vue:154
 msgctxt "webhooks"
@@ -51,26 +51,24 @@ msgstr "Mitteaktiivne"
 #: src/views/WebhookList.vue:250
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
-msgstr "Vebikonksude laadimisel tekkis viga"
+msgstr "Veebikonksude laadimisel tekkis viga"
 
 #: src/views/WebhookList.vue:314
 msgctxt "webhooks"
 msgid "Error saving webhook"
-msgstr "Vebikonksu salvestamisel tekkis viga"
+msgstr "Veebikonksu salvestamisel tekkis viga"
 
 #: src/views/WebhookList.vue:319
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
-msgstr ""
-"Kas uuendada selle vebikonksu saladust? Vastuvõtjad tuleb uue saladusega "
-"uuendada."
+msgstr "Kas uuendada selle veebikonksu saladust? Vastuvõtjad tuleb uue saladusega uuendada."
 
 #: src/views/WebhookList.vue:338
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
-msgstr "Vebikonksu saladuse uuendamisel tekkis viga"
+msgstr "Veebikonksu saladuse uuendamisel tekkis viga"
 
 #: src/views/WebhookList.vue:358
 msgctxt "webhooks"
@@ -85,7 +83,7 @@ msgstr "Testsündmus nurjus"
 #: src/views/WebhookList.vue:412
 msgctxt "webhooks"
 msgid "Error purging webhook"
-msgstr "Vebikonksu jäädaval kustutamisel tekkis viga"
+msgstr "Veebikonksu jäädaval kustutamisel tekkis viga"
 
 #: src/views/WebhookList.vue:420
 msgctxt "webhooks"
@@ -176,7 +174,7 @@ msgstr "Kustuta jäädavalt"
 #: src/views/WebhookList.vue:741
 msgctxt "webhooks"
 msgid "Add webhook"
-msgstr "Lisa vebikonks"
+msgstr "Lisa veebikonks"
 
 #: src/views/WebhookList.vue:585
 msgctxt "webhooks"
@@ -226,17 +224,17 @@ msgstr "Kirjeid ei leitud"
 #: src/views/WebhookList.vue:716
 msgctxt "webhooks"
 msgid "No webhooks configured."
-msgstr "Ühtegi vebikonksu pole seadistatud."
+msgstr "Ühtegi veebikonksu pole seadistatud."
 
 #: src/views/WebhookList.vue:738
 msgctxt "webhooks"
 msgid "Webhook secret"
-msgstr "Vebikonksu saladus"
+msgstr "Veebikonksu saladus"
 
 #: src/views/WebhookList.vue:740
 msgctxt "webhooks"
 msgid "Edit webhook"
-msgstr "Muuda vebikonksu"
+msgstr "Muuda veebikonksu"
 
 #: src/views/WebhookList.vue:750
 msgctxt "webhooks"
@@ -247,7 +245,9 @@ msgstr "Kopeeri see saladus kohe. Seda ei kuvata enam."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Mitteaktiivsed veebikonksud ei saa sündmusi ja nende ootel edastused visatakse ära"
+msgstr ""
+"Mitteaktiivsed veebikonksud ei saa sündmusi ja nende ootel edastused "
+"visatakse ära"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -257,7 +257,8 @@ msgstr "HTTPS-lõpp-punkti URL"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Aadress, mis võtab vastu allkirjastatud sündmused, seda ei saa hiljem muuta"
+msgstr ""
+"Aadress, mis võtab vastu allkirjastatud sündmused, seda ei saa hiljem muuta"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -268,7 +269,9 @@ msgstr "Sündmused"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Veebikonksule saadetavad sündmused, eemaldatud sündmuste ootel edastused tühistatakse"
+msgstr ""
+"Veebikonksule saadetavad sündmused, eemaldatud sündmuste ootel edastused "
+"tühistatakse"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -280,7 +283,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Valikuline nimi sama lõpp-punktiga veebikonksude eristamiseks, nähtav kõigile veebikonksude redigeerijatele"
+msgstr ""
+"Valikuline nimi sama lõpp-punktiga veebikonksude eristamiseks, nähtav "
+"kõigile veebikonksude redigeerijatele"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -292,17 +297,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopeeri saladus"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testi"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Tühista"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Salvesta"

@@ -195,7 +195,7 @@ export default {
           : { label: this.$gettext('Visit Duration (minutes)'), data: this.durations, average: true },
         { label: this.$gettext('Google Impressions'), data: this.impressions },
         { label: this.$gettext('Google Clicks'), data: this.clicks },
-        { label: this.$gettext('Google Conversion Rate'), data: this.ctrs, average: true, suffix: '%' }
+        { label: this.$gettext('Google click-through rate'), data: this.ctrs, average: true, suffix: '%' }
       ])
     },
 
@@ -612,7 +612,7 @@ export default {
 
         <v-col v-if="ctrs.length" cols="12" md="6">
           <v-card class="panel chart">
-            <v-card-title>{{ $gettext('Google Search: Conversions') }}</v-card-title>
+            <v-card-title>{{ $gettext('Google Search: Click-through rate') }}</v-card-title>
             <v-card-text>
               <LineChart :options="chartOptions" :data="ctrsData" />
             </v-card-text>

@@ -43,6 +43,7 @@
     color: var(--pico-form-element-invalid-focus-color);
     font-size: calc(var(--pico-font-size) * 0.75);
     margin: 1rem 1.5rem;
+    white-space: pre-line;
 }
 
 .contact .error {

@@ -217,7 +217,7 @@ msgstr "Apturēts līdz"
 #: src/views/WebhookList.vue:709
 msgctxt "webhooks"
 msgid "Loading"
-msgstr "Iekraušana"
+msgstr "Ielāde"
 
 #: src/views/WebhookList.vue:715
 msgctxt "webhooks"
@@ -248,7 +248,9 @@ msgstr "Nokopējiet šo slepeno atslēgu tagad. Tā vairs netiks parādīta."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Neaktīvi webhooki nesaņem nekādus notikumus, un to gaidošās piegādes tiek atmestas"
+msgstr ""
+"Neaktīvi webhooki nesaņem nekādus notikumus, un to gaidošās piegādes tiek "
+"atmestas"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -269,7 +271,8 @@ msgstr "Notikumi"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Webhookam sūtītie notikumi, noņemto notikumu gaidošās piegādes tiek atceltas"
+msgstr ""
+"Webhookam sūtītie notikumi, noņemto notikumu gaidošās piegādes tiek atceltas"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -281,7 +284,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Neobligāts nosaukums, lai atšķirtu webhookus ar vienu un to pašu gala punktu, redzams visiem webhooku redaktoriem"
+msgstr ""
+"Neobligāts nosaukums, lai atšķirtu webhookus ar vienu un to pašu gala "
+"punktu, redzams visiem webhooku redaktoriem"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -293,17 +298,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopēt slepeno atslēgu"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testēt"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Atcelt"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Saglabāt"

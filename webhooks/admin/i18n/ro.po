@@ -16,7 +16,7 @@ msgstr ""
 #: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
-msgstr "Webhook-uri"
+msgstr "Webhookuri"
 
 #: src/views/WebhookList.vue:147
 msgctxt "webhooks"
@@ -33,7 +33,7 @@ msgstr "Toate livrările sunt blocate de configurația serverului"
 #: src/views/WebhookList.vue:183
 msgctxt "webhooks"
 msgid "Status"
-msgstr "Statut"
+msgstr "Stare"
 
 #: src/views/WebhookList.vue:187
 msgctxt "webhooks"
@@ -250,7 +250,9 @@ msgstr "Copiați acest secret acum. Nu va mai fi afișat."
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
-msgstr "Webhookurile inactive nu primesc evenimente, iar livrările lor aflate în așteptare sunt abandonate"
+msgstr ""
+"Webhookurile inactive nu primesc evenimente, iar livrările lor aflate în "
+"așteptare sunt abandonate"
 
 #: src/views/WebhookList.vue:780
 msgctxt "webhooks"
@@ -260,7 +262,8 @@ msgstr "URL punct final HTTPS"
 #: src/views/WebhookList.vue:781
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
-msgstr "Adresa care primește evenimentele semnate, nu poate fi modificată ulterior"
+msgstr ""
+"Adresa care primește evenimentele semnate, nu poate fi modificată ulterior"
 
 #: src/views/WebhookList.vue:805
 msgctxt "webhooks"
@@ -271,7 +274,9 @@ msgstr "Evenimente"
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
-msgstr "Evenimentele trimise către webhook, livrările aflate în așteptare ale evenimentelor eliminate sunt anulate"
+msgstr ""
+"Evenimentele trimise către webhook, livrările aflate în așteptare ale "
+"evenimentelor eliminate sunt anulate"
 
 #: src/views/WebhookList.vue:813
 msgctxt "webhooks"
@@ -283,7 +288,9 @@ msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
 "webhook editors"
-msgstr "Nume opțional pentru a distinge webhookurile cu același punct final, vizibil pentru toți editorii de webhookuri"
+msgstr ""
+"Nume opțional pentru a distinge webhookurile cu același punct final, vizibil "
+"pentru toți editorii de webhookuri"
 
 #: src/views/WebhookList.vue:824
 msgctxt "webhooks"
@@ -295,17 +302,17 @@ msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Copiază secretul"
 
-#: src/views/WebhookList.vue:841
+#: src/views/WebhookList.vue:840
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testează"
 
-#: src/views/WebhookList.vue:844
+#: src/views/WebhookList.vue:843
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Anulează"
 
-#: src/views/WebhookList.vue:855
+#: src/views/WebhookList.vue:853
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Salvați"

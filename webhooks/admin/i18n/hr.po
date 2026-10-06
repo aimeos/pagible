@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhookovi"
+
+#: src/views/WebhookList.vue:147
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr ""
+"Webhookovi su onemogućeni konfiguracijom poslužitelja; događaji se ne šalju"
+
+#: src/views/WebhookList.vue:154
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration"
+msgstr "Sve isporuke blokirane su konfiguracijom poslužitelja"
+
+#: src/views/WebhookList.vue:183
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Status"
+
+#: src/views/WebhookList.vue:187
+msgctxt "webhooks"
+msgid "All"
+msgstr "Sve"
+
+#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
+#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Aktivan"
+
+#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Neaktivan"
+
+#: src/views/WebhookList.vue:250
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Pogreška pri dohvaćanju webhookova"
+
+#: src/views/WebhookList.vue:314
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Pogreška pri spremanju webhooka"
+
+#: src/views/WebhookList.vue:319
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"Zamijeniti tajni ključ ovog webhooka? Primatelje treba ažurirati novim "
+"tajnim ključem."
+
+#: src/views/WebhookList.vue:338
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Pogreška pri zamjeni tajnog ključa webhooka"
+
+#: src/views/WebhookList.vue:358
+msgctxt "webhooks"
+msgid "Test event delivered"
+msgstr "Probni događaj isporučen"
+
+#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "Probni događaj nije uspio"
+
+#: src/views/WebhookList.vue:412
+msgctxt "webhooks"
+msgid "Error purging webhook"
+msgstr "Pogreška pri trajnom brisanju webhooka"
+
+#: src/views/WebhookList.vue:420
+msgctxt "webhooks"
+msgid "Secret copied"
+msgstr "Tajni ključ kopiran"
+
+#: src/views/WebhookList.vue:425
+msgctxt "webhooks"
+msgid "Unable to copy secret"
+msgstr "Nije moguće kopirati tajni ključ"
+
+#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
+msgctxt "webhooks"
+msgid "None"
+msgstr "Ništa"
+
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "Povezivanje nije uspjelo"
+
+#: src/views/WebhookList.vue:448
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "Pristup odbijen"
+
+#: src/views/WebhookList.vue:449
+msgctxt "webhooks"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "Tajni ključ nije moguće dešifrirati; zamijenite ga"
+
+#: src/views/WebhookList.vue:450
+msgctxt "webhooks"
+msgid "Blocked by server configuration"
+msgstr "Blokirano konfiguracijom poslužitelja"
+
+#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Nije valjan URL"
+
+#: src/views/WebhookList.vue:452
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "Red čekanja nije dostupan"
+
+#: src/views/WebhookList.vue:453
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "Poslužitelj nije pronađen"
+
+#: src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "Odgovor je prevelik"
+
+#: src/views/WebhookList.vue:455
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "Isteklo je vrijeme čekanja zahtjeva"
+
+#: src/views/WebhookList.vue:460
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "Preusmjeravanja se ne slijede"
+
+#: src/views/WebhookList.vue:461
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Isporuka nije uspjela"
+
+#: src/views/WebhookList.vue:523
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Šaljite potpisane obavijesti kada se promijeni objavljeni sadržaj."
+
+#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Uključi/isključi odabir"
+
+#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "Trajno izbriši"
+
+#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
+#: src/views/WebhookList.vue:741
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Dodaj webhook"
+
+#: src/views/WebhookList.vue:585
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Traži"
+
+#: src/views/WebhookList.vue:594
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Osvježi"
+
+#: src/views/WebhookList.vue:635
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Uredi"
+
+#: src/views/WebhookList.vue:645
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Zamijeni ključ"
+
+#: src/views/WebhookList.vue:688
+msgctxt "webhooks"
+msgid "Last success"
+msgstr "Posljednja uspješna isporuka"
+
+#: src/views/WebhookList.vue:692
+msgctxt "webhooks"
+msgid "Last error"
+msgstr "Posljednja pogreška"
+
+#: src/views/WebhookList.vue:699
+msgctxt "webhooks"
+msgid "Paused until"
+msgstr "Pauzirano do"
+
+#: src/views/WebhookList.vue:709
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Učitavanje"
+
+#: src/views/WebhookList.vue:715
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Nema pronađenih unosa"
+
+#: src/views/WebhookList.vue:716
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Nema konfiguriranih webhookova."
+
+#: src/views/WebhookList.vue:738
+msgctxt "webhooks"
+msgid "Webhook secret"
+msgstr "Tajni ključ webhooka"
+
+#: src/views/WebhookList.vue:740
+msgctxt "webhooks"
+msgid "Edit webhook"
+msgstr "Uredi webhook"
+
+#: src/views/WebhookList.vue:750
+msgctxt "webhooks"
+msgid "Copy this secret now. It will not be shown again."
+msgstr "Kopirajte ovaj tajni ključ sada. Neće se ponovno prikazati."
+
+#: src/views/WebhookList.vue:771
+msgctxt "webhooks"
+msgid ""
+"Inactive webhooks receive no events and their queued deliveries are dropped"
+msgstr ""
+"Neaktivni webhookovi ne primaju događaje, a njihove isporuke na čekanju se "
+"odbacuju"
+
+#: src/views/WebhookList.vue:780
+msgctxt "webhooks"
+msgid "HTTPS endpoint URL"
+msgstr "URL HTTPS krajnje točke"
+
+#: src/views/WebhookList.vue:781
+msgctxt "webhooks"
+msgid "Address receiving the signed events, it cannot be changed later"
+msgstr "Adresa koja prima potpisane događaje; ne može se naknadno promijeniti"
+
+#: src/views/WebhookList.vue:805
+msgctxt "webhooks"
+msgid "Events"
+msgstr "Događaji"
+
+#: src/views/WebhookList.vue:806
+msgctxt "webhooks"
+msgid ""
+"Events sent to the webhook, queued deliveries of removed events are cancelled"
+msgstr ""
+"Događaji koji se šalju webhooku; isporuke uklonjenih događaja na čekanju se "
+"otkazuju"
+
+#: src/views/WebhookList.vue:813
+msgctxt "webhooks"
+msgid "Name"
+msgstr "Naziv"
+
+#: src/views/WebhookList.vue:814
+msgctxt "webhooks"
+msgid ""
+"Optional name to tell webhooks with the same endpoint apart, visible to all "
+"webhook editors"
+msgstr ""
+"Neobavezan naziv za razlikovanje webhookova s istom krajnjom točkom, vidljiv "
+"svim urednicima webhookova"
+
+#: src/views/WebhookList.vue:824
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Gotovo"
+
+#: src/views/WebhookList.vue:827
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Kopiraj tajni ključ"
+
+#: src/views/WebhookList.vue:840
+msgctxt "webhooks"
+msgid "Test"
+msgstr "Testiraj"
+
+#: src/views/WebhookList.vue:843
+msgctxt "webhooks"
+msgid "Cancel"
+msgstr "Odustani"
+
+#: src/views/WebhookList.vue:853
+msgctxt "webhooks"
+msgid "Save"
+msgstr "Spremi"

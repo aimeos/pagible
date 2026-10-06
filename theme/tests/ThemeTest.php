@@ -50,6 +50,103 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testLocaleUsesBaseLanguageForRegionalTranslations() : void
+	{
+		try {
+			Theme::locale( 'de-CH' );
+			$this->assertEquals( 'de-CH', app()->getLocale() );
+			$this->assertEquals( 'de', app( 'translator' )->getLocale() );
+			$this->assertEquals( 'Schließen', __( 'Close' ) );
+
+			Theme::locale( 'pt-BR' );
+			$this->assertEquals( 'pt-BR', app( 'translator' )->getLocale() );
+
+			Theme::locale( 'xx-YY' );
+			$this->assertEquals( 'xx-YY', app( 'translator' )->getLocale() );
+			$this->assertEquals( 'Close', __( 'Close' ) );
+		} finally {
+			Theme::locale( 'en' );
+		}
+	}
+
+
+	public function testLocalDateUsesLocaleDateStyles() : void
+	{
+		// delete the compiled template after rendering, otherwise directive changes are hidden by the cache
+		$render = fn( string $format ) => trim( Blade::render( "@localDate('2026-10-05'" . ( $format ? ", '$format'" : '' ) . ")", [], true ) );
+
+		try {
+			Theme::locale( 'de' );
+			$this->assertEquals( '5. Oktober 2026', $render( 'long' ) );
+			$this->assertEquals( 'Montag, 5. Oktober 2026', $render( 'full' ) );
+			$this->assertEquals( '5. Oktober', $render( '' ) );
+			$this->assertEquals( '5', $render( 'D' ) );
+			$this->assertEquals( 'Okt', $render( 'MMM' ) );
+
+			Theme::locale( 'en' );
+			$this->assertEquals( 'October 5, 2026', $render( 'long' ) );
+			$this->assertEquals( 'October 5', $render( '' ) );
+		} finally {
+			Theme::locale( 'en' );
+		}
+	}
+
+
+	public function testLocalDateShowsInvalidDatesAsTheyAre() : void
+	{
+		$html = trim( Blade::render( "@localDate(\$date, 'long')", ['date' => 'ab <b>sofort</b>'], true ) );
+
+		$this->assertEquals( 'ab &lt;b&gt;sofort&lt;/b&gt;', $html );
+	}
+
+
+	public function testLocalDateBadgeParts() : void
+	{
+		$render = fn( string $format ) => trim( Blade::render( "@localDate('2026-10-05', '$format')", [], true ) );
+		$expected = [
+			'bg' => 'окт',
+			'cs' => 'říj',
+			'ja' => '10月',
+			'lt' => 'spa',
+			'sr' => 'окт.',
+			'sr-Latn' => 'okt.',
+		];
+
+		try {
+			foreach( $expected as $locale => $month )
+			{
+				Theme::locale( $locale );
+				$this->assertEquals( '5', $render( 'D' ), $locale );
+				$this->assertEquals( $month, $render( 'MMM' ), $locale );
+			}
+		} finally {
+			Theme::locale( 'en' );
+		}
+	}
+
+
+	public function testPaginationUsesTranslatedLabels() : void
+	{
+		$paginator = new \Illuminate\Pagination\LengthAwarePaginator( range( 1, 10 ), 30, 10, 2, ['path' => '/blog'] );
+		$simple = new \Illuminate\Pagination\Paginator( range( 1, 10 ), 10, 2, ['path' => '/blog'] );
+		$simple->hasMorePagesWhen( true );
+
+		try {
+			Theme::locale( 'de' );
+			$html = (string) $paginator->links( 'cms::pagination' );
+			$simpleHtml = (string) $simple->links( 'cms::pagination-simple' );
+		} finally {
+			Theme::locale( 'en' );
+		}
+
+		$this->assertStringContainsString( 'aria-label="Seitennavigation"', $html );
+		$this->assertStringContainsString( 'aria-label="Vorherige Seite"', $html );
+		$this->assertStringContainsString( 'aria-label="Nächste Seite"', $html );
+		$this->assertStringContainsString( '>Vorherige Seite</a>', $simpleHtml );
+		$this->assertStringContainsString( '>Nächste Seite</a>', $simpleHtml );
+	}
+
+
 	public function testImageSizes() : void
 	{
 		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
@@ -781,9 +878,28 @@ class ThemeTest extends ThemeTestAbstract
 		$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
 
 		$this->assertStringContainsString( '<meta property="og:site_name" content="Website" />', $html );
+		$this->assertStringContainsString( '<meta property="og:locale" content="de_DE" />', $html );
 		$this->assertStringContainsString( '<meta name="twitter:image:alt" content="Großes Bild &amp; Motiv" />', $html );
 		$this->assertStringContainsString( '<meta property="og:image:alt" content="Großes Bild &amp; Motiv" />', $html );
 		$this->assertStringNotContainsString( 'Large image', $html );
+	}
+
+
+	public function testSocialMediaLocaleUsesLanguageAndRegion() : void
+	{
+		$data = (object) ['title' => 'Title'];
+		$files = collect();
+		$expected = ['pt' => 'pt_PT', 'pt-BR' => 'pt_BR', 'zh-TW' => 'zh_TW', 'zh' => 'zh_CN', 'ar' => 'ar_EG', 'de-CH' => 'de_CH'];
+
+		foreach( $expected as $lang => $locale )
+		{
+			$page = ( new Page() )->forceFill( ['domain' => '', 'id' => 'page', 'lang' => $lang, 'name' => 'Website', 'path' => 'page'] );
+			$page->setRelation( 'ancestors', collect() );
+
+			$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
+
+			$this->assertStringContainsString( '<meta property="og:locale" content="' . $locale . '" />', $html, $lang );
+		}
 	}
 
 

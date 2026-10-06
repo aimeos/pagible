@@ -1,6 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: lt\n"
@@ -17,7 +20,7 @@ msgstr ""
 #: js/components/ElementListItems.vue:557
 #: js/components/ElementListItems.vue:599
 #: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
-#: js/components/FileAiDialog.vue:142 js/components/FileDetailItem.vue:157
+#: js/components/FileAiDialog.vue:145 js/components/FileDetailItem.vue:157
 #: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
 #: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
 #: js/components/FileDetailItem.vue:316
@@ -41,7 +44,7 @@ msgstr ""
 #: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
 #: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
 #: js/views/FileDetail.vue:269 js/views/FileList.vue:178
-#: js/views/PageDetail.vue:543 js/views/PageDetail.vue:634
+#: js/views/PageDetail.vue:558 js/views/PageDetail.vue:649
 #: js/views/PageList.vue:216
 msgid "Permission denied"
 msgstr "Neturite leidimo"
@@ -74,107 +77,108 @@ msgstr "Atsakymas jau generuojamas. Palaukite, kol baigsis."
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Per daug prašymų. Šiek tiek palaukite ir bandykite dar kartą."
 
-#: js/commands.js:53
+#: js/commands.js:54
 msgid "Open commands"
 msgstr "Atidaryti komandas"
 
-#: js/commands.js:60
+#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Patvirtinti dialogą"
 
-#: js/commands.js:67
+#: js/commands.js:69
 msgid "Save changes"
 msgstr "Išsaugoti pakeitimus"
 
-#: js/commands.js:75
+#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Atidaryti paskelbimo meniu"
 
-#: js/commands.js:81
+#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Naujas puslapis, failas arba elementas"
 
-#: js/commands.js:87
+#: js/commands.js:91
 msgid "Search in list"
 msgstr "Ieškoti sąraše"
 
-#: js/commands.js:93
+#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Ankstesnis skirtukas"
 
-#: js/commands.js:99
+#: js/commands.js:103
 msgid "Next tab"
 msgstr "Kitas skirtukas"
 
-#: js/commands.js:105
+#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Rodyti arba slėpti šoninį skydelį"
 
-#: js/commands.js:111 js/components/DetailAppBar.vue:168
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Grįžti į sąrašo rodinį"
 
-#: js/commands.js:118
+#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Rodyti sparčiuosius klavišus"
 
-#: js/commands.js:124
+#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Pažymėti aktyvų puslapį, failą arba elementą"
 
-#: js/commands.js:130
+#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Ištrinti aktyvų puslapį, failą arba elementą"
 
-#: js/commands.js:137
+#: js/commands.js:143
 msgid "Copy page"
 msgstr "Kopijuoti puslapį"
 
-#: js/commands.js:144
+#: js/commands.js:151
 msgid "Cut page"
 msgstr "Iškirpti puslapį"
 
-#: js/commands.js:151
+#: js/commands.js:159
 msgid "Paste page"
 msgstr "Įklijuoti puslapį"
 
-#: js/commands.js:170 js/components/CommandPalette.vue:106
-#: js/components/FileDetailRefs.vue:145 js/components/Navigation.vue:30
-#: js/views/PageList.vue:265 js/views/PageList.vue:282
+#: js/commands.js:178 js/components/CommandPalette.vue:106
+#: js/components/ElementDetailRefs.vue:141 js/components/FileDetailRefs.vue:145
+#: js/components/Navigation.vue:30 js/views/PageList.vue:265
+#: js/views/PageList.vue:282
 msgid "Pages"
 msgstr "Puslapiai"
 
-#: js/commands.js:171
+#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Eiti į puslapius"
 
-#: js/commands.js:176 js/components/CommandPalette.vue:107
+#: js/commands.js:184 js/components/CommandPalette.vue:107
 #: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
 #: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
 #: js/views/FileList.vue:227 js/views/FileList.vue:244
 msgid "Media"
 msgstr "Medija"
 
-#: js/commands.js:177
+#: js/commands.js:185
 msgid "Go to media"
 msgstr "Eiti į mediją"
 
-#: js/commands.js:182 js/components/CommandPalette.vue:108
-#: js/components/ElementDetailRefs.vue:141 js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:39 js/views/ElementList.vue:228
+#: js/commands.js:190 js/components/CommandPalette.vue:108
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/views/ElementList.vue:228
 msgid "Shared elements"
 msgstr "Bendri elementai"
 
-#: js/commands.js:183
+#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Eiti į bendrus elementus"
 
-#: js/commands.js:188 js/components/Navigation.vue:33
+#: js/commands.js:196 js/components/Navigation.vue:33
 #: js/views/AccessList.vue:252
 msgid "Users"
 msgstr "Naudotojai"
 
-#: js/commands.js:189
+#: js/commands.js:197
 msgid "Go to users"
 msgstr "Eiti į naudotojus"
 
@@ -217,7 +221,7 @@ msgstr "El. pašto adresas"
 
 #: js/components/AccessUsers.vue:433
 msgid "Search user by email"
-msgstr "Ieškoti vartotojo pagal el. pašto adresą"
+msgstr "Ieškoti naudotojo pagal el. pašto adresą"
 
 #: js/components/AccessUsers.vue:445 js/components/AccessUsers.vue:446
 msgid "Search"
@@ -236,29 +240,29 @@ msgstr "Paskyra"
 msgid "Assigned frontend roles"
 msgstr "Priskirti viešosios dalies vaidmenys"
 
-#: js/components/AccessUsers.vue:484
+#: js/components/AccessUsers.vue:483
 msgid "Roles granting access to restricted pages"
 msgstr "Vaidmenys, suteikiantys prieigą prie apribotų puslapių"
 
-#: js/components/AccessUsers.vue:497
+#: js/components/AccessUsers.vue:496
 msgid "Assigned backend roles"
 msgstr "Priskirti administravimo dalies vaidmenys"
 
-#: js/components/AccessUsers.vue:501
+#: js/components/AccessUsers.vue:500
 msgid "Custom"
 msgstr "Pasirinktinis"
 
-#: js/components/AccessUsers.vue:507
+#: js/components/AccessUsers.vue:506
 msgid "Available roles"
 msgstr "Galimi vaidmenys"
 
-#: js/components/AccessUsers.vue:508
+#: js/components/AccessUsers.vue:506
 msgid "Roles defining what the user can do in the admin panel"
 msgstr ""
-"Vaidmenys, apibrėžiantys, ką vartotojas gali daryti administravimo skydelyje"
+"Vaidmenys, apibrėžiantys, ką naudotojas gali daryti administravimo skydelyje"
 
-#: js/components/AccessUsers.vue:520 js/components/ElementListItems.vue:950
-#: js/components/FileListItems.vue:1032 js/components/PageListItems.vue:2046
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1034 js/components/PageListItems.vue:2046
 #: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
 msgid "No entries found"
 msgstr "Įrašų nerasta"
@@ -281,7 +285,7 @@ msgid "Filters"
 msgstr "Filtrai"
 
 #: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
-#: js/components/FileListItems.vue:1039 js/components/PageListItems.vue:2053
+#: js/components/FileListItems.vue:1041 js/components/PageListItems.vue:2053
 msgid "Reset"
 msgstr "Iš naujo nustatyti"
 
@@ -292,11 +296,11 @@ msgid "ID"
 msgstr "ID"
 
 #: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
-#: js/fields/File.vue:502
+#: js/fields/File.vue:503
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/fields/File.vue:506
+#: js/components/AsideMeta.vue:29 js/fields/File.vue:507
 #: js/views/ElementList.vue:140 js/views/FileList.vue:139
 #: js/views/PageList.vue:182
 msgid "editor"
@@ -306,7 +310,7 @@ msgstr "redaktorius"
 msgid "created"
 msgstr "sukurta"
 
-#: js/components/AsideMeta.vue:39 js/fields/File.vue:510
+#: js/components/AsideMeta.vue:39 js/fields/File.vue:511
 msgid "updated"
 msgstr "atnaujinta"
 
@@ -333,7 +337,7 @@ msgid "Configuration"
 msgstr "Konfigūracija"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:850
+#: js/views/PageDetail.vue:865
 msgid "Content"
 msgstr "Turinys"
 
@@ -348,7 +352,7 @@ msgstr "%{count} / %{total}"
 #: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
 #: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
 msgid "Revert"
-msgstr "Atšaukti"
+msgstr "Grąžinti"
 
 #: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
 msgid "Changes"
@@ -411,8 +415,8 @@ msgid "Send a message ..."
 msgstr "Siųsti žinutę..."
 
 #: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
-#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:249
-#: js/components/FileDetailItem.vue:485
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:252
+#: js/components/FileDetailItem.vue:483
 #: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
 #: js/views/ElementList.vue:284 js/views/FileList.vue:283
 #: js/views/PageList.vue:321
@@ -439,7 +443,7 @@ msgid "New"
 msgstr "Naujas"
 
 #: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:32
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:38
 msgid "Commands"
 msgstr "Komandos"
 
@@ -451,7 +455,7 @@ msgstr "Įveskite komandą arba ieškokite puslapių, failų ir elementų"
 msgid "Command or search term"
 msgstr "Komanda arba paieškos žodis"
 
-#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:88
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:98
 msgid "then"
 msgstr "tada"
 
@@ -484,7 +488,7 @@ msgstr[2] ""
 "Šie %{num} įrašų bus ištrinti visam laikui ir jų nebus galima atkurti:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
-#: js/components/UnsavedDialog.vue:55 js/views/AccessList.vue:346
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
 msgid "Cancel"
 msgstr "Atšaukti"
 
@@ -542,19 +546,19 @@ msgstr[0] "Taikyti pasirinktas ypatybes %{num} įrašui."
 msgstr[1] "Taikyti pasirinktas ypatybes %{num} įrašams."
 msgstr[2] "Taikyti pasirinktas ypatybes %{num} įrašų."
 
-#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:89
-#: js/components/FileDetailItem.vue:405 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:259
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language"
 msgstr "Kalba"
 
-#: js/components/EditBulkDialog.vue:77
+#: js/components/EditBulkDialog.vue:76
 msgid "Language of the content"
 msgstr "Turinio kalba"
 
-#: js/components/EditBulkDialog.vue:84 js/components/PageAccess.vue:208
-#: js/components/PageBulkDialog.vue:277
+#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:270
 msgid "Apply"
 msgstr "Taikyti"
 
@@ -565,11 +569,11 @@ msgstr "Taikyti"
 msgid "Name"
 msgstr "Pavadinimas"
 
-#: js/components/ElementDetailItem.vue:76
+#: js/components/ElementDetailItem.vue:75
 msgid "Name to find the shared element in the element list"
 msgstr "Pavadinimas, pagal kurį bendras elementas randamas elementų sąraše"
 
-#: js/components/ElementDetailItem.vue:90
+#: js/components/ElementDetailItem.vue:88
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Elemento turinio kalba, pasirinkite nėra, jei naudojama visomis kalbomis"
@@ -583,6 +587,7 @@ msgid "no"
 msgstr "ne"
 
 #: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
+#: js/components/FileUrlDialog.vue:227
 msgid "URL"
 msgstr "URL"
 
@@ -610,17 +615,17 @@ msgstr "Paskelbta"
 #: js/components/PageListItems.vue:729
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
-msgstr[0] "%{num} įrašas perkeltas į šiukšlinę"
-msgstr[1] "%{num} įrašai perkelti į šiukšlinę"
-msgstr[2] "%{num} įrašų perkelta į šiukšlinę"
+msgstr[0] "%{num} įrašas perkeltas į šiukšliadėžę"
+msgstr[1] "%{num} įrašai perkelti į šiukšliadėžę"
+msgstr[2] "%{num} įrašų perkelta į šiukšliadėžę"
 
 #: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:943
 #: js/components/FileDetailItemImage.vue:948
-#: js/components/FileDetailItemImage.vue:953
 #: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
 #: js/components/PageListItems.vue:708
 msgid "Undo"
-msgstr "Panaikinti"
+msgstr "Anuliuoti"
 
 #: js/components/ElementListItems.vue:367
 msgid "Error trashing shared element"
@@ -683,7 +688,7 @@ msgstr "Ieškoti"
 
 #: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
 msgid "Updated by another user"
-msgstr "Atnaujino kitas vartotojas"
+msgstr "Atnaujino kitas naudotojas"
 
 #: js/components/ElementListItems.vue:842 js/components/FileListItems.vue:833
 #: js/components/PageListItems.vue:1791
@@ -694,14 +699,14 @@ msgstr "Atnaujinti"
 msgid "Reload elements"
 msgstr "Atnaujinti elementus"
 
-#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1026
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1028
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
 #: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
 #: js/fields/Combobox.vue:28 js/fields/Url.vue:167
 msgid "Loading"
 msgstr "Įkeliama"
 
-#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1042
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1044
 #: js/components/PageListItems.vue:2056
 msgid "No entries yet"
 msgstr "Įrašų dar nėra"
@@ -770,49 +775,49 @@ msgstr "Pakeisti į"
 msgid "Edit"
 msgstr "Redaguoti"
 
-#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:273
-#: js/components/FileAiDialog.vue:300 js/components/FileUrlDialog.vue:239
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:275
+#: js/components/FileAiDialog.vue:302 js/components/FileUrlDialog.vue:239
 #: js/components/PageDetailContentList.vue:877
 #: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
 #: js/fields/Table.vue:208 js/fields/Table.vue:278
 msgid "Remove"
 msgstr "Pašalinti"
 
-#: js/components/FileAiDialog.vue:130 js/components/FileListItems.vue:311
+#: js/components/FileAiDialog.vue:133 js/components/FileListItems.vue:311
 #: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
 #: js/fields/File.vue:166 js/fields/Images.vue:150
 msgid "Error adding file %{path}"
 msgstr "Klaida pridedant failą %{path}"
 
-#: js/components/FileAiDialog.vue:182
+#: js/components/FileAiDialog.vue:185
 msgid "Error creating file"
 msgstr "Klaida kuriant failą"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:241
 msgid "Create image"
 msgstr "Sukurti vaizdą"
 
-#: js/components/FileAiDialog.vue:256
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the image content"
 msgstr "Apibūdinkite vaizdo turinį"
 
-#: js/components/FileAiDialog.vue:257
+#: js/components/FileAiDialog.vue:259
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Aprašykite generuojamo vaizdo temą, stilių ir spalvas"
 
-#: js/components/FileAiDialog.vue:264
+#: js/components/FileAiDialog.vue:266
 msgid "New image"
 msgstr "Naujas vaizdas"
 
-#: js/components/FileAiDialog.vue:268
+#: js/components/FileAiDialog.vue:270
 msgid "Current images"
 msgstr "Dabartiniai vaizdai"
 
-#: js/components/FileAiDialog.vue:293
+#: js/components/FileAiDialog.vue:295
 msgid "Images used"
 msgstr "Naudojami vaizdai"
 
-#: js/components/FileAiDialog.vue:310
+#: js/components/FileAiDialog.vue:312
 msgid "Select images"
 msgstr "Pasirinkite vaizdus"
 
@@ -833,54 +838,54 @@ msgstr "Klaida išsaugant failą"
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripcija galima tik garso ir vaizdo failams"
 
-#: js/components/FileDetailItem.vue:392
+#: js/components/FileDetailItem.vue:391
 msgid "Name to find the file in the media list"
 msgstr "Pavadinimas, pagal kurį failas randamas medijos sąraše"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:404
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "Failo turinio kalba, pasirinkite nėra, jei naudojama visomis kalbomis"
 
-#: js/components/FileDetailItem.vue:416
+#: js/components/FileDetailItem.vue:414
 msgid "Copy URL"
 msgstr "Kopijuoti URL"
 
-#: js/components/FileDetailItem.vue:459
+#: js/components/FileDetailItem.vue:457
 msgid "Descriptions"
 msgstr "Aprašymai"
 
-#: js/components/FileDetailItem.vue:467 js/components/FileDetailItem.vue:527
+#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
 msgid "Translate text"
 msgstr "Išversti tekstą"
 
-#: js/components/FileDetailItem.vue:475
+#: js/components/FileDetailItem.vue:473
 msgid "Generate description"
-msgstr "Sukurti aprašymą"
+msgstr "Generuoti aprašymą"
 
-#: js/components/FileDetailItem.vue:502
+#: js/components/FileDetailItem.vue:500
 msgid "Description (%{lang})"
 msgstr "Aprašymas (%{lang})"
 
-#: js/components/FileDetailItem.vue:503
+#: js/components/FileDetailItem.vue:500
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Alternatyvus tekstas ekrano skaitytuvams ir paieškos sistemoms, taip pat "
 "naudojamas kaip antraštinis tekstas"
 
-#: js/components/FileDetailItem.vue:519
+#: js/components/FileDetailItem.vue:516
 msgid "Transcriptions"
 msgstr "Transkripcijos"
 
-#: js/components/FileDetailItem.vue:535
+#: js/components/FileDetailItem.vue:532
 msgid "Transcribe file content"
 msgstr "Transkribuoti failo turinį"
 
-#: js/components/FileDetailItem.vue:553
+#: js/components/FileDetailItem.vue:550
 msgid "Transcription (%{lang})"
 msgstr "Transkripcija (%{lang})"
 
-#: js/components/FileDetailItem.vue:554
+#: js/components/FileDetailItem.vue:550
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 "Kalbamas tekstas WebVTT formatu, rodomas kaip subtitrai ir transkripcija"
@@ -912,7 +917,7 @@ msgstr "Klaida didinant vaizdo skiriamąją gebą"
 #: js/components/FileDetailItemImage.vue:647
 #: js/components/FileDetailItemImage.vue:652
 msgid "Select area"
-msgstr "Pasirinkite sritį"
+msgstr "Pasirinkti sritį"
 
 #: js/components/FileDetailItemImage.vue:664
 msgid "Original ratio"
@@ -936,7 +941,7 @@ msgstr "Ištrinti pasirinktą sritį"
 
 #: js/components/FileDetailItemImage.vue:743
 #: js/components/FileDetailItemImage.vue:750
-#: js/components/FileDetailItemImage.vue:766
+#: js/components/FileDetailItemImage.vue:765
 msgid "Edit image"
 msgstr "Redaguoti vaizdą"
 
@@ -944,95 +949,95 @@ msgstr "Redaguoti vaizdą"
 msgid "Describe the changes"
 msgstr "Apibūdinkite pokyčius"
 
-#: js/components/FileDetailItemImage.vue:757
+#: js/components/FileDetailItemImage.vue:756
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr ""
 "Aprašykite, kas turėtų būti pakeista vaizde, pvz., padarykite dangų mėlyną"
 
-#: js/components/FileDetailItemImage.vue:775
+#: js/components/FileDetailItemImage.vue:774
 msgid "Remove background"
 msgstr "Pašalinti foną"
 
-#: js/components/FileDetailItemImage.vue:785
-#: js/components/FileDetailItemImage.vue:792
-#: js/components/FileDetailItemImage.vue:850
+#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:791
+#: js/components/FileDetailItemImage.vue:845
 msgid "Expand image"
 msgstr "Išplėsti vaizdą"
 
-#: js/components/FileDetailItemImage.vue:803
+#: js/components/FileDetailItemImage.vue:802
 msgctxt "image edge"
 msgid "Top"
 msgstr "Viršuje"
 
-#: js/components/FileDetailItemImage.vue:804
-#: js/components/FileDetailItemImage.vue:817
-#: js/components/FileDetailItemImage.vue:828
-#: js/components/FileDetailItemImage.vue:841
+#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:836
 msgid "Number of pixels added at this side of the image"
 msgstr "Pikselių, pridėtų prie šios vaizdo pusės, skaičius"
 
-#: js/components/FileDetailItemImage.vue:816
+#: js/components/FileDetailItemImage.vue:814
 msgctxt "image edge"
 msgid "Left"
-msgstr "Kairėje pusėje"
+msgstr "Kairėje"
 
-#: js/components/FileDetailItemImage.vue:827
+#: js/components/FileDetailItemImage.vue:824
 msgctxt "image edge"
 msgid "Right"
 msgstr "Dešinėje"
 
-#: js/components/FileDetailItemImage.vue:840
+#: js/components/FileDetailItemImage.vue:836
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Apačioje"
 
-#: js/components/FileDetailItemImage.vue:858
-#: js/components/FileDetailItemImage.vue:865
+#: js/components/FileDetailItemImage.vue:853
+#: js/components/FileDetailItemImage.vue:860
 msgid "Upscale image"
 msgstr "Padidinti vaizdo skiriamąją gebą"
 
-#: js/components/FileDetailItemImage.vue:878
-#: js/components/FileDetailItemImage.vue:888
-#: js/components/FileDetailItemImage.vue:898
-#: js/components/FileDetailItemImage.vue:908
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:883
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
 msgid "Scale %{factor}"
 msgstr "Skalė %{factor}"
 
-#: js/components/FileDetailItemImage.vue:917
+#: js/components/FileDetailItemImage.vue:912
 msgid "Rotate counter-clockwise"
 msgstr "Pasukti prieš laikrodžio rodyklę"
 
-#: js/components/FileDetailItemImage.vue:923
+#: js/components/FileDetailItemImage.vue:918
 msgid "Rotate clockwise"
 msgstr "Pasukti pagal laikrodžio rodyklę"
 
-#: js/components/FileDetailItemImage.vue:930
+#: js/components/FileDetailItemImage.vue:925
 msgid "Flip horizontally"
 msgstr "Apversti horizontaliai"
 
-#: js/components/FileDetailItemImage.vue:936
+#: js/components/FileDetailItemImage.vue:931
 msgid "Flip vertically"
 msgstr "Apversti vertikaliai"
 
-#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:938
 msgid "Convert to monochrome"
 msgstr "Paversti į nespalvotą"
 
-#: js/components/FileDetailItemImage.vue:946
+#: js/components/FileDetailItemImage.vue:941
 msgid "Download"
 msgstr "Atsisiųsti"
 
-#: js/components/FileDetailItemImage.vue:962
+#: js/components/FileDetailItemImage.vue:957
 msgid "Previous edit"
 msgstr "Ankstesnis redagavimas"
 
-#: js/components/FileDetailItemImage.vue:967
+#: js/components/FileDetailItemImage.vue:962
 msgid "Original"
 msgstr "Originalas"
 
 #: js/components/FileDetailItemVideo.vue:74
 msgid "No video element found"
-msgstr "Nerastas joks vaizdo elementas"
+msgstr "Nerastas vaizdo įrašo elementas"
 
 #: js/components/FileDetailItemVideo.vue:122
 msgid "Error saving video cover"
@@ -1080,19 +1085,19 @@ msgstr "Klaida visam laikui trinant failą"
 
 #: js/components/FileListItems.vue:672
 msgid "Error fetching files"
-msgstr "Failų gavimo klaida"
+msgstr "Klaida gaunant failus"
 
 #: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
-#: js/components/FileListItems.vue:1052 js/components/FileListItems.vue:1062
+#: js/components/FileListItems.vue:1054 js/components/FileListItems.vue:1064
 #: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
 #: js/fields/Images.vue:437
 msgid "Add files"
 msgstr "Pridėti failus"
 
-#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1007
-#: js/components/FileListItems.vue:1062 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1009
+#: js/components/FileListItems.vue:1064 js/components/FileProtect.vue:45
 msgid "Protect access"
-msgstr "Apsaugoti puslapio prieiga"
+msgstr "Apsaugoti prieigą"
 
 #: js/components/FileListItems.vue:839
 msgid "Reload files"
@@ -1118,23 +1123,27 @@ msgstr "Bent vienas URL yra ilgesnis nei 255 simboliai"
 
 #: js/components/FileUrlDialog.vue:152
 msgid "At least one file is not of type \"%{mime}*\""
-msgstr "Bent vienas failas nėra \"%{mime}*\" tipo."
+msgstr "Bent vienas failas nėra „%{mime}*“ tipo"
 
 #: js/components/FileUrlDialog.vue:156
 msgid "The file is not of type \"%{mime}*\""
-msgstr "Failas nėra \"%{mime}*\" tipo."
+msgstr "Failas nėra „%{mime}*“ tipo"
 
 #: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
 msgid "Add files from URLs"
 msgstr "Failų pridėjimas iš URL adresų"
 
-#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:441
+#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:442
 msgid "Add file"
 msgstr "Pridėti failą"
 
 #: js/components/FileUrlDialog.vue:209
 msgid "Enter one URL per line"
 msgstr "Įveskite po vieną URL vienoje eilutėje"
+
+#: js/components/FileUrlDialog.vue:210
+msgid "URLs"
+msgstr "URL adresai"
 
 #: js/components/FileUrlDialog.vue:210
 msgid "Files are downloaded from these URLs and added to the media list"
@@ -1163,7 +1172,7 @@ msgstr "Grupė: %{group} · Padėtis %{num}"
 
 #: js/components/HistoryDialog.vue:76
 msgid "Moved from position %{from} to %{to}"
-msgstr "Perkelta iš pozicijos %{from} į %{to}"
+msgstr "Perkelta iš padėties %{from} į %{to}"
 
 #: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
 msgid "%{num} field changed"
@@ -1174,7 +1183,7 @@ msgstr[2] "Pakeista %{num} laukų"
 
 #: js/components/HistoryDialog.vue:78
 msgid "%{selected} of %{total} selected"
-msgstr "Pasirinktas %{selected} iš %{total}"
+msgstr "Pasirinkta %{selected} iš %{total}"
 
 #: js/components/HistoryDialog.vue:85
 msgid "Unknown date"
@@ -1238,7 +1247,7 @@ msgstr "Gaunant versijas įvyko klaida"
 
 #: js/components/HistoryDialog.vue:204
 msgid "Retry"
-msgstr "Bandykite dar kartą"
+msgstr "Bandyti dar kartą"
 
 #: js/components/HistoryDialog.vue:218
 msgid "Current changes"
@@ -1266,7 +1275,7 @@ msgstr "Išlaikyti dabartinę padėtį"
 
 #: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
 msgid "Keep current value"
-msgstr "Laikyti dabartinę vertę"
+msgstr "Išlaikyti dabartinę vertę"
 
 #: js/components/HistoryDialog.vue:313
 msgid "Previous version: Latest saved version"
@@ -1278,7 +1287,7 @@ msgstr "Ankstesnė versija: %{date}"
 
 #: js/components/HistoryDialog.vue:314
 msgid "%{selected} of %{total} selected for reverting"
-msgstr "%{selected} iš %{total} pasirinktas grąžinti"
+msgstr "Pasirinkta grąžinti: %{selected} iš %{total}"
 
 #: js/components/HistoryDialog.vue:317
 msgid "Revert selected changes"
@@ -1331,7 +1340,8 @@ msgstr[0] "Praleista %{num} eilutė"
 msgstr[1] "Praleistos %{num} eilutės"
 msgstr[2] "Praleista %{num} eilučių"
 
-#: js/components/ListSort.vue:27 js/views/PageDetail.vue:843
+#: js/components/ListSort.vue:27
+msgctxt "editor person"
 msgid "Editor"
 msgstr "Redaktorius"
 
@@ -1371,7 +1381,7 @@ msgstr "Rūšiuoti pagal"
 msgid "Panels"
 msgstr "Skydeliai"
 
-#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:78
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:88
 msgid "Keyboard shortcuts"
 msgstr "Spartieji klavišai"
 
@@ -1385,12 +1395,16 @@ msgstr ""
 "Prieigos pakeitimai įsigalioja iš karto pasibaigus talpyklos galiojimo laikui"
 
 #: js/components/PageAccess.vue:174
+msgid "Visibility"
+msgstr "Matomumas"
+
+#: js/components/PageAccess.vue:174
 msgid ""
 "Public pages are visible to everyone, others only to logged in users or "
 "users with the selected roles"
 msgstr ""
-"Vieši puslapiai matomi visiems, kiti tik prisijungusiems vartotojams arba "
-"vartotojams su pasirinktais vaidmenimis"
+"Vieši puslapiai matomi visiems, kiti tik prisijungusiems naudotojams arba "
+"naudotojams su pasirinktais vaidmenimis"
 
 #: js/components/PageAccess.vue:178
 msgid "Public"
@@ -1398,7 +1412,7 @@ msgstr "Viešas"
 
 #: js/components/PageAccess.vue:179 js/components/PageListItems.vue:481
 msgid "Authenticated users"
-msgstr "Autentifikuoti vartotojai"
+msgstr "Prisijungę naudotojai"
 
 #: js/components/PageAccess.vue:187 js/components/PageDetailItem.vue:116
 #: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
@@ -1407,15 +1421,15 @@ msgstr "Autentifikuoti vartotojai"
 msgid "Access"
 msgstr "Prieiga"
 
-#: js/components/PageAccess.vue:188
+#: js/components/PageAccess.vue:187
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Puslapį gali matyti tik lankytojai, turintys vieną iš šių vaidmenų"
 
-#: js/components/PageAccess.vue:198 js/components/PageBulkDialog.vue:291
+#: js/components/PageAccess.vue:197 js/components/PageBulkDialog.vue:284
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Masiniai puslapių pakeitimai ribojami iki 1 000 puslapių"
 
-#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:285
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:278
 msgid "Apply recursively"
 msgstr "Taikyti rekursyviai"
 
@@ -1465,7 +1479,7 @@ msgstr "Paslėpta navigacijoje"
 
 #: js/components/PageBulkDialog.vue:74 js/components/PageDetailItemProps.vue:79
 msgid "Domain name is invalid"
-msgstr "Domeno vardas negalioja"
+msgstr "Netinkamas domeno vardas"
 
 #: js/components/PageBulkDialog.vue:161
 msgid "Apply the selected properties to %{num} page."
@@ -1476,100 +1490,100 @@ msgstr[2] "Taikyti pasirinktas ypatybes %{num} puslapių."
 
 #: js/components/PageBulkDialog.vue:172
 msgid "Change status"
-msgstr "Pakeisti būseną"
+msgstr "Keisti būseną"
 
 #: js/components/PageBulkDialog.vue:177
 #: js/components/PageDetailItemProps.vue:244
 msgid "Status"
-msgstr "Statusas"
+msgstr "Būsena"
 
-#: js/components/PageBulkDialog.vue:178
-#: js/components/PageDetailItemProps.vue:245
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
 msgstr ""
-"Išjungti puslapiai yra neprisijungę, paslėpti puslapiai yra prisijungę, bet "
-"nerodomi navigacijoje"
+"Išjungti puslapiai nepasiekiami, paslėpti puslapiai pasiekiami, bet nerodomi "
+"navigacijoje"
 
-#: js/components/PageBulkDialog.vue:187
+#: js/components/PageBulkDialog.vue:186
 msgid "Change cache time"
 msgstr "Keisti talpyklos laiką"
 
-#: js/components/PageBulkDialog.vue:192
-#: js/components/PageDetailItemProps.vue:370
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "Cache time"
 msgstr "Talpyklos laikas"
 
-#: js/components/PageBulkDialog.vue:193
-#: js/components/PageDetailItemProps.vue:371
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Kiek laiko sugeneruotas puslapis saugomas talpykloje, prieš sukuriant jį iš "
 "naujo"
 
-#: js/components/PageBulkDialog.vue:202
+#: js/components/PageBulkDialog.vue:200
 msgid "Change language"
 msgstr "Keisti kalbą"
 
-#: js/components/PageBulkDialog.vue:208
-#: js/components/PageDetailItemProps.vue:260
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
 msgid "Language of the page content"
 msgstr "Puslapio turinio kalba"
 
-#: js/components/PageBulkDialog.vue:215
+#: js/components/PageBulkDialog.vue:212
 msgid "Change theme"
 msgstr "Keisti temą"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:336
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageBulkDialog.vue:221
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
 msgid "Design used to display the page"
 msgstr "Dizainas, naudojamas puslapiui rodyti"
 
-#: js/components/PageBulkDialog.vue:228
+#: js/components/PageBulkDialog.vue:224
 msgid "Change page type"
 msgstr "Keisti puslapio tipą"
 
-#: js/components/PageBulkDialog.vue:233
-#: js/components/PageDetailItemProps.vue:346
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Page type"
 msgstr "Puslapio tipas"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:347
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
 msgid "Template of the theme which defines the page layout"
 msgstr "Temos šablonas, apibrėžiantis puslapio išdėstymą"
 
-#: js/components/PageBulkDialog.vue:241
+#: js/components/PageBulkDialog.vue:236
 msgid "Change tag"
 msgstr "Keisti žymą"
 
-#: js/components/PageBulkDialog.vue:245
-#: js/components/PageDetailItemProps.vue:358
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Page tag"
 msgstr "Puslapio žyma"
 
-#: js/components/PageBulkDialog.vue:246
-#: js/components/PageDetailItemProps.vue:359
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Vidinis identifikatorius puslapiui rasti šablonuose, pvz., blog"
 
-#: js/components/PageBulkDialog.vue:255
+#: js/components/PageBulkDialog.vue:249
 msgid "Change domain"
 msgstr "Keisti domeną"
 
-#: js/components/PageBulkDialog.vue:260
-#: js/components/PageDetailItemProps.vue:320
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain"
 msgstr "Domenas"
 
-#: js/components/PageBulkDialog.vue:261
-#: js/components/PageDetailItemProps.vue:321
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domenas, kuriame puslapis pasiekiamas, pvz., example.com"
 
@@ -1682,23 +1696,23 @@ msgid "Make shared"
 msgstr "Padaryti bendru"
 
 #: js/components/PageDetailContentList.vue:1001
-msgid "Merge copy"
-msgstr "Sujungti kopiją"
+msgid "Replace with local copy"
+msgstr "Pakeisti vietine kopija"
 
 #: js/components/PageDetailContentList.vue:1011
 msgctxt "text element"
 msgid "Split"
 msgstr "Padalyti"
 
-#: js/components/PageDetailEditor.vue:78
+#: js/components/PageDetailEditor.vue:80
 msgid "Double-click to edit"
 msgstr "Dukart spustelėkite norėdami redaguoti"
 
-#: js/components/PageDetailEditor.vue:266
+#: js/components/PageDetailEditor.vue:269
 msgid "Preview mode"
 msgstr "Peržiūros režimas"
 
-#: js/components/PageDetailEditor.vue:269
+#: js/components/PageDetailEditor.vue:272
 msgid "Not CMS content"
 msgstr "Ne CMS turinys"
 
@@ -1733,35 +1747,35 @@ msgstr "URL negalioja"
 msgid "The path is already in use by another page"
 msgstr "Kelias jau naudojamas kitame puslapyje"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:272
 msgid "Page title"
 msgstr "Puslapio pavadinimas"
 
-#: js/components/PageDetailItemProps.vue:275
+#: js/components/PageDetailItemProps.vue:272
 msgid "Shown in the browser tab and search results"
 msgstr "Rodoma naršyklės skirtuke ir paieškos rezultatuose"
 
-#: js/components/PageDetailItemProps.vue:286
+#: js/components/PageDetailItemProps.vue:283
 msgid "Page name"
 msgstr "Puslapio vardas"
 
-#: js/components/PageDetailItemProps.vue:287
+#: js/components/PageDetailItemProps.vue:283
 msgid "Short name shown in the navigation menus"
 msgstr "Trumpas pavadinimas, rodomas navigacijos meniu"
 
-#: js/components/PageDetailItemProps.vue:302
+#: js/components/PageDetailItemProps.vue:298
 msgid "URL path"
 msgstr "URL kelias"
 
-#: js/components/PageDetailItemProps.vue:303
+#: js/components/PageDetailItemProps.vue:298
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Puslapio URL dalis po domeno, pvz., about-us"
 
-#: js/components/PageDetailItemProps.vue:387
+#: js/components/PageDetailItemProps.vue:377
 msgid "Redirect URL"
 msgstr "Peradresavimo URL"
 
-#: js/components/PageDetailItemProps.vue:388
+#: js/components/PageDetailItemProps.vue:377
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Lankytojai nukreipiami į šį URL vietoj puslapio rodymo"
 
@@ -1810,7 +1824,7 @@ msgstr "Puslapio peržiūros"
 
 #: js/components/PageDetailMetrics.vue:192
 msgid "Page Visits"
-msgstr "Puslapių lankymas"
+msgstr "Puslapio apsilankymai"
 
 #: js/components/PageDetailMetrics.vue:195
 msgid "Visit Duration (minutes)"
@@ -1822,11 +1836,11 @@ msgstr "Google parodymai"
 
 #: js/components/PageDetailMetrics.vue:197
 msgid "Google Clicks"
-msgstr "\"Google\" paspaudimai"
+msgstr "Google paspaudimai"
 
 #: js/components/PageDetailMetrics.vue:198
-msgid "Google Conversion Rate"
-msgstr "\"Google\" konversijų rodiklis"
+msgid "Google click-through rate"
+msgstr "Google paspaudimų rodiklis"
 
 #: js/components/PageDetailMetrics.vue:204
 msgid "Round trip time"
@@ -1886,7 +1900,7 @@ msgstr "Puslapio greitis"
 
 #: js/components/PageDetailMetrics.vue:570
 msgid "Google Search: Queries"
-msgstr "Paieška \"Google\": Užklausos"
+msgstr "Google paieška: užklausos"
 
 #: js/components/PageDetailMetrics.vue:578
 msgid "Percent"
@@ -1902,8 +1916,8 @@ msgid "Google Search: Impressions & Clicks"
 msgstr "Google paieška: parodymai ir paspaudimai"
 
 #: js/components/PageDetailMetrics.vue:615
-msgid "Google Search: Conversions"
-msgstr "Paieška \"Google\": Konversijos"
+msgid "Google Search: Click-through rate"
+msgstr "Google paieška: paspaudimų rodiklis"
 
 #: js/components/PageListItems.vue:515
 msgid "Error adding root page"
@@ -1942,7 +1956,7 @@ msgstr "Klaida gaunant puslapius"
 
 #: js/components/PageListItems.vue:908
 msgid "Error inserting page"
-msgstr "Klaida įdedant puslapį"
+msgstr "Klaida įterpiant puslapį"
 
 #: js/components/PageListItems.vue:982
 msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
@@ -1985,7 +1999,7 @@ msgstr[1] "%{num} puslapių nepavyko atnaujinti"
 msgstr[2] "%{num} puslapių nepavyko atnaujinti"
 
 #: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
-#: js/views/PageDetail.vue:624
+#: js/views/PageDetail.vue:639
 msgid "Error saving page"
 msgstr "Klaida išsaugant puslapį"
 
@@ -2079,7 +2093,7 @@ msgstr "Sesija baigėsi"
 #: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
 #: js/components/User.vue:134
 msgid "Logout"
-msgstr "Atsijungimas"
+msgstr "Atsijungti"
 
 #: js/components/ReloginDialog.vue:148
 msgid ""
@@ -2093,7 +2107,7 @@ msgstr ""
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr "Norėdami tęsti, prisijunkite iš naujo. Neišsaugoti pakeitimai išliks."
 
-#: js/components/ReloginDialog.vue:167 js/views/Login.vue:234
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:237
 msgid "Sign in"
 msgstr "Prisijungti"
 
@@ -2117,9 +2131,9 @@ msgstr "Rodyti slaptažodį"
 msgid "Continue"
 msgstr "Tęsti"
 
-#: js/components/ReloginDialog.vue:217 js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:240
 msgid "Login"
-msgstr "Prisijungimas"
+msgstr "Prisijungti"
 
 #: js/components/SchemaDialog.vue:33
 msgid "Content elements"
@@ -2130,82 +2144,82 @@ msgid "New elements"
 msgstr "Nauji elementai"
 
 #: js/components/SchemaItems.vue:106
-msgid "uncategorized"
-msgstr "neklasifikuojama"
+msgid "Uncategorized"
+msgstr "Be kategorijos"
 
 #: js/components/SchemaItems.vue:119
 msgid "Error fetching content elements"
 msgstr "Klaida gaunant turinio elementus"
 
-#: js/components/ShortcutDialog.vue:23
+#: js/components/ShortcutDialog.vue:29
 msgid "General"
 msgstr "Bendra"
 
-#: js/components/ShortcutDialog.vue:28
+#: js/components/ShortcutDialog.vue:34
 msgid "Close dialog or menu"
 msgstr "Uždaryti dialogą arba meniu"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:40
 msgid "Move between commands and results"
 msgstr "Pereiti tarp komandų ir rezultatų"
 
-#: js/components/ShortcutDialog.vue:35
+#: js/components/ShortcutDialog.vue:41
 msgid "Run command or open result"
 msgstr "Vykdyti komandą arba atidaryti rezultatą"
 
-#: js/components/ShortcutDialog.vue:36
+#: js/components/ShortcutDialog.vue:42
 msgid "Close command palette"
 msgstr "Uždaryti komandų paletę"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:46
 msgid "Lists"
 msgstr "Sąrašai"
 
-#: js/components/ShortcutDialog.vue:44
+#: js/components/ShortcutDialog.vue:50
 msgid "Edit views"
 msgstr "Redagavimo rodiniai"
 
-#: js/components/ShortcutDialog.vue:48
+#: js/components/ShortcutDialog.vue:54
 msgid "Page content"
 msgstr "Puslapio turinys"
 
-#: js/components/ShortcutDialog.vue:49
+#: js/components/ShortcutDialog.vue:55
 msgid "Move content element up or down"
 msgstr "Perkelti turinio elementą aukštyn arba žemyn"
 
-#: js/components/ShortcutDialog.vue:52
+#: js/components/ShortcutDialog.vue:58
 msgid "Page tree"
 msgstr "Puslapių medis"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:61
 msgid "Move between pages"
 msgstr "Pereiti tarp puslapių"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:62
 msgid "Expand page"
 msgstr "Išskleisti puslapį"
 
-#: js/components/ShortcutDialog.vue:56
+#: js/components/ShortcutDialog.vue:63
 msgid "Add subpage to focused page"
 msgstr "Pridėti subpuslapį prie aktyvaus puslapio"
 
-#: js/components/ShortcutDialog.vue:57
+#: js/components/ShortcutDialog.vue:64
 msgid "Reorder or re-nest page"
 msgstr "Pertvarkyti arba perkelti puslapį į kitą lygį"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:70
 msgid "AI chat"
 msgstr "AI pokalbis"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:73
 msgid "Send message"
 msgstr "Siųsti žinutę"
 
-#: js/components/ShortcutDialog.vue:65
+#: js/components/ShortcutDialog.vue:74
 msgid "New line"
 msgstr "Nauja eilutė"
 
-#: js/components/ShortcutDialog.vue:66
+#: js/components/ShortcutDialog.vue:75
 msgid "Recall previous messages"
 msgstr "Grąžinti ankstesnes žinutes"
 
@@ -2217,11 +2231,11 @@ msgstr "Neišsaugoti pakeitimai"
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "Jūs turite neišsaugotų pakeitimų, kurie bus prarasti, jei išeisite."
 
-#: js/components/UnsavedDialog.vue:49
+#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "Atmesti"
 
-#: js/components/UnsavedDialog.vue:58
+#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "Išsaugoti ir išeiti"
 
@@ -2231,7 +2245,7 @@ msgstr "Nepavyko įkelti naudotojo"
 
 #: js/components/User.vue:99
 msgid "Toggle light/dark mode"
-msgstr "Šviesos / tamsos režimo perjungimas"
+msgstr "Perjungti šviesų / tamsų režimą"
 
 #: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
@@ -2253,27 +2267,27 @@ msgstr "Reikšmė turi būti šešiaženklis spalvos kodas"
 msgid "File is required"
 msgstr "Reikalingas failas"
 
-#: js/fields/File.vue:448
+#: js/fields/File.vue:449
 msgid "Add file from URL"
 msgstr "Pridėti failą iš URL adreso"
 
-#: js/fields/File.vue:456 js/fields/Images.vue:430
+#: js/fields/File.vue:457 js/fields/Images.vue:430
 msgid "Create file"
 msgstr "Sukurti failą"
 
-#: js/fields/File.vue:462
+#: js/fields/File.vue:463
 msgid "Upload file"
 msgstr "Įkelti failą"
 
-#: js/fields/File.vue:487
+#: js/fields/File.vue:488
 msgid "Drop file here to upload"
 msgstr "Numeskite failą čia, kad įkeltumėte"
 
-#: js/fields/File.vue:494
+#: js/fields/File.vue:495
 msgid "name"
 msgstr "pavadinimas"
 
-#: js/fields/File.vue:498
+#: js/fields/File.vue:499
 msgid "description"
 msgstr "aprašymas"
 
@@ -2343,7 +2357,7 @@ msgstr "Įtraukti pakeitimai iš %{editor}"
 
 #: js/routes.js:126
 msgid "You do not have permission to access %{path}"
-msgstr "Neturite leidimo prisijungti prie %{path}"
+msgstr "Neturite leidimo pasiekti %{path}"
 
 #: js/rules.js:18
 msgid "Value is required"
@@ -2395,817 +2409,812 @@ msgstr[2] "Leidžiama daugiausia %{num} stulpelių"
 msgid "Failed to load plugin"
 msgstr "Nepavyko įkelti papildinio"
 
-#: js/strings.js:30
+#: js/strings.js:32
 msgctxt "cs"
 msgid "main"
 msgstr "Pagrindinis"
 
-#: js/strings.js:31
-msgctxt "cs"
-msgid "header"
-msgstr "antraštė"
-
-#: js/strings.js:32
-msgctxt "cs"
-msgid "footer"
-msgstr "poraštė"
-
 #: js/strings.js:33
 msgctxt "cs"
-msgid "sidebar"
-msgstr "šoninė juosta"
+msgid "header"
+msgstr "Antraštė"
 
 #: js/strings.js:34
 msgctxt "cs"
-msgid "aside"
-msgstr "šoninis blokas"
+msgid "footer"
+msgstr "Poraštė"
 
-#: js/strings.js:37
+#: js/strings.js:35
+msgctxt "cs"
+msgid "sidebar"
+msgstr "Šoninė juosta"
+
+#: js/strings.js:36
+msgctxt "cs"
+msgid "aside"
+msgstr "Šoninis blokas"
+
+#: js/strings.js:39
 msgctxt "sg"
 msgid "basic"
 msgstr "pagrindinis"
 
-#: js/strings.js:38
+#: js/strings.js:40
 msgctxt "sg"
 msgid "content"
 msgstr "turinys"
 
-#: js/strings.js:39
+#: js/strings.js:41
 msgctxt "sg"
 msgid "media"
 msgstr "medija"
 
-#: js/strings.js:40
+#: js/strings.js:42
 msgctxt "sg"
 msgid "forms"
 msgstr "formos"
 
-#: js/strings.js:43
+#: js/strings.js:45
 msgctxt "as"
 msgid "type"
 msgstr "tipas"
 
-#: js/strings.js:44
+#: js/strings.js:46
 msgctxt "as"
 msgid "state"
 msgstr "būsena"
 
-#: js/strings.js:47
+#: js/strings.js:49
 msgctxt "st"
 msgid "valid"
-msgstr "galioja"
+msgstr "tinkamas"
 
-#: js/strings.js:48
+#: js/strings.js:50
 msgctxt "st"
 msgid "changed"
 msgstr "pakeistas"
 
-#: js/strings.js:49
+#: js/strings.js:51
 msgctxt "st"
 msgid "error"
 msgstr "klaida"
 
-#: js/strings.js:52
+#: js/strings.js:54
 msgctxt "st"
 msgid "reference"
 msgstr "nuoroda"
 
-#: js/strings.js:53
+#: js/strings.js:55
 msgctxt "st"
 msgid "heading"
 msgstr "antraštė"
 
-#: js/strings.js:54
+#: js/strings.js:56
 msgctxt "st"
 msgid "text"
 msgstr "tekstas"
 
-#: js/strings.js:55
+#: js/strings.js:57
 msgctxt "st"
 msgid "image-text"
 msgstr "vaizdas-tekstas"
 
-#: js/strings.js:56
+#: js/strings.js:58
 msgctxt "st"
 msgid "slideshow"
 msgstr "skaidrių demonstravimas"
 
-#: js/strings.js:57
+#: js/strings.js:59
 msgctxt "st"
 msgid "code"
 msgstr "kodas"
 
-#: js/strings.js:58
+#: js/strings.js:60
 msgctxt "st"
 msgid "table"
 msgstr "lentelė"
 
-#: js/strings.js:59
+#: js/strings.js:61
 msgctxt "st"
 msgid "map"
 msgstr "žemėlapis"
 
-#: js/strings.js:60
+#: js/strings.js:62
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:61
+#: js/strings.js:63
 msgctxt "st"
 msgid "image"
 msgstr "vaizdas"
 
-#: js/strings.js:62
+#: js/strings.js:64
 msgctxt "st"
 msgid "video"
 msgstr "vaizdo įrašas"
 
-#: js/strings.js:63
+#: js/strings.js:65
 msgctxt "st"
 msgid "audio"
 msgstr "garso įrašas"
 
-#: js/strings.js:64
+#: js/strings.js:66
 msgctxt "st"
 msgid "file"
 msgstr "failas"
 
-#: js/strings.js:65
+#: js/strings.js:67
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:66
+#: js/strings.js:68
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:67
+#: js/strings.js:69
 msgctxt "st"
 msgid "cards"
 msgstr "Kortelės"
 
-#: js/strings.js:68
+#: js/strings.js:70
 msgctxt "st"
 msgid "blog"
-msgstr "Blogas"
+msgstr "Tinklaraštis"
 
-#: js/strings.js:69
+#: js/strings.js:71
 msgctxt "st"
 msgid "article"
 msgstr "Straipsnis"
 
-#: js/strings.js:70
+#: js/strings.js:72
 msgctxt "st"
 msgid "questions"
 msgstr "DUK"
 
-#: js/strings.js:71
+#: js/strings.js:73
 msgctxt "st"
 msgid "toc"
 msgstr "turinys"
 
-#: js/strings.js:72
+#: js/strings.js:74
 msgctxt "st"
 msgid "contact"
 msgstr "Kontaktai"
 
-#: js/strings.js:73
+#: js/strings.js:75
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metažymos"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "social-media"
 msgstr "Socialiniai tinklai"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanoninis URL"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "robots"
 msgstr "Paieškos sistemos"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "styles"
 msgstr "stiliai"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "news"
 msgstr "Naujienos"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "pricing"
 msgstr "Kainų planai"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "security"
 msgstr "Saugumas"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "testimonial"
 msgstr "Atsiliepimai"
 
-#: js/strings.js:88
+#: js/strings.js:90
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Skyriaus antraštė nuo H1 iki H6"
 
-#: js/strings.js:89
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatuotas tekstas su pastraipomis, sąrašais ir nuorodomis"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Paveikslėlis šalia formatuoto teksto"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Išeities kodas su sintaksės paryškinimu"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Duomenų lentelė su pasirenkama antraštės eilute ar stulpeliu"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktyvus žemėlapis su vieta, tekstu ir nuoroda"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Pasirinktinis HTML įterpiniams ir valdikliams"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Vienas prisitaikantis paveikslėlis"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Besikeičiančios skaidrės su keliais paveikslėliais"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Įterptas vaizdo įrašas su valdikliais"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Įterptas garso įrašas su valdikliais"
 
-#: js/strings.js:99
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Atsisiunčiamas failas, pvz., PDF dokumentas"
 
-#: js/strings.js:100
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Didelis įvadas su pavadinimu, tekstu, mygtukais ir fonu"
 
-#: js/strings.js:101
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Raginimas veikti su tekstu ir mygtukais"
 
-#: js/strings.js:102
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Kortelių tinklelis su paveikslėliu, pavadinimu ir tekstu"
 
-#: js/strings.js:103
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Klientų citatos su vardu, pareigomis ir nuotrauka"
 
-#: js/strings.js:104
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Straipsnio įvadas su paveikslėlių galerija ir autoriumi"
 
-#: js/strings.js:105
+#: js/strings.js:107
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Tėvinio puslapio tinklaraščio straipsnių sąrašas"
 
-#: js/strings.js:106
+#: js/strings.js:108
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Tėvinio puslapio naujienų sąrašas"
 
-#: js/strings.js:107
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Išskirtas subpuslapis, po kurio eina kiti subpuslapiai"
 
-#: js/strings.js:108
+#: js/strings.js:110
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Kainų planai su prenumeratomis ar vienkartiniais mokėjimais"
 
-#: js/strings.js:109
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Dažnai užduodami klausimai su atsakymais"
 
-#: js/strings.js:110
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Turinys su nuorodomis į puslapio antraštes"
 
-#: js/strings.js:111
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Contact form with configurable fields"
 msgstr "Kontaktų forma su konfigūruojamais laukais"
 
-#: js/strings.js:114
+#: js/strings.js:116
 msgctxt "fn"
 msgid "button"
 msgstr "Mygtukas"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "fn"
 msgid "buttons"
 msgstr "mygtukai"
 
-#: js/strings.js:116
+#: js/strings.js:118
 msgctxt "fn"
 msgid "cards"
 msgstr "Kortelės"
 
-#: js/strings.js:117
+#: js/strings.js:119
 msgctxt "fn"
 msgid "description"
 msgstr "aprašymas"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "file"
 msgstr "failas"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "files"
 msgstr "failai"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "follow"
 msgstr "Nuorodų sekimas"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "header"
 msgstr "antraštė"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksavimas"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "keywords"
 msgstr "raktažodžiai"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "language"
 msgstr "kalba"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "label"
 msgstr "etiketė"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "level"
 msgstr "lygis"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "limit"
 msgstr "riba"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "location"
 msgstr "vieta"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "main"
 msgstr "Pagr. vaizdas"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "order"
 msgstr "tvarka"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Pirminis puslapis"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "position"
 msgstr "pozicija"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "text"
 msgstr "tekstas"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "table"
 msgstr "lentelė"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "title"
 msgstr "pavadinimas"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "image"
 msgstr "vaizdas"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "images"
 msgstr "vaizdai"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "items"
 msgstr "punktai"
 
-#: js/strings.js:141
+#: js/strings.js:143
 msgctxt "fn"
 msgid "introduction"
 msgstr "įvadas"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "load immediately"
 msgstr "nedelsiant įkelti"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "source code"
-msgstr "šaltinio kodas"
+msgstr "išeities kodas"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Viešosios dalies prieigos vaidmuo"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Mokėjimo kainos"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Mokėjimo nuoroda"
 
-#: js/strings.js:147
-msgctxt "fn"
-msgid "Payment kind"
-msgstr "Mokėjimo tipas"
-
-#: js/strings.js:148
+#: js/strings.js:149
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valiuta"
 
-#: js/strings.js:149
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Atsiskaitymo intervalas"
 
-#: js/strings.js:150
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Kainos vienetas"
 
-#: js/strings.js:151
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Tikslinis puslapis arba nuoroda"
 
-#: js/strings.js:152
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Formos laukai"
 
-#: js/strings.js:153
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Field"
 msgstr "Laukas"
 
-#: js/strings.js:154
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Required"
 msgstr "Privalomas"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Link label"
 msgstr "Nuorodos tekstas"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontaktinis URL"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kontaktinis el. paštas"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Description"
 msgstr "Aprašymas"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Rodoma kaina"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galerija"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Paryškinimo tekstas"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Paryškintas"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Language"
 msgstr "Kalba"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Mokėjimo tipas"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Pageidaujamos kalbos"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Paantraštė"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Padėkos"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "amount"
 msgstr "Suma"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "background"
 msgstr "Fonas"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "background animation"
 msgstr "Fono animacija"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatyvus mygtukas"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanoninis URL"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "columns"
 msgstr "Stulpeliai"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "encryption"
 msgstr "Šifravimas"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "expires"
 msgstr "Galiojimo pabaiga"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "features"
 msgstr "Ypatybės"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "hiring"
 msgstr "Įdarbinimas"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "layout"
 msgstr "Išdėstymas"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "name"
 msgstr "Pavadinimas"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "policy"
 msgstr "Saugumo politika"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "ratio"
 msgstr "Santykis"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "role"
 msgstr "Pareigos"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Paantraštė"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatyvi nuoroda"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Teksto šriftas"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Antraštės šriftas"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Teksto spalva"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Fono spalva"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Pažymėjimo spalva"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrastinė spalva"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontrastinė spalva užvedus"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrastinio teksto spalva"
 
-#: js/strings.js:194
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Pagrindinė spalva"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Pagrindinis fonas"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Pagrindinė spalva užvedus"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Pagrindinis fonas užvedus"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Antrinė spalva"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Antrinis fonas"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Antrinė spalva užvedus"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Antrinis fonas užvedus"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Kampo apvalinimas"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Naršymo kelio skirtukas"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Antraštės tekstas"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3213,455 +3222,455 @@ msgstr ""
 "1 lygis yra pagrindinė puslapio antraštė, aukštesni lygiai struktūrina "
 "toliau esančius skyrius"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatuotas tekstas su pastraipomis, sąrašais ir nuorodomis"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Formatuotas tekstas, rodomas šalia vaizdo"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Vaizdas, rodomas šalia teksto"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Vaizdo padėtis teksto atžvilgiu"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Vaizdo ir teksto pločio santykis"
 
-#: js/strings.js:213
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Programavimo kalba, naudojama sintaksės paryškinimui"
 
-#: js/strings.js:214
+#: js/strings.js:216
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Išeities kodas su sintaksės paryškinimu"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Neprivalomas antraštinis tekstas virš lentelės"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Naudoti pirmą eilutę, pirmą stulpelį arba abu kaip lentelės antraštes"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
-msgid "Table data as comma separated values, one row per line"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
-"Lentelės duomenys kaip kableliais atskirtos reikšmės, po vieną eilutę "
-"kiekvienoje linijoje"
+"Įveskite duomenis į langelius; prireikus pridėkite arba pašalinkite eilutes "
+"ir stulpelius"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Neprivaloma antraštė virš žemėlapio"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr ""
 "Aprašymas, rodomas šalia žemėlapio, pvz., adresas ar kelionės aprašymas"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Ieškokite vietos arba spustelėkite žemėlapyje, kad nustatytumėte vietą"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Nuorodos, atveriančios vietą žemėlapių paslaugoje, tekstas"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML kodas, įterpiamas į puslapį nepakeistas, pvz., įterpiniams ir "
 "valdikliams"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Vaizdas visu turinio srities pločiu"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Įkelti vaizdą nedelsiant, jei jis matomas puslapio viršuje"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Neprivaloma antraštė virš skaidrių demonstravimo"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Vaizdai rodomi vienas po kito, vilkite tvarkai pakeisti"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Įkelti pirmą vaizdą nedelsiant, jei jis matomas puslapio viršuje"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Puslapyje paleidžiamas vaizdo įrašo failas"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Puslapyje paleidžiamas garso įrašo failas"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Atsisiuntimui siūlomas failas"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Pagrindinė puslapio antraštė"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Trumpa eilutė virš antraštės"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Įvadas po antraštės"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda pagrindinis mygtukas"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Pagrindinio mygtuko tekstas"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda antrasis mygtukas"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Antrojo mygtuko tekstas"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Vaizdas už teksto"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Fono vaizdo animacijos efektas"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Vaizdai, rodomi šalia teksto"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Antraštė, patraukianti lankytojų dėmesį"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Tekstas, skatinantis lankytojus veikti"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Mygtukai, vedantys lankytojus į kitą žingsnį"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Mygtuko tekstas"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda mygtukas"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Neprivaloma antraštė virš kortelių"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Kortelių skaičius eilutėje, \"auto\" prisitaiko prie ekrano pločio"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Tinklelyje rodomos kortelės"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kortelės antraštė"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Vaizdas kortelės viršuje"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kortelės tekstas"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda kortelė"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Neprivaloma antraštė virš citatų"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Klientų ar partnerių citatos"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Asmens citata"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Asmens vardas"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Asmens pareigos ar įmonė"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Asmens nuotrauka"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Straipsnio įvadas, rodomas po puslapio pavadinimu"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Straipsnio vaizdai, pirmasis naudojamas kaip peržiūros vaizdas"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Straipsnio autoriaus vardas"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Nuoroda į autoriaus profilio puslapį"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Neprivaloma antraštė virš sąrašo"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Rodyti puslapius kaip korteles arba kompaktišką sąrašą"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Puslapis, kurio subpuslapiai išvardyti"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Išvardytų puslapių rūšiavimo tvarka"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Didžiausias vienu metu rodomų puslapių skaičius"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Rodyti kitus subpuslapius kaip korteles arba kompaktišką sąrašą"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Neprivaloma antraštė virš kainų planų"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Trumpas tekstas po antrašte"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Greta rodomi kainų planai"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Kainų plano pavadinimas"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Vaidmuo, suteikiamas klientams po apmokėjimo, kad jie galėtų pasiekti "
 "apsaugotus puslapius"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Plano kainos, pvz., mėnesio ir metų"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Pasikartojanti prenumerata ar vienkartinis mokėjimas"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Dienų skaičius tarp dviejų mokėjimų, pvz., 30 mėnesiniam"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Trijų raidžių ISO valiutos kodas, pvz., EUR arba USD"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Kainos ID arba suma, naudojama mokėjimo teikėjo"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Lankytojams rodoma suformatuota kaina, pvz., 9,99 €"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Skaitinė kaina, rodoma jei nenustatyta suformatuota kaina"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Tekstas po kainos, pvz., per mėnesį"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Trumpas kainų plano aprašymas"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Į planą įtrauktų funkcijų sąrašas"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Išskirti šį planą tarp kitų"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Trumpa etiketė ant išskirto plano, pvz., Populiariausias"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Neprivaloma antraštė virš klausimų"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Klausimai ir atsakymai, rodomi kaip išskleidžiamas sąrašas"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Lankytojų užduodamas klausimas"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Atsakymas į klausimą"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Neprivaloma antraštė virš turinio"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Neprivaloma antraštė virš kontaktų formos"
 
-#: js/strings.js:292
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Neprivalomas tekstas, rodomas tarp antraštės ir kontaktų formos"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Lankytojams šia tvarka rodomi formos laukai"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Pasirinkite formos lauką arba įveskite savo pavadinimą"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Lankytojai privalo užpildyti šį lauką"
 
-#: js/strings.js:294
+#: js/strings.js:298
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3670,390 +3679,390 @@ msgstr ""
 "Puslapio santrauka, rodoma paieškos rezultatuose, rekomenduojama 150–160 "
 "simbolių"
 
-#: js/strings.js:295
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Kableliais atskirtas puslapį apibūdinančių raktažodžių sąrašas"
 
-#: js/strings.js:296
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Pavadinimas, rodomas dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:297
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Santrauka, rodoma dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:298
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "Peržiūros vaizdas, rodomas dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:299
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Originalus URL, jei tas pats turinys pasiekiamas keliais adresais"
 
-#: js/strings.js:300
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Leisti arba neleisti paieškos sistemoms įtraukti šį puslapį"
 
-#: js/strings.js:301
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Leisti arba neleisti paieškos sistemoms sekti nuorodas šiame puslapyje"
 
-#: js/strings.js:302
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Svetainės pavadinimas, rodomas naršyklės skirtuke ir paieškos rezultatuose"
 
-#: js/strings.js:303
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotipas, rodomas puslapio antraštėje"
 
-#: js/strings.js:304
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Logotipo variantas, naudojamas tamsiems fonams"
 
-#: js/strings.js:305
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Mažas kvadratinis vaizdas, rodomas naršyklės skirtukuose ir žymėse"
 
-#: js/strings.js:306
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Kableliais atskirtas tekstui naudojamų šriftų sąrašas"
 
-#: js/strings.js:307
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Numatytoji teksto spalva"
 
-#: js/strings.js:308
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Puslapių fono spalva"
 
-#: js/strings.js:309
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Pažymėto teksto fono spalva"
 
-#: js/strings.js:310
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Elementų, kurių kontrastas su fonu stiprus, spalva"
 
-#: js/strings.js:311
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrastinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:312
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Teksto spalva elementuose, naudojančiuose kontrastinę spalvą"
 
-#: js/strings.js:313
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Pagrindinė prekės ženklo spalva, naudojama nuorodoms ir mygtukams"
 
-#: js/strings.js:314
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Pagrindinių mygtukų ir akcentų fono spalva"
 
-#: js/strings.js:315
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Pagrindinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:316
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Pagrindinė fono spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:317
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Papildoma spalva, naudojama mažiau svarbioms nuorodoms ir mygtukams"
 
-#: js/strings.js:318
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Antrinių mygtukų fono spalva"
 
-#: js/strings.js:319
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Antrinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:320
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Antrinė fono spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:321
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Kampų suapvalinimas kaip CSS ilgis, pvz., 0.25rem arba 0 aštriems kampams"
 
-#: js/strings.js:322
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Simbolis, rodomas tarp naršymo kelio nuorodų"
 
-#: js/strings.js:323
+#: js/strings.js:327
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS nuoroda susisiekti su saugumo komanda, pvz., forma"
 
-#: js/strings.js:324
+#: js/strings.js:328
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "El. pašto adresas saugumo problemoms pranešti"
 
-#: js/strings.js:325
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Data, po kurios saugumo informacija laikoma pasenusia"
 
-#: js/strings.js:326
+#: js/strings.js:330
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS nuoroda į viešąjį raktą šifruotiems pranešimams"
 
-#: js/strings.js:327
+#: js/strings.js:331
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS nuoroda į puslapį, dėkojantį saugumo tyrėjams"
 
-#: js/strings.js:328
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Kableliais atskirti kalbų kodai saugumo pranešimams, pvz., en, de"
 
-#: js/strings.js:329
+#: js/strings.js:333
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL, kuriuo skelbiamas security.txt failas"
 
-#: js/strings.js:330
+#: js/strings.js:334
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS nuoroda į saugumo ir atskleidimo politiką"
 
-#: js/strings.js:331
+#: js/strings.js:335
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS nuoroda į atviras su saugumu susijusias darbo vietas"
 
-#: js/strings.js:332
+#: js/strings.js:336
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS nuoroda į CSAF teikėjo metaduomenis"
 
-#: js/strings.js:333
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Papildomos taisyklės, pridedamos į robots.txt failą žiniatinklio robotams"
 
-#: js/strings.js:334
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Pasirinktinis CSS kodas, pridedamas visiems puslapiams"
 
-#: js/strings.js:335
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pasirinktinis JavaScript kodas, pridedamas visiems puslapiams"
 
-#: js/strings.js:336
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Kableliais atskirtas antraštėms naudojamų šriftų sąrašas"
 
-#: js/strings.js:339
+#: js/strings.js:343
 msgctxt "op"
 msgid "Name"
 msgstr "Vardas"
 
-#: js/strings.js:340
+#: js/strings.js:344
 msgctxt "op"
 msgid "Company"
 msgstr "Įmonė"
 
-#: js/strings.js:341
+#: js/strings.js:345
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefonas"
 
-#: js/strings.js:342
+#: js/strings.js:346
 msgctxt "op"
 msgid "E-Mail"
 msgstr "El. paštas"
 
-#: js/strings.js:343
+#: js/strings.js:347
 msgctxt "op"
 msgid "Subject"
 msgstr "Tema"
 
-#: js/strings.js:344
+#: js/strings.js:348
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekti nuorodas"
 
-#: js/strings.js:345
+#: js/strings.js:349
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksuoti"
 
-#: js/strings.js:346
+#: js/strings.js:350
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekti nuorodų"
 
-#: js/strings.js:347
+#: js/strings.js:351
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksuoti"
 
-#: js/strings.js:348
+#: js/strings.js:352
 msgctxt "op"
 msgid "Subscription"
 msgstr "Prenumerata"
 
-#: js/strings.js:349
+#: js/strings.js:353
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienkartinis mokėjimas"
 
-#: js/strings.js:350
+#: js/strings.js:354
 msgctxt "op"
 msgid "Auto"
 msgstr "Automatinis"
 
-#: js/strings.js:351
+#: js/strings.js:355
 msgctxt "op"
 msgid "Cards"
 msgstr "Kortelės"
 
-#: js/strings.js:352
+#: js/strings.js:356
 msgctxt "op"
 msgid "Default"
 msgstr "Numatytasis"
 
-#: js/strings.js:353
+#: js/strings.js:357
 msgctxt "op"
 msgid "End"
 msgstr "Pabaiga"
 
-#: js/strings.js:354
+#: js/strings.js:358
 msgctxt "op"
 msgid "First column"
 msgstr "Pirmas stulpelis"
 
-#: js/strings.js:355
+#: js/strings.js:359
 msgctxt "op"
 msgid "First row"
 msgstr "Pirma eilutė"
 
-#: js/strings.js:356
+#: js/strings.js:360
 msgctxt "op"
 msgid "First row and column"
 msgstr "Pirma eilutė ir stulpelis"
 
-#: js/strings.js:357
+#: js/strings.js:361
 msgctxt "op"
 msgid "Grid end"
 msgstr "Tinklelio pabaiga"
 
-#: js/strings.js:358
+#: js/strings.js:362
 msgctxt "op"
 msgid "Grid start"
 msgstr "Tinklelio pradžia"
 
-#: js/strings.js:359
+#: js/strings.js:363
 msgctxt "op"
 msgid "Latest"
 msgstr "Naujausi"
 
-#: js/strings.js:360
+#: js/strings.js:364
 msgctxt "op"
 msgid "List"
 msgstr "Sąrašas"
 
-#: js/strings.js:361
+#: js/strings.js:365
 msgctxt "op"
 msgid "None"
 msgstr "Nėra"
 
-#: js/strings.js:362
+#: js/strings.js:366
 msgctxt "op"
 msgid "Oldest"
 msgstr "Seniausi"
 
-#: js/strings.js:363
+#: js/strings.js:367
 msgctxt "op"
 msgid "Position"
 msgstr "Pozicija"
 
-#: js/strings.js:364
+#: js/strings.js:368
 msgctxt "op"
 msgid "Start"
 msgstr "Pradžia"
 
-#: js/strings.js:365
+#: js/strings.js:369
 msgctxt "op"
 msgid "Zoom"
 msgstr "Priartinimas"
 
-#: js/strings.js:368
+#: js/strings.js:372
 msgctxt "ai"
 msgid "Done"
 msgstr "Atlikta"
 
-#: js/strings.js:369
+#: js/strings.js:373
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau yra"
 
-#: js/strings.js:372
+#: js/strings.js:376
 msgctxt "sg"
 msgid "expert"
 msgstr "Išplėstiniai"
 
-#: js/strings.js:373
+#: js/strings.js:377
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:374
+#: js/strings.js:378
 msgctxt "st"
 msgid "website"
 msgstr "svetainė"
 
-#: js/strings.js:375
+#: js/strings.js:379
 msgctxt "st"
 msgid "logo"
 msgstr "Logotipas"
 
-#: js/strings.js:376
+#: js/strings.js:380
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatyvus logotipas"
 
-#: js/strings.js:377
+#: js/strings.js:381
 msgctxt "st"
 msgid "icon"
 msgstr "Piktograma"
@@ -4076,7 +4085,7 @@ msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
 msgstr ""
-"Esami apribojimai nesikeičia ir toliau bus nuoroda į visam laikui ištrintas "
+"Esami apribojimai nekeičiami ir toliau nurodys visam laikui ištrintas "
 "prieigos vertes."
 
 #: js/views/AccessList.vue:202
@@ -4107,11 +4116,11 @@ msgstr "Pridėti prieigos vertę"
 msgid "Access value"
 msgstr "Prieigos vertė"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:337
 msgid "Role name which can be assigned to pages and users"
-msgstr "Vaidmens pavadinimas, kurį galima priskirti puslapiams ir vartotojams"
+msgstr "Vaidmens pavadinimas, kurį galima priskirti puslapiams ir naudotojams"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:353
 msgid "Add"
 msgstr "Pridėti"
 
@@ -4132,7 +4141,7 @@ msgid "Error publishing element"
 msgstr "Klaida skelbiant elementą"
 
 #: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
-#: js/views/PageDetail.vue:549
+#: js/views/PageDetail.vue:564
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Yra neteisingų laukų, pirmiausia išspręskite klaidas"
 
@@ -4156,7 +4165,7 @@ msgstr "Naudojamas"
 #: js/views/ElementList.vue:121 js/views/FileList.vue:120
 #: js/views/PageList.vue:145
 msgid "publish"
-msgstr "skelbti"
+msgstr "paskelbimas"
 
 #: js/views/ElementList.vue:125 js/views/FileList.vue:124
 #: js/views/PageList.vue:149
@@ -4186,7 +4195,7 @@ msgstr "Tik šiukšliadėžėje"
 #: js/views/ElementList.vue:143 js/views/FileList.vue:142
 #: js/views/PageList.vue:185
 msgid "Edited by me"
-msgstr "Redaguota mano"
+msgstr "Mano redaguoti"
 
 #: js/views/ElementList.vue:148 js/views/FileList.vue:147
 #: js/views/PageList.vue:190
@@ -4247,7 +4256,7 @@ msgstr "Ne CMS redaktorius"
 msgid "Access denied"
 msgstr "Prieiga uždrausta"
 
-#: js/views/Login.vue:228
+#: js/views/Login.vue:231
 msgid "Error"
 msgstr "Klaida"
 
@@ -4267,28 +4276,33 @@ msgstr "Puslapis sėkmingai paskelbtas"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Puslapis suplanuotas paskelbti %{date}"
 
-#: js/views/PageDetail.vue:535 js/views/PageDetail.vue:810
+#: js/views/PageDetail.vue:550 js/views/PageDetail.vue:825
 msgid "Rate this page and suggest improvements"
 msgstr "Įvertinkite šį puslapį ir pasiūlykite patobulinimų"
 
-#: js/views/PageDetail.vue:602
+#: js/views/PageDetail.vue:617
 msgid "Page saved successfully"
 msgstr "Puslapis sėkmingai išsaugotas"
 
-#: js/views/PageDetail.vue:639
+#: js/views/PageDetail.vue:654
 msgid "No page schema for \"content\" found"
 msgstr "Nerasta puslapio schemos \"content\""
 
-#: js/views/PageDetail.vue:787 js/views/PageDetail.vue:838
-#: js/views/PageDetail.vue:857
+#: js/views/PageDetail.vue:802 js/views/PageDetail.vue:853
+#: js/views/PageDetail.vue:872
 msgid "Page"
 msgstr "Puslapis"
 
-#: js/views/PageDetail.vue:815
+#: js/views/PageDetail.vue:830
 msgid "Translate page"
 msgstr "Išversti puslapį"
 
-#: js/views/PageDetail.vue:860
+#: js/views/PageDetail.vue:858
+msgctxt "editing interface"
+msgid "Editor"
+msgstr "Rengyklė"
+
+#: js/views/PageDetail.vue:875
 msgid "Metrics"
 msgstr "Metrikos"
 
@@ -4302,7 +4316,7 @@ msgstr "Sąrašas"
 
 #: js/views/PageList.vue:164
 msgid "status"
-msgstr "statusas"
+msgstr "būsena"
 
 #: js/views/PageList.vue:168
 msgid "Hidden"
@@ -4314,7 +4328,7 @@ msgstr "talpykla"
 
 #: js/views/PageList.vue:314
 msgid "Generate page based on prompt"
-msgstr "Sukurti puslapį pagal užklausą"
+msgstr "Generuoti puslapį pagal raginimą"
 
 #: js/views/PageList.vue:332
 msgid ""
@@ -4322,119 +4336,4 @@ msgid ""
 "tree"
 msgstr ""
 "AI gali sukurti puslapį ir turinį pagal jūsų įvestį ir pridėti jį prie "
-"puslapio medžio."
-
-#~ msgid "Open command palette"
-#~ msgstr "Atidaryti komandų paletę"
-
-#~ msgid "Conflict resolution"
-#~ msgstr "Konfliktų sprendimas"
-
-#~ msgid "Command palette"
-#~ msgstr "Komandų paletė"
-
-#~ msgid "Confirm"
-#~ msgstr "Patvirtinti"
-
-#~ msgid "Selection is required"
-#~ msgstr "Būtina pasirinkti"
-
-#~ msgid "Minimum is %{num} entries"
-#~ msgstr "Mažiausia %{num} įrašų"
-
-#~ msgid "Maximum is %{num} entries"
-#~ msgstr "Daugiausia %{num} įrašų"
-
-#~ msgid "Minimum length is %{num} characters"
-#~ msgstr "Mažiausias ilgis - %{num} simbolių"
-
-#~ msgid "Maximum length is %{num} characters"
-#~ msgstr "Didžiausias ilgis - %{num} simbolių"
-
-#~ msgid "id"
-#~ msgstr "id"
-
-#~ msgid "Copy"
-#~ msgstr "Kopijuoti"
-
-#~ msgid "Top"
-#~ msgstr "Viršuje"
-
-#~ msgid "Left"
-#~ msgstr "Kairėje pusėje"
-
-#~ msgid "Right"
-#~ msgstr "Dešinėje"
-
-#~ msgid "Bottom"
-#~ msgstr "Apačioje"
-
-#~ msgid "Cut"
-#~ msgstr "Iškirpti"
-
-#~ msgid "Split"
-#~ msgstr "Padalyti"
-
-#~ msgid "Enable"
-#~ msgstr "Įjungti"
-
-#~ msgid "Disable"
-#~ msgstr "Išjungti"
-
-#~ msgid "Minimum are %{num} columns"
-#~ msgstr "Mažiausiai yra %{num} stulpelių"
-
-#~ msgid "Maximum are %{num} columns"
-#~ msgstr "Daugiausia yra %{num} stulpelių"
-
-#~ msgid "Error deleting access values"
-#~ msgstr "Ištrinant prieigos vertes įvyko klaida"
-
-#~ msgid "Upscale"
-#~ msgstr "Padidinti skiriamąją gebą"
-
-#~ msgid "Files"
-#~ msgstr "Failai"
-
-#~ msgid "Current"
-#~ msgstr "Dabartinis"
-
-#~ msgid "Apply changes"
-#~ msgstr "Taikyti pakeitimus"
-
-#~ msgid "Toggle all"
-#~ msgstr "Perjungti viską"
-
-#~ msgid "Revert to version"
-#~ msgstr "Grįžti prie ankstesnės versijos"
-
-#~ msgid "Edit element"
-#~ msgstr "Redaguoti elementą"
-
-#~ msgid "Fullscreen mode"
-#~ msgstr "Viso ekrano režimas"
-
-#~ msgid "Exit fullscreen mode"
-#~ msgstr "Išeiti iš viso ekrano režimo"
-
-#~ msgid "Open menu"
-#~ msgstr "Atidaryti meniu"
-
-#~ msgid "Delete access values"
-#~ msgstr "Ištrinkite prieigos vertes"
-
-#~ msgid ""
-#~ "Existing restrictions are not changed and will continue to reference the "
-#~ "deleted access values."
-#~ msgstr ""
-#~ "Esami apribojimai nesikeičia ir toliau bus nuoroda į ištrintas prieigos "
-#~ "vertes."
-
-#~ msgid "Error fetching element versions"
-#~ msgstr "Elemento versijų gavimo klaida"
-
-#~ msgid "Error fetching file versions"
-#~ msgstr "Failų versijų gavimo klaida"
-
-#~ msgid "Error fetching page versions"
-#~ msgstr "Puslapių versijų gavimo klaida"
+"puslapio medžio"

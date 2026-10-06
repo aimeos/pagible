@@ -122,7 +122,7 @@
                         <div class="property-primary-fact property-available_from">
                             <dt>{{ __('Available from') }}</dt>
                             <dd>
-                                <time datetime="{{ $data->available_from }}">{{ \Illuminate\Support\Carbon::parse($data->available_from)->translatedFormat('j F Y') }}</time>
+                                <time datetime="{{ $data->available_from }}">@localDate($data->available_from, 'long')</time>
                             </dd>
                         </div>
                     @endif
@@ -218,7 +218,7 @@
             @endif
             <p class="property-updated">
                 {{ __('Updated') }}
-                <time datetime="{{ $page->updated_at->toDateString() }}">{{ $page->updated_at->translatedFormat('j F Y') }}</time>
+                <time datetime="{{ $page->updated_at->toDateString() }}">@localDate($page->updated_at, 'long')</time>
             </p>
             <a class="property-contact-link" href="#property-contact-{{ cms($page, 'id') }}">
                 {{ in_array($data->status, ['sold', 'rented'], true)

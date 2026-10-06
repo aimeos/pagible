@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -78,6 +79,40 @@ class Theme
 
             return $themes;
         } );
+    }
+
+
+    /**
+     * Sets the application locale for rendering pages in the given language.
+     *
+     * @param string $locale Language tag like "de" or "de-CH"
+     */
+    public static function locale( string $locale ) : void
+    {
+        App::setLocale( $locale );
+        self::translations( $locale );
+    }
+
+
+    /**
+     * Sets the language of the translations only, leaving the application locale unchanged.
+     *
+     * Regional languages without own translations (e.g. "de-CH") use the
+     * translations of their base language ("de") instead of the fallback locale.
+     *
+     * @param string $locale Language tag like "de" or "de-CH"
+     */
+    public static function translations( string $locale ) : void
+    {
+        $translator = app( 'translator' );
+        $translator->setLocale( $locale );
+
+        $base = strtok( $locale, '-_' ) ?: $locale;
+        $loader = $translator->getLoader();
+
+        if( $base !== $locale && empty( $loader->load( $locale, '*', '*' ) ) && !empty( $loader->load( $base, '*', '*' ) ) ) {
+            $translator->setLocale( $base );
+        }
     }
 
 

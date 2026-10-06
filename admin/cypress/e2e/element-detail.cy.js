@@ -397,7 +397,7 @@ describe('Element Detail', () => {
       { latest: { ...makeElementDetail().latest, data } }
     )
 
-    detailView().find('.label').should('contain', 'title')
+    detailView().contains('.label', 'title', { matchCase: false }).should('exist')
     detailView().find('textarea').should('have.value', 'Contact us')
   })
 
@@ -425,7 +425,7 @@ describe('Element Detail', () => {
     detailView().find('.v-tab').contains('Content').click()
     detailView().find('.content').should('have.length', 1)
     detailView().find('button.btn-add').click()
-    cy.get('.v-dialog').contains('.item', 'heading').click()
+    cy.get('.v-dialog').contains('.item', 'heading', { matchCase: false }).click()
 
     detailView().find('.content').should('have.length', 2)
     detailView().find('.menu-save').should('not.be.disabled')

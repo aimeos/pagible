@@ -2,7 +2,7 @@
     $nav ??= new \Aimeos\Cms\Navigation($page, auth()->user());
 @endphp
 <!DOCTYPE html>
-<html class="no-js" data-theme="light" lang="{{ cms($page, 'lang') }}" dir="{{ in_array(cms($page, 'lang'), ['ar', 'az', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
+<html class="no-js" data-theme="light" lang="{{ cms($page, 'lang') }}" dir="{{ in_array(strtok((string) cms($page, 'lang'), '-_'), ['ar', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -59,6 +59,7 @@
                 "@@context": "https://schema.org",
                 "@@type": "WebPage",
                 "name": {!! cmsjson(cms($page, 'title')) !!},
+                "inLanguage": {!! cmsjson(cms($page, 'lang')) !!},
                 "url": {!! cmsjson(cmsroute($page)) !!}
             }
             @if($nav->ancestors()->count() > 1)
@@ -90,7 +91,7 @@
         <dialog id="modal-search" class="search">
             <article>
                 <header>
-                    <form action="{{ cmsroute('cms.search', ['q' => '_term_']) }}" toolname="search" tooldescription="{{ __('Search the website and return matching pages with their titles and links') }}" toolautosubmit>
+                    <form action="{{ cmsroute('cms.search', ['q' => '_term_', 'locale' => cms($page, 'lang')]) }}" toolname="search" tooldescription="{{ __('Search the website and return matching pages with their titles and links') }}" toolautosubmit>
                         <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" minlength="{{ config('cms.theme.min-search') }}" required toolparamdescription="{{ __('Words or phrase to search for in the website content') }}">
                         <button type="reset" aria-label="{{ __('Close') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
@@ -99,7 +100,7 @@
                         </button>
                     </form>
                 </header>
-                <div class="results">
+                <div class="results" data-load-more="{{ __('Load more') }}" data-no-results="{{ __('No results found') }}" data-failed="{{ __('Search failed') }}">
                 </div>
             </article>
         </dialog>

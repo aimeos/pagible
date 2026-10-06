@@ -1,0 +1,4306 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: js/ai.js:44 js/ai.js:91 js/ai.js:146 js/components/ElementListItems.vue:292
+#: js/components/ElementListItems.vue:331
+#: js/components/ElementListItems.vue:477
+#: js/components/ElementListItems.vue:517
+#: js/components/ElementListItems.vue:557
+#: js/components/ElementListItems.vue:599
+#: js/components/ElementListItems.vue:644 js/components/Fields.vue:119
+#: js/components/FileAiDialog.vue:145 js/components/FileDetailItem.vue:157
+#: js/components/FileDetailItem.vue:195 js/components/FileDetailItem.vue:234
+#: js/components/FileDetailItem.vue:268 js/components/FileDetailItem.vue:273
+#: js/components/FileDetailItem.vue:316
+#: js/components/FileDetailItemImage.vue:387
+#: js/components/FileDetailItemVideo.vue:68
+#: js/components/FileDetailItemVideo.vue:136
+#: js/components/FileDetailItemVideo.vue:174
+#: js/components/FileListItems.vue:281 js/components/FileListItems.vue:326
+#: js/components/FileListItems.vue:472 js/components/FileListItems.vue:509
+#: js/components/FileListItems.vue:546 js/components/FileListItems.vue:588
+#: js/components/FileListItems.vue:633
+#: js/components/PageDetailContentList.vue:412
+#: js/components/PageDetailContentList.vue:506
+#: js/components/PageListItems.vue:486 js/components/PageListItems.vue:586
+#: js/components/PageListItems.vue:659 js/components/PageListItems.vue:786
+#: js/components/PageListItems.vue:857 js/components/PageListItems.vue:930
+#: js/components/PageListItems.vue:1063 js/components/PageListItems.vue:1092
+#: js/components/PageListItems.vue:1218 js/components/PageListItems.vue:1259
+#: js/components/PageListItems.vue:1380 js/components/PageListItems.vue:1458
+#: js/components/PageListItems.vue:1509 js/fields/File.vue:147
+#: js/fields/Images.vue:118 js/fields/Items.vue:208 js/publish.js:39
+#: js/version.js:6 js/views/ElementDetail.vue:261 js/views/ElementList.vue:179
+#: js/views/FileDetail.vue:269 js/views/FileList.vue:178
+#: js/views/PageDetail.vue:558 js/views/PageDetail.vue:649
+#: js/views/PageList.vue:216
+msgid "Permission denied"
+msgstr "دسترسی رد شد"
+
+#: js/ai.js:68
+msgid "Error transcribing file"
+msgstr "خطا در رونویسی فایل"
+
+#: js/ai.js:125
+msgid "Error translating texts"
+msgstr "خطا در ترجمه متن‌ها"
+
+#: js/ai.js:153
+msgid "Prompt is required for generating text"
+msgstr "برای تولید متن، وارد کردن درخواست الزامی است"
+
+#: js/ai.js:180
+msgid "Error generating text"
+msgstr "خطا در تولید متن"
+
+#: js/chat.js:34
+msgid "The chat assistant is not available."
+msgstr "دستیار گفتگو در دسترس نیست."
+
+#: js/chat.js:73
+msgid "A response is already being generated. Please wait for it to finish."
+msgstr "پاسخی در حال تولید است. لطفاً تا پایان آن صبر کنید."
+
+#: js/chat.js:75
+msgid "Too many requests. Please wait a moment and try again."
+msgstr "تعداد درخواست‌ها بیش از حد است. لطفاً کمی صبر کنید و دوباره تلاش کنید."
+
+#: js/commands.js:54
+msgid "Open commands"
+msgstr "باز کردن فرمان‌ها"
+
+#: js/commands.js:61
+msgid "Confirm dialog"
+msgstr "تأیید پنجره"
+
+#: js/commands.js:69
+msgid "Save changes"
+msgstr "ذخیره تغییرات"
+
+#: js/commands.js:78
+msgid "Open publish menu"
+msgstr "باز کردن منوی انتشار"
+
+#: js/commands.js:85
+msgid "New page, file or element"
+msgstr "صفحه، فایل یا عنصر جدید"
+
+#: js/commands.js:91
+msgid "Search in list"
+msgstr "جستجو در فهرست"
+
+#: js/commands.js:97
+msgid "Previous tab"
+msgstr "زبانه قبلی"
+
+#: js/commands.js:103
+msgid "Next tab"
+msgstr "زبانه بعدی"
+
+#: js/commands.js:109
+msgid "Show or hide side panel"
+msgstr "نمایش یا پنهان کردن پنل کناری"
+
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
+msgid "Back to list view"
+msgstr "بازگشت به نمای فهرست"
+
+#: js/commands.js:122
+msgid "Show keyboard shortcuts"
+msgstr "نمایش میان‌برهای صفحه‌کلید"
+
+#: js/commands.js:128
+msgid "Select focused page, file or element"
+msgstr "انتخاب صفحه، فایل یا عنصر متمرکز"
+
+#: js/commands.js:135
+msgid "Delete focused page, file or element"
+msgstr "حذف صفحه، فایل یا عنصر متمرکز"
+
+#: js/commands.js:143
+msgid "Copy page"
+msgstr "کپی صفحه"
+
+#: js/commands.js:151
+msgid "Cut page"
+msgstr "برش صفحه"
+
+#: js/commands.js:159
+msgid "Paste page"
+msgstr "جای‌گذاری صفحه"
+
+#: js/commands.js:178 js/components/CommandPalette.vue:106
+#: js/components/ElementDetailRefs.vue:141 js/components/FileDetailRefs.vue:145
+#: js/components/Navigation.vue:30 js/views/PageList.vue:265
+#: js/views/PageList.vue:282
+msgid "Pages"
+msgstr "صفحه‌ها"
+
+#: js/commands.js:179
+msgid "Go to pages"
+msgstr "رفتن به صفحه‌ها"
+
+#: js/commands.js:184 js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
+#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
+#: js/views/FileList.vue:227 js/views/FileList.vue:244
+msgid "Media"
+msgstr "رسانه"
+
+#: js/commands.js:185
+msgid "Go to media"
+msgstr "رفتن به رسانه"
+
+#: js/commands.js:190 js/components/CommandPalette.vue:108
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/views/ElementList.vue:228
+msgid "Shared elements"
+msgstr "عناصر مشترک"
+
+#: js/commands.js:191
+msgid "Go to shared elements"
+msgstr "رفتن به عناصر مشترک"
+
+#: js/commands.js:196 js/components/Navigation.vue:33
+#: js/views/AccessList.vue:252
+msgid "Users"
+msgstr "کاربران"
+
+#: js/commands.js:197
+msgid "Go to users"
+msgstr "رفتن به کاربران"
+
+#: js/components/AccessUsers.vue:219
+msgid "Access roles updated"
+msgstr "نقش‌های دسترسی به‌روزرسانی شد"
+
+#: js/components/AccessUsers.vue:229
+msgid "Error updating access roles"
+msgstr "خطا در به‌روزرسانی نقش‌های دسترسی"
+
+#: js/components/AccessUsers.vue:230
+msgid "Error updating CMS permissions"
+msgstr "خطا در به‌روزرسانی مجوزهای CMS"
+
+#: js/components/AccessUsers.vue:326
+msgid "User created"
+msgstr "کاربر ایجاد شد"
+
+#: js/components/AccessUsers.vue:332
+msgid "Error creating user"
+msgstr "خطا در ایجاد کاربر"
+
+#: js/components/AccessUsers.vue:357 js/components/PageAccess.vue:126
+#: js/views/AccessList.vue:141
+msgid "Error fetching access roles"
+msgstr "خطا در دریافت نقش‌های دسترسی"
+
+#: js/components/AccessUsers.vue:387
+msgid "Error fetching user access roles"
+msgstr "خطا در دریافت نقش‌های دسترسی کاربر"
+
+#: js/components/AccessUsers.vue:416 js/components/AccessUsers.vue:417
+msgid "Create user"
+msgstr "ایجاد کاربر"
+
+#: js/components/AccessUsers.vue:424
+msgid "Email address"
+msgstr "نشانی ایمیل"
+
+#: js/components/AccessUsers.vue:433
+msgid "Search user by email"
+msgstr "جستجوی کاربر با ایمیل"
+
+#: js/components/AccessUsers.vue:445 js/components/AccessUsers.vue:446
+msgid "Search"
+msgstr "جستجو"
+
+#: js/components/AccessUsers.vue:461 js/components/AccessUsers.vue:462
+#: js/components/DetailAppBar.vue:202
+msgid "Save"
+msgstr "ذخیره"
+
+#: js/components/AccessUsers.vue:471
+msgid "Account"
+msgstr "حساب کاربری"
+
+#: js/components/AccessUsers.vue:476 js/components/AccessUsers.vue:483
+msgid "Assigned frontend roles"
+msgstr "نقش‌های فرانت‌اند اختصاص‌یافته"
+
+#: js/components/AccessUsers.vue:483
+msgid "Roles granting access to restricted pages"
+msgstr "نقش‌هایی که به صفحات محدودشده دسترسی می‌دهند"
+
+#: js/components/AccessUsers.vue:496
+msgid "Assigned backend roles"
+msgstr "نقش‌های بک‌اند اختصاص‌یافته"
+
+#: js/components/AccessUsers.vue:500
+msgid "Custom"
+msgstr "سفارشی"
+
+#: js/components/AccessUsers.vue:506
+msgid "Available roles"
+msgstr "نقش‌های موجود"
+
+#: js/components/AccessUsers.vue:506
+msgid "Roles defining what the user can do in the admin panel"
+msgstr ""
+"نقش‌هایی که تعیین می‌کنند کاربر در پنل مدیریت چه کارهایی می‌تواند انجام دهد"
+
+#: js/components/AccessUsers.vue:518 js/components/ElementListItems.vue:950
+#: js/components/FileListItems.vue:1034 js/components/PageListItems.vue:2046
+#: js/components/SchemaItems.vue:192 js/views/AccessList.vue:324
+msgid "No entries found"
+msgstr "موردی یافت نشد"
+
+#: js/components/ActionMenu.vue:26 js/components/CommandPalette.vue:104
+msgid "Actions"
+msgstr "عملیات"
+
+#: js/components/ActionMenu.vue:61 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:186
+msgid "Close"
+msgstr "بستن"
+
+#: js/components/AsideCount.vue:65
+msgid "Used elements"
+msgstr "عناصر استفاده‌شده"
+
+#: js/components/AsideList.vue:69
+msgid "Filters"
+msgstr "فیلترها"
+
+#: js/components/AsideList.vue:76 js/components/ElementListItems.vue:957
+#: js/components/FileListItems.vue:1041 js/components/PageListItems.vue:2053
+msgid "Reset"
+msgstr "بازنشانی"
+
+#: js/components/AsideMeta.vue:21 js/components/ElementDetailRefs.vue:146
+#: js/components/ElementDetailRefs.vue:176 js/components/FileDetailRefs.vue:150
+#: js/components/FileDetailRefs.vue:180 js/components/FileDetailRefs.vue:202
+msgid "ID"
+msgstr "شناسه"
+
+#: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
+#: js/fields/File.vue:503
+msgid "MIME"
+msgstr "MIME"
+
+#: js/components/AsideMeta.vue:29 js/fields/File.vue:507
+#: js/views/ElementList.vue:140 js/views/FileList.vue:139
+#: js/views/PageList.vue:182
+msgid "editor"
+msgstr "ویرایشگر"
+
+#: js/components/AsideMeta.vue:33
+msgid "created"
+msgstr "ایجاد شده"
+
+#: js/components/AsideMeta.vue:39 js/fields/File.vue:511
+msgid "updated"
+msgstr "به‌روزرسانی شده"
+
+#: js/components/AsideMeta.vue:45
+msgid "deleted"
+msgstr "حذف شده"
+
+#: js/components/AsideMeta.vue:57 js/components/AsideMeta.vue:59
+#: js/components/HistoryDialog.vue:40
+msgid "Meta data"
+msgstr "فراداده"
+
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:40
+msgid "Fields"
+msgstr "فیلدها"
+
+#: js/components/ChangesDialog.vue:61
+msgid "Meta tags"
+msgstr "متا تگ‌ها"
+
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:41
+msgid "Configuration"
+msgstr "پیکربندی"
+
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:41
+#: js/views/PageDetail.vue:865
+msgid "Content"
+msgstr "محتوا"
+
+#: js/components/ChangesDialog.vue:320
+msgid "Conflicts from %{editor}"
+msgstr "تعارض‌ها از سوی %{editor}"
+
+#: js/components/ChangesDialog.vue:326
+msgid "%{count} / %{total}"
+msgstr "%{count} / %{total}"
+
+#: js/components/ChangesDialog.vue:348 js/components/Fields.vue:328
+#: js/components/Fields.vue:361 js/components/FieldsAside.vue:256
+msgid "Revert"
+msgstr "بازگرداندن"
+
+#: js/components/ChangesDialog.vue:351 js/components/ChangesDialog.vue:378
+msgid "Changes"
+msgstr "تغییرات"
+
+#: js/components/ChangesDialog.vue:400
+msgid "Removed"
+msgstr "حذف‌شده"
+
+#: js/components/ChangesDialog.vue:407
+msgid "Added"
+msgstr "افزوده‌شده"
+
+#: js/components/ChangesDialog.vue:445
+msgid "Use theirs"
+msgstr "استفاده از نسخه دیگر"
+
+#: js/components/ChangesDialog.vue:451
+msgid "Keep mine"
+msgstr "حفظ نسخه من"
+
+#: js/components/ChangesDialog.vue:458
+msgid "Merge both"
+msgstr "ادغام هر دو"
+
+#: js/components/ChatDialog.vue:270
+msgid "Done"
+msgstr "انجام شد"
+
+#: js/components/ChatDialog.vue:280
+msgid "Sorry, something went wrong."
+msgstr "متأسفیم، مشکلی پیش آمد."
+
+#: js/components/ChatDialog.vue:327
+msgid "AI Assistant"
+msgstr "دستیار هوش مصنوعی"
+
+#: js/components/ChatDialog.vue:335 js/components/ChatDialog.vue:336
+msgid "New chat"
+msgstr "گفتگوی جدید"
+
+#: js/components/ChatDialog.vue:347 js/views/ElementList.vue:251
+#: js/views/FileList.vue:250 js/views/PageList.vue:288
+msgid "What shall I do for you?"
+msgstr "چه کاری می‌توانم برای شما انجام دهم؟"
+
+#: js/components/ChatDialog.vue:364
+msgid "Thinking ..."
+msgstr "در حال فکر کردن ..."
+
+#: js/components/ChatDialog.vue:370 js/components/PageDetailContentList.vue:857
+#: js/components/PageDetailContentList.vue:953
+#: js/components/PageListItems.vue:1896 js/fields/Items.vue:375
+msgctxt "clipboard"
+msgid "Copy"
+msgstr "کپی"
+
+#: js/components/ChatDialog.vue:384
+msgid "Send a message ..."
+msgstr "پیامی بفرستید ..."
+
+#: js/components/ChatDialog.vue:399 js/components/ChatDialog.vue:400
+#: js/components/Fields.vue:321 js/components/FileAiDialog.vue:252
+#: js/components/FileDetailItem.vue:483
+#: js/components/PageDetailContentList.vue:827 js/fields/Items.vue:462
+#: js/views/ElementList.vue:284 js/views/FileList.vue:283
+#: js/views/PageList.vue:321
+msgid "Dictate"
+msgstr "دیکته"
+
+#: js/components/ChatDialog.vue:410 js/components/ChatDialog.vue:411
+msgid "Stop"
+msgstr "توقف"
+
+#: js/components/ChatDialog.vue:420 js/components/ChatDialog.vue:421
+#: js/views/ElementList.vue:277 js/views/FileList.vue:276
+msgid "Send"
+msgstr "ارسال"
+
+#: js/components/CommandPalette.vue:105
+msgid "Go to"
+msgstr "رفتن به"
+
+#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:928 js/components/PageListItems.vue:978
+#: js/components/PageListItems.vue:2017
+msgid "New"
+msgstr "جدید"
+
+#: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
+#: js/components/Navigation.vue:83 js/components/ShortcutDialog.vue:38
+msgid "Commands"
+msgstr "فرمان‌ها"
+
+#: js/components/CommandPalette.vue:289
+msgid "Type a command or search pages, files and elements"
+msgstr "فرمانی وارد کنید یا صفحه‌ها، فایل‌ها و عناصر را جستجو کنید"
+
+#: js/components/CommandPalette.vue:290
+msgid "Command or search term"
+msgstr "فرمان یا عبارت جستجو"
+
+#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:98
+msgid "then"
+msgstr "سپس"
+
+#: js/components/CommandPalette.vue:329
+msgid "Search failed, please try again"
+msgstr "جستجو ناموفق بود، لطفاً دوباره تلاش کنید"
+
+#: js/components/CommandPalette.vue:330
+msgid "No results"
+msgstr "نتیجه‌ای یافت نشد"
+
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ElementListItems.vue:801
+#: js/components/ElementListItems.vue:910 js/components/FileListItems.vue:779
+#: js/components/FileListItems.vue:921 js/components/PageListItems.vue:1751
+#: js/components/PageListItems.vue:1989 js/views/AccessList.vue:278
+msgid "Purge"
+msgstr "حذف دائمی"
+
+#: js/components/ConfirmDialog.vue:33
+msgid "The following entry will be permanently deleted and cannot be restored:"
+msgid_plural ""
+"The following %{num} entries will be permanently deleted and cannot be "
+"restored:"
+msgstr[0] "مورد زیر برای همیشه حذف می‌شود و قابل بازیابی نیست:"
+msgstr[1] "%{num} مورد زیر برای همیشه حذف می‌شوند و قابل بازیابی نیستند:"
+
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:641
+#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:345
+msgid "Cancel"
+msgstr "لغو"
+
+#: js/components/DetailAppBar.vue:164 js/views/AccessList.vue:230
+#: js/views/ElementList.vue:218 js/views/FileList.vue:217
+#: js/views/PageList.vue:255 js/views/PluginPanel.vue:66
+msgid "Menu"
+msgstr "منو"
+
+#: js/components/DetailAppBar.vue:185
+msgid "View history"
+msgstr "مشاهده تاریخچه"
+
+#: js/components/DetailAppBar.vue:194
+msgid "View merge changes"
+msgstr "مشاهده تغییرات ادغام"
+
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ElementListItems.vue:781
+#: js/components/ElementListItems.vue:877 js/components/FileListItems.vue:759
+#: js/components/FileListItems.vue:891 js/components/PageListItems.vue:1707
+#: js/components/PageListItems.vue:1852
+msgid "Publish"
+msgstr "انتشار"
+
+#: js/components/DetailAppBar.vue:241
+msgid "Publish & Close"
+msgstr "انتشار و بستن"
+
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
+msgid "Schedule"
+msgstr "زمان‌بندی"
+
+#: js/components/DetailAppBar.vue:281
+msgid "Schedule & Close"
+msgstr "زمان‌بندی و بستن"
+
+#: js/components/DetailAppBar.vue:289 js/views/ElementList.vue:236
+#: js/views/FileList.vue:235 js/views/PageList.vue:273
+#: js/views/PluginPanel.vue:83
+msgid "Toggle side menu"
+msgstr "نمایش/پنهان کردن منوی کناری"
+
+#: js/components/EditBulkDialog.vue:57 js/components/ElementListItems.vue:786
+#: js/components/ElementListItems.vue:892 js/components/FileListItems.vue:764
+#: js/components/FileListItems.vue:903 js/components/PageBulkDialog.vue:155
+#: js/components/PageListItems.vue:1723 js/components/PageListItems.vue:1873
+msgid "Edit properties"
+msgstr "ویرایش ویژگی‌ها"
+
+#: js/components/EditBulkDialog.vue:63
+msgid "Apply the selected properties to %{num} entry."
+msgid_plural "Apply the selected properties to %{num} entries."
+msgstr[0] "اعمال ویژگی‌های انتخاب‌شده بر %{num} مورد."
+msgstr[1] "اعمال ویژگی‌های انتخاب‌شده بر %{num} مورد."
+
+#: js/components/EditBulkDialog.vue:76 js/components/ElementDetailItem.vue:88
+#: js/components/FileDetailItem.vue:404 js/components/ListSort.vue:28
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
+msgid "Language"
+msgstr "زبان"
+
+#: js/components/EditBulkDialog.vue:76
+msgid "Language of the content"
+msgstr "زبان محتوا"
+
+#: js/components/EditBulkDialog.vue:83 js/components/PageAccess.vue:208
+#: js/components/PageBulkDialog.vue:270
+msgid "Apply"
+msgstr "اعمال"
+
+#: js/components/ElementDetailItem.vue:75
+#: js/components/ElementDetailRefs.vue:148 js/components/FileDetailItem.vue:391
+#: js/components/FileDetailRefs.vue:152 js/components/FileDetailRefs.vue:182
+#: js/components/ListSort.vue:32
+msgid "Name"
+msgstr "نام"
+
+#: js/components/ElementDetailItem.vue:75
+msgid "Name to find the shared element in the element list"
+msgstr "نامی برای یافتن عنصر مشترک در فهرست عناصر"
+
+#: js/components/ElementDetailItem.vue:88
+msgid "Language of the element content, choose none if used in all languages"
+msgstr ""
+"زبان محتوای عنصر؛ اگر در همه زبان‌ها استفاده می‌شود، «هیچ‌کدام» را انتخاب کنید"
+
+#: js/components/ElementDetailRefs.vue:63 js/components/FileDetailRefs.vue:66
+msgid "yes"
+msgstr "بله"
+
+#: js/components/ElementDetailRefs.vue:66 js/components/FileDetailRefs.vue:69
+msgid "no"
+msgstr "خیر"
+
+#: js/components/ElementDetailRefs.vue:147 js/components/FileDetailRefs.vue:151
+#: js/components/FileUrlDialog.vue:227
+msgid "URL"
+msgstr "URL"
+
+#: js/components/ElementDetailRefs.vue:160 js/components/FileDetailRefs.vue:164
+#: js/components/PageAccess.vue:180 js/components/PageListItems.vue:477
+msgid "Restricted"
+msgstr "محدودشده"
+
+#: js/components/ElementDetailRefs.vue:171 js/components/FileDetailRefs.vue:197
+msgid "Versions"
+msgstr "نسخه‌ها"
+
+#: js/components/ElementDetailRefs.vue:177 js/components/FileDetailRefs.vue:181
+#: js/components/FileDetailRefs.vue:203 js/components/ListSort.vue:37
+msgid "Type"
+msgstr "نوع"
+
+#: js/components/ElementDetailRefs.vue:178 js/components/FileDetailRefs.vue:204
+#: js/views/ElementList.vue:124 js/views/FileList.vue:123
+#: js/views/PageList.vue:148
+msgid "Published"
+msgstr "منتشرشده"
+
+#: js/components/ElementListItems.vue:356 js/components/FileListItems.vue:351
+#: js/components/PageListItems.vue:729
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "به سطل زباله منتقل شد"
+msgstr[1] "%{num} مورد به سطل زباله منتقل شد"
+
+#: js/components/ElementListItems.vue:362
+#: js/components/FileDetailItemImage.vue:943
+#: js/components/FileDetailItemImage.vue:948
+#: js/components/FileListItems.vue:357 js/components/PageListItems.vue:537
+#: js/components/PageListItems.vue:708
+msgid "Undo"
+msgstr "واگرد"
+
+#: js/components/ElementListItems.vue:367
+msgid "Error trashing shared element"
+msgstr "خطا در انتقال عنصر مشترک به سطل زباله"
+
+#: js/components/ElementListItems.vue:508
+msgid "Error restoring shared element"
+msgstr "خطا در بازیابی عنصر مشترک"
+
+#: js/components/ElementListItems.vue:548
+msgid "Error publishing shared element"
+msgstr "خطا در انتشار عنصر مشترک"
+
+#: js/components/ElementListItems.vue:586
+msgid "Error purging shared element"
+msgstr "خطا در حذف دائمی عنصر مشترک"
+
+#: js/components/ElementListItems.vue:637
+msgid "Error saving shared element"
+msgstr "خطا در ذخیره عنصر مشترک"
+
+#: js/components/ElementListItems.vue:694
+msgid "Error fetching shared elements"
+msgstr "خطا در دریافت عناصر مشترک"
+
+#: js/components/ElementListItems.vue:765 js/components/FileListItems.vue:743
+#: js/components/PageDetailContentList.vue:843
+#: js/components/PageListItems.vue:1691 js/views/AccessList.vue:273
+#: js/views/AccessList.vue:317
+msgid "Toggle selection"
+msgstr "تغییر وضعیت انتخاب"
+
+#: js/components/ElementListItems.vue:791
+#: js/components/ElementListItems.vue:900 js/components/FileListItems.vue:769
+#: js/components/FileListItems.vue:911 js/components/PageListItems.vue:1741
+#: js/components/PageListItems.vue:1979
+msgid "Delete"
+msgstr "حذف"
+
+#: js/components/ElementListItems.vue:796
+#: js/components/ElementListItems.vue:905 js/components/FileListItems.vue:774
+#: js/components/FileListItems.vue:916 js/components/PageListItems.vue:1746
+#: js/components/PageListItems.vue:1984
+msgid "Restore"
+msgstr "بازیابی"
+
+#: js/components/ElementListItems.vue:810
+#: js/components/ElementListItems.vue:968
+#: js/components/PageDetailContentList.vue:1063
+#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:510
+msgid "Add element"
+msgstr "افزودن عنصر"
+
+#: js/components/ElementListItems.vue:825 js/components/FileListItems.vue:814
+#: js/components/PageDetailContentList.vue:886
+#: js/components/PageListItems.vue:1773 js/components/SchemaItems.vue:141
+#: js/views/AccessList.vue:302
+msgid "Search for"
+msgstr "جستجو برای"
+
+#: js/components/ElementListItems.vue:836 js/components/FileListItems.vue:827
+msgid "Updated by another user"
+msgstr "به‌روزرسانی‌شده توسط کاربر دیگر"
+
+#: js/components/ElementListItems.vue:842 js/components/FileListItems.vue:833
+#: js/components/PageListItems.vue:1791
+msgid "Refresh"
+msgstr "تازه‌سازی"
+
+#: js/components/ElementListItems.vue:848 js/components/SchemaItems.vue:152
+msgid "Reload elements"
+msgstr "بارگذاری مجدد عناصر"
+
+#: js/components/ElementListItems.vue:945 js/components/FileListItems.vue:1028
+#: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:13
+#: js/components/PageListItems.vue:2040 js/fields/Autocomplete.vue:203
+#: js/fields/Combobox.vue:28 js/fields/Url.vue:167
+msgid "Loading"
+msgstr "در حال بارگذاری"
+
+#: js/components/ElementListItems.vue:960 js/components/FileListItems.vue:1044
+#: js/components/PageListItems.vue:2056
+msgid "No entries yet"
+msgstr "هنوز موردی وجود ندارد"
+
+#: js/components/Fields.vue:284 js/components/Fields.vue:290
+#: js/fields/Items.vue:427 js/fields/Items.vue:433
+msgid "Translate"
+msgstr "ترجمه"
+
+#: js/components/Fields.vue:309 js/fields/Items.vue:451
+msgid "Generate text"
+msgstr "تولید متن"
+
+#: js/components/Fields.vue:336
+msgid "Updated by other editor"
+msgstr "به‌روزرسانی‌شده توسط ویرایشگر دیگر"
+
+#: js/components/Fields.vue:339
+msgid "Overwritten"
+msgstr "بازنویسی‌شده"
+
+#: js/components/FieldsAside.vue:86
+msgid "Mobile"
+msgstr "موبایل"
+
+#: js/components/FieldsAside.vue:87
+msgid "Tablet"
+msgstr "تبلت"
+
+#: js/components/FieldsAside.vue:88
+msgid "Computer"
+msgstr "رایانه"
+
+#: js/components/FieldsAside.vue:88
+msgid "Full width"
+msgstr "تمام‌عرض"
+
+#: js/components/FieldsAside.vue:179
+msgid "Content Element"
+msgstr "عنصر محتوا"
+
+#: js/components/FieldsAside.vue:192
+msgid "Add element before"
+msgstr "افزودن عنصر قبل از"
+
+#: js/components/FieldsAside.vue:200
+msgid "Add element after"
+msgstr "افزودن عنصر بعد از"
+
+#: js/components/FieldsAside.vue:208
+msgid "Remove element"
+msgstr "حذف عنصر"
+
+#: js/components/FieldsAside.vue:216
+msgid "Responsive preview"
+msgstr "پیش‌نمایش واکنش‌گرا"
+
+#: js/components/FieldsAside.vue:248
+#: js/components/PageDetailContentList.vue:1006
+msgid "Change to"
+msgstr "تغییر به"
+
+#: js/components/FileActionMenu.vue:36 js/fields/File.vue:376
+#: js/fields/File.vue:377 js/fields/File.vue:416 js/fields/File.vue:417
+#: js/fields/Images.vue:387
+msgid "Edit"
+msgstr "ویرایش"
+
+#: js/components/FileActionMenu.vue:41 js/components/FileAiDialog.vue:275
+#: js/components/FileAiDialog.vue:302 js/components/FileUrlDialog.vue:239
+#: js/components/PageDetailContentList.vue:877
+#: js/components/PageDetailContentList.vue:963 js/fields/Items.vue:385
+#: js/fields/Table.vue:208 js/fields/Table.vue:278
+msgid "Remove"
+msgstr "برداشتن"
+
+#: js/components/FileAiDialog.vue:133 js/components/FileListItems.vue:311
+#: js/components/FileUrlDialog.vue:60 js/components/FileUrlDialog.vue:163
+#: js/fields/File.vue:166 js/fields/Images.vue:150
+msgid "Error adding file %{path}"
+msgstr "خطا در افزودن فایل %{path}"
+
+#: js/components/FileAiDialog.vue:185
+msgid "Error creating file"
+msgstr "خطا در ایجاد فایل"
+
+#: js/components/FileAiDialog.vue:241
+msgid "Create image"
+msgstr "ایجاد تصویر"
+
+#: js/components/FileAiDialog.vue:259
+msgid "Describe the image content"
+msgstr "محتوای تصویر را توصیف کنید"
+
+#: js/components/FileAiDialog.vue:259
+msgid "Describe the subject, style and colors of the image to generate"
+msgstr "موضوع، سبک و رنگ‌های تصویری را که باید تولید شود توصیف کنید"
+
+#: js/components/FileAiDialog.vue:266
+msgid "New image"
+msgstr "تصویر جدید"
+
+#: js/components/FileAiDialog.vue:270
+msgid "Current images"
+msgstr "تصاویر فعلی"
+
+#: js/components/FileAiDialog.vue:295
+msgid "Images used"
+msgstr "تصاویر استفاده‌شده"
+
+#: js/components/FileAiDialog.vue:312
+msgid "Select images"
+msgstr "انتخاب تصاویر"
+
+#: js/components/FileDetailItem.vue:112
+msgid "Copied to clipboard"
+msgstr "در کلیپ‌بورد کپی شد"
+
+#: js/components/FileDetailItem.vue:143
+msgid "Error describing file"
+msgstr "خطا در توصیف فایل"
+
+#: js/components/FileDetailItem.vue:223 js/components/FileListItems.vue:626
+#: js/fields/File.vue:300 js/fields/Images.vue:300 js/views/FileDetail.vue:337
+msgid "Error saving file"
+msgstr "خطا در ذخیره فایل"
+
+#: js/components/FileDetailItem.vue:239
+msgid "Transcription is only available for audio and video files"
+msgstr "رونویسی فقط برای فایل‌های صوتی و ویدیویی در دسترس است"
+
+#: js/components/FileDetailItem.vue:391
+msgid "Name to find the file in the media list"
+msgstr "نامی برای یافتن فایل در فهرست رسانه"
+
+#: js/components/FileDetailItem.vue:404
+msgid "Language of the file content, choose none if used in all languages"
+msgstr ""
+"زبان محتوای فایل؛ اگر در همه زبان‌ها استفاده می‌شود، «هیچ‌کدام» را انتخاب کنید"
+
+#: js/components/FileDetailItem.vue:414
+msgid "Copy URL"
+msgstr "کپی URL"
+
+#: js/components/FileDetailItem.vue:457
+msgid "Descriptions"
+msgstr "توضیحات"
+
+#: js/components/FileDetailItem.vue:465 js/components/FileDetailItem.vue:524
+msgid "Translate text"
+msgstr "ترجمه متن"
+
+#: js/components/FileDetailItem.vue:473
+msgid "Generate description"
+msgstr "تولید توضیحات"
+
+#: js/components/FileDetailItem.vue:500
+msgid "Description (%{lang})"
+msgstr "توضیحات (%{lang})"
+
+#: js/components/FileDetailItem.vue:500
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"متن جایگزین برای صفحه‌خوان‌ها و موتورهای جستجو، که به‌عنوان زیرنویس تصویر نیز "
+"استفاده می‌شود"
+
+#: js/components/FileDetailItem.vue:516
+msgid "Transcriptions"
+msgstr "رونویسی‌ها"
+
+#: js/components/FileDetailItem.vue:532
+msgid "Transcribe file content"
+msgstr "رونویسی محتوای فایل"
+
+#: js/components/FileDetailItem.vue:550
+msgid "Transcription (%{lang})"
+msgstr "رونویسی (%{lang})"
+
+#: js/components/FileDetailItem.vue:550
+msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
+msgstr ""
+"متن گفتاری در قالب WebVTT، که به‌صورت زیرنویس و متن پیاده‌شده نمایش داده می‌شود"
+
+#: js/components/FileDetailItemImage.vue:223
+msgid "Error erasing image part"
+msgstr "خطا در پاک کردن بخشی از تصویر"
+
+#: js/components/FileDetailItemImage.vue:330
+msgid "Error editing image part"
+msgstr "خطا در ویرایش بخشی از تصویر"
+
+#: js/components/FileDetailItemImage.vue:352
+msgid "Error removing background"
+msgstr "خطا در حذف پس‌زمینه"
+
+#: js/components/FileDetailItemImage.vue:458
+msgid "Error editing image"
+msgstr "خطا در ویرایش تصویر"
+
+#: js/components/FileDetailItemImage.vue:545
+msgid "Error uncropping image"
+msgstr "خطا در گسترش تصویر"
+
+#: js/components/FileDetailItemImage.vue:590
+msgid "Error upscaling image"
+msgstr "خطا در افزایش وضوح تصویر"
+
+#: js/components/FileDetailItemImage.vue:647
+#: js/components/FileDetailItemImage.vue:652
+msgid "Select area"
+msgstr "انتخاب ناحیه"
+
+#: js/components/FileDetailItemImage.vue:664
+msgid "Original ratio"
+msgstr "نسبت اصلی"
+
+#: js/components/FileDetailItemImage.vue:673
+msgid "No ratio"
+msgstr "بدون نسبت"
+
+#: js/components/FileDetailItemImage.vue:678
+msgid "Square"
+msgstr "مربع"
+
+#: js/components/FileDetailItemImage.vue:722
+msgid "Crop selected area"
+msgstr "برش ناحیه انتخاب‌شده"
+
+#: js/components/FileDetailItemImage.vue:732
+msgid "Erase selected area"
+msgstr "پاک کردن ناحیه انتخاب‌شده"
+
+#: js/components/FileDetailItemImage.vue:743
+#: js/components/FileDetailItemImage.vue:750
+#: js/components/FileDetailItemImage.vue:765
+msgid "Edit image"
+msgstr "ویرایش تصویر"
+
+#: js/components/FileDetailItemImage.vue:756
+msgid "Describe the changes"
+msgstr "تغییرات را توصیف کنید"
+
+#: js/components/FileDetailItemImage.vue:756
+msgid "Describe what should be changed in the image, e.g. make the sky blue"
+msgstr "توصیف کنید چه چیزی در تصویر باید تغییر کند، مثلاً آسمان را آبی کن"
+
+#: js/components/FileDetailItemImage.vue:774
+msgid "Remove background"
+msgstr "حذف پس‌زمینه"
+
+#: js/components/FileDetailItemImage.vue:784
+#: js/components/FileDetailItemImage.vue:791
+#: js/components/FileDetailItemImage.vue:845
+msgid "Expand image"
+msgstr "گسترش تصویر"
+
+#: js/components/FileDetailItemImage.vue:802
+msgctxt "image edge"
+msgid "Top"
+msgstr "بالا"
+
+#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:814
+#: js/components/FileDetailItemImage.vue:824
+#: js/components/FileDetailItemImage.vue:836
+msgid "Number of pixels added at this side of the image"
+msgstr "تعداد پیکسل‌هایی که به این سمت تصویر افزوده می‌شود"
+
+#: js/components/FileDetailItemImage.vue:814
+msgctxt "image edge"
+msgid "Left"
+msgstr "چپ"
+
+#: js/components/FileDetailItemImage.vue:824
+msgctxt "image edge"
+msgid "Right"
+msgstr "راست"
+
+#: js/components/FileDetailItemImage.vue:836
+msgctxt "image edge"
+msgid "Bottom"
+msgstr "پایین"
+
+#: js/components/FileDetailItemImage.vue:853
+#: js/components/FileDetailItemImage.vue:860
+msgid "Upscale image"
+msgstr "افزایش وضوح تصویر"
+
+#: js/components/FileDetailItemImage.vue:873
+#: js/components/FileDetailItemImage.vue:883
+#: js/components/FileDetailItemImage.vue:893
+#: js/components/FileDetailItemImage.vue:903
+msgid "Scale %{factor}"
+msgstr "مقیاس %{factor}"
+
+#: js/components/FileDetailItemImage.vue:912
+msgid "Rotate counter-clockwise"
+msgstr "چرخش پادساعتگرد"
+
+#: js/components/FileDetailItemImage.vue:918
+msgid "Rotate clockwise"
+msgstr "چرخش ساعتگرد"
+
+#: js/components/FileDetailItemImage.vue:925
+msgid "Flip horizontally"
+msgstr "قرینه افقی"
+
+#: js/components/FileDetailItemImage.vue:931
+msgid "Flip vertically"
+msgstr "قرینه عمودی"
+
+#: js/components/FileDetailItemImage.vue:938
+msgid "Convert to monochrome"
+msgstr "تبدیل به سیاه‌وسفید"
+
+#: js/components/FileDetailItemImage.vue:941
+msgid "Download"
+msgstr "دانلود"
+
+#: js/components/FileDetailItemImage.vue:957
+msgid "Previous edit"
+msgstr "ویرایش قبلی"
+
+#: js/components/FileDetailItemImage.vue:962
+msgid "Original"
+msgstr "اصلی"
+
+#: js/components/FileDetailItemVideo.vue:74
+msgid "No video element found"
+msgstr "هیچ عنصر ویدیویی یافت نشد"
+
+#: js/components/FileDetailItemVideo.vue:122
+msgid "Error saving video cover"
+msgstr "خطا در ذخیره تصویر جلد ویدیو"
+
+#: js/components/FileDetailItemVideo.vue:164
+msgid "Error removing video cover"
+msgstr "خطا در حذف تصویر جلد ویدیو"
+
+#: js/components/FileDetailItemVideo.vue:180
+msgid "No file selected"
+msgstr "هیچ فایلی انتخاب نشده است"
+
+#: js/components/FileDetailItemVideo.vue:210
+msgid "Error uploading video cover"
+msgstr "خطا در بارگذاری تصویر جلد ویدیو"
+
+#: js/components/FileDetailItemVideo.vue:243
+msgid "Use as cover image"
+msgstr "استفاده به‌عنوان تصویر جلد"
+
+#: js/components/FileDetailItemVideo.vue:251
+msgid "Upload cover image"
+msgstr "بارگذاری تصویر جلد"
+
+#: js/components/FileDetailRefs.vue:175 js/views/ElementList.vue:245
+msgid "Elements"
+msgstr "عناصر"
+
+#: js/components/FileListItems.vue:362
+msgid "Error trashing file"
+msgstr "خطا در انتقال فایل به سطل زباله"
+
+#: js/components/FileListItems.vue:502
+msgid "Error restoring file"
+msgstr "خطا در بازیابی فایل"
+
+#: js/components/FileListItems.vue:539 js/views/FileDetail.vue:253
+msgid "Error publishing file"
+msgstr "خطا در انتشار فایل"
+
+#: js/components/FileListItems.vue:575
+msgid "Error purging file"
+msgstr "خطا در حذف دائمی فایل"
+
+#: js/components/FileListItems.vue:672
+msgid "Error fetching files"
+msgstr "خطا در دریافت فایل‌ها"
+
+#: js/components/FileListItems.vue:790 js/components/FileListItems.vue:800
+#: js/components/FileListItems.vue:1054 js/components/FileListItems.vue:1064
+#: js/components/FileUrlDialog.vue:196 js/fields/Images.vue:413
+#: js/fields/Images.vue:437
+msgid "Add files"
+msgstr "افزودن فایل‌ها"
+
+#: js/components/FileListItems.vue:800 js/components/FileListItems.vue:1009
+#: js/components/FileListItems.vue:1064 js/components/FileProtect.vue:45
+msgid "Protect access"
+msgstr "محافظت از دسترسی"
+
+#: js/components/FileListItems.vue:839
+msgid "Reload files"
+msgstr "بارگذاری مجدد فایل‌ها"
+
+#: js/components/FileListItems.vue:848
+msgid "Grid view"
+msgstr "نمای شبکه‌ای"
+
+#: js/components/FileListItems.vue:856
+msgid "List view"
+msgstr "نمای فهرستی"
+
+#: js/components/FileProtect.vue:67
+msgid "Only visitors allowed to view the page using the file can download it"
+msgstr ""
+"فقط بازدیدکنندگانی که اجازه مشاهده صفحه حاوی این فایل را دارند می‌توانند آن "
+"را دانلود کنند"
+
+#: js/components/FileUrlDialog.vue:116
+msgid "At least one URL is longer than 255 characters"
+msgstr "دست‌کم یکی از URLها بیش از ۲۵۵ نویسه است"
+
+#: js/components/FileUrlDialog.vue:152
+msgid "At least one file is not of type \"%{mime}*\""
+msgstr "دست‌کم یکی از فایل‌ها از نوع \"%{mime}*\" نیست"
+
+#: js/components/FileUrlDialog.vue:156
+msgid "The file is not of type \"%{mime}*\""
+msgstr "فایل از نوع \"%{mime}*\" نیست"
+
+#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:420
+msgid "Add files from URLs"
+msgstr "افزودن فایل‌ها از URLها"
+
+#: js/components/FileUrlDialog.vue:196 js/fields/File.vue:442
+msgid "Add file"
+msgstr "افزودن فایل"
+
+#: js/components/FileUrlDialog.vue:209
+msgid "Enter one URL per line"
+msgstr "در هر خط یک URL وارد کنید"
+
+#: js/components/FileUrlDialog.vue:210
+msgid "URLs"
+msgstr "URLها"
+
+#: js/components/FileUrlDialog.vue:210
+msgid "Files are downloaded from these URLs and added to the media list"
+msgstr "فایل‌ها از این URLها دانلود و به فهرست رسانه افزوده می‌شوند"
+
+#: js/components/FileUrlDialog.vue:226
+msgid "Enter URL"
+msgstr "URL را وارد کنید"
+
+#: js/components/FileUrlDialog.vue:227
+msgid "The file is downloaded from this URL and added to the media list"
+msgstr "فایل از این URL دانلود و به فهرست رسانه افزوده می‌شود"
+
+#: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
+#: js/components/PageDetailContentList.vue:1024
+msgid "Shared element"
+msgstr "عنصر مشترک"
+
+#: js/components/HistoryDialog.vue:63
+msgid "Content block"
+msgstr "بلوک محتوا"
+
+#: js/components/HistoryDialog.vue:68
+msgid "Group: %{group} · Position %{num}"
+msgstr "گروه: %{group} · موقعیت %{num}"
+
+#: js/components/HistoryDialog.vue:76
+msgid "Moved from position %{from} to %{to}"
+msgstr "از موقعیت %{from} به %{to} منتقل شد"
+
+#: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
+msgid "%{num} field changed"
+msgid_plural "%{num} fields changed"
+msgstr[0] "%{num} فیلد تغییر کرد"
+msgstr[1] "%{num} فیلد تغییر کرد"
+
+#: js/components/HistoryDialog.vue:78
+msgid "%{selected} of %{total} selected"
+msgstr "%{selected} از %{total} انتخاب شده"
+
+#: js/components/HistoryDialog.vue:85
+msgid "Unknown date"
+msgstr "تاریخ نامشخص"
+
+#: js/components/HistoryDialog.vue:124
+msgid "Block position"
+msgstr "موقعیت بلوک"
+
+#: js/components/HistoryDialog.vue:129
+msgid "Value"
+msgstr "مقدار"
+
+#: js/components/HistoryDialog.vue:173
+msgid "%{num} block added"
+msgid_plural "%{num} blocks added"
+msgstr[0] "%{num} بلوک افزوده شد"
+msgstr[1] "%{num} بلوک افزوده شد"
+
+#: js/components/HistoryDialog.vue:174
+msgid "%{num} block removed"
+msgid_plural "%{num} blocks removed"
+msgstr[0] "%{num} بلوک حذف شد"
+msgstr[1] "%{num} بلوک حذف شد"
+
+#: js/components/HistoryDialog.vue:175
+msgid "%{num} block changed"
+msgid_plural "%{num} blocks changed"
+msgstr[0] "%{num} بلوک تغییر کرد"
+msgstr[1] "%{num} بلوک تغییر کرد"
+
+#: js/components/HistoryDialog.vue:176
+msgid "%{num} block moved"
+msgid_plural "%{num} blocks moved"
+msgstr[0] "%{num} بلوک جابه‌جا شد"
+msgstr[1] "%{num} بلوک جابه‌جا شد"
+
+#: js/components/HistoryDialog.vue:177
+msgid "%{num} file changed"
+msgid_plural "%{num} files changed"
+msgstr[0] "%{num} فایل تغییر کرد"
+msgstr[1] "%{num} فایل تغییر کرد"
+
+#: js/components/HistoryDialog.vue:178 js/components/HistoryDialog.vue:207
+#: js/components/HistoryDialog.vue:303
+msgid "No changes"
+msgstr "بدون تغییر"
+
+#: js/components/HistoryDialog.vue:192
+msgid "History"
+msgstr "تاریخچه"
+
+#: js/components/HistoryDialog.vue:203
+msgid "Error fetching versions"
+msgstr "خطا در دریافت نسخه‌ها"
+
+#: js/components/HistoryDialog.vue:204
+msgid "Retry"
+msgstr "تلاش دوباره"
+
+#: js/components/HistoryDialog.vue:218
+msgid "Current changes"
+msgstr "تغییرات فعلی"
+
+#: js/components/HistoryDialog.vue:224
+msgid "Scheduled for %{date}"
+msgstr "زمان‌بندی‌شده برای %{date}"
+
+#: js/components/HistoryDialog.vue:232
+msgid "Select all"
+msgstr "انتخاب همه"
+
+#: js/components/HistoryDialog.vue:246
+msgid "Block added"
+msgstr "بلوک افزوده شد"
+
+#: js/components/HistoryDialog.vue:247
+msgid "Block removed"
+msgstr "بلوک حذف شد"
+
+#: js/components/HistoryDialog.vue:267
+msgid "Keep current position"
+msgstr "حفظ موقعیت فعلی"
+
+#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
+msgid "Keep current value"
+msgstr "حفظ مقدار فعلی"
+
+#: js/components/HistoryDialog.vue:313
+msgid "Previous version: Latest saved version"
+msgstr "نسخه قبلی: آخرین نسخه ذخیره‌شده"
+
+#: js/components/HistoryDialog.vue:313
+msgid "Previous version: %{date}"
+msgstr "نسخه قبلی: %{date}"
+
+#: js/components/HistoryDialog.vue:314
+msgid "%{selected} of %{total} selected for reverting"
+msgstr "%{selected} از %{total} برای بازگرداندن انتخاب شده"
+
+#: js/components/HistoryDialog.vue:317
+msgid "Revert selected changes"
+msgstr "بازگرداندن تغییرات انتخاب‌شده"
+
+#: js/components/HistoryDialog.vue:320
+msgid "Restore previous version"
+msgstr "بازیابی نسخه قبلی"
+
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
+msgid "Previous value"
+msgstr "مقدار قبلی"
+
+#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
+msgid "New value"
+msgstr "مقدار جدید"
+
+#: js/components/HistoryField.vue:91
+msgid "Enlarge %{name}"
+msgstr "بزرگ‌نمایی %{name}"
+
+#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:124
+msgid "Loading preview"
+msgstr "در حال بارگذاری پیش‌نمایش"
+
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:100
+#: js/components/HistoryField.vue:105 js/components/HistoryField.vue:125
+#: js/components/HistoryField.vue:127
+msgid "Preview unavailable"
+msgstr "پیش‌نمایش در دسترس نیست"
+
+#: js/components/HistoryField.vue:114
+msgid "Image preview"
+msgstr "پیش‌نمایش تصویر"
+
+#: js/components/HistoryField.vue:115
+msgid "Close preview"
+msgstr "بستن پیش‌نمایش"
+
+#: js/components/HistoryField.vue:135
+msgid "Table preview"
+msgstr "پیش‌نمایش جدول"
+
+#: js/components/HistoryField.vue:139
+msgid "%{num} row omitted"
+msgid_plural "%{num} rows omitted"
+msgstr[0] "%{num} ردیف نمایش داده نشد"
+msgstr[1] "%{num} ردیف نمایش داده نشد"
+
+#: js/components/ListSort.vue:27
+msgctxt "editor person"
+msgid "Editor"
+msgstr "ویرایشگر"
+
+#: js/components/ListSort.vue:29
+msgid "Latest"
+msgstr "جدیدترین"
+
+#: js/components/ListSort.vue:30
+msgid "Latest edit"
+msgstr "آخرین ویرایش"
+
+#: js/components/ListSort.vue:33
+msgid "Oldest"
+msgstr "قدیمی‌ترین"
+
+#: js/components/ListSort.vue:34
+msgid "Oldest edit"
+msgstr "قدیمی‌ترین ویرایش"
+
+#: js/components/ListSort.vue:35
+msgid "Position"
+msgstr "موقعیت"
+
+#: js/components/ListSort.vue:36 js/views/PageList.vue:139
+msgid "Tree"
+msgstr "درخت"
+
+#: js/components/ListSort.vue:38
+msgid "Usage"
+msgstr "کاربرد"
+
+#: js/components/ListSort.vue:61
+msgid "Sort by"
+msgstr "مرتب‌سازی بر اساس"
+
+#: js/components/Navigation.vue:53
+msgid "Panels"
+msgstr "پنل‌ها"
+
+#: js/components/Navigation.vue:95 js/components/ShortcutDialog.vue:88
+msgid "Keyboard shortcuts"
+msgstr "میان‌برهای صفحه‌کلید"
+
+#: js/components/PageAccess.vue:104
+msgid "Error changing page access"
+msgstr "خطا در تغییر دسترسی صفحه"
+
+#: js/components/PageAccess.vue:170
+msgid "Access changes take effect immediately after cache expiry"
+msgstr "تغییرات دسترسی بلافاصله پس از انقضای کش اعمال می‌شوند"
+
+#: js/components/PageAccess.vue:174
+msgid "Visibility"
+msgstr "نمایانی"
+
+#: js/components/PageAccess.vue:174
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"صفحات عمومی برای همه قابل مشاهده‌اند و سایر صفحات فقط برای کاربران واردشده یا "
+"کاربرانی با نقش‌های انتخاب‌شده"
+
+#: js/components/PageAccess.vue:178
+msgid "Public"
+msgstr "عمومی"
+
+#: js/components/PageAccess.vue:179 js/components/PageListItems.vue:481
+msgid "Authenticated users"
+msgstr "کاربران احرازهویت‌شده"
+
+#: js/components/PageAccess.vue:187 js/components/PageDetailItem.vue:116
+#: js/components/PageListItems.vue:480 js/components/PageListItems.vue:1728
+#: js/components/PageListItems.vue:1878 js/components/PageListItems.vue:2078
+#: js/views/AccessList.vue:239 js/views/AccessList.vue:248
+msgid "Access"
+msgstr "دسترسی"
+
+#: js/components/PageAccess.vue:187
+msgid "Only visitors with one of these roles can view the page"
+msgstr ""
+"فقط بازدیدکنندگانی که یکی از این نقش‌ها را دارند می‌توانند صفحه را ببینند"
+
+#: js/components/PageAccess.vue:197 js/components/PageBulkDialog.vue:284
+msgid "Page bulk changes are limited to 1,000 pages"
+msgstr "تغییرات گروهی صفحات به ۱٬۰۰۰ صفحه محدود است"
+
+#: js/components/PageAccess.vue:217 js/components/PageBulkDialog.vue:278
+msgid "Apply recursively"
+msgstr "اعمال بازگشتی"
+
+#: js/components/PageBulkDialog.vue:54 js/components/PageDetailItemProps.vue:56
+#: js/views/PageList.vue:177
+msgid "No cache"
+msgstr "بدون کش"
+
+#: js/components/PageBulkDialog.vue:55 js/components/PageBulkDialog.vue:56
+#: js/components/PageBulkDialog.vue:57 js/components/PageBulkDialog.vue:58
+#: js/components/PageDetailItemProps.vue:57
+#: js/components/PageDetailItemProps.vue:58
+#: js/components/PageDetailItemProps.vue:59
+#: js/components/PageDetailItemProps.vue:60
+msgid "%{num} minute"
+msgid_plural "%{num} minutes"
+msgstr[0] "%{num} دقیقه"
+msgstr[1] "%{num} دقیقه"
+
+#: js/components/PageBulkDialog.vue:59 js/components/PageBulkDialog.vue:60
+#: js/components/PageBulkDialog.vue:61 js/components/PageBulkDialog.vue:62
+#: js/components/PageBulkDialog.vue:63 js/components/PageDetailItemProps.vue:61
+#: js/components/PageDetailItemProps.vue:62
+#: js/components/PageDetailItemProps.vue:63
+#: js/components/PageDetailItemProps.vue:64
+#: js/components/PageDetailItemProps.vue:65
+msgid "%{num} hour"
+msgid_plural "%{num} hours"
+msgstr[0] "%{num} ساعت"
+msgstr[1] "%{num} ساعت"
+
+#: js/components/PageBulkDialog.vue:66 js/components/PageDetailItemProps.vue:68
+#: js/views/PageList.vue:169
+msgid "Disabled"
+msgstr "غیرفعال"
+
+#: js/components/PageBulkDialog.vue:67 js/components/PageDetailItemProps.vue:69
+#: js/views/PageList.vue:167
+msgid "Enabled"
+msgstr "فعال"
+
+#: js/components/PageBulkDialog.vue:68 js/components/PageDetailItemProps.vue:70
+msgid "Hidden in navigation"
+msgstr "پنهان در ناوبری"
+
+#: js/components/PageBulkDialog.vue:74 js/components/PageDetailItemProps.vue:79
+msgid "Domain name is invalid"
+msgstr "نام دامنه نامعتبر است"
+
+#: js/components/PageBulkDialog.vue:161
+msgid "Apply the selected properties to %{num} page."
+msgid_plural "Apply the selected properties to %{num} pages."
+msgstr[0] "اعمال ویژگی‌های انتخاب‌شده بر %{num} صفحه."
+msgstr[1] "اعمال ویژگی‌های انتخاب‌شده بر %{num} صفحه."
+
+#: js/components/PageBulkDialog.vue:172
+msgid "Change status"
+msgstr "تغییر وضعیت"
+
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
+msgid "Status"
+msgstr "وضعیت"
+
+#: js/components/PageBulkDialog.vue:177
+#: js/components/PageDetailItemProps.vue:244
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"صفحات غیرفعال آفلاین هستند؛ صفحات پنهان آنلاین هستند اما در ناوبری نمایش "
+"داده نمی‌شوند"
+
+#: js/components/PageBulkDialog.vue:186
+msgid "Change cache time"
+msgstr "تغییر زمان کش"
+
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
+msgid "Cache time"
+msgstr "زمان کش"
+
+#: js/components/PageBulkDialog.vue:191
+#: js/components/PageDetailItemProps.vue:361
+msgid "How long the generated page is cached before it is created again"
+msgstr "مدت زمانی که صفحه تولیدشده پیش از ایجاد دوباره در کش نگه داشته می‌شود"
+
+#: js/components/PageBulkDialog.vue:200
+msgid "Change language"
+msgstr "تغییر زبان"
+
+#: js/components/PageBulkDialog.vue:205
+#: js/components/PageDetailItemProps.vue:258
+msgid "Language of the page content"
+msgstr "زبان محتوای صفحه"
+
+#: js/components/PageBulkDialog.vue:212
+msgid "Change theme"
+msgstr "تغییر پوسته"
+
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
+msgid "Theme"
+msgstr "پوسته"
+
+#: js/components/PageBulkDialog.vue:217
+#: js/components/PageDetailItemProps.vue:330
+msgid "Design used to display the page"
+msgstr "طراحی‌ای که برای نمایش صفحه استفاده می‌شود"
+
+#: js/components/PageBulkDialog.vue:224
+msgid "Change page type"
+msgstr "تغییر نوع صفحه"
+
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
+msgid "Page type"
+msgstr "نوع صفحه"
+
+#: js/components/PageBulkDialog.vue:229
+#: js/components/PageDetailItemProps.vue:339
+msgid "Template of the theme which defines the page layout"
+msgstr "قالبی از پوسته که چیدمان صفحه را تعیین می‌کند"
+
+#: js/components/PageBulkDialog.vue:236
+msgid "Change tag"
+msgstr "تغییر برچسب"
+
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
+msgid "Page tag"
+msgstr "برچسب صفحه"
+
+#: js/components/PageBulkDialog.vue:240
+#: js/components/PageDetailItemProps.vue:350
+msgid "Internal identifier to find the page in templates, e.g. blog"
+msgstr "شناسه داخلی برای یافتن صفحه در قالب‌ها، مثلاً blog"
+
+#: js/components/PageBulkDialog.vue:249
+msgid "Change domain"
+msgstr "تغییر دامنه"
+
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
+msgid "Domain"
+msgstr "دامنه"
+
+#: js/components/PageBulkDialog.vue:254
+#: js/components/PageDetailItemProps.vue:315
+msgid "Domain the page is available at, e.g. example.com"
+msgstr "دامنه‌ای که صفحه در آن در دسترس است، مثلاً example.com"
+
+#: js/components/PageDetailContentList.vue:185
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:705
+msgid "Content element not found"
+msgstr "عنصر محتوا یافت نشد"
+
+#: js/components/PageDetailContentList.vue:463
+msgid "Error refining content"
+msgstr "خطا در بهبود محتوا"
+
+#: js/components/PageDetailContentList.vue:513
+msgid "Element not found"
+msgstr "عنصر یافت نشد"
+
+#: js/components/PageDetailContentList.vue:518
+msgid "Element is already shared"
+msgstr "عنصر از قبل مشترک است"
+
+#: js/components/PageDetailContentList.vue:561
+msgid "Unable to make element shared"
+msgstr "امکان مشترک کردن عنصر وجود ندارد"
+
+#: js/components/PageDetailContentList.vue:595
+msgid "Not available for this content element"
+msgstr "برای این عنصر محتوا در دسترس نیست"
+
+#: js/components/PageDetailContentList.vue:712
+msgid "Element is not shared"
+msgstr "عنصر مشترک نیست"
+
+#: js/components/PageDetailContentList.vue:791
+msgid "Describe the task you want to perform"
+msgstr "کاری را که می‌خواهید انجام شود توصیف کنید"
+
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
+msgid "Hide help"
+msgstr "پنهان کردن راهنما"
+
+#: js/components/PageDetailContentList.vue:806 js/views/ElementList.vue:266
+#: js/views/FileList.vue:265 js/views/PageList.vue:303
+msgid "Show help"
+msgstr "نمایش راهنما"
+
+#: js/components/PageDetailContentList.vue:818
+msgid "Refining ..."
+msgstr "در حال بهبود ..."
+
+#: js/components/PageDetailContentList.vue:818
+msgid "Refine content based on prompt"
+msgstr "بهبود محتوا بر اساس درخواست"
+
+#: js/components/PageDetailContentList.vue:835 js/views/ElementList.vue:292
+#: js/views/FileList.vue:291 js/views/PageList.vue:329
+msgid "Help"
+msgstr "راهنما"
+
+#: js/components/PageDetailContentList.vue:836
+msgid "AI can add or improve content based on your input"
+msgstr "هوش مصنوعی می‌تواند بر اساس ورودی شما محتوا اضافه یا بهبود دهد"
+
+#: js/components/PageDetailContentList.vue:837
+msgid "It can take a long time depending on the task and content size"
+msgstr "بسته به کار و حجم محتوا، ممکن است زمان زیادی طول بکشد"
+
+#: js/components/PageDetailContentList.vue:862
+#: js/components/PageDetailContentList.vue:958
+#: js/components/PageListItems.vue:1891 js/fields/Items.vue:380
+msgctxt "clipboard"
+msgid "Cut"
+msgstr "برش"
+
+#: js/components/PageDetailContentList.vue:867
+#: js/components/PageListItems.vue:1904 js/components/PageListItems.vue:1929
+msgid "Paste"
+msgstr "جای‌گذاری"
+
+#: js/components/PageDetailContentList.vue:872
+#: js/components/PageDetailContentList.vue:1016
+msgid "Merge"
+msgstr "ادغام"
+
+#: js/components/PageDetailContentList.vue:930 js/fields/Items.vue:350
+msgid "Move element"
+msgstr "جابه‌جایی عنصر"
+
+#: js/components/PageDetailContentList.vue:971 js/fields/Items.vue:393
+msgid "Paste before"
+msgstr "جای‌گذاری قبل از"
+
+#: js/components/PageDetailContentList.vue:976 js/fields/Items.vue:398
+msgid "Paste after"
+msgstr "جای‌گذاری بعد از"
+
+#: js/components/PageDetailContentList.vue:981 js/fields/Items.vue:403
+#: js/fields/Table.vue:195 js/fields/Table.vue:265
+msgid "Insert before"
+msgstr "درج قبل از"
+
+#: js/components/PageDetailContentList.vue:986 js/fields/Items.vue:408
+#: js/fields/Table.vue:203 js/fields/Table.vue:273
+msgid "Insert after"
+msgstr "درج بعد از"
+
+#: js/components/PageDetailContentList.vue:996
+msgid "Make shared"
+msgstr "مشترک کردن"
+
+#: js/components/PageDetailContentList.vue:1001
+msgid "Replace with local copy"
+msgstr "جایگزینی با نسخه محلی"
+
+#: js/components/PageDetailContentList.vue:1011
+msgctxt "text element"
+msgid "Split"
+msgstr "تقسیم"
+
+#: js/components/PageDetailEditor.vue:80
+msgid "Double-click to edit"
+msgstr "برای ویرایش دوبار کلیک کنید"
+
+#: js/components/PageDetailEditor.vue:269
+msgid "Preview mode"
+msgstr "حالت پیش‌نمایش"
+
+#: js/components/PageDetailEditor.vue:272
+msgid "Not CMS content"
+msgstr "محتوای CMS نیست"
+
+#: js/components/PageDetailItem.vue:95
+msgid "Detail"
+msgstr "جزئیات"
+
+#: js/components/PageDetailItem.vue:102
+msgid "Meta"
+msgstr "متا"
+
+#: js/components/PageDetailItem.vue:109
+msgid "Config"
+msgstr "پیکربندی"
+
+#: js/components/PageDetailItemProps.vue:78
+#: js/components/PageDetailItemProps.vue:100
+#: js/components/PageDetailItemProps.vue:104 js/views/Login.vue:54
+#: js/views/Login.vue:57
+msgid "Field is required"
+msgstr "این فیلد الزامی است"
+
+#: js/components/PageDetailItemProps.vue:85
+msgid "Path must not start with a slash (/)"
+msgstr "مسیر نباید با اسلش (/) شروع شود"
+
+#: js/components/PageDetailItemProps.vue:95
+msgid "URL is not valid"
+msgstr "URL معتبر نیست"
+
+#: js/components/PageDetailItemProps.vue:125
+msgid "The path is already in use by another page"
+msgstr "این مسیر قبلاً توسط صفحه دیگری استفاده شده است"
+
+#: js/components/PageDetailItemProps.vue:272
+msgid "Page title"
+msgstr "عنوان صفحه"
+
+#: js/components/PageDetailItemProps.vue:272
+msgid "Shown in the browser tab and search results"
+msgstr "در زبانه مرورگر و نتایج جستجو نمایش داده می‌شود"
+
+#: js/components/PageDetailItemProps.vue:283
+msgid "Page name"
+msgstr "نام صفحه"
+
+#: js/components/PageDetailItemProps.vue:283
+msgid "Short name shown in the navigation menus"
+msgstr "نام کوتاهی که در منوهای ناوبری نمایش داده می‌شود"
+
+#: js/components/PageDetailItemProps.vue:298
+msgid "URL path"
+msgstr "مسیر URL"
+
+#: js/components/PageDetailItemProps.vue:298
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "بخشی از URL صفحه پس از دامنه، مثلاً about-us"
+
+#: js/components/PageDetailItemProps.vue:377
+msgid "Redirect URL"
+msgstr "URL تغییر مسیر"
+
+#: js/components/PageDetailItemProps.vue:377
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr "بازدیدکنندگان به‌جای دیدن صفحه به این URL هدایت می‌شوند"
+
+#: js/components/PageDetailItemSection.vue:60
+msgid "The element has already been added"
+msgstr "این عنصر قبلاً افزوده شده است"
+
+#: js/components/PageDetailItemSection.vue:193
+msgid "Remove content element"
+msgstr "حذف عنصر محتوا"
+
+#: js/components/PageDetailMetrics.vue:151
+msgid "Views"
+msgstr "بازدیدها"
+
+#: js/components/PageDetailMetrics.vue:152
+msgid "Visits"
+msgstr "ویزیت‌ها"
+
+#: js/components/PageDetailMetrics.vue:153
+#: js/components/PageDetailMetrics.vue:194
+msgid "Conversions"
+msgstr "تبدیل‌ها"
+
+#: js/components/PageDetailMetrics.vue:162
+msgid "Duration"
+msgstr "مدت"
+
+#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:576
+msgid "Impressions"
+msgstr "نمایش‌ها"
+
+#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:577
+msgid "Clicks"
+msgstr "کلیک‌ها"
+
+#: js/components/PageDetailMetrics.vue:182
+msgid "Percentage"
+msgstr "درصد"
+
+#: js/components/PageDetailMetrics.vue:191
+msgid "Page Views"
+msgstr "بازدیدهای صفحه"
+
+#: js/components/PageDetailMetrics.vue:192
+msgid "Page Visits"
+msgstr "ویزیت‌های صفحه"
+
+#: js/components/PageDetailMetrics.vue:195
+msgid "Visit Duration (minutes)"
+msgstr "مدت ویزیت (دقیقه)"
+
+#: js/components/PageDetailMetrics.vue:196
+msgid "Google Impressions"
+msgstr "نمایش‌های Google"
+
+#: js/components/PageDetailMetrics.vue:197
+msgid "Google Clicks"
+msgstr "کلیک‌های Google"
+
+#: js/components/PageDetailMetrics.vue:198
+msgid "Google click-through rate"
+msgstr "نرخ کلیک گوگل"
+
+#: js/components/PageDetailMetrics.vue:204
+msgid "Round trip time"
+msgstr "زمان رفت‌وبرگشت"
+
+#: js/components/PageDetailMetrics.vue:205
+msgid "Time to first byte"
+msgstr "زمان تا نخستین بایت"
+
+#: js/components/PageDetailMetrics.vue:206
+msgid "First contentful paint"
+msgstr "نخستین نمایش محتوا"
+
+#: js/components/PageDetailMetrics.vue:207
+msgid "Largest contentful paint"
+msgstr "بزرگ‌ترین نمایش محتوا"
+
+#: js/components/PageDetailMetrics.vue:208
+msgid "Interaction to next paint"
+msgstr "تعامل تا نمایش بعدی"
+
+#: js/components/PageDetailMetrics.vue:209
+msgid "Cumulative layout shift"
+msgstr "جابه‌جایی تجمعی چیدمان"
+
+#: js/components/PageDetailMetrics.vue:403
+msgid "Page metrics"
+msgstr "معیارهای صفحه"
+
+#: js/components/PageDetailMetrics.vue:409
+msgid "Days"
+msgstr "روز"
+
+#: js/components/PageDetailMetrics.vue:436
+msgid "Weekly Insights"
+msgstr "بینش‌های هفتگی"
+
+#: js/components/PageDetailMetrics.vue:465
+msgid "Views & Visits"
+msgstr "بازدیدها و ویزیت‌ها"
+
+#: js/components/PageDetailMetrics.vue:474
+msgid "Visit Durations (minutes)"
+msgstr "مدت ویزیت‌ها (دقیقه)"
+
+#: js/components/PageDetailMetrics.vue:486
+msgid "Referrers"
+msgstr "ارجاع‌دهنده‌ها"
+
+#: js/components/PageDetailMetrics.vue:529
+msgid "Countries"
+msgstr "کشورها"
+
+#: js/components/PageDetailMetrics.vue:545
+msgid "Page Speed"
+msgstr "سرعت صفحه"
+
+#: js/components/PageDetailMetrics.vue:570
+msgid "Google Search: Queries"
+msgstr "جستجوی Google: عبارت‌ها"
+
+#: js/components/PageDetailMetrics.vue:578
+msgid "Percent"
+msgstr "درصد"
+
+#: js/components/PageDetailMetrics.vue:579
+msgctxt "search ranking"
+msgid "Position"
+msgstr "رتبه"
+
+#: js/components/PageDetailMetrics.vue:606
+msgid "Google Search: Impressions & Clicks"
+msgstr "جستجوی Google: نمایش‌ها و کلیک‌ها"
+
+#: js/components/PageDetailMetrics.vue:615
+msgid "Google Search: Click-through rate"
+msgstr "جستجوی گوگل: نرخ کلیک"
+
+#: js/components/PageListItems.vue:515
+msgid "Error adding root page"
+msgstr "خطا در افزودن صفحه ریشه"
+
+#: js/components/PageListItems.vue:536
+msgid "Page moved"
+msgstr "صفحه منتقل شد"
+
+#: js/components/PageListItems.vue:616
+msgid "Cache cleared"
+msgstr "کش پاک شد"
+
+#: js/components/PageListItems.vue:617
+msgid "Cache cleared for %{num} page."
+msgid_plural "Cache cleared for %{num} pages."
+msgstr[0] "کش %{num} صفحه پاک شد."
+msgstr[1] "کش %{num} صفحه پاک شد."
+
+#: js/components/PageListItems.vue:627
+msgid "Error clearing cache"
+msgstr "خطا در پاک کردن کش"
+
+#: js/components/PageListItems.vue:700
+msgid "Error trashing page"
+msgstr "خطا در انتقال صفحه به سطل زباله"
+
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:972
+msgid "Error restoring page"
+msgstr "خطا در بازیابی صفحه"
+
+#: js/components/PageListItems.vue:827
+msgid "Error fetching pages"
+msgstr "خطا در دریافت صفحه‌ها"
+
+#: js/components/PageListItems.vue:908
+msgid "Error inserting page"
+msgstr "خطا در درج صفحه"
+
+#: js/components/PageListItems.vue:982
+msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
+msgstr "%{name} (%{lang}، مسیر: %{path}، دامنه: %{domain})"
+
+#: js/components/PageListItems.vue:990
+msgid "%{name} (%{lang}, path: %{path})"
+msgstr "%{name} (%{lang}، مسیر: %{path})"
+
+#: js/components/PageListItems.vue:1082
+msgid "Error moving page"
+msgstr "خطا در انتقال صفحه"
+
+#: js/components/PageListItems.vue:1173
+msgid "Error copying page"
+msgstr "خطا در کپی صفحه"
+
+#: js/components/PageListItems.vue:1178 js/views/PageDetail.vue:281
+msgid "Error fetching page"
+msgstr "خطا در دریافت صفحه"
+
+#: js/components/PageListItems.vue:1252 js/views/PageDetail.vue:499
+msgid "Error publishing page"
+msgstr "خطا در انتشار صفحه"
+
+#: js/components/PageListItems.vue:1277
+msgid "All subpages of these pages will be purged as well."
+msgstr "همه زیرصفحه‌های این صفحات نیز برای همیشه حذف خواهند شد."
+
+#: js/components/PageListItems.vue:1307
+msgid "Error purging page"
+msgstr "خطا در حذف دائمی صفحه"
+
+#: js/components/PageListItems.vue:1440
+msgid "%{num} page could not be updated"
+msgid_plural "%{num} pages could not be updated"
+msgstr[0] "%{num} صفحه به‌روزرسانی نشد"
+msgstr[1] "%{num} صفحه به‌روزرسانی نشد"
+
+#: js/components/PageListItems.vue:1451 js/components/PageListItems.vue:1549
+#: js/views/PageDetail.vue:639
+msgid "Error saving page"
+msgstr "خطا در ذخیره صفحه"
+
+#: js/components/PageListItems.vue:1502
+msgid "Error searching pages"
+msgstr "خطا در جستجوی صفحه‌ها"
+
+#: js/components/PageListItems.vue:1712 js/components/PageListItems.vue:1858
+msgctxt "page status"
+msgid "Enable"
+msgstr "فعال کردن"
+
+#: js/components/PageListItems.vue:1717 js/components/PageListItems.vue:1863
+msgctxt "page status"
+msgid "Disable"
+msgstr "غیرفعال کردن"
+
+#: js/components/PageListItems.vue:1733 js/components/PageListItems.vue:1883
+msgid "Clear cache"
+msgstr "پاک کردن کش"
+
+#: js/components/PageListItems.vue:1761 js/components/PageListItems.vue:2063
+msgid "Add page"
+msgstr "افزودن صفحه"
+
+#: js/components/PageListItems.vue:1785
+msgid "Reload page tree"
+msgstr "بارگذاری مجدد درخت صفحات"
+
+#: js/components/PageListItems.vue:1809
+msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
+msgstr ""
+"برای پیمایش از کلیدهای جهت‌نما استفاده کنید. برای تغییر ترتیب، Alt را همراه "
+"کلیدهای جهت‌نما بزنید."
+
+#: js/components/PageListItems.vue:1811
+msgid "Moved to position %{position} of %{total}"
+msgstr "به موقعیت %{position} از %{total} منتقل شد"
+
+#: js/components/PageListItems.vue:1813
+msgid "Outdented to level %{level}, position %{position} of %{total}"
+msgstr ""
+"با کاهش تورفتگی به سطح %{level}، موقعیت %{position} از %{total} منتقل شد"
+
+#: js/components/PageListItems.vue:1819
+msgid "Indented to level %{level}, position %{position} of %{total}"
+msgstr ""
+"با افزایش تورفتگی به سطح %{level}، موقعیت %{position} از %{total} منتقل شد"
+
+#: js/components/PageListItems.vue:1839
+msgid "Toggle child nodes"
+msgstr "باز/بستن گره‌های فرزند"
+
+#: js/components/PageListItems.vue:1910 js/components/PageListItems.vue:1935
+#: js/components/PageListItems.vue:1960
+msgid "Before"
+msgstr "قبل از"
+
+#: js/components/PageListItems.vue:1915 js/components/PageListItems.vue:1940
+#: js/components/PageListItems.vue:1965
+msgid "Into"
+msgstr "درون"
+
+#: js/components/PageListItems.vue:1920 js/components/PageListItems.vue:1945
+#: js/components/PageListItems.vue:1970
+msgid "After"
+msgstr "بعد از"
+
+#: js/components/PageListItems.vue:1954
+msgid "Insert"
+msgstr "درج"
+
+#: js/components/PageListItems.vue:2081
+msgid "Apply access settings to %{num} page."
+msgid_plural "Apply access settings to %{num} pages."
+msgstr[0] "اعمال تنظیمات دسترسی بر %{num} صفحه."
+msgstr[1] "اعمال تنظیمات دسترسی بر %{num} صفحه."
+
+#: js/components/ReloginDialog.vue:95
+msgid "You are not signed in yet"
+msgstr "شما هنوز وارد نشده‌اید"
+
+#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
+#: js/stores.js:353 js/views/Login.vue:146
+msgid "Login failed"
+msgstr "ورود ناموفق بود"
+
+#: js/components/ReloginDialog.vue:134
+msgid "Session expired"
+msgstr "نشست منقضی شد"
+
+#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/User.vue:134
+msgid "Logout"
+msgstr "خروج"
+
+#: js/components/ReloginDialog.vue:148
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"لطفاً در زبانه جدید دوباره وارد شوید و برای ادامه به اینجا بازگردید. تغییرات "
+"ذخیره‌نشده شما حفظ می‌شوند."
+
+#: js/components/ReloginDialog.vue:154
+msgid "Please sign in again to continue. Your unsaved changes are kept."
+msgstr "لطفاً برای ادامه دوباره وارد شوید. تغییرات ذخیره‌نشده شما حفظ می‌شوند."
+
+#: js/components/ReloginDialog.vue:167 js/views/Login.vue:237
+msgid "Sign in"
+msgstr "ورود"
+
+#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+msgid "E-Mail"
+msgstr "ایمیل"
+
+#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+msgid "Password"
+msgstr "رمز عبور"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Hide password"
+msgstr "پنهان کردن رمز عبور"
+
+#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+msgid "Show password"
+msgstr "نمایش رمز عبور"
+
+#: js/components/ReloginDialog.vue:217
+msgid "Continue"
+msgstr "ادامه"
+
+#: js/components/ReloginDialog.vue:217 js/views/Login.vue:240
+msgid "Login"
+msgstr "ورود"
+
+#: js/components/SchemaDialog.vue:33
+msgid "Content elements"
+msgstr "عناصر محتوا"
+
+#: js/components/SchemaDialog.vue:38
+msgid "New elements"
+msgstr "عناصر جدید"
+
+#: js/components/SchemaItems.vue:106
+msgid "Uncategorized"
+msgstr "دسته‌بندی‌نشده"
+
+#: js/components/SchemaItems.vue:119
+msgid "Error fetching content elements"
+msgstr "خطا در دریافت عناصر محتوا"
+
+#: js/components/ShortcutDialog.vue:29
+msgid "General"
+msgstr "عمومی"
+
+#: js/components/ShortcutDialog.vue:34
+msgid "Close dialog or menu"
+msgstr "بستن پنجره یا منو"
+
+#: js/components/ShortcutDialog.vue:40
+msgid "Move between commands and results"
+msgstr "جابه‌جایی بین فرمان‌ها و نتایج"
+
+#: js/components/ShortcutDialog.vue:41
+msgid "Run command or open result"
+msgstr "اجرای فرمان یا باز کردن نتیجه"
+
+#: js/components/ShortcutDialog.vue:42
+msgid "Close command palette"
+msgstr "بستن پالت فرمان"
+
+#: js/components/ShortcutDialog.vue:46
+msgid "Lists"
+msgstr "فهرست‌ها"
+
+#: js/components/ShortcutDialog.vue:50
+msgid "Edit views"
+msgstr "نماهای ویرایش"
+
+#: js/components/ShortcutDialog.vue:54
+msgid "Page content"
+msgstr "محتوای صفحه"
+
+#: js/components/ShortcutDialog.vue:55
+msgid "Move content element up or down"
+msgstr "جابه‌جایی عنصر محتوا به بالا یا پایین"
+
+#: js/components/ShortcutDialog.vue:58
+msgid "Page tree"
+msgstr "درخت صفحات"
+
+#: js/components/ShortcutDialog.vue:61
+msgid "Move between pages"
+msgstr "جابه‌جایی بین صفحه‌ها"
+
+#: js/components/ShortcutDialog.vue:62
+msgid "Expand page"
+msgstr "باز کردن صفحه"
+
+#: js/components/ShortcutDialog.vue:63
+msgid "Add subpage to focused page"
+msgstr "افزودن زیرصفحه به صفحه متمرکز"
+
+#: js/components/ShortcutDialog.vue:64
+msgid "Reorder or re-nest page"
+msgstr "تغییر ترتیب یا جایگاه صفحه"
+
+#: js/components/ShortcutDialog.vue:70
+msgid "AI chat"
+msgstr "گفتگوی هوش مصنوعی"
+
+#: js/components/ShortcutDialog.vue:73
+msgid "Send message"
+msgstr "ارسال پیام"
+
+#: js/components/ShortcutDialog.vue:74
+msgid "New line"
+msgstr "خط جدید"
+
+#: js/components/ShortcutDialog.vue:75
+msgid "Recall previous messages"
+msgstr "فراخوانی پیام‌های قبلی"
+
+#: js/components/UnsavedDialog.vue:33
+msgid "Unsaved changes"
+msgstr "تغییرات ذخیره‌نشده"
+
+#: js/components/UnsavedDialog.vue:44
+msgid "You have unsaved changes that will be lost if you leave."
+msgstr "تغییرات ذخیره‌نشده‌ای دارید که در صورت خروج از دست می‌روند."
+
+#: js/components/UnsavedDialog.vue:50
+msgid "Discard"
+msgstr "صرف‌نظر کردن"
+
+#: js/components/UnsavedDialog.vue:59
+msgid "Save & leave"
+msgstr "ذخیره و خروج"
+
+#: js/components/User.vue:60
+msgid "Failed to load user"
+msgstr "بارگذاری کاربر ناموفق بود"
+
+#: js/components/User.vue:99
+msgid "Toggle light/dark mode"
+msgstr "تغییر حالت روشن/تیره"
+
+#: js/components/User.vue:106 js/components/User.vue:111
+msgid "Switch language"
+msgstr "تغییر زبان"
+
+#: js/components/User.vue:120
+msgid "User menu"
+msgstr "منوی کاربر"
+
+#: js/fields/Autocomplete.vue:202 js/fields/Combobox.vue:27 js/version.js:48
+msgid "No data available"
+msgstr "داده‌ای موجود نیست"
+
+#: js/fields/Color.vue:23
+msgid "Value must be a hex color code"
+msgstr "مقدار باید کد رنگ هگز باشد"
+
+#: js/fields/File.vue:140
+msgid "File is required"
+msgstr "فایل الزامی است"
+
+#: js/fields/File.vue:449
+msgid "Add file from URL"
+msgstr "افزودن فایل از URL"
+
+#: js/fields/File.vue:457 js/fields/Images.vue:430
+msgid "Create file"
+msgstr "ایجاد فایل"
+
+#: js/fields/File.vue:463
+msgid "Upload file"
+msgstr "بارگذاری فایل"
+
+#: js/fields/File.vue:488
+msgid "Drop file here to upload"
+msgstr "فایل را برای بارگذاری اینجا رها کنید"
+
+#: js/fields/File.vue:495
+msgid "name"
+msgstr "نام"
+
+#: js/fields/File.vue:499
+msgid "description"
+msgstr "توضیحات"
+
+#: js/fields/Images.vue:454
+msgid "Drop files here"
+msgstr "فایل‌ها را اینجا رها کنید"
+
+#: js/fields/Map.vue:232
+msgid "Clear location"
+msgstr "پاک کردن مکان"
+
+#: js/fields/Map.vue:235
+msgid "Click the map to set the location"
+msgstr "برای تعیین مکان روی نقشه کلیک کنید"
+
+#: js/fields/String.vue:45
+msgid "Value has invalid format"
+msgstr "قالب مقدار نامعتبر است"
+
+#: js/fields/Table.vue:168
+msgid "Move column"
+msgstr "جابه‌جایی ستون"
+
+#: js/fields/Table.vue:185
+msgid "Column actions"
+msgstr "عملیات ستون"
+
+#: js/fields/Table.vue:224
+msgid "Move row"
+msgstr "جابه‌جایی ردیف"
+
+#: js/fields/Table.vue:255
+msgid "Row actions"
+msgstr "عملیات ردیف"
+
+#: js/fields/Url.vue:59 js/utils.js:209
+msgid "None"
+msgstr "هیچ‌کدام"
+
+#: js/fields/Url.vue:60
+msgid "Sponsored"
+msgstr "حمایت‌شده"
+
+#: js/fields/Url.vue:61
+msgid "Nofollow"
+msgstr "Nofollow"
+
+#: js/fields/Url.vue:78
+msgid "Not a valid URL"
+msgstr "URL معتبر نیست"
+
+#: js/fields/Url.vue:88
+msgid "Invalid URL schema configuration"
+msgstr "پیکربندی طرح URL نامعتبر است"
+
+#: js/fields/Url.vue:167
+msgid "No pages found"
+msgstr "هیچ صفحه‌ای یافت نشد"
+
+#: js/fields/Url.vue:179
+msgid "Link attribute"
+msgstr "ویژگی پیوند"
+
+#: js/merge.js:34
+msgid "Merged with changes from %{editor}"
+msgstr "با تغییرات %{editor} ادغام شد"
+
+#: js/routes.js:126
+msgid "You do not have permission to access %{path}"
+msgstr "شما اجازه دسترسی به %{path} را ندارید"
+
+#: js/rules.js:18
+msgid "Value is required"
+msgstr "مقدار الزامی است"
+
+#: js/rules.js:23
+msgid "At least %{num} entry is required"
+msgid_plural "At least %{num} entries are required"
+msgstr[0] "دست‌کم %{num} مورد الزامی است"
+msgstr[1] "دست‌کم %{num} مورد الزامی است"
+
+#: js/rules.js:30
+msgid "At most %{num} entry is allowed"
+msgid_plural "At most %{num} entries are allowed"
+msgstr[0] "حداکثر %{num} مورد مجاز است"
+msgstr[1] "حداکثر %{num} مورد مجاز است"
+
+#: js/rules.js:38
+msgid "At least %{num} character is required"
+msgid_plural "At least %{num} characters are required"
+msgstr[0] "دست‌کم %{num} نویسه الزامی است"
+msgstr[1] "دست‌کم %{num} نویسه الزامی است"
+
+#: js/rules.js:48
+msgid "At most %{num} character is allowed"
+msgid_plural "At most %{num} characters are allowed"
+msgstr[0] "حداکثر %{num} نویسه مجاز است"
+msgstr[1] "حداکثر %{num} نویسه مجاز است"
+
+#: js/rules.js:55
+msgid "At least %{num} column is required"
+msgid_plural "At least %{num} columns are required"
+msgstr[0] "دست‌کم %{num} ستون الزامی است"
+msgstr[1] "دست‌کم %{num} ستون الزامی است"
+
+#: js/rules.js:62
+msgid "At most %{num} column is allowed"
+msgid_plural "At most %{num} columns are allowed"
+msgstr[0] "حداکثر %{num} ستون مجاز است"
+msgstr[1] "حداکثر %{num} ستون مجاز است"
+
+#: js/stores.js:585
+msgid "Failed to load plugin"
+msgstr "بارگذاری افزونه ناموفق بود"
+
+#: js/strings.js:32
+msgctxt "cs"
+msgid "main"
+msgstr "اصلی"
+
+#: js/strings.js:33
+msgctxt "cs"
+msgid "header"
+msgstr "سربرگ"
+
+#: js/strings.js:34
+msgctxt "cs"
+msgid "footer"
+msgstr "پاورقی"
+
+#: js/strings.js:35
+msgctxt "cs"
+msgid "sidebar"
+msgstr "نوار کناری"
+
+#: js/strings.js:36
+msgctxt "cs"
+msgid "aside"
+msgstr "حاشیه"
+
+#: js/strings.js:39
+msgctxt "sg"
+msgid "basic"
+msgstr "پایه"
+
+#: js/strings.js:40
+msgctxt "sg"
+msgid "content"
+msgstr "محتوا"
+
+#: js/strings.js:41
+msgctxt "sg"
+msgid "media"
+msgstr "رسانه"
+
+#: js/strings.js:42
+msgctxt "sg"
+msgid "forms"
+msgstr "فرم‌ها"
+
+#: js/strings.js:45
+msgctxt "as"
+msgid "type"
+msgstr "نوع"
+
+#: js/strings.js:46
+msgctxt "as"
+msgid "state"
+msgstr "وضعیت"
+
+#: js/strings.js:49
+msgctxt "st"
+msgid "valid"
+msgstr "معتبر"
+
+#: js/strings.js:50
+msgctxt "st"
+msgid "changed"
+msgstr "تغییریافته"
+
+#: js/strings.js:51
+msgctxt "st"
+msgid "error"
+msgstr "خطا"
+
+#: js/strings.js:54
+msgctxt "st"
+msgid "reference"
+msgstr "ارجاع"
+
+#: js/strings.js:55
+msgctxt "st"
+msgid "heading"
+msgstr "سرتیتر"
+
+#: js/strings.js:56
+msgctxt "st"
+msgid "text"
+msgstr "متن"
+
+#: js/strings.js:57
+msgctxt "st"
+msgid "image-text"
+msgstr "تصویر و متن"
+
+#: js/strings.js:58
+msgctxt "st"
+msgid "slideshow"
+msgstr "اسلایدشو"
+
+#: js/strings.js:59
+msgctxt "st"
+msgid "code"
+msgstr "کد"
+
+#: js/strings.js:60
+msgctxt "st"
+msgid "table"
+msgstr "جدول"
+
+#: js/strings.js:61
+msgctxt "st"
+msgid "map"
+msgstr "نقشه"
+
+#: js/strings.js:62
+msgctxt "st"
+msgid "html"
+msgstr "HTML"
+
+#: js/strings.js:63
+msgctxt "st"
+msgid "image"
+msgstr "تصویر"
+
+#: js/strings.js:64
+msgctxt "st"
+msgid "video"
+msgstr "ویدیو"
+
+#: js/strings.js:65
+msgctxt "st"
+msgid "audio"
+msgstr "صوت"
+
+#: js/strings.js:66
+msgctxt "st"
+msgid "file"
+msgstr "فایل"
+
+#: js/strings.js:67
+msgctxt "st"
+msgid "hero"
+msgstr "بخش معرفی"
+
+#: js/strings.js:68
+msgctxt "st"
+msgid "CTA"
+msgstr "فراخوان اقدام"
+
+#: js/strings.js:69
+msgctxt "st"
+msgid "cards"
+msgstr "کارت‌ها"
+
+#: js/strings.js:70
+msgctxt "st"
+msgid "blog"
+msgstr "وبلاگ"
+
+#: js/strings.js:71
+msgctxt "st"
+msgid "article"
+msgstr "مقاله"
+
+#: js/strings.js:72
+msgctxt "st"
+msgid "questions"
+msgstr "پرسش‌های متداول"
+
+#: js/strings.js:73
+msgctxt "st"
+msgid "toc"
+msgstr "فهرست مطالب"
+
+#: js/strings.js:74
+msgctxt "st"
+msgid "contact"
+msgstr "تماس"
+
+#: js/strings.js:75
+msgctxt "st"
+msgid "meta-tags"
+msgstr "متا تگ‌ها"
+
+#: js/strings.js:76
+msgctxt "st"
+msgid "social-media"
+msgstr "شبکه‌های اجتماعی"
+
+#: js/strings.js:77
+msgctxt "st"
+msgid "canonical"
+msgstr "URL متعارف"
+
+#: js/strings.js:78
+msgctxt "st"
+msgid "robots"
+msgstr "موتورهای جستجو"
+
+#: js/strings.js:79
+msgctxt "st"
+msgid "theme"
+msgstr "پوسته"
+
+#: js/strings.js:80
+msgctxt "st"
+msgid "styles"
+msgstr "سبک‌ها"
+
+#: js/strings.js:81
+msgctxt "st"
+msgid "javascript"
+msgstr "JavaScript"
+
+#: js/strings.js:82
+msgctxt "st"
+msgid "heros"
+msgstr "بخش‌های معرفی"
+
+#: js/strings.js:83
+msgctxt "st"
+msgid "news"
+msgstr "اخبار"
+
+#: js/strings.js:84
+msgctxt "st"
+msgid "pricing"
+msgstr "قیمت‌گذاری"
+
+#: js/strings.js:85
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#: js/strings.js:86
+msgctxt "st"
+msgid "security"
+msgstr "امنیت"
+
+#: js/strings.js:87
+msgctxt "st"
+msgid "testimonial"
+msgstr "نظرات مشتریان"
+
+#: js/strings.js:90
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "سرتیتر بخش از H1 تا H6"
+
+#: js/strings.js:91
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "متن قالب‌بندی‌شده با پاراگراف، فهرست و پیوند"
+
+#: js/strings.js:92
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "تصویر در کنار متن قالب‌بندی‌شده"
+
+#: js/strings.js:93
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "کد منبع با برجسته‌سازی نحو"
+
+#: js/strings.js:94
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "جدول داده با سطر یا ستون سرعنوان اختیاری"
+
+#: js/strings.js:95
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "نقشه تعاملی با مکان، متن و پیوند"
+
+#: js/strings.js:96
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "نشانه‌گذاری HTML سفارشی برای جاسازی‌ها و ویجت‌ها"
+
+#: js/strings.js:97
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "یک تصویر واکنش‌گرا"
+
+#: js/strings.js:98
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "اسلایدهای چرخشی با چند تصویر"
+
+#: js/strings.js:99
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "ویدیوی جاسازی‌شده با کنترل‌های پخش"
+
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "صوت جاسازی‌شده با کنترل‌های پخش"
+
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "فایل قابل دانلود مانند سند PDF"
+
+#: js/strings.js:102
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "معرفی بزرگ با عنوان، متن، دکمه‌ها و پس‌زمینه"
+
+#: js/strings.js:103
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "فراخوان اقدام با متن و دکمه‌ها"
+
+#: js/strings.js:104
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "شبکه‌ای از کارت‌ها با تصویر، عنوان و متن"
+
+#: js/strings.js:105
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "نقل‌قول‌های مشتریان با نام، نقش و عکس"
+
+#: js/strings.js:106
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "مقدمه مقاله با گالری تصاویر و نویسنده"
+
+#: js/strings.js:107
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "فهرست مقاله‌های وبلاگ از یک صفحه والد"
+
+#: js/strings.js:108
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "فهرست مقاله‌های خبری از یک صفحه والد"
+
+#: js/strings.js:109
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "زیرصفحه برجسته و به دنبال آن زیرصفحه‌های دیگر"
+
+#: js/strings.js:110
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "طرح‌های قیمت با اشتراک یا پرداخت یک‌باره"
+
+#: js/strings.js:111
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "پرسش‌های متداول همراه با پاسخ"
+
+#: js/strings.js:112
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "فهرست مطالب با پیوند به سرتیترهای صفحه"
+
+#: js/strings.js:113
+msgctxt "sd"
+msgid "Contact form with configurable fields"
+msgstr "فرم تماس با فیلدهای قابل پیکربندی"
+
+#: js/strings.js:116
+msgctxt "fn"
+msgid "button"
+msgstr "دکمه"
+
+#: js/strings.js:117
+msgctxt "fn"
+msgid "buttons"
+msgstr "دکمه‌ها"
+
+#: js/strings.js:118
+msgctxt "fn"
+msgid "cards"
+msgstr "کارت‌ها"
+
+#: js/strings.js:119
+msgctxt "fn"
+msgid "description"
+msgstr "توضیحات"
+
+#: js/strings.js:120
+msgctxt "fn"
+msgid "file"
+msgstr "فایل"
+
+#: js/strings.js:121
+msgctxt "fn"
+msgid "files"
+msgstr "فایل‌ها"
+
+#: js/strings.js:122
+msgctxt "fn"
+msgid "follow"
+msgstr "دنبال کردن پیوندها"
+
+#: js/strings.js:123
+msgctxt "fn"
+msgid "header"
+msgstr "سرعنوان"
+
+#: js/strings.js:124
+msgctxt "fn"
+msgid "index"
+msgstr "نمایه‌سازی"
+
+#: js/strings.js:125
+msgctxt "fn"
+msgid "keywords"
+msgstr "کلیدواژه‌ها"
+
+#: js/strings.js:126
+msgctxt "fn"
+msgid "language"
+msgstr "زبان"
+
+#: js/strings.js:127
+msgctxt "fn"
+msgid "label"
+msgstr "برچسب"
+
+#: js/strings.js:128
+msgctxt "fn"
+msgid "level"
+msgstr "سطح"
+
+#: js/strings.js:129
+msgctxt "fn"
+msgid "limit"
+msgstr "تعداد"
+
+#: js/strings.js:130
+msgctxt "fn"
+msgid "location"
+msgstr "مکان"
+
+#: js/strings.js:131
+msgctxt "fn"
+msgid "main"
+msgstr "اصلی"
+
+#: js/strings.js:132
+msgctxt "fn"
+msgid "order"
+msgstr "ترتیب"
+
+#: js/strings.js:133
+msgctxt "fn"
+msgid "parent-page"
+msgstr "صفحه والد"
+
+#: js/strings.js:134
+msgctxt "fn"
+msgid "position"
+msgstr "موقعیت"
+
+#: js/strings.js:135
+msgctxt "fn"
+msgid "text"
+msgstr "متن"
+
+#: js/strings.js:136
+msgctxt "fn"
+msgid "table"
+msgstr "جدول"
+
+#: js/strings.js:137
+msgctxt "fn"
+msgid "title"
+msgstr "عنوان"
+
+#: js/strings.js:138
+msgctxt "fn"
+msgid "url"
+msgstr "URL"
+
+#: js/strings.js:140
+msgctxt "fn"
+msgid "image"
+msgstr "تصویر"
+
+#: js/strings.js:141
+msgctxt "fn"
+msgid "images"
+msgstr "تصاویر"
+
+#: js/strings.js:142
+msgctxt "fn"
+msgid "items"
+msgstr "موارد"
+
+#: js/strings.js:143
+msgctxt "fn"
+msgid "introduction"
+msgstr "مقدمه"
+
+#: js/strings.js:144
+msgctxt "fn"
+msgid "load immediately"
+msgstr "بارگذاری فوری"
+
+#: js/strings.js:145
+msgctxt "fn"
+msgid "source code"
+msgstr "کد منبع"
+
+#: js/strings.js:146
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "نقش دسترسی فرانت‌اند"
+
+#: js/strings.js:147
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "قیمت‌های پرداخت"
+
+#: js/strings.js:148
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "مرجع پرداخت"
+
+#: js/strings.js:149
+msgctxt "fn"
+msgid "Currency"
+msgstr "واحد پول"
+
+#: js/strings.js:150
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "دوره صورتحساب"
+
+#: js/strings.js:151
+msgctxt "fn"
+msgid "Price unit"
+msgstr "واحد قیمت"
+
+#: js/strings.js:152
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "صفحه یا پیوند مقصد"
+
+#: js/strings.js:153
+msgctxt "fn"
+msgid "Form fields"
+msgstr "فیلدهای فرم"
+
+#: js/strings.js:154
+msgctxt "fn"
+msgid "Field"
+msgstr "فیلد"
+
+#: js/strings.js:155
+msgctxt "fn"
+msgid "Required"
+msgstr "الزامی"
+
+#: js/strings.js:156
+msgctxt "fn"
+msgid "Link label"
+msgstr "متن پیوند"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "URL تماس"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Contact email"
+msgstr "ایمیل تماس"
+
+#: js/strings.js:159
+msgctxt "fn"
+msgid "Description"
+msgstr "توضیحات"
+
+#: js/strings.js:160
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "قیمت نمایش‌داده‌شده"
+
+#: js/strings.js:161
+msgctxt "fn"
+msgid "Gallery"
+msgstr "گالری"
+
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "متن برجسته"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "برجسته"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Language"
+msgstr "زبان"
+
+#: js/strings.js:165
+msgctxt "fn"
+msgid "Payment type"
+msgstr "شیوه پرداخت"
+
+#: js/strings.js:166
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "زبان‌های ترجیحی"
+
+#: js/strings.js:167
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "زیرعنوان"
+
+#: js/strings.js:168
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "قدردانی‌ها"
+
+#: js/strings.js:169
+msgctxt "fn"
+msgid "amount"
+msgstr "مبلغ"
+
+#: js/strings.js:170
+msgctxt "fn"
+msgid "background"
+msgstr "پس‌زمینه"
+
+#: js/strings.js:171
+msgctxt "fn"
+msgid "background animation"
+msgstr "انیمیشن پس‌زمینه"
+
+#: js/strings.js:172
+msgctxt "fn"
+msgid "button-alternative"
+msgstr "دکمه جایگزین"
+
+#: js/strings.js:173
+msgctxt "fn"
+msgid "canonical"
+msgstr "URL متعارف"
+
+#: js/strings.js:174
+msgctxt "fn"
+msgid "columns"
+msgstr "ستون‌ها"
+
+#: js/strings.js:175
+msgctxt "fn"
+msgid "csaf"
+msgstr "پیوند CSAF"
+
+#: js/strings.js:176
+msgctxt "fn"
+msgid "encryption"
+msgstr "رمزنگاری"
+
+#: js/strings.js:177
+msgctxt "fn"
+msgid "expires"
+msgstr "تاریخ انقضا"
+
+#: js/strings.js:178
+msgctxt "fn"
+msgid "features"
+msgstr "ویژگی‌ها"
+
+#: js/strings.js:179
+msgctxt "fn"
+msgid "hiring"
+msgstr "فرصت‌های شغلی"
+
+#: js/strings.js:180
+msgctxt "fn"
+msgid "layout"
+msgstr "چیدمان"
+
+#: js/strings.js:181
+msgctxt "fn"
+msgid "name"
+msgstr "نام"
+
+#: js/strings.js:182
+msgctxt "fn"
+msgid "policy"
+msgstr "سیاست"
+
+#: js/strings.js:183
+msgctxt "fn"
+msgid "ratio"
+msgstr "نسبت"
+
+#: js/strings.js:184
+msgctxt "fn"
+msgid "role"
+msgstr "نقش"
+
+#: js/strings.js:185
+msgctxt "fn"
+msgid "subtitle"
+msgstr "زیرعنوان"
+
+#: js/strings.js:186
+msgctxt "fn"
+msgid "url-alternative"
+msgstr "URL جایگزین"
+
+#: js/strings.js:188
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "قلم متن"
+
+#: js/strings.js:189
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "قلم سرتیتر"
+
+#: js/strings.js:190
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "رنگ متن"
+
+#: js/strings.js:191
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "رنگ پس‌زمینه"
+
+#: js/strings.js:192
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "رنگ انتخاب متن"
+
+#: js/strings.js:193
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "رنگ کنتراست"
+
+#: js/strings.js:194
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "رنگ کنتراست (هنگام اشاره)"
+
+#: js/strings.js:195
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "رنگ متن کنتراست"
+
+#: js/strings.js:196
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "رنگ اصلی"
+
+#: js/strings.js:197
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "پس‌زمینه اصلی"
+
+#: js/strings.js:198
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "رنگ اصلی (هنگام اشاره)"
+
+#: js/strings.js:199
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "پس‌زمینه اصلی (هنگام اشاره)"
+
+#: js/strings.js:200
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "رنگ ثانویه"
+
+#: js/strings.js:201
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "پس‌زمینه ثانویه"
+
+#: js/strings.js:202
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "رنگ ثانویه (هنگام اشاره)"
+
+#: js/strings.js:203
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "پس‌زمینه ثانویه (هنگام اشاره)"
+
+#: js/strings.js:204
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "شعاع گوشه"
+
+#: js/strings.js:205
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "جداکننده مسیر راهنما"
+
+#: js/strings.js:208
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "متن سرتیتر"
+
+#: js/strings.js:209
+msgctxt "fh"
+msgid ""
+"Level 1 is the main page headline, higher levels structure the sections below"
+msgstr ""
+"سطح ۱ سرتیتر اصلی صفحه است و سطوح بالاتر بخش‌های زیرین را ساختاربندی می‌کنند"
+
+#: js/strings.js:210
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "متن قالب‌بندی‌شده با پاراگراف، فهرست و پیوند"
+
+#: js/strings.js:211
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "متن قالب‌بندی‌شده‌ای که در کنار تصویر نمایش داده می‌شود"
+
+#: js/strings.js:212
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "تصویری که در کنار متن نمایش داده می‌شود"
+
+#: js/strings.js:213
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "موقعیت تصویر نسبت به متن"
+
+#: js/strings.js:214
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "نسبت عرض بین تصویر و متن"
+
+#: js/strings.js:215
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "زبان برنامه‌نویسی مورد استفاده برای برجسته‌سازی نحو"
+
+#: js/strings.js:216
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "کد منبعی که با برجسته‌سازی نحو نمایش داده می‌شود"
+
+#: js/strings.js:217
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "عنوان اختیاری که بالای جدول نمایش داده می‌شود"
+
+#: js/strings.js:218
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "استفاده از سطر اول، ستون اول یا هر دو به‌عنوان سرعنوان جدول"
+
+#: js/strings.js:219
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr ""
+"داده‌ها را در سلول‌ها وارد کنید؛ در صورت نیاز سطرها و ستون‌ها را اضافه یا حذف "
+"کنید"
+
+#: js/strings.js:220
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "سرتیتر اختیاری که بالای نقشه نمایش داده می‌شود"
+
+#: js/strings.js:221
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "توضیحاتی که در کنار نقشه نمایش داده می‌شود، مثلاً نشانی یا مسیریابی"
+
+#: js/strings.js:222
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "مکانی را جستجو کنید یا برای تعیین مکان روی نقشه کلیک کنید"
+
+#: js/strings.js:223
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "متن پیوندی که مکان را در یک سرویس نقشه باز می‌کند"
+
+#: js/strings.js:224
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "کد HTML که بدون تغییر در صفحه درج می‌شود، مثلاً برای جاسازی‌ها و ویجت‌ها"
+
+#: js/strings.js:225
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "تصویری که در تمام عرض ناحیه محتوا نمایش داده می‌شود"
+
+#: js/strings.js:226
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "اگر تصویر در بالای صفحه قابل مشاهده است، بدون تأخیر بارگذاری شود"
+
+#: js/strings.js:227
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "سرتیتر اختیاری که بالای اسلایدشو نمایش داده می‌شود"
+
+#: js/strings.js:228
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "تصاویری که یکی پس از دیگری نمایش داده می‌شوند؛ برای تغییر ترتیب بکشید"
+
+#: js/strings.js:229
+msgctxt "fh"
+msgid ""
+"Load the first image without delay if it is visible at the top of the page"
+msgstr ""
+"اگر نخستین تصویر در بالای صفحه قابل مشاهده است، بدون تأخیر بارگذاری شود"
+
+#: js/strings.js:230
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "فایل ویدیویی که در صفحه پخش می‌شود"
+
+#: js/strings.js:231
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "فایل صوتی که در صفحه پخش می‌شود"
+
+#: js/strings.js:232
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "فایلی که برای دانلود ارائه می‌شود"
+
+#: js/strings.js:233
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "سرتیتر اصلی صفحه"
+
+#: js/strings.js:234
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "خط کوتاهی که بالای سرتیتر نمایش داده می‌شود"
+
+#: js/strings.js:235
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "مقدمه‌ای که زیر سرتیتر نمایش داده می‌شود"
+
+#: js/strings.js:236
+msgctxt "fh"
+msgid "Page or link the main button leads to"
+msgstr "صفحه یا پیوندی که دکمه اصلی به آن می‌رود"
+
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Text of the main button"
+msgstr "متن دکمه اصلی"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Page or link the second button leads to"
+msgstr "صفحه یا پیوندی که دکمه دوم به آن می‌رود"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Text of the second button"
+msgstr "متن دکمه دوم"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "تصویری که پشت متن نمایش داده می‌شود"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "جلوه انیمیشن تصویر پس‌زمینه"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "تصاویری که در کنار متن نمایش داده می‌شوند"
+
+#: js/strings.js:243
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "سرتیتری که توجه بازدیدکنندگان را جلب می‌کند"
+
+#: js/strings.js:244
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "متنی که بازدیدکنندگان را به اقدام ترغیب می‌کند"
+
+#: js/strings.js:245
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "دکمه‌هایی که بازدیدکنندگان را به مرحله بعد هدایت می‌کنند"
+
+#: js/strings.js:246
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "متن دکمه"
+
+#: js/strings.js:247
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "صفحه یا پیوندی که دکمه به آن می‌رود"
+
+#: js/strings.js:248
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "سرتیتر اختیاری که بالای کارت‌ها نمایش داده می‌شود"
+
+#: js/strings.js:249
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "تعداد کارت‌ها در هر ردیف؛ \"auto\" خود را با عرض صفحه‌نمایش تطبیق می‌دهد"
+
+#: js/strings.js:250
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "کارت‌هایی که در شبکه نمایش داده می‌شوند"
+
+#: js/strings.js:251
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "سرتیتر کارت"
+
+#: js/strings.js:252
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "تصویری که در بالای کارت نمایش داده می‌شود"
+
+#: js/strings.js:253
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "متن کارت"
+
+#: js/strings.js:254
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "صفحه یا پیوندی که کارت به آن می‌رود"
+
+#: js/strings.js:255
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "سرتیتر اختیاری که بالای نقل‌قول‌ها نمایش داده می‌شود"
+
+#: js/strings.js:256
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "نقل‌قول‌های مشتریان یا شرکا"
+
+#: js/strings.js:257
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "نقل‌قول شخص"
+
+#: js/strings.js:258
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "نام شخص"
+
+#: js/strings.js:259
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "سمت یا شرکت شخص"
+
+#: js/strings.js:260
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "عکس شخص"
+
+#: js/strings.js:261
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "مقدمه مقاله که زیر عنوان صفحه نمایش داده می‌شود"
+
+#: js/strings.js:262
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "تصاویر مقاله؛ نخستین تصویر به‌عنوان تصویر پیش‌نمایش استفاده می‌شود"
+
+#: js/strings.js:263
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "نام نویسنده مقاله"
+
+#: js/strings.js:264
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "پیوند به صفحه نمایه نویسنده"
+
+#: js/strings.js:265
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "سرتیتر اختیاری که بالای فهرست نمایش داده می‌شود"
+
+#: js/strings.js:266
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "نمایش صفحه‌ها به‌صورت کارت یا فهرست فشرده"
+
+#: js/strings.js:267
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "صفحه‌ای که زیرصفحه‌های آن فهرست می‌شوند"
+
+#: js/strings.js:268
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "ترتیب مرتب‌سازی صفحه‌های فهرست‌شده"
+
+#: js/strings.js:269
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "حداکثر تعداد صفحه‌هایی که هم‌زمان نمایش داده می‌شوند"
+
+#: js/strings.js:270
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "نمایش سایر زیرصفحه‌ها به‌صورت کارت یا فهرست فشرده"
+
+#: js/strings.js:271
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "سرتیتر اختیاری که بالای طرح‌های قیمت نمایش داده می‌شود"
+
+#: js/strings.js:272
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "متن کوتاهی که زیر سرتیتر نمایش داده می‌شود"
+
+#: js/strings.js:273
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "طرح‌های قیمت که کنار هم نمایش داده می‌شوند"
+
+#: js/strings.js:274
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "نام طرح قیمت"
+
+#: js/strings.js:275
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr ""
+"نقشی که پس از پرداخت برای دسترسی به صفحات محافظت‌شده به مشتریان داده می‌شود"
+
+#: js/strings.js:276
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "قیمت‌های طرح، مثلاً ماهانه و سالانه"
+
+#: js/strings.js:277
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "اشتراک دوره‌ای یا پرداخت یک‌باره"
+
+#: js/strings.js:278
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "تعداد روزهای بین دو پرداخت، مثلاً ۳۰ برای ماهانه"
+
+#: js/strings.js:279
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "کد سه‌حرفی ISO واحد پول، مثلاً EUR یا USD"
+
+#: js/strings.js:280
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "شناسه قیمت یا مبلغی که درگاه پرداخت استفاده می‌کند"
+
+#: js/strings.js:281
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "قیمت قالب‌بندی‌شده‌ای که به بازدیدکنندگان نمایش داده می‌شود، مثلاً €9.99"
+
+#: js/strings.js:282
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "قیمت عددی که در صورت تعیین نشدن قیمت قالب‌بندی‌شده نمایش داده می‌شود"
+
+#: js/strings.js:283
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "متنی که پس از قیمت نمایش داده می‌شود، مثلاً در ماه"
+
+#: js/strings.js:284
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "توضیح کوتاه طرح قیمت"
+
+#: js/strings.js:285
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "فهرست ویژگی‌های موجود در طرح"
+
+#: js/strings.js:286
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "برجسته کردن این طرح نسبت به سایر طرح‌ها"
+
+#: js/strings.js:287
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "برچسب کوتاهی که روی طرح برجسته نمایش داده می‌شود، مثلاً محبوب"
+
+#: js/strings.js:288
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "سرتیتر اختیاری که بالای پرسش‌ها نمایش داده می‌شود"
+
+#: js/strings.js:289
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "پرسش‌ها و پاسخ‌هایی که به‌صورت فهرست بازشونده نمایش داده می‌شوند"
+
+#: js/strings.js:290
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "پرسشی که بازدیدکنندگان مطرح می‌کنند"
+
+#: js/strings.js:291
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "پاسخ به پرسش"
+
+#: js/strings.js:292
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "سرتیتر اختیاری که بالای فهرست مطالب نمایش داده می‌شود"
+
+#: js/strings.js:293
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "سرتیتر اختیاری که بالای فرم تماس نمایش داده می‌شود"
+
+#: js/strings.js:294
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "متن اختیاری که بین سرتیتر و فرم تماس نمایش داده می‌شود"
+
+#: js/strings.js:295
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "فیلدهای فرم که به همین ترتیب به بازدیدکنندگان نمایش داده می‌شوند"
+
+#: js/strings.js:296
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "یک فیلد فرم انتخاب کنید یا نام دلخواه خود را وارد کنید"
+
+#: js/strings.js:297
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "بازدیدکنندگان باید این فیلد را پر کنند"
+
+#: js/strings.js:298
+msgctxt "fh"
+msgid ""
+"Summary of the page shown in search results, 150 to 160 characters "
+"recommended"
+msgstr ""
+"خلاصه صفحه که در نتایج جستجو نمایش داده می‌شود؛ ۱۵۰ تا ۱۶۰ نویسه توصیه می‌شود"
+
+#: js/strings.js:299
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "فهرست کلیدواژه‌های توصیف‌کننده صفحه، جداشده با کاما"
+
+#: js/strings.js:300
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "عنوانی که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
+
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "خلاصه‌ای که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr ""
+"تصویر پیش‌نمایشی که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "URL اصلی، در صورتی که همان محتوا در چند نشانی در دسترس باشد"
+
+#: js/strings.js:304
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "اجازه دادن یا جلوگیری از فهرست شدن این صفحه توسط موتورهای جستجو"
+
+#: js/strings.js:305
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr ""
+"اجازه دادن یا جلوگیری از دنبال کردن پیوندهای این صفحه توسط موتورهای جستجو"
+
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "نام وب‌سایت که در زبانه مرورگر و نتایج جستجو نمایش داده می‌شود"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "لوگویی که در سربرگ صفحه نمایش داده می‌شود"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "نسخه‌ای از لوگو برای پس‌زمینه‌های تیره"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "تصویر مربعی کوچکی که در زبانه‌ها و نشانک‌های مرورگر نمایش داده می‌شود"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "فهرست قلم‌های مورد استفاده برای متن، جداشده با کاما"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Default text color"
+msgstr "رنگ پیش‌فرض متن"
+
+#: js/strings.js:312
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "رنگ پس‌زمینه صفحه‌ها"
+
+#: js/strings.js:313
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "رنگ پس‌زمینه متن انتخاب‌شده"
+
+#: js/strings.js:314
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "رنگ عناصری با کنتراست زیاد نسبت به پس‌زمینه"
+
+#: js/strings.js:315
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "رنگ کنتراست هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
+
+#: js/strings.js:316
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "رنگ متن روی عناصری که از رنگ کنتراست استفاده می‌کنند"
+
+#: js/strings.js:317
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "رنگ اصلی برند که برای پیوندها و دکمه‌ها استفاده می‌شود"
+
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "رنگ پس‌زمینه دکمه‌های اصلی و موارد برجسته"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "رنگ اصلی هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "رنگ پس‌زمینه اصلی هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
+
+#: js/strings.js:321
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "رنگ تکمیلی برای پیوندها و دکمه‌های کم‌اهمیت‌تر"
+
+#: js/strings.js:322
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "رنگ پس‌زمینه دکمه‌های ثانویه"
+
+#: js/strings.js:323
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "رنگ ثانویه هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
+
+#: js/strings.js:324
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "رنگ پس‌زمینه ثانویه هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
+
+#: js/strings.js:325
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "میزان گردی گوشه‌ها به‌صورت طول CSS، مثلاً 0.25rem یا 0 برای گوشه‌های تیز"
+
+#: js/strings.js:326
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "نویسه‌ای که بین پیوندهای مسیر راهنما نمایش داده می‌شود"
+
+#: js/strings.js:327
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "پیوند HTTPS برای تماس با تیم امنیت، مثلاً یک فرم"
+
+#: js/strings.js:328
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "نشانی ایمیل برای گزارش مشکلات امنیتی"
+
+#: js/strings.js:329
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "تاریخی که پس از آن اطلاعات امنیتی منسوخ تلقی می‌شود"
+
+#: js/strings.js:330
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "پیوند HTTPS به کلید عمومی برای پیام‌های رمزنگاری‌شده"
+
+#: js/strings.js:331
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "پیوند HTTPS به صفحه قدردانی از پژوهشگران امنیتی"
+
+#: js/strings.js:332
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "کدهای زبان برای گزارش‌های امنیتی، جداشده با کاما، مثلاً en, de"
+
+#: js/strings.js:333
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "URL HTTPS که فایل security.txt در آن منتشر می‌شود"
+
+#: js/strings.js:334
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "پیوند HTTPS به سیاست امنیت و افشا"
+
+#: js/strings.js:335
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "پیوند HTTPS به فرصت‌های شغلی مرتبط با امنیت"
+
+#: js/strings.js:336
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "پیوند HTTPS به فراداده ارائه‌دهنده CSAF"
+
+#: js/strings.js:337
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "قواعد تکمیلی که برای خزنده‌های وب به فایل robots.txt افزوده می‌شوند"
+
+#: js/strings.js:338
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "کد CSS سفارشی که به همه صفحه‌ها افزوده می‌شود"
+
+#: js/strings.js:339
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "کد JavaScript سفارشی که به همه صفحه‌ها افزوده می‌شود"
+
+#: js/strings.js:340
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "فهرست قلم‌های مورد استفاده برای سرتیترها، جداشده با کاما"
+
+#: js/strings.js:343
+msgctxt "op"
+msgid "Name"
+msgstr "نام"
+
+#: js/strings.js:344
+msgctxt "op"
+msgid "Company"
+msgstr "شرکت"
+
+#: js/strings.js:345
+msgctxt "op"
+msgid "Telephone"
+msgstr "تلفن"
+
+#: js/strings.js:346
+msgctxt "op"
+msgid "E-Mail"
+msgstr "ایمیل"
+
+#: js/strings.js:347
+msgctxt "op"
+msgid "Subject"
+msgstr "موضوع"
+
+#: js/strings.js:348
+msgctxt "op"
+msgid "Follow"
+msgstr "دنبال کردن"
+
+#: js/strings.js:349
+msgctxt "op"
+msgid "Index"
+msgstr "نمایه‌سازی"
+
+#: js/strings.js:350
+msgctxt "op"
+msgid "No follow"
+msgstr "عدم دنبال کردن"
+
+#: js/strings.js:351
+msgctxt "op"
+msgid "No index"
+msgstr "عدم نمایه‌سازی"
+
+#: js/strings.js:352
+msgctxt "op"
+msgid "Subscription"
+msgstr "اشتراک"
+
+#: js/strings.js:353
+msgctxt "op"
+msgid "One-time payment"
+msgstr "پرداخت یک‌باره"
+
+#: js/strings.js:354
+msgctxt "op"
+msgid "Auto"
+msgstr "خودکار"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "Cards"
+msgstr "کارت‌ها"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "Default"
+msgstr "پیش‌فرض"
+
+#: js/strings.js:357
+msgctxt "op"
+msgid "End"
+msgstr "انتها"
+
+#: js/strings.js:358
+msgctxt "op"
+msgid "First column"
+msgstr "ستون اول"
+
+#: js/strings.js:359
+msgctxt "op"
+msgid "First row"
+msgstr "سطر اول"
+
+#: js/strings.js:360
+msgctxt "op"
+msgid "First row and column"
+msgstr "سطر و ستون اول"
+
+#: js/strings.js:361
+msgctxt "op"
+msgid "Grid end"
+msgstr "انتهای شبکه"
+
+#: js/strings.js:362
+msgctxt "op"
+msgid "Grid start"
+msgstr "ابتدای شبکه"
+
+#: js/strings.js:363
+msgctxt "op"
+msgid "Latest"
+msgstr "جدیدترین"
+
+#: js/strings.js:364
+msgctxt "op"
+msgid "List"
+msgstr "فهرست"
+
+#: js/strings.js:365
+msgctxt "op"
+msgid "None"
+msgstr "هیچ‌کدام"
+
+#: js/strings.js:366
+msgctxt "op"
+msgid "Oldest"
+msgstr "قدیمی‌ترین"
+
+#: js/strings.js:367
+msgctxt "op"
+msgid "Position"
+msgstr "موقعیت"
+
+#: js/strings.js:368
+msgctxt "op"
+msgid "Start"
+msgstr "ابتدا"
+
+#: js/strings.js:369
+msgctxt "op"
+msgid "Zoom"
+msgstr "بزرگ‌نمایی"
+
+#: js/strings.js:372
+msgctxt "ai"
+msgid "Done"
+msgstr "انجام شد"
+
+#: js/strings.js:373
+msgctxt "ai"
+msgid "Already exists"
+msgstr "از قبل وجود دارد"
+
+#: js/strings.js:376
+msgctxt "sg"
+msgid "expert"
+msgstr "پیشرفته"
+
+#: js/strings.js:377
+msgctxt "sg"
+msgid "theme"
+msgstr "پوسته"
+
+#: js/strings.js:378
+msgctxt "st"
+msgid "website"
+msgstr "وب‌سایت"
+
+#: js/strings.js:379
+msgctxt "st"
+msgid "logo"
+msgstr "لوگو"
+
+#: js/strings.js:380
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "لوگوی جایگزین"
+
+#: js/strings.js:381
+msgctxt "st"
+msgid "icon"
+msgstr "نماد"
+
+#: js/utils.js:259 js/views/ElementList.vue:123 js/views/ElementList.vue:133
+#: js/views/ElementList.vue:142 js/views/FileList.vue:122
+#: js/views/FileList.vue:132 js/views/FileList.vue:141
+#: js/views/PageList.vue:147 js/views/PageList.vue:157
+#: js/views/PageList.vue:166 js/views/PageList.vue:176
+#: js/views/PageList.vue:184
+msgid "All"
+msgstr "همه"
+
+#: js/views/AccessList.vue:169
+msgid "Error adding access value"
+msgstr "خطا در افزودن مقدار دسترسی"
+
+#: js/views/AccessList.vue:183
+msgid ""
+"Existing restrictions are not changed and will continue to reference the "
+"purged access values."
+msgstr ""
+"محدودیت‌های موجود تغییر نمی‌کنند و همچنان به مقادیر دسترسیِ حذف‌شده ارجاع خواهند "
+"داد."
+
+#: js/views/AccessList.vue:202
+msgid "Error purging access values"
+msgstr "خطا در حذف دائمی مقادیر دسترسی"
+
+#: js/views/AccessList.vue:234 js/views/ElementList.vue:222
+#: js/views/FileList.vue:221 js/views/PageList.vue:259
+#: js/views/PluginPanel.vue:70
+msgid "Close navigation"
+msgstr "بستن ناوبری"
+
+#: js/views/AccessList.vue:234 js/views/ElementList.vue:222
+#: js/views/FileList.vue:221 js/views/PageList.vue:259
+#: js/views/PluginPanel.vue:70
+msgid "Open navigation"
+msgstr "باز کردن ناوبری"
+
+#: js/views/AccessList.vue:253
+msgid "Roles"
+msgstr "نقش‌ها"
+
+#: js/views/AccessList.vue:288 js/views/AccessList.vue:333
+msgid "Add access value"
+msgstr "افزودن مقدار دسترسی"
+
+#: js/views/AccessList.vue:337
+msgid "Access value"
+msgstr "مقدار دسترسی"
+
+#: js/views/AccessList.vue:337
+msgid "Role name which can be assigned to pages and users"
+msgstr "نام نقشی که می‌توان به صفحه‌ها و کاربران اختصاص داد"
+
+#: js/views/AccessList.vue:353
+msgid "Add"
+msgstr "افزودن"
+
+#: js/views/ElementDetail.vue:205
+msgid "Error fetching element"
+msgstr "خطا در دریافت عنصر"
+
+#: js/views/ElementDetail.vue:243
+msgid "Element published successfully"
+msgstr "عنصر با موفقیت منتشر شد"
+
+#: js/views/ElementDetail.vue:244
+msgid "Element scheduled for publishing at %{date}"
+msgstr "عنصر برای انتشار در %{date} زمان‌بندی شد"
+
+#: js/views/ElementDetail.vue:245
+msgid "Error publishing element"
+msgstr "خطا در انتشار عنصر"
+
+#: js/views/ElementDetail.vue:267 js/views/FileDetail.vue:275
+#: js/views/PageDetail.vue:564
+msgid "There are invalid fields, please resolve the errors first"
+msgstr "فیلدهای نامعتبری وجود دارد، لطفاً ابتدا خطاها را برطرف کنید"
+
+#: js/views/ElementDetail.vue:311
+msgid "Element saved successfully"
+msgstr "عنصر با موفقیت ذخیره شد"
+
+#: js/views/ElementDetail.vue:325
+msgid "Error saving element"
+msgstr "خطا در ذخیره عنصر"
+
+#: js/views/ElementDetail.vue:385 js/views/ElementDetail.vue:405
+#: js/views/ElementDetail.vue:410
+msgid "Element"
+msgstr "عنصر"
+
+#: js/views/ElementDetail.vue:412 js/views/FileDetail.vue:401
+msgid "Used by"
+msgstr "استفاده‌شده در"
+
+#: js/views/ElementList.vue:121 js/views/FileList.vue:120
+#: js/views/PageList.vue:145
+msgid "publish"
+msgstr "انتشار"
+
+#: js/views/ElementList.vue:125 js/views/FileList.vue:124
+#: js/views/PageList.vue:149
+msgid "Scheduled"
+msgstr "زمان‌بندی‌شده"
+
+#: js/views/ElementList.vue:126 js/views/FileList.vue:125
+#: js/views/PageList.vue:150
+msgid "Drafts"
+msgstr "پیش‌نویس‌ها"
+
+#: js/views/ElementList.vue:131 js/views/FileList.vue:130
+#: js/views/PageList.vue:155
+msgid "trashed"
+msgstr "سطل زباله"
+
+#: js/views/ElementList.vue:134 js/views/FileList.vue:133
+#: js/views/PageList.vue:158
+msgid "Available only"
+msgstr "فقط موارد موجود"
+
+#: js/views/ElementList.vue:135 js/views/FileList.vue:134
+#: js/views/PageList.vue:159
+msgid "Only trashed"
+msgstr "فقط موارد سطل زباله"
+
+#: js/views/ElementList.vue:143 js/views/FileList.vue:142
+#: js/views/PageList.vue:185
+msgid "Edited by me"
+msgstr "ویرایش‌شده توسط من"
+
+#: js/views/ElementList.vue:148 js/views/FileList.vue:147
+#: js/views/PageList.vue:190
+msgid "languages"
+msgstr "زبان‌ها"
+
+#: js/views/ElementList.vue:251 js/views/FileList.vue:250
+#: js/views/PageList.vue:288
+msgid "Press Enter to open the chat"
+msgstr "برای باز کردن گفتگو Enter را فشار دهید"
+
+#: js/views/ElementList.vue:293
+msgid "AI can find and manage shared elements based on your input"
+msgstr "هوش مصنوعی می‌تواند بر اساس ورودی شما عناصر مشترک را پیدا و مدیریت کند"
+
+#: js/views/ElementList.vue:294 js/views/FileList.vue:293
+#: js/views/PageList.vue:339
+msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
+msgstr ""
+"برای باز کردن دستیار هوش مصنوعی و بهبود محتوا در گفتگو، Enter یا پیکان را "
+"فشار دهید"
+
+#: js/views/FileDetail.vue:191
+msgid "Error fetching file"
+msgstr "خطا در دریافت فایل"
+
+#: js/views/FileDetail.vue:251
+msgid "File published successfully"
+msgstr "فایل با موفقیت منتشر شد"
+
+#: js/views/FileDetail.vue:252
+msgid "File scheduled for publishing at %{date}"
+msgstr "فایل برای انتشار در %{date} زمان‌بندی شد"
+
+#: js/views/FileDetail.vue:325
+msgid "File saved successfully"
+msgstr "فایل با موفقیت ذخیره شد"
+
+#: js/views/FileDetail.vue:374 js/views/FileDetail.vue:394
+#: js/views/FileDetail.vue:399
+msgid "File"
+msgstr "فایل"
+
+#: js/views/FileList.vue:292
+msgid "AI can find and manage media files based on your input"
+msgstr ""
+"هوش مصنوعی می‌تواند بر اساس ورودی شما فایل‌های رسانه را پیدا و مدیریت کند"
+
+#: js/views/Login.vue:55
+msgid "Invalid e-mail address"
+msgstr "نشانی ایمیل نامعتبر است"
+
+#: js/views/Login.vue:115
+msgid "Not a CMS editor"
+msgstr "ویرایشگر CMS نیست"
+
+#: js/views/Login.vue:171
+msgid "Access denied"
+msgstr "دسترسی رد شد"
+
+#: js/views/Login.vue:231
+msgid "Error"
+msgstr "خطا"
+
+#: js/views/PageDetail.vue:198
+msgid ""
+"The user is viewing the page with ID \"%{id}\". When they refer to \"this "
+"page\", use get-page with that ID."
+msgstr ""
+"کاربر در حال مشاهده صفحه‌ای با شناسه \"%{id}\" است. وقتی به «این صفحه» اشاره "
+"می‌کند، از get-page با همین شناسه استفاده کنید."
+
+#: js/views/PageDetail.vue:497
+msgid "Page published successfully"
+msgstr "صفحه با موفقیت منتشر شد"
+
+#: js/views/PageDetail.vue:498
+msgid "Page scheduled for publishing at %{date}"
+msgstr "صفحه برای انتشار در %{date} زمان‌بندی شد"
+
+#: js/views/PageDetail.vue:550 js/views/PageDetail.vue:825
+msgid "Rate this page and suggest improvements"
+msgstr "به این صفحه امتیاز دهید و بهبودهایی پیشنهاد کنید"
+
+#: js/views/PageDetail.vue:617
+msgid "Page saved successfully"
+msgstr "صفحه با موفقیت ذخیره شد"
+
+#: js/views/PageDetail.vue:654
+msgid "No page schema for \"content\" found"
+msgstr "هیچ طرح‌واره صفحه‌ای برای \"content\" یافت نشد"
+
+#: js/views/PageDetail.vue:802 js/views/PageDetail.vue:853
+#: js/views/PageDetail.vue:872
+msgid "Page"
+msgstr "صفحه"
+
+#: js/views/PageDetail.vue:830
+msgid "Translate page"
+msgstr "ترجمه صفحه"
+
+#: js/views/PageDetail.vue:858
+msgctxt "editing interface"
+msgid "Editor"
+msgstr "ویرایشگر"
+
+#: js/views/PageDetail.vue:875
+msgid "Metrics"
+msgstr "معیارها"
+
+#: js/views/PageList.vue:137
+msgid "view"
+msgstr "نما"
+
+#: js/views/PageList.vue:140
+msgid "List"
+msgstr "فهرست"
+
+#: js/views/PageList.vue:164
+msgid "status"
+msgstr "وضعیت"
+
+#: js/views/PageList.vue:168
+msgid "Hidden"
+msgstr "پنهان"
+
+#: js/views/PageList.vue:174
+msgid "cache"
+msgstr "کش"
+
+#: js/views/PageList.vue:314
+msgid "Generate page based on prompt"
+msgstr "تولید صفحه بر اساس درخواست"
+
+#: js/views/PageList.vue:332
+msgid ""
+"AI can create a page and content based on your input and add it to the page "
+"tree"
+msgstr ""
+"هوش مصنوعی می‌تواند بر اساس ورودی شما یک صفحه و محتوای آن را ایجاد کرده و به "
+"درخت صفحات اضافه کند"

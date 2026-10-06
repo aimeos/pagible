@@ -103,6 +103,31 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testSearchUsesPageLanguage()
+    {
+        $page = \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail();
+
+        $response = $this->get( '/blog' );
+
+        $response->assertOk();
+        $response->assertSee( 'cmsapi/search?q=_term_&amp;locale=' . $page->lang . '"', false );
+        $response->assertSee( 'data-no-results="No results found"', false );
+        $response->assertSee( '"inLanguage": "' . $page->lang . '"', false );
+        $response->assertSee( 'dir="ltr"', false );
+    }
+
+
+    public function testRegionalRtlLanguageUsesRtlDirection()
+    {
+        \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail()->forceFill( ['lang' => 'ar-EG'] )->saveQuietly();
+
+        $response = $this->get( '/blog' );
+
+        $response->assertOk();
+        $response->assertSee( 'lang="ar-EG" dir="rtl"', false );
+    }
+
+
     public function testPaginatorPageUsesSelfCanonicalUrl()
     {
         $this->blogList();
