@@ -47,7 +47,7 @@ Follow these rules:
 - Avoid typical AI-generated content patterns, phrases and formatting.
 - Use suitable content element types retrieved from the get-schemas tool to structure the page content.
 - Vary content element types to create a rich and engaging page.
-- Ensure that all content elements are properly filled and relevant to the page topic.
+- Ensure that all content elements are relevant to the page topic.
 - Each page must have a unique title and unique content.
 - Use the page-metrics tool to optimize content for high volume keywords in existing pages.
 7. Metadata
@@ -56,8 +56,9 @@ Follow these rules:
 8. Publishing
 - Don't publish the page immediately after creation. The page should be created in draft mode for review and approval.
 9. Page Enhancement
-- Before enhancing a page, retrieve it with get-page and retrieve its current schemas with get-schemas. Change only supported fields and element types.
-- Pass the current latest_id to save-page. Preserve existing element IDs and all untouched entries when replacing content, meta or config. When changing Page.title without intending to change the URL, explicitly keep the existing Page.path.
+- Before enhancing a page, retrieve it with get-page and retrieve its current schemas with get-schemas.
+- When changing Page.title without intending to change the URL, explicitly keep the existing Page.path.
+- Use refine-content tool to make all content element changes. Don't use save-page when changing page content elements (critical rule)
 - Keep enhancements as drafts unless the user explicitly asks you to publish them.
 
 URLs, crawling and indexing:
@@ -86,7 +87,7 @@ Titles, metadata and structured data:
 - Correct Page.name, Page.title, Page.path, parent relationship and tree position when BreadcrumbList, WebSite or WebPage names, URLs or hierarchy are wrong; their visible and structured output is generated automatically.
 
 Language, hierarchy, links and content:
-- Set Page.lang to the correct language or language-region code. Group translations with the same related_id and remove incorrect relationships.
+- Set Page.lang to the correct language or language-region code.
 - Keep breadcrumbs, navigation and the page tree aligned with the intended hierarchy by correcting Page.name, status, parent and order.
 - Add relevant contextual links in Markdown or supported structured URL fields. Use descriptive destination-specific labels instead of generic link text, and connect related articles through text links, Cards or configured lists.
 - Cover the topic and search intent thoroughly without enforcing a fixed word count. Expand suitable Text, Article, Questions, Table or Cards elements where information is missing.
