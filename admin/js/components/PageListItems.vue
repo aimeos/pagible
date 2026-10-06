@@ -1761,4 +1761,14 @@ export default {
     padding: 4px 0;
   }
 }
+
+/* screen reader texts rendered by he-tree */
+.sr-only {
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
 </style>
