@@ -1,7 +1,7 @@
 import App from '../../js/App.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { isReactive } from 'vue'
-import { slugify, srcset, toBlob, debounce, locales, txlocales, url } from '../../js/utils'
+import { slugify, toBlob, debounce, locales, txlocales, url } from '../../js/utils'
 import { write, translate, transcribe } from '../../js/ai'
 import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../../js/stores'
 
@@ -76,28 +76,6 @@ describe('url()', () => {
 
   it('does not proxy relative paths even when proxy is true', () => {
     expect(url('images/photo.jpg', true)).to.equal('/storage/images/photo.jpg')
-  })
-})
-
-describe('srcset()', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
-  })
-
-  it('returns empty string for null or undefined', () => {
-    expect(srcset(null)).to.equal('')
-    expect(srcset(undefined)).to.equal('')
-  })
-
-  it('returns empty string for empty object', () => {
-    expect(srcset({})).to.equal('')
-  })
-
-  it('builds srcset from width-path map', () => {
-    const result = srcset({ 400: 'img-400.jpg', 800: 'img-800.jpg' })
-    expect(result).to.include('400w')
-    expect(result).to.include('800w')
-    expect(result).to.include('/storage/img-400.jpg')
   })
 })
 

@@ -9,10 +9,9 @@
  * - `min`: int, minimum number of entries required
  * - `required`: boolean, if true, at least one entry is required
  */
-import gql from 'graphql-tag'
-import { markRaw } from 'vue'
 import {
   mdiDotsVertical,
+  mdiDragVertical,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -29,11 +28,14 @@ import VirtualList from 'vue-virtual-sortable'
 import { required, minEntries, maxEntries } from '../rules'
 import ActionMenu from '../components/ActionMenu.vue'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
-import { fieldTypes, hintTypes, protectTypes } from '../fieldtypes'
-import { clone, itemTitle, txlocales, uid } from '../utils'
+import { fieldBase } from '../field'
+import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
+import { clone, dictate, itemTitle, txlocales, uid } from '../utils'
 import { key, reveal, scrollParent } from '../virtual'
 
 export default {
+  extends: fieldBase,
+
   inheritAttrs: false,
 
   components: {
@@ -42,14 +44,10 @@ export default {
   },
 
   props: {
-    modelValue: { type: Array },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: Array }
   },
 
-  emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
+  emits: ['addFile', 'removeFile'],
 
   inject: ['write', 'translate'],
 
@@ -58,10 +56,8 @@ export default {
       translating: {},
       dictating: {},
       composing: {},
-      errors: [],
-      items: [],
+      items: this.init(this.modelValue),
       itemKey: (item) => item?.[this.config.identity] || key(item),
-      lastError: null,
       panel: [],
       scroller: null,
       audio: {}
@@ -78,6 +74,7 @@ export default {
       clipboard,
       messages,
       mdiDotsVertical,
+      mdiDragVertical,
       mdiContentCopy,
       mdiContentCut,
       mdiDelete,
@@ -90,7 +87,9 @@ export default {
       mdiMicrophone,
       mdiViewGridPlus,
       hintTypes,
+      itemTitle,
       protectTypes,
+      toName,
       txlocales
     }
   },
@@ -105,17 +104,13 @@ export default {
         this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
       }
     }
-    this.audio = null
-    this.translating = null
-    this.dictating = null
-    this.composing = null
-    this.panel = null
-    this.scroller = null
-    this.items = null
-    this.errors = null
   },
 
   computed: {
+    hasError() {
+      return !this.rules.every((rule) => rule(this.items) === true)
+    },
+
     rules() {
       return [
         required(this.$gettext, this.config.required),
@@ -133,15 +128,6 @@ export default {
     change(items = this.items) {
       this.items = items
       this.$emit('update:modelValue', this.items)
-      this.check()
-    },
-
-    check() {
-      const hasError = !this.rules.every((rule) => rule(this.items) === true)
-      if (hasError !== this.lastError) {
-        this.lastError = hasError
-        this.$emit('error', hasError)
-      }
     },
 
     copy(idx) {
@@ -177,6 +163,12 @@ export default {
       return item
     },
 
+    init(val) {
+      const items = Array.isArray(val) ? val : clone(this.config.default ?? [])
+      items.forEach((item) => this.identity(item, this.config))
+      return items
+    },
+
     insert(idx, align = 'auto') {
       const item = this.identity({}, this.config)
       const key = this.itemKey(item)
@@ -204,31 +196,10 @@ export default {
     },
 
     record(idx, code) {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
-      if (!this.audio[idx + code]) {
-        return (this.audio[idx + code] = markRaw(
-          import('../audio').then((mod) => mod.recording().start())
-        ))
-      }
-
-      this.audio[idx + code].then((rec) => {
-        this.dictating[idx + code] = true
-        this.audio[idx + code] = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.update(idx, code, transcription.asText())
-            })
-            .finally(() => {
-              this.dictating[idx + code] = false
-            })
-        })
-      })
+      const key = idx + code
+      this.audio[key] = dictate(this.audio[key], (busy) => (this.dictating[key] = busy), (text) => this.update(idx, code, text))
     },
 
     remove(idx) {
@@ -237,15 +208,6 @@ export default {
       this.items.splice(idx, 1)
       this.panel = this.panel.filter((value) => value !== key)
       this.change()
-    },
-
-    title(el) {
-      return itemTitle(el)
-    },
-
-    toName(type) {
-      const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
-      return fieldTypes.has(name) ? name : 'Hidden'
     },
 
     translateText(idx, code, lang) {
@@ -270,23 +232,7 @@ export default {
     },
 
     writeText(idx, code) {
-      const context = [
-        'generate for field "' + (this.config.item?.[code]?.label || code) + '"',
-        'required output format is "' + this.config.item?.[code]?.type + '"',
-        this.config.item?.[code]?.min
-          ? 'minimum characters: ' + this.config.item?.[code]?.min
-          : null,
-        this.config.item?.[code]?.max
-          ? 'maximum characters: ' + this.config.item?.[code]?.max
-          : null,
-        this.config.item?.[code]?.placeholder
-          ? 'hint text: ' + this.config.item?.[code]?.placeholder
-          : null,
-        this.config.item?.[code]?.hint
-          ? 'field description: ' + this.config.item?.[code]?.hint
-          : null,
-        'context information as JSON: ' + JSON.stringify(this.items[idx])
-      ]
+      const context = aiContext(this.config.item?.[code] || {}, code, this.items[idx])
       const prompt =
         this.items[idx][code] ||
         (this.items[idx]['title']
@@ -306,13 +252,8 @@ export default {
   },
 
   watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        this.items = Array.isArray(val) ? val : clone(this.config.default ?? [])
-        this.items.forEach((item) => this.identity(item, this.config))
-        this.check()
-      }
+    modelValue(val) {
+      this.items = this.init(val)
     }
   }
 }
@@ -348,21 +289,8 @@ export default {
             variant="text"
             class="item-handle"
             :aria-label="$gettext('Move element')"
-            icon
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              width="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11
-                  M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z"
-              />
-            </svg>
-          </v-btn>
+            :icon="mdiDragVertical"
+          />
 
           <span class="btn-actions" v-if="!readonly">
             <ActionMenu>
@@ -370,48 +298,30 @@ export default {
                 <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
               </template>
 
-              <v-list-item>
-                <v-btn :prepend-icon="mdiContentCopy" variant="text" @click="copy(idx)">{{
-                  $pgettext('clipboard', 'Copy')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiContentCut" variant="text" @click="cut(idx)">{{
-                  $pgettext('clipboard', 'Cut')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiDelete" variant="text" @click="remove(idx)">{{
-                  $gettext('Remove')
-                }}</v-btn>
-              </v-list-item>
-
-              <v-divider></v-divider>
-
-              <v-list-item v-if="clipboard.get('items-content')">
-                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="paste(idx)">{{
-                  $gettext('Paste before')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item v-if="clipboard.get('items-content')">
-                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="paste(idx + 1)">{{
-                  $gettext('Paste after')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowUp" variant="text" @click="insert(idx)">{{
-                  $gettext('Insert before')
-                }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn :prepend-icon="mdiArrowDown" variant="text" @click="insert(idx + 1)">{{
-                  $gettext('Insert after')
-                }}</v-btn>
-              </v-list-item>
+              <template
+                v-for="(action, i) in [
+                  { icon: mdiContentCopy, label: $pgettext('clipboard', 'Copy'), fn: () => copy(idx) },
+                  { icon: mdiContentCut, label: $pgettext('clipboard', 'Cut'), fn: () => cut(idx) },
+                  { icon: mdiDelete, label: $gettext('Remove'), fn: () => remove(idx) },
+                  { divider: true },
+                  { icon: mdiArrowUp, label: $gettext('Paste before'), fn: () => paste(idx), hide: !clipboard.get('items-content') },
+                  { icon: mdiArrowDown, label: $gettext('Paste after'), fn: () => paste(idx + 1), hide: !clipboard.get('items-content') },
+                  { icon: mdiArrowUp, label: $gettext('Insert before'), fn: () => insert(idx) },
+                  { icon: mdiArrowDown, label: $gettext('Insert after'), fn: () => insert(idx + 1) }
+                ].filter((action) => !action.hide)"
+                :key="i"
+              >
+                <v-divider v-if="action.divider" />
+                <v-list-item v-else>
+                  <v-btn :prepend-icon="action.icon" variant="text" @click="action.fn()">{{
+                    action.label
+                  }}</v-btn>
+                </v-list-item>
+              </template>
             </ActionMenu>
           </span>
 
-          <div class="element-title">{{ title(item) }}</div>
+          <div class="element-title">{{ itemTitle(item) }}</div>
         </v-expansion-panel-title>
 
         <v-expansion-panel-text>
@@ -493,16 +403,6 @@ export default {
       </template>
     </VirtualList>
   </v-expansion-panels>
-
-  <div v-if="errors.length" class="v-input--error">
-    <div class="v-input__details" role="alert" aria-live="polite">
-      <div class="v-messages">
-        <div v-for="(msg, idx) in errors" :key="idx" class="v-messages__message">
-          {{ msg }}
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="btn-group">
     <v-btn

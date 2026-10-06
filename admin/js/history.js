@@ -2,14 +2,14 @@
 
 import equal from 'fast-deep-equal'
 import { diffArrays } from 'diff'
+import { UNSAFE_KEYS as SKIP } from './json'
+import { empty } from './utils'
 
-const SKIP = ['__proto__', 'constructor', 'prototype']
 const SECTIONS = ['meta', 'config', 'content']
 const METADATA = ['previews', 'editor']
 const graphemes = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 const segments = new Intl.Segmenter(undefined, { granularity: 'word' })
-const vacant = value => value == null || (typeof value === 'object' && !Object.keys(value).length)
-const same = (a, b) => equal(a, b) || (vacant(a) && vacant(b))
+const same = (a, b) => equal(a, b) || (empty(a) && empty(b))
 const object = value => value != null && typeof value === 'object' && !Array.isArray(value)
 const filedata = file => file && { path: file.path, name: file.name, mime: file.mime, previews: file.previews || {} }
 const reference = value => value == null || typeof value === 'string' || value?.type === 'file' || (Array.isArray(value) && value.every(reference))
@@ -129,55 +129,15 @@ export function sections(before = {}, after = {}) {
   return result
 }
 
-export function tableRows(before = [], after = [], limit = 9) {
-  const parts = diffArrays(before, after, { comparator: equal, timeout: 50 })
+// Diffs both lists and pairs the removed and added values of each changed hunk side by side
+function pairs(before, after, comparator) {
+  const parts = diffArrays(before, after, { comparator, timeout: 50 })
     || [{ value: before, removed: true }, { value: after, added: true }]
   const rows = []
 
   for (let i = 0; i < parts.length; i++) {
     if (!parts[i].added && !parts[i].removed) {
-      parts[i].value.forEach(row => rows.push({ before: row, after: row }))
-      continue
-    }
-
-    const changed = []
-    while (i < parts.length && (parts[i].added || parts[i].removed)) changed.push(parts[i++])
-    i--
-    const removed = changed.filter(part => part.removed).flatMap(part => part.value)
-    const added = changed.filter(part => part.added).flatMap(part => part.value)
-    for (let index = 0; index < Math.max(removed.length, added.length); index++) {
-      rows.push({ before: removed[index], after: added[index] })
-    }
-  }
-
-  const context = new Set()
-  if (rows.length) context.add(0)
-  rows.forEach((row, index) => {
-    if (equal(row.before, row.after)) return
-    for (let pos = Math.max(0, index - 1); pos <= Math.min(rows.length - 1, index + 1); pos++) context.add(pos)
-  })
-  let indices = [...context]
-  if (indices.length > limit) indices = [...indices.slice(0, Math.ceil(limit / 2)), ...indices.slice(-Math.floor(limit / 2))]
-
-  const result = []
-  let previous = -1
-  for (const index of indices) {
-    if (index > previous + 1) result.push({ skip: index - previous - 1 })
-    result.push(rows[index])
-    previous = index
-  }
-  if (previous < rows.length - 1) result.push({ skip: rows.length - previous - 1 })
-  return result
-}
-
-export function lineRows(before, after, limit = 20, context = 3) {
-  const parts = diffArrays(before.split('\n'), after.split('\n'), { timeout: 50 })
-    || [{ value: before.split('\n'), removed: true }, { value: after.split('\n'), added: true }]
-  const rows = []
-
-  for (let i = 0; i < parts.length; i++) {
-    if (!parts[i].added && !parts[i].removed) {
-      parts[i].value.forEach(line => rows.push({ before: line, after: line }))
+      parts[i].value.forEach(value => rows.push({ before: value, after: value }))
       continue
     }
 
@@ -190,24 +150,41 @@ export function lineRows(before, after, limit = 20, context = 3) {
       rows.push({ before: removed[index], after: added[index], changed: true })
     }
   }
+  return rows
+}
 
-  if (rows.length <= limit) return null
-
-  const visible = new Set()
-  rows.forEach((row, index) => {
-    if (!row.changed) return
-    for (let pos = Math.max(0, index - context); pos <= Math.min(rows.length - 1, index + context); pos++) visible.add(pos)
-  })
-
+// Keeps the rows at the given ascending indices and replaces the gaps by skip counts
+function compact(rows, indices) {
   const result = []
   let previous = -1
-  for (const index of visible) {
+  for (const index of indices) {
     if (index > previous + 1) result.push({ skip: index - previous - 1 })
     result.push(rows[index])
     previous = index
   }
   if (previous < rows.length - 1) result.push({ skip: rows.length - previous - 1 })
   return result
+}
+
+// Rows around a changed index within the given distance
+function nearby(rows, distance, visible = new Set()) {
+  rows.forEach((row, index) => {
+    if (!row.changed) return
+    for (let pos = Math.max(0, index - distance); pos <= Math.min(rows.length - 1, index + distance); pos++) visible.add(pos)
+  })
+  return [...visible]
+}
+
+export function tableRows(before = [], after = [], limit = 9) {
+  const rows = pairs(before, after, equal)
+  let indices = nearby(rows, 1, new Set(rows.length ? [0] : []))
+  if (indices.length > limit) indices = [...indices.slice(0, Math.ceil(limit / 2)), ...indices.slice(-Math.floor(limit / 2))]
+  return compact(rows, indices)
+}
+
+export function lineRows(before, after, limit = 20, context = 3) {
+  const rows = pairs(before.split('\n'), after.split('\n'))
+  return rows.length > limit ? compact(rows, nearby(rows, context)) : null
 }
 
 export function filepairs(before = [], after = []) {

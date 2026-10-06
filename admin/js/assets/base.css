@@ -876,3 +876,23 @@ textarea[readonly],
     animation: none;
   }
 }
+
+/* Drop targets of the file fields, the fields set the layout and border style */
+.dropzone {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  cursor: copy;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+
+.dropzone.dragover {
+  border-color: rgb(var(--v-theme-primary)) !important;
+  background-color: rgba(var(--v-theme-primary), 0.06);
+  color: rgb(var(--v-theme-primary));
+}
+
+.dropzone * {
+  pointer-events: none;
+}

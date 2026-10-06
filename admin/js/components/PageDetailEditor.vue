@@ -20,7 +20,6 @@ export default {
     item: { type: Object, required: true },
     elements: { type: Object, required: true },
     asideVisible: { type: Boolean, default: false },
-    assets: { type: Object, default: () => ({}) },
     previewSize: {
       type: String,
       default: 'computer',

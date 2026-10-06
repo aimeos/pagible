@@ -2,19 +2,10 @@
 
 <script>
 import { required } from '../rules'
+import { fieldBase } from '../field'
 
 export default {
-  props: {
-    modelValue: { type: String },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
-
-  emits: ['update:modelValue', 'error'],
-
-  data: () => ({ lastError: null }),
+  extends: fieldBase,
 
   computed: {
     rules() {
@@ -22,19 +13,6 @@ export default {
         required(this.$gettext, this.config.required),
         (v) => !v || /^#[0-9A-F]{6,8}$/i.test(v) || this.$gettext(`Value must be a hex color code`)
       ]
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every((rule) => rule(val ?? this.config.default ?? '') === true)
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

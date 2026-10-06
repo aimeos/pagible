@@ -2,8 +2,10 @@
 
 <script>
 import gql from 'graphql-tag'
+import { VAutocomplete } from 'vuetify/components/VAutocomplete'
 import { maxEntries, required } from '../rules'
 import { debounce, safeParse } from '../utils'
+import { fieldBase } from '../field'
 
 /**
  * Configuration:
@@ -23,37 +25,27 @@ import { debounce, safeParse } from '../utils'
  * - `url`: string, REST URL where _term_ is replaced by the search term
  */
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: [Object, String, Number, Boolean, null] },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
-
-  emits: ['update:modelValue', 'error'],
-
-  setup() {
-    return { debounce }
+    modelValue: { type: [Object, String, Number, Boolean, null] }
   },
 
   data() {
     return {
-      lastError: null,
       list: this.config.options || [],
       loading: false
     }
   },
 
   created() {
-    this.graphql = this.debounce(this.graphql, 500)
-    this.rest = this.debounce(this.rest, 500)
+    this.graphql = debounce(this.graphql, 500)
+    this.rest = debounce(this.rest, 500)
   },
 
   computed: {
-    hasError() {
-      const val = this.modelValue ?? this.config.default ?? null
-      return !this.rules.every((rule) => rule(val) === true)
+    returnObject() {
+      return !!this.config['item-title']
     },
 
     rules() {
@@ -61,6 +53,10 @@ export default {
         required(this.$gettext, this.config.required),
         (v) => !Array.isArray(v) || maxEntries(this.$ngettext, this.config.max)(v)
       ]
+    },
+
+    tag() {
+      return VAutocomplete
     }
   },
 
@@ -83,9 +79,7 @@ export default {
       this.loading = true
       this.$apollo
         .query({
-          query: gql`
-            ${query}
-          `
+          query: gql(query)
         })
         .then((result) => {
           // parse the latest data if available
@@ -161,35 +155,15 @@ export default {
     },
 
     toList(result) {
-      if (this.config['list-key']) {
-        return this.config['list-key'].split('/').reduce((part, key) => {
-          return typeof part === 'object' && part !== null ? part[key] : part
-        }, result)
-      }
-
-      return result
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every(
-          (rule) => rule(val ?? this.config.default ?? null) === true
-        )
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
+      return this.config['list-key'] ? this.get(result, this.config['list-key'].split('/')) : result
     }
   }
 }
 </script>
 
 <template>
-  <v-autocomplete
+  <component
+    :is="tag"
     :hint="config.hint && $pgettext('fh', config.hint)"
     :error="hasError"
     :rules="rules"
@@ -203,7 +177,7 @@ export default {
         : $gettext('Loading') + ' ...'
     "
     :placeholder="config.placeholder || ''"
-    :return-object="!!config['item-title']"
+    :return-object="returnObject"
     :multiple="config.multiple"
     :chips="config.multiple"
     :modelValue="modelValue ?? config.default ?? null"
@@ -215,5 +189,5 @@ export default {
     variant="outlined"
     item-title="label"
     item-value="value"
-  ></v-autocomplete>
+  ></component>
 </template>

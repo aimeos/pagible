@@ -1,4 +1,5 @@
 import FileDetail from '../../../js/views/FileDetail.vue'
+import { apolloClient } from '../../../js/graphql'
 import { sections } from '../../../js/history'
 import { useUserStore, useMessageStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
@@ -7,7 +8,7 @@ const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
   FileDetailItem: { template: '<div class="file-detail-item-stub" />' },
-  FileDetailRefs: { template: '<div class="file-detail-refs-stub" />' },
+  DetailRefs: { template: '<div class="file-detail-refs-stub" />' },
 }
 
 const baseItem = {
@@ -143,12 +144,10 @@ describe('FileDetail', () => {
   })
 
   it('invalidates file lists', () => {
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
 
-    mountDetail({}, {}, {
-      provider: { defaultClient: { cache: { evict, gc } } },
-    }).then(() => {
+    mountDetail().then(() => {
       Cypress.vueWrapper.findComponent(FileDetail).vm.invalidate()
 
       expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'files' })

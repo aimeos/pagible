@@ -1,16 +1,14 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-export default {
-  props: {
-    modelValue: { type: Array },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
+import { fieldBase } from '../field'
 
-  emits: ['update:modelValue', 'error']
+export default {
+  extends: fieldBase,
+
+  props: {
+    modelValue: { type: Array }
+  }
 }
 </script>
 

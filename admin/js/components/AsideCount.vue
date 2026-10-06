@@ -18,44 +18,20 @@ export default {
 
   computed: {
     stores() {
-      const keys = Object.keys(this.side.store).sort()
-      const map = {}
-
-      for (const key of keys) {
-        map[key] = this.side.store[key]
-      }
-
-      return map
+      return Object.fromEntries(Object.entries(this.side.store).sort(([a], [b]) => a < b ? -1 : 1))
     }
   },
 
   methods: {
     isActive(key, code) {
-      if (typeof this.active[key] === 'undefined') {
-        this.active[key] = {}
-      }
-
-      if (typeof this.active[key][code] === 'undefined') {
-        this.active[key][code] = false
-      }
-
-      return this.active[key][code]
-    },
-
-    sort(items) {
-      const keys = Object.keys(items).sort()
-      const map = {}
-
-      for (const key of keys) {
-        map[key] = items[key]
-      }
-
-      return map
+      return !!this.active[key]?.[code]
     },
 
     toggle(key, code) {
+      const group = this.active[key] ??= {}
+
+      group[code] = !group[code]
       this.side.toggle(key, code)
-      this.active[key][code] = !this.active[key][code]
     }
   }
 }

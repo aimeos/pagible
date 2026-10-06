@@ -17,18 +17,16 @@
 import gql from 'graphql-tag'
 import { required } from '../rules'
 import { debounce } from '../utils'
+import { fieldBase } from '../field'
 
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: String },
-    rel: { type: String, default: '' },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    rel: { type: String, default: '' }
   },
 
-  emits: ['update:modelValue', 'update:rel', 'error'],
+  emits: ['update:rel'],
 
   setup() {
     return { debounce }
@@ -41,7 +39,6 @@ export default {
     const allowed = raw.every((s) => /^[a-z]+$/.test(s)) ? raw : ['http', 'https']
 
     return {
-      lastError: null,
       relItems: [],
       loading: false,
       pages: [],
@@ -65,11 +62,6 @@ export default {
   computed: {
     external() {
       return this.config.rel && /^(?:https?:)?\/\//i.test(this.modelValue ?? this.config.default ?? '')
-    },
-
-    hasError() {
-      const val = this.modelValue ?? this.config.default ?? ''
-      return !this.rules.every((rule) => rule(val) === true)
     },
 
     rules() {
@@ -133,21 +125,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every(
-          (rule) => rule(val ?? this.config.default ?? '') === true
-        )
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

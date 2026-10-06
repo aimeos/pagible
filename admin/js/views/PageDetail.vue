@@ -2,37 +2,20 @@
 
 <script>
 import gql from 'graphql-tag'
-import AsideMeta from '../components/AsideMeta.vue'
 import AsideCount from '../components/AsideCount.vue'
 import ActionMenu from '../components/ActionMenu.vue'
 import ChatDialog from '../components/ChatDialog.vue'
-import DetailAppBar from '../components/DetailAppBar.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
 
 const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
+import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
-import { invalidateList } from '../graphql'
-import { pluginLabel } from '../i18n'
-import { publishDate, publishItem } from '../publish'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { focusInvalid, frozenParse, hasTrue, safeParse, txlocales } from '../utils'
-import { setupReload, cleanEcho } from '../echo'
-import { loadVersions, reloadVersion } from '../version'
-import {
-  useAppStore,
-  useDrawerStore,
-  useDirtyStore,
-  useSideStore,
-  useUserStore,
-  useMessageStore,
-  usePluginStore,
-  useSchemaStore,
-  useViewStack,
-  useChangeStore
-} from '../stores'
+import { useAppStore, useDrawerStore, useSchemaStore } from '../stores'
 import {
   mdiCreation,
   mdiTranslate,
@@ -40,9 +23,18 @@ import {
 } from '@mdi/js'
 
 
-const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
-const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
+
+// copy of the element without the internal "_" properties
+function strip(el) {
+  const out = {}
+
+  for (const k in el) {
+    if (!k.startsWith('_')) out[k] = el[k]
+  }
+
+  return out
+}
 
 const PAGE_DETAIL_FIELDS = `
   id
@@ -106,55 +98,26 @@ const SAVE_PAGE = gql`
 `
 
 export default {
+  extends: detailBase,
+
   components: {
+    ...detailBase.components,
     ActionMenu,
-    AsideMeta,
     AsideCount,
     ChatDialog,
-    ChangesDialog,
-    DetailAppBar,
     FieldsAside,
-    HistoryDialog,
     PageDetailItem,
     PageDetailEditor,
     PageDetailContent,
     PageDetailMetrics
   },
 
-  props: {
-    item: { type: Object, required: true },
-    stacked: { type: Boolean, default: false }
-  },
-
-  provide() {
-    return {
-      // re-provide custom methods
-      write: this.writeText,
-      translate: this.translateText
-    }
-  },
-
   setup() {
-    const dirtyStore = useDirtyStore()
-    const drawer = useDrawerStore()
-    const messages = useMessageStore()
-    const schemas = useSchemaStore()
-    const side = useSideStore()
-    const user = useUserStore()
-    const app = useAppStore()
-    const viewStack = useViewStack()
-    const changes = useChangeStore()
-
     return {
-      app,
-      drawer,
-      dirtyStore,
-      side,
-      user,
-      messages,
-      schemas,
-      viewStack,
-      changes,
+      ...useDetail('page'),
+      app: useAppStore(),
+      drawer: useDrawerStore(),
+      schemas: useSchemaStore(),
       mdiCreation,
       mdiTranslate,
       mdiArrowRightThin,
@@ -176,18 +139,7 @@ export default {
       editorElement: null,
       previewSize: 'computer',
       latest: null,
-      publishAt: null,
-      publishTime: null,
-      publishing: false,
       translating: false,
-      vhistory: false,
-      changed: null,
-      vchanged: false,
-      destroyed: false,
-      echoCleanup: null,
-      echoPromise: null,
-      loading: true,
-      saving: false,
       savecnt: 0,
       historyData: null
     }
@@ -228,57 +180,28 @@ export default {
 
     saveConfig() {
       return { fcn: this.save, count: this.savecnt }
-    },
-
-    subpanels() {
-      return usePluginStore().subpanels.page || {}
     }
   },
 
   created() {
-    this.dirtyStore.register(() => this.save(true))
     this.schemas.load()
-
-    if (!this.item?.id || !this.user.can('page:view')) {
-      this.loading = false
-      return
-    }
-
-    this.reload().then((ok) => {
-      if (!ok) return
-
-      // reload the open page when its own item is saved elsewhere or after a reconnect that may
-      // have missed a save, unless the user has unsaved edits
-      setupReload(this, 'page', this.item.id, () => this.refresh(), () => !this.hasChanged && this.user.can('page:view'))
-    })
   },
 
   beforeUnmount() {
-    this.side.$reset()
-    this.dirtyStore.unregister()
-
     this.assets = markRaw({})
     this.elements = markRaw({})
     this.editorActions = false
     this.editorElement = null
-    this.destroyed = true
-    this.changed = null
     this.latest = null
     this.dirty = null
     this.errors = null
-
-    cleanEcho(this)
   },
 
   methods: {
-    label(panel) {
-      return pluginLabel(panel, this)
-    },
-
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
-      return reloadVersion(this, FETCH_PAGE, 'page', this.$gettext('Error fetching page'), (page) => {
+      return this.reloadVersion(FETCH_PAGE, this.$gettext('Error fetching page'), (page) => {
         this.latest = page.latest
 
         Object.assign(this.item, safeParse(this.latest?.data))
@@ -294,10 +217,7 @@ export default {
         this.item.config = aux.config ?? {}
         this.item.meta = aux.meta ?? {}
 
-        const elements = this.elems(this.latest?.elements || [])
-        this.assets = markRaw(this.files(this.latest?.files || [], elements))
-        this.elements = markRaw(elements)
-        this.item.content = this.obsolete(this.item.content)
+        this.assign(this.latest?.elements || [], this.latest?.files || [])
         this.latest = { id: this.latest?.id }
       }, () => !this.hasChanged, { access: this.user.can('page:access') })
     },
@@ -309,14 +229,6 @@ export default {
       }
 
       if (changes.content) {
-        const strip = (el) => {
-          const out = {}
-          for (const k in el) {
-            if (!k.startsWith('_')) out[k] = el[k]
-          }
-          return out
-        }
-
         const prev = {}
         for (const el of this.item.content || []) {
           prev[el.id || el.refid] = JSON.stringify(strip(el))
@@ -340,48 +252,35 @@ export default {
       this.vhistory = false
     },
 
+    // applies the elements and files of a version and drops references to missing files
+    assign(elements, files) {
+      const map = this.elems(elements)
+
+      this.assets = markRaw(this.files(files, map))
+      this.elements = markRaw(map)
+      this.item.content = this.obsolete(this.item.content)
+    },
+
+    // removes internal properties and data not defined by the schema of the elements
     clean(data, type) {
       if (!data || !type) return data
 
-      const isArray = Array.isArray(data)
-      const result = isArray ? [] : {}
+      const map = (el) => {
+        const cleaned = strip(el)
+        const fields = this.schemas[type]?.[el.type]?.fields
 
-      for (const key in data) {
-        const el = data[key]
-        const cleaned = {}
-
-        for (const k in el) {
-          if (!k.startsWith('_')) {
-            cleaned[k] = el[k]
-          }
+        if (cleaned.data && fields) {
+          cleaned.data = Object.fromEntries(Object.entries(cleaned.data).filter(([name]) => {
+            return fields[name] || (name.endsWith('-rel') && fields[name.slice(0, -4)]?.rel)
+          }))
         }
 
-        if (cleaned.data) {
-          const fields = this.schemas[type]?.[el.type]?.fields
-
-          if (fields) {
-            const cleanedData = {}
-
-            for (const name in cleaned.data) {
-              const url = name.endsWith('-rel') ? name.slice(0, -4) : null
-
-              if (fields[name] || (url && fields[url]?.rel)) {
-                cleanedData[name] = cleaned.data[name]
-              }
-            }
-
-            cleaned.data = cleanedData
-          }
-        }
-
-        if (isArray) {
-          result.push(cleaned)
-        } else {
-          result[key] = cleaned
-        }
+        return cleaned
       }
 
-      return result
+      return Array.isArray(data)
+        ? data.map(map)
+        : Object.fromEntries(Object.entries(data).map(([key, el]) => [key, map(el)]))
     },
 
     elems(entries) {
@@ -471,17 +370,9 @@ export default {
       })
     },
 
-    invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
-    },
-
     obsolete(content) {
       for (const entry of content) {
-        if (entry.files && Array.isArray(entry.files)) {
-          entry.files = entry.files.filter((id) => {
-            return typeof this.assets[id] !== 'undefined'
-          })
-        }
+        if (Array.isArray(entry.files)) entry.files = entry.files.filter((id) => this.assets[id] !== undefined)
       }
 
       return content
@@ -490,18 +381,6 @@ export default {
     pageUpdated(event) {
       Object.assign(this.item, event)
       this.dirty.page = true
-    },
-
-    publish(at = null, close = false) {
-      publishItem(this, 'page', {
-        success: this.$gettext('Page published successfully'),
-        scheduled: (d) => this.$gettext('Page scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing page')
-      }, at, close)
-    },
-
-    schedule(close = false) {
-      this.publish(publishDate(this.publishAt, this.publishTime), close)
     },
 
     reset() {
@@ -554,26 +433,13 @@ export default {
       await this.$nextTick()
       this.$refs.content?.flush()
 
-      if (!this.user.can('page:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve(false)
-      }
-
-      if (this.hasError) {
-        this.messages.add(
-          this.$gettext('There are invalid fields, please resolve the errors first'),
-          'error'
-        )
-        this.showError()
-        return Promise.resolve(false)
+      if (!this.saveable()) {
+        return false
       }
 
       if (!this.hasChanged) {
-        return Promise.resolve(true)
+        return true
       }
-
-      const meta = this.clean(this.item.meta || {}, 'meta')
-      const config = this.clean(this.item.config || {}, 'config')
 
       this.saving = true
 
@@ -595,18 +461,14 @@ export default {
               type: this.item.type || '',
               theme: this.item.theme || '',
               related_id: this.item.related_id || null,
-              meta: JSON.stringify(this.clean(meta, 'meta')),
-              config: JSON.stringify(this.clean(config, 'config')),
+              meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
+              config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
             latestId: this.latest?.id
           }
         })
         .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
           const page = response.data?.savePage
           const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
 
@@ -623,21 +485,13 @@ export default {
             this.item.meta = aux?.meta ?? this.item.meta
           }
 
-          this.invalidate()
           this.savecnt++
-
-          const version = page?.latest
-          this.item.published = version?.published ?? false
-          this.item.publish_at = version?.publish_at ?? null
-          this.item.editor = version?.editor ?? this.item.editor
-          this.item.updated_at = version?.created_at ?? this.item.updated_at
-          this.changes.notify('page', this.item)
+          this.saved(page?.latest)
 
           return true
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving page') + ':\n' + error, 'error')
-          this.$log(`PageDetail::save(): Error saving page`, error)
+          this.messages.error(this.$gettext('Error saving page'), error)
         })
         .finally(() => {
           this.saving = false
@@ -645,10 +499,7 @@ export default {
     },
 
     async translatePage(lang) {
-      if (!this.user.can('text:translate')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!this.user.can('text:translate')) return this.messages.denied()
 
       if (!this.schemas.content) {
         this.messages.add(this.$gettext('No page schema for "content" found'), 'error')
@@ -717,54 +568,24 @@ export default {
           }
         })
 
-        this.dirty['content'] = true
-        this.dirty['page'] = true
-
+        Object.assign(this.dirty, { content: true, page: true })
         this.item.lang = lang
       } finally {
         this.translating = false
       }
     },
 
-    translateText(texts, to, from = null) {
-      return import('../ai').then(({ translate }) => translate(texts, to, from || this.item.lang))
-    },
-
-    update(what, value) {
-      if (what === 'page') {
-        Object.assign(this.item, value)
-      } else {
-        this[what] = value
-      }
-
-      this.dirty[what] = true
-    },
-
     use(version, clean = false) {
       Object.assign(this.item, version.data)
+      this.assign(version.elements || [], Object.values(version.files || {}))
 
-      const elements = this.elems(version.elements || [])
-      this.assets = this.files(Object.values(version.files || {}), elements)
-      this.elements = elements
-      this.item.content = this.obsolete(this.item.content)
-
-      this.dirty['content'] = true
-      this.dirty['page'] = true
-
+      Object.assign(this.dirty, { content: true, page: true })
       this.vhistory = false
       if (clean) this.reset()
     },
 
-    validate() {
-      return Promise.all(
-        [this.$refs.page?.validate(), this.$refs.content?.validate()].filter((v) => v)
-      ).then((results) => {
-        return results.every((result) => result)
-      })
-    },
-
     versions(id) {
-      return loadVersions(this, FETCH_PAGE_VERSIONS, 'page', id, v => {
+      return this.loadVersions(FETCH_PAGE_VERSIONS, id, v => {
         const elements = this.elems(v.elements || [])
         const item = {
           ...v,
@@ -776,25 +597,14 @@ export default {
       })
     },
 
-    writeText(prompt, context = [], files = []) {
-      if (!Array.isArray(context)) {
-        context = [context]
-      }
-
-      context.push('page content as JSON: ' + JSON.stringify(this.item.content))
-      context.push('required output language: ' + (this.item.lang || 'en'))
-
-      return import('../ai').then(({ write }) => write(prompt, context, files))
+    writeContext() {
+      return 'page content as JSON: ' + JSON.stringify(this.item.content)
     }
   },
 
   watch: {
     asidePage(newAside) {
       this.aside = newAside
-    },
-
-    hasChanged(value, old) {
-      if (value !== old) this.dirtyStore.set(value)
     },
 
     vhistory(val) {
@@ -805,27 +615,7 @@ export default {
 </script>
 
 <template>
-  <DetailAppBar
-    type="page"
-    :label="$gettext('Page')"
-    :name="item.name"
-    :stacked="stacked"
-    :dirty="hasChanged"
-    :error="hasError"
-    :conflict="hasConflict"
-    :changed="changed"
-    :published="item.published"
-    :has-latest="!!latest"
-    :saving="saving"
-    :publishing="publishing"
-    v-model:publish-at="publishAt"
-    v-model:publish-time="publishTime"
-    @save="save()"
-    @publish="publish(null, $event)"
-    @schedule="schedule($event)"
-    @history="vhistory = true"
-    @changes="vchanged = true"
-  >
+  <DetailAppBar v-bind="bar" :label="$gettext('Page')" :has-latest="!!latest">
     <template #actions>
       <v-btn
         v-if="user.can('page:chat')"
@@ -894,7 +684,6 @@ export default {
             :aside-visible="aside === 'editor' && drawer.aside"
             :save="saveConfig"
             :item="item"
-            :assets="assets"
             :elements="elements"
             :preview-size="previewSize"
             @change="dirty.content = true"

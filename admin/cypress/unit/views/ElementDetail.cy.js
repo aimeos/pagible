@@ -1,4 +1,5 @@
 import ElementDetail from '../../../js/views/ElementDetail.vue'
+import { apolloClient } from '../../../js/graphql'
 import { sections } from '../../../js/history'
 import { useSchemaStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
@@ -6,7 +7,7 @@ import '../../../js/assets/base.css'
 const stubs = {
   AsideMeta: { template: '<div class="aside-meta-stub" />' },
   HistoryDialog: { template: '<div class="history-dialog-stub" />' },
-  ElementDetailRefs: { template: '<div class="element-detail-refs-stub" />' },
+  DetailRefs: { template: '<div class="element-detail-refs-stub" />' },
   ElementDetailItem: { template: '<div class="element-detail-item-stub" />' },
 }
 
@@ -133,12 +134,10 @@ describe('ElementDetail', () => {
   })
 
   it('invalidates element lists', () => {
-    const evict = cy.stub()
-    const gc = cy.stub()
+    const evict = cy.stub(apolloClient.cache, 'evict')
+    const gc = cy.stub(apolloClient.cache, 'gc')
 
-    mountDetail({}, {}, {
-      provider: { defaultClient: { cache: { evict, gc } } },
-    }).then(() => {
+    mountDetail().then(() => {
       Cypress.vueWrapper.findComponent(ElementDetail).vm.invalidate()
 
       expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'elements' })

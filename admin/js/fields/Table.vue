@@ -3,10 +3,11 @@
 <script>
 import {
   mdiDotsVertical,
+  mdiDragHorizontal,
+  mdiDragVertical,
   mdiTableColumnPlusBefore,
   mdiTableColumnPlusAfter,
   mdiDelete,
-  mdiDragHorizontal,
   mdiTableRowPlusBefore,
   mdiTableRowPlusAfter
 } from '@mdi/js'
@@ -23,10 +24,11 @@ export default {
   setup() {
     return {
       mdiDotsVertical,
+      mdiDragHorizontal,
+      mdiDragVertical,
       mdiTableColumnPlusBefore,
       mdiTableColumnPlusAfter,
       mdiDelete,
-      mdiDragHorizontal,
       mdiTableRowPlusBefore,
       mdiTableRowPlusAfter,
       debounce
@@ -46,9 +48,7 @@ export default {
     return {
       columns: this.header(),
       lastError: null,
-      table: this.modelValue,
-      validated: null,
-      updated: null
+      table: this.modelValue
     }
   },
 
@@ -143,7 +143,7 @@ export default {
     modelValue: {
       handler(val) {
         this.table = val
-        this.validated ? this.validated(val) : this.validate(val)
+        this.validated(val)
         this.columns = this.header()
       }
     }
@@ -166,20 +166,8 @@ export default {
               variant="text"
               class="col-handle cursor-move"
               :aria-label="$gettext('Move column')"
-              icon
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                width="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M3,15V13H5V15H3M3,11V9H5V11H3M7,15V13H9V15H7M7,11V9H9V11H7M11,15V13H13V15H11M11,11V9H13V11H11M15,15V13H17V15H15M15,11V9H17V11H15M19,15V13H21V15H19M19,11V9H21V11H19Z"
-                />
-              </svg>
-            </v-btn>
+              :icon="mdiDragHorizontal"
+            />
 
             <span class="btn-actions" v-if="!readonly">
               <ActionMenu :title="$gettext('Column actions')" location="start center">
@@ -187,25 +175,16 @@ export default {
                   <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-list-item>
-                  <v-btn
-                    :prepend-icon="mdiTableColumnPlusBefore"
-                    variant="text"
-                    @click="addCol(idx)"
-                    >{{ $gettext('Insert before') }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item>
-                  <v-btn
-                    :prepend-icon="mdiTableColumnPlusAfter"
-                    variant="text"
-                    @click="addCol(idx + 1)"
-                    >{{ $gettext('Insert after') }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item v-if="cols.length > 1">
-                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmCol(idx)">{{
-                    $gettext('Remove')
+                <v-list-item
+                  v-for="item in [
+                    { icon: mdiTableColumnPlusBefore, label: $gettext('Insert before'), fn: () => addCol(idx) },
+                    { icon: mdiTableColumnPlusAfter, label: $gettext('Insert after'), fn: () => addCol(idx + 1) },
+                    { icon: mdiDelete, label: $gettext('Remove'), fn: () => rmCol(idx), hide: cols.length <= 1 }
+                  ].filter((item) => !item.hide)"
+                  :key="item.icon"
+                >
+                  <v-btn :prepend-icon="item.icon" variant="text" @click="item.fn()">{{
+                    item.label
                   }}</v-btn>
                 </v-list-item>
               </ActionMenu>
@@ -220,23 +199,11 @@ export default {
         <tr v-for="(row, rowidx) in table" :key="rowidx">
           <td>
             <v-btn
-              :icon="mdiDragHorizontal"
               :aria-label="$gettext('Move row')"
               variant="text"
               class="row-handle cursor-move"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                width="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z"
-                />
-              </svg>
-            </v-btn>
+              :icon="mdiDragVertical"
+            />
           </td>
 
           <td v-for="(col, colidx) in cols" :key="colidx">
@@ -257,25 +224,16 @@ export default {
                   <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-list-item>
-                  <v-btn
-                    :prepend-icon="mdiTableRowPlusBefore"
-                    variant="text"
-                    @click="addRow(rowidx)"
-                    >{{ $gettext('Insert before') }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item>
-                  <v-btn
-                    :prepend-icon="mdiTableRowPlusAfter"
-                    variant="text"
-                    @click="addRow(rowidx + 1)"
-                    >{{ $gettext('Insert after') }}</v-btn
-                  >
-                </v-list-item>
-                <v-list-item v-if="table.length > 1">
-                  <v-btn :prepend-icon="mdiDelete" variant="text" @click="rmRow(rowidx)">{{
-                    $gettext('Remove')
+                <v-list-item
+                  v-for="item in [
+                    { icon: mdiTableRowPlusBefore, label: $gettext('Insert before'), fn: () => addRow(rowidx) },
+                    { icon: mdiTableRowPlusAfter, label: $gettext('Insert after'), fn: () => addRow(rowidx + 1) },
+                    { icon: mdiDelete, label: $gettext('Remove'), fn: () => rmRow(rowidx), hide: table.length <= 1 }
+                  ].filter((item) => !item.hide)"
+                  :key="item.icon"
+                >
+                  <v-btn :prepend-icon="item.icon" variant="text" @click="item.fn()">{{
+                    item.label
                   }}</v-btn>
                 </v-list-item>
               </ActionMenu>

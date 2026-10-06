@@ -2,10 +2,11 @@
 
 <script>
 import { mdiDotsVertical, mdiPencil, mdiTrashCan } from '@mdi/js'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 
 export default {
-  components: { ActionMenu },
+  components: { ActionItem, ActionMenu },
 
   props: {
     editable: { type: Boolean, default: false }
@@ -31,15 +32,11 @@ export default {
       />
     </template>
 
-    <v-list-item v-if="editable">
-      <v-btn :prepend-icon="mdiPencil" variant="text" @click="$emit('edit')">
-        {{ $gettext('Edit') }}
-      </v-btn>
-    </v-list-item>
-    <v-list-item>
-      <v-btn :prepend-icon="mdiTrashCan" variant="text" @click="$emit('remove')">
-        {{ $gettext('Remove') }}
-      </v-btn>
-    </v-list-item>
+    <ActionItem v-if="editable" :prepend-icon="mdiPencil" @click="$emit('edit')">
+      {{ $gettext('Edit') }}
+    </ActionItem>
+    <ActionItem :prepend-icon="mdiTrashCan" @click="$emit('remove')">
+      {{ $gettext('Remove') }}
+    </ActionItem>
   </ActionMenu>
 </template>

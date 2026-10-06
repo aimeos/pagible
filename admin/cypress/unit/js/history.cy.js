@@ -1,5 +1,5 @@
 import { blocks, filechanges, filepairs, lineRows, plaintext, restore, sections, tableRows, words } from '../../../js/history'
-import { loadVersions } from '../../../js/version'
+import { detailBase } from '../../../js/detail'
 
 const block = (id, text = id) => ({ id, type: 'text', group: 'main', data: { text } })
 const a = block('a'), b = block('b'), c = block('c')
@@ -7,11 +7,11 @@ const moveKey = entry => entry.fields.find(field => field.position).key
 const context = () => ({
   user: { can: cy.stub().returns(true) },
   $apollo: { query: cy.stub() },
-  messages: { add: cy.spy() },
+  messages: { add: cy.spy(), denied: cy.spy() },
   $gettext: value => value,
 })
 const load = (vm, key = 'page', id = 'id', convert = value => value) =>
-  loadVersions(vm, 'query', key, id, convert)
+  detailBase.methods.loadVersions.call({ ...vm, type: key }, 'query', id, convert)
 
 describe('History comparisons and restoration', () => {
   it('ignores metadata and object key order without ignoring real scalar changes', () => {
@@ -42,7 +42,7 @@ describe('History comparisons and restoration', () => {
       { before: before[0], after: before[0] },
       { skip: 3 },
       { before: before[4], after: before[4] },
-      { before: before[5], after: after[5] },
+      { before: before[5], after: after[5], changed: true },
       { before: before[6], after: before[6] },
       { skip: 5 }
     ])
@@ -251,7 +251,7 @@ describe('History version loading', () => {
     const vm = context()
     vm.user.can.returns(false)
     expect(await load(vm)).to.deep.equal([])
-    expect(vm.messages.add).to.have.been.calledOnceWithExactly('Permission denied', 'error')
+    expect(vm.messages.denied).to.have.been.calledOnce
     vm.user.can.returns(true)
     expect(await load(vm, 'page', '')).to.deep.equal([])
     expect(vm.$apollo.query).not.to.have.been.called

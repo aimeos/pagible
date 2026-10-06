@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
 import { useUserStore, useMessageStore } from '../stores'
@@ -62,7 +63,7 @@ const UPSCALE_IMAGE = gql`
 `
 
 export default {
-  components: { ActionMenu, CmsDialog },
+  components: { ActionItem, ActionMenu, CmsDialog },
 
   props: {
     item: { type: Object, required: true },
@@ -100,7 +101,6 @@ export default {
       user,
       messages,
       fileurl,
-      toBlob,
       mdiClose,
       mdiCropFree,
       mdiCrop,
@@ -135,27 +135,40 @@ export default {
 
   beforeUnmount() {
     this.destroyed = true
-
-    try {
-      if (this.cropper) {
-        this.cropper.destroy()
-        this.cropper = null
-      }
-    } finally {
-      this.images.forEach((img) => {
-        URL.revokeObjectURL(img.url)
-      })
-
-      this.images = null
-      this.Cropper = null
-      this.loading = null
-      this.menu = null
-      this.edittext = null
-      this.cropLabel = null
-    }
+    this.images.forEach((img) => URL.revokeObjectURL(img.url))
+    this.cropper?.destroy()
   },
 
   computed: {
+    aspects() {
+      return [
+        [this.$gettext('Original ratio'), this.ratio],
+        [this.$gettext('No ratio'), NaN],
+        [this.$gettext('Square'), 1],
+        ['3:2', 3 / 2],
+        ['4:3', 4 / 3],
+        ['5:3', 5 / 3],
+        ['16:9', 16 / 9]
+      ]
+    },
+
+    edges() {
+      const hint = ' ‒ ' + this.$gettext('Number of pixels added at this side of the image')
+
+      return [
+        [['top', this.$pgettext('image edge', 'Top') + hint]],
+        [
+          ['left', this.$pgettext('image edge', 'Left') + hint],
+          ['right', this.$pgettext('image edge', 'Right') + hint]
+        ],
+        [['bottom', this.$pgettext('image edge', 'Bottom') + hint]]
+      ]
+    },
+
+    factors() {
+      return [16, 8, 4, 2].filter((f) => this.width * f <= 4096 && this.height * f <= 4096)
+    },
+
     ratio() {
       if (!this.cropper) {
         return NaN
@@ -209,22 +222,8 @@ export default {
 
     erase() {
       if (!this.cropper) return
-      this.image().then((blob) => {
-        this.mask().toBlob((mask) => {
-          this.mutate(
-            'image:erase',
-            ERASE_IMAGE,
-            {
-              file: new File([blob], 'image', { type: this.item.mime }),
-              mask: new File([mask], 'mask', { type: 'image/png' })
-            }
-          ).then((response) => this.replace(this.toBlob(response.data?.erase)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error erasing image part') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::erase(): Error erasing image part', error)
-          })
-          .finally(() => this.clear())
-        })
+      this.masked().then((files) => {
+        this.mutate('image:erase', ERASE_IMAGE, files, this.$gettext('Error erasing image part'))
       })
     },
 
@@ -315,23 +314,9 @@ export default {
         return
       }
 
-      this.image().then((blob) => {
-        this.mask().toBlob((mask) => {
-          this.mutate(
-            'image:inpaint',
-            INPAINT_IMAGE,
-            {
-              file: new File([blob], 'image', { type: this.item.mime }),
-              mask: new File([mask], 'mask', { type: 'image/png' }),
-              prompt: this.edittext
-            }
-          ).then((response) => this.replace(this.toBlob(response.data?.inpaint)))
-          .catch((error) => {
-            this.messages.add(this.$gettext('Error editing image part') + ':\n' + error, 'error')
-            this.$log('FileDetailItemImage::inpaint(): Error editing image part', error)
-          })
-          .finally(() => this.clear())
-        })
+      this.masked().then((files) => {
+        const vars = { ...files, prompt: this.edittext }
+        this.mutate('image:inpaint', INPAINT_IMAGE, vars, this.$gettext('Error editing image part'))
       })
     },
 
@@ -341,68 +326,10 @@ export default {
       this.clear()
 
       this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate(
-          'image:isolate',
-          ISOLATE_IMAGE,
-          {
-            file: new File([blob], 'image.png', { type: 'image/png' })
-          }
-        ).then((response) => this.replace(this.toBlob(response.data?.isolate)))
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error removing background') + ':\n' + error, 'error')
-          this.$log('FileDetailItemImage::isolate(): Error removing background', error)
-        })
+        this.mutate('image:isolate', ISOLATE_IMAGE, {
+          file: new File([blob], 'image.png', { type: 'image/png' })
+        }, this.$gettext('Error removing background'))
       })
-    },
-
-    monochrome() {
-      if (!this.cropper) return
-
-      this.clear()
-
-      const canvas = this.cropper.getCroppedCanvas()
-      const context = canvas.getContext('2d')
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-      const data = imageData.data
-
-      for (let i = 0; i < data.length; i += 4) {
-        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
-        data[i] = gray
-        data[i + 1] = gray
-        data[i + 2] = gray
-        data[i + 3] = Math.round(gray)
-      }
-
-      context.putImageData(imageData, 0, 0)
-
-      canvas.toBlob((blob) => {
-        if (blob) {
-          this.replace(blob)
-        }
-      })
-    },
-
-    mutate(action, mutation, variables) {
-      if (this.readonly || !this.user.can(action)) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.reject()
-      }
-
-      this.loading[action] = true
-
-      return this.$apollo
-        .mutate({
-          mutation,
-          variables,
-          context: { hasUpload: true }
-        })
-        .then((response) => {
-          if (response.errors) throw response.errors
-          return response
-        })
-        .finally(() => {
-          this.loading[action] = false
-        })
     },
 
     mask() {
@@ -435,6 +362,66 @@ export default {
       return canvas
     },
 
+    // returns the image and the mask of the selected area as upload files
+    masked() {
+      return this.image().then((blob) =>
+        new Promise((resolve) => this.mask().toBlob(resolve)).then((mask) => ({
+          file: new File([blob], 'image', { type: this.item.mime }),
+          mask: new File([mask], 'mask', { type: 'image/png' })
+        }))
+      )
+    },
+
+    monochrome() {
+      if (!this.cropper) return
+
+      this.clear()
+
+      const canvas = this.cropper.getCroppedCanvas()
+      const context = canvas.getContext('2d')
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
+        data[i] = gray
+        data[i + 1] = gray
+        data[i + 2] = gray
+        data[i + 3] = Math.round(gray)
+      }
+
+      context.putImageData(imageData, 0, 0)
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.replace(blob)
+        }
+      })
+    },
+
+    // runs the AI image mutation and replaces the image by the result
+    mutate(action, mutation, variables, msg) {
+      if (this.readonly || !this.user.can(action)) {
+        this.messages.denied()
+        return this.clear()
+      }
+
+      this.loading[action] = true
+
+      return this.$apollo
+        .mutate({
+          mutation,
+          variables,
+          context: { hasUpload: true }
+        })
+        .then((response) => this.replace(toBlob(response.data?.[action.split(':')[1]])))
+        .catch((error) => this.messages.error(msg, error))
+        .finally(() => {
+          this.loading[action] = false
+          this.clear()
+        })
+    },
+
     painted() {
       this.selected ? this.inpaint() : this.repaint()
       this.menu['paint'] = false
@@ -446,19 +433,10 @@ export default {
       }
 
       this.image().then((blob) => {
-        this.mutate(
-          'image:repaint',
-          REPAINT_IMAGE,
-          {
-            file: new File([blob], 'image', { type: this.item.mime }),
-            prompt: this.edittext
-          }
-        ).then((response) => this.replace(this.toBlob(response.data?.repaint)))
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error editing image') + ':\n' + error, 'error')
-          this.$log('FileDetailItemImage::repaint(): Error editing image', error)
-        })
-        .finally(() => this.clear())
+        this.mutate('image:repaint', REPAINT_IMAGE, {
+          file: new File([blob], 'image', { type: this.item.mime }),
+          prompt: this.edittext
+        }, this.$gettext('Error editing image'))
       })
     },
 
@@ -468,25 +446,26 @@ export default {
       let file = null
 
       if (blob) {
-        const image = URL.createObjectURL(blob)
-
-        this.cropper.replace(image)
-
         if (idx !== null) {
-          this.images.unshift(...this.images.splice(idx, 1))
-        } else {
-          this.images.unshift({ blob: blob, url: image })
+          URL.revokeObjectURL(this.images.splice(idx, 1)[0].url)
         }
 
-        this.images.splice(10).forEach((img) => {
-          URL.revokeObjectURL(img.url)
-        })
-
+        this.cropper.replace(this.remember(blob))
         file = new File([blob], this.item.path.split('/').pop(), { type: 'image/png' })
       }
 
       this.$emit('update:file', file)
       this.reset()
+    },
+
+    // adds the image to the undo history and returns its object URL
+    remember(blob) {
+      const url = URL.createObjectURL(blob)
+
+      this.images.unshift({ blob: blob, url: url })
+      this.images.splice(10).forEach((img) => URL.revokeObjectURL(img.url))
+
+      return url
     },
 
     reset() {
@@ -530,40 +509,25 @@ export default {
       this.clear()
 
       this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate(
-          'image:uncrop',
-          UNCROP_IMAGE,
-          {
-            file: new File([blob], 'image.png', { type: 'image/png' }),
-            top: this.extend.top ?? 0,
-            right: this.extend.right ?? 0,
-            bottom: this.extend.bottom ?? 0,
-            left: this.extend.left ?? 0
-          }
-        ).then((response) => this.replace(this.toBlob(response.data?.uncrop)))
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error uncropping image') + ':\n' + error, 'error')
-          this.$log('FileDetailItemImage::uncrop(): Error uncropping image', error)
-        })
+        this.mutate('image:uncrop', UNCROP_IMAGE, {
+          file: new File([blob], 'image.png', { type: 'image/png' }),
+          top: this.extend.top ?? 0,
+          right: this.extend.right ?? 0,
+          bottom: this.extend.bottom ?? 0,
+          left: this.extend.left ?? 0
+        }, this.$gettext('Error uncropping image'))
       })
     },
 
     uncropped() {
-      this.uncrop(this.extend.top, this.extend.right, this.extend.bottom, this.extend.left)
+      this.uncrop()
       this.menu['uncrop'] = false
     },
 
     updateFile() {
       if (!this.readonly && !this.destroyed && this.cropper) {
         this.cropper.getCroppedCanvas().toBlob((blob) => {
-          const url = URL.createObjectURL(blob)
-
-          this.images.unshift({ blob: blob, url: url })
-          this.images.splice(10).forEach((img) => {
-            URL.revokeObjectURL(img.url)
-          })
-
-          this.cropper.replace(url)
+          this.cropper.replace(this.remember(blob))
           this.$emit(
             'update:file',
             new File([blob], this.item.path.split('/').pop(), { type: 'image/png' })
@@ -578,18 +542,10 @@ export default {
       this.clear()
 
       this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate(
-          'image:upscale',
-          UPSCALE_IMAGE,
-          {
-            file: new File([blob], 'image.png', { type: 'image/png' }),
-            factor: factor
-          }
-        ).then((response) => this.replace(this.toBlob(response.data?.upscale)))
-        .catch((error) => {
-          this.messages.add(this.$gettext('Error upscaling image') + ':\n' + error, 'error')
-          this.$log('FileDetailItemImage::upscale(): Error upscaling image', error)
-        })
+        this.mutate('image:upscale', UPSCALE_IMAGE, {
+          file: new File([blob], 'image.png', { type: 'image/png' }),
+          factor: factor
+        }, this.$gettext('Error upscaling image'))
       })
     },
 
@@ -624,7 +580,7 @@ export default {
 </script>
 
 <template>
-  <div ref="editorContainer" class="editor-container">
+  <div class="editor-container">
     <img
       ref="image"
       :src="fileurl(item, item.path, !svg)"
@@ -655,65 +611,14 @@ export default {
           />
         </template>
 
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(ratio)"
-            >{{ $gettext('Original ratio') }}</v-btn
-          >
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(NaN)"
-            >{{ $gettext('No ratio') }}</v-btn
-          >
-        </v-list-item>
-        <v-list-item>
-          <v-btn :prepend-icon="mdiCropFree" class="no-rtl" variant="text" @click="aspect(1)">{{
-            $gettext('Square')
-          }}</v-btn>
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(3 / 2)"
-            >3:2</v-btn
-          >
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(4 / 3)"
-            >4:3</v-btn
-          >
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(5 / 3)"
-            >5:3</v-btn
-          >
-        </v-list-item>
-        <v-list-item>
-          <v-btn
-            :prepend-icon="mdiCropFree"
-            class="no-rtl"
-            variant="text"
-            @click="aspect(16 / 9)"
-            >16:9</v-btn
-          >
-        </v-list-item>
+        <ActionItem
+          v-for="[label, value] in aspects"
+          :key="label"
+          :prepend-icon="mdiCropFree"
+          class="no-rtl"
+          @click="aspect(value)"
+          >{{ label }}</ActionItem
+        >
       </ActionMenu>
 
       <v-btn
@@ -793,47 +698,13 @@ export default {
           transition="scale-transition"
           max-width="300"
         >
-          <v-row class="single">
-            <v-col cols="6">
+          <v-row v-for="(row, idx) in edges" :key="idx" :class="{ single: row.length === 1 }">
+            <v-col v-for="[key, label] in row" :key="key" cols="6">
               <v-number-input
-                v-model="extend.top"
+                v-model="extend[key]"
                 variant="outlined"
                 controlVariant="hidden"
-                :label="$pgettext('image edge', 'Top') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
-                :max="2000"
-                :min="0"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="6">
-              <v-number-input
-                v-model="extend.left"
-                variant="outlined"
-                controlVariant="hidden"
-                :label="$pgettext('image edge', 'Left') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
-                :max="2000"
-                :min="0"
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-number-input
-                v-model="extend.right"
-                variant="outlined"
-                controlVariant="hidden"
-                :label="$pgettext('image edge', 'Right') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
-                :max="2000"
-                :min="0"
-              />
-            </v-col>
-          </v-row>
-          <v-row class="single">
-            <v-col cols="6">
-              <v-number-input
-                v-model="extend.bottom"
-                variant="outlined"
-                controlVariant="hidden"
-                :label="$pgettext('image edge', 'Bottom') + ' ‒ ' + $gettext('Number of pixels added at this side of the image')"
+                :label="label"
                 :max="2000"
                 :min="0"
               />
@@ -863,46 +734,15 @@ export default {
           />
         </template>
 
-        <v-list-item v-if="width * 16 <= 4096 && height * 16 <= 4096">
-          <v-btn
-            :prepend-icon="mdiMagnifyExpand"
-            class="no-rtl"
-            variant="text"
-            @click="upscale(16)"
-          >
-            {{ $gettext('Scale %{factor}', { factor: '16x' }) }}
-          </v-btn>
-        </v-list-item>
-        <v-list-item v-if="width * 8 <= 4096 && height * 8 <= 4096">
-          <v-btn
-            :prepend-icon="mdiMagnifyExpand"
-            class="no-rtl"
-            variant="text"
-            @click="upscale(8)"
-          >
-            {{ $gettext('Scale %{factor}', { factor: '8x' }) }}
-          </v-btn>
-        </v-list-item>
-        <v-list-item v-if="width * 4 <= 4096 && height * 4 <= 4096">
-          <v-btn
-            :prepend-icon="mdiMagnifyExpand"
-            class="no-rtl"
-            variant="text"
-            @click="upscale(4)"
-          >
-            {{ $gettext('Scale %{factor}', { factor: '4x' }) }}
-          </v-btn>
-        </v-list-item>
-        <v-list-item v-if="width * 2 <= 4096 && height * 2 <= 4096">
-          <v-btn
-            :prepend-icon="mdiMagnifyExpand"
-            class="no-rtl"
-            variant="text"
-            @click="upscale(2)"
-          >
-            {{ $gettext('Scale %{factor}', { factor: '2x' }) }}
-          </v-btn>
-        </v-list-item>
+        <ActionItem
+          v-for="factor in factors"
+          :key="factor"
+          :prepend-icon="mdiMagnifyExpand"
+          class="no-rtl"
+          @click="upscale(factor)"
+        >
+          {{ $gettext('Scale %{factor}', { factor: factor + 'x' }) }}
+        </ActionItem>
       </ActionMenu>
 
       <v-btn

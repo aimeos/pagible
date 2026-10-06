@@ -2,7 +2,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-const UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype']
+export const UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype']
 
 /**
  * Parses a JSON string, strips prototype-polluting keys and freezes the result.

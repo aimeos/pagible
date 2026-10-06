@@ -2,22 +2,12 @@
 
 <script>
 import gql from 'graphql-tag'
-import AsideMeta from '../components/AsideMeta.vue'
-import DetailAppBar from '../components/DetailAppBar.vue'
-import FileDetailRefs from '../components/FileDetailRefs.vue'
+import DetailRefs from '../components/DetailRefs.vue'
 import FileDetailItem from '../components/FileDetailItem.vue'
-import { useDirtyStore, useSideStore, useUserStore, useMessageStore, usePluginStore, useViewStack, useChangeStore } from '../stores'
 import { applyResult, hasUnresolved } from '../merge'
-import { invalidateList } from '../graphql'
-import { pluginLabel } from '../i18n'
-import { publishDate, publishItem } from '../publish'
-import { defineAsyncComponent, markRaw } from 'vue'
-import { setupReload, cleanEcho } from '../echo'
-import { loadVersions, reloadVersion } from '../version'
-import { focusInvalid, safeParse } from '../utils'
-
-const ChangesDialog = defineAsyncComponent(() => import('../components/ChangesDialog.vue'))
-const HistoryDialog = defineAsyncComponent(() => import('../components/HistoryDialog.vue'))
+import { detailBase, useDetail } from '../detail'
+import { markRaw } from 'vue'
+import { safeParse } from '../utils'
 
 const FETCH_FILE = gql`
   query ($id: ID!) {
@@ -74,63 +64,36 @@ const FETCH_FILE_VERSIONS = gql`
 `
 
 export default {
+  extends: detailBase,
+
   components: {
-    AsideMeta,
-    ChangesDialog,
-    DetailAppBar,
-    HistoryDialog,
-    FileDetailItem,
-    FileDetailRefs
+    ...detailBase.components,
+    DetailRefs,
+    FileDetailItem
   },
 
   props: {
-    item: { type: Object, required: true },
-    stacked: { type: Boolean, default: false },
     onSaved: { type: Function, default: null }
   },
 
   data: () => ({
-    destroyed: false,
-    echoCleanup: null,
-    echoPromise: null,
     file: null,
-    initial: null,
-    error: false,
-    changed: null,
-    loading: true,
-    dirty: false,
-    publishAt: null,
-    publishTime: null,
-    publishing: false,
-    saving: false,
-    vchanged: false,
-    vhistory: false,
-    tab: 'file'
+    initial: null
   }),
 
   setup() {
-    const dirtyStore = useDirtyStore()
-    const messages = useMessageStore()
-    const side = useSideStore()
-    const user = useUserStore()
-    const viewStack = useViewStack()
-    const changes = useChangeStore()
+    return useDetail('file')
+  },
 
-    return {
-      dirtyStore,
-      side,
-      user,
-      messages,
-      viewStack,
-      changes
-    }
+  created() {
+    this.initial = this.previewsJson()
+  },
+
+  beforeUnmount() {
+    this.file = null
   },
 
   computed: {
-    subpanels() {
-      return usePluginStore().subpanels.file || {}
-    },
-
     hasConflict() {
       return hasUnresolved(this.changed, ['data', 'aux'])
     },
@@ -153,42 +116,11 @@ export default {
     }
   },
 
-  created() {
-    this.dirtyStore.register(() => this.save(true))
-    this.initial = this.previewsJson()
-
-    if (!this.item?.id || !this.user.can('file:view')) {
-      this.loading = false
-      return
-    }
-
-    this.reload().then((ok) => {
-      if (!ok) return
-
-      // reload the open file when its own item is saved elsewhere or after a reconnect that may
-      // have missed a save, unless the user has unsaved edits
-      setupReload(this, 'file', this.item.id, () => this.reload(), () => !this.dirty && this.user.can('file:view'))
-    })
-  },
-
-  beforeUnmount() {
-    this.destroyed = true
-    this.dirtyStore.unregister()
-    cleanEcho(this)
-    this.changed = null
-    this.file = null
-    this.side.$reset()
-  },
-
   methods: {
-    label(panel) {
-      return pluginLabel(panel, this)
-    },
-
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
-      return reloadVersion(this, FETCH_FILE, 'file', this.$gettext('Error fetching file'), (file) => {
+      return this.reloadVersion(FETCH_FILE, this.$gettext('Error fetching file'), (file) => {
         const latest = file.latest
 
         Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
@@ -207,22 +139,9 @@ export default {
       this.vhistory = false
     },
 
-    errorUpdated(event) {
-      this.error = event
-    },
-
     fileUpdated(event) {
       this.file = event
       this.dirty = true
-    },
-
-    itemUpdated() {
-      this.$emit('update:item', this.item)
-      this.dirty = true
-    },
-
-    invalidate() {
-      invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
     },
 
     media(data) {
@@ -246,37 +165,8 @@ export default {
       return JSON.stringify(this.item?.previews || {})
     },
 
-    publish(at = null, close = false) {
-      publishItem(this, 'file', {
-        success: this.$gettext('File published successfully'),
-        scheduled: (d) => this.$gettext('File scheduled for publishing at %{date}', { date: d.toLocaleDateString() }),
-        error: this.$gettext('Error publishing file')
-      }, at, close)
-    },
-
-    schedule(close = false) {
-      this.publish(publishDate(this.publishAt, this.publishTime), close)
-    },
-
-    reset() {
-      this.dirty = false
-      this.changed = null
-      this.error = false
-    },
-
     save(quiet = false) {
-      if (!this.user.can('file:save')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return Promise.resolve(false)
-      }
-
-      if (this.error) {
-        this.messages.add(
-          this.$gettext('There are invalid fields, please resolve the errors first'),
-          'error'
-        )
-        this.tab = 'file'
-        this.$nextTick(() => focusInvalid(this.$refs.form))
+      if (!this.saveable()) {
         return Promise.resolve(false)
       }
 
@@ -309,33 +199,23 @@ export default {
           }
         })
         .then((result) => {
-          if (result.errors) {
-            throw result.errors
-          }
-
           const file = result.data?.saveFile
           const latest = file?.latest
           const changed = file?.changed ? markRaw(safeParse(file.changed)) : null
 
           Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
-          this.item.updated_at = latest?.created_at
           this.item.latestId = latest?.id
           this.initial = this.previewsJson()
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
 
-          this.item.published = latest?.published ?? false
-          this.item.publish_at = latest?.publish_at ?? null
-          this.item.editor = latest?.editor ?? this.item.editor
-          this.invalidate()
-          this.changes.notify('file', this.item)
+          this.saved(latest)
           this.onSaved?.()
 
           return true
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log(`FileDetail::save(): Error saving file`, error)
+          this.messages.error(this.$gettext('Error saving file'), error)
         })
         .finally(() => {
           this.saving = false
@@ -350,7 +230,7 @@ export default {
     },
 
     versions(id) {
-      return loadVersions(this, FETCH_FILE_VERSIONS, 'file', id, v => {
+      return this.loadVersions(FETCH_FILE_VERSIONS, id, v => {
         const data = Object.assign(safeParse(v.data), safeParse(v.aux))
         const item = { ...v, data: Object.freeze(data) }
         delete item.aux
@@ -358,38 +238,12 @@ export default {
         return Object.freeze(item)
       })
     }
-  },
-
-  watch: {
-    dirty(value) {
-      this.dirtyStore.set(value)
-    }
   }
 }
 </script>
 
 <template>
-  <DetailAppBar
-    type="file"
-    :label="$gettext('File')"
-    :name="item.name"
-    :stacked="stacked"
-    :dirty="dirty"
-    :error="error"
-    :conflict="hasConflict"
-    :changed="changed"
-    :published="item.published"
-    :has-latest="!!item.latestId"
-    :saving="saving"
-    :publishing="publishing"
-    v-model:publish-at="publishAt"
-    v-model:publish-time="publishTime"
-    @save="save()"
-    @publish="publish(null, $event)"
-    @schedule="schedule"
-    @history="vhistory = true"
-    @changes="vchanged = true"
-  />
+  <DetailAppBar v-bind="bar" :label="$gettext('File')" :has-latest="!!item.latestId" />
 
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />
@@ -409,13 +263,13 @@ export default {
           <FileDetailItem
             @update:item="itemUpdated"
             @update:file="fileUpdated"
-            @error="errorUpdated"
+            @error="error = $event"
             :item="item"
           />
         </v-window-item>
 
         <v-window-item value="refs">
-          <FileDetailRefs :item="item" />
+          <DetailRefs :item="item" type="file" />
         </v-window-item>
 
         <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">

@@ -4,6 +4,7 @@
 import { markRaw } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { fieldBase } from '../field'
 
 const number = (value) => {
   if (value === null || value === undefined || value === '') return null
@@ -32,18 +33,13 @@ const markerIcon = () => L.divIcon({
  * - `zoom`: int, default OpenStreetMap zoom level (1-19)
  */
 export default {
+  extends: fieldBase,
+
   props: {
-    modelValue: { type: Object },
-    config: { type: Object, default: () => ({}) },
-    assets: { type: Object, default: () => ({}) },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: Object }
   },
 
-  emits: ['update:modelValue', 'error'],
-
   data: () => ({
-    lastError: null,
     map: null,
     marker: null,
     syncing: false
@@ -194,16 +190,6 @@ export default {
   },
 
   watch: {
-    hasError: {
-      immediate: true,
-      handler(value) {
-        if (value !== this.lastError) {
-          this.lastError = value
-          this.$emit('error', value)
-        }
-      }
-    },
-
     modelValue: {
       deep: true,
       handler() {

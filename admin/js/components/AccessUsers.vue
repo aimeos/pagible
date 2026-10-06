@@ -123,17 +123,8 @@ export default {
     },
 
     isBackendPermissionCustom() {
-      if (!this.result?.permissions?.length) return false
-
       const known = new Set(this.permissionOptions.roles || [])
-
-      return (this.result.permissions || []).some((entry) => {
-        if (!this.isRole(entry)) {
-          return true
-        }
-
-        return !known.has(entry)
-      })
+      return (this.result?.permissions || []).some((entry) => !this.isRole(entry) || !known.has(entry))
     },
 
     permissionRoleItems() {
@@ -188,19 +179,29 @@ export default {
   },
 
   methods: {
+    async applyRoleChanges() {
+      const promises = []
+
+      if (this.canAccess && this.hasFrontendRoleChanges) {
+        promises.push(this.change('access', this.frontendRoleDraft, SET_USER_ACCESS))
+      }
+
+      if (this.canPermission && this.hasBackendRoleChanges) {
+        promises.push(this.changePermissionRole(this.backendRoleDraft))
+      }
+
+      await Promise.all(promises)
+    },
+
     async change(field, values, mutation) {
       const saving = field === 'access' ? 'savingAccess' : 'savingPermissions'
       if (!this.result || this[saving]) return
 
       const email = this.result.email
       const id = this.result.id
-      const current = new Set(this.result[field] || [])
       const assignments = [...new Set(Array.isArray(values) ? values : [])]
 
-      if (
-        assignments.length === current.size &&
-        assignments.every((value) => current.has(value))
-      ) {
+      if (this.selectionEqual(assignments, this.result[field])) {
         return
       }
 
@@ -217,10 +218,9 @@ export default {
 
           if (field === 'access') {
             this.messages.add(this.$gettext('Access roles updated'), 'success')
-            this.syncFrontendRoleDraft()
-          } else {
-            this.syncBackendRoleDraft()
           }
+
+          this.sync(field)
         }
       } catch (error) {
         if (email === this.searchEmail) {
@@ -229,57 +229,11 @@ export default {
               ? this.$gettext('Error updating access roles')
               : this.$gettext('Error updating CMS permissions')
 
-          this.messages.add(message + ':\n' + error, 'error')
+          this.messages.error(message, error)
         }
       } finally {
         this[saving] = false
       }
-    },
-
-    syncBackendRoleDraft() {
-      this.backendRoleDraft = this.permissionRole
-    },
-
-    syncFrontendRoleDraft() {
-      this.frontendRoleDraft = [...new Set(this.result?.access || [])]
-    },
-
-    syncRoleDrafts() {
-      this.syncFrontendRoleDraft()
-      this.syncBackendRoleDraft()
-    },
-
-    selectionEqual(a, b) {
-      const left = [...new Set((a || []).filter((v) => v !== undefined))].sort()
-      const right = [...new Set((b || []).filter((v) => v !== undefined))].sort()
-
-      return left.length === right.length && left.every((value, index) => value === right[index])
-    },
-
-    changeAccess(values) {
-      return this.change('access', values, SET_USER_ACCESS)
-    },
-
-    changePermissions(values) {
-      return this.change('permissions', values, SET_USER_PERMISSIONS)
-    },
-
-    async applyRoleChanges() {
-      const promises = []
-
-      if (this.canAccess && this.hasFrontendRoleChanges) {
-        promises.push(this.changeAccess(this.frontendRoleDraft))
-      }
-
-      if (this.canPermission && this.hasBackendRoleChanges) {
-        promises.push(this.changePermissionRole(this.backendRoleDraft))
-      }
-
-      if (!promises.length) {
-        return
-      }
-
-      await Promise.all(promises)
     },
 
     changePermissionRole(roles) {
@@ -289,21 +243,8 @@ export default {
         !this.isRole(entry) || !this.permissionOptions.roles.includes(entry)
       )
       const selected = (roles || []).filter((value) => value !== this.customRoleValue)
-      const assignments = new Set([...remaining, ...selected])
 
-      this.changePermissions([...assignments])
-    },
-
-    changePermissionRoleDraft(roles) {
-      this.backendRoleDraft = [...new Set(Array.isArray(roles) ? roles : [])]
-    },
-
-    changeAccessDraft(values) {
-      this.frontendRoleDraft = [...new Set(Array.isArray(values) ? values : [])]
-    },
-
-    isRole(entry) {
-      return typeof entry === 'string' && !entry.startsWith('!') && !entry.includes(':')
+      return this.change('permissions', [...remaining, ...selected], SET_USER_PERMISSIONS)
     },
 
     async createUser() {
@@ -325,19 +266,27 @@ export default {
         if (email === this.searchEmail) {
           this.messages.add(this.$gettext('User created'), 'success')
           this.result = response.data.createUser
-          this.syncRoleDrafts()
+          this.sync()
         }
       } catch (error) {
         if (email === this.searchEmail) {
-          this.messages.add(this.$gettext('Error creating user') + ':\n' + error, 'error')
+          this.messages.error(this.$gettext('Error creating user'), error)
         }
       } finally {
         this.creating = false
       }
     },
 
+    draft(key, values) {
+      this[key] = [...new Set(Array.isArray(values) ? values : [])]
+    },
+
     emailChanged() {
       this.result = undefined
+    },
+
+    isRole(entry) {
+      return typeof entry === 'string' && !entry.startsWith('!') && !entry.includes(':')
     },
 
     async loadPermissions() {
@@ -352,9 +301,9 @@ export default {
         })
 
         this.permissionOptions = response.data.permissions
-        this.syncBackendRoleDraft()
+        this.sync('permissions')
       } catch (error) {
-        this.messages.add(this.$gettext('Error fetching access roles') + ':\n' + error, 'error')
+        this.messages.error(this.$gettext('Error fetching access roles'), error)
       } finally {
         this.loadingPermissions = false
       }
@@ -380,22 +329,36 @@ export default {
 
         if (email === this.searchEmail) {
           this.result = response.data.cmsUser
-          this.syncRoleDrafts()
+          this.sync()
         }
       } catch (error) {
         if (email === this.searchEmail) {
-          this.messages.add(this.$gettext('Error fetching user access roles') + ':\n' + error, 'error')
+          this.messages.error(this.$gettext('Error fetching user access roles'), error)
         }
       } finally {
         this.loadingUser = false
       }
     },
 
-    clearEmail() {
-      this.email = ''
-      this.emailChanged()
+    selectionEqual(a, b) {
+      const left = [...new Set((a || []).filter((v) => v !== undefined))].sort()
+      const right = [...new Set((b || []).filter((v) => v !== undefined))].sort()
+
+      return left.length === right.length && left.every((value, index) => value === right[index])
     },
 
+    /**
+     * Resets the frontend ("access"), backend ("permissions") or both role drafts to the saved roles
+     */
+    sync(field) {
+      if (field !== 'permissions') {
+        this.frontendRoleDraft = [...new Set(this.result?.access || [])]
+      }
+
+      if (field !== 'access') {
+        this.backendRoleDraft = this.permissionRole
+      }
+    }
   }
 }
 </script>
@@ -488,7 +451,7 @@ export default {
           clearable
           hide-selected
           hide-details="auto"
-          @update:model-value="changeAccessDraft"
+          @update:model-value="draft('frontendRoleDraft', $event)"
         />
       </section>
 
@@ -510,7 +473,7 @@ export default {
           closable-chips
           clearable
           hide-details="auto"
-          @update:model-value="changePermissionRoleDraft"
+          @update:model-value="draft('backendRoleDraft', $event)"
         />
       </section>
     </div>
@@ -542,7 +505,6 @@ export default {
 }
 
 .found-email {
-  font-family: monospace;
   font-size: 18px;
   margin: 0;
   word-break: break-word;

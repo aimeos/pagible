@@ -1,6 +1,5 @@
 /** @license MIT, https://opensource.org/license/mit */
 
-import { markRaw } from 'vue'
 import { debounce, safeParse, sanitize } from './utils'
 
 let echoPromise = null
@@ -124,7 +123,14 @@ export function socketId() {
   return echoInstance?.socketId?.() || ''
 }
 
-export function setupEcho(vm, type, onEvent, actions = LIST_ACTIONS, connect = subscribe) {
+/**
+ * Subscribes to one or several per-type channels and returns a disposer that removes the
+ * listeners, also when called before the subscription has been established.
+ */
+export function setupEcho(type, onEvent, actions = LIST_ACTIONS, connect = subscribe) {
+  let release = null
+  let disposed = false
+
   const promise = Array.isArray(type)
     ? Promise.allSettled(type.map((name) => connect(name, (event, action) => onEvent(event, action, name), actions)))
         .then((results) => {
@@ -140,34 +146,18 @@ export function setupEcho(vm, type, onEvent, actions = LIST_ACTIONS, connect = s
         })
     : connect(type, onEvent, actions)
 
-  const pending = markRaw(promise
-    .then((cleanup) => {
-      if (vm.echoPromise !== pending || vm.destroyed) return cleanup
-
-      vm.echoCleanup = cleanup
-      vm.echoPromise = null
-      return null
+  promise
+    .then((fn) => {
+      if (disposed) fn?.()
+      else release = fn
     })
-    .catch((error) => {
-      if (vm.echoPromise === pending) vm.echoPromise = null
-      console.warn('Echo subscription failed:', error)
-      return null
-    }))
+    .catch((error) => console.warn('Echo subscription failed:', error))
 
-  vm.echoPromise = pending
-}
-
-export function cleanEcho(vm) {
-  vm.reloadDebounced?.cancel()
-  vm.reloadDebounced = null
-
-  if (vm.echoCleanup) {
-    vm.echoCleanup()
-  } else if (vm.echoPromise) {
-    vm.echoPromise.then((cleanup) => cleanup?.())
+  return () => {
+    disposed = true
+    release?.()
+    release = null
   }
-  vm.echoCleanup = null
-  vm.echoPromise = null
 }
 
 export async function subscribe(contentType, callback, actions = LIST_ACTIONS) {
@@ -273,14 +263,19 @@ export function listEcho(vm, event, name) {
 /**
  * Subscribes a detail view to its per-type channel and reloads (debounced) when its own item is
  * saved elsewhere, or after a reconnect that may have missed a save - guarded by enabled() (e.g.
- * not dirty and permitted). cleanEcho() cancels the pending reload on unmount.
+ * not dirty and permitted). The returned disposer also cancels a pending reload.
  */
-export function setupReload(vm, type, id, reload, enabled) {
-  vm.reloadDebounced = debounce(reload, 300)
+export function setupReload(type, id, reload, enabled, connect = subscribe) {
+  const reloadd = debounce(reload, 300)
   // a detail view reloads its own item on any patch action, a bulk edit including its id, or reconnect
-  setupEcho(vm, type, (event, name) => {
+  const dispose = setupEcho(type, (event, name) => {
     if ((name === RECONNECT || event?.id === id || event?.ids?.includes(id)) && enabled()) {
-      vm.reloadDebounced()
+      reloadd()
     }
-  }, [...PATCH_ACTIONS, 'bulk'])
+  }, [...PATCH_ACTIONS, 'bulk'], connect)
+
+  return () => {
+    reloadd.cancel()
+    dispose()
+  }
 }

@@ -5,54 +5,58 @@ import gql from 'graphql-tag'
 import { mdiLock } from '@mdi/js'
 import { useUserStore, useViewStack } from '../stores'
 
-const FETCH_FILE_REFS = gql`
-  query ($id: ID!) {
-    file(id: $id) {
-      id
-      bypages {
-        id
-        path
-        name
-        restricted
+const queries = new Map()
+const views = {
+  Element: () => import('../views/ElementDetail.vue'),
+  File: () => import('../views/FileDetail.vue'),
+  Page: () => import('../views/PageDetail.vue')
+}
+
+// returns the cached query for the pages, elements (files only) and versions referencing the item
+function query(type) {
+  if (!queries.has(type)) {
+    queries.set(type, gql`
+      query ($id: ID!) {
+        ${type}(id: $id) {
+          id
+          bypages {
+            id
+            path
+            name
+            restricted
+          }
+          ${type === 'file' ? 'byelements { id type name }' : ''}
+          byversions {
+            id
+            versionable_id
+            versionable_type
+            published
+            publish_at
+          }
+        }
       }
-      byelements {
-        id
-        type
-        name
-      }
-      byversions {
-        id
-        versionable_id
-        versionable_type
-        published
-        publish_at
-      }
-    }
+    `)
   }
-`
+
+  return queries.get(type)
+}
 
 export default {
   props: {
-    item: { type: Object, required: true }
+    item: { type: Object, required: true },
+    type: { type: String, required: true }
   },
-
-  emits: [],
 
   data: () => ({
     panel: [0, 1, 2],
     versions: {},
-    file: {}
+    refs: {}
   }),
 
   setup() {
     const viewStack = useViewStack()
     const user = useUserStore()
     return { mdiLock, user, viewStack }
-  },
-
-  beforeUnmount() {
-    this.versions = null
-    this.file = null
   },
 
   methods: {
@@ -70,27 +74,10 @@ export default {
       }
     },
 
-    async openElement(item) {
-      const { default: ElementDetail } = await import('../views/ElementDetail.vue')
-      this.viewStack.openView(ElementDetail, { item: { ...item }, stacked: true })
-    },
-
-    async openFile(item) {
-      const { default: FileDetail } = await import('../views/FileDetail.vue')
-      this.viewStack.openView(FileDetail, { item: { ...item }, stacked: true })
-    },
-
-    async openPage(item) {
-      const { default: PageDetail } = await import('../views/PageDetail.vue')
-      this.viewStack.openView(PageDetail, { item: { ...item }, stacked: true })
-    },
-
-    openVersion(item) {
-      const owner = { id: item.id }
-
-      if (item.type === 'Element') return this.openElement(owner)
-      if (item.type === 'File') return this.openFile(owner)
-      if (item.type === 'Page') return this.openPage(owner)
+    // opens the detail view of the referenced element, file or page
+    async open(type, item) {
+      const { default: view } = await views[type]()
+      this.viewStack.openView(view, { item: { ...item }, stacked: true })
     }
   },
 
@@ -98,30 +85,26 @@ export default {
     item: {
       immediate: true,
       handler(item) {
-        if (!item.id || !this.user.can('file:view')) {
+        if (!item.id || !this.user.can(this.type + ':view')) {
           return
         }
 
         this.$apollo
           .query({
-            query: FETCH_FILE_REFS,
+            query: query(this.type),
             fetchPolicy: 'no-cache',
             variables: {
               id: item.id
             }
           })
           .then((result) => {
-            if (result.errors) {
-              throw result.errors
-            }
-
-            const file = result.data?.file || {}
-            this.file = Object.freeze({
-              ...file,
-              bypages: Object.freeze((file.bypages || []).map(p => Object.freeze(p))),
-              byelements: Object.freeze((file.byelements || []).map(e => Object.freeze(e)))
+            const refs = result.data?.[this.type] || {}
+            this.refs = Object.freeze({
+              ...refs,
+              bypages: Object.freeze((refs.bypages || []).map(p => Object.freeze(p))),
+              byelements: Object.freeze((refs.byelements || []).map(e => Object.freeze(e)))
             })
-            this.versions = Object.freeze((result.data?.file?.byversions || [])
+            this.versions = Object.freeze((refs.byversions || [])
               .map((item) => Object.freeze(this.mapVersion(item)))
               .filter((item) => {
                 return this.user.can(item.type.toLowerCase() + ':view')
@@ -129,7 +112,7 @@ export default {
             )
           })
           .catch((error) => {
-            this.$log(`FileDetailRef::watch(item): Error fetching file`, item, error)
+            this.$log(`DetailRefs::watch(item): Error fetching ${this.type} references`, item, error)
           })
       }
     }
@@ -141,7 +124,7 @@ export default {
   <v-container>
     <v-sheet class="scroll refs">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
-        <v-expansion-panel v-if="file.bypages?.length && user.can('page:view')">
+        <v-expansion-panel v-if="refs.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="pages" density="comfortable" hover>
@@ -153,7 +136,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in file.bypages" :key="v.id" @click="openPage(v)">
+                <tr v-for="v in refs.bypages" :key="v.id" @click="open('Page', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ '/' + v.path }}</td>
                   <td>
@@ -171,7 +154,7 @@ export default {
           </v-expansion-panel-text>
         </v-expansion-panel>
 
-        <v-expansion-panel v-if="file.byelements?.length && user.can('element:view')">
+        <v-expansion-panel v-if="refs.byelements?.length && user.can('element:view')">
           <v-expansion-panel-title>{{ $gettext('Elements') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="elements" density="comfortable" hover>
@@ -183,7 +166,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in file.byelements" :key="v.id" @click="openElement(v)">
+                <tr v-for="v in refs.byelements" :key="v.id" @click="open('Element', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.name }}</td>
@@ -205,7 +188,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in versions" :key="v.key" @click="openVersion(v)">
+                <tr v-for="v in versions" :key="v.key" @click="open(v.type, { id: v.id })">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.published }}</td>

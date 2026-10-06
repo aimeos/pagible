@@ -34,17 +34,13 @@ export default {
 
       this.$emit('apply', this.lang)
       this.$emit('update:modelValue', false)
-    },
-
-    reset() {
-      this.lang = null
     }
   },
 
   watch: {
     modelValue(open) {
       if (open) {
-        this.reset()
+        this.lang = null
       }
     }
   }
@@ -71,8 +67,7 @@ export default {
 
     <v-select
       :items="locales()"
-      :modelValue="lang"
-      @update:modelValue="lang = $event"
+      v-model="lang"
       :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the content')"
       variant="underlined"
       hide-details="auto"

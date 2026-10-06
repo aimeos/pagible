@@ -34,3 +34,20 @@ export const hintTypes = new Set([
   'Autocomplete', 'Checkbox', 'Color', 'Combobox', 'Date', 'Html', 'Number', 'Plaintext',
   'Radio', 'Range', 'Select', 'Slider', 'String', 'Switch', 'Url'
 ])
+
+/** AI text generation context for the field config with the given code and the surrounding data. */
+export const aiContext = (field, code, data) => [
+  'generate for field "' + (field.label || code) + '"',
+  'required output format is "' + field.type + '"',
+  field.min ? 'minimum characters: ' + field.min : null,
+  field.max ? 'maximum characters: ' + field.max : null,
+  field.placeholder ? 'hint text: ' + field.placeholder : null,
+  field.hint ? 'field description: ' + field.hint : null,
+  'context information as JSON: ' + JSON.stringify(data)
+]
+
+/** Registered field component name for the schema field type, "Hidden" for unknown types. */
+export const toName = (type) => {
+  const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
+  return fieldTypes.has(name) ? name : 'Hidden'
+}

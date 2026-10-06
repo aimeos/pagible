@@ -29,22 +29,16 @@ export default {
         map[this.$gettext('editor')] = this.item.editor
       }
 
-      if (this.item.created_at) {
-        map[this.$gettext('created')] = new Date(this.item.created_at).toLocaleString(
-          this.$vuetify.locale.current
-        )
+      const dates = {
+        created_at: this.$gettext('created'),
+        updated_at: this.$gettext('updated'),
+        deleted_at: this.$gettext('deleted')
       }
 
-      if (this.item.updated_at) {
-        map[this.$gettext('updated')] = new Date(this.item.updated_at).toLocaleString(
-          this.$vuetify.locale.current
-        )
-      }
-
-      if (this.item.deleted_at) {
-        map[this.$gettext('deleted')] = new Date(this.item.deleted_at).toLocaleString(
-          this.$vuetify.locale.current
-        )
+      for (const [key, label] of Object.entries(dates)) {
+        if (this.item[key]) {
+          map[label] = new Date(this.item[key]).toLocaleString(this.$vuetify.locale.current)
+        }
       }
 
       return map
@@ -68,10 +62,6 @@ export default {
 <style scoped>
 .v-navigation-drawer {
   border-start-start-radius: 8px;
-}
-
-:deep(.v-list-group__items) {
-  --v-list-indent: 0px;
 }
 
 .v-list-item {

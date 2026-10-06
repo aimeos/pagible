@@ -17,7 +17,6 @@ function mountEditor(props = {}, perms = {}) {
     props: {
       item: { ...item },
       elements: {},
-      assets: {},
       save: { fcn: () => Promise.resolve(), count: 0 },
       ...props,
     },

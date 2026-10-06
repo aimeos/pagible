@@ -2,6 +2,7 @@
 
 <script>
 import { minChars, maxChars, required } from '../rules'
+import { fieldBase } from '../field'
 
 /**
  * Configuration:
@@ -15,24 +16,9 @@ import { minChars, maxChars, required } from '../rules'
  * - `uppercase`: boolean, normalize input to uppercase
  */
 export default {
-  props: {
-    modelValue: { type: String },
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
-  },
-
-  emits: ['update:modelValue', 'error'],
-
-  data: () => ({ lastError: null }),
+  extends: fieldBase,
 
   computed: {
-    hasError() {
-      const val = this.modelValue ?? this.config.default ?? ''
-      return !this.rules.every((rule) => rule(val) === true)
-    },
-
     rules() {
       return [
         required(this.$gettext, this.config.required),
@@ -50,21 +36,6 @@ export default {
   methods: {
     update(value) {
       this.$emit('update:modelValue', this.config.uppercase ? value?.toUpperCase() : value)
-    }
-  },
-
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(val) {
-        const hasError = !this.rules.every(
-          (rule) => rule(val ?? this.config.default ?? '') === true
-        )
-        if (hasError !== this.lastError) {
-          this.lastError = hasError
-          this.$emit('error', hasError)
-        }
-      }
     }
   }
 }

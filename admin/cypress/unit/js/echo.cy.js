@@ -2,12 +2,12 @@ import {
   bulkPatch,
   bindReconnect,
   channelName,
-  cleanEcho,
   eventPatch,
   listEcho,
   resubscribe,
   resync,
   setupEcho,
+  setupReload,
   PATCH_ACTIONS,
   LIST_ACTIONS,
   RECONNECT,
@@ -214,18 +214,17 @@ describe('resubscribe()', () => {
 })
 
 describe('Echo lifecycle', () => {
-  it('owns the cleanup returned by the current subscription', () => {
+  const flush = () => new Promise((done) => setTimeout(done))
+
+  it('returns a disposer that runs the subscription cleanup once', () => {
     const cleanup = cy.stub()
-    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+    const dispose = setupEcho('page', () => {}, LIST_ACTIONS, () => Promise.resolve(cleanup))
 
-    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => Promise.resolve(cleanup))
-    const pending = vm.echoPromise
+    return flush().then(() => {
+      expect(cleanup).not.to.have.been.called
 
-    return pending.then(() => {
-      expect(vm.echoCleanup).to.equal(cleanup)
-      expect(vm.echoPromise).to.equal(null)
-
-      cleanEcho(vm)
+      dispose()
+      dispose()
       expect(cleanup).to.have.been.calledOnce
     })
   })
@@ -238,16 +237,13 @@ describe('Echo lifecycle', () => {
       return Promise.resolve(cleanups[type])
     })
     const onEvent = cy.stub()
-    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+    const dispose = setupEcho(['element', 'file'], onEvent, LIST_ACTIONS, connect)
 
-    setupEcho(vm, ['element', 'file'], onEvent, LIST_ACTIONS, connect)
-    const pending = vm.echoPromise
-
-    return pending.then(() => {
+    return flush().then(() => {
       callbacks.file({ id: 'file-1' }, 'saved')
       expect(onEvent).to.have.been.calledWith({ id: 'file-1' }, 'saved', 'file')
 
-      cleanEcho(vm)
+      dispose()
       expect(cleanups.element).to.have.been.calledOnce
       expect(cleanups.file).to.have.been.calledOnce
     })
@@ -260,33 +256,55 @@ describe('Echo lifecycle', () => {
       ? Promise.resolve(cleanup)
       : Promise.reject(new Error('denied'))
     )
-    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
+    const dispose = setupEcho(['element', 'file'], () => {}, LIST_ACTIONS, connect)
 
-    setupEcho(vm, ['element', 'file'], () => {}, LIST_ACTIONS, connect)
-    const pending = vm.echoPromise
-
-    return pending.then(() => {
+    return flush().then(() => {
       expect(cleanup).to.have.been.calledOnce
       expect(warning).to.have.been.calledOnce
-      expect(vm.echoCleanup).to.equal(null)
-      expect(vm.echoPromise).to.equal(null)
+
+      dispose()
+      expect(cleanup).to.have.been.calledOnce
     })
   })
 
-  it('cleans a pending subscription after it is replaced', () => {
+  it('cleans a pending subscription disposed before it resolves', () => {
     const cleanup = cy.stub()
-    const vm = { destroyed: false, echoCleanup: null, echoPromise: null }
     let resolve
 
-    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => new Promise((done) => { resolve = done }))
-    const pending = vm.echoPromise
+    const dispose = setupEcho('page', () => {}, LIST_ACTIONS, () => new Promise((done) => { resolve = done }))
 
-    cleanEcho(vm)
-    setupEcho(vm, 'page', () => {}, LIST_ACTIONS, () => Promise.resolve(null))
+    dispose()
+    expect(cleanup).not.to.have.been.called
     resolve(cleanup)
 
-    return pending.then(() => {
+    return flush().then(() => {
       expect(cleanup).to.have.been.calledOnce
+
+      dispose()
+      expect(cleanup).to.have.been.calledOnce
+    })
+  })
+
+  it('reloads a detail view debounced and cancels it on dispose', () => {
+    const wait = () => new Promise((done) => setTimeout(done, 400))
+    const reload = cy.stub()
+    let callback
+
+    const connect = (type, cb) => { callback = cb; return Promise.resolve(null) }
+    const dispose = setupReload('page', 'page-1', reload, () => true, connect)
+
+    callback({ id: 'other' }, 'saved')
+    callback({ id: 'page-1' }, 'saved')
+    callback({ ids: ['page-1'] }, 'bulk')
+
+    return wait().then(() => {
+      expect(reload).to.have.been.calledOnce
+
+      callback(null, RECONNECT)
+      dispose()
+      return wait()
+    }).then(() => {
+      expect(reload).to.have.been.calledOnce
     })
   })
 })

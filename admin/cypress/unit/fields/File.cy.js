@@ -291,11 +291,11 @@ describe('File', () => {
     cy.get('@error').should('have.been.calledWith', false)
   })
 
-  it('shows the file icon SVG when file is loaded', () => {
+  it('shows the file icon when file is loaded', () => {
     mountFile({
       modelValue: { id: '1', type: 'file' },
       assets: { 1: fileAsset }
     })
-    cy.get('.file svg').should('exist')
+    cy.get('.file-preview .v-icon').should('exist')
   })
 })

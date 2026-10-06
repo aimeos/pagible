@@ -72,28 +72,24 @@ export default {
 
     <template #append>
       <v-list>
-        <v-list-item rounded="lg">
+        <v-list-item
+          v-for="item in [
+            { key: 'palette', css: 'btn-palette', icon: mdiConsoleLine, label: $gettext('Commands') },
+            { key: 'sheet', css: 'btn-shortcuts', icon: mdiKeyboardOutline, label: $gettext('Keyboard shortcuts') }
+          ]"
+          :key="item.key"
+          rounded="lg"
+        >
           <button
             type="button"
-            class="router-link btn-palette"
-            :aria-keyshortcuts="commands.palette.aria"
-            @click="shortcuts.palette = true"
+            class="router-link"
+            :class="item.css"
+            :aria-keyshortcuts="commands[item.key].aria"
+            @click="shortcuts[item.key] = true"
           >
-            <v-icon :icon="mdiConsoleLine" class="icon" />
-            {{ $gettext('Commands') }}
-            <kbd class="hint" aria-hidden="true">{{ hint('palette') }}</kbd>
-          </button>
-        </v-list-item>
-        <v-list-item rounded="lg">
-          <button
-            type="button"
-            class="router-link btn-shortcuts"
-            :aria-keyshortcuts="commands.sheet.aria"
-            @click="shortcuts.sheet = true"
-          >
-            <v-icon :icon="mdiKeyboardOutline" class="icon" />
-            {{ $gettext('Keyboard shortcuts') }}
-            <kbd class="hint" aria-hidden="true">{{ hint('sheet') }}</kbd>
+            <v-icon :icon="item.icon" class="icon" />
+            {{ item.label }}
+            <kbd class="hint" aria-hidden="true">{{ hint(item.key) }}</kbd>
           </button>
         </v-list-item>
       </v-list>
@@ -127,8 +123,7 @@ button.router-link {
   text-align: start;
 }
 
-.btn-palette .hint,
-.btn-shortcuts .hint {
+.hint {
   margin-inline-start: auto;
   padding: 0 6px;
   border: 1px solid rgba(var(--v-border-color), var(--v-medium-emphasis-opacity));

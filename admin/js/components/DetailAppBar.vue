@@ -90,7 +90,7 @@ export default {
   watch: {
     publishMenu(value) {
       // focus the publish button so Enter confirms, e.g. after opening the menu by shortcut
-      value && this.$nextTick(() => this.focusPublish())
+      value && this.$nextTick(() => this.$refs.publishNow?.$el.focus())
     },
 
     saving(value, old) {
@@ -104,19 +104,15 @@ export default {
 
   methods: {
     async goBack() {
+      const back = () => { this.$router.push({ name: `${this.type}:view` }) }
+
       if (this.stacked) {
         this.viewStack.closeView()
       } else if (this.dirtyStore.dirty) {
-        await this.dirtyStore.confirm(() => {
-          this.$router.push({ name: `${this.type}:view` })
-        })
+        await this.dirtyStore.confirm(back)
       } else {
-        this.$router.push({ name: `${this.type}:view` })
+        back()
       }
-    },
-
-    focusPublish() {
-      this.$refs.publishNow?.$el.focus()
     },
 
     openPublish() {
@@ -145,10 +141,6 @@ export default {
   },
 
   computed: {
-    canPublish() {
-      return (!this.published || this.dirty) && !this.error && this.user.can(`${this.type}:publish`)
-    },
-
     pubDisabled() {
       return (this.published && !this.dirty) || this.error || !this.user.can(`${this.type}:publish`)
     },
@@ -219,7 +211,7 @@ export default {
             :aria-keyshortcuts="commands.publish.aria"
             :disabled="pubDisabled"
             :variant="pubDisabled ? 'plain' : 'tonal'"
-            :class="{ active: canPublish, error: error }"
+            :class="{ active: !pubDisabled, error: error }"
             class="menu-publish"
           >
             <v-icon>

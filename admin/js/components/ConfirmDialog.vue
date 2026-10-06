@@ -20,7 +20,7 @@ export default {
 <template>
   <CmsDialog
     :model-value="confirm.show"
-    :title="$gettext('Purge')"
+    :title="confirm.action || $gettext('Purge')"
     @update:model-value="!$event && confirm.close(false)"
     toolbar-color="warning"
     role="alertdialog"
@@ -30,7 +30,7 @@ export default {
       <v-icon :icon="mdiAlertCircleOutline" color="warning" size="40" aria-hidden="true" />
       <p>
         {{
-          $ngettext(
+          confirm.text || $ngettext(
             'The following entry will be permanently deleted and cannot be restored:',
             'The following %{num} entries will be permanently deleted and cannot be restored:',
             confirm.items.length,
@@ -40,7 +40,7 @@ export default {
       </p>
     </div>
 
-    <v-list class="confirm-list" density="compact">
+    <v-list v-if="confirm.items.length" class="confirm-list" density="compact">
       <v-list-item
         v-for="(item, idx) in confirm.items"
         :key="idx"
@@ -54,7 +54,7 @@ export default {
     <template #actions>
       <v-btn @click="confirm.close(false)" variant="text">{{ $gettext('Cancel') }}</v-btn>
       <v-btn @click="confirm.close(true)" class="btn-confirm" color="error" variant="tonal">{{
-        $gettext('Purge')
+        confirm.action || $gettext('Purge')
       }}</v-btn>
     </template>
   </CmsDialog>

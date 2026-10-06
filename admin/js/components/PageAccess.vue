@@ -96,13 +96,10 @@ export default {
           }
         })
 
-        if (response.errors) throw response.errors
-
-        invalidateList(this.$apollo.provider.defaultClient.cache, 'pages')
+        invalidateList('pages')
         this.$emit('applied', this.value, descendants)
       } catch (error) {
-        this.messages.add(this.$gettext('Error changing page access') + ':\n' + error, 'error')
-        this.$log('PageAccess::apply(): Error changing page access', this.ids, error)
+        this.messages.error(this.$gettext('Error changing page access'), error, this.ids)
       } finally {
         this.saving = false
       }
@@ -123,8 +120,7 @@ export default {
 
         this.items = [...new Set([...this.values, ...(response.data.access || [])])].sort()
       } catch (error) {
-        this.messages.add(this.$gettext('Error fetching access roles') + ':\n' + error, 'error')
-        this.$log('PageAccess::load(): Error fetching access roles', error)
+        this.messages.error(this.$gettext('Error fetching access roles'), error)
       } finally {
         this.loading = false
       }

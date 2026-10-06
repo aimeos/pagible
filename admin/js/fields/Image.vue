@@ -8,9 +8,7 @@ export default {
   setup: File.setup,
 
   computed: {
-    kind() {
-      return 'image'
-    }
+    kind: () => 'image'
   }
 }
 </script>

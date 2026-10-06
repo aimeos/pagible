@@ -20,32 +20,16 @@ const retryLink = new RetryLink({
   attempts: { max: 2, retryIf: retry }
 })
 
-// Forwards Laravel's XSRF-TOKEN cookie as the X-XSRF-TOKEN header so cookie
-// authenticated mutations are protected against CSRF when the GraphQL route is
-// guarded by the VerifyCsrfToken middleware. No-op when the cookie is absent.
-const csrfLink = new ApolloLink((operation, forward) => {
-  const xsrf = xsrfHeaders()
-
-  if (xsrf['X-XSRF-TOKEN']) {
-    operation.setContext(({ headers = {} }) => ({
-      headers: { ...headers, ...xsrf }
-    }))
-  }
-
-  return forward(operation)
-})
-
-// Forwards the websocket connection id as the X-Socket-ID header so the server
-// can use broadcast()->toOthers() to skip echoing a change back to the tab that
-// made it. No-op until Echo is connected, which is fine: an unconnected tab is
-// not subscribed to any channel and so receives no events anyway.
-const socketLink = new ApolloLink((operation, forward) => {
+// Forwards Laravel's XSRF-TOKEN cookie as the X-XSRF-TOKEN header so cookie authenticated
+// mutations are protected against CSRF, and the websocket connection id as the X-Socket-ID
+// header so the server can skip echoing a change back to the tab that made it via toOthers().
+// Both are no-ops when the cookie is absent or Echo isn't connected (no subscribed channels then).
+const headersLink = new ApolloLink((operation, forward) => {
   const id = socketId()
+  const headers = { ...xsrfHeaders(), ...(id && { 'X-Socket-ID': id }) }
 
-  if (id) {
-    operation.setContext(({ headers = {} }) => ({
-      headers: { ...headers, 'X-Socket-ID': id }
-    }))
+  if (Object.keys(headers).length) {
+    operation.setContext((ctx) => ({ headers: { ...ctx.headers, ...headers } }))
   }
 
   return forward(operation)
@@ -103,7 +87,7 @@ export function handleError({ graphQLErrors, networkError, operation, forward })
 }
 
 /** Removes every cached variant of a root list field. */
-export function invalidateList(cache, field) {
+export function invalidateList(field, cache = apolloClient.cache) {
   cache.evict({ id: 'ROOT_QUERY', fieldName: field })
   cache.gc()
 }
@@ -165,7 +149,7 @@ const apolloClient = new ApolloClient({
     },
     resultCacheMaxSize: 100
   }),
-  link: ApolloLink.from([retryLink, errorLink, csrfLink, socketLink, httpLink]),
+  link: ApolloLink.from([retryLink, errorLink, headersLink, httpLink]),
   queryDeduplication: true
 })
 const apollo = createApolloProvider({ defaultClient: apolloClient })

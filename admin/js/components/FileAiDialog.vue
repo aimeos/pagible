@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import CmsDialog from './Dialog.vue'
 import FileListItems from './FileListItems.vue'
-import { createFile } from '../files'
-import { useAppStore, useUserStore, useMessageStore } from '../stores'
-import { fileurl, IMAGE_MIME_FILTER, toBlob, url } from '../utils'
+import { createFile, revokeBlob } from '../files'
+import { useUserStore, useMessageStore } from '../stores'
+import { dictate, fileurl, IMAGE_MIME_FILTER, toBlob } from '../utils'
 import { mdiMicrophoneOutline, mdiMicrophone, mdiDelete } from '@mdi/js'
 
 const IMAGINE = gql`
@@ -34,15 +34,11 @@ export default {
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
-    const app = useAppStore()
 
     return {
-      app,
       user,
       messages,
       fileurl,
-      toBlob,
-      url,
       IMAGE_MIME_FILTER,
       mdiMicrophoneOutline,
       mdiMicrophone,
@@ -55,7 +51,6 @@ export default {
       audio: null,
       chat: '',
       items: [],
-      errors: [],
       used: [],
       loading: false,
       dictating: false
@@ -75,12 +70,7 @@ export default {
           return
         }
 
-        this.items.forEach((item) => {
-          if (item.path.startsWith('blob:')) {
-            URL.revokeObjectURL(item.path)
-          }
-        })
-
+        this.items.forEach(revokeBlob)
         this.items = []
         this.used = []
         this.chat = ''
@@ -94,15 +84,9 @@ export default {
       this.audio = null
     }
 
-    this.items.forEach((item) => {
-      if (item.path.startsWith('blob:')) {
-        URL.revokeObjectURL(item.path)
-      }
-    })
-
+    this.items.forEach(revokeBlob)
     this.items = []
     this.used = []
-    this.errors = []
     this.chat = ''
   },
 
@@ -129,11 +113,7 @@ export default {
           this.$emit('add', [item])
         })
         .catch((error) => {
-          this.messages.add(
-            this.$gettext(`Error adding file %{path}`, { path: item?.path }) + ':\n' + error,
-            'error'
-          )
-          this.$log(`FileAiDialog::add(): Error adding file`, error)
+          this.messages.error(this.$gettext(`Error adding file %{path}`, { path: item?.path }), error)
         })
         .finally(() => {
           this.loading = false
@@ -141,17 +121,13 @@ export default {
     },
 
     create() {
-      if (!this.user.can('image:imagine')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
+      if (!this.user.can('image:imagine')) return this.messages.denied()
 
       if (!this.chat?.trim() || this.loading) {
         return
       }
 
       this.loading = true
-      this.original = this.chat
 
       this.$apollo
         .mutate({
@@ -163,12 +139,8 @@ export default {
           }
         })
         .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
           if (response.data.imagine) {
-            const blob = this.toBlob(response.data.imagine)
+            const blob = toBlob(response.data.imagine)
 
             this.items.unshift({
               path: URL.createObjectURL(blob),
@@ -182,8 +154,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error creating file') + ':\n' + error, 'error')
-          this.$log(`FileAiDialog::create(): Error creating file`, error)
+          this.messages.error(this.$gettext('Error creating file'), error)
         })
         .finally(() => {
           this.loading = false
@@ -191,34 +162,11 @@ export default {
     },
 
     record() {
-      if (!this.audio) {
-        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
-      }
-
-      this.audio.then((rec) => {
-        this.dictating = true
-        this.audio = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              this.chat = transcription.asText()
-            })
-            .finally(() => {
-              this.dictating = false
-            })
-        })
-      })
+      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
     },
 
     remove(idx) {
-      const item = this.items[idx]
-
-      if (item?.path?.startsWith('blob:')) {
-        URL.revokeObjectURL(item.path)
-      }
-
+      revokeBlob(this.items[idx])
       this.items.splice(idx, 1)
     },
 

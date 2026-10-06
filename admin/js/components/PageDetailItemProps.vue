@@ -2,16 +2,10 @@
 
 <script>
 import gql from 'graphql-tag'
-import {
-  useAppStore,
-  useUserStore,
-  useSchemaStore,
-  useLanguageStore,
-  useSideStore
-} from '../stores'
-import { debounce, locales, slugify } from '../utils'
+import { domain } from '../rules'
+import { useAppStore, useUserStore, useSchemaStore } from '../stores'
+import { cacheItems, debounce, locales, slugify, statusItems } from '../utils'
 
-const DOMAIN_REGEX = /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/
 const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)?$/
 
 const CHECK_PATH = gql`
@@ -26,58 +20,32 @@ const CHECK_PATH = gql`
 
 export default {
   props: {
-    item: { type: Object, required: true },
-    assets: { type: Object, default: () => {} }
+    item: { type: Object, required: true }
   },
 
   emits: ['change', 'error'],
 
   data: () => ({
-    cacheItems: [],
-    statusItems: [],
     errors: {},
     messages: {}
   }),
 
   setup() {
-    const languages = useLanguageStore()
     const schemas = useSchemaStore()
-    const side = useSideStore()
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, side, schemas, languages, debounce, slugify, locales }
+    return { app, user, schemas, debounce, slugify, locales, cacheItems: cacheItems(), statusItems: statusItems() }
   },
 
   created() {
     this.checkPathd = this.debounce(this.checkPath, 500)
     this.validated = this.debounce(() => this.validate(true), 300)
-    this.cacheItems = [
-      { key: 0, val: this.$gettext('No cache') },
-      { key: 1, val: this.$ngettext('%{num} minute', '%{num} minutes', 1, { num: 1 }) },
-      { key: 5, val: this.$ngettext('%{num} minute', '%{num} minutes', 5, { num: 5 }) },
-      { key: 15, val: this.$ngettext('%{num} minute', '%{num} minutes', 15, { num: 15 }) },
-      { key: 30, val: this.$ngettext('%{num} minute', '%{num} minutes', 30, { num: 30 }) },
-      { key: 60, val: this.$ngettext('%{num} hour', '%{num} hours', 1, { num: 1 }) },
-      { key: 180, val: this.$ngettext('%{num} hour', '%{num} hours', 3, { num: 3 }) },
-      { key: 360, val: this.$ngettext('%{num} hour', '%{num} hours', 6, { num: 6 }) },
-      { key: 720, val: this.$ngettext('%{num} hour', '%{num} hours', 12, { num: 12 }) },
-      { key: 1440, val: this.$ngettext('%{num} hour', '%{num} hours', 24, { num: 24 }) }
-    ]
-    this.statusItems = [
-      { key: 0, val: this.$gettext('Disabled') },
-      { key: 1, val: this.$gettext('Enabled') },
-      { key: 2, val: this.$gettext('Hidden in navigation') }
-    ]
   },
 
   computed: {
-
     domainRules() {
-      return [
-        (v) => !!v || this.$gettext('Field is required'),
-        (v) => !v || DOMAIN_REGEX.test(v) || this.$gettext('Domain name is invalid')
-      ]
+      return [...this.requiredRules, domain(this.$gettext)]
     },
 
     pathRules() {
@@ -96,11 +64,7 @@ export default {
       ]
     },
 
-    titleRules() {
-      return [(v) => !!v || this.$gettext('Field is required')]
-    },
-
-    langRules() {
+    requiredRules() {
       return [(v) => !!v || this.$gettext('Field is required')]
     }
   },
@@ -252,7 +216,7 @@ export default {
           <v-select
             ref="lang"
             :items="locales()"
-            :rules="langRules"
+            :rules="requiredRules"
             :readonly="readonly"
             :modelValue="item.lang"
             :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the page content')"
@@ -266,7 +230,7 @@ export default {
         <v-col cols="12" md="6">
           <v-text-field
             ref="title"
-            :rules="titleRules"
+            :rules="requiredRules"
             :readonly="readonly"
             :modelValue="item.title"
             :label="$gettext('Page title') + ' ‒ ' + $gettext('Shown in the browser tab and search results')"

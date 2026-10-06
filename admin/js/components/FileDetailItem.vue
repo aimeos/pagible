@@ -2,21 +2,13 @@
 
 <script>
 import gql from 'graphql-tag'
-import FileAiDialog from './FileAiDialog.vue'
 import FileProtect from './FileProtect.vue'
-import { defineAsyncComponent, markRaw } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import FileDetailItemAudio from './FileDetailItemAudio.vue'
-import {
-  useAppStore,
-  useUserStore,
-  useLanguageStore,
-  useMessageStore,
-  useSideStore
-} from '../stores'
+import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
-import { RELOCATE_FILE } from '../files'
-import { invalidateList } from '../graphql'
-import { fileurl, toBlob, locales, txlocales } from '../utils'
+import { relocateFiles } from '../files'
+import { dictate, fileurl, locales, txlocales } from '../utils'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
 const FileDetailItemVideo = defineAsyncComponent(() => import('./FileDetailItemVideo.vue'))
@@ -31,7 +23,6 @@ const DESCRIBE_FILE = gql`
 
 export default {
   components: {
-    FileAiDialog,
     FileDetailItemImage,
     FileDetailItemVideo,
     FileDetailItemAudio,
@@ -46,7 +37,6 @@ export default {
 
   data() {
     return {
-      vedit: false,
       loading: {},
       tabtrans: null,
       tabdesc: null,
@@ -57,21 +47,16 @@ export default {
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
-    const side = useSideStore()
     const user = useUserStore()
-    const app = useAppStore()
 
     return {
-      app,
       user,
       languages,
       messages,
-      side,
       mdiTranslate,
       mdiCreation,
       mdiMicrophoneOutline,
       fileurl,
-      toBlob,
       locales,
       txlocales,
       mdiContentCopy,
@@ -84,13 +69,15 @@ export default {
       this.audio.then((rec) => rec?.stop?.()).catch(() => {})
       this.audio = null
     }
-
-    this.loading = null
   },
 
   computed: {
     desclangs() {
       return [...new Set([...this.languages.available, ...Object.keys(this.item.description || {})])]
+    },
+
+    lang() {
+      return this.desclangs[0] || this.item.lang || 'en'
     },
 
     protect() {
@@ -114,7 +101,7 @@ export default {
     },
 
     describe() {
-      const lang = this.desclangs[0] || this.item.lang || 'en'
+      const lang = this.lang
 
       this.loading.describe = true
 
@@ -130,18 +117,13 @@ export default {
           }
         })
         .then((response) => {
-          if (response.errors) {
-            throw response.errors
-          }
-
           this.update(
             'description',
             Object.assign(this.item.description || {}, { [lang]: response.data?.describe })
           )
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error describing file') + ':\n' + error, 'error')
-          this.$log('FileDetailItem::describe(): Error describing file', error)
+          this.messages.error(this.$gettext('Error describing file'), error)
         })
         .finally(() => {
           this.loading.describe = false
@@ -153,33 +135,10 @@ export default {
     },
 
     record() {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
-      if (!this.audio) {
-        return (this.audio = markRaw(import('../audio').then((mod) => mod.recording().start())))
-      }
-
-      this.audio.then((rec) => {
-        this.loading.dictate = true
-        this.audio = null
-
-        rec.stop()?.then((buffer) => {
-          import('../ai')
-            .then((mod) => mod.transcribe(buffer))
-            .then((transcription) => {
-              const lang = this.desclangs[0] || this.item.lang || 'en'
-
-              this.update(
-                'description',
-                Object.assign(this.item.description || {}, { [lang]: transcription.asText() })
-              )
-            })
-            .finally(() => {
-              this.loading.dictate = false
-            })
-        })
+      this.audio = dictate(this.audio, (busy) => (this.loading.dictate = busy), (text) => {
+        this.update('description', Object.assign(this.item.description || {}, { [this.lang]: text }))
       })
     },
 
@@ -192,7 +151,7 @@ export default {
       }
 
       if (!this.user.can('file:relocate')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
+        this.messages.denied()
         return Promise.resolve(false)
       }
 
@@ -202,26 +161,17 @@ export default {
 
       this.loading.protect = true
 
-      return this.$apollo
-        .mutate({
-          mutation: RELOCATE_FILE,
-          variables: {
-            id: [this.item.id],
-            disk: disk
-          }
-        })
-        .then((response) => {
-          if (response.errors || !response.data?.relocateFile?.[0]) {
-            throw response.errors || response
+      return relocateFiles(this.$apollo, [this.item.id], disk)
+        .then((items) => {
+          if (!items[0]) {
+            throw new Error('No file relocated')
           }
 
-          Object.assign(this.item, response.data.relocateFile[0])
-          invalidateList(this.$apollo.provider.defaultClient.cache, 'files')
+          Object.assign(this.item, items[0])
           return true
         })
         .catch((error) => {
-          this.messages.add(this.$gettext('Error saving file') + ':\n' + error, 'error')
-          this.$log('FileDetailItem::setProtect(): Error relocating file', this.item, error)
+          this.messages.error(this.$gettext('Error saving file'), error, this.item)
           return false
         })
         .finally(() => {
@@ -230,9 +180,7 @@ export default {
     },
 
     transcribeFile() {
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly) return this.messages.denied()
 
       if (!this.item.mime?.startsWith('audio/') && !this.item.mime?.startsWith('video/')) {
         return this.messages.add(
@@ -246,11 +194,9 @@ export default {
       import('../ai')
         .then((mod) => mod.transcribe(this.item.path))
         .then((transcription) => {
-          const lang = this.desclangs[0] || this.item.lang || 'en'
-
           this.update(
             'transcription',
-            Object.assign(this.item.transcription || {}, { [lang]: transcription.asText() })
+            Object.assign(this.item.transcription || {}, { [this.lang]: transcription.asText() })
           )
         })
         .finally(() => {
@@ -264,14 +210,7 @@ export default {
     },
 
     translateText(map) {
-      if (!this.user.can('text:translate')) {
-        this.messages.add(this.$gettext('Permission denied'), 'error')
-        return
-      }
-
-      if (this.readonly) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly || !this.user.can('text:translate')) return this.messages.denied()
 
       if (!map || typeof map !== 'object') {
         this.$log(`FileDetailItem::translateText(): Invalid map object`, map)
@@ -312,9 +251,7 @@ export default {
     },
 
     translateVTT(map) {
-      if (this.readonly || !this.user.can('text:translate')) {
-        return this.messages.add(this.$gettext('Permission denied'), 'error')
-      }
+      if (this.readonly || !this.user.can('text:translate')) return this.messages.denied()
 
       if (!map || typeof map !== 'object') {
         this.$log(`FileDetailItem::translateVTT(): Invalid map object`, map)
@@ -360,7 +297,6 @@ export default {
         return
       }
 
-      this.vedit = false
       this.item.path = items[0].path
       this.item.mime = items[0].mime
 
@@ -383,7 +319,6 @@ export default {
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
-            ref="name"
             :readonly="readonly"
             :modelValue="item.name"
             @update:modelValue="update('name', $event)"
@@ -395,7 +330,6 @@ export default {
         </v-col>
         <v-col cols="12" md="6">
           <v-select
-            ref="lang"
             :items="locales(true)"
             :readonly="readonly"
             :modelValue="item.lang"
@@ -431,7 +365,6 @@ export default {
             v-else-if="item.mime?.startsWith('video/')"
             :item="item"
             :readonly="readonly"
-            @update:item="$emit('update:item', $event)"
           />
           <FileDetailItemAudio v-else-if="item.mime?.startsWith('audio/')" :item="item" />
           <svg
@@ -495,8 +428,7 @@ export default {
           <v-window v-model="tabdesc" :touch="false">
             <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea
-                ref="description"
-                @update:modelValue="descriptionUpdated(entry.value, $event)"
+                    @update:modelValue="descriptionUpdated(entry.value, $event)"
                 :label="$gettext('Description (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Alternative text for screen readers and search engines, also used as caption')"
                 :modelValue="item.description?.[entry.value] || ''"
                 :readonly="readonly"
@@ -545,8 +477,7 @@ export default {
           <v-window v-model="tabtrans" :touch="false">
             <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
               <v-textarea
-                ref="transcription"
-                @update:modelValue="transcriptionUpdated(entry.value, $event)"
+                    @update:modelValue="transcriptionUpdated(entry.value, $event)"
                 :label="$gettext('Transcription (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Spoken text in WebVTT format, shown as subtitles and transcript')"
                 :modelValue="item.transcription?.[entry.value] || ''"
                 :readonly="readonly"
@@ -561,10 +492,6 @@ export default {
       </v-row>
     </v-sheet>
   </v-container>
-
-  <Teleport to="body">
-    <FileAiDialog v-model="vedit" :files="[item]" @add="use($event)" />
-  </Teleport>
 </template>
 
 <style scoped>

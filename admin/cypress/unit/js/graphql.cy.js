@@ -166,7 +166,7 @@ describe('invalidateList()', () => {
     const evict = cy.stub()
     const gc = cy.stub()
 
-    invalidateList({ evict, gc }, 'elements')
+    invalidateList('elements', { evict, gc })
 
     expect(evict).to.have.been.calledWith({ id: 'ROOT_QUERY', fieldName: 'elements' })
     expect(gc).to.have.been.calledOnce

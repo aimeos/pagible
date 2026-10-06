@@ -1,44 +1,20 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { VCombobox } from 'vuetify/components/VCombobox'
 import Autocomplete from './Autocomplete.vue'
-import { debounce } from '../utils'
 
 export default {
   extends: Autocomplete,
 
-  setup() {
-    return { debounce }
+  computed: {
+    returnObject() {
+      return false
+    },
+
+    tag() {
+      return VCombobox
+    }
   }
 }
 </script>
-
-<template>
-  <v-combobox
-    :hint="config.hint && $pgettext('fh', config.hint)"
-    :error="hasError"
-    :rules="rules"
-    :items="list"
-    :loading="loading"
-    :readonly="readonly"
-    :clearable="!readonly"
-    :no-data-text="
-      !loading
-        ? config['empty-text'] || $gettext('No data available')
-        : $gettext('Loading') + ' ...'
-    "
-    :placeholder="config.placeholder || ''"
-    :multiple="config.multiple"
-    :return-object="false"
-    :chips="config.multiple"
-    :modelValue="modelValue ?? config.default ?? null"
-    @update:modelValue="$emit('update:modelValue', $event)"
-    @update:search="search($event)"
-    @update:menu="search('')"
-    density="comfortable"
-    hide-details="auto"
-    variant="outlined"
-    item-title="label"
-    item-value="value"
-  ></v-combobox>
-</template>

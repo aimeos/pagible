@@ -9,7 +9,6 @@ export default {
     listClass: { type: [String, Array, Object], default: '' },
     listProps: { type: Object, default: () => ({}) },
     location: { type: String, default: 'end center' },
-    maxWidth: { type: [Number, String], default: 300 },
     title: { type: String, default: '' }
   },
 
@@ -49,7 +48,7 @@ export default {
     v-model="open"
     v-bind="overlayProps"
     :aria-label="label"
-    :max-width="maxWidth"
+    max-width="300"
   >
     <template #activator="{ props }">
       <slot name="activator" :props="props" :label="label" />

@@ -2,7 +2,7 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiDeleteForever, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
+import { mdiClose, mdiDeleteForever, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
 import AccessUsers from '../components/AccessUsers.vue'
@@ -49,6 +49,7 @@ export default {
       drawer,
       messages,
       user,
+      mdiClose,
       mdiDeleteForever,
       mdiKeyPlus,
       mdiMagnify,
@@ -138,7 +139,7 @@ export default {
 
         this.items = response.data.access
       } catch (error) {
-        this.messages.add(this.$gettext('Error fetching access roles') + ':\n' + error, 'error')
+        this.messages.error(this.$gettext('Error fetching access roles'), error)
       } finally {
         this.loading = false
       }
@@ -166,7 +167,7 @@ export default {
         this.addDialog = false
         this.value = ''
       } catch (error) {
-        this.messages.add(this.$gettext('Error adding access value') + ':\n' + error, 'error')
+        this.messages.error(this.$gettext('Error adding access value'), error)
       } finally {
         this.saving = false
       }
@@ -199,7 +200,7 @@ export default {
         this.items = response.data.deleteAccess
         this.checked = new Set()
       } catch (error) {
-        this.messages.add(this.$gettext('Error purging access values') + ':\n' + error, 'error')
+        this.messages.error(this.$gettext('Error purging access values'), error)
       } finally {
         this.saving = false
       }

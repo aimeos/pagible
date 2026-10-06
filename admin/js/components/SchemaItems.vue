@@ -116,8 +116,7 @@ export default {
       return this.schemas
         .reload()
         .catch((error) => {
-          this.messages.add(this.$gettext('Error fetching content elements') + ':\n' + error, 'error')
-          this.$log(`SchemaItems::reload(): Error fetching schemas`, error)
+          this.messages.error(this.$gettext('Error fetching content elements'), error)
         })
         .finally(() => {
           this.loading = false

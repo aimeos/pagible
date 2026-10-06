@@ -67,16 +67,6 @@ export default {
   },
 
   computed: {
-    open: {
-      get() {
-        return !!this.drawer.aside
-      },
-
-      set(value) {
-        this.drawer.aside = value
-      }
-    },
-
     responsiveIcon() {
       return this.responsiveViews.find((item) => item.value === this.previewSize)?.icon || mdiMonitor
     },
@@ -124,12 +114,14 @@ export default {
     },
 
     fields(type) {
-      if (!this.schemas[this.type] || !this.schemas[this.type][type]?.fields) {
+      const fields = this.schemas[this.type]?.[type]?.fields
+
+      if (!fields) {
         console.warn(`No definition of fields for "${type}" (${this.type}) schemas`)
         return []
       }
 
-      return this.schemas.content[type]?.fields
+      return fields
     },
 
     revert() {
@@ -175,7 +167,7 @@ export default {
 
 <template>
   <v-navigation-drawer
-    v-model="open"
+    v-model="drawer.aside"
     :aria-label="$gettext('Content Element')"
     mobile-breakpoint="md"
     location="end"
