@@ -22,6 +22,10 @@ final class KeepPage
      */
     public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
     {
+        if( isset( $args['lang'] ) ) {
+            return Resource::variants( 'restore', $args['id'], $args['lang'], Auth::user() )->all();
+        }
+
         return Resource::restore(
             Page::class,
             $args['id'],

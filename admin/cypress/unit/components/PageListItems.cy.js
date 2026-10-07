@@ -616,7 +616,6 @@ describe('PageListItems', () => {
           domain: 'example.com',
           lang: 'de',
           name: 'Source page',
-          related_id: 'page-source',
           status: 0,
           tag: 'source',
           theme: 'corporate',

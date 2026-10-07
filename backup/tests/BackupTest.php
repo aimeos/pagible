@@ -219,6 +219,7 @@ class BackupTest extends BackupTestAbstract
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $page = (array) $db->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->first();
+        $variant = (array) $db->table( 'cms_page_variants' )->where( 'page_id', $page['id'] )->first();
         $file = (array) $db->table( 'cms_files' )->where( 'tenant_id', $this->tenant )->first();
         $pageId = (string) \Illuminate\Support\Str::uuid7();
         $fileId = (string) \Illuminate\Support\Str::uuid7();
@@ -226,18 +227,21 @@ class BackupTest extends BackupTestAbstract
         $page['id'] = $pageId;
         $page['tenant_id'] = 'other';
         $page['parent_id'] = null;
-        $page['related_id'] = null;
-        $page['latest_id'] = null;
-        $page['domain'] = 'other.example';
-        $page['path'] = 'foreign-' . substr( $pageId, 0, 8 );
+        $variant['id'] = $pageId;
+        $variant['page_id'] = $pageId;
+        $variant['tenant_id'] = 'other';
+        $variant['latest_id'] = null;
+        $variant['domain'] = 'other.example';
+        $variant['path'] = 'foreign-' . substr( $pageId, 0, 8 );
         $file['id'] = $fileId;
         $file['tenant_id'] = 'other';
         $file['latest_id'] = null;
         $file['path'] = 'cms/other/' . $fileId . '/foreign.txt';
 
         $db->table( 'cms_pages' )->insert( $page );
+        $db->table( 'cms_page_variants' )->insert( $variant );
         $db->table( 'cms_files' )->insert( $file );
-        $db->table( 'cms_page_file' )->insert( ['page_id' => $pageId, 'file_id' => $fileId] );
+        $db->table( 'cms_page_file' )->insert( ['variant_id' => $pageId, 'file_id' => $fileId] );
 
         $backup = $this->backup( $this->tenant );
         $zip = new \ZipArchive();

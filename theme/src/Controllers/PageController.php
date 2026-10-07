@@ -115,7 +115,7 @@ class PageController extends Controller
             $this->deny( $user );
         }
 
-        $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
+        $response = new Response( $html, 200, array_filter( ['Content-Type' => 'text/html', 'Content-Language' => $page->lang] ) );
 
         if( $user || $access->access_exists || !$page->cache ) {
             return $response->header( 'Cache-Control', 'no-store, private' );

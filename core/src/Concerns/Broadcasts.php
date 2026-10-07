@@ -37,7 +37,7 @@ trait Broadcasts
      *
      * @param string $action Past-tense action: added, saved, published, restored, dropped, moved, purged
      * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
+     * @param array{}|array{version_id: string, path?: string, domain?: string, lang?: string} $projection Published projection
      * @throws \InvalidArgumentException If $action has no matching event class
      */
     public function announce( string $action, Authenticatable|string|null $editor = null,
@@ -117,7 +117,7 @@ trait Broadcasts
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields
      * @param bool $bulk TRUE to use the bulk event for a single item too
-     * @param array<string, array{version_id: string, path?: string, domain?: string}> $projected Published projections by item id
+     * @param array<string, array{version_id: string, path?: string, domain?: string, lang?: string}> $projected Published projections by item id
      */
     public static function announceMany( Collection $items, string $action, string $editor,
         array $data = [], bool $bulk = false, array $projected = [] ) : void
@@ -173,8 +173,8 @@ trait Broadcasts
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Past-tense action
-     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
-     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string}}
+     * @param array{}|array{version_id: string, path?: string, domain?: string, lang?: string} $projection Published projection
+     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string, lang?: string}}
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor,
         string $action, array $projection = [] ) : array

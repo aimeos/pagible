@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Query\PageBuilder;
+use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\NestedSet;
@@ -26,8 +28,14 @@ use Illuminate\Support\Collection;
 /**
  * Page model
  *
+ * Facade over the page structure (cms_pages) and one of its language variants
+ * (cms_page_variants). By default, the variant of the source language is used.
+ *
  * @property string $id
- * @property string|null $related_id
+ * @property string $variant_id
+ * @property string $source
+ * @property array<string, string> $hashes
+ * @property bool $stale
  * @property string $tenant_id
  * @property string $tag
  * @property string $lang
@@ -55,6 +63,9 @@ use Illuminate\Support\Collection;
  * @property-read Collection<int, Page> $ancestors
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PageAccess> $access
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
+ * @method static PageQuery<static> language(?string $lang, bool $trashed = false)
+ * @method static PageQuery<static> variant(string $id)
+ * @method static PageQuery<static> allVariants(bool $trashed = false)
  */
 class Page extends Base
 {
@@ -65,19 +76,19 @@ class Page extends Base
 
     /** @var list<string> Columns required for Page lifecycle operations */
     public const REQUIRED_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'path', 'domain', 'editor', 'latest_id', 'deleted_at',
+        'id', 'variant_id', 'tenant_id', 'parent_id', 'source', 'lang', 'path', 'domain', 'editor', 'latest_id', 'deleted_at',
         NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
     ];
 
     /** @var list<string> Optional columns available for selective Page responses */
     public const RESPONSE_COLUMNS = [
-        'related_id', 'name', 'title', 'tag', 'lang', 'to', 'type', 'theme', 'meta', 'config',
+        'name', 'title', 'tag', 'to', 'type', 'theme', 'meta', 'config',
         'content', 'status', 'cache', 'created_at', 'updated_at',
     ];
 
     /** @var list<string> Columns needed for memory-efficient Page queries */
     public const SELECT_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'related_id', 'path', 'domain', 'name', 'title',
+        'id', 'variant_id', 'tenant_id', 'parent_id', 'source', 'path', 'domain', 'name', 'title',
         'tag', 'lang', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache',
         'editor', 'latest_id', 'created_at', 'updated_at', 'deleted_at',
         NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
@@ -89,7 +100,6 @@ class Page extends Base
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'related_id' => null,
         'tenant_id' => '',
         'tag' => '',
         'lang' => '',
@@ -106,6 +116,8 @@ class Page extends Base
         'status' => 0,
         'cache' => 5,
         'editor' => '',
+        'hashes' => '{}',
+        'stale' => false,
     ];
 
     /**
@@ -128,6 +140,8 @@ class Page extends Base
         'meta' => 'object',
         'config' => 'object',
         'content' => 'object', // for object access in templates
+        'hashes' => 'array',
+        'stale' => 'boolean',
     ];
 
     /**
@@ -136,7 +150,6 @@ class Page extends Base
      * @var list<string>
      */
     protected $fillable = [
-        'related_id',
         'tag',
         'lang',
         'path',
@@ -183,6 +196,25 @@ class Page extends Base
      */
     protected ?Collection $cachedAncestorsAndSelf = null;
 
+    /**
+     * Connections whose schema contains the page variants table.
+     *
+     * @var array<string, true|null>
+     */
+    private static array $schema = [];
+
+
+    /**
+     * Boot the model.
+     */
+    protected static function booted() : void
+    {
+        static::creating( function( Page $page ) {
+            $page->setAttribute( 'variant_id', $page->getAttribute( 'variant_id' ) ?: $page->getKey() );
+            $page->setAttribute( 'source', $page->getAttribute( 'source' ) ?: (string) $page->lang );
+        } );
+    }
+
 
     /**
      * Returns a query builder for the full page tree including disabled and trashed pages.
@@ -200,7 +232,7 @@ class Page extends Base
         $depth = NestedSet::DEPTH;
 
         $builder = Nav::withTrashed()
-            ->select( 'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'type', 'path', 'domain', 'lang', 'to', 'status', 'latest_id', $lft, $rgt, $depth )
+            ->select( 'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'type', 'path', 'domain', 'lang', 'source', 'to', 'status', 'latest_id', $lft, $rgt, $depth )
             ->orderBy( $lft );
 
         if( $root ) {
@@ -231,6 +263,90 @@ class Page extends Base
             $this->meta->{'meta-tags'}->data->description ?? '',
             ...\Aimeos\Cms\Scout::text( $items ),
         ] ) );
+    }
+
+
+    /**
+     * Returns the name of the class owning the page versions.
+     *
+     * @return string Class name
+     */
+    public function getMorphClass()
+    {
+        return static::versionType();
+    }
+
+
+    /**
+     * Returns the type stored in the versions referencing the page variants.
+     *
+     * @return string Versionable type
+     */
+    public static function versionType() : string
+    {
+        return PageVariant::class;
+    }
+
+
+    /**
+     * Returns the attribute name of the key the versions are referencing.
+     *
+     * @return string Attribute name
+     */
+    public function getVersionKeyName() : string
+    {
+        return 'variant_id';
+    }
+
+
+    /**
+     * Generates the unique IDs including the ID of the source variant, which is the same as the page ID.
+     */
+    public function setUniqueIds() : void
+    {
+        parent::setUniqueIds();
+
+        if( !$this->getAttribute( 'variant_id' ) ) {
+            $this->setAttribute( 'variant_id', $this->getKey() );
+        }
+    }
+
+
+    /**
+     * Creates a new Eloquent query builder for the model.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return PageQuery<self>
+     */
+    public function newEloquentBuilder( $query ) : PageQuery
+    {
+        // migrations running before the page variants exist use the plain page table
+        if( $query instanceof PageBuilder && ( self::$schema[$this->getConnectionName()] ??= $this->getConnection()->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ?: null ) ) {
+            $query->variants();
+        }
+
+        return new PageQuery( $query );
+    }
+
+
+    /**
+     * Get a new query builder instance for the connection.
+     *
+     * @return PageBuilder
+     */
+    protected function newBaseQueryBuilder()
+    {
+        $conn = $this->getConnection();
+        return new PageBuilder( $conn, $conn->getQueryGrammar(), $conn->getPostProcessor() );
+    }
+
+
+    /**
+     * Resets the cached schema state, e.g. while migrations are running.
+     */
+    public static function resetSchema() : void
+    {
+        self::$schema = [];
     }
 
 
@@ -287,6 +403,67 @@ class Page extends Base
 
 
     /**
+     * Returns the language variants of the page and their state.
+     *
+     * @return list<array{id: string|null, lang: string, source: bool, state: string, published: bool}> Variant list
+     */
+    public function variantList() : array
+    {
+        $id = (string) $this->id;
+        return self::variantLists( [$id => (string) $this->source] )[$id];
+    }
+
+
+    /**
+     * Returns the language variants of the pages and their state.
+     *
+     * The state is "current", "stale" (source changed since the last update), "trashed" or
+     * "missing" for languages from "cms.locales" without a variant. "published" is TRUE if
+     * the latest version of the variant is published.
+     *
+     * @param array<string, string> $pages Source language codes keyed by page ID
+     * @return array<string, list<array{id: string|null, lang: string, source: bool, state: string, published: bool}>> Variant lists keyed by page ID
+     */
+    public static function variantLists( array $pages ) : array
+    {
+        $variants = PageVariant::withTrashed()->whereIn( 'page_id', array_keys( $pages ) )
+            ->orderBy( 'lang' )->get( ['id', 'page_id', 'lang', 'stale', 'latest_id', 'deleted_at'] );
+
+        $published = Version::whereIn( 'id', $variants->pluck( 'latest_id' )->filter()->unique()->values()->all() )
+            ->pluck( 'published', 'id' );
+
+        $locales = array_fill_keys( array_map( 'strval', (array) config( 'cms.locales', [] ) ), null );
+        $result = array_fill_keys( array_keys( $pages ), $locales );
+
+        foreach( $variants as $variant )
+        {
+            $result[$variant->page_id][$variant->lang] = [
+                'id' => $variant->id,
+                'lang' => $variant->lang,
+                'source' => $variant->lang === $pages[$variant->page_id],
+                'state' => match( true ) {
+                    $variant->trashed() => 'trashed',
+                    $variant->stale => 'stale',
+                    default => 'current',
+                },
+                'published' => (bool) ( $published[$variant->latest_id] ?? false ),
+            ];
+        }
+
+        foreach( $result as $id => $list )
+        {
+            foreach( $list as $lang => $entry ) {
+                $list[$lang] = $entry ?? ['id' => null, 'lang' => (string) $lang, 'source' => false, 'state' => 'missing', 'published' => false];
+            }
+
+            $result[$id] = array_values( $list );
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Returns whether the page has explicit frontend access rules.
      */
     public function restricted() : bool
@@ -310,7 +487,7 @@ class Page extends Base
      */
     public function elements() : BelongsToMany
     {
-        return $this->belongsToMany( Element::class, 'cms_page_element', 'page_id' );
+        return $this->belongsToMany( Element::class, 'cms_page_element', 'variant_id', 'element_id', 'variant_id' );
     }
 
 
@@ -321,7 +498,7 @@ class Page extends Base
      */
     public function files() : BelongsToMany
     {
-        return $this->belongsToMany( File::class, 'cms_page_file', 'page_id' );
+        return $this->belongsToMany( File::class, 'cms_page_file', 'variant_id', 'file_id', 'variant_id' );
     }
 
 
@@ -501,6 +678,27 @@ class Page extends Base
 
 
     /**
+     * Removes the search index entries of all variants in the pruned subtree.
+     */
+    protected function pruning() : void
+    {
+        $tenant = (string) $this->tenant_id;
+        $ids = PageVariant::withoutTenancy()->withTrashed()
+            ->where( 'tenant_id', $tenant )
+            ->whereIn( 'page_id', fn( $query ) => $query->select( 'id' )->from( 'cms_pages' )
+                ->where( 'tenant_id', $tenant )
+                ->where( NestedSet::LFT, '>=', $this->getLft() )
+                ->where( NestedSet::RGT, '<=', $this->getRgt() )
+            )
+            ->pluck( 'id' )->all();
+
+        \Aimeos\Cms\Tenancy::run( $tenant, fn() => \Aimeos\Cms\Scout::unindex( static::class, $ids ) );
+
+        parent::pruning();
+    }
+
+
+    /**
      * Get query for the complete sub-tree up to three levels.
      *
      * @return DescendantsRelation Eloquent relationship to the descendants of the page
@@ -521,13 +719,19 @@ class Page extends Base
             ->whereNotExists( function( $query ) use ( $table, $lft, $rgt ) {
                 $query->select( DB::raw( 1 ) )
                     ->from( $table . ' as disabled' )
+                    ->join( 'cms_page_variants as disabled_variant', 'disabled_variant.page_id', '=', 'disabled.id' )
+                    ->whereColumn( 'disabled_variant.lang', "$table.lang" )
                     ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->where( 'disabled.status', 0 )
+                    ->where( 'disabled_variant.status', 0 )
                     ->whereNull( 'disabled.deleted_at' )
                     ->whereColumn( "disabled.$lft", '<=', "$table.$lft" )
                     ->whereColumn( "disabled.$rgt", '>=', "$table.$rgt" );
             })
             ->defaultOrder();
+
+        if( !$this->isSourceVariant() && $builder instanceof PageQuery ) {
+            $builder->language( $this->lang );
+        }
 
         if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
             $builder->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
@@ -538,13 +742,69 @@ class Page extends Base
 
 
     /**
+     * Tests if the page variant is the source variant of the page.
+     *
+     * @return bool TRUE if it's the source variant or the languages are unknown
+     */
+    public function isSourceVariant(): bool
+    {
+        $lang = $this->attributes['lang'] ?? null;
+        $source = $this->attributes['source'] ?? null;
+
+        return $lang === null || $source === null || $lang === $source;
+    }
+
+
+    /**
+     * Returns the key of the search index entry, which is the variant ID.
+     *
+     * @return mixed Variant ID or the page ID for the first variant
+     */
+    public function getScoutKey(): mixed
+    {
+        return $this->getAttribute( 'variant_id' ) ?? $this->getKey();
+    }
+
+
+    /**
+     * Returns the facade column of the search index key, each page variant is indexed separately.
+     *
+     * @return string Column name
+     */
+    public function getScoutKeyName(): string
+    {
+        return 'variant_id';
+    }
+
+
+    /**
+     * Gets the page variants matching the search index keys.
+     *
+     * @param \Laravel\Scout\Builder<static> $builder Scout search builder
+     * @param array<int, mixed> $ids Variant IDs
+     * @return \Illuminate\Database\Eloquent\Builder<static> Query for the page variants
+     */
+    public function queryScoutModelsByIds( \Laravel\Scout\Builder $builder, array $ids )
+    {
+        $query = $this->newQuery()->allVariants( true );
+        $query->withTrashed();
+
+        if( $builder->queryCallback ) {
+            call_user_func( $builder->queryCallback, $query );
+        }
+
+        return $query->whereIn( $this->qualifyColumn( $this->getScoutKeyName() ), $ids );
+    }
+
+
+    /**
      * Returns the searchable data for the page.
      *
      * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
-        $attrs = ['domain', 'lang', 'path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at', 'latest_id'];
+        $attrs = ['domain', 'lang', 'path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at', 'variant_deleted_at', 'latest_id'];
 
         // bulk index + changed content check for performance reasons
         if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
@@ -566,7 +826,7 @@ class Page extends Base
 
         $content = '';
 
-        if( !$this->trashed() )
+        if( !$this->trashed() && $this->getAttribute( 'variant_deleted_at' ) === null )
         {
             $content = mb_strtolower( trim(
                 $this->path . "\n"
@@ -604,6 +864,32 @@ class Page extends Base
 
 
     /**
+     * Restricts queries saving the model to the variant of the model.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function setKeysForSaveQuery( $query )
+    {
+        parent::setKeysForSaveQuery( $query );
+        return $this->useVariant( $query );
+    }
+
+
+    /**
+     * Restricts queries reloading the model to the variant of the model.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function setKeysForSelectQuery( $query )
+    {
+        parent::setKeysForSelectQuery( $query );
+        return $this->useVariant( $query );
+    }
+
+
+    /**
      * Don't fire model events for each descendant for performance reasons.
      *
      * @return bool FALSE to disable firing events for descendants
@@ -622,7 +908,11 @@ class Page extends Base
      */
     protected function makeAllSearchableUsing( $query )
     {
-        return $query->select( self::SELECT_COLUMNS )->withCount( 'access' )->with( [
+        if( $query instanceof PageQuery ) {
+            $query->allVariants( true );
+        }
+
+        return $query->select( [...self::SELECT_COLUMNS, 'variant_deleted_at'] )->withCount( 'access' )->with( [
             'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
             'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
@@ -805,6 +1095,22 @@ class Page extends Base
         return Attribute::make(
             set: fn( $value ) => (string) $value,
         );
+    }
+
+
+    /**
+     * Uses the variant of the model in the query if known.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function useVariant( $query )
+    {
+        if( $query instanceof PageQuery && ( $id = $this->original['variant_id'] ?? $this->attributes['variant_id'] ?? null ) ) {
+            $query->variant( (string) $id );
+        }
+
+        return $query;
     }
 
 

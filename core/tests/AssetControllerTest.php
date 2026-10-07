@@ -370,13 +370,13 @@ class AssetControllerTest extends CoreTestAbstract
 
         if( $direct ) {
             $db->table( 'cms_page_file' )->insert( [
-                'page_id' => $page->id,
+                'variant_id' => $page->variant_id,
                 'file_id' => $file->id,
             ] );
         } else {
             $element = Element::firstOrFail();
             $db->table( 'cms_page_element' )->updateOrInsert( [
-                'page_id' => $page->id,
+                'variant_id' => $page->variant_id,
                 'element_id' => $element->id,
             ] );
             $db->table( 'cms_element_file' )->updateOrInsert( [

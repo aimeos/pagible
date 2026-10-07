@@ -41,7 +41,7 @@ class AddFile extends Tool
             'content' => 'string|max:8388608',
             'disk' => 'sometimes|string|in:public,private',
             'name' => 'string|max:255',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'description' => 'array',
         ], [
             'url.required_without' => 'You must specify the URL of the file to add, e.g., "https://example.com/image.jpg", or its base64 encoded content.',

@@ -12,6 +12,9 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Query\PageBuilder;
+use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -29,7 +32,7 @@ final class Publication
     /** @var array<class-string<Base>, array<string, Base>> */
     private array $models = [];
 
-    /** @var array<class-string<Base>, array<string, array{version_id: string, path?: string, domain?: string}>> */
+    /** @var array<class-string<Base>, array<string, array{version_id: string, path?: string, domain?: string, lang?: string}>> */
     private array $projected = [];
 
     /**
@@ -86,6 +89,9 @@ final class Publication
             array_map( strval( ... ), array_keys( $this->models[File::class] ?? [] ) ),
         );
 
+        // translations whose source changed need an update
+        Resource::staleVariants( array_filter( $this->models[Page::class] ?? [], fn( $item ) => $item instanceof Page ) );
+
         foreach( $this->models as $model => $items ) {
             Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
         }
@@ -124,7 +130,7 @@ final class Publication
     public function one( Base $model, Version $version ) : void
     {
         if( !$version->exists
-            || (string) $version->versionable_id !== (string) $model->getKey()
+            || (string) $version->versionable_id !== (string) $model->getVersionKey()
             || (string) $version->versionable_type !== (string) $model->getMorphClass()
         ) {
             throw new \LogicException( 'CMS version does not belong to the model.' );
@@ -170,9 +176,11 @@ final class Publication
      * @param array<string> $ids
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param string|null $at Publication date or null to publish immediately
+     * @param string|null $lang Language of the page variants or null for the source variants
      * @return Collection<int, Base>
      */
-    public static function publish( string $model, array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    public static function publish( string $model, array $ids, ?Authenticatable $user = null, ?string $at = null,
+        ?string $lang = null ) : Collection
     {
         Validation::publishAt( $at );
 
@@ -188,7 +196,7 @@ final class Publication
         $publication = new self();
 
         $publish = fn() => Utils::transaction(
-            function() use ( $at, $editor, $ids, $model, $publication, $user ) {
+            function() use ( $at, $editor, $ids, $lang, $model, $publication, $user ) {
 
                 /** @var Collection<int, Base> $items */
                 $items = collect();
@@ -197,7 +205,7 @@ final class Publication
 
                 foreach( array_chunk( $ids, 50 ) as $chunk )
                 {
-                    $loaded = self::items( $model, $chunk, (bool) $at );
+                    $loaded = self::items( $model, $chunk, (bool) $at, $lang );
                     $unpublished = $loaded->filter(
                         fn( Base $item ) => $item->latest && !$item->latest->published,
                     )->values();
@@ -287,7 +295,12 @@ final class Publication
                     $row[$column] = $attributes[$column] ?? null;
                 }
 
-                $groups[$key]['table'] = $model->getTable();
+                if( $model instanceof Page ) {
+                    // published page data is stored in the page variant
+                    [$row, $columns] = self::variantRow( $model, $row, $columns );
+                }
+
+                $groups[$key]['table'] = $model instanceof Page ? 'cms_page_variants' : $model->getTable();
                 $groups[$key]['columns'] = $columns;
                 $groups[$key]['rows'][] = $row;
             }
@@ -394,9 +407,10 @@ final class Publication
      *
      * @param class-string<Base> $model
      * @param array<string> $ids
+     * @param string|null $lang Language of the page variants or null for the source variants
      * @return Collection<int, Base>
      */
-    private static function items( string $model, array $ids, bool $compact = false ) : Collection
+    private static function items( string $model, array $ids, bool $compact = false, ?string $lang = null ) : Collection
     {
         $instance = new $model();
         $table = $instance->getTable();
@@ -416,8 +430,13 @@ final class Publication
             'created_at',
         ];
 
-        $query = $instance->newQuery()
-            ->select( $compact ? ["{$table}.id", "{$table}.latest_id"] : ["{$table}.*"] )
+        $query = $instance->newQuery();
+
+        if( $lang !== null && $query instanceof PageQuery ) {
+            $query->language( $lang );
+        }
+
+        $query->select( $compact ? ["{$table}.id", "{$table}.latest_id"] : ["{$table}.*"] )
             ->leftJoin( 'cms_versions AS cms_latest', function( $join ) use ( $table ) {
                 $join->on( "{$table}.latest_id", '=', 'cms_latest.id' )
                     ->where( 'cms_latest.tenant_id', Tenancy::value() );
@@ -435,8 +454,8 @@ final class Publication
                     ->selectRaw( 'count(*)' )
                     ->whereColumn( 'page_id', "{$table}.id" )
                     ->where( 'tenant_id', Tenancy::value() ),
-                'pub_active_files' => $first( 'cms_page_file', 'page_id', "{$table}.id" ),
-                'pub_active_elements' => $first( 'cms_page_element', 'page_id', "{$table}.id" ),
+                'pub_active_files' => $first( 'cms_page_file', 'variant_id', "{$table}.variant_id" ),
+                'pub_active_elements' => $first( 'cms_page_element', 'variant_id', "{$table}.variant_id" ),
             ] );
         }
         elseif( !$compact && $model === Element::class )
@@ -656,7 +675,7 @@ final class Publication
                 $fileOwners[$versionId] = $owners[$versionId];
             }
 
-            if( $type === Page::class && $this->flag( $version, 'target_elements' ) !== false ) {
+            if( $type === PageVariant::class && $this->flag( $version, 'target_elements' ) !== false ) {
                 $elementOwners[$versionId] = $owners[$versionId];
             }
         }
@@ -743,15 +762,15 @@ final class Publication
 
         foreach( $owners as $versionId => $owner )
         {
-            if( $owner['type'] === Page::class ) {
+            if( $owner['type'] === PageVariant::class ) {
                 $pages[$owner['id']] = $this->refs[$versionId];
             } else {
                 $elements[$owner['id']] = $this->refs[$versionId];
             }
         }
 
-        $this->syncPivot( 'cms_page_file', 'page_id', 'file_id', $pages, 'files' );
-        $this->syncPivot( 'cms_page_element', 'page_id', 'element_id', $pages, 'elements' );
+        $this->syncPivot( 'cms_page_file', 'variant_id', 'file_id', $pages, 'files' );
+        $this->syncPivot( 'cms_page_element', 'variant_id', 'element_id', $pages, 'elements' );
         $this->syncPivot( 'cms_element_file', 'element_id', 'file_id', $elements, 'files' );
     }
 
@@ -842,7 +861,7 @@ final class Publication
 
         if( $model instanceof Page )
         {
-            $projection += $model->route( $version );
+            $projection += $model->route( $version ) + ['lang' => (string) ( $version->data->lang ?? $model->lang )];
 
             $elements = [];
 
@@ -859,6 +878,35 @@ final class Publication
 
         $this->models[$model::class][$id] = $model;
         $this->projected[$model::class][$id] = $projection;
+    }
+
+
+    /**
+     * Maps a page facade row to the row of its page variant.
+     *
+     * @param array<string, mixed> $row
+     * @param array<string> $columns
+     * @return array{0: array<string, mixed>, 1: array<string>} Variant row and columns
+     */
+    private static function variantRow( Page $page, array $row, array $columns ) : array
+    {
+        $result = ['id' => $page->variant_id];
+        $names = [];
+
+        foreach( $columns as $column )
+        {
+            $name = PageBuilder::VARIANT_COLUMNS[$column]
+                ?? ( in_array( $column, PageBuilder::SHARED_COLUMNS, true ) ? $column : null );
+
+            if( $name === null ) {
+                throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
+            }
+
+            $result[$name] = $row[$column];
+            $names[] = $name;
+        }
+
+        return [$result, $names];
     }
 
 

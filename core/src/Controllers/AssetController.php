@@ -38,7 +38,7 @@ class AssetController extends Controller
         {
             $user = $request->user();
             $editor = Permission::can( 'page:view', $user ) && Permission::can( 'file:view', $user );
-            $query = Page::select( 'id', 'tenant_id', 'latest_id' );
+            $query = Page::select( 'id', 'variant_id', 'tenant_id', 'latest_id' );
 
             if( !$editor ) {
                 $query->withAccess( $user )
@@ -75,10 +75,10 @@ class AssetController extends Controller
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
 
         $refs = $db->table( 'cms_page_file' )->selectRaw( '1 as attached' )
-            ->where( 'page_id', $page->id )->where( 'file_id', $file );
+            ->where( 'variant_id', $page->variant_id )->where( 'file_id', $file );
         $elements = $db->table( 'cms_element_file as ef' )->selectRaw( '1 as attached' )
             ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-            ->where( 'pe.page_id', $page->id )->where( 'ef.file_id', $file );
+            ->where( 'pe.variant_id', $page->variant_id )->where( 'ef.file_id', $file );
 
         $refs->unionAll( $elements );
 

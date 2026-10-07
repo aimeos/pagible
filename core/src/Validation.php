@@ -18,10 +18,10 @@ class Validation
 {
     /** @var array<class-string, array<string, int>> Maximum string lengths or integer values of scalar fields */
     private const LIMITS = [
-        Element::class => ['lang' => 5, 'name' => 255, 'type' => 50],
-        File::class => ['lang' => 5, 'mime' => 100, 'name' => 255, 'path' => 255],
+        Element::class => ['lang' => 10, 'name' => 255, 'type' => 50],
+        File::class => ['lang' => 10, 'mime' => 100, 'name' => 255, 'path' => 255],
         Page::class => [
-            'cache' => 32767, 'domain' => 255, 'lang' => 5, 'name' => 255, 'path' => 255, 'related_id' => 36,
+            'cache' => 32767, 'domain' => 255, 'lang' => 10, 'name' => 255, 'path' => 255,
             'status' => 32767, 'tag' => 30, 'theme' => 30, 'title' => 255, 'to' => 255, 'type' => 30,
         ],
     ];
@@ -79,6 +79,9 @@ class Validation
         if( !Permission::can( 'page:config', $user ) ) {
             unset( $input['config'] );
         }
+
+        // the source language is changed by Resource::setSource() only
+        unset( $input['source'] );
 
         if( isset( $input['content'] ) )
         {

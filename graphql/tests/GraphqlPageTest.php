@@ -42,7 +42,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected = [
@@ -60,7 +60,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $response = $this->actingAs($this->user)->graphQL("{
             page(id: \"{$page->id}\") {
                 id
-                related_id
                 parent_id
                 lang
                 path
@@ -100,7 +99,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected[] = [
@@ -129,7 +128,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -340,7 +338,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'created_at' => (string) $page->created_at,
                 'updated_at' => (string) $page->updated_at,
             ] + collect($page->getAttributes())
-                ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+                ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
                 ->all();
         }
 
@@ -352,7 +350,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }, first: 10, page: 1) {
                 data {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -385,7 +382,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         foreach ($pagesData as $i => $actual) {
             // Assert scalar fields
-            foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
+            foreach (['id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
                 $this->assertEquals($expected[$i][$key], $actual[$key]);
             }
 
@@ -636,7 +633,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPage()
     {
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -654,7 +651,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     cache: 0
                 }) {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -686,7 +682,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected = [
@@ -710,7 +706,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -748,7 +744,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $ref = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -787,7 +783,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $blog = Page::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $blog->id . '") {
@@ -817,7 +813,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '") {
@@ -846,7 +842,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $blog = Page::where('tag', 'blog')->firstOrFail();
         $article = Page::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 9 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '", ref: "' . $blog->id . '") {
@@ -875,7 +871,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -1107,7 +1103,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = Page::where('tag', 'root')->firstOrFail();
         $root->delete();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {
@@ -1142,7 +1138,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $page->latest()->update( ['published' => false] );
         $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1221,7 +1217,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 11 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgePage(id: ["' . $root->id . '"]) {

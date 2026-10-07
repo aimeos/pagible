@@ -55,7 +55,7 @@ class ValidationTest extends CoreTestAbstract
     public function testPageLimits()
     {
         $this->expectException( Exception::class );
-        Validation::page( ['lang' => 'en-GB-x'] );
+        Validation::page( ['lang' => 'zh-Hant-TW-x'] );
     }
 
 

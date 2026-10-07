@@ -114,6 +114,7 @@ class PageControllerTest extends ThemeTestAbstract
         $response->assertSee( 'data-no-results="No results found"', false );
         $response->assertSee( '"inLanguage": "' . $page->lang . '"', false );
         $response->assertSee( 'dir="ltr"', false );
+        $response->assertHeader( 'Content-Language', $page->lang );
     }
 
 

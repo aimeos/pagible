@@ -91,11 +91,10 @@ extend type Query {
     @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@catalog")
 
-  "Get page by ID"
-  page(id: ID! @eq): Page
+  "Get page by ID in the given language or in its source language if no language is passed"
+  page(id: ID!, lang: String, trashed: Trashed): Page
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
-    @softDeletes
-    @find
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@page")
 
   "Get the available pages"
   pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed): [Page!]
@@ -167,16 +166,24 @@ extend type Mutation {
   clearCache(ids: [ID!]! @rulesForArray(apply: ["max:1000"])): Int!
     @guard @cmsPermission(action: "cache:clear") @throttle(name: "cms-graphql")
 
-  "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
+  "Add a new page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL); 'lang' of the input is the source language and defaults to the application locale"
   addPage(input: PageInput!, parent: ID, ref: ID): Page
+    @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
+
+  "Add a language variant to the page as untranslated copy of the latest source draft"
+  addVariant(id: ID!, lang: String!): Page
+    @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
+
+  "Copy the page and its sub-pages with all language variants below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
+  copyPage(id: ID!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   movePage(id: ID!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-graphql")
 
-  "Update the values of an existing page"
-  savePage(id: ID!, input: PageInput!, latestId: ID): Page
+  "Update the values of an existing page in the given language or in its source language if no language is passed"
+  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
@@ -187,20 +194,20 @@ extend type Mutation {
   bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
-  "Delete an existing page"
-  dropPage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
+  "Delete existing pages or only their variants in the given language"
+  dropPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
     @guard @cmsPermission(action: "page:drop") @throttle(name: "cms-graphql")
 
-  "Restore an existing page"
-  keepPage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
+  "Restore existing pages or only their variants in the given language"
+  keepPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
     @guard @cmsPermission(action: "page:keep") @throttle(name: "cms-graphql")
 
-  "Purge an existing page"
-  purgePage(id: [ID!]! @rulesForArray(apply: ["max:1000"])): [Page]!
+  "Purge existing pages or only their variants in the given language"
+  purgePage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
     @guard @cmsPermission(action: "page:purge") @throttle(name: "cms-graphql")
 
-  "Publish page data"
-  pubPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime): [Page]!
+  "Publish page data in the given language or in the source language if no language is passed"
+  pubPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime, lang: String): [Page]!
     @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
 
 
@@ -364,14 +371,24 @@ type Page {
     @withCount(relation: "access")
     @method(name: "restricted")
 
-  "Translation ID of all pages with the same content in different languages"
-  related_id: ID
 
   "ID of the parent page or NULL if it's a root page"
   parent_id: ID
 
-  "ISO language code, e.g. 'en', 'en-GB' or empty for default language"
+  "ISO language code of the page variant, e.g. 'en', 'en-GB' or 'zh-Hant'"
   lang: String!
+
+  "ISO language code of the source variant the other variants are translated from"
+  source: String!
+
+  "Whether the source changed since the variant was last updated"
+  stale: Boolean!
+
+  "Date/time value when the page variant was deleted or NULL if it's available"
+  variant_deleted_at: String
+
+  "Language variants of the page and missing languages from the configured locales"
+  variants: [PageLanguage!]! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\VariantResolver")
 
   "Unique URL segment of the page"
   path: String
@@ -452,12 +469,27 @@ type Page {
   changed: JSON
 }
 
+type PageLanguage {
+  "Unique ID of the page variant or NULL if the language is missing"
+  id: ID
+
+  "ISO language code of the variant"
+  lang: String!
+
+  "Whether the variant is the source variant of the page"
+  source: Boolean!
+
+  "State of the variant: current, stale, trashed or missing"
+  state: String!
+
+  "Whether the latest version of the variant is published"
+  published: Boolean!
+}
+
 input PageFilter {
   "Unique page IDs"
   id: [ID!] @rulesForArray(apply: ["nullable", "max:1000"])
 
-  "Translation ID of all pages with the same content in different languages"
-  related_id: ID
 
   "ID of the parent page or NULL if it's a root page"
   parent_id: ID
@@ -512,11 +544,12 @@ input PageFilter {
 }
 
 input PageInput {
-  "Translation ID of all pages with the same content in different languages"
-  related_id: ID
 
-  "ISO language code, e.g. 'en', 'en-GB' or empty for default language"
+  "ISO language code, e.g. 'en', 'en-GB' or 'zh-Hant'"
   lang: String
+
+  "ISO language code of the variant that becomes the source variant of the page"
+  source: String
 
   "Unique URL segment of the page"
   path: String

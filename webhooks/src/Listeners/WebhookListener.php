@@ -136,7 +136,7 @@ class WebhookListener
         $data = ['id' => $event->id, 'version_id' => $versionId];
 
         if( $event->contentType === 'page' ) {
-            foreach( ['path', 'domain'] as $field ) {
+            foreach( ['path', 'domain', 'lang'] as $field ) {
                 if( is_string( $value = ( $projection ?: $event->data )[$field] ?? null ) ) {
                     $data[$field] = $value;
                 }

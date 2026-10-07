@@ -3,6 +3,7 @@
 namespace Aimeos\Cms\Scout;
 
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -280,6 +281,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
         }
 
+        // Pages are indexed per variant, a language filter selects the variants of that language
+        if( $query instanceof \Aimeos\Cms\Query\PageQuery && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
+            $query->language( $lang, $query->removedScopes() !== [] );
+        }
+
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
             $this->joinSearchIndex( $query, $builder, $modelTable );
@@ -337,7 +343,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     protected function indexQuery( $group, string $type )
     {
         return $group->firstOrFail()->getConnection()->table( 'cms_index' )
-            ->whereIn( 'indexable_id', $group->pluck( 'id' )->all() )
+            ->whereIn( 'indexable_id', $group->map( fn( $model ) => $model instanceof Base ? $model->getScoutKey() : $model->getKey() )->all() )
             ->where( 'indexable_type', $type )
             ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
     }
@@ -359,7 +365,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $query->select( "{$modelTable}.*" );
         }
 
-        $query->join( 'cms_index', 'cms_index.indexable_id', '=', "{$modelTable}.id" )
+        $key = $builder->model instanceof Base ? $builder->model->getScoutKeyName() : $builder->model->getKeyName();
+
+        $query->join( 'cms_index', 'cms_index.indexable_id', '=', $modelTable . '.' . $key )
             ->where( 'cms_index.indexable_type', get_class( $builder->model ) )
             ->where( 'cms_index.tenant_id', \Aimeos\Cms\Tenancy::value() );
 

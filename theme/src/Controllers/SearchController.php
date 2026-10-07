@@ -41,7 +41,7 @@ class SearchController extends Controller
         $external = Scout::usesExternalSearch();
         $builder = Page::search( $vals['q'] )
             ->query( function( $q ) use ( $domain, $lang ) {
-                $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
+                $q->select( 'cms_pages.id', 'cms_pages.variant_id', 'cms_pages.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
                     ->withGlobalScope( 'status', new Status )
                     ->where( 'domain', $domain )
                     ->where( 'lang', $lang )

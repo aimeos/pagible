@@ -94,7 +94,7 @@ describe('PageDetail', () => {
     mountDetail().then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
       const { id, published, ...data } = baseItem
-      expect(sections({ ...data, related_id: null, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent().data)).to.deep.equal({})
+      expect(sections({ ...data, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent().data)).to.deep.equal({})
 
       const file = { id: 'old-file', path: 'old.jpg', previews: {} }
       const element = { id: 'old-element', type: 'text', name: 'Shared campaign', data: '{"text":"Saved element"}', files: [] }

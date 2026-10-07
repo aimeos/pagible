@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Events\Translation;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Jobs\InvalidatePages;
 use Aimeos\Cms\Jobs\PruneVersions;
@@ -15,6 +16,8 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -172,6 +175,419 @@ class Resource
 
 
     /**
+     * Adds a language variant to a page as untranslated copy of the latest source draft.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the new variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Page with the new variant
+     * @throws Exception If the language is invalid or the page already has a variant in that language
+     */
+    public static function addVariant( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $lang = self::checkLang( $lang );
+        $editor = Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $id, $lang, $editor, $user ) {
+
+            /** @var Page $source */
+            $source = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+
+            $existing = PageVariant::withTrashed()->where( 'page_id', $source->id )->where( 'lang', $lang )->first( ['id', 'deleted_at'] );
+
+            if( $existing ) {
+                throw new Exception( $existing->trashed()
+                    ? sprintf( 'Language "%1$s" is in the trash, restore it instead', $lang )
+                    : sprintf( 'Language "%1$s" already exists', $lang )
+                );
+            }
+
+            $data = (array) ( $source->latest->data ?? $source->only( [...Hashes::PAGE_FIELDS, 'path', 'domain', 'to', 'status'] ) );
+            $aux = (array) ( $source->latest->aux ?? [] );
+
+            [$domain, $path] = self::variantPath( $source, $lang, (string) ( $data['path'] ?? $source->path ) );
+            $data = ['lang' => $lang, 'domain' => $domain, 'path' => $path] + $data;
+
+            $variant = new PageVariant();
+            $variant->forceFill( array_intersect_key( $data, array_flip( ['to', 'name', 'title', 'type', 'theme', 'tag', 'cache'] ) ) + [
+                'page_id' => $source->id,
+                'lang' => $lang,
+                'domain' => $domain,
+                'path' => $path,
+                'status' => 0,
+                'hashes' => self::copyHashes( $data, $aux ),
+                'stale' => true,
+                'editor' => $editor,
+            ] )->save();
+
+            return self::addVersion( Page::variant( (string) $variant->id )->firstOrFail(), $data, $aux, $editor, $user );
+        } );
+
+        self::watch( 'added', $page, [$lang], $editor );
+
+        return $page;
+    }
+
+
+    /**
+     * Copies a page and its sub-pages with all language variants.
+     *
+     * The latest version of each variant becomes the first version of its copy, element IDs
+     * and hashes stay unchanged. Colliding paths get the language code appended.
+     *
+     * @param string $id Page UUID
+     * @param string|null $ref Sibling page ID to insert before
+     * @param string|null $parent Parent page ID to append to
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Copy of the page in its source language
+     */
+    public static function copyPage( string $id, ?string $ref = null, ?string $parent = null, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        return Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor, $user ) {
+
+            /** @var Page $root */
+            $root = Page::select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )->findOrFail( $id );
+
+            $pages = Page::select( 'id', 'parent_id', 'source', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
+                ->where( NestedSet::LFT, '>=', $root->getLft() )
+                ->where( NestedSet::RGT, '<=', $root->getRgt() )
+                ->orderBy( NestedSet::LFT )
+                ->get();
+
+            Page::checkBulk( $pages->count() );
+
+            $variants = PageVariant::whereIn( 'page_id', $pages->pluck( 'id' )->all() )
+                ->orderBy( 'lang' )->get()->groupBy( 'page_id' );
+
+            $versions = Version::with( ['files:id', 'elements:id'] )
+                ->whereIn( 'id', $variants->flatten()->pluck( 'latest_id' )->filter()->all() )
+                ->get()->keyBy( 'id' );
+
+            $copies = [];
+            $result = null;
+
+            /** @var Page $orig */
+            foreach( $pages as $orig )
+            {
+                $list = $variants->get( (string) $orig->id );
+                $source = $list?->firstWhere( 'lang', $orig->source ) ?? $list?->first();
+
+                if( !$list || !$source ) {
+                    continue;
+                }
+
+                $page = null;
+
+                foreach( $list->sortBy( fn( $v ) => $v->id === $source->id ? 0 : 1 ) as $variant )
+                {
+                    $version = $versions->get( (string) $variant->latest_id );
+                    $data = (array) ( $version->data ?? $variant->only( ['path', 'domain', 'to', 'name', 'title', 'type', 'theme', 'tag', 'cache', 'status'] ) );
+                    $aux = (array) ( $version->aux ?? ['content' => $variant->content, 'meta' => $variant->meta, 'config' => $variant->config] );
+
+                    $data['lang'] = $variant->lang;
+                    $data['domain'] = (string) ( $data['domain'] ?? $variant->domain );
+                    $data['path'] = self::uniquePath( $data['domain'], (string) ( $data['path'] ?? $variant->path ), $variant->lang );
+
+                    $fields = array_intersect_key( $data, array_flip( ['lang', 'path', 'domain', 'to', 'name', 'title', 'type', 'theme', 'tag', 'cache', 'status'] ) );
+
+                    if( $page === null )
+                    {
+                        $page = new Page();
+                        $page->forceFill( $fields + [
+                            'source' => $variant->lang,
+                            'hashes' => $variant->hashes,
+                            'stale' => $variant->stale,
+                            'editor' => $editor,
+                        ] );
+
+                        isset( $copies[(string) $orig->parent_id] ) && $orig->id !== $root->id
+                            ? $page->appendToNode( $copies[(string) $orig->parent_id] )
+                            : $page->position( $ref, $parent );
+
+                        $page->save();
+                        $copies[(string) $orig->id] = $page;
+                        $copy = $page;
+                    }
+                    else
+                    {
+                        $new = new PageVariant();
+                        $new->forceFill( $fields + [
+                            'page_id' => $page->id,
+                            'hashes' => $variant->hashes,
+                            'stale' => $variant->stale,
+                            'editor' => $editor,
+                        ] )->save();
+
+                        $copy = Page::variant( (string) $new->id )->firstOrFail();
+                    }
+
+                    $refs = $version ? [
+                        'files' => $version->files->pluck( 'id' )->all(),
+                        'elements' => $version->elements->pluck( 'id' )->all(),
+                    ] : null;
+
+                    $copy = self::addVersion( $copy, $data, $aux, $editor, $user, $refs );
+                    $result ??= $copy;
+                }
+
+                $page?->announce( 'added', $editor );
+            }
+
+            if( !$result ) {
+                throw new Exception( sprintf( 'Page "%1$s" has no variants', $id ) );
+            }
+
+            return $result;
+        } );
+    }
+
+
+    /**
+     * Moves a language variant of a page to the trash.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Trashed page variant
+     * @throws Exception If the variant is the source variant of the page
+     */
+    public static function dropVariant( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $id, $lang, $editor ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->language( $lang )->lockForUpdate()->findOrFail( $id );
+
+            if( $page->lang === $page->source ) {
+                throw new Exception( 'The source language can not be deleted, change the source language first' );
+            }
+
+            $time = ( new PageVariant() )->freshTimestamp();
+
+            PageVariant::whereKey( $page->variant_id )->update( ['deleted_at' => $time, 'editor' => $editor] );
+            $page->forceFill( ['variant_deleted_at' => $time, 'editor' => $editor] )->syncOriginal();
+
+            return $page;
+        } );
+
+        if( Scout::usesExternalSearch() ) {
+            config( 'scout.soft_delete' )
+                ? Scout::index( Page::class, [(string) $page->id], collect( [$page] ) )
+                : Scout::unindex( Page::class, [$page->variant_id] );
+        }
+
+        self::invalidatePages( [$page] );
+        self::watch( 'dropped', $page, [$lang], $editor );
+
+        return $page;
+    }
+
+
+    /**
+     * Deletes a language variant of a page including its versions.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Purged page variant
+     * @throws Exception If the variant is the source variant of the page
+     */
+    public static function purgeVariant( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $id, $lang ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->language( $lang, true )->lockForUpdate()->findOrFail( $id );
+
+            if( $page->lang === $page->source ) {
+                throw new Exception( 'The source language can not be deleted, change the source language first' );
+            }
+
+            Version::where( 'versionable_type', PageVariant::class )
+                ->where( 'versionable_id', $page->variant_id )
+                ->delete();
+
+            PageVariant::withTrashed()->whereKey( $page->variant_id )->forceDelete();
+            $page->exists = false;
+
+            return $page;
+        } );
+
+        if( $page->getAttribute( 'variant_deleted_at' ) === null ) {
+            self::invalidatePages( [$page] );
+        }
+
+        Scout::unindex( Page::class, [$page->variant_id] );
+        self::watch( 'purged', $page, [$lang], $editor );
+
+        return $page;
+    }
+
+
+    /**
+     * Restores a trashed language variant of a page.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Restored page variant
+     */
+    public static function restoreVariant( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $id, $lang, $editor ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->language( $lang, true )->whereNotNull( 'variant_deleted_at' )
+                ->lockForUpdate()->findOrFail( $id );
+
+            $source = Page::withTrashed()->findOrFail( $id );
+            $hashes = (array) $page->hashes;
+            $stale = empty( $hashes ) || Hashes::stale( self::publishedHashes( $source ), $hashes );
+
+            PageVariant::withTrashed()->whereKey( $page->variant_id )->update( [
+                'deleted_at' => null,
+                'editor' => $editor,
+                'stale' => $stale,
+            ] );
+
+            $page->forceFill( ['variant_deleted_at' => null, 'editor' => $editor, 'stale' => $stale] )->syncOriginal();
+
+            return $page;
+        } );
+
+        Scout::index( Page::class, [(string) $page->id], collect( [$page] ) );
+        self::invalidatePages( [$page] );
+        self::watch( 'restored', $page, [$lang], $editor );
+
+        return $page;
+    }
+
+
+    /**
+     * Changes the source language of a page.
+     *
+     * The hashes of the other variants are reset to the hashes of the new source for the
+     * element IDs available in both, so later updates only contain real changes.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of an existing variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Page in the new source language
+     * @throws Exception If the page has no variant in that language
+     */
+    public static function setSource( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        $result = Utils::transaction( function() use ( $id, $lang ) {
+
+            /** @var Page|null $page */
+            $page = Page::withTrashed()->language( $lang )->lockForUpdate()->find( $id );
+
+            if( !$page ) {
+                throw new Exception( sprintf( 'Page "%1$s" has no variant in language "%2$s"', $id, $lang ) );
+            }
+
+            if( $page->source === $lang ) {
+                return [$page, false];
+            }
+
+            $hashes = self::publishedHashes( $page );
+            $elements = array_flip( Hashes::elements( $hashes ) );
+
+            $variants = PageVariant::withTrashed()->where( 'page_id', $page->id )
+                ->where( 'id', '!=', $page->variant_id )
+                ->get( ['id', 'lang', 'content', 'hashes', 'stale'] );
+
+            foreach( $variants as $variant )
+            {
+                // the former source is the origin of all linked variants
+                $linked = !empty( $variant->hashes ) || $variant->lang === $page->source;
+                $new = [];
+
+                foreach( (array) $variant->content as $item )
+                {
+                    $elid = ( (array) $item )['id'] ?? null;
+
+                    if( is_scalar( $elid ) && isset( $elements[(string) $elid] ) ) {
+                        $new['el:' . $elid] = $hashes['el:' . $elid];
+                    }
+                }
+
+                if( $linked ) {
+                    $new += array_filter( $hashes, fn( $key ) => !str_starts_with( $key, 'el:' ), ARRAY_FILTER_USE_KEY );
+                }
+
+                PageVariant::withTrashed()->whereKey( $variant->id )->update( [
+                    'hashes' => json_encode( (object) $new ),
+                    'stale' => !$linked || Hashes::stale( $hashes, $new ),
+                ] );
+            }
+
+            PageVariant::whereKey( $page->variant_id )->update( ['hashes' => '{}', 'stale' => false] );
+            Page::withTrashed()->whereKey( $page->id )->toBase()->update( ['source' => $lang] );
+
+            $page->forceFill( ['source' => $lang, 'hashes' => [], 'stale' => false] )->syncOriginal();
+
+            return [$page, true];
+        } );
+
+        [$page, $changed] = $result;
+
+        if( $changed ) {
+            self::watch( 'source', $page, [$lang], $editor );
+        }
+
+        return $page;
+    }
+
+    /**
+     * Trashes, restores or purges the variants of several pages in one language.
+     *
+     * Pages without a matching variant and source variants, which can't be deleted, are skipped.
+     *
+     * @param string $action "drop", "restore" or "purge"
+     * @param array<string> $ids Page UUIDs
+     * @param string $lang Language code of the variants
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Collection<int, Page> Changed page variants
+     */
+    public static function variants( string $action, array $ids, string $lang, ?Authenticatable $user = null ) : Collection
+    {
+        $method = match( $action ) {
+            'drop' => 'dropVariant',
+            'restore' => 'restoreVariant',
+            'purge' => 'purgeVariant',
+            default => throw new \InvalidArgumentException( sprintf( 'Invalid variant action "%1$s"', $action ) ),
+        };
+
+        $ids = array_values( array_unique( $ids ) );
+        Page::checkBulk( count( $ids ) );
+
+        $items = collect();
+
+        foreach( $ids as $id )
+        {
+            try {
+                $items->push( self::$method( $id, $lang, $user ) );
+            } catch( Exception | \Illuminate\Database\Eloquent\ModelNotFoundException $e ) {
+                // source variant or no variant in that language
+            }
+        }
+
+        return $items;
+    }
+
+
+    /**
      * Soft-deletes items by ID.
      *
      * @param class-string<Base> $model
@@ -213,7 +629,7 @@ class Resource
      * Invalidates the published pages using the Elements, the Files directly or the Files through an Element.
      *
      * The pages are invalidated by queued jobs, so publishing content shared by many pages doesn't slow down
-     * the request. The jobs get the page IDs because the references of purged items don't exist any more when they run.
+     * the request. The jobs get the page variant IDs because the references of purged items don't exist any more when they run.
      *
      * @param array<string> $elements Element UUIDs
      * @param array<string> $files File UUIDs
@@ -226,15 +642,15 @@ class Resource
         $queries = [];
 
         if( $elements ) {
-            $queries[] = $db->table( 'cms_page_element' )->select( 'page_id' )->whereIn( 'element_id', $elements );
+            $queries[] = $db->table( 'cms_page_element' )->select( 'variant_id' )->whereIn( 'element_id', $elements );
         }
 
         if( $files )
         {
-            $queries[] = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $files );
+            $queries[] = $db->table( 'cms_page_file' )->select( 'variant_id' )->whereIn( 'file_id', $files );
             $queries[] = $db->table( 'cms_element_file as ef' )
                 ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-                ->select( 'pe.page_id' )->whereIn( 'ef.file_id', $files );
+                ->select( 'pe.variant_id' )->whereIn( 'ef.file_id', $files );
         }
 
         if( !$query = array_shift( $queries ) ) {
@@ -246,7 +662,7 @@ class Resource
         }
 
         // Jobs dispatched after commit are kept in memory until then, so reading the IDs in chunks wouldn't save memory
-        foreach( $query->pluck( 'page_id' )->unique()->chunk( 1000 ) as $chunk ) {
+        foreach( $query->pluck( 'variant_id' )->unique()->chunk( 1000 ) as $chunk ) {
             InvalidatePages::dispatch( Tenancy::value(), $chunk->map( strval( ... ) )->values()->all() )->afterCommit();
         }
     }
@@ -460,6 +876,209 @@ class Resource
 
 
     /**
+     * Creates the first version of a new page variant.
+     *
+     * @param Page $page Page with the variant the version belongs to
+     * @param array<string, mixed> $data Version data
+     * @param array<string, mixed> $aux Content, meta and config
+     * @param string $editor Name of the editing user
+     * @param Authenticatable|null $user Authenticated user accepting the references
+     * @param array{files: array<string>, elements: array<string>}|null $refs Known file and element references
+     * @return Page Page with the new version as "latest"
+     */
+    protected static function addVersion( Page $page, array $data, array $aux, string $editor,
+        ?Authenticatable $user = null, ?array $refs = null ) : Page
+    {
+        $page->draft( [
+            'data' => $data,
+            'lang' => $data['lang'] ?? $page->lang,
+            'editor' => $editor,
+            'aux' => $aux,
+        ], $refs ?? self::refs( $aux, $user ) );
+
+        return $page;
+    }
+
+
+    /**
+     * Validates a language code.
+     *
+     * @param string $lang Language code, e.g. "en" or "zh-Hant"
+     * @return string Validated language code
+     * @throws Exception If the language code is invalid
+     */
+    protected static function checkLang( string $lang ) : string
+    {
+        if( strlen( $lang ) > 10 || !preg_match( '/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/', $lang ) ) {
+            throw new Exception( sprintf( 'Invalid language code "%1$s"', $lang ) );
+        }
+
+        return $lang;
+    }
+
+
+    /**
+     * Returns the hashes of an untranslated copy of the source.
+     *
+     * Items with texts to translate get an empty hash, so they still count as changed.
+     *
+     * @param array<string, mixed> $data Version data
+     * @param array<string, mixed> $aux Content, meta and config
+     * @return array<string, string> Hashes by key
+     */
+    protected static function copyHashes( array $data, array $aux ) : array
+    {
+        $hashes = Hashes::page( $data, $aux['content'] ?? [], $aux['meta'] ?? [], $aux['config'] ?? [] );
+        $refs = [];
+
+        foreach( (array) ( $aux['content'] ?? [] ) as $item )
+        {
+            $item = (array) $item;
+
+            if( ( $item['type'] ?? null ) === 'reference' && isset( $item['id'] ) ) {
+                $refs['el:' . $item['id']] = true;
+            }
+        }
+
+        foreach( $hashes as $key => $hash )
+        {
+            if( $key === 'page:title' || $key === 'page:name' || str_starts_with( $key, 'meta:' )
+                || str_starts_with( $key, 'el:' ) && !isset( $refs[$key] )
+            ) {
+                $hashes[$key] = '';
+            }
+        }
+
+        return $hashes;
+    }
+
+
+    /**
+     * Returns the hashes of the published variant of the page.
+     *
+     * @param Page $page Page with the variant
+     * @return array<string, string> Hashes by key
+     */
+    protected static function publishedHashes( Page $page ) : array
+    {
+        return Hashes::page( $page->only( Hashes::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
+    }
+
+
+    /**
+     * Returns a path that isn't used by another page variant in the domain.
+     *
+     * @param string $domain Domain name
+     * @param string $path Preferred path
+     * @param string $lang Language code appended on collisions
+     * @return string Unique path
+     */
+    protected static function uniquePath( string $domain, string $path, string $lang ) : string
+    {
+        $base = $path === '' ? $lang : $path . '-' . $lang;
+        $candidate = $path;
+        $num = 1;
+
+        while( PageVariant::withTrashed()->where( 'domain', $domain )->where( 'path', $candidate )->exists() ) {
+            $candidate = $num++ === 1 ? $base : $base . '-' . $num;
+        }
+
+        return $candidate;
+    }
+
+
+    /**
+     * Returns the domain and path of a new page variant.
+     *
+     * The path is the slug of the source path prefixed with the path of the nearest
+     * ancestor having a variant in that language. The domain is the one of the parent
+     * variant in that language or the domain of the source variant.
+     *
+     * @param Page $page Page with its source variant
+     * @param string $lang Language code of the new variant
+     * @param string $path Path of the source variant
+     * @return array{0: string, 1: string} Domain and path
+     */
+    protected static function variantPath( Page $page, string $lang, string $path ) : array
+    {
+        $ancestor = DB::connection( config( 'cms.db', 'sqlite' ) )
+            ->table( 'cms_pages as p' )
+            ->join( 'cms_page_variants as v', 'v.page_id', '=', 'p.id' )
+            ->where( 'p.tenant_id', Tenancy::value() )
+            ->where( 'p.' . NestedSet::LFT, '<', $page->getLft() )
+            ->where( 'p.' . NestedSet::RGT, '>', $page->getRgt() )
+            ->where( 'v.lang', $lang )
+            ->whereNull( 'v.deleted_at' )
+            ->orderByDesc( 'p.' . NestedSet::DEPTH )
+            ->first( ['p.id', 'v.path', 'v.domain'] );
+
+        $slug = basename( $path );
+        $domain = $ancestor && $ancestor->id === $page->parent_id ? (string) $ancestor->domain : (string) $page->domain;
+        $path = $ancestor && $ancestor->path !== '' ? $ancestor->path . '/' . $slug : $slug;
+
+        return [$domain, self::uniquePath( $domain, $path, $lang )];
+    }
+
+
+    /**
+     * Dispatches the watch event for unversioned changes of page variants.
+     *
+     * @param string $action Action name
+     * @param Page $page Affected page
+     * @param array<int, string> $langs Affected languages
+     * @param string $editor Name of the editing user
+     */
+    protected static function watch( string $action, Page $page, array $langs, string $editor ) : void
+    {
+        Watch::dispatch( Translation::class, fn() => new Translation(
+            $action, (string) $page->id, $langs, $editor, false, (string) $page->tenant_id
+        ) );
+    }
+
+
+    /**
+     * Marks the translations of the published source variants as stale if the source changed.
+     *
+     * Trashed variants are skipped because restoring them recomputes the flag.
+     *
+     * @param iterable<Page> $pages Published pages with their source variant
+     */
+    public static function staleVariants( iterable $pages ) : void
+    {
+        $sources = $hashes = [];
+
+        foreach( $pages as $page )
+        {
+            if( $page->isSourceVariant() && $page->source ) {
+                $sources[(string) $page->id] = $page;
+            }
+        }
+
+        foreach( array_chunk( array_keys( $sources ), 100 ) as $chunk )
+        {
+            $ids = [];
+            $variants = PageVariant::whereIn( 'page_id', $chunk )->where( 'stale', false )
+                ->get( ['id', 'page_id', 'lang', 'hashes'] );
+
+            foreach( $variants as $variant )
+            {
+                $source = $sources[$variant->page_id];
+
+                if( $variant->lang !== $source->source && ( empty( $variant->hashes )
+                    || Hashes::stale( $hashes[$variant->page_id] ??= self::publishedHashes( $source ), (array) $variant->hashes ) )
+                ) {
+                    $ids[] = $variant->id;
+                }
+            }
+
+            if( !empty( $ids ) ) {
+                PageVariant::whereIn( 'id', $ids )->toBase()->update( ['stale' => true] );
+            }
+        }
+    }
+
+
+    /**
      * Applies and announces a lifecycle action while preserving Page tree semantics and route invalidation.
      *
      * @param class-string<Base> $model
@@ -478,12 +1097,13 @@ class Resource
         $isPage = $model === Page::class;
         $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
         $pages = collect();
+        $variantKeys = [];
 
         if( !$isPage ) {
             sort( $ids, SORT_STRING );
         }
 
-        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages ) {
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages, &$variantKeys ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
             if( $isPage ) {
@@ -537,9 +1157,23 @@ class Resource
                 $pages = $items;
             }
 
+            // Pages are indexed per variant, collect them before they are removed
+            if( $isPage && Scout::usesSearchIndex()
+                && ( $action === 'purged' || $action === 'dropped' && Scout::usesExternalSearch() && !config( 'scout.soft_delete' ) )
+            ) {
+                foreach( $pages->pluck( 'id' )->chunk( 500 ) as $chunk ) {
+                    array_push( $variantKeys, ...PageVariant::withTrashed()->whereIn( 'page_id', $chunk->all() )->pluck( 'id' )->all() );
+                }
+            }
+
             // Purged files are announced with their publication state, which is removed with their versions
             if( $action === 'purged' && $model === File::class && $announce && Base::announces( Purged::class ) ) {
                 $items->load( ['latest' => fn( $query ) => $query->select( 'id', 'published', 'publish_at', 'created_at' )] );
+            }
+
+            // The versions are removed together with the page variants
+            if( $action === 'purged' && $isPage && $announce && Base::announces( Purged::class ) ) {
+                $items->load( 'latest' );
             }
 
             $model::lifecycle( $items, $action, $editor );
@@ -601,11 +1235,12 @@ class Resource
         if( $isPage && $action === 'dropped' && !Scout::usesExternalSearch() ) {
             return $items;
         } elseif( $action === 'restored' ) {
-            Scout::index( $model, $changed, $isPage && $fields ? null : $items );
+            // all variants of restored pages change
+            Scout::index( $model, $changed, $isPage ? null : $items );
         } elseif( $action === 'dropped' && config( 'scout.soft_delete' ) ) {
             Scout::index( $model, $changed );
         } else {
-            Scout::unindex( $model, $changed );
+            Scout::unindex( $model, $isPage ? $variantKeys : $changed );
         }
 
         return $items;
@@ -954,23 +1589,38 @@ class Resource
      * @param array<string, mixed> $input Changed fields (merged with latest version)
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @param string|null $lang Language of the page variant or null for the source variant
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
+     * @throws Exception If the new source language in $input['source'] has no variant
      */
-    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Page
+    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null,
+        ?string $lang = null ) : Page
     {
+        $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId ) {
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source ) {
 
             /** @var Page $page */
-            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $page = Page::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
 
-            self::applyPage( $page, $input, $editor, $latestId, $user );
-            $page->announce( 'saved', $editor );
-            self::pruneVersions( Page::class, [$page->id] );
+            if( !empty( $input ) || $source === null )
+            {
+                self::applyPage( $page, $input, $editor, $latestId, $user );
+                $page->announce( 'saved', $editor );
+                self::pruneVersions( Page::class, [$page->id] );
+            }
+
+            if( $source !== null && $source !== $page->source )
+            {
+                self::setSource( (string) $page->id, $source, $user );
+
+                $variant = PageVariant::withTrashed()->findOrFail( $page->variant_id, ['id', 'hashes', 'stale'] );
+                $page->forceFill( ['source' => $source, 'hashes' => $variant->hashes, 'stale' => $variant->stale] )->syncOriginal();
+            }
 
             return $page;
         } );
@@ -1046,6 +1696,12 @@ class Resource
         $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
         $data = array_diff_key( $input, $aux );
         $accepts = (bool) $aux;
+
+        if( isset( $input['lang'] ) && $input['lang'] !== $page->lang && PageVariant::withTrashed()
+            ->where( 'page_id', $page->id )->where( 'lang', $input['lang'] )->exists()
+        ) {
+            throw new Exception( sprintf( 'The page already has a variant in "%1$s"', $input['lang'] ) );
+        }
 
         [$data, $aux, $diffs] = Merge::page( $page, $data, $aux, $latestId, $user );
 

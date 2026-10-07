@@ -20,7 +20,7 @@ class Nav extends Page
 {
     /** @var list<string> Columns required by navigation and ancestor projections */
     public const SELECT_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'to',
+        'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'source', 'to',
         'status', 'config', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
     ];
 
@@ -110,16 +110,5 @@ class Nav extends Page
     public function __toString() : string
     {
         return trim( ( $this->name ?? '' ) . "\n" . ( $this->title ?? '' ) );
-    }
-
-
-    /**
-     * Returns the name of the used morph class.
-     *
-     * @return string Class name
-     */
-    public function getMorphClass()
-    {
-        return Page::class;
     }
 }

@@ -36,7 +36,7 @@ class WebhookListenerTest extends WebhookTestAbstract
 
         event( new Published(
             'page', $id, 'version-1', 'editor@testbench', [
-                'path' => 'webhook-page', 'domain' => 'example.com',
+                'path' => 'webhook-page', 'domain' => 'example.com', 'lang' => 'de',
             ], true,
             null, null, null, 'test', 'graphql',
         ) );
@@ -55,6 +55,7 @@ class WebhookListenerTest extends WebhookTestAbstract
                     'version_id' => 'version-1',
                     'path' => 'webhook-page',
                     'domain' => 'example.com',
+                    'lang' => 'de',
                 ]
                 && !isset( $payload['editor'] )
                 && !str_contains( serialize( $job ), self::secret( 'test' ) )
@@ -318,6 +319,7 @@ class WebhookListenerTest extends WebhookTestAbstract
                 'version_id' => 'published-version',
                 'path' => 'published-route',
                 'domain' => 'published.example',
+                'lang' => 'de',
             ],
         ) );
 
@@ -330,6 +332,7 @@ class WebhookListenerTest extends WebhookTestAbstract
                     'version_id' => 'published-version',
                     'path' => 'published-route',
                     'domain' => 'published.example',
+                    'lang' => 'de',
                 ];
         } );
     }

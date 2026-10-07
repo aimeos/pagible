@@ -36,7 +36,7 @@ class SearchFiles extends Tool
         $v = $request->validate([
             'term' => 'string|max:255',
             'mime' => 'string|max:50',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'trashed' => 'string|in:without,with,only',
             'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
             'editor' => 'string|max:255',

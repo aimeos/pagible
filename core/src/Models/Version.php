@@ -45,6 +45,9 @@ class Version extends Model
     /** @var list<class-string<Base>> Supported versionable models */
     public const TYPES = [Page::class, Element::class, File::class];
 
+    /** @var array<string, class-string<Base>> Version owner types and the CMS models they belong to */
+    public const OWNERS = [PageVariant::class => Page::class, Element::class => Element::class, File::class => File::class];
+
     /** @var list<string> Most frequently used version projection */
     public const SELECT_COLUMNS = [
         'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
@@ -309,7 +312,26 @@ class Version extends Model
 
 
     /**
-     * Get the parent versionable model (page, file or element).
+     * Returns the CMS model the version belongs to.
+     *
+     * Page versions are owned by a page variant, so the page joined with that
+     * variant is returned instead of the variant itself.
+     *
+     * @return Base|null Page, element or file model or NULL if not found
+     */
+    public function owner() : ?Base
+    {
+        if( $this->versionable_type === PageVariant::class ) {
+            return Page::variant( $this->versionable_id )->first();
+        }
+
+        $model = $this->versionable;
+        return $model instanceof Base ? $model : null;
+    }
+
+
+    /**
+     * Get the parent versionable model (page variant, file or element).
      *
      * @return MorphTo<Model, $this>
      */

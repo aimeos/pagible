@@ -44,7 +44,6 @@ return new class extends Migration
             $table->string('theme', 30);
             $table->smallInteger('cache');
             $table->smallInteger('status');
-            $table->uuid('related_id')->nullable();
             $table->uuid('latest_id')->nullable();
             $table->json('meta');
             $table->json('config');

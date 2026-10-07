@@ -29,9 +29,13 @@ class CashierProduct
     /**
      * Resolves one unambiguous price from trusted published page content.
      *
+     * Prices and currencies may differ per language, so the price is read from the
+     * published content of the page variant in that language (source variant if NULL).
+     *
      * @return ProductData
      */
-    public function find( Authenticatable $user, string $pageId, string $elementId, string $packageId, string $priceId ) : array
+    public function find( Authenticatable $user, string $pageId, string $elementId, string $packageId, string $priceId,
+        ?string $lang = null ) : array
     {
         $tenant = Tenancy::value();
 
@@ -40,6 +44,7 @@ class CashierProduct
         }
 
         $page = Page::query()
+            ->when( $lang, fn( $query ) => $query->language( (string) $lang ) )
             ->whereIn( 'status', [1, 2] )
             ->access( $user )
             ->findOrFail( $pageId );

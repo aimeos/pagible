@@ -128,6 +128,34 @@ class CashierControllerTest extends CashierTestAbstract
     }
 
 
+    public function testCheckoutUsesPriceOfLanguageVariant(): void
+    {
+        $editor = new \App\Models\User( [
+            'name' => 'Editor',
+            'email' => 'editor@testbench',
+            'cmsperms' => \Aimeos\Cms\Permission::all(),
+        ] );
+        \Aimeos\Cms\Resource::addVariant( (string) $this->page->id, 'de', $editor );
+
+        $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
+        $content[0]['data']['items'][0]['prices'][0]['currency'] = 'CHF';
+        Page::language( 'de' )->findOrFail( $this->page->id )
+            ->forceFill( ['content' => $content, 'status' => 1] )->saveQuietly();
+
+        $find = fn( ?string $lang ) => app( CashierProduct::class )->find(
+            $this->storedUser(), (string) $this->page->id, 'pricing', 'professional', 'once', $lang
+        );
+
+        $this->assertSame( 'CHF', $find( 'de' )['currency'] );
+        $this->assertSame( 'EUR', $find( 'en' )['currency'] );
+        $this->assertSame( 'EUR', $find( null )['currency'] );
+
+        $this->actingAs( $this->storedUser() )
+            ->post( route( 'cms.cashier' ), $this->checkout( ['lang' => 'fr'] ) )
+            ->assertNotFound();
+    }
+
+
     public function testCheckoutAcceptsSeveralPrices(): void
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );

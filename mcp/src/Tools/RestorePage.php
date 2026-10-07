@@ -19,7 +19,7 @@ use Laravel\Mcp\Request;
 
 #[Name('restore-page')]
 #[Title('Restore a soft-deleted page')]
-#[Description('Restores a previously soft-deleted page. Returns the restored page as a JSON object.')]
+#[Description('Restores a previously soft-deleted page, or only one deleted language variant if lang is passed. Returns the restored page as a JSON object.')]
 class RestorePage extends Tool
 {
     protected const PERMISSIONS = ['page:keep'];
@@ -32,9 +32,16 @@ class RestorePage extends Tool
     {
         $v = $request->validate([
             'id' => 'required|string|max:36',
+            'lang' => 'string|max:10',
         ], [
             'id.required' => 'You must specify the ID of the page to restore.',
         ] );
+
+        if( isset( $v['lang'] ) )
+        {
+            $item = Resource::restoreVariant( $v['id'], $v['lang'], $request->user() );
+            return Response::structured( Presenter::item( $item, true ) + ['stale' => $item->stale] );
+        }
 
         /** @var Page $item */
         $item = Page::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
@@ -60,6 +67,8 @@ class RestorePage extends Tool
             'id' => $schema->string()
                 ->description('The UUID of the soft-deleted page to restore.')
                 ->required(),
+            'lang' => $schema->string()
+                ->description('ISO language code to restore only that deleted language variant of the page, e.g., "de".'),
         ];
     }
 }

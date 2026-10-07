@@ -87,10 +87,13 @@ return new class extends Migration
 
     private function pages( Connection $db ) : void
     {
-        $db->table( 'cms_pages' )
+        // page data is stored in the page variants after the variants migration ran
+        $table = $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ? 'cms_page_variants' : 'cms_pages';
+
+        $db->table( $table )
             ->select( 'id', 'meta', 'config' )
             ->orderBy( 'id' )
-            ->chunkById( 500, function( $rows ) use ( $db ) {
+            ->chunkById( 500, function( $rows ) use ( $db, $table ) {
                 $updates = [];
 
                 foreach( $rows as $row )
@@ -115,9 +118,9 @@ return new class extends Migration
                 }
 
                 if( $updates !== [] ) {
-                    $db->transaction( function() use ( $db, $updates ) {
+                    $db->transaction( function() use ( $db, $table, $updates ) {
                         foreach( $updates as $id => $values ) {
-                            $db->table( 'cms_pages' )->where( 'id', $id )->update( $values );
+                            $db->table( $table )->where( 'id', $id )->update( $values );
                         }
                     } );
                 }
@@ -225,7 +228,7 @@ return new class extends Migration
     {
         $db->table( 'cms_versions' )
             ->select( 'id', 'aux' )
-            ->where( 'versionable_type', Page::class )
+            ->whereIn( 'versionable_type', [Page::class, 'Aimeos\Cms\Models\PageVariant'] )
             ->orderBy( 'id' )
             ->chunkById( 500, function( $rows ) use ( $db ) {
                 $updates = [];

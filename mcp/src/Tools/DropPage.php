@@ -19,7 +19,7 @@ use Laravel\Mcp\Request;
 
 #[Name('drop-page')]
 #[Title('Soft-delete a page')]
-#[Description('Soft-deletes a page. The page can be restored within the retention period using restore-page. Returns the deleted page as a JSON object.')]
+#[Description('Soft-deletes a page with all its language variants, or only one language variant if lang is passed. The page or variant can be restored within the retention period using restore-page. Returns the deleted page as a JSON object.')]
 class DropPage extends Tool
 {
     protected const PERMISSIONS = ['page:drop'];
@@ -32,9 +32,14 @@ class DropPage extends Tool
     {
         $v = $request->validate([
             'id' => 'required|string|max:36',
+            'lang' => 'string|max:10',
         ], [
             'id.required' => 'You must specify the ID of the page to delete.',
         ] );
+
+        if( isset( $v['lang'] ) ) {
+            return Response::structured( Presenter::item( Resource::dropVariant( $v['id'], $v['lang'], $request->user() ) ) );
+        }
 
         if( !( $item = Resource::drop( Page::class, [$v['id']], $request->user() )->first() ) ) {
             return Response::structured( ['error' => 'Page not found.'] );
@@ -55,6 +60,8 @@ class DropPage extends Tool
             'id' => $schema->string()
                 ->description('The UUID of the page to delete.')
                 ->required(),
+            'lang' => $schema->string()
+                ->description('ISO language code to delete only that language variant of the page, e.g., "de". The source language can not be deleted.'),
         ];
     }
 }

@@ -85,6 +85,30 @@ final class Query
 
 
     /**
+     * Resolver for a single page in the source language or the requested language.
+     *
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     */
+    public function page( $rootValue, array $args ) : ?Page
+    {
+        $trashed = $args['trashed'] ?? null;
+
+        $query = match( $trashed ) {
+            'with' => Page::withTrashed(),
+            'only' => Page::onlyTrashed(),
+            default => Page::query(),
+        };
+
+        if( isset( $args['lang'] ) ) {
+            $query->language( (string) $args['lang'], in_array( $trashed, ['with', 'only'], true ) );
+        }
+
+        return $query->whereKey( $args['id'] )->first();
+    }
+
+
+    /**
      * Resolver for paginated page list query.
      *
      * @param  null  $rootValue

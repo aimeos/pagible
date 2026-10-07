@@ -348,7 +348,6 @@ export default {
 
       return markRaw({
         data: Object.freeze({
-          related_id: item.related_id || null,
           scheduled: item.publish_at ? 1 : 0,
           cache: item.cache,
           domain: item.domain,
@@ -460,7 +459,6 @@ export default {
               to: this.item.to || '',
               type: this.item.type || '',
               theme: this.item.theme || '',
-              related_id: this.item.related_id || null,
               meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
               config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))

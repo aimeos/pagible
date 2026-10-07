@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\IndexModels;
+use Aimeos\Cms\Query\PageQuery;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 use Laravel\Scout\ModelObserver;
@@ -36,6 +37,13 @@ class Scout
     public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
     {
         $isDraft = in_array( 'draft', $fields );
+
+        if( $query instanceof PageQuery && ( $lang = static::language( $builder ) ) !== null )
+        {
+            $where = collect( $builder->wheres )->firstWhere( 'field', '__soft_deleted' );
+            $query->language( $lang, $where ? $where['value'] === 1 : (bool) config( 'scout.soft_delete', false ) );
+        }
+
         static::apply( $query, $builder, $isDraft );
 
         if( $builder->query === '' && $builder->queryCallback ) {
@@ -119,20 +127,48 @@ class Scout
 
 
     /**
+     * Returns the language the search is limited to.
+     *
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @return string|null Language code or NULL if not filtered by one language
+     */
+    public static function language( Builder $builder ) : ?string
+    {
+        foreach( $builder->wheres as $key => $where )
+        {
+            if( ( $where['field'] ?? $key ) !== 'lang' ) {
+                continue;
+            }
+
+            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+
+            if( ( $where['operator'] ?? '=' ) === '=' && is_scalar( $value ) && (string) $value !== '' ) {
+                return (string) $value;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
      * Reindexes models by ID in bounded native Scout batches.
      *
+     * All variants of the pages are reindexed unless their changed variants are passed as loaded models.
+     *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
-     * @param Collection<int, Models\Base>|null $loaded Already loaded current models
+     * @param array<string> $ids Model IDs (page IDs for pages)
+     * @param Collection<int, covariant Models\Base>|null $loaded Already loaded current models
      */
     public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
     {
         $instance = new $model();
         $models = [];
 
+        // pages are indexed per variant, loaded variants are the changed ones of their page
         foreach( $loaded ?? [] as $item ) {
-            if( $item instanceof $model && $item->id !== null ) {
-                $models[$item->id] = $item;
+            if( $item instanceof $model && $item->id !== null && $item->shouldBeSearchable() ) {
+                $models[$item->id][$item->getScoutKey()] = $item;
             }
         }
 
@@ -143,7 +179,7 @@ class Scout
                     ->onQueue( $instance->syncWithSearchUsingQueue() )
                     ->onConnection( $instance->syncWithSearchUsing() ) );
             } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
-                $loaded = $instance->newCollection( array_values( $items ) );
+                $loaded = $instance->newCollection( array_merge( ...array_map( array_values( ... ), array_values( $items ) ) ) );
                 $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
                 $instance->syncMakeSearchable( $loaded );
             } else {
@@ -265,7 +301,7 @@ class Scout
      * Removes models from Scout by ID in bounded native batches.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Search keys (variant IDs for pages)
      */
     public static function unindex( string $model, array $ids ) : void
     {

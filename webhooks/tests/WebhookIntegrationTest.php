@@ -11,6 +11,7 @@ use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Webhook;
+use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -65,7 +66,35 @@ class WebhookIntegrationTest extends WebhookTestAbstract
                     'version_id' => $version->id,
                     'path' => 'integration',
                     'domain' => 'example.com',
+                    'lang' => 'en',
                 ];
+        } );
+    }
+
+
+    public function testVariantPublicationUsesVariantRoute() : void
+    {
+        $webhook = $this->webhook();
+        $page = Resource::addPage( [
+            'name' => 'Variant', 'title' => 'Variant', 'path' => 'variant',
+            'domain' => 'example.com', 'lang' => 'en', 'status' => 1,
+        ], $this->user );
+
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::savePage( $page->id, ['path' => 'variante', 'status' => 1], $this->user, lang: 'de' );
+        Queue::fake();
+
+        Publication::publish( Page::class, [$page->id], $this->user, lang: 'de' );
+
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) use ( $page, $webhook ) {
+            $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
+
+            return $job->webhookId === $webhook->id
+                && $job->event === 'page.published'
+                && $payload['data']['id'] === $page->id
+                && $payload['data']['path'] === 'variante'
+                && $payload['data']['domain'] === 'example.com'
+                && $payload['data']['lang'] === 'de';
         } );
     }
 
@@ -158,6 +187,7 @@ class WebhookIntegrationTest extends WebhookTestAbstract
                     'version_id' => $published->id,
                     'path' => 'published-route',
                     'domain' => 'published.example',
+                    'lang' => 'en',
                 ];
         } );
     }

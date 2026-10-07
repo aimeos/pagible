@@ -8,9 +8,11 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Models\PageVariant;
 use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -664,6 +666,200 @@ class PageToolsTest extends McpTestAbstract
      *
      * @return array<string, array<string, mixed>>
      */
+    public function testGetPageLanguage()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( ['Startseite', 'variants', 'stale'] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+            'lang' => 'fr',
+        ] );
+
+        $response->assertSee( ['not found'] );
+    }
+
+
+    public function testGetPageHistoryLanguage()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageHistory::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( ['versions', 'Startseite'] );
+    }
+
+
+    public function testSearchPagesLanguage()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+    }
+
+
+    public function testAddPageDefaultLanguage()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'name' => 'No language',
+            'title' => 'No language',
+            'content' => [['type' => 'text', 'data' => ['text' => 'Default language']]],
+            'meta' => $this->meta( 'A page without language' ),
+        ] );
+
+        $response->assertOk();
+
+        $page = Page::where( 'name', 'No language' )->firstOrFail();
+        $this->assertEquals( config( 'app.locale' ), $page->lang );
+        $this->assertEquals( config( 'app.locale' ), $page->source );
+    }
+
+
+    public function testCopyPage()
+    {
+        $page = Page::where( 'name', 'Dev' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\CopyPage::class, [
+            'id' => $page->id,
+            'parent_id' => $page->parent_id,
+        ] );
+
+        $response->assertOk();
+
+        $copy = Page::where( 'name', 'Dev' )->where( 'id', '!=', $page->id )->firstOrFail();
+        $response->assertSee( [$copy->id] );
+
+        $this->assertEquals( $page->parent_id, $copy->parent_id );
+        $this->assertEquals(
+            PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'hashes' ),
+            PageVariant::where( 'page_id', $copy->id )->where( 'lang', 'de' )->value( 'hashes' )
+        );
+    }
+
+
+    public function testCopyPageRequiresAddPermission()
+    {
+        $page = Page::where( 'name', 'Dev' )->first();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view', 'page:save']] );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\CopyPage::class, ['id' => $page->id] )
+            ->assertHasErrors();
+    }
+
+
+    public function testSavePageLanguage()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        $de = Page::language( 'de' )->findOrFail( $page->id );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+            'latest_id' => $de->latest_id,
+            'name' => 'Startseite',
+        ] );
+
+        $response->assertOk()->assertSee( ['Startseite'] );
+        $this->assertEquals( 'Startseite', Page::language( 'de' )->findOrFail( $page->id )->latest->data->name );
+        $this->assertNotEquals( 'Startseite', Page::findOrFail( $page->id )->latest->data->name );
+    }
+
+
+    public function testSavePageSource()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        $de = Page::language( 'de' )->findOrFail( $page->id );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+            'latest_id' => $de->latest_id,
+            'source' => 'de',
+        ] );
+
+        $response->assertOk();
+        $this->assertEquals( 'de', Page::findOrFail( $page->id )->source );
+        $this->assertEquals( 'de', Page::findOrFail( $page->id )->lang );
+    }
+
+
+    public function testDropRestorePageLanguage()
+    {
+        $page = Page::where( 'name', 'Dev' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+        $this->assertNull( Page::language( 'de' )->find( $page->id ) );
+        $this->assertNotNull( Page::find( $page->id ) );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+        $this->assertNotNull( Page::language( 'de' )->find( $page->id ) );
+    }
+
+
+    public function testDropPageSourceLanguage()
+    {
+        $page = Page::where( 'name', 'Dev' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+            'id' => $page->id,
+            'lang' => $page->lang,
+        ] )->assertOk()->assertSee( ['source language'] );
+
+        $this->assertNotNull( Page::find( $page->id ) );
+    }
+
+
+    public function testPublishPageLanguage()
+    {
+        $page = Page::where( 'name', 'Home' )->first();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
+            'id' => [$page->id],
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk();
+        $this->assertEquals( 'Startseite', Page::language( 'de' )->findOrFail( $page->id )->name );
+        $this->assertEquals( 'Home', Page::findOrFail( $page->id )->name );
+    }
+
+
     protected function meta( string $description ) : array
     {
         return [

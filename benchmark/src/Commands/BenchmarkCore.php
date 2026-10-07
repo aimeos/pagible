@@ -248,21 +248,21 @@ class BenchmarkCore extends Command
         self::invalidate( $domain );
 
         // Break circular page↔version FK by clearing latest_id first
-        DB::connection( $conn )->table( 'cms_pages' )
+        DB::connection( $conn )->table( 'cms_page_variants' )
             ->where( 'tenant_id', $tenant )
             ->where( 'editor', 'benchmark' )
             ->update( ['latest_id' => null] );
 
-        $pageIds = DB::connection( $conn )->table( 'cms_pages' )
-            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
+        $variants = DB::connection( $conn )->table( 'cms_page_variants' )
+            ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->get( ['id', 'page_id'] );
         $versionIds = DB::connection( $conn )->table( 'cms_versions' )
             ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
 
         // Delete pivot tables (no tenant_id column)
-        foreach( $pageIds->chunk( 500 ) as $chunk )
+        foreach( $variants->pluck( 'id' )->chunk( 500 ) as $chunk )
         {
-            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'page_id', $chunk )->delete();
-            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'page_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'variant_id', $chunk )->delete();
+            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'variant_id', $chunk )->delete();
         }
 
         foreach( $versionIds->chunk( 500 ) as $chunk )
@@ -272,7 +272,7 @@ class BenchmarkCore extends Command
         }
 
         // Delete main tables
-        $tables = ['cms_versions', 'cms_elements', 'cms_files', 'cms_pages'];
+        $tables = ['cms_versions', 'cms_elements', 'cms_files', 'cms_page_variants'];
 
         foreach( $tables as $table )
         {
@@ -280,6 +280,11 @@ class BenchmarkCore extends Command
                 ->where( 'tenant_id', $tenant )
                 ->where( 'editor', 'benchmark' )
                 ->delete();
+        }
+
+        // Pages have no editor column, they are identified by their variants
+        foreach( $variants->pluck( 'page_id' )->unique()->chunk( 500 ) as $chunk ) {
+            DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $tenant )->whereIn( 'id', $chunk )->delete();
         }
     }
 }

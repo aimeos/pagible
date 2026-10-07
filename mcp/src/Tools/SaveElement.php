@@ -32,7 +32,7 @@ class SaveElement extends Tool
         $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:100',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'data' => 'array',
             'latest_id' => 'required|string|max:36',
         ], [

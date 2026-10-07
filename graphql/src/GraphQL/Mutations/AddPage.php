@@ -20,8 +20,11 @@ final class AddPage
      */
     public function __invoke( $rootValue, array $args ) : Page
     {
+        $input = $args['input'] ?? [];
+        $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
+
         return Resource::addPage(
-            $args['input'] ?? [],
+            $input,
             Auth::user(),
             $args['ref'] ?? null,
             $args['parent'] ?? null,

@@ -917,12 +917,14 @@ class Restore extends Command
     {
         $this->info( 'Restoring database...' );
 
-        // Sort entity tables (with id) before pivot tables, shorter names first (parents before children)
+        // Sort referenced tables first, then entity tables (with id) before pivot tables
         uksort( $columns, function( string $a, string $b ) use ( $columns ) {
+            $aParent = $a === 'cms_pages';
+            $bParent = $b === 'cms_pages';
             $aHasId = in_array( 'id', $columns[$a] );
             $bHasId = in_array( 'id', $columns[$b] );
 
-            return $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId );
+            return ( $bParent <=> $aParent ) ?: ( $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId ) );
         } );
 
         $db->transaction( function() use ( $zip, $db, $tenant, $sourceTenant, $merge, $columns, $files, $after ) {

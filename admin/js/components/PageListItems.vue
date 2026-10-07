@@ -893,7 +893,6 @@ export default {
                   title: data.title,
                   cache: data.cache,
                   domain: data.domain,
-                  related_id: node.id,
                   meta: JSON.stringify(aux?.meta || {}),
                   config: JSON.stringify(aux?.config || {}),
                   content: JSON.stringify(aux?.content || []),

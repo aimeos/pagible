@@ -367,8 +367,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionRetryReplacesMoreThanOneChunk(): void
     {
-        $template = (array) DB::connection( config( 'cms.db', 'sqlite' ) )
-            ->table( 'cms_pages' )->where( 'path', 'hidden' )->first();
+        $template = (array) Page::where( 'path', 'hidden' )->toBase()->first();
         $ids = $rows = [];
 
         for( $i = 0; $i <= PageAccess::CHUNK_SIZE; $i++ )
@@ -376,6 +375,7 @@ class PageAccessTest extends CoreTestAbstract
             $id = Str::uuid7()->toString();
             $row = $template;
             $row['id'] = $id;
+            $row['variant_id'] = $id;
             $row['path'] = 'access-bulk-' . $i;
             $row['_lft'] = 10000 + $i * 2;
             $row['_rgt'] = 10001 + $i * 2;
@@ -383,10 +383,8 @@ class PageAccessTest extends CoreTestAbstract
             $rows[] = $row;
         }
 
-        $table = DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_pages' );
-
         foreach( array_chunk( $rows, 50 ) as $chunk ) {
-            $table->insert( $chunk );
+            Page::query()->toBase()->insert( $chunk );
         }
 
         $this->assertCount( PageAccess::CHUNK_SIZE + 1, $ids );

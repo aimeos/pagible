@@ -35,7 +35,7 @@ class SaveFile extends Tool
         $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:255',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'description' => 'array',
             'latest_id' => 'required|string|max:36',
             'content' => 'string|max:8388608',

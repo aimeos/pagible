@@ -25,6 +25,7 @@ final class SavePage
             $args['input'] ?? [],
             Auth::user(),
             $args['latestId'] ?? null,
+            $args['lang'] ?? null,
         );
     }
 }

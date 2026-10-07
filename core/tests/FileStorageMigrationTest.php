@@ -60,8 +60,8 @@ class FileStorageMigrationTest extends CoreTestAbstract
         ] );
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->insert( [
-            ['page_id' => $page->id, 'file_id' => $foreign->id],
-            ['page_id' => $owned->id, 'file_id' => $current->id],
+            ['variant_id' => $page->variant_id, 'file_id' => $foreign->id],
+            ['variant_id' => $owned->variant_id, 'file_id' => $current->id],
         ] );
         Event::fake( [PageInvalidated::class] );
 
@@ -226,7 +226,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
 
         $page = Page::where( 'path', 'blog' )->firstOrFail();
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $page->id, 'file_id' => $first->id,
+            'variant_id' => $page->variant_id, 'file_id' => $first->id,
         ] );
         Event::fake( [PageInvalidated::class] );
 

@@ -65,7 +65,7 @@ class ServeCachedPage
 
             if( $response = PageCache::response( $path, $domain, fresh: true ) ) {
                 if( $start !== null ) {
-                    $this->observe( $path, $domain, 200, $start );
+                    $this->observe( $path, $domain, 200, $start, (string) $response->headers->get( 'Content-Language' ) );
                 }
                 return $response;
             }
@@ -106,7 +106,9 @@ class ServeCachedPage
                 $path ?? trim( $request->getPathInfo(), '/' ),
                 $domain,
                 $status,
-                $start
+                $start,
+                $response instanceof \Symfony\Component\HttpFoundation\Response
+                    ? (string) $response->headers->get( 'Content-Language' ) : '',
             );
         }
 
@@ -121,8 +123,9 @@ class ServeCachedPage
      * @param string $domain Requested domain, empty unless multi-domain routing is on
      * @param int $status HTTP status code of the response
      * @param int|float $start High-resolution start time from hrtime()
+     * @param string $lang Language of the page variant, empty if unknown
      */
-    protected function observe( string $path, string $domain, int $status, int|float $start ) : void
+    protected function observe( string $path, string $domain, int $status, int|float $start, string $lang = '' ) : void
     {
         Watch::observe(
             source: 'request',
@@ -131,6 +134,7 @@ class ServeCachedPage
             dimensions: [
                 'path' => $status === 200 ? '/' . $path : '*',
                 'domain' => $status === 200 ? $domain : '',
+                'lang' => $status === 200 ? $lang : '',
                 'status' => $status,
             ],
             sample: true,

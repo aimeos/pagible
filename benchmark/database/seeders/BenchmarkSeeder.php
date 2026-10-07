@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Utils;
 
@@ -123,9 +124,9 @@ class BenchmarkSeeder
         $rootRgt = $lft + ( $actualTotal * 2 ) - 1;
 
         $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
-        $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $rootData, $rootContent, $rootMeta, $nowMs );
-        $pivotPageFile[] = ['page_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
-        $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+        $versions[] = $this->versionRow( $rootVersionId, $rootId, PageVariant::class, $rootData, $rootContent, $rootMeta, $nowMs );
+        $pivotPageFile[] = ['variant_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
+        $pivotPageElement[] = ['variant_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -158,9 +159,9 @@ class BenchmarkSeeder
             }
 
             $pages[] = $l1Row;
-            $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $l1Data, $l1Content, $l1Meta, $nowMs );
-            $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
-            $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+            $versions[] = $this->versionRow( $l1VersionId, $l1Id, PageVariant::class, $l1Data, $l1Content, $l1Meta, $nowMs );
+            $pivotPageFile[] = ['variant_id' => $l1Id, 'file_id' => $l1Fid];
+            $pivotPageElement[] = ['variant_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
             $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -191,9 +192,9 @@ class BenchmarkSeeder
                 }
 
                 $pages[] = $l2Row;
-                $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $l2Data, $l2Content, $l2Meta, $nowMs );
-                $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
-                $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+                $versions[] = $this->versionRow( $l2VersionId, $l2Id, PageVariant::class, $l2Data, $l2Content, $l2Meta, $nowMs );
+                $pivotPageFile[] = ['variant_id' => $l2Id, 'file_id' => $l2Fid];
+                $pivotPageElement[] = ['variant_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
                 $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -221,9 +222,9 @@ class BenchmarkSeeder
                     }
 
                     $pages[] = $l3Row;
-                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $l3Data, $l3Content, $l3Meta, $nowMs );
-                    $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
-                    $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, PageVariant::class, $l3Data, $l3Content, $l3Meta, $nowMs );
+                    $pivotPageFile[] = ['variant_id' => $l3Id, 'file_id' => $l3Fid];
+                    $pivotPageElement[] = ['variant_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
                     $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -255,8 +256,17 @@ class BenchmarkSeeder
     {
         $conn = config( 'cms.db', 'sqlite' );
 
+        // pages are split into the page structure and the source language variant
+        if( !empty( $rows['pages'] ) )
+        {
+            Page::withoutGlobalScopes()->toBase()->insert( $rows['pages'] );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $rows['pages'] ) );
+            }
+        }
+
         $tables = [
-            'cms_pages' => $rows['pages'],
             'cms_versions' => $rows['versions'],
             'cms_page_file' => $rows['pivotPageFile'],
             'cms_page_element' => $rows['pivotPageElement'],
@@ -451,7 +461,6 @@ class BenchmarkSeeder
         return [
             'id' => $id,
             'tenant_id' => $this->tenantId,
-            'related_id' => null,
             'tag' => $data['tag'] ?? '',
             'lang' => 'en',
             'path' => $data['path'],

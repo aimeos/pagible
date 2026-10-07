@@ -165,6 +165,40 @@ abstract class Base extends Model
 
 
     /**
+     * Returns the value of the key the versions are referencing.
+     *
+     * @return string|null Key value
+     */
+    public function getVersionKey() : ?string
+    {
+        $value = $this->getAttribute( $this->getVersionKeyName() );
+        return $value !== null ? (string) $value : null;
+    }
+
+
+    /**
+     * Returns the type stored in the versions referencing the model.
+     *
+     * @return string Versionable type
+     */
+    public static function versionType() : string
+    {
+        return static::class;
+    }
+
+
+    /**
+     * Returns the attribute name of the key the versions are referencing.
+     *
+     * @return string Attribute name
+     */
+    public function getVersionKeyName() : string
+    {
+        return $this->getKeyName();
+    }
+
+
+    /**
      * Get the model's latest version.
      *
      * @return BelongsTo<Version, $this> Eloquent relationship to the latest version
@@ -191,7 +225,7 @@ abstract class Base extends Model
             $sub->select( 'cms_versions.id' )
                 ->from( 'cms_versions' )
                 ->whereColumn( 'cms_versions.id', $table . '.latest_id' )
-                ->where( 'cms_versions.versionable_type', static::class )
+                ->where( 'cms_versions.versionable_type', static::versionType() )
                 ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
             foreach( $wheres as $field => $value ) {
@@ -312,7 +346,7 @@ abstract class Base extends Model
      * Removes old versions for several models using one ranked version stream.
      *
      * @param string $tenant Tenant ID
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Version owner IDs (variant IDs for pages)
      */
     public static function pruneVersions( string $tenant, array $ids ) : void
     {
@@ -415,7 +449,7 @@ abstract class Base extends Model
      */
     public function removeVersions() : void
     {
-        if( ( $id = $this->id ) !== null ) {
+        if( ( $id = $this->getVersionKey() ) !== null ) {
             static::pruneVersions( $this->tenant_id, [$id] );
         }
     }
@@ -453,7 +487,8 @@ abstract class Base extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
+        return $this->morphMany( Version::class, 'versionable', null, null, $this->getVersionKeyName() )
+            ->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 
@@ -491,8 +526,8 @@ abstract class Base extends Model
     {
         // pruning runs outside the tenant context of the item
         Version::withoutTenancy()->where( 'tenant_id', (string) $this->tenant_id )
-            ->where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
+            ->where( 'versionable_id', $this->getVersionKey() )
+            ->where( 'versionable_type', $this->getMorphClass() )
             ->delete();
     }
 
@@ -538,7 +573,7 @@ abstract class Base extends Model
 
         foreach( Version::withoutTenancy()->select( 'id', 'versionable_id' )
             ->where( 'tenant_id', $tenant )
-            ->where( 'versionable_type', static::class )
+            ->where( 'versionable_type', static::versionType() )
             ->whereIn( 'versionable_id', $ids )
             ->orderBy( 'versionable_id' )->orderByDesc( 'created_at' )->orderByDesc( 'id' )
             ->cursor() as $version

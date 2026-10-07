@@ -31,8 +31,8 @@ class Backup extends Command
      */
     private const OWNERS = [
         'cms_element_file' => ['element_id', 'cms_elements'],
-        'cms_page_element' => ['page_id', 'cms_pages'],
-        'cms_page_file' => ['page_id', 'cms_pages'],
+        'cms_page_element' => ['variant_id', 'cms_page_variants'],
+        'cms_page_file' => ['variant_id', 'cms_page_variants'],
         'cms_version_element' => ['version_id', 'cms_versions'],
         'cms_version_file' => ['version_id', 'cms_versions'],
     ];

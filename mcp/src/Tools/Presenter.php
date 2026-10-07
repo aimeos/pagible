@@ -151,6 +151,16 @@ class Presenter
             ] );
         }
 
+        // language variant state, only if the columns are selected
+        $attr = $item->getAttributes();
+
+        foreach( ['source', 'stale'] as $name )
+        {
+            if( array_key_exists( $name, $attr ) ) {
+                $result[$name] = $item->getAttribute( $name );
+            }
+        }
+
         return $result + self::meta( $item ) + ['url' => self::url( $data['path'] ?? '', $data['domain'] ?? null )];
     }
 
@@ -228,7 +238,7 @@ class Presenter
         return [
             'lang' => $version->lang ?? '',
             'editor' => $version->editor ?? '',
-            'deleted' => $item->trashed(),
+            'deleted' => $item->trashed() || ( $item->getAttributes()['variant_deleted_at'] ?? null ) !== null,
             'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
             'updated_at' => ( $version->created_at ?? $item->updated_at )?->format( 'Y-m-d H:i:s' ),
         ];

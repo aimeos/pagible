@@ -979,7 +979,7 @@ class AccessTest extends CoreTestAbstract
 
 class AccessPackageModel extends \Illuminate\Database\Eloquent\Model
 {
-    protected $table = 'cms_pages';
+    protected $table = 'cms_page_variants';
     public $timestamps = false;
 
 

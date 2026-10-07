@@ -49,7 +49,7 @@ class HeroButtonsMigrationTest extends ThemeTestAbstract
             ['type' => 'hero', 'data' => ['title' => 'Label only', 'button' => 'Orphan']],
         ];
 
-        $db->table( 'cms_pages' )->where( 'id', $page->id )->update( ['content' => json_encode( $content )] );
+        $db->table( 'cms_page_variants' )->where( 'id', $page->variant_id )->update( ['content' => json_encode( $content )] );
         $db->table( 'cms_versions' )->where( 'id', $page->latest_id )->update( [
             'aux' => json_encode( ['content' => $content, 'meta' => [], 'config' => []] ),
         ] );
@@ -64,7 +64,7 @@ class HeroButtonsMigrationTest extends ThemeTestAbstract
         $migration = require dirname( __DIR__ ) . '/database/migrations/2026_10_03_000000_convert_hero_buttons.php';
         $migration->up();
 
-        $stored = json_decode( $db->table( 'cms_pages' )->where( 'id', $page->id )->value( 'content' ), true );
+        $stored = json_decode( $db->table( 'cms_page_variants' )->where( 'id', $page->variant_id )->value( 'content' ), true );
 
         $this->assertEquals( ['title' => 'Unchanged', 'url' => '/keep'], $stored[0]['data'] );
         $this->assertEquals( $expected, $stored[1]['data'] );

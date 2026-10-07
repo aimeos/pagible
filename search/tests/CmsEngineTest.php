@@ -544,6 +544,53 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testIndexesAllPageVariants(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = Resource::addPage( [
+            'lang' => 'en', 'name' => 'zqvsourceterm', 'title' => 'Source', 'path' => 'zqv-source', 'status' => 1,
+        ], $user, parent: $root->id );
+
+        $variant = Resource::addVariant( $page->id, 'de', $user );
+        Resource::savePage( $page->id, ['name' => 'zqvvariantterm', 'path' => 'zqv-variante'], $user, lang: 'de' );
+        Publication::publish( Page::class, [$page->id], $user, lang: 'de' );
+
+        $this->waitIndex();
+
+        $db = DB::connection( config( 'cms.db' ) );
+        $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $page->id )->exists() );
+        $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
+
+        // without a language, only the source variant matches
+        $this->assertCount( 1, Page::search( 'zqvsourceterm' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertCount( 0, Page::search( 'zqvvariantterm' )->searchFields( 'draft' )->take( 25 )->get() );
+
+        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( $page->id, $found->first()->id );
+        $this->assertEquals( 'de', $found->first()->lang );
+
+        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'content' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( 'zqv-variante', $found->first()->path );
+
+        Resource::purgeVariant( $page->id, 'de', $user );
+        $this->assertFalse( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
+
+        Resource::addVariant( $page->id, 'de', $user );
+        $keys = \Aimeos\Cms\Models\PageVariant::where( 'page_id', $page->id )->pluck( 'id' )->all();
+        $this->assertCount( 2, $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->distinct()->pluck( 'indexable_id' ) );
+
+        Resource::purge( Page::class, [$page->id], $user );
+        $this->assertFalse( $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->exists() );
+    }
+
+
     public function testBulkReindexesTrashedPages(): void
     {
         $user = new \App\Models\User( [

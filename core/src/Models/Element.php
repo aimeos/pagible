@@ -117,8 +117,8 @@ class Element extends Base
      */
     public function bypages() : BelongsToMany
     {
-        return $this->belongsToMany( Page::class, 'cms_page_element' )
-            ->select('id', 'path', 'name' );
+        return $this->belongsToMany( Page::class, 'cms_page_element', 'element_id', 'variant_id', 'id', 'variant_id' )
+            ->allVariants()->select('id', 'path', 'name' );
     }
 
 

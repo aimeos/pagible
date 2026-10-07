@@ -674,13 +674,13 @@ class ResourceTest extends CoreTestAbstract
         $element = Element::firstOrFail();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $pages[0]->id, 'file_id' => $file->id,
+            'variant_id' => $pages[0]->variant_id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_element_file' )->updateOrInsert( [
             'element_id' => $element->id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_page_element' )->updateOrInsert( [
-            'page_id' => $pages[1]->id, 'element_id' => $element->id,
+            'variant_id' => $pages[1]->variant_id, 'element_id' => $element->id,
         ] );
 
         Event::fake( [PageInvalidated::class, FilesRemoved::class] );
@@ -981,7 +981,7 @@ class ResourceTest extends CoreTestAbstract
         Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
         $page = Page::firstOrFail();
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $page->id, 'file_id' => $files[0]->id,
+            'variant_id' => $page->variant_id, 'file_id' => $files[0]->id,
         ] );
         Event::fake( [Bulk::class, PageInvalidated::class, Saved::class] );
 
@@ -1256,10 +1256,10 @@ class ResourceTest extends CoreTestAbstract
         $calls = [
             fn() => Resource::addElement( ['lang' => 'en', 'type' => 'heading', 'name' => $long, 'data' => []], $this->user ),
             fn() => Resource::saveElement( $element->id, ['name' => $long], $this->user ),
-            fn() => Resource::bulkElement( [$element->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::bulkElement( [$element->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
             fn() => Resource::addFile( $upload, $this->user ),
             fn() => Resource::saveFile( $file->id, ['name' => ['a']], $this->user ),
-            fn() => Resource::bulkFile( [$file->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::bulkFile( [$file->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
             fn() => Resource::addPage( ['lang' => 'en', 'name' => 'A', 'title' => $long, 'path' => 'res-' . Utils::uid()], $this->user ),
             fn() => Resource::savePage( $page->id, ['status' => 32768], $this->user ),
             fn() => Resource::bulkPage( [$page->id], ['tag' => str_repeat( 'a', 31 )], $this->user ),
@@ -1536,7 +1536,7 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -1769,7 +1769,7 @@ class ResourceTest extends CoreTestAbstract
         Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
         Event::fake( [PageInvalidated::class] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
@@ -1793,9 +1793,9 @@ class ResourceTest extends CoreTestAbstract
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $target->id, 'type' => 'file']]]];
         $page = $this->page( $content );
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->table( 'cms_page_file' )->where( 'page_id', $page->id )->delete();
-        $db->table( 'cms_page_file' )->insert( ['page_id' => $page->id, 'file_id' => $other->id] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $db->table( 'cms_page_file' )->where( 'variant_id', $page->variant_id )->delete();
+        $db->table( 'cms_page_file' )->insert( ['variant_id' => $page->variant_id, 'file_id' => $other->id] );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -2488,18 +2488,19 @@ class ResourceTest extends CoreTestAbstract
     protected function sharedPages( Element $element ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $row = (array) $db->table( 'cms_pages' )->where( 'id', $element->bypages()->value( 'id' ) )->first();
+        $row = (array) Page::where( 'id', $element->bypages()->value( 'id' ) )->toBase()->first();
         $rows = [];
 
         for( $i = 0; $i < 251; $i++ ) {
-            $rows[] = ['id' => (string) Str::uuid7(), 'path' => 'shared-' . $i] + $row;
+            $id = (string) Str::uuid7();
+            $rows[] = ['id' => $id, 'variant_id' => $id, 'path' => 'shared-' . $i] + $row;
         }
 
         // SQL Server allows max. 2100 bound parameters per statement
         foreach( array_chunk( $rows, 50 ) as $chunk )
         {
-            $db->table( 'cms_pages' )->insert( $chunk );
-            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $chunk ) );
+            Page::query()->toBase()->insert( $chunk );
+            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['variant_id' => $row['variant_id'], 'element_id' => $element->id], $chunk ) );
         }
     }
 }
