@@ -1,0 +1,1 @@
+import{Y as e}from"./charts-qBJJ9lq9.js";import{M as t}from"./index-Bm3VUUmh.js";import{t as n}from"./field-DnDtz9-M.js";var r={extends:n,props:{modelValue:{type:String,default:``}},created(){this.modelValue!==this.config?.value&&this.$emit(`update:modelValue`,this.config?.value)}};function i(t,n,r,i,a,o){return e(``,!0)}var a=t(r,[[`render`,i]]);export{a as default};

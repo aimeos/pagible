@@ -119,6 +119,62 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPagesLanguageFallback()
+    {
+        $page = $this->page();
+        $other = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $query = fn( string $trashed ) => $this->actingAs( $this->user )->graphQL( '{
+            pages(filter: {id: ["' . $page->id . '", "' . $other->id . '"]}, lang: "de", trashed: ' . $trashed . ') {
+                data { id lang variant_deleted_at }
+            }
+        }' )->assertGraphQLErrorFree()->json( 'data.pages.data' );
+
+        $result = collect( $query( 'WITHOUT' ) )->keyBy( 'id' );
+        $this->assertCount( 2, $result );
+        $this->assertEquals( 'de', $result[$page->id]['lang'] );
+        $this->assertEquals( 'en', $result[$other->id]['lang'] );
+        $this->assertEquals( [], $query( 'ONLY' ) );
+
+        // a trashed variant falls back to the source variant unless trashed ones are requested
+        Resource::dropVariant( $page->id, 'de', $this->user );
+
+        $result = collect( $query( 'WITHOUT' ) )->keyBy( 'id' );
+        $this->assertEquals( 'en', $result[$page->id]['lang'] );
+
+        $result = collect( $query( 'WITH' ) )->keyBy( 'id' );
+        $this->assertCount( 2, $result );
+        $this->assertEquals( 'de', $result[$page->id]['lang'] );
+        $this->assertNotNull( $result[$page->id]['variant_deleted_at'] );
+
+        $result = $query( 'ONLY' );
+        $this->assertCount( 1, $result );
+        $this->assertEquals( [$page->id, 'de'], [$result[0]['id'], $result[0]['lang']] );
+    }
+
+
+    public function testBulkPageLanguage()
+    {
+        $page = $this->page();
+        $other = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                bulkPage(id: ["' . $page->id . '", "' . $other->id . '"], input: {status: 1}, lang: "de") { ids failed data }
+            }
+        ' )->assertGraphQLErrorFree();
+
+        // the page without a "de" variant is skipped
+        $response->assertJson( ['data' => ['bulkPage' => ['ids' => [$page->id], 'failed' => 1]]] );
+        $this->assertEquals( 'de', json_decode( $response->json( 'data.bulkPage.data' ) ?? '{}' )->lang ?? null );
+        $this->assertEquals( 1, Page::language( 'de' )->findOrFail( $page->id )->latest->data->status ?? null );
+        $this->assertNotEquals( 1, Page::findOrFail( $page->id )->latest->data->status ?? null );
+        $this->assertNotEquals( 1, Page::findOrFail( $other->id )->latest->data->status ?? null );
+    }
+
+
     public function testAddPageDefaultLanguage()
     {
         config( ['app.locale' => 'de'] );

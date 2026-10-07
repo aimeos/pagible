@@ -27,7 +27,7 @@ const stubs = {
   PageDetailEditor: {
     props: { asideVisible: Boolean, previewSize: String },
     emits: ['change', 'edit'],
-    methods: { addAfter() {}, addBefore() {}, remove() {} },
+    methods: { addAfter() {}, addBefore() {}, reload() {}, remove() {} },
     render() {
       return h('button', {
         class: 'page-detail-editor-stub',
@@ -567,6 +567,136 @@ describe('PageDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
         expect(vm.hasConflict).to.be.true
+      })
+    })
+  })
+
+  describe('language variants', () => {
+    function pageData(lang, variants) {
+      return {
+        data: {
+          page: {
+            id: '1',
+            lang,
+            source: 'en',
+            stale: false,
+            has: 0,
+            restricted: false,
+            variants,
+            latest: {
+              id: 'v-' + lang,
+              published: false,
+              publish_at: null,
+              data: JSON.stringify({ ...baseItem, lang }),
+              aux: JSON.stringify({ content: [], meta: {}, config: {} }),
+              editor: 'test@test.com',
+              created_at: '2026-01-01 00:00:00',
+              files: [],
+              elements: [],
+            },
+          },
+        },
+      }
+    }
+
+    const variants = [
+      { id: '1', lang: 'en', source: true, state: 'current', published: true },
+      { id: '1', lang: 'de', source: false, state: 'stale', published: false },
+    ]
+
+    it('lists all site languages with the state of their variants', () => {
+      const query = cy.stub().resolves(pageData('en', variants))
+
+      mountDetail({ 'page:view': true }, {}, { query }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+        vm.languages.available = ['en', 'de', 'fr']
+
+        cy.wrap(null).should(() => {
+          expect(vm.langs.map(({ code, state, source }) => ({ code, state, source }))).to.deep.equal([
+            { code: 'en', state: 'current', source: true },
+            { code: 'de', state: 'stale', source: false },
+            { code: 'fr', state: 'missing', source: false },
+          ])
+        })
+      })
+    })
+
+    it('loads the variant in the language and saves it in that language', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      query.resolves(pageData('de', variants))
+      const mutate = cy.stub().resolves({ data: { savePage: { id: '1', latest: { id: 'v2', published: false, data: '{}', created_at: '2026-01-01 00:00:00' } } } })
+
+      mountDetail({ 'page:view': true, 'page:save': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+        vm.languages.available = ['en', 'de']
+
+        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'de', state: 'stale' }))
+        cy.then(() => {
+          expect(query.lastCall.args[0].variables).to.deep.include({ id: '1', lang: 'de' })
+          expect(vm.variantLang).to.equal('de')
+          expect(mutate).not.to.have.been.called
+
+          vm.dirty = { page: true }
+          return vm.save(true)
+        })
+        cy.then(() => {
+          const call = mutate.getCalls().find((c) => c.args[0].variables.input)
+          expect(call.args[0].variables.lang).to.equal('de')
+        })
+      })
+    })
+
+    it('creates a missing variant before switching to it', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      query.resolves(pageData('fr', [...variants, { id: '1', lang: 'fr', source: false, state: 'current', published: false }]))
+      const mutate = cy.stub().resolves({ data: { addVariant: { id: '1', lang: 'fr' } } })
+
+      mountDetail({ 'page:view': true, 'page:add': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
+        cy.then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
+          expect(query.lastCall.args[0].variables.lang).to.equal('fr')
+          expect(vm.variantLang).to.equal('fr')
+        })
+      })
+    })
+
+    it('does not create a missing variant without page:add permission', () => {
+      const query = cy.stub().resolves(pageData('en', variants))
+      const mutate = cy.stub()
+
+      mountDetail({ 'page:view': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
+        cy.then(() => {
+          expect(mutate).not.to.have.been.called
+          expect(vm.variantLang).to.equal('en')
+        })
+      })
+    })
+
+    it('loads the history of the edited variant', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('de', variants))
+      query.resolves({ data: { page: { id: '1', versions: [] } } })
+
+      mountDetail({ 'page:view': true }, {}, { query }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.variantLang).to.equal('de'))
+        cy.then(() => vm.versions('1'))
+        cy.then(() => {
+          expect(query.lastCall.args[0].variables).to.deep.equal({ id: '1', lang: 'de' })
+        })
       })
     })
   })

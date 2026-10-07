@@ -33,8 +33,7 @@ export default {
       publish: null,
       status: null,
       editor: null,
-      cache: null,
-      lang: null
+      cache: null
     }
 
     return {
@@ -80,9 +79,19 @@ export default {
             { title: this.$gettext('No cache'), icon: mdiClockAlertOutline, value: { cache: 0 } }
           ]
         },
-        aside.editor,
-        aside.lang
+        aside.editor
       ]
+    }
+  },
+
+  methods: {
+    // opens the page in the shown language, the editor offers to create missing ones
+    open(item) {
+      this.$router.push({
+        name: 'page:detail',
+        params: { id: item.id },
+        query: item.lang ? { lang: item.lang } : {}
+      })
     }
   }
 }

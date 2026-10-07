@@ -20,6 +20,7 @@ import {
   multidomain,
   sessionlifetime,
   locales as appLocales,
+  locale as appLocale,
   plugins
 } from './config'
 
@@ -590,7 +591,7 @@ export const useLanguageStore = defineStore('language', {
 
   actions: {
     default() {
-      return this.available[0] || 'en'
+      return this.available.includes(appLocale) ? appLocale : this.available[0] || 'en'
     },
 
     translate(key) {

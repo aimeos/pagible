@@ -51,6 +51,20 @@ class PageQuery extends QueryBuilder
 
 
     /**
+     * Uses the variant of the given language or the source variant for pages without that variant.
+     *
+     * @param string $lang Language code
+     * @param bool $trashed Include a soft-deleted variant of the language
+     * @return static Same builder for fluent interface
+     */
+    public function fallback( string $lang, bool $trashed = false ) : static
+    {
+        $this->base()->variants( 'fallback', $lang, $trashed );
+        return $this;
+    }
+
+
+    /**
      * Uses the variant of the given language, pages without that variant are excluded.
      *
      * @param string|null $lang Language code or NULL for the source language

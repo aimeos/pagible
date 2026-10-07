@@ -15,9 +15,13 @@ import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { focusInvalid, frozenParse, hasTrue, safeParse, txlocales } from '../utils'
-import { useAppStore, useDrawerStore, useSchemaStore } from '../stores'
+import { useAppStore, useDrawerStore, useLanguageStore, useSchemaStore } from '../stores'
 import {
   mdiCreation,
+  mdiCheck,
+  mdiDelete,
+  mdiPlus,
+  mdiSync,
   mdiTranslate,
   mdiArrowRightThin
 } from '@mdi/js'
@@ -62,12 +66,22 @@ const PAGE_DETAIL_FIELDS = `
 
 const FETCH_PAGE = gql`
   ${FILE_FIELDS}
-  query($id: ID!, $access: Boolean!) {
-    page(id: $id) {
+  query($id: ID!, $lang: String, $access: Boolean!) {
+    page(id: $id, lang: $lang) {
       id
+      lang
+      source
+      stale
       access @include(if: $access)
       has
       restricted
+      variants {
+        id
+        lang
+        source
+        state
+        published
+      }
       latest {
         ${PAGE_DETAIL_FIELDS}
       }
@@ -77,8 +91,8 @@ const FETCH_PAGE = gql`
 
 const FETCH_PAGE_VERSIONS = gql`
   ${FILE_FIELDS}
-  query($id: ID!) {
-    page(id: $id) {
+  query($id: ID!, $lang: String) {
+    page(id: $id, lang: $lang) {
       id
       versions {
         ${PAGE_DETAIL_FIELDS}
@@ -87,9 +101,18 @@ const FETCH_PAGE_VERSIONS = gql`
   }
 `
 
+const ADD_VARIANT = gql`
+  mutation ($id: ID!, $lang: String!) {
+    addVariant(id: $id, lang: $lang) {
+      id
+      lang
+    }
+  }
+`
+
 const SAVE_PAGE = gql`
-  mutation ($id: ID!, $input: PageInput!, $latestId: ID) {
-    savePage(id: $id, input: $input, latestId: $latestId) {
+  mutation ($id: ID!, $input: PageInput!, $latestId: ID, $lang: String) {
+    savePage(id: $id, input: $input, latestId: $latestId, lang: $lang) {
       id
       latest { id published publish_at editor created_at }
       changed
@@ -117,8 +140,13 @@ export default {
       ...useDetail('page'),
       app: useAppStore(),
       drawer: useDrawerStore(),
+      languages: useLanguageStore(),
       schemas: useSchemaStore(),
       mdiCreation,
+      mdiCheck,
+      mdiDelete,
+      mdiPlus,
+      mdiSync,
       mdiTranslate,
       mdiArrowRightThin,
       txlocales
@@ -141,7 +169,11 @@ export default {
       latest: null,
       translating: false,
       savecnt: 0,
-      historyData: null
+      historyData: null,
+      // language of the edited page variant, the source variant if NULL
+      variantLang: (!this.stacked && this.$route?.query?.lang) || null,
+      variants: [],
+      switching: false
     }
   },
 
@@ -171,6 +203,19 @@ export default {
 
     hasError() {
       return hasTrue(this.errors)
+    },
+
+    // all site languages and those of the existing variants with their state
+    langs() {
+      const map = new Map(this.variants.map((v) => [v.lang, v]))
+      const codes = [...new Set([...this.languages.available, ...map.keys()])]
+
+      return codes.map((code) => ({
+        code,
+        name: this.languages.translate(code),
+        source: !!map.get(code)?.source,
+        state: map.get(code)?.state || 'missing'
+      }))
     },
 
     changeTargets() {
@@ -203,9 +248,14 @@ export default {
     reload() {
       return this.reloadVersion(FETCH_PAGE, this.$gettext('Error fetching page'), (page) => {
         this.latest = page.latest
+        this.variantLang = page.lang || this.variantLang
+        this.variants = page.variants || []
 
         Object.assign(this.item, safeParse(this.latest?.data))
         this.item.access = page.access
+        this.item.source = page.source
+        this.item.stale = page.stale
+        this.item.variants = this.variants
         this.item.has = page.has
         this.item.restricted = page.restricted
         this.item.published = this.latest?.published
@@ -219,7 +269,7 @@ export default {
 
         this.assign(this.latest?.elements || [], this.latest?.files || [])
         this.latest = { id: this.latest?.id }
-      }, () => !this.hasChanged, { access: this.user.can('page:access') })
+      }, () => !this.hasChanged, { lang: this.variantLang, access: this.user.can('page:access') })
     },
 
     apply(changes, version) {
@@ -463,7 +513,8 @@ export default {
               config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
               content: JSON.stringify(this.clean(this.item.content, 'content'))
             },
-            latestId: this.latest?.id
+            latestId: this.latest?.id,
+            lang: this.variantLang
           }
         })
         .then((response) => {
@@ -494,6 +545,44 @@ export default {
         .finally(() => {
           this.saving = false
         })
+    },
+
+    // switches the editor to the variant in the language, missing variants are created as untranslated copy
+    async switchLang(entry) {
+      if (entry.code === this.variantLang || entry.state === 'trashed' || this.switching) {
+        return
+      }
+
+      if (entry.state === 'missing' && !this.user.can('page:add')) {
+        return this.messages.denied()
+      }
+
+      if (this.hasChanged && !(await this.save(true))) {
+        return
+      }
+
+      this.switching = true
+
+      try {
+        if (entry.state === 'missing') {
+          await this.$apollo.mutate({ mutation: ADD_VARIANT, variables: { id: this.item.id, lang: entry.code } })
+          this.invalidate()
+        }
+      } catch (error) {
+        this.switching = false
+        return this.messages.error(this.$gettext('Error adding language'), error, entry.code)
+      }
+
+      this.variantLang = entry.code
+      this.vhistory = false
+
+      if (!this.stacked) {
+        this.$router?.replace({ query: { ...this.$route?.query, lang: entry.code } })
+      }
+
+      return this.refresh().finally(() => {
+        this.switching = false
+      })
     },
 
     async translatePage(lang) {
@@ -583,7 +672,7 @@ export default {
     },
 
     versions(id) {
-      return this.loadVersions(FETCH_PAGE_VERSIONS, id, v => {
+      return this.loadVersions(FETCH_PAGE_VERSIONS, id, (v) => {
         const elements = this.elems(v.elements || [])
         const item = {
           ...v,
@@ -592,7 +681,7 @@ export default {
         item.files = Object.freeze(this.files(v.files || [], elements))
         delete item.aux
         return Object.freeze(item)
-      })
+      }, { lang: this.variantLang })
     },
 
     writeContext() {
@@ -615,6 +704,38 @@ export default {
 <template>
   <DetailAppBar v-bind="bar" :label="$gettext('Page')" :has-latest="!!latest">
     <template #actions>
+      <span class="btn-lang-switch" v-if="langs.length > 1 || variants.length > 1">
+        <ActionMenu :title="$gettext('Language')">
+          <template #activator="{ props, label }">
+            <v-btn v-bind="props" :title="label" :loading="switching">
+              {{ variantLang || item.lang }}
+            </v-btn>
+          </template>
+          <v-list-item v-for="entry in langs" :key="entry.code">
+            <v-btn
+              @click="switchLang(entry)"
+              :active="entry.code === variantLang"
+              :disabled="entry.state === 'trashed' || (entry.state === 'missing' && !user.can('page:add'))"
+              :prepend-icon="{ current: mdiCheck, stale: mdiSync, trashed: mdiDelete, missing: mdiPlus }[entry.state]"
+              :class="'lang-' + entry.state"
+              :data-lang="entry.code"
+              variant="text"
+            >
+              {{ entry.name }}
+              <span class="lang-state">{{
+                entry.source
+                  ? $gettext('Source')
+                  : {
+                      current: $gettext('Up to date'),
+                      stale: $gettext('Needs update'),
+                      trashed: $gettext('Trashed'),
+                      missing: $gettext('Create')
+                    }[entry.state]
+              }}</span>
+            </v-btn>
+          </v-list-item>
+        </ActionMenu>
+      </span>
       <v-btn
         v-if="user.can('page:chat')"
         @click="review()"
@@ -759,6 +880,17 @@ export default {
 </template>
 
 <style scoped>
+.btn-lang-switch .v-btn {
+  text-transform: uppercase;
+}
+
+.lang-state {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-size: 0.75rem;
+  margin-inline-start: 0.5rem;
+  text-transform: none;
+}
+
 .detail-tabs .v-tab.conflict {
   color: color-mix(in srgb, rgb(var(--v-theme-error)) 50%, rgb(var(--v-theme-on-background)));
 }

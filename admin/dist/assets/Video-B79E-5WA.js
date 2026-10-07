@@ -1,1 +1,0 @@
-import e from"./File-qEG6yl6H.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`video`}};export{t as default};

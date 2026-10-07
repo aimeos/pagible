@@ -1,0 +1,1 @@
+import e from"./File-DHZ8tPYV.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`video`}};export{t as default};

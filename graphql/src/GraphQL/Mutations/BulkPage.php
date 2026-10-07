@@ -25,6 +25,7 @@ final class BulkPage
             $args['input'] ?? [],
             Auth::user(),
             $args['descendants'] ?? false,
+            $args['lang'] ?? null,
         );
     }
 }

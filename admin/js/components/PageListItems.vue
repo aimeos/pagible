@@ -25,7 +25,9 @@ import {
   mdiCached,
   mdiLock,
   mdiKeyVariant,
-  mdiPencil
+  mdiPencil,
+  mdiSync,
+  mdiTranslateOff
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
@@ -68,13 +70,16 @@ const PAGE_TREE_FIELDS = new Set([
   'publish_at',
   'published',
   'restricted',
+  'source',
+  'stale',
   'status',
   'tag',
   'theme',
   'title',
   'to',
   'type',
-  'updated_at'
+  'updated_at',
+  'variant_deleted_at'
 ])
 function patchData(data, item) {
   for (const key in item) {
@@ -87,19 +92,6 @@ function patchData(data, item) {
 const CLEAR_CACHE = gql`
   mutation ($ids: [ID!]!) {
     clearCache(ids: $ids)
-  }
-`
-
-const FETCH_PAGE_FOR_PASTE = gql`
-  query ($id: ID!) {
-    page(id: $id) {
-      id
-      latest {
-        id
-        data
-        aux
-      }
-    }
   }
 `
 
@@ -120,8 +112,8 @@ const MOVE_PAGE = gql`
 `
 
 const SAVE_PAGES = gql`
-  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean) {
-    bulkPage(id: $id, input: $input, descendants: $descendants) {
+  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean, $lang: String) {
+    bulkPage(id: $id, input: $input, descendants: $descendants, lang: $lang) {
       ids
       latest
       data
@@ -133,8 +125,12 @@ const SAVE_PAGES = gql`
 const PAGE_FIELDS = `id
           access @include(if: $access)
           parent_id
+          lang
+          source
+          stale
           created_at
           deleted_at
+          variant_deleted_at
           editor
           has
           restricted
@@ -147,10 +143,18 @@ const PAGE_FIELDS = `id
             created_at
           }`
 
-const PASTE_PAGE = gql`
-  mutation ($input: PageInput!, $parent: ID, $ref: ID, $access: Boolean!) {
-    addPage(input: $input, parent: $parent, ref: $ref) {
+const ADD_VARIANT = gql`
+  mutation ($id: ID!, $lang: String!, $access: Boolean!) {
+    addVariant(id: $id, lang: $lang) {
       ${PAGE_FIELDS}
+    }
+  }
+`
+
+const COPY_PAGE = gql`
+  mutation ($id: ID!, $parent: ID, $ref: ID) {
+    copyPage(id: $id, parent: $parent, ref: $ref) {
+      id
     }
   }
 `
@@ -163,6 +167,7 @@ const FETCH_PAGES = gql`
     $page: Int!,
     $trashed: Trashed,
     $publish: Publish,
+    $lang: String,
     $access: Boolean!
   ) {
     pages(
@@ -171,7 +176,8 @@ const FETCH_PAGES = gql`
       first: $limit,
       page: $page,
       trashed: $trashed,
-      publish: $publish
+      publish: $publish,
+      lang: $lang
     ) {
       data {
         ${PAGE_FIELDS}
@@ -212,8 +218,16 @@ export default {
   emits: listBase.emits,
 
   data() {
+    // the list always shows the pages in a current language, the last one chosen or the default
+    const lang = this.user.setting('page', 'lang', this.languages.default())
+
+    if (!this.languages.available.includes(lang.value)) {
+      lang.value = this.languages.default()
+    }
+
     return {
       items: [],
+      lang,
       accessDialog: false,
       accessDescendants: 0,
       accessIds: [],
@@ -274,6 +288,8 @@ export default {
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
+      mdiSync,
+      mdiTranslateOff,
       sortOptions: SORT_OPTIONS
     }
   },
@@ -322,6 +338,10 @@ export default {
 
   computed: {
     filtered: listBase.computed.filtered,
+
+    langs() {
+      return this.languages.available.map((code) => ({ value: code, title: this.languages.translate(code) }))
+    },
 
     isChecked() {
       return this.checked || this.$refs.tree?.statsFlat.some((stat) => stat._checked)
@@ -407,7 +427,7 @@ export default {
             throw new Error('No data in addPage mutation result')
           }
 
-          const page = { ...result.data.addPage }
+          const page = { ...result.data.addPage, lang: this.lang, source: this.lang }
 
           this.$refs.tree.add(page)
           this.invalidate()
@@ -525,12 +545,10 @@ export default {
     },
 
     create(attr = {}) {
-      const current = this.$vuetify.locale.current
-
       return Object.assign(
         {
           path: '_' + Math.floor(Math.random() * 10000),
-          lang: this.languages.available.includes(current) ? current : this.languages.default(),
+          lang: this.lang,
           status: 0,
           cache: 5
         },
@@ -539,7 +557,142 @@ export default {
     },
 
     count() {
-      this.counts = tally(this.selected().map((stat) => stat.data))
+      const items = this.selected().map((stat) => stat.data)
+      const own = items.filter((item) => !this.missing(item))
+
+      // variant actions only count the pages which have a variant in the current language
+      this.counts = Object.assign(tally(items), {
+        draft: own.filter((item) => !item.published).length,
+        own: own.length,
+        langLive: own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length,
+        langSource: own.filter((item) => item.lang === item.source).length,
+        langTrashed: own.filter((item) => item.variant_deleted_at).length
+      })
+    },
+
+    // adds an untranslated copy of the source variant in the current language
+    createLang(stat) {
+      if (!this.allowed('add') || !this.missing(stat.data)) {
+        return
+      }
+
+      return this.$apollo
+        .mutate({
+          mutation: ADD_VARIANT,
+          variables: { id: stat.data.id, lang: this.lang, access: this.user.can('page:access') }
+        })
+        .then((result) => {
+          if (!result.data.addVariant) {
+            throw new Error('No data in addVariant mutation result')
+          }
+
+          Object.assign(stat.data, this.hydrate(result.data.addVariant))
+          this.invalidate()
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error adding language'), error, stat.data.id)
+        })
+    },
+
+    // moves the variants in the current language to the trash, source variants are skipped
+    async dropLang(stat = null) {
+      const all = this.allowed('drop') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : []
+      const list = all.filter((item) => item.data.lang !== item.data.source && !item.data.variant_deleted_at)
+      const skipped = all.filter((item) => item.data.lang === item.data.source).length
+
+      if (!list.length) {
+        if (skipped) {
+          this.messages.add(this.$gettext('Pages in their source language are deleted as whole pages only'), 'info')
+        }
+        return
+      }
+
+      if (
+        !stat &&
+        !(await this.confirm.ask(
+          this.$gettext('Delete language'),
+          this.$ngettext(
+            'Move %{num} page in "%{lang}" to the trash?',
+            'Move %{num} pages in "%{lang}" to the trash?',
+            list.length,
+            { num: list.length, lang: this.languages.translate(this.lang) }
+          ),
+          [],
+          skipped
+            ? this.$ngettext(
+                '%{num} page in its source language is skipped.',
+                '%{num} pages in their source language are skipped.',
+                skipped,
+                { num: skipped }
+              )
+            : ''
+        ))
+      ) {
+        return
+      }
+
+      const ids = list.map((item) => item.data.id)
+
+      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang).then((ok) => {
+        if (!ok) {
+          return
+        }
+
+        const action = this.user.can('page:keep')
+          ? {
+              label: this.$gettext('Undo'),
+              handler: () => {
+                this.mutate('keep', ids, this.$gettext('Error restoring language'), this.lang).then((ok) => {
+                  ok && this.reload(false)
+                })
+              }
+            }
+          : null
+
+        this.messages.add(
+          this.$ngettext('Moved to trash', '%{num} entries moved to trash', ids.length, { num: ids.length }),
+          'success',
+          null,
+          action
+        )
+
+        return this.refetch(list)
+      })
+    },
+
+    // restores the trashed variants in the current language
+    keepLang(stat = null) {
+      const list = this.allowed('keep') ? (stat ? [stat] : this.selected((page) => page.variant_deleted_at && !this.missing(page))) : []
+
+      if (!list.length) {
+        return
+      }
+
+      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang).then((ok) => {
+        ok && this.refetch(list)
+      })
+    },
+
+    // permanently removes the variants in the current language, source variants are skipped
+    async purgeLang(stat = null) {
+      const list = (this.allowed('purge') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : [])
+        .filter((item) => item.data.lang !== item.data.source)
+
+      if (
+        !list.length ||
+        !(await this.confirm.purge(
+          list.map((stat) => ({
+            name: stat.data.name + ' (' + this.languages.translate(this.lang) + ')',
+            info: '/' + (stat.data.path || '')
+          }))
+        ))
+      ) {
+        return
+      }
+
+      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang).then((ok) => {
+        ok && this.refetch(list)
+      })
     },
 
     cut(stat, node) {
@@ -622,7 +775,7 @@ export default {
     },
 
     editProps(stat = null) {
-      const list = stat ? [stat] : this.selected()
+      const list = stat ? [stat] : this.selected((page) => !this.missing(page))
       const set = new Set(list)
 
       this.propsCount = list.length
@@ -664,7 +817,11 @@ export default {
         updated_at: entry.latest?.created_at || entry.updated_at,
         editor: entry.latest?.editor || entry.editor,
         published: entry.latest?.published ?? true,
-        publish_at: entry.latest?.publish_at || null
+        publish_at: entry.latest?.publish_at || null,
+        lang: entry.lang ?? item.lang ?? null,
+        source: entry.source ?? null,
+        stale: !!entry.stale,
+        variant_deleted_at: entry.variant_deleted_at || null
       })
     },
 
@@ -687,6 +844,7 @@ export default {
         })
         .then((result) => {
           node.id = result.data.addPage.id
+          node.source = node.lang
 
           if (idx !== null || stat.open) {
             this.$refs.tree.add(node, parent, idx !== null ? pos + idx : 0)
@@ -809,10 +967,25 @@ export default {
         })
     },
 
-    // runs the mutation for the page IDs and resolves true on success
-    mutate(action, ids, msg) {
+    // returns if the page has no variant in the current language and the source variant is shown
+    missing(node) {
+      return !!node?.lang && node.lang !== this.lang
+    },
+
+    // returns if an event patch belongs to the shown variant: patches without a language are
+    // bulk edits of the source variants, rows without a known language accept all patches
+    matches(data, item) {
+      if (!data.lang) return true
+      return item.lang ? data.lang === item.lang : !data.source || data.lang === data.source
+    },
+
+    // runs the mutation for the page IDs (of the variants in the language) and resolves true on success
+    mutate(action, ids, msg, lang = null) {
       return this.$apollo
-        .mutate({ mutation: mutation(action, 'page'), variables: { id: ids } })
+        .mutate({
+          mutation: mutation(action, 'page', !!lang),
+          variables: lang ? { id: ids, lang } : { id: ids }
+        })
         .then(() => {
           this.invalidate()
           return true
@@ -824,7 +997,7 @@ export default {
     },
 
     // queries the pages matching the list filters and the given filter values
-    pages(values, page, limit, sort, msg) {
+    pages(values, page, limit, sort, msg, trashed = null) {
       if (!this.allowed('view')) {
         return Promise.resolve([])
       }
@@ -832,7 +1005,7 @@ export default {
       const filter = {}
 
       for (const key in this.filter) {
-        if (!['publish', 'trashed', 'view'].includes(key) && this.filter[key] !== null) {
+        if (!['lang', 'publish', 'trashed', 'view'].includes(key) && this.filter[key] !== null) {
           filter[key] = this.filter[key]
         }
       }
@@ -846,8 +1019,9 @@ export default {
             sort,
             page,
             limit,
-            trashed: this.filter.trashed || 'WITHOUT',
+            trashed: trashed || this.filter.trashed || 'WITHOUT',
             publish: this.filter.publish || null,
+            lang: this.lang,
             access: this.user.can('page:access')
           }
         })
@@ -862,64 +1036,39 @@ export default {
         return
       }
 
-      const { parent, ref } = this.target(stat, idx)
-      const node = { ...this.clip.node }
+      const { parent, pos, ref } = this.target(stat, idx)
+      // collapsed nodes load their children incl. the copy when pasting into them
+      const append = idx !== null || stat.open
 
+      // the server copies the page, its sub-pages and all language variants
       return this.$apollo
-        .query({
-          query: FETCH_PAGE_FOR_PASTE,
-          fetchPolicy: 'no-cache',
-          variables: {
-            id: node.id
-          }
+        .mutate({
+          mutation: COPY_PAGE,
+          variables: { id: this.clip.node.id, parent: parent?.data.id ?? null, ref }
         })
         .then((result) => {
-          const latest = result?.data?.page?.latest
-          const data = Object.assign({}, node, safeParse(latest?.data))
-          const aux = safeParse(latest?.aux)
+          const id = result.data.copyPage?.id
 
-          return this.$apollo
-            .mutate({
-              mutation: PASTE_PAGE,
-              variables: {
-                input: {
-                  status: 0,
-                  to: data.to,
-                  tag: data.tag,
-                  type: data.type,
-                  theme: data.theme,
-                  lang: data.lang,
-                  name: data.name,
-                  title: data.title,
-                  cache: data.cache,
-                  domain: data.domain,
-                  meta: JSON.stringify(aux?.meta || {}),
-                  config: JSON.stringify(aux?.config || {}),
-                  content: JSON.stringify(aux?.content || []),
-                  path: data.path + '_' + Math.floor(Math.random() * 10000)
-                },
-                parent: parent?.data.id ?? null,
-                ref,
-                access: this.user.can('page:access')
-              }
-            })
-            .then((result) => {
-              if (!result.data.addPage) {
-                throw new Error('No page data returned')
-              }
+          if (!id) {
+            throw new Error('No page data returned')
+          }
 
-              const index = idx !== null ? this.$refs.tree.getSiblings(stat).indexOf(stat) + idx : 0
-              const item = this.hydrate(result.data.addPage)
+          this.invalidate()
+          return this.pages({ id: [id] }, 1, 1, undefined, this.$gettext('Error fetching page'), 'WITH')
+        })
+        .then((result) => {
+          const item = result?.data?.[0]
 
-              this.$refs.tree.add(item, parent, index)
-              this.invalidate()
-            })
-            .catch((error) => {
-              this.messages.error(this.$gettext('Error copying page'), error, stat, idx)
-            })
+          if (item && append) {
+            this.$refs.tree.add(item, parent, idx !== null ? pos + idx : 0)
+          } else if (!append) {
+            this.load(stat, stat.data)
+          }
+
+          this.updateHas(parent, (item?.has || 0) + 1)
         })
         .catch((error) => {
-          this.messages.error(this.$gettext('Error fetching page'), error, node.id)
+          this.messages.error(this.$gettext('Error copying page'), error, stat, idx)
         })
     },
 
@@ -934,7 +1083,7 @@ export default {
     patch(item) {
       const stat = this.$refs.tree?.statsFlat.find((stat) => stat.data?.id === item.id)
 
-      if (!stat) {
+      if (!stat || !this.matches(stat.data, item)) {
         return false
       }
 
@@ -950,20 +1099,22 @@ export default {
       this.$refs.tree?.statsFlat.forEach((stat) => {
         const item = byId.get(stat.data?.id)
 
-        if (item) {
+        if (item && this.matches(stat.data, item)) {
           patchData(stat.data, item)
         }
       })
     },
 
     publish(stat) {
-      const list = this.allowed('publish') ? (stat ? [stat] : this.selected((page) => !page.published)) : []
+      const list = this.allowed('publish')
+        ? stat ? [stat] : this.selected((page) => !page.published && !this.missing(page))
+        : []
 
       if (!list.length) {
         return
       }
 
-      this.mutate('pub', list.map((item) => item.data.id), this.$gettext('Error publishing page')).then((ok) => {
+      return this.mutate('pub', list.map((item) => item.data.id), this.$gettext('Error publishing page'), this.lang).then((ok) => {
         for (const item of ok ? list : []) {
           item.data.published = true
           item._checked = false
@@ -998,6 +1149,31 @@ export default {
 
           this.$refs.tree.remove(item)
           this.updateHas(parent, -removed)
+        }
+      })
+    },
+
+    // reloads the rows after their variant changed, e.g. the source variant is shown after
+    // trashing the variant in the current language; rows not matching the filter anymore are removed
+    refetch(list) {
+      const ids = list.map((stat) => stat.data.id)
+
+      return this.pages({ id: ids }, 1, ids.length, undefined, this.$gettext('Error fetching pages')).then((result) => {
+        if (!result) {
+          return
+        }
+
+        const byId = new Map(result.data.map((item) => [item.id, item]))
+
+        for (const stat of list) {
+          const item = byId.get(stat.data.id)
+
+          if (item) {
+            Object.assign(stat.data, item, { has: stat.data.has })
+            stat._checked = false
+          } else if (this.$refs.tree?.statsFlat.includes(stat)) {
+            this.$refs.tree.remove(stat)
+          }
         }
       })
     },
@@ -1085,7 +1261,8 @@ export default {
           variables: {
             id: ids,
             input: input,
-            descendants: descendants
+            descendants: descendants,
+            lang: this.lang
           }
         })
         .then((result) => {
@@ -1098,7 +1275,7 @@ export default {
           this.$refs.tree?.statsFlat.forEach((stat) => {
             const id = stat.data?.id
 
-            if (ids.has(id)) {
+            if (ids.has(id) && !this.missing(stat.data)) {
               for (const key in data) {
                 if (key in stat.data) {
                   stat.data[key] = data[key]
@@ -1161,7 +1338,7 @@ export default {
         return
       }
 
-      const list = stat ? [stat] : this.selected()
+      const list = stat ? [stat] : this.selected((page) => !this.missing(page))
 
       if (!list.length) {
         return
@@ -1174,7 +1351,8 @@ export default {
             id: list.map((stat) => stat.data.id),
             input: {
               status: val
-            }
+            },
+            lang: this.lang
           }
         })
         .then((result) => {
@@ -1315,6 +1493,10 @@ export default {
       }
     },
 
+    lang() {
+      this.reload(false)
+    },
+
     sort() {
       this.reload(false)
     },
@@ -1350,15 +1532,15 @@ export default {
           <ActionItem v-if="counts.draft && user.can('page:publish')" :prepend-icon="mdiPublish" @click="publish()">
             {{ $gettext('Publish') }} ({{ counts.draft }})
           </ActionItem>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEye" @click="status(null, 1)">
-            {{ $pgettext('page status', 'Enable') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEye" @click="status(null, 1)">
+            {{ $pgettext('page status', 'Enable') }} ({{ counts.own }})
           </ActionItem>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="status(null, 0)">
-            {{ $pgettext('page status', 'Disable') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="status(null, 0)">
+            {{ $pgettext('page status', 'Disable') }} ({{ counts.own }})
           </ActionItem>
           <v-divider></v-divider>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps()">
+            {{ $gettext('Edit properties') }} ({{ counts.own }})
           </ActionItem>
           <ActionItem v-if="isChecked && user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess()">
             {{ $gettext('Access') }} ({{ counts.all }})
@@ -1378,6 +1560,35 @@ export default {
           <ActionItem v-if="isChecked && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
             {{ $gettext('Purge') }} ({{ counts.all }})
           </ActionItem>
+
+          <template v-if="counts.langLive || counts.langTrashed">
+            <v-divider></v-divider>
+
+            <ActionItem
+              v-if="counts.langLive && user.can('page:drop')"
+              :prepend-icon="mdiTranslateOff"
+              class="action-drop-lang"
+              @click="dropLang()"
+            >
+              {{ $gettext('Delete this language') }} ({{ counts.langLive }})
+            </ActionItem>
+            <ActionItem
+              v-if="counts.langTrashed && user.can('page:keep')"
+              :prepend-icon="mdiDeleteRestore"
+              class="action-keep-lang"
+              @click="keepLang()"
+            >
+              {{ $gettext('Restore this language') }} ({{ counts.langTrashed }})
+            </ActionItem>
+            <ActionItem
+              v-if="counts.langTrashed && user.can('page:purge')"
+              :prepend-icon="mdiDeleteForever"
+              class="action-purge-lang"
+              @click="purgeLang()"
+            >
+              {{ $gettext('Purge this language') }} ({{ counts.langTrashed }})
+            </ActionItem>
+          </template>
         </ActionMenu>
       </span>
 
@@ -1394,6 +1605,15 @@ export default {
     </div>
 
     <div class="search">
+      <v-select
+        v-if="langs.length > 1"
+        v-model="lang"
+        :items="langs"
+        :label="$gettext('Language')"
+        class="lang-select"
+        variant="underlined"
+        hide-details
+      />
       <v-text-field
         ref="search"
         v-model="term"
@@ -1475,30 +1695,38 @@ export default {
               <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
             </template>
             <ActionItem
-              v-if="!node.deleted_at && !node.published && user.can('page:publish')"
+              v-if="missing(node) && !node.deleted_at && user.can('page:add')"
+              :prepend-icon="mdiPlus"
+              class="action-create-lang"
+              @click="createLang(stat)"
+              >{{ $gettext('Create in %{lang}', { lang: languages.translate(lang) }) }}</ActionItem
+            >
+
+            <ActionItem
+              v-if="!missing(node) && !node.deleted_at && !node.published && user.can('page:publish')"
               :prepend-icon="mdiPublish"
               @click="publish(stat)"
               >{{ $gettext('Publish') }}</ActionItem
             >
 
             <ActionItem
-              v-if="!node.deleted_at && user.can('page:save') && !node.status"
+              v-if="!missing(node) && !node.deleted_at && user.can('page:save') && !node.status"
               :prepend-icon="mdiEye"
               @click="status(stat, 1)"
               >{{ $pgettext('page status', 'Enable') }}</ActionItem
             >
             <ActionItem
-              v-if="!node.deleted_at && user.can('page:save') && node.status"
+              v-if="!missing(node) && !node.deleted_at && user.can('page:save') && node.status"
               :prepend-icon="mdiEyeOff"
               @click="status(stat, 0)"
               >{{ $pgettext('page status', 'Disable') }}</ActionItem
             >
 
             <v-divider
-              v-if="!node.deleted_at && !node.published && user.can('page:publish')"
+              v-if="!node.deleted_at && (missing(node) ? user.can('page:add') : !node.published && user.can('page:publish'))"
             ></v-divider>
 
-            <ActionItem v-if="user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
+            <ActionItem v-if="!missing(node) && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
               {{ $gettext('Edit properties') }}
             </ActionItem>
             <ActionItem v-if="user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess(stat)">
@@ -1544,6 +1772,35 @@ export default {
             <ActionItem v-if="user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
               {{ $gettext('Purge') }}
             </ActionItem>
+
+            <template v-if="!missing(node) && node.lang !== node.source">
+              <v-divider></v-divider>
+
+              <ActionItem
+                v-if="!node.variant_deleted_at && user.can('page:drop')"
+                :prepend-icon="mdiTranslateOff"
+                class="action-drop-lang"
+                @click="dropLang(stat)"
+              >
+                {{ $gettext('Delete this language') }}
+              </ActionItem>
+              <ActionItem
+                v-if="node.variant_deleted_at && user.can('page:keep')"
+                :prepend-icon="mdiDeleteRestore"
+                class="action-keep-lang"
+                @click="keepLang(stat)"
+              >
+                {{ $gettext('Restore this language') }}
+              </ActionItem>
+              <ActionItem
+                v-if="user.can('page:purge')"
+                :prepend-icon="mdiDeleteForever"
+                class="action-purge-lang"
+                @click="purgeLang(stat)"
+              >
+                {{ $gettext('Purge this language') }}
+              </ActionItem>
+            </template>
           </ActionMenu>
         </span>
       </div>
@@ -1553,7 +1810,8 @@ export default {
           'status-hidden': node.status == 2,
           'status-enabled': node.status == 1,
           'status-disabled': !node.status,
-          trashed: node.deleted_at,
+          trashed: node.deleted_at || node.variant_deleted_at,
+          missing: missing(node),
           cut: stat.cut
         }"
         :title="title(node)"
@@ -1561,6 +1819,12 @@ export default {
         <a href="#" class="item-text" @click.prevent="$emit('select', node)">
           <div class="item-head">
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
+            <v-icon
+              v-if="node.stale && node.lang !== node.source && !missing(node)"
+              class="item-stale"
+              :icon="mdiSync"
+              :aria-label="$gettext('Needs update')"
+            />
             <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
             <v-icon
               v-if="node.restricted"
@@ -1573,6 +1837,17 @@ export default {
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
         </a>
+        <div v-if="missing(node) && !node.deleted_at && !embed && user.can('page:add')" class="item-create">
+          <v-btn
+            @click="createLang(stat)"
+            :prepend-icon="mdiPlus"
+            class="btn-create-lang"
+            variant="tonal"
+            size="small"
+          >
+            {{ $gettext('Create') }}
+          </v-btn>
+        </div>
         <a
           class="item-aux"
           :href="url(node)"
@@ -1712,6 +1987,16 @@ export default {
 
 .tree-node-inner .item-content.cut {
   opacity: 0.7;
+}
+
+.tree-node-inner .item-content.missing .item-text,
+.tree-node-inner .item-content.missing .item-aux {
+  opacity: 0.5;
+}
+
+.tree-node-inner .item-create {
+  align-self: center;
+  padding: 0 8px;
 }
 
 .tree-node-inner .item-text {

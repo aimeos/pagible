@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\PageQuery;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
 use Aimeos\Nestedset\NestedSet;
@@ -786,8 +787,12 @@ class Page extends Base
      */
     public function queryScoutModelsByIds( \Laravel\Scout\Builder $builder, array $ids )
     {
-        $query = $this->newQuery()->allVariants( true );
+        $query = $this->newQuery();
         $query->withTrashed();
+
+        if( !Scout::fallback( $query, $builder ) ) {
+            $query->allVariants( true );
+        }
 
         if( $builder->queryCallback ) {
             call_user_func( $builder->queryCallback, $query );

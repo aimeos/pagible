@@ -96,8 +96,8 @@ extend type Query {
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@page")
 
-  "Get the available pages"
-  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed): [Page!]
+  "Get the available pages, with 'lang' each page in that language or in its source language if it has no variant in that language"
+  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed, lang: String @rules(apply: ["nullable", "string", "max:10"])): [Page!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
 
@@ -190,8 +190,8 @@ extend type Mutation {
   setPageAccess(id: [ID!]! @rulesForArray(apply: ["max:1000"]), access: [String!] @rulesForArray(apply: ["nullable", "max:250"]), descendants: Boolean = false): Int!
     @guard @cmsPermission(action: "page:access") @throttle(name: "cms-graphql")
 
-  "Apply the same values to several existing pages at once, optionally including all sub-pages; returns the ids saved"
-  bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false): BulkResult!
+  "Apply the same values to several existing pages at once, optionally including all sub-pages; with 'lang' to their variants in that language, otherwise to their source variants; returns the ids saved"
+  bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false, lang: String @rules(apply: ["nullable", "string", "max:10"])): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Delete existing pages or only their variants in the given language"

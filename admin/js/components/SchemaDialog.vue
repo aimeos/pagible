@@ -17,13 +17,22 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     elements: { type: Boolean, default: true },
+    lang: { type: String, default: null },
     type: { type: String, default: 'content' }
   },
   emits: ['update:modelValue', 'add'],
 
   data: () => ({
-    tab: 'new'
-  })
+    tab: 'new',
+    langOnly: true
+  }),
+
+  computed: {
+    // shared elements in the language of the edited page variant unless switched off
+    shared() {
+      return this.lang && this.langOnly ? { lang: this.lang } : {}
+    }
+  }
 }
 </script>
 
@@ -44,7 +53,16 @@ export default {
         <SchemaItems :type="type" @add="$emit('add', $event)" />
       </v-tabs-window-item>
       <v-tabs-window-item v-if="elements" value="shared">
-        <ElementListItems @select="$emit('add', $event)" embed />
+        <v-switch
+          v-if="lang"
+          v-model="langOnly"
+          :label="$gettext('Only elements in %{lang}', { lang })"
+          class="filter-lang"
+          color="primary"
+          density="compact"
+          hide-details
+        />
+        <ElementListItems :filter="shared" @select="$emit('add', $event)" embed />
       </v-tabs-window-item>
     </v-tabs-window>
   </CmsDialog>

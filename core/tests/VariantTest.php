@@ -456,6 +456,26 @@ class VariantTest extends CoreTestAbstract
     }
 
 
+    public function testFallbackLanguage()
+    {
+        $page = $this->page();
+        $other = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $ids = [$page->id, $other->id];
+        $langs = fn( bool $trashed = false ) => Page::fallback( 'de', $trashed )->withTrashed()->whereIn( 'id', $ids )
+            ->get()->pluck( 'lang', 'id' )->all();
+
+        $this->assertEquals( [$page->id => 'de', $other->id => 'en'], $langs() );
+
+        // a trashed variant falls back to the source variant unless trashed ones are requested
+        Resource::dropVariant( $page->id, 'de', $this->user );
+
+        $this->assertEquals( [$page->id => 'en', $other->id => 'en'], $langs() );
+        $this->assertEquals( [$page->id => 'de', $other->id => 'en'], $langs( true ) );
+    }
+
+
     public function testSearchIndexesAllVariants()
     {
         $page = $this->page();

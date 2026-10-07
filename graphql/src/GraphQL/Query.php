@@ -11,6 +11,7 @@ use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Scout;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
@@ -123,6 +124,14 @@ final class Query
             : [];
 
         $search = Filter::search( Page::class, $filter['any'] ?? '' );
+
+        if( isset( $args['lang'] ) )
+        {
+            // trashed variants of the language are selected by the fallback
+            Scout::prefer( $search, (string) $args['lang'], $args['trashed'] ?? null );
+            $args['trashed'] = ( $args['trashed'] ?? null ) === 'only' ? 'with' : ( $args['trashed'] ?? null );
+            unset( $filter['lang'], $args['lang'] );
+        }
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 

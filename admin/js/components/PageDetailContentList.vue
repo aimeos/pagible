@@ -926,7 +926,7 @@ export default {
   </div>
 
   <Teleport to="body">
-    <SchemaDialog v-model="vschemas" @add="add($event, index)" />
+    <SchemaDialog v-model="vschemas" :lang="item.lang" @add="add($event, index)" />
   </Teleport>
 
   <Teleport to="body">

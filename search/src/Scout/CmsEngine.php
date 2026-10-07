@@ -286,6 +286,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $query->language( $lang, $query->removedScopes() !== [] );
         }
 
+        ScoutHelper::fallback( $query, $builder );
+
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
             $this->joinSearchIndex( $query, $builder, $modelTable );

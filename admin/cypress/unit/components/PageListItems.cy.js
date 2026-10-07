@@ -1,7 +1,7 @@
 import PageListItems from '../../../js/components/PageListItems.vue'
 import { apolloClient } from '../../../js/graphql'
 import { isMac } from '../../../js/commands'
-import { useUserStore } from '../../../js/stores'
+import { useLanguageStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   Draggable: {
@@ -12,7 +12,7 @@ const stubs = {
   },
 }
 
-function mountList(props = {}, perms = {}, apollo = {}) {
+function mountList(props = {}, perms = {}, apollo = {}, lang = null) {
   return cy.mount(PageListItems, {
     props: {
       ...props,
@@ -40,6 +40,11 @@ function mountList(props = {}, perms = {}, apollo = {}) {
         install() {
           const user = useUserStore()
           user.me = { permission: perms }
+
+          if (lang) {
+            useLanguageStore().available = ['en', 'de', 'fr']
+            user.me.settings = { page: { lang } }
+          }
         }
       }],
     },
@@ -551,82 +556,60 @@ describe('PageListItems', () => {
     })
   })
 
-  it('copies the latest page data when the tree node only contains its ID', () => {
-    const data = {
-      cache: 15,
-      domain: 'example.com',
-      lang: 'de',
-      name: 'Source page',
-      path: 'source-page',
-      status: 1,
-      tag: 'source',
-      theme: 'corporate',
-      title: 'Source title',
-      to: '/target',
-      type: 'landing',
-    }
-    const aux = {
-      content: [{ id: 'content-1', type: 'text', group: 'main', data: { text: 'Copied text' } }],
-      config: { styles: { type: 'styles', data: { text: 'body {}' }, files: [] } },
-      meta: { canonical: { type: 'canonical', data: { url: '/source-page' }, files: [] } },
+  it('copies the page on the server and adds the copy to the tree', () => {
+    const copy = {
+      id: 'page-copy',
+      parent_id: null,
+      lang: 'en',
+      source: 'en',
+      stale: false,
+      created_at: '2026-01-01 00:00:00',
+      deleted_at: null,
+      variant_deleted_at: null,
+      editor: 'test@test.com',
+      has: 2,
+      restricted: false,
+      latest: {
+        id: 'version-copy',
+        published: false,
+        publish_at: null,
+        data: JSON.stringify({ name: 'Source page', path: 'source-page_1234', lang: 'en', status: 0 }),
+        editor: 'test@test.com',
+        created_at: '2026-01-01 00:00:00',
+      },
     }
     const query = cy.stub()
     query.onFirstCall().resolves({
       data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
     })
     query.onSecondCall().resolves({
-      data: { page: { id: 'page-source', latest: { id: 'version-source', data: JSON.stringify(data), aux: JSON.stringify(aux) } } }
+      data: { pages: { data: [copy], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
     })
-    const mutate = cy.stub().resolves({
-      data: {
-        addPage: {
-          id: 'page-copy',
-          parent_id: null,
-          created_at: '2026-01-01 00:00:00',
-          deleted_at: null,
-          editor: 'test@test.com',
-          has: 0,
-          restricted: false,
-          latest: {
-            id: 'version-copy',
-            published: false,
-            publish_at: null,
-            data: JSON.stringify({ ...data, status: 0, path: 'source-page_1234' }),
-            editor: 'test@test.com',
-            created_at: '2026-01-01 00:00:00',
-          },
-        },
-      },
-    })
+    const mutate = cy.stub().resolves({ data: { copyPage: { id: 'page-copy' } } })
 
     mountList({}, { 'page:add': true, 'page:view': true }, { query, mutate }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageListItems).vm
-      const target = { data: { id: 'page-target' } }
+      const parent = { data: { id: 'page-parent', has: 1 } }
+      const target = { data: { id: 'page-target' }, parent }
+      const add = cy.stub()
       vm.$refs.tree.getSiblings = () => [target]
+      vm.$refs.tree.add = add
       vm.clip = { type: 'copy', node: { id: 'page-source' } }
 
       return vm.paste(target, 1).then(() => {
-        expect(query.secondCall.args[0].fetchPolicy).to.equal('no-cache')
-        expect(query.secondCall.args[0].variables).to.deep.equal({ id: 'page-source' })
         expect(mutate).to.have.been.calledOnce
-
-        const input = mutate.firstCall.args[0].variables.input
-        expect(input).to.include({
-          cache: 15,
-          domain: 'example.com',
-          lang: 'de',
-          name: 'Source page',
-          status: 0,
-          tag: 'source',
-          theme: 'corporate',
-          title: 'Source title',
-          to: '/target',
-          type: 'landing',
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: 'page-source',
+          parent: 'page-parent',
+          ref: null,
         })
-        expect(input.path).to.match(/^source-page_\d+$/)
-        expect(JSON.parse(input.content)).to.deep.equal(aux.content)
-        expect(JSON.parse(input.config)).to.deep.equal(aux.config)
-        expect(JSON.parse(input.meta)).to.deep.equal(aux.meta)
+
+        expect(query.secondCall.args[0].variables).to.deep.include({ lang: 'en', trashed: 'WITH' })
+        expect(query.secondCall.args[0].variables.filter).to.deep.include({ id: ['page-copy'] })
+        expect(add).to.have.been.calledOnce
+        expect(add.firstCall.args[0]).to.include({ id: 'page-copy', name: 'Source page' })
+        expect(add.firstCall.args[2]).to.equal(1)
+        expect(parent.data.has).to.equal(4)
       })
     })
   })
@@ -783,6 +766,7 @@ describe('PageListItems', () => {
           id: ['page-1'],
           input: { status: 0 },
           descendants: true,
+          lang: 'en',
         })
         expect(node.data.status).to.equal(0)
         expect(selected._checked).to.equal(true)
@@ -824,8 +808,150 @@ describe('PageListItems', () => {
         expect(mutate.firstCall.args[0].variables).to.deep.equal({
           id: ['page-1', 'page-2'],
           input: { status: 0 },
+          lang: 'en',
         })
         expect(stats.map((stat) => stat.data.status)).to.deep.equal([0, 0])
+      })
+    })
+  })
+
+  describe('language variants', () => {
+    function variant(id, lang, source = 'en', extra = {}) {
+      return { _checked: true, data: { id, lang, source, name: id, path: id, published: false, has: 0, ...extra } }
+    }
+
+    it('shows the language selector with the last chosen language', () => {
+      mountList({}, { 'page:view': true }, {}, 'fr').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        expect(vm.$.proxy.lang).to.equal('fr')
+        expect(vm.langs.map((l) => l.value)).to.deep.equal(['en', 'de', 'fr'])
+      })
+      cy.get('.lang-select').should('exist')
+    })
+
+    it('falls back to the default language when the chosen one is not available', () => {
+      mountList({}, { 'page:view': true }, {}, 'xx').then(({ wrapper }) => {
+        expect(wrapper.findComponent(PageListItems).vm.$.proxy.lang).to.equal('en')
+      })
+    })
+
+    it('fetches the pages in the current language', () => {
+      const query = cy.stub().resolves({
+        data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+      })
+
+      mountList({}, { 'page:view': true }, { query }, 'de').then(() => {
+        cy.wrap(query).should('have.been.called')
+        cy.wrap(null).should(() => {
+          expect(query.firstCall.args[0].variables.lang).to.equal('de')
+        })
+      })
+    })
+
+    it('publishes selected rows with French as current language', () => {
+      const mutate = cy.stub().resolves({ data: { pubPage: [{ id: 'page-1' }] } })
+
+      mountList({}, { 'page:publish': true, 'page:view': true }, { mutate }, 'fr').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const french = variant('page-1', 'fr')
+        const missing = variant('page-2', 'en')
+        vm.$refs.tree.statsFlat = [french, missing]
+
+        expect(vm.missing(french.data)).to.equal(false)
+        expect(vm.missing(missing.data)).to.equal(true)
+
+        return vm.publish().then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'fr' })
+          expect(french.data.published).to.equal(true)
+          expect(missing.data.published).to.equal(false)
+          expect(missing._checked).to.equal(true)
+        })
+      })
+    })
+
+    it('dims rows without a variant in the current language and offers to create it', () => {
+      const query = cy.stub().resolves({
+        data: {
+          pages: {
+            data: [
+              {
+                id: 'page-1', parent_id: null, lang: 'en', source: 'en', stale: false,
+                created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
+                editor: 'test@test.com', has: 0, restricted: false,
+                latest: { id: 'v1', published: true, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+                  data: JSON.stringify({ name: 'Home', path: 'home', lang: 'en', status: 1 }) },
+              },
+            ],
+            paginatorInfo: { currentPage: 1, lastPage: 1 },
+          },
+        },
+      })
+      const mutate = cy.stub().resolves({
+        data: {
+          addVariant: {
+            id: 'page-1', parent_id: null, lang: 'fr', source: 'en', stale: false,
+            created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
+            editor: 'test@test.com', has: 0, restricted: false,
+            latest: { id: 'v2', published: false, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+              data: JSON.stringify({ name: 'Home', path: 'home', lang: 'fr', status: 1 }) },
+          },
+        },
+      })
+
+      mountList({}, { 'page:add': true, 'page:view': true }, { query, mutate }, 'fr').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        cy.wrap(null).should(() => expect(vm.items).to.have.length(1))
+        cy.then(() => {
+          const stat = { data: { ...vm.items[0] } }
+          expect(vm.missing(stat.data)).to.equal(true)
+
+          return vm.createLang(stat).then(() => {
+            expect(mutate.firstCall.args[0].variables).to.deep.include({ id: 'page-1', lang: 'fr' })
+            expect(stat.data.lang).to.equal('fr')
+            expect(vm.missing(stat.data)).to.equal(false)
+          })
+        })
+      })
+    })
+
+    it('bulk deletes a language and skips and reports the source variants', () => {
+      const query = cy.stub().resolves({
+        data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+      })
+      const mutate = cy.stub().resolves({ data: { dropPage: [{ id: 'page-1' }] } })
+
+      mountList({}, { 'page:drop': true, 'page:view': true }, { query, mutate }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const german = variant('page-1', 'de')
+        const source = variant('page-2', 'de', 'de')
+        const missing = variant('page-3', 'en')
+        const ask = cy.stub().resolves(true)
+        vm.confirm.ask = ask
+        vm.$refs.tree.statsFlat = [german, source, missing]
+
+        return vm.dropLang().then(() => {
+          expect(ask).to.have.been.calledOnce
+          expect(ask.firstCall.args[1]).to.contain('1 page')
+          expect(ask.firstCall.args[3]).to.contain('1 page in its source language is skipped')
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'de' })
+        })
+      })
+    })
+
+    it('reports when only source variants are selected for deleting a language', () => {
+      const mutate = cy.stub()
+
+      mountList({}, { 'page:drop': true, 'page:view': true }, { mutate }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const add = cy.spy(vm.messages, 'add')
+        vm.$refs.tree.statsFlat = [variant('page-1', 'de', 'de')]
+
+        return vm.dropLang().then(() => {
+          expect(mutate).not.to.have.been.called
+          expect(add).to.have.been.calledWithMatch(/source language/, 'info')
+        })
       })
     })
   })

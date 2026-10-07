@@ -251,7 +251,7 @@ describe('Page List', () => {
     // Search triggers a server query only in list view
     cy.get('.v-navigation-drawer--right').contains('List').click()
     cy.wait('@gql') // list view pages query
-    cy.get('.search input').type('test')
+    cy.get('.search .v-text-field:not(.v-select) input').type('test')
     cy.wait('@gql') // search query with filter
   })
 

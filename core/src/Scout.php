@@ -25,6 +25,9 @@ class Scout
      */
     public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
 
+    /** @var \WeakMap<Builder<\Illuminate\Database\Eloquent\Model>, array{0: string, 1: bool, 2: bool}>|null Language fallbacks of the page searches */
+    private static ?\WeakMap $fallbacks = null;
+
 
     /**
      * Apply draft-mode filters for the collection engine via callback.
@@ -44,6 +47,7 @@ class Scout
             $query->language( $lang, $where ? $where['value'] === 1 : (bool) config( 'scout.soft_delete', false ) );
         }
 
+        static::fallback( $query, $builder );
         static::apply( $query, $builder, $isDraft );
 
         if( $builder->query === '' && $builder->queryCallback ) {
@@ -123,6 +127,59 @@ class Scout
         foreach( $builder->orders as &$order ) {
             $order['column'] = $qualify( $order['column'] ) ?? $table . '.' . $order['column'];
         }
+    }
+
+
+    /**
+     * Applies the language fallback of the page search to the query.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<covariant \Illuminate\Database\Eloquent\Model> $builder
+     * @return bool TRUE if the search uses a language fallback
+     */
+    public static function fallback( \Illuminate\Database\Eloquent\Builder $query, Builder $builder ) : bool
+    {
+        if( !$query instanceof PageQuery || !( $entry = self::$fallbacks[$builder] ?? null ) ) {
+            return false;
+        }
+
+        [$lang, $trashed, $only] = $entry;
+        $query->fallback( $lang, $trashed );
+
+        if( $trashed ) {
+            $query->withoutGlobalScope( SoftDeletingScope::class );
+        }
+
+        if( $only )
+        {
+            $table = $query->getModel()->getTable();
+            $query->where( fn( $q ) => $q
+                ->whereNotNull( $table . '.deleted_at' )
+                ->orWhereNotNull( $table . '.variant_deleted_at' )
+            );
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Lists the pages in the given language or in their source language if they have no variant in that language.
+     *
+     * Use "with" for the trashed filter of the search, the trashed variants are
+     * handled by the fallback.
+     *
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder Page search
+     * @param string $lang Language code
+     * @param string|null $trashed NULL or "without" for available pages and variants only, "with" to include trashed ones, "only" for trashed ones
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Page search with the language fallback
+     */
+    public static function prefer( Builder $builder, string $lang, ?string $trashed = null ) : Builder
+    {
+        self::$fallbacks ??= new \WeakMap();
+        self::$fallbacks[$builder] = [$lang, in_array( $trashed, ['with', 'only'], true ), $trashed === 'only'];
+
+        return $builder;
     }
 
 

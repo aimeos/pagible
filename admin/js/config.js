@@ -27,5 +27,7 @@ export const sessionlifetime = parseInt(dataset.sessionlifetime) || 0
 
 // Strip prototype-polluting keys from the server-rendered bootstrap data.
 export const locales = safeParse(dataset.locales, ['en'])
+// Application language used as default for new content
+export const locale = dataset.locale || ''
 export const plugins = safeParse(dataset.plugins, {})
 export const theme = safeParse(dataset.theme, {})

@@ -1440,9 +1440,11 @@ class Resource
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param \Closure(string, array<string, array<string, array<string>>>, string): (Page|File|Element|null) $save Loads one locked row and applies the change using the prefetched references
      * @param bool $copy TRUE to prefetch the references of the latest versions which are copied to the new ones
+     * @param array<string, mixed> $extra Additional values reported in the result and event data, e.g. the language
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    protected static function bulk( string $model, array $ids, array $input, ?Authenticatable $user, \Closure $save, bool $copy = true ) : array
+    protected static function bulk( string $model, array $ids, array $input, ?Authenticatable $user, \Closure $save, bool $copy = true,
+        array $extra = [] ) : array
     {
         if( empty( $ids ) || empty( $input ) ) {
             return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
@@ -1492,7 +1494,7 @@ class Resource
         $result = [
             'ids' => $saved,
             'latest' => $latest,
-            'data' => $input + ['published' => false, 'updated_at' => (string) now()],
+            'data' => $input + $extra + ['published' => false, 'updated_at' => (string) now()],
             'failed' => count( $ids ) - count( $saved ),
         ];
 
@@ -1634,9 +1636,11 @@ class Resource
      * @param array<string, mixed> $input Partial page input applied to every page
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $descendants TRUE to also update all sub-pages of the given pages
+     * @param string|null $lang Language of the page variants to update or NULL for the source variants
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false ) : array
+    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false,
+        ?string $lang = null ) : array
     {
         $input = Validation::page( $input, $user );
 
@@ -1663,9 +1667,10 @@ class Resource
 
         $copy = !array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
 
-        return self::bulk( Page::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?Page {
+        return self::bulk( Page::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user, $lang ) : ?Page {
 
-            if( !( $page = Page::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
+            // pages without a variant in the language are skipped
+            if( !( $page = Page::withTrashed()->language( $lang, true )->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
                 return null;
             }
 
@@ -1673,7 +1678,7 @@ class Resource
             self::applyPage( $page, $input, $editor, null, $user, $refs[$page->latest_id ?? ''] ?? null );
 
             return $page;
-        }, $copy );
+        }, $copy, $lang !== null ? ['lang' => $lang] : [] );
     }
 
 

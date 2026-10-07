@@ -217,7 +217,7 @@ export default {
             ref="lang"
             :items="locales()"
             :rules="requiredRules"
-            :readonly="readonly"
+            :readonly="readonly || item.variants?.some((v) => v.id && v.lang !== item.lang)"
             :modelValue="item.lang"
             :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the page content')"
             @update:modelValue="update('lang', $event)"
