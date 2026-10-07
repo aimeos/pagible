@@ -48,5 +48,12 @@
     "Next page": "ទំព័របន្ទាប់",
     "Load more": "ផ្ទុកបន្ថែម",
     "No results found": "រកមិនឃើញលទ្ធផល",
-    "Search failed": "ការស្វែងរកបានបរាជ័យ"
+    "Search failed": "ការស្វែងរកបានបរាជ័យ",
+    "Attachments": "ឯកសារភ្ជាប់",
+    "Images or PDF files, max. :size MB each": "រូបភាព ឬឯកសារ PDF អតិបរមា :size MB ក្នុងមួយឯកសារ",
+    ":attribute: The file type is not allowed.": ":attribute: ប្រភេទឯកសារនេះមិនត្រូវបានអនុញ្ញាតទេ។",
+    ":attribute: The file is too large.": ":attribute: ឯកសារធំពេក។",
+    ":attribute: Too many files.": ":attribute: ឯកសារច្រើនពេក។",
+    ":attribute: The files are too large.": ":attribute: ឯកសារទាំងនោះធំពេក។",
+    "Please select": "សូមជ្រើសរើស"
 }

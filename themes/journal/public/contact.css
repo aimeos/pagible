@@ -13,6 +13,7 @@
 }
 
 .contact input,
+.contact select,
 .contact textarea {
     background-color: var(--pico-contrast-inverse);
     border: 1px solid var(--pico-contrast-border);
@@ -25,6 +26,7 @@
 }
 
 .contact input:focus,
+.contact select:focus,
 .contact textarea:focus {
     border-color: var(--pico-primary);
     box-shadow: 0 0 0 0.1875rem var(--pico-primary-focus);

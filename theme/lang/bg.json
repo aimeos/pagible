@@ -48,5 +48,12 @@
     "Next page": "Следваща страница",
     "Load more": "Зареди още",
     "No results found": "Няма намерени резултати",
-    "Search failed": "Търсенето е неуспешно"
+    "Search failed": "Търсенето е неуспешно",
+    "Attachments": "Прикачени файлове",
+    "Images or PDF files, max. :size MB each": "Изображения или PDF файлове, макс. :size MB всеки",
+    ":attribute: The file type is not allowed.": ":attribute: Типът файл не е разрешен.",
+    ":attribute: The file is too large.": ":attribute: Файлът е твърде голям.",
+    ":attribute: Too many files.": ":attribute: Твърде много файлове.",
+    ":attribute: The files are too large.": ":attribute: Файловете са твърде големи.",
+    "Please select": "Моля, изберете"
 }

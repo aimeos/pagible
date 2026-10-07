@@ -48,5 +48,12 @@
     "Next page": "העמוד הבא",
     "Load more": "טעינת עוד",
     "No results found": "לא נמצאו תוצאות",
-    "Search failed": "החיפוש נכשל"
+    "Search failed": "החיפוש נכשל",
+    "Attachments": "קבצים מצורפים",
+    "Images or PDF files, max. :size MB each": "תמונות או קובצי PDF, עד :size MB לכל קובץ",
+    ":attribute: The file type is not allowed.": ":attribute: סוג הקובץ אינו מותר.",
+    ":attribute: The file is too large.": ":attribute: הקובץ גדול מדי.",
+    ":attribute: Too many files.": ":attribute: יותר מדי קבצים.",
+    ":attribute: The files are too large.": ":attribute: הקבצים גדולים מדי.",
+    "Please select": "נא לבחור"
 }

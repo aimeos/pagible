@@ -19,13 +19,18 @@ class ContactMail extends Mailable
     /** @var array<string, mixed> */
     public array $data;
 
+    /** @var array<int, array{path: string, name: string, mime: string}> */
+    public array $uploads;
+
 
     /**
      * @param array<string, mixed> $data
+     * @param array<int, array{path: string, name: string, mime: string}> $uploads Files attached to the mail
      */
-    public function __construct(array $data)
+    public function __construct(array $data, array $uploads = [])
     {
         $this->data = $data;
+        $this->uploads = $uploads;
     }
 
 
@@ -37,6 +42,10 @@ class ContactMail extends Mailable
 
             // keep the configured sender address to pass SPF/DKIM/DMARC checks
             $this->from( config( 'mail.from.address' ), $name ?: $email )->replyTo( $email, $name );
+        }
+
+        foreach( $this->uploads as $upload ) {
+            $this->attach( $upload['path'], ['as' => $upload['name'], 'mime' => $upload['mime']] );
         }
 
         return $this

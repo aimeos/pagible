@@ -48,5 +48,12 @@
     "Next page": "Pàgina següent",
     "Load more": "Carrega'n més",
     "No results found": "No s'han trobat resultats",
-    "Search failed": "La cerca ha fallat"
+    "Search failed": "La cerca ha fallat",
+    "Attachments": "Fitxers adjunts",
+    "Images or PDF files, max. :size MB each": "Imatges o fitxers PDF, màx. :size MB cadascun",
+    ":attribute: The file type is not allowed.": ":attribute: El tipus de fitxer no està permès.",
+    ":attribute: The file is too large.": ":attribute: El fitxer és massa gran.",
+    ":attribute: Too many files.": ":attribute: Massa fitxers.",
+    ":attribute: The files are too large.": ":attribute: Els fitxers són massa grans.",
+    "Please select": "Seleccioneu una opció"
 }

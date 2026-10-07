@@ -48,5 +48,12 @@
     "Next page": "다음 페이지",
     "Load more": "더 보기",
     "No results found": "검색 결과가 없습니다",
-    "Search failed": "검색에 실패했습니다"
+    "Search failed": "검색에 실패했습니다",
+    "Attachments": "첨부 파일",
+    "Images or PDF files, max. :size MB each": "이미지 또는 PDF 파일, 파일당 최대 :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: 허용되지 않는 파일 형식입니다.",
+    ":attribute: The file is too large.": ":attribute: 파일이 너무 큽니다.",
+    ":attribute: Too many files.": ":attribute: 파일이 너무 많습니다.",
+    ":attribute: The files are too large.": ":attribute: 파일 크기의 합계가 너무 큽니다.",
+    "Please select": "선택하세요"
 }

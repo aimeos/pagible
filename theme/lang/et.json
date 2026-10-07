@@ -48,5 +48,12 @@
     "Next page": "Järgmine lehekülg",
     "Load more": "Laadi rohkem",
     "No results found": "Tulemusi ei leitud",
-    "Search failed": "Otsing ebaõnnestus"
+    "Search failed": "Otsing ebaõnnestus",
+    "Attachments": "Manused",
+    "Images or PDF files, max. :size MB each": "Pildid või PDF-failid, kuni :size MB faili kohta",
+    ":attribute: The file type is not allowed.": ":attribute: Failitüüp ei ole lubatud.",
+    ":attribute: The file is too large.": ":attribute: Fail on liiga suur.",
+    ":attribute: Too many files.": ":attribute: Liiga palju faile.",
+    ":attribute: The files are too large.": ":attribute: Failid on liiga suured.",
+    "Please select": "Palun valige"
 }

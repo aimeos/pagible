@@ -48,5 +48,12 @@
     "Next page": "Seuraava sivu",
     "Load more": "Lataa lisää",
     "No results found": "Tuloksia ei löytynyt",
-    "Search failed": "Haku epäonnistui"
+    "Search failed": "Haku epäonnistui",
+    "Attachments": "Liitteet",
+    "Images or PDF files, max. :size MB each": "Kuvia tai PDF-tiedostoja, enintään :size Mt tiedostoa kohden",
+    ":attribute: The file type is not allowed.": ":attribute: Tiedostotyyppi ei ole sallittu.",
+    ":attribute: The file is too large.": ":attribute: Tiedosto on liian suuri.",
+    ":attribute: Too many files.": ":attribute: Liian monta tiedostoa.",
+    ":attribute: The files are too large.": ":attribute: Tiedostot ovat liian suuria.",
+    "Please select": "Valitse"
 }

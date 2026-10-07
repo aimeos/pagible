@@ -2749,8 +2749,9 @@ msgstr "Satura rādītājs ar saitēm uz lapas virsrakstiem"
 
 #: js/strings.js:113
 msgctxt "sd"
-msgid "Contact form with configurable fields"
-msgstr "Saziņas veidlapa ar konfigurējamiem laukiem"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr ""
+"Kontaktforma ar konfigurējamiem laukiem un neobligātiem failu pielikumiem"
 
 #: js/strings.js:116
 msgctxt "fn"
@@ -2949,255 +2950,270 @@ msgstr "Obligāts"
 
 #: js/strings.js:156
 msgctxt "fn"
+msgid "Input type"
+msgstr "Ievades tips"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Choices"
+msgstr "Izvēles"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Pielikumi"
+
+#: js/strings.js:159
+msgctxt "fn"
 msgid "Link label"
 msgstr "Saites teksts"
 
-#: js/strings.js:157
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontakta URL"
 
-#: js/strings.js:158
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kontakta e-pasts"
 
-#: js/strings.js:159
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Description"
 msgstr "Apraksts"
 
-#: js/strings.js:160
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Redzamā cena"
 
-#: js/strings.js:161
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galerija"
 
-#: js/strings.js:162
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Izcēluma teksts"
 
-#: js/strings.js:163
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Izcelts"
 
-#: js/strings.js:164
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Language"
 msgstr "Valoda"
 
-#: js/strings.js:165
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Maksājuma veids"
 
-#: js/strings.js:166
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Vēlamās valodas"
 
-#: js/strings.js:167
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Apakšvirsraksts"
 
-#: js/strings.js:168
+#: js/strings.js:171
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Pateicības"
 
-#: js/strings.js:169
+#: js/strings.js:172
 msgctxt "fn"
 msgid "amount"
 msgstr "Summa"
 
-#: js/strings.js:170
+#: js/strings.js:173
 msgctxt "fn"
 msgid "background"
 msgstr "Fons"
 
-#: js/strings.js:171
+#: js/strings.js:174
 msgctxt "fn"
 msgid "background animation"
 msgstr "Fona animācija"
 
-#: js/strings.js:172
+#: js/strings.js:175
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatīvā poga"
 
-#: js/strings.js:173
+#: js/strings.js:176
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanoniskais URL"
 
-#: js/strings.js:174
+#: js/strings.js:177
 msgctxt "fn"
 msgid "columns"
 msgstr "Kolonnas"
 
-#: js/strings.js:175
+#: js/strings.js:178
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:176
+#: js/strings.js:179
 msgctxt "fn"
 msgid "encryption"
 msgstr "Šifrēšana"
 
-#: js/strings.js:177
+#: js/strings.js:180
 msgctxt "fn"
 msgid "expires"
 msgstr "Derīguma termiņš"
 
-#: js/strings.js:178
+#: js/strings.js:181
 msgctxt "fn"
 msgid "features"
 msgstr "Īpašības"
 
-#: js/strings.js:179
+#: js/strings.js:182
 msgctxt "fn"
 msgid "hiring"
 msgstr "Vakances"
 
-#: js/strings.js:180
+#: js/strings.js:183
 msgctxt "fn"
 msgid "layout"
 msgstr "Izkārtojums"
 
-#: js/strings.js:181
+#: js/strings.js:184
 msgctxt "fn"
 msgid "name"
 msgstr "Nosaukums"
 
-#: js/strings.js:182
+#: js/strings.js:185
 msgctxt "fn"
 msgid "policy"
 msgstr "Drošības politika"
 
-#: js/strings.js:183
+#: js/strings.js:186
 msgctxt "fn"
 msgid "ratio"
 msgstr "Attiecība"
 
-#: js/strings.js:184
+#: js/strings.js:187
 msgctxt "fn"
 msgid "role"
 msgstr "Amats"
 
-#: js/strings.js:185
+#: js/strings.js:188
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Apakšvirsraksts"
 
-#: js/strings.js:186
+#: js/strings.js:189
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatīvā saite"
 
-#: js/strings.js:188
+#: js/strings.js:191
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Teksta fonts"
 
-#: js/strings.js:189
+#: js/strings.js:192
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Virsraksta fonts"
 
-#: js/strings.js:190
+#: js/strings.js:193
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Teksta krāsa"
 
-#: js/strings.js:191
+#: js/strings.js:194
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Fona krāsa"
 
-#: js/strings.js:192
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Atlases krāsa"
 
-#: js/strings.js:193
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrasta krāsa"
 
-#: js/strings.js:194
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontrasta krāsa, novietojot kursoru"
 
-#: js/strings.js:195
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrasta teksta krāsa"
 
-#: js/strings.js:196
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Galvenā krāsa"
 
-#: js/strings.js:197
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Galvenais fons"
 
-#: js/strings.js:198
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Galvenā krāsa, novietojot kursoru"
 
-#: js/strings.js:199
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Galvenais fons, novietojot kursoru"
 
-#: js/strings.js:200
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Sekundārā krāsa"
 
-#: js/strings.js:201
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Sekundārais fons"
 
-#: js/strings.js:202
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Sekundārā krāsa, novietojot kursoru"
 
-#: js/strings.js:203
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Sekundārais fons, novietojot kursoru"
 
-#: js/strings.js:204
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Stūra rādiuss"
 
-#: js/strings.js:205
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Navigācijas ceļa atdalītājs"
 
-#: js/strings.js:208
+#: js/strings.js:211
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Virsraksta teksts"
 
-#: js/strings.js:209
+#: js/strings.js:212
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3205,454 +3221,471 @@ msgstr ""
 "1. līmenis ir galvenais lapas virsraksts, augstāki līmeņi strukturē zemāk "
 "esošās sadaļas"
 
-#: js/strings.js:210
+#: js/strings.js:213
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatēts teksts ar rindkopām, sarakstiem un saitēm"
 
-#: js/strings.js:211
+#: js/strings.js:214
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Formatēts teksts, kas redzams blakus attēlam"
 
-#: js/strings.js:212
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Attēls, kas redzams blakus tekstam"
 
-#: js/strings.js:213
+#: js/strings.js:216
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Attēla novietojums attiecībā pret tekstu"
 
-#: js/strings.js:214
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Attēla un teksta platuma attiecība"
 
-#: js/strings.js:215
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Programmēšanas valoda, ko izmanto sintakses izcelšanai"
 
-#: js/strings.js:216
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Pirmkods ar sintakses izcelšanu"
 
-#: js/strings.js:217
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Neobligāts paraksts virs tabulas"
 
-#: js/strings.js:218
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Izmantot pirmo rindu, pirmo kolonnu vai abas kā tabulas galvenes"
 
-#: js/strings.js:219
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Ievadiet datus šūnās; pēc vajadzības pievienojiet vai noņemiet rindas un "
 "kolonnas"
 
-#: js/strings.js:220
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Neobligāts virsraksts virs kartes"
 
-#: js/strings.js:221
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Apraksts, kas redzams blakus kartei, piemēram, adrese vai norādes"
 
-#: js/strings.js:222
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr ""
 "Meklējiet vietu vai noklikšķiniet uz kartes, lai iestatītu atrašanās vietu"
 
-#: js/strings.js:223
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Saites teksts, kas atver atrašanās vietu kartes pakalpojumā"
 
-#: js/strings.js:224
+#: js/strings.js:227
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML kods, kas tiek iekļauts lapā nemainīts, piemēram, iegultiem elementiem "
 "un logrīkiem"
 
-#: js/strings.js:225
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Attēls visā satura zonas platumā"
 
-#: js/strings.js:226
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Ielādēt attēlu bez aizkaves, ja tas ir redzams lapas augšdaļā"
 
-#: js/strings.js:227
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Neobligāts virsraksts virs slaidrādes"
 
-#: js/strings.js:228
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Attēli tiek rādīti cits pēc cita, velciet, lai mainītu secību"
 
-#: js/strings.js:229
+#: js/strings.js:232
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Ielādēt pirmo attēlu bez aizkaves, ja tas ir redzams lapas augšdaļā"
 
-#: js/strings.js:230
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Lapā atskaņots video fails"
 
-#: js/strings.js:231
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Lapā atskaņots audio fails"
 
-#: js/strings.js:232
+#: js/strings.js:235
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Lejupielādei piedāvāts fails"
 
-#: js/strings.js:233
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Galvenais lapas virsraksts"
 
-#: js/strings.js:234
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Īsa rindiņa virs virsraksta"
 
-#: js/strings.js:235
+#: js/strings.js:238
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Ievads zem virsraksta"
 
-#: js/strings.js:236
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Lapa vai saite, uz kuru ved galvenā poga"
 
-#: js/strings.js:237
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Galvenās pogas teksts"
 
-#: js/strings.js:238
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Lapa vai saite, uz kuru ved otrā poga"
 
-#: js/strings.js:239
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Otrās pogas teksts"
 
-#: js/strings.js:240
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Attēls aiz teksta"
 
-#: js/strings.js:241
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Fona attēla animācijas efekts"
 
-#: js/strings.js:242
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Attēli, kas redzami blakus tekstam"
 
-#: js/strings.js:243
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Virsraksts, kas piesaista apmeklētāju uzmanību"
 
-#: js/strings.js:244
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Teksts, kas mudina apmeklētājus rīkoties"
 
-#: js/strings.js:245
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Pogas, kas ved apmeklētājus uz nākamo soli"
 
-#: js/strings.js:246
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Pogas teksts"
 
-#: js/strings.js:247
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Lapa vai saite, uz kuru ved poga"
 
-#: js/strings.js:248
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Neobligāts virsraksts virs kartītēm"
 
-#: js/strings.js:249
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Kartīšu skaits rindā, \"auto\" pielāgojas ekrāna platumam"
 
-#: js/strings.js:250
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Režģī redzamās kartītes"
 
-#: js/strings.js:251
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kartītes virsraksts"
 
-#: js/strings.js:252
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Attēls kartītes augšdaļā"
 
-#: js/strings.js:253
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kartītes teksts"
 
-#: js/strings.js:254
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Lapa vai saite, uz kuru ved kartīte"
 
-#: js/strings.js:255
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Neobligāts virsraksts virs citātiem"
 
-#: js/strings.js:256
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Klientu vai partneru citāti"
 
-#: js/strings.js:257
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Personas citāts"
 
-#: js/strings.js:258
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Personas vārds"
 
-#: js/strings.js:259
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Personas amats vai uzņēmums"
 
-#: js/strings.js:260
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Personas fotoattēls"
 
-#: js/strings.js:261
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Raksta ievads, kas redzams zem lapas virsraksta"
 
-#: js/strings.js:262
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Raksta attēli, pirmais tiek izmantots kā priekšskatījuma attēls"
 
-#: js/strings.js:263
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Raksta autora vārds"
 
-#: js/strings.js:264
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Saite uz autora profila lapu"
 
-#: js/strings.js:265
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Neobligāts virsraksts virs saraksta"
 
-#: js/strings.js:266
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Rādīt lapas kā kartītes vai kā kompaktu sarakstu"
 
-#: js/strings.js:267
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Lapa, kuras apakšlapas tiek uzskaitītas"
 
-#: js/strings.js:268
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Uzskaitīto lapu kārtošanas secība"
 
-#: js/strings.js:269
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Maksimālais vienlaikus redzamo lapu skaits"
 
-#: js/strings.js:270
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Rādīt pārējās apakšlapas kā kartītes vai kā kompaktu sarakstu"
 
-#: js/strings.js:271
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Neobligāts virsraksts virs cenu plāniem"
 
-#: js/strings.js:272
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Īss teksts zem virsraksta"
 
-#: js/strings.js:273
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Blakus rādīti cenu plāni"
 
-#: js/strings.js:274
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Cenu plāna nosaukums"
 
-#: js/strings.js:275
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Loma, kas piešķirta klientiem pēc maksājuma, lai piekļūtu aizsargātām lapām"
 
-#: js/strings.js:276
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Plāna cenas, piemēram, mēneša un gada"
 
-#: js/strings.js:277
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Atkārtots abonements vai vienreizējs maksājums"
 
-#: js/strings.js:278
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Dienu skaits starp diviem maksājumiem, piemēram, 30 ikmēneša plānam"
 
-#: js/strings.js:279
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Trīs burtu ISO valūtas kods, piemēram, EUR vai USD"
 
-#: js/strings.js:280
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Maksājumu pakalpojuma sniedzēja izmantotais cenas ID vai summa"
 
-#: js/strings.js:281
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Apmeklētājiem redzamā formatētā cena, piemēram, 9,99 €"
 
-#: js/strings.js:282
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Skaitliska cena, kas redzama, ja nav iestatīta formatēta cena"
 
-#: js/strings.js:283
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Teksts aiz cenas, piemēram, mēnesī"
 
-#: js/strings.js:284
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Cenu plāna īss apraksts"
 
-#: js/strings.js:285
+#: js/strings.js:288
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Plānā iekļauto funkciju saraksts"
 
-#: js/strings.js:286
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Izcelt šo plānu salīdzinājumā ar pārējiem"
 
-#: js/strings.js:287
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Īss uzraksts uz izceltā plāna, piemēram, Populārs"
 
-#: js/strings.js:288
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Neobligāts virsraksts virs jautājumiem"
 
-#: js/strings.js:289
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Jautājumi un atbildes izvēršamā sarakstā"
 
-#: js/strings.js:290
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Apmeklētāju uzdots jautājums"
 
-#: js/strings.js:291
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Atbilde uz jautājumu"
 
-#: js/strings.js:292
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Neobligāts virsraksts virs satura rādītāja"
 
-#: js/strings.js:293
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Neobligāts virsraksts virs saziņas veidlapas"
 
-#: js/strings.js:294
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Neobligāts teksts starp virsrakstu un saziņas veidlapu"
 
-#: js/strings.js:295
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Veidlapas lauki, kas apmeklētājiem tiek rādīti šādā secībā"
 
-#: js/strings.js:296
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Izvēlieties veidlapas lauku vai ievadiet savu nosaukumu"
 
-#: js/strings.js:297
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Apmeklētājiem jāaizpilda šis lauks"
 
-#: js/strings.js:298
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "Apmeklētājiem rādītās ievades tips"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Izvēles lauku vērtības, viena katrā rindā"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid ""
+"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr ""
+"Maksimālais attēlu vai PDF failu skaits, ko apmeklētāji var pievienot, 0 atspējo augšupielādi"
+
+#: js/strings.js:304
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3661,392 +3694,407 @@ msgstr ""
 "Lapas kopsavilkums, kas redzams meklēšanas rezultātos, ieteicami 150–160 "
 "rakstzīmes"
 
-#: js/strings.js:299
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Ar komatu atdalīts lapu raksturojošu atslēgvārdu saraksts"
 
-#: js/strings.js:300
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Virsraksts, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:301
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Kopsavilkums, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:302
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Priekšskatījuma attēls, kas redzams, koplietojot lapu sociālajos tīklos"
 
-#: js/strings.js:303
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Sākotnējais URL, ja tas pats saturs ir pieejams vairākās adresēs"
 
-#: js/strings.js:304
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Atļaut vai liegt meklētājprogrammām iekļaut šo lapu sarakstā"
 
-#: js/strings.js:305
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Atļaut vai liegt meklētājprogrammām sekot saitēm šajā lapā"
 
-#: js/strings.js:306
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Vietnes nosaukums, kas redzams pārlūkprogrammas cilnē un meklēšanas "
 "rezultātos"
 
-#: js/strings.js:307
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotips, kas redzams lapas galvenē"
 
-#: js/strings.js:308
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Logotipa variants, ko izmanto tumšiem foniem"
 
-#: js/strings.js:309
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Neliels kvadrātveida attēls, kas redzams pārlūkprogrammas cilnēs un "
 "grāmatzīmēs"
 
-#: js/strings.js:310
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Ar komatu atdalīts tekstam izmantoto fontu saraksts"
 
-#: js/strings.js:311
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Noklusējuma teksta krāsa"
 
-#: js/strings.js:312
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Lapu fona krāsa"
 
-#: js/strings.js:313
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Iezīmētā teksta fona krāsa"
 
-#: js/strings.js:314
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Elementu krāsa ar spēcīgu kontrastu pret fonu"
 
-#: js/strings.js:315
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrasta krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:316
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Teksta krāsa elementiem, kas izmanto kontrasta krāsu"
 
-#: js/strings.js:317
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Galvenā zīmola krāsa, ko izmanto saitēm un pogām"
 
-#: js/strings.js:318
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Galveno pogu un izcēlumu fona krāsa"
 
-#: js/strings.js:319
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Galvenā krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:320
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Galvenā fona krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:321
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Papildu krāsa, ko izmanto mazāk svarīgām saitēm un pogām"
 
-#: js/strings.js:322
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Sekundāro pogu fona krāsa"
 
-#: js/strings.js:323
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Sekundārā krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:324
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Sekundārā fona krāsa, novietojot kursoru uz elementa vai to fokusējot"
 
-#: js/strings.js:325
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Stūru noapaļojums kā CSS garums, piemēram, 0.25rem vai 0 asiem stūriem"
 
-#: js/strings.js:326
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Rakstzīme, kas redzama starp navigācijas ceļa saitēm"
 
-#: js/strings.js:327
+#: js/strings.js:333
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS saite, lai sazinātos ar drošības komandu, piemēram, veidlapa"
 
-#: js/strings.js:328
+#: js/strings.js:334
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "E-pasta adrese drošības problēmu ziņošanai"
 
-#: js/strings.js:329
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Datums, pēc kura drošības informācija tiek uzskatīta par novecojušu"
 
-#: js/strings.js:330
+#: js/strings.js:336
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS saite uz publisko atslēgu šifrētiem ziņojumiem"
 
-#: js/strings.js:331
+#: js/strings.js:337
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS saite uz lapu, kas pateicas drošības pētniekiem"
 
-#: js/strings.js:332
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Ar komatu atdalīti valodu kodi drošības ziņojumiem, piemēram, en, de"
 
-#: js/strings.js:333
+#: js/strings.js:339
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL, kur publicēts security.txt fails"
 
-#: js/strings.js:334
+#: js/strings.js:340
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS saite uz drošības un atklāšanas politiku"
 
-#: js/strings.js:335
+#: js/strings.js:341
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS saite uz atvērtajām ar drošību saistītajām vakancēm"
 
-#: js/strings.js:336
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS saite uz CSAF nodrošinātāja metadatiem"
 
-#: js/strings.js:337
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Papildu noteikumi, kas pievienoti robots.txt failam tīmekļa robotiem"
 
-#: js/strings.js:338
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Pielāgots CSS kods, kas pievienots visām lapām"
 
-#: js/strings.js:339
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pielāgots JavaScript kods, kas pievienots visām lapām"
 
-#: js/strings.js:340
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Ar komatu atdalīts virsrakstiem izmantoto fontu saraksts"
 
-#: js/strings.js:343
+#: js/strings.js:349
 msgctxt "op"
 msgid "Name"
 msgstr "Vārds"
 
-#: js/strings.js:344
+#: js/strings.js:350
 msgctxt "op"
 msgid "Company"
 msgstr "Uzņēmums"
 
-#: js/strings.js:345
+#: js/strings.js:351
 msgctxt "op"
 msgid "Telephone"
 msgstr "Tālrunis"
 
-#: js/strings.js:346
+#: js/strings.js:352
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-pasts"
 
-#: js/strings.js:347
+#: js/strings.js:353
 msgctxt "op"
 msgid "Subject"
 msgstr "Temats"
 
-#: js/strings.js:348
+#: js/strings.js:354
+msgctxt "op"
+msgid "Text"
+msgstr "Teksts"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "Text area"
+msgstr "Teksta apgabals"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "Selection"
+msgstr "Izvēles saraksts"
+
+#: js/strings.js:357
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekot saitēm"
 
-#: js/strings.js:349
+#: js/strings.js:358
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksēt"
 
-#: js/strings.js:350
+#: js/strings.js:359
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekot saitēm"
 
-#: js/strings.js:351
+#: js/strings.js:360
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksēt"
 
-#: js/strings.js:352
+#: js/strings.js:361
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abonements"
 
-#: js/strings.js:353
+#: js/strings.js:362
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienreizējs maksājums"
 
-#: js/strings.js:354
+#: js/strings.js:363
 msgctxt "op"
 msgid "Auto"
 msgstr "Automātisks"
 
-#: js/strings.js:355
+#: js/strings.js:364
 msgctxt "op"
 msgid "Cards"
 msgstr "Kartītes"
 
-#: js/strings.js:356
+#: js/strings.js:365
 msgctxt "op"
 msgid "Default"
 msgstr "Noklusējuma"
 
-#: js/strings.js:357
+#: js/strings.js:366
 msgctxt "op"
 msgid "End"
 msgstr "Beigas"
 
-#: js/strings.js:358
+#: js/strings.js:367
 msgctxt "op"
 msgid "First column"
 msgstr "Pirmā kolonna"
 
-#: js/strings.js:359
+#: js/strings.js:368
 msgctxt "op"
 msgid "First row"
 msgstr "Pirmā rinda"
 
-#: js/strings.js:360
+#: js/strings.js:369
 msgctxt "op"
 msgid "First row and column"
 msgstr "Pirmā rinda un kolonna"
 
-#: js/strings.js:361
+#: js/strings.js:370
 msgctxt "op"
 msgid "Grid end"
 msgstr "Režģa beigas"
 
-#: js/strings.js:362
+#: js/strings.js:371
 msgctxt "op"
 msgid "Grid start"
 msgstr "Režģa sākums"
 
-#: js/strings.js:363
+#: js/strings.js:372
 msgctxt "op"
 msgid "Latest"
 msgstr "Jaunākie"
 
-#: js/strings.js:364
+#: js/strings.js:373
 msgctxt "op"
 msgid "List"
 msgstr "Saraksts"
 
-#: js/strings.js:365
+#: js/strings.js:374
 msgctxt "op"
 msgid "None"
 msgstr "Nav"
 
-#: js/strings.js:366
+#: js/strings.js:375
 msgctxt "op"
 msgid "Oldest"
 msgstr "Vecākie"
 
-#: js/strings.js:367
+#: js/strings.js:376
 msgctxt "op"
 msgid "Position"
 msgstr "Pozīcija"
 
-#: js/strings.js:368
+#: js/strings.js:377
 msgctxt "op"
 msgid "Start"
 msgstr "Sākums"
 
-#: js/strings.js:369
+#: js/strings.js:378
 msgctxt "op"
 msgid "Zoom"
 msgstr "Tuvinājums"
 
-#: js/strings.js:372
+#: js/strings.js:381
 msgctxt "ai"
 msgid "Done"
 msgstr "Paveikts"
 
-#: js/strings.js:373
+#: js/strings.js:382
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau pastāv"
 
-#: js/strings.js:376
+#: js/strings.js:385
 msgctxt "sg"
 msgid "expert"
 msgstr "Papildu"
 
-#: js/strings.js:377
+#: js/strings.js:386
 msgctxt "sg"
 msgid "theme"
 msgstr "Tēma"
 
-#: js/strings.js:378
+#: js/strings.js:387
 msgctxt "st"
 msgid "website"
 msgstr "tīmekļa vietne"
 
-#: js/strings.js:379
+#: js/strings.js:388
 msgctxt "st"
 msgid "logo"
 msgstr "Logotips"
 
-#: js/strings.js:380
+#: js/strings.js:389
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatīvs logotips"
 
-#: js/strings.js:381
+#: js/strings.js:390
 msgctxt "st"
 msgid "icon"
 msgstr "Ikona"
@@ -4265,6 +4313,10 @@ msgid ""
 msgstr ""
 "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un "
 "pievienot to lapu kokam"
+
+#~ msgctxt "sd"
+#~ msgid "Contact form with configurable fields"
+#~ msgstr "Saziņas veidlapa ar konfigurējamiem laukiem"
 
 #~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 #~ msgstr "%{name} (%{lang}, ceļš: %{path}, domēns: %{domain})"
