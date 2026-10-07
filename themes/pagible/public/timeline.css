@@ -1,0 +1,92 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.timeline .steps {
+    --marker: 2.5rem;
+    --gap: 2rem;
+    counter-reset: step;
+    display: grid;
+    gap: var(--gap);
+    margin: 0;
+    padding: 0;
+}
+
+.timeline .step {
+    counter-increment: step;
+    position: relative;
+    min-height: var(--marker);
+    margin: 0;
+    padding-top: 0.4rem;
+    padding-inline-start: calc(var(--marker) + 1.25rem);
+    list-style: none;
+}
+
+.timeline .step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--marker) + 0.5rem);
+    bottom: calc(0.5rem - var(--gap));
+    inset-inline-start: calc(var(--marker) / 2 - 1px);
+    width: 2px;
+    background-color: var(--pico-muted-border-color);
+}
+
+.timeline .marker {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--marker);
+    height: var(--marker);
+    border: 2px solid var(--pico-primary);
+    border-radius: 50%;
+    color: var(--pico-primary-hover);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.timeline .marker::before {
+    content: counter(step);
+}
+
+.timeline .label {
+    margin: 0 0 0.25rem;
+    color: var(--pico-primary-hover);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 600;
+}
+
+.timeline .title {
+    margin: 0 0 0.5rem;
+    font-size: calc(var(--pico-font-size) * 1.1);
+}
+
+.timeline .step .cms-text,
+.timeline .step .cms-text p {
+    margin-bottom: 0;
+    color: var(--pico-muted-color);
+}
+
+@media (min-width: 768px) {
+    .timeline .steps.layout-horizontal {
+        --gap: 1.5rem;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+    }
+
+    .timeline .layout-horizontal .step {
+        padding-top: calc(var(--marker) + 1rem);
+        padding-inline-start: 0;
+    }
+
+    .timeline .layout-horizontal .step:not(:last-child)::before {
+        top: calc(var(--marker) / 2 - 1px);
+        bottom: auto;
+        inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
+        width: auto;
+        height: 2px;
+    }
+}

@@ -2560,676 +2560,686 @@ msgstr "DUK"
 
 #: js/strings.js:74
 msgctxt "st"
+msgid "timeline"
+msgstr "Laiko juosta"
+
+#: js/strings.js:75
+msgctxt "st"
 msgid "toc"
 msgstr "turinys"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "Kontaktai"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metažymos"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "Socialiniai tinklai"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanoninis URL"
 
-#: js/strings.js:79
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "Paieškos sistemos"
 
-#: js/strings.js:80
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:81
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "stiliai"
 
-#: js/strings.js:82
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:83
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:84
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "Naujienos"
 
-#: js/strings.js:85
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "Kainų planai"
 
-#: js/strings.js:86
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:87
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "Saugumas"
 
-#: js/strings.js:88
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "Atsiliepimai"
 
-#: js/strings.js:91
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Skyriaus antraštė nuo H1 iki H6"
 
-#: js/strings.js:92
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatuotas tekstas su pastraipomis, sąrašais ir nuorodomis"
 
-#: js/strings.js:93
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Paveikslėlis šalia formatuoto teksto"
 
-#: js/strings.js:94
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Išeities kodas su sintaksės paryškinimu"
 
-#: js/strings.js:95
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Duomenų lentelė su pasirenkama antraštės eilute ar stulpeliu"
 
-#: js/strings.js:96
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktyvus žemėlapis su vieta, tekstu ir nuoroda"
 
-#: js/strings.js:97
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Pasirinktinis HTML įterpiniams ir valdikliams"
 
-#: js/strings.js:98
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Vienas prisitaikantis paveikslėlis"
 
-#: js/strings.js:99
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Besikeičiančios skaidrės su keliais paveikslėliais"
 
-#: js/strings.js:100
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Slider comparing two images before and after a change"
 msgstr "Slankiklis, lyginantis du vaizdus prieš pakeitimą ir po jo"
 
-#: js/strings.js:101
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Įterptas vaizdo įrašas su valdikliais"
 
-#: js/strings.js:102
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Įterptas garso įrašas su valdikliais"
 
-#: js/strings.js:103
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Atsisiunčiamas failas, pvz., PDF dokumentas"
 
-#: js/strings.js:104
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Didelis įvadas su pavadinimu, tekstu, mygtukais ir fonu"
 
-#: js/strings.js:105
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Raginimas veikti su tekstu ir mygtukais"
 
-#: js/strings.js:106
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Kortelių tinklelis su paveikslėliu, pavadinimu ir tekstu"
 
-#: js/strings.js:107
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Klientų citatos su vardu, pareigomis ir nuotrauka"
 
-#: js/strings.js:108
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Straipsnio įvadas su paveikslėlių galerija ir autoriumi"
 
-#: js/strings.js:109
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Tėvinio puslapio tinklaraščio straipsnių sąrašas"
 
-#: js/strings.js:110
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Tėvinio puslapio naujienų sąrašas"
 
-#: js/strings.js:111
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Išskirtas subpuslapis, po kurio eina kiti subpuslapiai"
 
-#: js/strings.js:112
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Kainų planai su prenumeratomis ar vienkartiniais mokėjimais"
 
-#: js/strings.js:113
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Dažnai užduodami klausimai su atsakymais"
 
-#: js/strings.js:114
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Sunumeruoti žingsniai arba įvykiai chronologine tvarka"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Turinys su nuorodomis į puslapio antraštes"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "sd"
 msgid "Contact form with configurable fields and optional file attachments"
 msgstr ""
 "Kontaktų forma su konfigūruojamais laukais ir pasirenkamais failų priedais"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "Mygtukas"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "mygtukai"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "Kortelės"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "aprašymas"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "failas"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "failai"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "Nuorodų sekimas"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "antraštė"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksavimas"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "raktažodžiai"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "kalba"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "etiketė"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "lygis"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "riba"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "vieta"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "Pagr. vaizdas"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "tvarka"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Pirminis puslapis"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "pozicija"
 
-#: js/strings.js:137
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "tekstas"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "lentelė"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "pavadinimas"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "vaizdas"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "vaizdai"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "before image"
 msgstr "vaizdas prieš"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "after image"
 msgstr "vaizdas po"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "punktai"
 
-#: js/strings.js:147
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "įvadas"
 
-#: js/strings.js:148
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "nedelsiant įkelti"
 
-#: js/strings.js:149
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "išeities kodas"
 
-#: js/strings.js:150
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Viešosios dalies prieigos vaidmuo"
 
-#: js/strings.js:151
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Mokėjimo kainos"
 
-#: js/strings.js:152
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Mokėjimo nuoroda"
 
-#: js/strings.js:153
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valiuta"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Atsiskaitymo intervalas"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Kainos vienetas"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Tikslinis puslapis arba nuoroda"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Formos laukai"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "Laukas"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "Privalomas"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Input type"
 msgstr "Įvesties tipas"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Choices"
 msgstr "Pasirinkimai"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Attachments"
 msgstr "Priedai"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "Nuorodos tekstas"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontaktinis URL"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kontaktinis el. paštas"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "Aprašymas"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Rodoma kaina"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galerija"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Paryškinimo tekstas"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Paryškintas"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "Kalba"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Mokėjimo tipas"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Pageidaujamos kalbos"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Paantraštė"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Padėkos"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "Suma"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "Fonas"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "Fono animacija"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatyvus mygtukas"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanoninis URL"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "Stulpeliai"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "Šifravimas"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "Galiojimo pabaiga"
 
-#: js/strings.js:185
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "Ypatybės"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "Įdarbinimas"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "Išdėstymas"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "Pavadinimas"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "Saugumo politika"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "Santykis"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "Pareigos"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Paantraštė"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatyvi nuoroda"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Teksto šriftas"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Antraštės šriftas"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Teksto spalva"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Fono spalva"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Pažymėjimo spalva"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrastinė spalva"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontrastinė spalva užvedus"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrastinio teksto spalva"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Pagrindinė spalva"
 
-#: js/strings.js:204
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Pagrindinis fonas"
 
-#: js/strings.js:205
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Pagrindinė spalva užvedus"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Pagrindinis fonas užvedus"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Antrinė spalva"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Antrinis fonas"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Antrinė spalva užvedus"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Antrinis fonas užvedus"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Kampo apvalinimas"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Naršymo kelio skirtukas"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Antraštės tekstas"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3237,493 +3247,527 @@ msgstr ""
 "1 lygis yra pagrindinė puslapio antraštė, aukštesni lygiai struktūrina "
 "toliau esančius skyrius"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formatuotas tekstas su pastraipomis, sąrašais ir nuorodomis"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Formatuotas tekstas, rodomas šalia vaizdo"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Vaizdas, rodomas šalia teksto"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Vaizdo padėtis teksto atžvilgiu"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Vaizdo ir teksto pločio santykis"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Programavimo kalba, naudojama sintaksės paryškinimui"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Išeities kodas su sintaksės paryškinimu"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Neprivalomas antraštinis tekstas virš lentelės"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Naudoti pirmą eilutę, pirmą stulpelį arba abu kaip lentelės antraštes"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Įveskite duomenis į langelius; prireikus pridėkite arba pašalinkite eilutes "
 "ir stulpelius"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Neprivaloma antraštė virš žemėlapio"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr ""
 "Aprašymas, rodomas šalia žemėlapio, pvz., adresas ar kelionės aprašymas"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Ieškokite vietos arba spustelėkite žemėlapyje, kad nustatytumėte vietą"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Nuorodos, atveriančios vietą žemėlapių paslaugoje, tekstas"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML kodas, įterpiamas į puslapį nepakeistas, pvz., įterpiniams ir "
 "valdikliams"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Vaizdas visu turinio srities pločiu"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Įkelti vaizdą nedelsiant, jei jis matomas puslapio viršuje"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Neprivaloma antraštė virš skaidrių demonstravimo"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Vaizdai rodomi vienas po kito, vilkite tvarkai pakeisti"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Įkelti pirmą vaizdą nedelsiant, jei jis matomas puslapio viršuje"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Optional headline shown above the comparison"
 msgstr "Neprivaloma antraštė, rodoma virš palyginimo"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image showing the state before the change"
 msgstr "Vaizdas, rodantis būseną prieš pakeitimą"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Image showing the result, both images should have the same size"
 msgstr "Vaizdas, rodantis rezultatą, abu vaizdai turėtų būti vienodo dydžio"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid ""
 "Load the images without delay if they are visible at the top of the page"
 msgstr "Įkelti vaizdus be delsimo, jei jie matomi puslapio viršuje"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Puslapyje paleidžiamas vaizdo įrašo failas"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Puslapyje paleidžiamas garso įrašo failas"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Atsisiuntimui siūlomas failas"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Pagrindinė puslapio antraštė"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Trumpa eilutė virš antraštės"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Įvadas po antraštės"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda pagrindinis mygtukas"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Pagrindinio mygtuko tekstas"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda antrasis mygtukas"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Antrojo mygtuko tekstas"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Vaizdas už teksto"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Fono vaizdo animacijos efektas"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Vaizdai, rodomi šalia teksto"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Antraštė, patraukianti lankytojų dėmesį"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Tekstas, skatinantis lankytojus veikti"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Mygtukai, vedantys lankytojus į kitą žingsnį"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Mygtuko tekstas"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda mygtukas"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Neprivaloma antraštė virš kortelių"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Kortelių skaičius eilutėje, \"auto\" prisitaiko prie ekrano pločio"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid ""
 "Show cards, small badges like certificates or large figures like key numbers"
 msgstr ""
-"Rodyti korteles, mažus ženklelius, pvz., sertifikatus, arba didelius skaičius, pvz., pagrindinius rodiklius"
+"Rodyti korteles, mažus ženklelius, pvz., sertifikatus, arba didelius "
+"skaičius, pvz., pagrindinius rodiklius"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Tinklelyje rodomos kortelės"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kortelės antraštė"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Vaizdas kortelės viršuje"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kortelės tekstas"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Puslapis arba nuoroda, į kurią veda kortelė"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Neprivaloma antraštė virš citatų"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Klientų ar partnerių citatos"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Asmens citata"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Asmens vardas"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Asmens pareigos ar įmonė"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Asmens nuotrauka"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Straipsnio įvadas, rodomas po puslapio pavadinimu"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Straipsnio vaizdai, pirmasis naudojamas kaip peržiūros vaizdas"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Straipsnio autoriaus vardas"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Nuoroda į autoriaus profilio puslapį"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Neprivaloma antraštė virš sąrašo"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Rodyti puslapius kaip korteles arba kompaktišką sąrašą"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Puslapis, kurio subpuslapiai išvardyti"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Išvardytų puslapių rūšiavimo tvarka"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Didžiausias vienu metu rodomų puslapių skaičius"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Rodyti kitus subpuslapius kaip korteles arba kompaktišką sąrašą"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Neprivaloma antraštė virš kainų planų"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Trumpas tekstas po antrašte"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Greta rodomi kainų planai"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Kainų plano pavadinimas"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Vaidmuo, suteikiamas klientams po apmokėjimo, kad jie galėtų pasiekti "
 "apsaugotus puslapius"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Plano kainos, pvz., mėnesio ir metų"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Pasikartojanti prenumerata ar vienkartinis mokėjimas"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Dienų skaičius tarp dviejų mokėjimų, pvz., 30 mėnesiniam"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Trijų raidžių ISO valiutos kodas, pvz., EUR arba USD"
 
-#: js/strings.js:292
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Kainos ID arba suma, naudojama mokėjimo teikėjo"
 
-#: js/strings.js:293
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Lankytojams rodoma suformatuota kaina, pvz., 9,99 €"
 
-#: js/strings.js:294
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Skaitinė kaina, rodoma jei nenustatyta suformatuota kaina"
 
-#: js/strings.js:295
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Tekstas po kainos, pvz., per mėnesį"
 
-#: js/strings.js:296
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Trumpas kainų plano aprašymas"
 
-#: js/strings.js:297
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Į planą įtrauktų funkcijų sąrašas"
 
-#: js/strings.js:298
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Išskirti šį planą tarp kitų"
 
-#: js/strings.js:299
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Trumpa etiketė ant išskirto plano, pvz., Populiariausias"
 
-#: js/strings.js:300
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Neprivaloma antraštė virš klausimų"
 
-#: js/strings.js:301
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Klausimai ir atsakymai, rodomi kaip išskleidžiamas sąrašas"
 
-#: js/strings.js:302
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Lankytojų užduodamas klausimas"
 
-#: js/strings.js:303
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Atsakymas į klausimą"
 
-#: js/strings.js:304
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Pasirenkama antraštė virš laiko juostos"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "Rodyti žingsnius vieną po kito arba greta, greta tinka iki penkių žingsnių"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Žingsniai arba įvykiai tokia tvarka, kokia jie vyksta"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Pasirenkama data, laikotarpis arba etapas virš pavadinimo, pvz., 2024 arba 1 savaitė"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Žingsnio arba įvykio pavadinimas"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Žingsnio arba įvykio aprašymas"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Neprivaloma antraštė virš turinio"
 
-#: js/strings.js:305
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Neprivaloma antraštė virš kontaktų formos"
 
-#: js/strings.js:306
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Neprivalomas tekstas, rodomas tarp antraštės ir kontaktų formos"
 
-#: js/strings.js:307
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Lankytojams šia tvarka rodomi formos laukai"
 
-#: js/strings.js:308
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Pasirinkite formos lauką arba įveskite savo pavadinimą"
 
-#: js/strings.js:309
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Lankytojai privalo užpildyti šį lauką"
 
-#: js/strings.js:310
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Lankytojams rodomos įvesties tipas"
 
-#: js/strings.js:311
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Pasirinkimo laukų reikšmės, po vieną eilutėje"
 
-#: js/strings.js:312
+#: js/strings.js:320
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3731,7 +3775,7 @@ msgstr ""
 "Didžiausias paveikslėlių ar PDF failų skaičius, kurį lankytojai gali "
 "pridėti, 0 išjungia įkėlimą"
 
-#: js/strings.js:313
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3740,415 +3784,425 @@ msgstr ""
 "Puslapio santrauka, rodoma paieškos rezultatuose, rekomenduojama 150–160 "
 "simbolių"
 
-#: js/strings.js:314
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Kableliais atskirtas puslapį apibūdinančių raktažodžių sąrašas"
 
-#: js/strings.js:315
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Pavadinimas, rodomas dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:316
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Santrauka, rodoma dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:317
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "Peržiūros vaizdas, rodomas dalijantis puslapiu socialiniuose tinkluose"
 
-#: js/strings.js:318
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Originalus URL, jei tas pats turinys pasiekiamas keliais adresais"
 
-#: js/strings.js:319
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Leisti arba neleisti paieškos sistemoms įtraukti šį puslapį"
 
-#: js/strings.js:320
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Leisti arba neleisti paieškos sistemoms sekti nuorodas šiame puslapyje"
 
-#: js/strings.js:321
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Svetainės pavadinimas, rodomas naršyklės skirtuke ir paieškos rezultatuose"
 
-#: js/strings.js:322
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotipas, rodomas puslapio antraštėje"
 
-#: js/strings.js:323
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Logotipo variantas, naudojamas tamsiems fonams"
 
-#: js/strings.js:324
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Mažas kvadratinis vaizdas, rodomas naršyklės skirtukuose ir žymėse"
 
-#: js/strings.js:325
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Kableliais atskirtas tekstui naudojamų šriftų sąrašas"
 
-#: js/strings.js:326
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Numatytoji teksto spalva"
 
-#: js/strings.js:327
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Puslapių fono spalva"
 
-#: js/strings.js:328
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Pažymėto teksto fono spalva"
 
-#: js/strings.js:329
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Elementų, kurių kontrastas su fonu stiprus, spalva"
 
-#: js/strings.js:330
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrastinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:331
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Teksto spalva elementuose, naudojančiuose kontrastinę spalvą"
 
-#: js/strings.js:332
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Pagrindinė prekės ženklo spalva, naudojama nuorodoms ir mygtukams"
 
-#: js/strings.js:333
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Pagrindinių mygtukų ir akcentų fono spalva"
 
-#: js/strings.js:334
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Pagrindinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:335
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Pagrindinė fono spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:336
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Papildoma spalva, naudojama mažiau svarbioms nuorodoms ir mygtukams"
 
-#: js/strings.js:337
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Antrinių mygtukų fono spalva"
 
-#: js/strings.js:338
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Antrinė spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:339
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Antrinė fono spalva užvedus žymeklį ar aktyvavus elementą"
 
-#: js/strings.js:340
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Kampų suapvalinimas kaip CSS ilgis, pvz., 0.25rem arba 0 aštriems kampams"
 
-#: js/strings.js:341
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Simbolis, rodomas tarp naršymo kelio nuorodų"
 
-#: js/strings.js:342
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS nuoroda susisiekti su saugumo komanda, pvz., forma"
 
-#: js/strings.js:343
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "El. pašto adresas saugumo problemoms pranešti"
 
-#: js/strings.js:344
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Data, po kurios saugumo informacija laikoma pasenusia"
 
-#: js/strings.js:345
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS nuoroda į viešąjį raktą šifruotiems pranešimams"
 
-#: js/strings.js:346
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS nuoroda į puslapį, dėkojantį saugumo tyrėjams"
 
-#: js/strings.js:347
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Kableliais atskirti kalbų kodai saugumo pranešimams, pvz., en, de"
 
-#: js/strings.js:348
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL, kuriuo skelbiamas security.txt failas"
 
-#: js/strings.js:349
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS nuoroda į saugumo ir atskleidimo politiką"
 
-#: js/strings.js:350
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS nuoroda į atviras su saugumu susijusias darbo vietas"
 
-#: js/strings.js:351
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS nuoroda į CSAF teikėjo metaduomenis"
 
-#: js/strings.js:352
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Papildomos taisyklės, pridedamos į robots.txt failą žiniatinklio robotams"
 
-#: js/strings.js:353
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Pasirinktinis CSS kodas, pridedamas visiems puslapiams"
 
-#: js/strings.js:354
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pasirinktinis JavaScript kodas, pridedamas visiems puslapiams"
 
-#: js/strings.js:355
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Kableliais atskirtas antraštėms naudojamų šriftų sąrašas"
 
-#: js/strings.js:358
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "Vardas"
 
-#: js/strings.js:359
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "Įmonė"
 
-#: js/strings.js:360
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefonas"
 
-#: js/strings.js:361
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "El. paštas"
 
-#: js/strings.js:362
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "Tema"
 
-#: js/strings.js:363
+#: js/strings.js:371
 msgctxt "op"
 msgid "Text"
 msgstr "Tekstas"
 
-#: js/strings.js:364
+#: js/strings.js:372
 msgctxt "op"
 msgid "Text area"
 msgstr "Teksto sritis"
 
-#: js/strings.js:365
+#: js/strings.js:373
 msgctxt "op"
 msgid "Selection"
 msgstr "Pasirinkimų sąrašas"
 
-#: js/strings.js:366
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "Sekti nuorodas"
 
-#: js/strings.js:367
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksuoti"
 
-#: js/strings.js:368
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "Nesekti nuorodų"
 
-#: js/strings.js:369
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "Neindeksuoti"
 
-#: js/strings.js:370
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "Prenumerata"
 
-#: js/strings.js:371
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Vienkartinis mokėjimas"
 
-#: js/strings.js:372
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "Automatinis"
 
-#: js/strings.js:373
+#: js/strings.js:381
 msgctxt "op"
 msgid "Badges"
 msgstr "Ženkleliai"
 
-#: js/strings.js:374
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "Kortelės"
 
-#: js/strings.js:375
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "Numatytasis"
 
-#: js/strings.js:376
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "Pabaiga"
 
-#: js/strings.js:377
+#: js/strings.js:385
 msgctxt "op"
 msgid "Figures"
 msgstr "Skaičiai"
 
-#: js/strings.js:378
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "Pirmas stulpelis"
 
-#: js/strings.js:379
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "Pirma eilutė"
 
-#: js/strings.js:380
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "Pirma eilutė ir stulpelis"
 
-#: js/strings.js:381
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "Tinklelio pabaiga"
 
-#: js/strings.js:382
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "Tinklelio pradžia"
 
-#: js/strings.js:383
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Horizontaliai"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "Naujausi"
 
-#: js/strings.js:384
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "Sąrašas"
 
-#: js/strings.js:385
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "Nėra"
 
-#: js/strings.js:386
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "Seniausi"
 
-#: js/strings.js:387
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "Pozicija"
 
-#: js/strings.js:388
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "Pradžia"
 
-#: js/strings.js:389
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "Vertikaliai"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "Priartinimas"
 
-#: js/strings.js:392
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "Atlikta"
 
-#: js/strings.js:393
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Jau yra"
 
-#: js/strings.js:396
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "Išplėstiniai"
 
-#: js/strings.js:397
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:398
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "svetainė"
 
-#: js/strings.js:399
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "Logotipas"
 
-#: js/strings.js:400
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatyvus logotipas"
 
-#: js/strings.js:401
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "Piktograma"

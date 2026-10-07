@@ -996,6 +996,52 @@
                 }
             }
         },
+        "timeline": {
+            "group": "content",
+            "description": "Numbered steps or events in chronological order",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5,3A2,2 0 1,1 5,7A2,2 0 1,1 5,3M5,10A2,2 0 1,1 5,14A2,2 0 1,1 5,10M5,17A2,2 0 1,1 5,21A2,2 0 1,1 5,17M4.25,7H5.75V10H4.25V7M4.25,14H5.75V17H4.25V14M9,4H21V6H9V4M9,11H21V13H9V11M9,18H18V20H9V18Z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string",
+                    "hint": "Optional headline shown above the timeline"
+                },
+                "layout": {
+                    "type": "select",
+                    "hint": "Show the steps one below the other or side by side, side by side suits up to five steps",
+                    "default": "vertical",
+                    "options": [
+                        {
+                            "value": "vertical",
+                            "label": "Vertical"
+                        },
+                        {
+                            "value": "horizontal",
+                            "label": "Horizontal"
+                        }
+                    ]
+                },
+                "items": {
+                    "type": "items",
+                    "hint": "Steps or events in the order they happen",
+                    "required": true,
+                    "item": {
+                        "label": {
+                            "type": "string",
+                            "hint": "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+                        },
+                        "title": {
+                            "type": "string",
+                            "hint": "Name of the step or event",
+                            "required": true
+                        },
+                        "text": {
+                            "type": "markdown",
+                            "hint": "Description of the step or event"
+                        }
+                    }
+                }
+            }
+        },
         "toc": {
             "group": "content",
             "description": "Table of contents linking to page headings",
