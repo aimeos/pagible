@@ -3458,256 +3458,263 @@ msgstr "Broj kartica po retku, \"auto\" se prilagođava širini zaslona"
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Prikaži kartice, male značke poput certifikata ili velike brojke poput ključnih podataka"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Kartice prikazane u mreži"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Naslov kartice"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Slika prikazana na vrhu kartice"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Tekst kartice"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Stranica ili poveznica na koju vodi kartica"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Neobavezan naslov prikazan iznad izjava"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Izjave klijenata ili partnera"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Izjava osobe"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Ime osobe"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Pozicija ili tvrtka osobe"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Fotografija osobe"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Uvod članka prikazan ispod naslova stranice"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Slike članka, prva se koristi kao slika pregleda"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Ime autora članka"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Poveznica na profilnu stranicu autora"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Neobavezan naslov prikazan iznad popisa"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Prikaži stranice kao kartice ili kao kompaktan popis"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Stranica čije se podstranice navode"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Redoslijed sortiranja navedenih stranica"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Najveći broj stranica prikazanih odjednom"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Prikaži ostale podstranice kao kartice ili kao kompaktan popis"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Neobavezan naslov prikazan iznad cjenovnih planova"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Kratki tekst prikazan ispod naslova"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Cjenovni planovi prikazani jedan uz drugi"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Naziv cjenovnog plana"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Uloga koju kupci dobivaju nakon plaćanja za pristup zaštićenim stranicama"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Cijene plana, npr. mjesečno i godišnje"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Ponavljajuća pretplata ili jednokratno plaćanje"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Broj dana između dva plaćanja, npr. 30 za mjesečno"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Troslovni ISO kôd valute, npr. EUR ili USD"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID cijene ili iznos koji koristi pružatelj usluge plaćanja"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Oblikovana cijena prikazana posjetiteljima, npr. 9,99 €"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Brojčana cijena prikazana ako oblikovana cijena nije postavljena"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Tekst prikazan iza cijene, npr. mjesečno"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Kratki opis cjenovnog plana"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Popis značajki uključenih u plan"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Istakni ovaj plan u odnosu na ostale"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Kratka oznaka prikazana na istaknutom planu, npr. Popularno"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Neobavezan naslov prikazan iznad pitanja"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Pitanja i odgovori prikazani kao proširivi popis"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Pitanje koje postavljaju posjetitelji"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Odgovor na pitanje"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Neobavezan naslov prikazan iznad sadržaja"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Neobavezan naslov prikazan iznad kontaktnog obrasca"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Neobavezan tekst prikazan između naslova i kontaktnog obrasca"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Polja obrasca prikazana posjetiteljima ovim redoslijedom"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Odaberite polje obrasca ili unesite vlastiti naziv"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Posjetitelji moraju ispuniti ovo polje"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Vrsta unosa koja se prikazuje posjetiteljima"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Izbori za polja odabira, jedan po retku"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3715,7 +3722,7 @@ msgstr ""
 "Najveći broj slika ili PDF datoteka koje posjetitelji mogu priložiti, 0 "
 "onemogućuje prijenos"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3724,404 +3731,414 @@ msgstr ""
 "Sažetak stranice prikazan u rezultatima pretraživanja, preporučuje se 150 do "
 "160 znakova"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Popis ključnih riječi koje opisuju stranicu, odvojenih zarezom"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Naslov prikazan kada se stranica dijeli na društvenim mrežama"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Sažetak prikazan kada se stranica dijeli na društvenim mrežama"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "Slika pregleda prikazana kada se stranica dijeli na društvenim mrežama"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Izvorni URL ako je isti sadržaj dostupan na više adresa"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Dopusti ili spriječi tražilicama da prikazuju ovu stranicu"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Dopusti ili spriječi tražilicama da prate poveznice na ovoj stranici"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Naziv web-mjesta prikazan na kartici preglednika i u rezultatima "
 "pretraživanja"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotip prikazan u zaglavlju stranice"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Varijanta logotipa za tamne pozadine"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Mala kvadratna slika prikazana na karticama preglednika i u oznakama"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Popis fontova za tekst, odvojenih zarezom"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Zadana boja teksta"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Boja pozadine stranica"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Boja pozadine označenog teksta"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Boja elemenata s jakim kontrastom prema pozadini"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrastna boja pri prelasku mišem ili fokusiranju elementa"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Boja teksta na elementima koji koriste kontrastnu boju"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Glavna boja brenda za poveznice i gumbe"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Boja pozadine primarnih gumba i isticanja"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Primarna boja pri prelasku mišem ili fokusiranju elementa"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Primarna boja pozadine pri prelasku mišem ili fokusiranju elementa"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Dodatna boja za manje važne poveznice i gumbe"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Boja pozadine sekundarnih gumba"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Sekundarna boja pri prelasku mišem ili fokusiranju elementa"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Sekundarna boja pozadine pri prelasku mišem ili fokusiranju elementa"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Zaobljenost kutova kao CSS duljina, npr. 0.25rem ili 0 za oštre kutove"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Znak prikazan između poveznica putanje navigacije"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS poveznica za kontakt sa sigurnosnim timom, npr. obrazac"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Adresa e-pošte za prijavu sigurnosnih problema"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Datum nakon kojeg se sigurnosne informacije smatraju zastarjelima"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS poveznica na javni ključ za šifrirane poruke"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS poveznica na stranicu sa zahvalama sigurnosnim istraživačima"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Kodovi jezika za sigurnosna izvješća odvojeni zarezom, npr. en, de"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL na kojem je objavljena datoteka security.txt"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS poveznica na sigurnosna pravila i pravila otkrivanja"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS poveznica na otvorena radna mjesta u području sigurnosti"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS poveznica na metapodatke CSAF pružatelja"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Dodatna pravila za web-pretraživače dodana u datoteku robots.txt"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Prilagođeni CSS kôd dodan na sve stranice"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Prilagođeni JavaScript kôd dodan na sve stranice"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Popis fontova za naslove, odvojenih zarezom"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "Ime"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "Tvrtka"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefon"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-pošta"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "Predmet"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "Tekst"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "Tekstno područje"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "Padajući izbornik"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "Prati poveznice"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "Indeksiraj"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "Ne prati poveznice"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "Ne indeksiraj"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "Pretplata"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Jednokratno plaćanje"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "Automatski"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "Značke"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "Kartice"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "Zadano"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "Kraj"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "Brojke"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "Prvi stupac"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "Prvi redak"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "Prvi redak i stupac"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "Kraj mreže"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "Početak mreže"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "Najnovije"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "Popis"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "Ništa"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "Najstarije"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "Položaj"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "Početak"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "Zumiranje"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "Gotovo"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Već postoji"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "Napredno"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "Web-mjesto"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "Logotip"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternativni logotip"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "Ikona"

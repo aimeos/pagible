@@ -3367,14 +3367,16 @@ msgstr "Imagine care arată starea dinaintea schimbării"
 msgctxt "fh"
 msgid "Image showing the result, both images should have the same size"
 msgstr ""
-"Imagine care arată rezultatul, ambele imagini ar trebui să aibă aceeași dimensiune"
+"Imagine care arată rezultatul, ambele imagini ar trebui să aibă aceeași "
+"dimensiune"
 
 #: js/strings.js:240
 msgctxt "fh"
 msgid ""
 "Load the images without delay if they are visible at the top of the page"
 msgstr ""
-"Încarcă imaginile fără întârziere dacă sunt vizibile în partea de sus a paginii"
+"Încarcă imaginile fără întârziere dacă sunt vizibile în partea de sus a "
+"paginii"
 
 #: js/strings.js:241
 msgctxt "fh"
@@ -3478,257 +3480,264 @@ msgstr "Numărul de carduri pe rând, \"auto\" se adaptează la lățimea ecranu
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Afișează carduri, insigne mici precum certificate sau cifre mari precum indicatori cheie"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Carduri afișate în grilă"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Titlul cardului"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Imagine afișată în partea de sus a cardului"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Textul cardului"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Pagina sau linkul către care duce cardul"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Titlu opțional afișat deasupra citatelor"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Citate de la clienți sau parteneri"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Citatul persoanei"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Numele persoanei"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Funcția sau compania persoanei"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Fotografia persoanei"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Introducerea articolului afișată sub titlul paginii"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr ""
 "Imaginile articolului, prima este folosită ca imagine de previzualizare"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Numele autorului articolului"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Link către pagina de profil a autorului"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Titlu opțional afișat deasupra listei"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Afișează paginile ca carduri sau ca listă compactă"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Pagina ale cărei subpagini sunt listate"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Ordinea de sortare a paginilor listate"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Numărul maxim de pagini afișate simultan"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Afișează subpaginile suplimentare ca carduri sau ca listă compactă"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Titlu opțional afișat deasupra planurilor de preț"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Text scurt afișat sub titlu"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Planuri de preț afișate unul lângă altul"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Numele planului de preț"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Rolul acordat clienților după plată pentru accesul la paginile protejate"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Prețurile planului, de ex. lunar și anual"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Abonament recurent sau plată unică"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Numărul de zile dintre două plăți, de ex. 30 pentru lunar"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Codul valutar ISO din trei litere, de ex. EUR sau USD"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID-ul prețului sau suma utilizată de furnizorul de plăți"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Prețul formatat afișat vizitatorilor, de ex. 9,99 €"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Prețul numeric afișat dacă nu este setat un preț formatat"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Text afișat după preț, de ex. pe lună"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Descriere scurtă a planului de preț"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Lista funcțiilor incluse în plan"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Evidențiază acest plan față de celelalte"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Etichetă scurtă afișată pe planul evidențiat, de ex. Popular"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Titlu opțional afișat deasupra întrebărilor"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Întrebări și răspunsuri afișate ca listă extensibilă"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Întrebare adresată de vizitatori"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Răspunsul la întrebare"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Titlu opțional afișat deasupra cuprinsului"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Titlu opțional afișat deasupra formularului de contact"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Text opțional afișat între titlu și formularul de contact"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Câmpurile formularului afișate vizitatorilor în această ordine"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Selectați un câmp al formularului sau introduceți propriul nume"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Vizitatorii trebuie să completeze acest câmp"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Tipul câmpului afișat vizitatorilor"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Opțiuni pentru câmpurile de selecție, câte una pe rând"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3736,7 +3745,7 @@ msgstr ""
 "Numărul maxim de imagini sau fișiere PDF pe care le pot atașa vizitatorii, 0 "
 "dezactivează încărcarea"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3745,420 +3754,430 @@ msgstr ""
 "Rezumatul paginii afișat în rezultatele căutării, recomandat 150–160 de "
 "caractere"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Listă de cuvinte-cheie separate prin virgulă care descriu pagina"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Titlul afișat la distribuirea paginii pe rețelele sociale"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Rezumatul afișat la distribuirea paginii pe rețelele sociale"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Imaginea de previzualizare afișată la distribuirea paginii pe rețelele "
 "sociale"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr ""
 "URL-ul original dacă același conținut este disponibil la mai multe adrese"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 "Permite sau blochează indexarea acestei pagini de către motoarele de căutare"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Permite sau blochează urmărirea linkurilor de pe această pagină de către "
 "motoarele de căutare"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "Numele site-ului afișat în fila browserului și în rezultatele căutării"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logo afișat în antetul paginii"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Varianta de logo utilizată pentru fundaluri închise"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Imagine mică pătrată afișată în filele browserului și la favorite"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Listă de fonturi separate prin virgulă utilizate pentru text"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Culoarea implicită a textului"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Culoarea de fundal a paginilor"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Culoarea de fundal a textului selectat"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Culoarea elementelor cu contrast puternic față de fundal"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr ""
 "Culoarea de contrast la trecerea cu mouse-ul sau la focalizarea unui element"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Culoarea textului pe elementele care utilizează culoarea de contrast"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Culoarea principală a mărcii utilizată pentru linkuri și butoane"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Culoarea de fundal a butoanelor primare și a evidențierilor"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr ""
 "Culoarea primară la trecerea cu mouse-ul sau la focalizarea unui element"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr ""
 "Culoarea de fundal primară la trecerea cu mouse-ul sau la focalizarea unui "
 "element"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr ""
 "Culoare suplimentară utilizată pentru linkuri și butoane mai puțin importante"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Culoarea de fundal a butoanelor secundare"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr ""
 "Culoarea secundară la trecerea cu mouse-ul sau la focalizarea unui element"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr ""
 "Culoarea de fundal secundară la trecerea cu mouse-ul sau la focalizarea unui "
 "element"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Rotunjirea colțurilor ca lungime CSS, de ex. 0.25rem sau 0 pentru colțuri "
 "ascuțite"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Caracterul afișat între linkurile de tip breadcrumb"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "Link HTTPS pentru a contacta echipa de securitate, de ex. un formular"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Adresă de e-mail pentru raportarea problemelor de securitate"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Data după care informațiile de securitate sunt considerate depășite"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "Link HTTPS către cheia publică pentru mesaje criptate"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "Link HTTPS către pagina de mulțumire pentru cercetătorii de securitate"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Coduri de limbă separate prin virgulă pentru rapoartele de securitate, de "
 "ex. en, de"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL HTTPS unde este publicat fișierul security.txt"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "Link HTTPS către politica de securitate și divulgare"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "Link HTTPS către joburile deschise legate de securitate"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "Link HTTPS către metadatele furnizorului CSAF"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Reguli suplimentare adăugate în fișierul robots.txt pentru roboții web"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Cod CSS personalizat adăugat pe toate paginile"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Cod JavaScript personalizat adăugat pe toate paginile"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Listă de fonturi separate prin virgulă utilizate pentru titluri"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "Nume"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "Companie"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefon"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-mail"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "Subiect"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "Text"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "Zonă de text"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "Listă de selecție"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "Urmărire linkuri"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "Indexare"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "Fără urmărire linkuri"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "Fără indexare"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abonament"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Plată unică"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "Automat"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "Insigne"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "Carduri"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "Implicit"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "Sfârșit"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "Cifre"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "Prima coloană"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "Primul rând"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "Primul rând și coloană"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "Sfârșitul grilei"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "Începutul grilei"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "Cele mai noi"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "Listă"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "Niciuna"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "Cele mai vechi"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "Poziție"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "Început"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "Efectuat"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Există deja"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "Avansat"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "Temă"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "site web"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "Siglă"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Siglă alternativă"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "Pictogramă"

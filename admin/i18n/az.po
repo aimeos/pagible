@@ -3446,255 +3446,262 @@ msgstr "Hər sətirdə kartların sayı, \"auto\" ekranın eninə uyğunlaşır"
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Kartları, sertifikatlar kimi kiçik nişanları və ya əsas göstəricilər kimi böyük rəqəmləri göstərin"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Şəbəkədə göstərilən kartlar"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kartın başlığı"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Kartın yuxarısında göstərilən şəkil"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kartın mətni"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Kartın apardığı səhifə və ya keçid"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Sitatların üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Müştərilərin və ya tərəfdaşların sitatları"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Şəxsin sitatı"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Şəxsin adı"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Şəxsin vəzifəsi və ya şirkəti"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Şəxsin fotoşəkli"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Səhifə başlığının altında göstərilən məqalə girişi"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Məqalənin şəkilləri, birincisi önizləmə şəkli kimi istifadə olunur"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Məqalə müəllifinin adı"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Müəllifin profil səhifəsinə keçid"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Siyahının üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Səhifələri kartlar və ya yığcam siyahı kimi göstər"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Alt səhifələri siyahıya alınan səhifə"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Siyahıdakı səhifələrin sıralama qaydası"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Eyni anda göstərilən səhifələrin maksimum sayı"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Digər alt səhifələri kartlar və ya yığcam siyahı kimi göstər"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Qiymət planlarının üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Başlığın altında göstərilən qısa mətn"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Yan-yana göstərilən qiymət planları"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Qiymət planının adı"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr "Ödənişdən sonra qorunan səhifələrə giriş üçün müştərilərə verilən rol"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Planın qiymətləri, məs. aylıq və illik"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Təkrarlanan abunəlik və ya birdəfəlik ödəniş"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "İki ödəniş arasındakı günlərin sayı, məs. aylıq üçün 30"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Üç hərfli ISO valyuta kodu, məs. EUR və ya USD"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Ödəniş provayderinin istifadə etdiyi qiymət ID-si və ya məbləğ"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Ziyarətçilərə göstərilən formatlanmış qiymət, məs. €9.99"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Formatlanmış qiymət təyin edilməyibsə, göstərilən rəqəmsal qiymət"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Qiymətdən sonra göstərilən mətn, məs. aylıq"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Qiymət planının qısa təsviri"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Plana daxil olan imkanların siyahısı"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Bu planı digərləri ilə müqayisədə vurğula"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Vurğulanmış planda göstərilən qısa etiket, məs. Populyar"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Sualların üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Açılan siyahı kimi göstərilən suallar və cavablar"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Ziyarətçilərin verdiyi sual"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Sualın cavabı"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Mündəricatın üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Əlaqə formasının üstündə göstərilən istəyə bağlı başlıq"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Başlıq ilə əlaqə forması arasında göstərilən istəyə bağlı mətn"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Ziyarətçilərə bu sırada göstərilən forma sahələri"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Forma sahəsini seçin və ya öz adınızı daxil edin"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Ziyarətçilər bu sahəni doldurmalıdır"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Ziyarətçilərə göstərilən daxiletmə növü"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Seçim sahələri üçün seçimlər, hər sətirdə bir"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3702,7 +3709,7 @@ msgstr ""
 "Ziyarətçilərin əlavə edə biləcəyi şəkil və ya PDF fayllarının maksimum sayı, "
 "0 yükləmələri söndürür"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3711,410 +3718,420 @@ msgstr ""
 "Axtarış nəticələrində göstərilən səhifə xülasəsi, 150-160 simvol tövsiyə "
 "olunur"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Səhifəni təsvir edən açar sözlərin vergüllə ayrılmış siyahısı"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Səhifə sosial mediada paylaşıldıqda göstərilən başlıq"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Səhifə sosial mediada paylaşıldıqda göstərilən xülasə"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "Səhifə sosial mediada paylaşıldıqda göstərilən önizləmə şəkli"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Eyni məzmun bir neçə ünvanda mövcuddursa, orijinal URL"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 "Axtarış sistemlərinin bu səhifəni siyahıya salmasına icazə ver və ya qadağan "
 "et"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Axtarış sistemlərinin bu səhifədəki keçidləri izləməsinə icazə ver və ya "
 "qadağan et"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "Brauzer tabında və axtarış nəticələrində göstərilən vebsayt adı"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Səhifənin başlıq hissəsində göstərilən loqo"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Tünd fonlar üçün istifadə olunan loqo variantı"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Brauzer tablarında və əlfəcinlərdə göstərilən kiçik kvadrat şəkil"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Mətn üçün istifadə olunan şriftlərin vergüllə ayrılmış siyahısı"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Standart mətn rəngi"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Səhifələrin fon rəngi"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Seçilmiş mətnin fon rəngi"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Fonla güclü kontrast təşkil edən elementlərin rəngi"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Element üzərinə gəldikdə və ya fokuslandıqda kontrast rəng"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Kontrast rəngdən istifadə edən elementlərdə mətn rəngi"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Keçidlər və düymələr üçün istifadə olunan əsas brend rəngi"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Əsas düymələrin və vurğuların fon rəngi"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Element üzərinə gəldikdə və ya fokuslandıqda əsas rəng"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Element üzərinə gəldikdə və ya fokuslandıqda əsas fon rəngi"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Daha az vacib keçidlər və düymələr üçün istifadə olunan əlavə rəng"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "İkinci dərəcəli düymələrin fon rəngi"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Element üzərinə gəldikdə və ya fokuslandıqda ikinci dərəcəli rəng"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Element üzərinə gəldikdə və ya fokuslandıqda ikinci dərəcəli fon rəngi"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "CSS uzunluğu kimi künclərin yuvarlaqlığı, məs. 0.25rem və ya iti künclər "
 "üçün 0"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Naviqasiya zənciri keçidləri arasında göstərilən simvol"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "Təhlükəsizlik komandası ilə əlaqə üçün HTTPS keçidi, məs. forma"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Təhlükəsizlik problemlərini bildirmək üçün e-poçt ünvanı"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Təhlükəsizlik məlumatlarının köhnəlmiş sayıldığı tarix"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "Şifrələnmiş mesajlar üçün açıq açara HTTPS keçidi"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "Təhlükəsizlik tədqiqatçılarına təşəkkür edən səhifəyə HTTPS keçidi"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Təhlükəsizlik hesabatları üçün vergüllə ayrılmış dil kodları, məs. en, de"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "security.txt faylının dərc edildiyi HTTPS URL-i"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "Təhlükəsizlik və açıqlama siyasətinə HTTPS keçidi"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "Təhlükəsizliklə bağlı açıq vakansiyalara HTTPS keçidi"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "CSAF provayderinin metaməlumatlarına HTTPS keçidi"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Veb-axtarış robotları üçün robots.txt faylına əlavə edilən əlavə qaydalar"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Bütün səhifələrə əlavə edilən fərdi CSS kodu"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Bütün səhifələrə əlavə edilən fərdi JavaScript kodu"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Başlıqlar üçün istifadə olunan şriftlərin vergüllə ayrılmış siyahısı"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "Ad"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "Şirkət"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefon"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-poçt"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "Mövzu"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "Mətn"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "Mətn sahəsi"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "Seçim siyahısı"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "Keçidlər izlənsin"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "İndekslənsin"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "Keçidlər izlənməsin"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "İndekslənməsin"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "Abunəlik"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Birdəfəlik ödəniş"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "Avtomatik"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "Nişanlar"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "Kartlar"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "Standart"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "Son"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "Rəqəmlər"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "Birinci sütun"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "Birinci sətir"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "Birinci sətir və sütun"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "Şəbəkənin sonu"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "Şəbəkənin başlanğıcı"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "Ən yeni"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "Siyahı"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "Heç biri"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "Ən köhnə"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "Mövqe"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "Başlanğıc"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "Yaxınlaşdırma"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "Hazırdır"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Artıq mövcuddur"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "Ekspert"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "Mövzu"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "Vebsayt"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "Loqo"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternativ loqo"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "İkon"

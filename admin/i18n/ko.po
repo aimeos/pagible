@@ -3403,255 +3403,261 @@ msgstr "행당 카드 수, \"auto\"는 화면 너비에 맞게 자동 조정"
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr "카드, 인증서 같은 작은 배지 또는 핵심 수치 같은 큰 숫자를 표시합니다"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "그리드에 표시되는 카드"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "카드의 제목"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "카드 상단에 표시되는 이미지"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "카드의 텍스트"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "카드가 연결되는 페이지 또는 링크"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "인용문 위에 표시되는 선택적 제목"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "고객 또는 파트너의 인용문"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "해당 인물의 인용문"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "해당 인물의 이름"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "해당 인물의 직함 또는 소속"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "해당 인물의 사진"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "페이지 제목 아래에 표시되는 기사 소개"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "기사의 이미지, 첫 번째 이미지가 미리보기 이미지로 사용됨"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "기사 작성자의 이름"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "작성자 프로필 페이지로의 링크"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "목록 위에 표시되는 선택적 제목"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "페이지를 카드 또는 간결한 목록으로 표시"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "하위 페이지 목록을 표시할 상위 페이지"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "표시되는 페이지의 정렬 순서"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "한 번에 표시할 페이지의 최대 수"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "추가 하위 페이지를 카드 또는 간결한 목록으로 표시"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "요금제 위에 표시되는 선택적 제목"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "제목 아래에 표시되는 짧은 텍스트"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "나란히 표시되는 요금제"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "요금제의 이름"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr "결제 후 고객에게 부여되어 보호된 페이지에 접근할 수 있는 역할"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "요금제의 가격(예: 월별 및 연별)"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "정기 구독 또는 일회성 결제"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "두 결제 사이의 일수(예: 월별이면 30)"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "세 자리 ISO 통화 코드(예: EUR 또는 USD)"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "결제 제공업체가 사용하는 가격 ID 또는 금액"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "방문자에게 표시되는 서식 있는 가격(예: €9.99)"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "서식 있는 가격이 없을 때 표시되는 숫자 가격"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "가격 뒤에 표시되는 텍스트(예: /월)"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "요금제에 대한 짧은 설명"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "요금제에 포함된 기능 목록"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "다른 요금제보다 이 요금제를 강조 표시"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "강조된 요금제에 표시되는 짧은 레이블(예: 인기)"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "질문 위에 표시되는 선택적 제목"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "펼침 목록으로 표시되는 질문과 답변"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "방문자가 하는 질문"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "질문에 대한 답변"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "목차 위에 표시되는 선택적 제목"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "문의 양식 위에 표시되는 선택적 제목"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "제목과 문의 양식 사이에 표시되는 선택적 텍스트"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "이 순서로 방문자에게 표시되는 양식 필드"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "양식 필드를 선택하거나 직접 이름을 입력하세요"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "방문자가 이 필드를 반드시 입력해야 합니다"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "방문자에게 표시되는 입력 유형"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "선택 입력의 선택 항목, 한 줄에 하나씩"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3659,409 +3665,419 @@ msgstr ""
 "방문자가 첨부할 수 있는 이미지 또는 PDF 파일의 최대 개수, 0이면 업로드 비활성"
 "화"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
 "recommended"
 msgstr "검색 결과에 표시되는 페이지 요약, 150~160자 권장"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "페이지를 설명하는 쉼표로 구분된 키워드 목록"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "페이지를 소셜 미디어에 공유할 때 표시되는 제목"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "페이지를 소셜 미디어에 공유할 때 표시되는 요약"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "페이지를 소셜 미디어에 공유할 때 표시되는 미리보기 이미지"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "동일한 콘텐츠가 여러 주소에서 제공되는 경우의 원본 URL"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "검색 엔진의 이 페이지 색인 생성을 허용 또는 차단"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "검색 엔진의 이 페이지 내 링크 추적을 허용 또는 차단"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "브라우저 탭과 검색 결과에 표시되는 웹사이트 이름"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "페이지 헤더에 표시되는 로고"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "어두운 배경용 로고 버전"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "브라우저 탭과 북마크에 표시되는 작은 정사각형 이미지"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "텍스트에 사용할 쉼표로 구분된 글꼴 목록"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "기본 텍스트 색상"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "페이지의 배경색"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "선택한 텍스트의 배경색"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "배경과 대비가 강한 요소의 색상"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "요소에 마우스를 올리거나 포커스했을 때의 대비 색상"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "대비 색상을 사용하는 요소의 텍스트 색상"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "링크와 버튼에 사용하는 메인 브랜드 색상"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "기본 버튼과 강조 표시의 배경색"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "요소에 마우스를 올리거나 포커스했을 때의 기본 색상"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "요소에 마우스를 올리거나 포커스했을 때의 기본 배경색"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "덜 중요한 링크와 버튼에 사용하는 보조 색상"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "보조 버튼의 배경색"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "요소에 마우스를 올리거나 포커스했을 때의 보조 색상"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "요소에 마우스를 올리거나 포커스했을 때의 보조 배경색"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "CSS 길이로 지정하는 모서리 둥글기(예: 0.25rem, 직각은 0)"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "이동 경로 링크 사이에 표시되는 문자"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "보안팀 문의용 HTTPS 링크(예: 양식)"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "보안 문제 신고용 이메일 주소"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "보안 정보가 오래된 것으로 간주되는 날짜"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "암호화된 메시지용 공개 키의 HTTPS 링크"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "보안 연구자에게 감사를 전하는 페이지의 HTTPS 링크"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "보안 보고서용 쉼표로 구분된 언어 코드(예: en, de)"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "security.txt 파일이 게시된 HTTPS URL"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "보안 및 공개 정책의 HTTPS 링크"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "보안 관련 채용 공고의 HTTPS 링크"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "CSAF 제공자 메타데이터의 HTTPS 링크"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "웹 크롤러를 위해 robots.txt 파일에 추가하는 규칙"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "모든 페이지에 추가되는 사용자 정의 CSS 코드"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "모든 페이지에 추가되는 사용자 정의 JavaScript 코드"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "제목에 사용할 쉼표로 구분된 글꼴 목록"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "이름"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "회사"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "전화번호"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "이메일"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "제목"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "텍스트"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "텍스트 영역"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "선택 목록"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "링크 따라가기"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "색인 허용"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "링크 따라가지 않기"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "색인 안 함"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "구독"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "일회성 결제"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "자동"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "배지"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "카드"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "기본값"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "끝"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "수치"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "첫 번째 열"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "첫 번째 행"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "첫 번째 행과 열"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "그리드 끝"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "그리드 시작"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "최신순"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "목록"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "없음"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "오래된 순"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "위치"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "시작"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "줌"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "완료"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "이미 존재"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "고급"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "테마"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "웹사이트"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "로고"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "대체 로고"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "아이콘"

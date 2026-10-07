@@ -496,6 +496,25 @@
                     "type": "string",
                     "hint": "Optional headline shown above the cards"
                 },
+                "layout": {
+                    "type": "select",
+                    "hint": "Show cards, small badges like certificates or large figures like key numbers",
+                    "default": "cards",
+                    "options": [
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "badges",
+                            "label": "Badges"
+                        },
+                        {
+                            "value": "figures",
+                            "label": "Figures"
+                        }
+                    ]
+                },
                 "columns": {
                     "type": "select",
                     "hint": "Number of cards per row, \"auto\" adapts to the screen width",

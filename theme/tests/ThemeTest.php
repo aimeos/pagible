@@ -671,6 +671,23 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testCardsLayout()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$cards = [(object) ['title' => '25', 'text' => 'Years in business']];
+
+		$html = view( 'cms::cards', ['data' => (object) ['cards' => $cards], 'files' => collect(), 'page' => $page] )->render();
+		$this->assertStringContainsString( 'layout-cards', $html );
+
+		$data = (object) ['layout' => 'figures', 'cards' => $cards];
+		$html = view( 'cms::cards', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'layout-figures', $html );
+		$this->assertStringContainsString( '25', $html );
+		$this->assertStringContainsString( 'Years in business', $html );
+	}
+
+
 	public function testCtaRendersOptionalTextAndThreeButtons()
 	{
 		$page = ( new Page() )->forceFill( ['lang' => 'en'] );

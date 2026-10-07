@@ -3397,663 +3397,679 @@ msgstr "จำนวนการ์ดต่อแถว \"auto\" จะปร�
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr "แสดงการ์ด ตราเล็กๆ เช่น ใบรับรอง หรือตัวเลขขนาดใหญ่ เช่น ตัวเลขสำคัญ"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "การ์ดที่แสดงในกริด"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "หัวข้อของการ์ด"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "รูปภาพที่แสดงด้านบนของการ์ด"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "ข้อความของการ์ด"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "หน้าหรือลิงก์ที่การ์ดนำไปถึง"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "หัวข้อที่แสดงเหนือคำรับรอง (ไม่บังคับ)"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "คำรับรองจากลูกค้าหรือพันธมิตร"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "คำรับรองของบุคคลนั้น"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "ชื่อของบุคคลนั้น"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "ตำแหน่งหรือบริษัทของบุคคลนั้น"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "รูปถ่ายของบุคคลนั้น"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "บทนำของบทความที่แสดงใต้ชื่อเรื่องของหน้า"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "รูปภาพของบทความ รูปแรกจะใช้เป็นรูปตัวอย่าง"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "ชื่อผู้เขียนบทความ"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "ลิงก์ไปยังหน้าโปรไฟล์ของผู้เขียน"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "หัวข้อที่แสดงเหนือรายการ (ไม่บังคับ)"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "แสดงหน้าต่าง ๆ เป็นการ์ดหรือเป็นรายการแบบกะทัดรัด"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "หน้าที่ใช้แสดงรายการหน้าย่อย"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "ลำดับการเรียงของหน้าที่แสดง"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "จำนวนหน้าสูงสุดที่แสดงพร้อมกัน"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "แสดงหน้าย่อยเพิ่มเติมเป็นการ์ดหรือเป็นรายการแบบกะทัดรัด"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "หัวข้อที่แสดงเหนือแผนราคา (ไม่บังคับ)"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "ข้อความสั้น ๆ ที่แสดงใต้หัวข้อ"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "แผนราคาที่แสดงเรียงกัน"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "ชื่อของแผนราคา"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr "บทบาทที่มอบให้ลูกค้าหลังชำระเงินเพื่อเข้าถึงหน้าที่มีการป้องกัน"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "ราคาของแผน เช่น รายเดือนและรายปี"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "การสมัครสมาชิกแบบต่อเนื่องหรือการชำระเงินครั้งเดียว"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "จำนวนวันระหว่างการชำระเงินสองครั้ง เช่น 30 สำหรับรายเดือน"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "รหัสสกุลเงิน ISO สามตัวอักษร เช่น EUR หรือ USD"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "รหัสราคาหรือจำนวนเงินที่ผู้ให้บริการชำระเงินใช้"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "ราคาที่จัดรูปแบบแสดงให้ผู้เข้าชมเห็น เช่น €9.99"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "ราคาตัวเลขที่แสดงหากไม่ได้ตั้งราคาที่จัดรูปแบบไว้"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "ข้อความที่แสดงหลังราคา เช่น ต่อเดือน"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "คำอธิบายสั้น ๆ ของแผนราคา"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "รายการฟีเจอร์ที่รวมอยู่ในแผน"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "เน้นแผนนี้เมื่อเทียบกับแผนอื่น"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "ป้ายกำกับสั้น ๆ ที่แสดงบนแผนที่ไฮไลต์ เช่น ยอดนิยม"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "หัวข้อที่แสดงเหนือคำถาม (ไม่บังคับ)"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "คำถามและคำตอบที่แสดงเป็นรายการแบบขยายได้"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "คำถามที่ผู้เข้าชมถาม"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "คำตอบของคำถาม"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "หัวข้อที่แสดงเหนือสารบัญ (ไม่บังคับ)"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "หัวข้อที่แสดงเหนือแบบฟอร์มติดต่อ (ไม่บังคับ)"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "ข้อความเพิ่มเติมที่แสดงระหว่างหัวข้อและแบบฟอร์มติดต่อ"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "ฟิลด์ของแบบฟอร์มที่แสดงต่อผู้เยี่ยมชมตามลำดับนี้"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "เลือกฟิลด์ของแบบฟอร์มหรือป้อนชื่อของคุณเอง"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "ผู้เยี่ยมชมต้องกรอกฟิลด์นี้"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "ประเภทอินพุตที่แสดงต่อผู้เยี่ยมชม"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "ตัวเลือกสำหรับช่องเลือก หนึ่งรายการต่อบรรทัด"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr "จำนวนสูงสุดของรูปภาพหรือไฟล์ PDF ที่ผู้เยี่ยมชมแนบได้ 0 คือปิดการอัปโหลด"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
 "recommended"
 msgstr "สรุปหน้าที่แสดงในผลการค้นหา แนะนำ 150 ถึง 160 ตัวอักษร"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "รายการคำสำคัญคั่นด้วยจุลภาคที่อธิบายหน้า"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "ชื่อเรื่องที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "สรุปที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "รูปภาพตัวอย่างที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "URL ต้นฉบับหากเนื้อหาเดียวกันมีอยู่ที่หลายที่อยู่"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "อนุญาตหรือป้องกันไม่ให้เครื่องมือค้นหาจัดทำดัชนีหน้านี้"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "อนุญาตหรือป้องกันไม่ให้เครื่องมือค้นหาติดตามลิงก์บนหน้านี้"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "ชื่อเว็บไซต์ที่แสดงในแท็บเบราว์เซอร์และผลการค้นหา"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "โลโก้ที่แสดงในส่วนหัวของหน้า"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "โลโก้อีกแบบสำหรับพื้นหลังสีเข้ม"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "รูปภาพสี่เหลี่ยมขนาดเล็กที่แสดงในแท็บเบราว์เซอร์และบุ๊กมาร์ก"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "รายการฟอนต์คั่นด้วยจุลภาคที่ใช้กับข้อความ"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "สีข้อความเริ่มต้น"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "สีพื้นหลังของหน้า"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "สีพื้นหลังของข้อความที่เลือก"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "สีขององค์ประกอบที่มีความคมชัดสูงกับพื้นหลัง"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "สีคอนทราสต์เมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "สีข้อความบนองค์ประกอบที่ใช้สีคอนทราสต์"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "สีแบรนด์หลักที่ใช้กับลิงก์และปุ่ม"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "สีพื้นหลังของปุ่มหลักและส่วนไฮไลต์"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "สีหลักเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "สีพื้นหลังหลักเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "สีเพิ่มเติมที่ใช้กับลิงก์และปุ่มที่สำคัญน้อยกว่า"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "สีพื้นหลังของปุ่มรอง"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "สีรองเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "สีพื้นหลังรองเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "ความโค้งของมุมในหน่วย CSS เช่น 0.25rem หรือ 0 สำหรับมุมฉาก"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "อักขระที่แสดงระหว่างลิงก์เบรดครัมบ์"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "ลิงก์ HTTPS สำหรับติดต่อทีมความปลอดภัย เช่น แบบฟอร์ม"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "อีเมลสำหรับรายงานปัญหาด้านความปลอดภัย"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "วันที่ที่ข้อมูลความปลอดภัยจะถือว่าล้าสมัย"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "ลิงก์ HTTPS ไปยังกุญแจสาธารณะสำหรับข้อความเข้ารหัส"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "ลิงก์ HTTPS ไปยังหน้าขอบคุณนักวิจัยด้านความปลอดภัย"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "รหัสภาษาคั่นด้วยจุลภาคสำหรับรายงานความปลอดภัย เช่น en, de"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL แบบ HTTPS ที่เผยแพร่ไฟล์ security.txt"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "ลิงก์ HTTPS ไปยังนโยบายความปลอดภัยและการเปิดเผยข้อมูล"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "ลิงก์ HTTPS ไปยังตำแหน่งงานที่เกี่ยวข้องกับความปลอดภัย"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "ลิงก์ HTTPS ไปยังข้อมูลเมทาดาทาของผู้ให้บริการ CSAF"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "กฎเพิ่มเติมที่เพิ่มลงในไฟล์ robots.txt สำหรับเว็บครอว์เลอร์"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "โค้ด CSS กำหนดเองที่เพิ่มในทุกหน้า"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "โค้ด JavaScript กำหนดเองที่เพิ่มในทุกหน้า"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "รายการฟอนต์คั่นด้วยจุลภาคที่ใช้กับหัวข้อ"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "ชื่อ"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "บริษัท"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "โทรศัพท์"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "อีเมล"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "หัวเรื่อง"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "ข้อความ"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "พื้นที่ข้อความ"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "รายการตัวเลือก"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "ติดตามลิงก์"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "จัดทำดัชนี"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "ไม่ติดตามลิงก์"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "ไม่จัดทำดัชนี"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "การสมัครสมาชิก"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "ชำระเงินครั้งเดียว"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "อัตโนมัติ"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "ตรา"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "การ์ด"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "ค่าเริ่มต้น"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "ท้าย"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "ตัวเลข"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "คอลัมน์แรก"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "แถวแรก"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "แถวและคอลัมน์แรก"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "ท้ายกริด"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "เริ่มต้นกริด"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "ล่าสุด"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "รายการ"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "ไม่มี"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "เก่าที่สุด"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "ตำแหน่ง"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "เริ่มต้น"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "ซูม"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "เสร็จแล้ว"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "มีอยู่แล้ว"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "ขั้นสูง"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "ธีม"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "เว็บไซต์"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "โลโก้"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "โลโก้สำรอง"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "ไอคอน"
