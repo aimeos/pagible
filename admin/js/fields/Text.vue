@@ -18,6 +18,7 @@ import {
   AutoLink,
   Link
 } from 'ckeditor5'
+import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import { Ckeditor } from '@ckeditor/ckeditor5-vue'
 import { minChars, maxChars, required } from '../rules'
@@ -64,6 +65,9 @@ const toolbar = [
  * - `max`: int, maximum number of characters allowed
  * - `min`: int, minimum number of characters required if the field isn't empty
  * - `required`: boolean, if true, the field must not be empty
+ *
+ * Pages picked from the "Pages" list of the link form are stored as `page:<id>` links
+ * which are rendered as URL of the page in the language of the current page.
  */
 export default {
   extends: fieldBase,
@@ -81,7 +85,8 @@ export default {
       destroyed: false,
       editor: markRaw(ClassicEditor),
       visible: false,
-      translations: undefined
+      translations: undefined,
+      linkPages: []
     }
   },
 
@@ -119,7 +124,11 @@ export default {
         translations: this.translations,
         language: {
           ui: this.$vuetify.locale.current
-        }
+        },
+        link: {
+          allowedProtocols: ['https?', 'ftps?', 'mailto', 'tel', 'page']
+        },
+        extraPlugins: [this.pageLinks()]
       })
     },
 
@@ -133,6 +142,67 @@ export default {
   },
 
   methods: {
+    // CKEditor plugin adding the pages in the current language to the link form
+    pageLinks() {
+      const vm = this
+
+      return class PageLinks {
+        constructor(editor) {
+          this.editor = editor
+        }
+
+        afterInit() {
+          if (!this.editor.plugins.has('LinkUI')) return
+
+          vm.loadPages()
+          this.editor.plugins.get('LinkUI').registerLinksListProvider({
+            label: vm.$gettext('Pages'),
+            emptyListPlaceholder: vm.$gettext('No pages found'),
+            getListItems: () =>
+              vm.linkPages.map((page) => ({
+                id: page.id,
+                href: `page:${page.id}`,
+                label: `${page.name || page.path} (/${page.path || ''})`
+              })),
+            getItem: (href) => {
+              const id = /^page:([A-Za-z0-9-]+)$/.exec(href || '')?.[1]
+              const page = id && vm.linkPages.find((item) => item.id === id)
+
+              return id ? { href, label: page ? page.name || page.path : href, tooltip: page ? `/${page.path || ''}` : '' } : null
+            },
+            // page links have no URL in the editor
+            navigate: (item) => /^page:/.test(item.href)
+          })
+        }
+      }
+    },
+
+    loadPages() {
+      this.$apollo
+        .query({
+          query: gql`
+            query ($lang: String) {
+              pages(first: 100, lang: $lang) {
+                data {
+                  id
+                  name
+                  path
+                }
+              }
+            }
+          `,
+          variables: { lang: this.$route?.query?.lang || null }
+        })
+        .then((result) => {
+          if (!this.destroyed) {
+            this.linkPages = result.data?.pages?.data || []
+          }
+        })
+        .catch((error) => {
+          this.$log('Text::loadPages(): Error fetching pages', error)
+        })
+    },
+
     show(isVisible) {
       if (!this.destroyed) {
         this.visible = isVisible

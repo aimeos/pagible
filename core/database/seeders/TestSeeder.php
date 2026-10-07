@@ -386,6 +386,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
     protected function addDisabled( Page $home )
     {
         $page = Page::forceCreate([
+            'lang' => 'en',
             'name' => 'Disabled',
             'title' => 'Disabled page | Laravel CMS',
             'path' => 'disabled',
@@ -397,6 +398,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
 
         $version = $page->versions()->forceCreate([
             'data' => [
+                'lang' => 'en',
                 'name' => 'Disabled',
                 'title' => 'Disabled page | Laravel CMS',
                 'path' => 'disabled',
@@ -410,6 +412,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
         $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         $child = Page::forceCreate([
+            'lang' => 'en',
             'name' => 'Disabled child',
             'title' => 'Disabled child | Laravel CMS',
             'path' => 'disabled-child',
@@ -421,6 +424,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
 
         $version = $child->versions()->forceCreate([
             'data' => [
+                'lang' => 'en',
                 'name' => 'Disabled child',
                 'title' => 'Disabled child | Laravel CMS',
                 'path' => 'disabled-child',
@@ -440,6 +444,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
     protected function addHidden( Page $home )
     {
         $page = Page::forceCreate([
+            'lang' => 'en',
             'name' => 'Hidden',
             'title' => 'Hidden page | Laravel CMS',
             'path' => 'hidden',
@@ -451,6 +456,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
 
         $version = $page->versions()->forceCreate([
             'data' => [
+                'lang' => 'en',
                 'name' => 'Hidden',
                 'title' => 'Hidden page | Laravel CMS',
                 'path' => 'hidden',

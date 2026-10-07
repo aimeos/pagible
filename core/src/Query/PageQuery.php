@@ -94,6 +94,22 @@ class PageQuery extends QueryBuilder
 
 
     /**
+     * Uses the variant of the given language if it's published and enabled, else the source variant.
+     *
+     * Pages whose variant in that language is missing, unpublished or disabled are returned
+     * with their source variant, so the "lang" column tells if the variant is a fallback.
+     *
+     * @param string $lang Language code
+     * @return static Same builder for fluent interface
+     */
+    public function visible( string $lang ) : static
+    {
+        $this->base()->variants( 'visible', $lang );
+        return $this;
+    }
+
+
+    /**
      * Uses the variant with the given ID.
      *
      * @param string $id Variant ID

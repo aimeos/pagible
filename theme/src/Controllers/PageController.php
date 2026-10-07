@@ -152,10 +152,12 @@ class PageController extends Controller
             'latest.elements.files.latest',
         ];
 
+        // every variant has its own URL, so look up the variant and not only the source variant
         $page = Page::with( $with )
+            ->allVariants()
             ->whereLatest( ['path' => $path] + ( $domain !== '' ? ['domain' => $domain] : [] ) )
             ->first()
-            ?? Page::with( $with )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+            ?? Page::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;
 
@@ -205,11 +207,11 @@ class PageController extends Controller
             ->withGlobalScope( 'status', new Status() )
             ->withAccess( $user );
 
-        if( $route ) {
-            return $query->findOrFail( $route->id );
+        if( $route && $route->variant_id ) {
+            return $query->variant( (string) $route->variant_id )->findOrFail( $route->id );
         }
 
-        return $query->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+        return $query->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
     }
 
 

@@ -60,7 +60,6 @@ class SitemapController extends Controller
      */
     public function news( string $domain = '' ) : StreamedResponse
     {
-        $name = $this->xml( $this->name( $domain ) );
         $template = $this->template();
         $tz = $this->timezone();
 
@@ -71,7 +70,8 @@ class SitemapController extends Controller
             ->orderByDesc( 'created_at' )
             ->limit( static::NEWS_PER_SITEMAP );
 
-        return response()->stream( function() use ( $name, $query, $template, $tz ) {
+        return response()->stream( function() use ( $domain, $query, $template, $tz ) {
+            $names = [];
             echo '<?xml version="1.0" encoding="UTF-8"?>';
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">';
 
@@ -81,6 +81,8 @@ class SitemapController extends Controller
                     continue;
                 }
 
+                // the website title is translated in the root page variant of the article's language
+                $name = $names[(string) $page->lang] ??= $this->xml( $this->name( $domain, (string) $page->lang ) );
                 $date = ( new \DateTimeImmutable( $page->created_at, $tz ) )->format( \DateTimeInterface::ATOM );
                 $lang = strtolower( str_replace( '_', '-', $page->lang ?: config( 'app.locale', 'en' ) ) );
                 $lang = in_array( $lang, ['zh-cn', 'zh-tw'], true ) ? $lang : explode( '-', $lang )[0];
@@ -137,10 +139,13 @@ class SitemapController extends Controller
 
     /**
      * Returns the published website title from the root page configuration.
+     *
+     * @param string $domain Requested domain, empty to match all domains
+     * @param string|null $lang Language of the root page variant, NULL for the source variant
      */
-    protected function name( string $domain ) : string
+    protected function name( string $domain, ?string $lang = null ) : string
     {
-        return Nav::rootConfig( $domain, fn( $page ) => trim( (string) ( $page->config->website->data->title ?? '' ) ) ?: null ) ?? '';
+        return Nav::rootConfig( $domain, fn( $page ) => trim( (string) ( $page->config->website->data->title ?? '' ) ) ?: null, $lang ) ?? '';
     }
 
 
@@ -203,7 +208,9 @@ class SitemapController extends Controller
     {
         // Sitemaps are publicly cacheable, so their contents must never depend on
         // the authenticated editor exception implemented by the Status scope.
-        $query = Nav::whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
+        // every published variant has its own URL
+        $query = Nav::allVariants()
+            ->whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
             ->where( function( $q ) {
                 $q->whereNull( 'to' )->orWhere( 'to', '' );
             } )
@@ -242,7 +249,7 @@ class SitemapController extends Controller
      * Streams a `<urlset>` XML document.
      *
      * When `$limit` is null all rows are streamed (single-file mode); otherwise
-     * the result is sliced via `ORDER BY id LIMIT/OFFSET` for chunked output.
+     * the result is sliced via `ORDER BY id, lang LIMIT/OFFSET` for chunked output.
      * The route URL is resolved once with placeholders and substituted per row
      * to avoid the per-iteration cost of Laravel's URL generator.
      *
@@ -258,7 +265,7 @@ class SitemapController extends Controller
         $query = $this->query()->select( 'path', 'domain', 'updated_at', 'meta' );
 
         if( $limit !== null ) {
-            $query->orderBy( 'id' )->offset( (int) $offset )->limit( $limit );
+            $query->orderBy( 'id' )->orderBy( 'lang' )->offset( (int) $offset )->limit( $limit );
         }
 
         return response()->stream( function() use ( $tz, $template, $query ) {

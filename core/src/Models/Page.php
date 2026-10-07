@@ -67,6 +67,9 @@ use Illuminate\Support\Collection;
  * @method static PageQuery<static> language(?string $lang, bool $trashed = false)
  * @method static PageQuery<static> variant(string $id)
  * @method static PageQuery<static> allVariants(bool $trashed = false)
+ * @method static PageQuery<static> fallback(string $lang, bool $trashed = false)
+ * @method static PageQuery<static> visible(string $lang)
+ * @method static PageQuery<static> sourceVariant()
  */
 class Page extends Base
 {
@@ -363,6 +366,8 @@ class Page extends Base
             ->setModel( new Nav() )
             ->defaultOrder();
 
+        // ancestors provide the inherited config, so they fall back to the source variant in both modes
+        $this->localize( $builder, false );
         return new AncestorsRelation( $builder, $this );
     }
 
@@ -374,10 +379,13 @@ class Page extends Base
      */
     public function children() : HasMany
     {
-        return $this->hasMany( Nav::class, $this->getParentIdName() )
+        $relation = $this->hasMany( Nav::class, $this->getParentIdName() )
             ->select( Nav::SELECT_COLUMNS )
             ->setModel( new Nav() )
             ->defaultOrder();
+
+        $this->localize( $relation->getQuery() );
+        return $relation;
     }
 
 
@@ -573,8 +581,52 @@ class Page extends Base
      */
     public function parent() : BelongsTo
     {
-        return $this->belongsTo( Nav::class, $this->getParentIdName() )
+        $relation = $this->belongsTo( Nav::class, $this->getParentIdName() )
             ->select( Nav::SELECT_COLUMNS )->setModel( new Nav() );
+
+        // the parent page always exists, so it falls back to the source variant in both modes
+        $this->localize( $relation->getQuery(), false );
+        return $relation;
+    }
+
+
+    /**
+     * Create a new instance of the given model.
+     *
+     * Relations are eager loaded from a new instance of the query model, so a language
+     * set at the query model (e.g. by the JSON:API "lang" filter) is passed to the new
+     * instance for localizing the navigation relations.
+     *
+     * @param array<string, mixed> $attributes
+     * @param bool $exists
+     * @return static
+     */
+    public function newInstance( $attributes = [], $exists = false )
+    {
+        $model = parent::newInstance( $attributes, $exists );
+        $lang = $this->attributes['lang'] ?? '';
+
+        if( !$this->exists && !$exists && $lang !== '' && ( $model->attributes['lang'] ?? '' ) === '' ) {
+            $model->attributes['lang'] = $lang;
+        }
+
+        return $model;
+    }
+
+
+    /**
+     * Relation to the published language variants of the page.
+     *
+     * Contains enabled variants which aren't in the trash, ordered by language.
+     *
+     * @return HasMany<PageVariant, $this>
+     */
+    public function variants() : HasMany
+    {
+        return $this->hasMany( PageVariant::class, 'page_id' )
+            ->select( 'id', 'tenant_id', 'page_id', 'lang', 'domain', 'path', 'to', 'status' )
+            ->whereIn( 'status', [1, 2] )
+            ->orderBy( 'lang' );
     }
 
 
@@ -730,8 +782,24 @@ class Page extends Base
             })
             ->defaultOrder();
 
-        if( !$this->isSourceVariant() && $builder instanceof PageQuery ) {
-            $builder->language( $this->lang );
+        if( $this->localize( $builder ) && ( $lang = $this->attributes['lang'] ?? null ) && !self::fallbackToSource() )
+        {
+            // leave out the sub-pages of pages without a variant in that language too
+            $builder->whereNotExists( function( $query ) use ( $table, $lft, $rgt, $lang ) {
+                $query->select( DB::raw( 1 ) )
+                    ->from( $table . ' as missing' )
+                    ->where( 'missing.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
+                    ->whereNull( 'missing.deleted_at' )
+                    ->whereColumn( "missing.$lft", '<=', "$table.$lft" )
+                    ->whereColumn( "missing.$rgt", '>=', "$table.$rgt" )
+                    ->whereNotExists( function( $query ) use ( $lang ) {
+                        $query->select( DB::raw( 1 ) )
+                            ->from( 'cms_page_variants as missing_variant' )
+                            ->whereColumn( 'missing_variant.page_id', 'missing.id' )
+                            ->where( 'missing_variant.lang', '=', $lang )
+                            ->whereNull( 'missing_variant.deleted_at' );
+                    } );
+            } );
         }
 
         if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
@@ -739,6 +807,49 @@ class Page extends Base
         }
 
         return new DescendantsRelation( $builder->setModel( new Nav() ), $this );
+    }
+
+
+    /**
+     * Tests if pages without a visible variant in the current language are shown in their source language.
+     *
+     * @return bool TRUE for the "source" fallback, FALSE if such pages are hidden
+     */
+    public static function fallbackToSource() : bool
+    {
+        return config( 'cms.translate.fallback', 'hide' ) === 'source';
+    }
+
+
+    /**
+     * Uses the variants in the language of this page for a navigation query.
+     *
+     * Pages without a visible variant in that language are left out or replaced by their
+     * source variant depending on the "cms.translate.fallback" setting. Editors see
+     * unpublished variants too. Queries of models without a language, e.g. when eager
+     * loading relations, keep using the source variants.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<*> $builder Page or navigation query
+     * @param bool $hide Leave out pages without variant in "hide" mode, FALSE always falls back to the source variant
+     * @return bool TRUE if the query has been restricted to the language, FALSE if not
+     */
+    public function localize( $builder, bool $hide = true ) : bool
+    {
+        $lang = $this->attributes['lang'] ?? null;
+
+        if( !is_string( $lang ) || $lang === '' || !$builder instanceof PageQuery ) {
+            return false;
+        }
+
+        if( $hide && !self::fallbackToSource() ) {
+            $builder->language( $lang );
+        } elseif( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+            $builder->fallback( $lang );
+        } else {
+            $builder->visible( $lang );
+        }
+
+        return true;
     }
 
 

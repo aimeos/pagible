@@ -23,6 +23,9 @@ final class Navigation
     /** @var array<int, Collection<int, Page>> */
     private array $items = [];
 
+    /** @var Collection<int, \stdClass>|null */
+    private ?Collection $variants = null;
+
     /**
      * Creates a request-local navigation view for a page and frontend user.
      */
@@ -78,19 +81,71 @@ final class Navigation
 
 
     /**
+     * Returns the published variants of the current page for language switchers and hreflang links.
+     *
+     * Only variants which are enabled and don't redirect are listed, without fallbacks.
+     *
+     * @return Collection<int, \stdClass> Variant rows ordered by language
+     */
+    public function variants() : Collection
+    {
+        return $this->variants ??= Nav::query()->allVariants()
+            ->select( 'id', 'tenant_id', 'lang', 'source', 'path', 'domain', 'to', 'name', 'status' )
+            ->where( 'id', $this->page->id )
+            ->whereIn( 'status', [1, 2] )
+            ->where( fn( $q ) => $q->whereNull( 'to' )->orWhere( 'to', '' ) )
+            ->orderBy( 'lang' )
+            ->toBase()
+            ->get();
+    }
+
+
+    /**
      * Returns the base navigation query including the latest versions for editors.
+     *
+     * Each page is returned in the language of the current page if it has a visible variant
+     * in that language, otherwise in its source language. Editors see unpublished variants.
      *
      * @return \Aimeos\Nestedset\QueryBuilder<Nav>
      */
     private function query() : \Aimeos\Nestedset\QueryBuilder
     {
         $query = Nav::select( Nav::SELECT_COLUMNS )->access( $this->user );
+        $lang = (string) $this->page->lang;
 
-        if( Permission::can( 'page:view', $this->user ) ) {
+        if( Permission::can( 'page:view', $this->user ) )
+        {
             $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
+            $lang !== '' && $query->fallback( $lang );
+        }
+        elseif( $lang !== '' )
+        {
+            $query->visible( $lang );
         }
 
         return $query;
+    }
+
+
+    /**
+     * Tests if the page must be left out because it has no visible variant in the current language.
+     *
+     * Pages in their source language are shown instead if the "source" fallback is configured
+     * and the source variant is visible. Otherwise, the page is hidden with its sub-pages.
+     *
+     * @param Page $page Navigation item in the current or its source language
+     * @param int $status Status of the navigation item
+     * @return bool TRUE if the page and its sub-pages are hidden, FALSE if not
+     */
+    private function fallback( Page $page, int $status ) : bool
+    {
+        $lang = (string) $this->page->lang;
+
+        if( $lang === '' || $page->lang === $lang ) {
+            return false;
+        }
+
+        return !Page::fallbackToSource() || $status !== 1;
     }
 
 
@@ -117,6 +172,11 @@ final class Navigation
             }
 
             if( (int) $status === 2 ) {
+                continue;
+            }
+
+            // source variant of a page without visible variant in the current language
+            if( $this->fallback( $page, (int) $status ) ) {
                 continue;
             }
 

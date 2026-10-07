@@ -4,11 +4,14 @@
 /**
  * Configuration:
  * - `hint`: string, description shown below the field while it has focus
- * - `absolute`: boolean, if true, relative paths and fragment/query links are rejected
+ * - `absolute`: boolean, if true, relative paths, fragment/query links and page links are rejected
  * - `allowed`: array of strings, allowed URL schemas (e.g., ['http', 'https'])
  * - `placeholder`: string, placeholder text for the input field
  * - `rel`: boolean, if true, show relationship options for external links
  * - `required`: boolean, if true, the field is required
+ *
+ * Pages picked from the suggestions are stored as `page:<id>` links which are rendered
+ * as URL of the page in the language of the current page.
  *
  * The `rel` prop carries the selected relationship. Its parent stores the value
  * in a sibling `<field>-rel` data property, keeping the URL itself a string.
@@ -42,6 +45,7 @@ export default {
       relItems: [],
       loading: false,
       pages: [],
+      linked: null,
       // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
       // to avoid catastrophic backtracking (ReDoS) on crafted input.
       regex: new RegExp(
@@ -52,6 +56,7 @@ export default {
 
   created() {
     this.searchd = this.debounce(this.search, 300)
+    this.resolve(this.modelValue)
     this.relItems = [
       { key: '', val: this.$gettext('None') },
       { key: 'sponsored', val: this.$gettext('Sponsored') },
@@ -59,7 +64,19 @@ export default {
     ]
   },
 
+  watch: {
+    modelValue(value) {
+      this.resolve(value)
+    }
+  },
+
   computed: {
+    // suggested pages and the linked page so the combobox shows its name instead of the ID
+    items() {
+      const list = this.linked ? [this.linked] : []
+      return list.concat(this.pages.filter((item) => item.value !== this.linked?.value))
+    },
+
     external() {
       return this.config.rel && /^(?:https?:)?\/\//i.test(this.modelValue ?? this.config.default ?? '')
     },
@@ -91,11 +108,48 @@ export default {
         }
       }
 
-      return v ? /^[#?][^\s]*$/.test(v) || this.regex.test(v) : true
+      return v ? /^[#?][^\s]*$/.test(v) || /^page:[A-Za-z0-9-]+$/.test(v) || this.regex.test(v) : true
+    },
+
+    item(page) {
+      return { title: `${page.name || page.path} (/${page.path || ''})`, value: `page:${page.id}` }
+    },
+
+    resolve(value) {
+      const id = /^page:([A-Za-z0-9-]+)$/.exec(value || '')?.[1]
+
+      if (!id || this.linked?.value === value) {
+        this.linked = id ? this.linked : null
+        return
+      }
+
+      this.linked = { title: value, value }
+      this.$apollo
+        .query({
+          query: gql`
+            query ($id: ID!, $lang: String) {
+              page(id: $id, lang: $lang) {
+                id
+                name
+                path
+              }
+            }
+          `,
+          variables: { id, lang: this.$route?.query?.lang || null }
+        })
+        .then((result) => {
+          if (result.data?.page && this.linked?.value === value) {
+            this.linked = this.item(result.data.page)
+          }
+        })
+        .catch((error) => {
+          this.$log('Url::resolve(): Error fetching page', error)
+        })
     },
 
     search(value) {
-      if (!value || this.config.absolute) {
+      // the combobox shows the title of the picked page as search text
+      if (!value || this.config.absolute || this.items.some((item) => item.title === value)) {
         this.pages = []
         return
       }
@@ -104,20 +158,23 @@ export default {
       this.$apollo
         .query({
           query: gql`
-            query pages($filter: PageFilter) {
-              pages(first: 10, filter: $filter) {
+            query pages($filter: PageFilter, $lang: String) {
+              pages(first: 10, filter: $filter, lang: $lang) {
                 data {
+                  id
+                  name
                   path
                 }
               }
             }
           `,
           variables: {
-            filter: { any: value.replace(/^\/+/, '') }
+            filter: { any: value.replace(/^\/+/, '') },
+            lang: this.$route?.query?.lang || null
           }
         })
         .then((result) => {
-          this.pages = (result.data?.pages?.data || []).map((page) => '/' + (page.path || ''))
+          this.pages = (result.data?.pages?.data || []).map((page) => this.item(page))
         })
         .catch((error) => {
           this.$log('Url::search(): Error fetching pages', error)
@@ -137,7 +194,8 @@ export default {
         :hint="config.hint && $pgettext('fh', config.hint)"
         :error="hasError"
         :rules="rules"
-        :items="pages"
+        :items="items"
+        :return-object="false"
         :loading="loading"
         :readonly="readonly"
         :placeholder="config.placeholder || ''"
@@ -149,7 +207,10 @@ export default {
         hide-details="auto"
         variant="outlined"
         class="url-input ltr"
+        item-title="title"
+        item-value="value"
         clearable
+        no-filter
       ></v-combobox>
       <v-select
         v-if="external"

@@ -182,6 +182,53 @@ describe('Url', () => {
     cy.get('@update').should('have.been.called')
   })
 
+  it('accepts page links as valid', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Url, {
+      props: { modelValue: 'page:0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b', config: {}, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('rejects page links when an absolute URL is required', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Url, {
+      props: { modelValue: 'page:0197a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b', config: { absolute: true }, onError }
+    })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('shows the name of the linked page', () => {
+    const page = { id: 'abc-123', name: 'About us', path: 'about' }
+    cy.mount(Url, {
+      props: { modelValue: 'page:abc-123', config: {} },
+      global: { mocks: { $apollo: { query: () => Promise.resolve({ data: { page } }) } } }
+    })
+    cy.get('.url-input').should('contain', 'About us (/about)')
+  })
+
+  it('stores picked pages as page links', () => {
+    const onUpdate = cy.spy().as('update')
+    const pages = { data: [{ id: 'abc-123', name: 'About us', path: 'about' }] }
+    cy.mount(Url, {
+      props: { config: {}, 'onUpdate:modelValue': onUpdate },
+      global: { mocks: { $apollo: { query: () => Promise.resolve({ data: { pages } }) } } }
+    })
+    cy.get('input[role="combobox"]').type('abo')
+    cy.get('.v-list-item').contains('About us (/about)').click()
+    cy.get('@update').should('have.been.calledWith', 'page:abc-123')
+  })
+
+  it('does not search pages for absolute URLs', () => {
+    const query = cy.stub().resolves({ data: {} }).as('query')
+    cy.mount(Url, {
+      props: { config: { absolute: true } },
+      global: { mocks: { $apollo: { query } } }
+    })
+    cy.get('input[role="combobox"]').type('abo')
+    cy.get('@query').should('not.have.been.called')
+  })
+
   it('is readonly when readonly prop is true', () => {
     cy.mount(Url, { props: { config: {}, readonly: true } })
     cy.get('input[role="combobox"]').should('have.attr', 'readonly')

@@ -65,7 +65,8 @@ class Nav extends Page
     public static function page( string $path, string $domain = '' ) : ?self
     {
         return self::query()
-            ->select( 'id', 'tenant_id', 'domain', 'path', 'to', 'cache', 'status' )
+            ->allVariants()
+            ->select( 'id', 'variant_id', 'tenant_id', 'domain', 'path', 'to', 'cache', 'status' )
             ->withAggregate( 'access as access_exists', new Expression( '1' ) )
             ->whereIn( 'status', [1, 2] )
             ->where( 'domain', $domain )
@@ -79,11 +80,13 @@ class Nav extends Page
      *
      * @param string $domain Requested domain, empty to match all domains
      * @param \Closure(self): mixed $fn Receives each partial, read-only root page and returns its value or NULL
+     * @param string|null $lang Language of the root page variants, NULL for the source variants
      * @return mixed First non-null value or NULL if no root page provides one
      */
-    public static function rootConfig( string $domain, \Closure $fn ) : mixed
+    public static function rootConfig( string $domain, \Closure $fn, ?string $lang = null ) : mixed
     {
         $pages = self::query()
+            ->when( $lang !== null && $lang !== '', fn( $q ) => $q->visible( (string) $lang ) )
             ->select( 'config' )
             ->whereNull( 'parent_id' )
             ->whereIn( 'status', [1, 2] )

@@ -212,6 +212,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Translations
+    |--------------------------------------------------------------------------
+    |
+    | How menus, breadcrumbs and page lists show pages without a visible
+    | variant in the current language: "hide" leaves them out together with
+    | their sub-pages, "source" shows them with the name and URL of their
+    | source language variant.
+    |
+    */
+    'translate' => [
+        'fallback' => env( 'CMS_TRANSLATE_FALLBACK', 'hide' ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Number of stored versions
     |--------------------------------------------------------------------------
     |

@@ -16,18 +16,22 @@ use LaravelJsonApi\Eloquent\Filters\WhereIdIn;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasMany;
 use LaravelJsonApi\Eloquent\Fields\Relations\HasOne;
 use LaravelJsonApi\Eloquent\Fields\ArrayHash;
+use LaravelJsonApi\Eloquent\Fields\ArrayList;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\ID;
 use LaravelJsonApi\Eloquent\Schema;
 use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\JsonApi\V1\Filters\WhereLang;
+use Aimeos\Cms\JsonApi\V1\Filters\WhereVariant;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 
 class PageSchema extends Schema
@@ -106,6 +110,14 @@ class PageSchema extends Schema
 
                 return $name === 'content' ? $this->resolveContent( $model, $items ) : $this->resolveFiles( $model, $items );
             } ), ['meta', 'config', 'content'] ),
+            ArrayList::make( 'variants' )->readOnly()->extractUsing(
+                fn( $model ) => $model->variants->map( fn( $variant ) => [
+                    'lang' => $variant->lang,
+                    'path' => $variant->path,
+                    'domain' => $variant->domain,
+                    'url' => $this->variantUrl( $variant->path, $variant->domain ),
+                ] )->values()->all()
+            ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn( $relation ) => $relation->withoutLinks()
             ),
@@ -126,7 +138,10 @@ class PageSchema extends Schema
         return [
             ...array_map( fn( $name ) => Where::make( $name )->deserializeUsing(
                 fn( $value ) => (string) $value
-            ), ['domain', 'path', 'tag', 'lang'] ),
+            ), ['domain', 'tag'] ),
+            WhereVariant::make( 'path' )->deserializeUsing( fn( $value ) => (string) $value ),
+            // must be the last variant filter because it selects the variants of the language
+            WhereLang::make( 'lang' )->deserializeUsing( fn( $value ) => (string) $value ),
             WhereIdIn::make( $this ),
         ];
     }
@@ -164,6 +179,10 @@ class PageSchema extends Schema
             $query = $query->with( $with );
         }
 
+        if( !$fields || str_contains( $fields, 'variants' ) ) {
+            $query->with( 'variants' );
+        }
+
         $query = $query->orderBy( NestedSet::LFT );
 
         if( $request?->get( 'filter' ) ) {
@@ -182,6 +201,24 @@ class PageSchema extends Schema
     public function pagination(): ?Paginator
     {
         return PagePagination::make();
+    }
+
+
+    /**
+     * Returns the URL of a page variant if the page route of the theme package is available.
+     *
+     * @param string $path Page path
+     * @param string $domain Page domain
+     * @return string|null Absolute URL or NULL if pages aren't rendered by the CMS
+     */
+    protected function variantUrl( string $path, string $domain ) : ?string
+    {
+        if( !Route::has( 'cms.page' ) ) {
+            return null;
+        }
+
+        $params = config( 'cms.multidomain' ) ? ['domain' => $domain ?: request()->getHost()] : [];
+        return route( 'cms.page', $params + ['path' => $path] );
     }
 
 

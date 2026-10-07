@@ -51,7 +51,8 @@ class PageBuilder extends Builder
      * Uses the variant joined by the given condition.
      *
      * @param string $mode "source" for the source language, "lang" for one language, "fallback" for one language
-     *  or the source language if a page has no variant in that language, "variant" for one variant ID or "all"
+     *  or the source language if a page has no variant in that language, "visible" for one language or the source
+     *  language if a page has no published and enabled variant in that language, "variant" for one variant ID or "all"
      * @param string|null $value Language code or variant ID depending on the mode
      * @param bool $trashed Include soft-deleted variants
      * @return static Same builder for fluent interface
@@ -91,6 +92,21 @@ class PageBuilder extends Builder
                                         ->whereColumn( 'w.page_id', '=', 'p.id' )
                                         ->where( 'w.lang', '=', (string) $value )
                                         ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
+                                } );
+                            } );
+                        } );
+                        break;
+                    case 'visible':
+                        $join->where( function( $q ) use ( $value ) {
+                            $q->where( function( $q ) use ( $value ) {
+                                $q->where( 'v.lang', '=', (string) $value )->where( 'v.status', '<>', 0 );
+                            } )->orWhere( function( $q ) use ( $value ) {
+                                $q->whereColumn( 'v.lang', '=', 'p.source' )->whereNotExists( function( $q ) use ( $value ) {
+                                    $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
+                                        ->whereColumn( 'w.page_id', '=', 'p.id' )
+                                        ->where( 'w.lang', '=', (string) $value )
+                                        ->where( 'w.status', '<>', 0 )
+                                        ->whereNull( 'w.deleted_at' );
                                 } );
                             } );
                         } );
