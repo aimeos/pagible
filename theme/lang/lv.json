@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Fails ir pārāk liels.",
     ":attribute: Too many files.": ":attribute: Pārāk daudz failu.",
     ":attribute: The files are too large.": ":attribute: Faili ir pārāk lieli.",
-    "Please select": "Lūdzu, izvēlieties"
+    "Please select": "Lūdzu, izvēlieties",
+    "Before": "Pirms",
+    "After": "Pēc",
+    "Before and after comparison": "Salīdzinājums pirms un pēc"
 }

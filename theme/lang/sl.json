@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Datoteka je prevelika.",
     ":attribute: Too many files.": ":attribute: Preveč datotek.",
     ":attribute: The files are too large.": ":attribute: Datoteke so prevelike.",
-    "Please select": "Izberite"
+    "Please select": "Izberite",
+    "Before": "Prej",
+    "After": "Potem",
+    "Before and after comparison": "Primerjava prej in potem"
 }

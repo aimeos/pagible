@@ -1,0 +1,93 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.before-after .compare {
+	--pos: 50%;
+	position: relative;
+	direction: ltr;
+	overflow: hidden;
+	border-radius: calc(var(--pico-border-radius) * 2);
+	user-select: none;
+}
+
+.before-after .compare picture,
+.before-after .compare img {
+	display: block;
+	width: 100%;
+}
+
+.before-after .compare img {
+	height: auto;
+}
+
+.before-after .compare .before {
+	position: absolute;
+	inset: 0;
+	clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.before-after .compare .before img {
+	height: 100%;
+	object-fit: cover;
+}
+
+.before-after .compare .label {
+	position: absolute;
+	top: 1rem;
+	padding: 0.25rem 0.75rem;
+	border-radius: var(--pico-border-radius);
+	background-color: #000000a0;
+	color: #ffffff;
+	font-size: 0.875rem;
+	pointer-events: none;
+}
+
+.before-after .compare .label-before {
+	left: 1rem;
+}
+
+.before-after .compare .label-after {
+	right: 1rem;
+}
+
+.before-after .compare .handle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--pos);
+	width: 0.25rem;
+	transform: translateX(-50%);
+	background-color: #ffffff;
+	box-shadow: 0 0 0.5rem #00000080;
+	pointer-events: none;
+}
+
+.before-after .compare .handle::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	transform: translate(-50%, -50%);
+	border: 0.25rem solid #ffffff;
+	border-radius: 50%;
+	background-color: #00000060;
+	box-shadow: 0 0 0.5rem #00000080;
+}
+
+.before-after .compare:has(input:focus-visible) .handle::after {
+	outline: 0.2rem solid var(--pico-primary);
+	outline-offset: 0.2rem;
+}
+
+.before-after .compare input[type="range"] {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: ew-resize;
+}

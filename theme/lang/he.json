@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: הקובץ גדול מדי.",
     ":attribute: Too many files.": ":attribute: יותר מדי קבצים.",
     ":attribute: The files are too large.": ":attribute: הקבצים גדולים מדי.",
-    "Please select": "נא לבחור"
+    "Please select": "נא לבחור",
+    "Before": "לפני",
+    "After": "אחרי",
+    "Before and after comparison": "השוואת לפני ואחרי"
 }

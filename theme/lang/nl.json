@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Het bestand is te groot.",
     ":attribute: Too many files.": ":attribute: Te veel bestanden.",
     ":attribute: The files are too large.": ":attribute: De bestanden zijn te groot.",
-    "Please select": "Maak een keuze"
+    "Please select": "Maak een keuze",
+    "Before": "Voor",
+    "After": "Na",
+    "Before and after comparison": "Voor-en-na-vergelijking"
 }

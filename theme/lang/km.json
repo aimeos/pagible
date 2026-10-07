@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: ឯកសារធំពេក។",
     ":attribute: Too many files.": ":attribute: ឯកសារច្រើនពេក។",
     ":attribute: The files are too large.": ":attribute: ឯកសារទាំងនោះធំពេក។",
-    "Please select": "សូមជ្រើសរើស"
+    "Please select": "សូមជ្រើសរើស",
+    "Before": "មុន",
+    "After": "ក្រោយ",
+    "Before and after comparison": "ការប្រៀបធៀបមុន និងក្រោយ"
 }

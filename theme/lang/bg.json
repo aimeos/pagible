@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Файлът е твърде голям.",
     ":attribute: Too many files.": ":attribute: Твърде много файлове.",
     ":attribute: The files are too large.": ":attribute: Файловете са твърде големи.",
-    "Please select": "Моля, изберете"
+    "Please select": "Моля, изберете",
+    "Before": "Преди",
+    "After": "След",
+    "Before and after comparison": "Сравнение преди и след"
 }

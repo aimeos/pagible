@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: File terlalu besar.",
     ":attribute: Too many files.": ":attribute: Terlalu banyak file.",
     ":attribute: The files are too large.": ":attribute: Ukuran total file terlalu besar.",
-    "Please select": "Silakan pilih"
+    "Please select": "Silakan pilih",
+    "Before": "Sebelum",
+    "After": "Sesudah",
+    "Before and after comparison": "Perbandingan sebelum dan sesudah"
 }

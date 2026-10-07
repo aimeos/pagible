@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Fail on liiga suur.",
     ":attribute: Too many files.": ":attribute: Liiga palju faile.",
     ":attribute: The files are too large.": ":attribute: Failid on liiga suured.",
-    "Please select": "Palun valige"
+    "Please select": "Palun valige",
+    "Before": "Enne",
+    "After": "Pärast",
+    "Before and after comparison": "Enne ja pärast võrdlus"
 }

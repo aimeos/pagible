@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Dosya çok büyük.",
     ":attribute: Too many files.": ":attribute: Çok fazla dosya.",
     ":attribute: The files are too large.": ":attribute: Dosyalar çok büyük.",
-    "Please select": "Lütfen seçin"
+    "Please select": "Lütfen seçin",
+    "Before": "Önce",
+    "After": "Sonra",
+    "Before and after comparison": "Önce ve sonra karşılaştırması"
 }

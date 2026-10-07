@@ -323,6 +323,35 @@
                 }
             }
         },
+        "before-after": {
+            "group": "media",
+            "description": "Slider comparing two images before and after a change",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19,3H14V5H19V18L14,12V21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10,18H5L10,12M10,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H10V23H12V1H10V3Z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string",
+                    "hint": "Optional headline shown above the comparison"
+                },
+                "before": {
+                    "type": "image",
+                    "label": "before image",
+                    "hint": "Image showing the state before the change",
+                    "required": true
+                },
+                "after": {
+                    "type": "image",
+                    "label": "after image",
+                    "hint": "Image showing the result, both images should have the same size",
+                    "required": true
+                },
+                "main": {
+                    "type": "switch",
+                    "label": "load immediately",
+                    "hint": "Load the images without delay if they are visible at the top of the page",
+                    "default": false
+                }
+            }
+        },
         "video": {
             "group": "media",
             "description": "Embedded video with player controls",

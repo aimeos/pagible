@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: El fitxer és massa gran.",
     ":attribute: Too many files.": ":attribute: Massa fitxers.",
     ":attribute: The files are too large.": ":attribute: Els fitxers són massa grans.",
-    "Please select": "Seleccioneu una opció"
+    "Please select": "Seleccioneu una opció",
+    "Before": "Abans",
+    "After": "Després",
+    "Before and after comparison": "Comparació d'abans i després"
 }

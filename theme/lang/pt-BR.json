@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: O arquivo é muito grande.",
     ":attribute: Too many files.": ":attribute: Arquivos demais.",
     ":attribute: The files are too large.": ":attribute: Os arquivos são muito grandes.",
-    "Please select": "Selecione uma opção"
+    "Please select": "Selecione uma opção",
+    "Before": "Antes",
+    "After": "Depois",
+    "Before and after comparison": "Comparação antes e depois"
 }

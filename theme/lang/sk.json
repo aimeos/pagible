@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Súbor je príliš veľký.",
     ":attribute: Too many files.": ":attribute: Príliš veľa súborov.",
     ":attribute: The files are too large.": ":attribute: Súbory sú príliš veľké.",
-    "Please select": "Vyberte, prosím"
+    "Please select": "Vyberte, prosím",
+    "Before": "Pred",
+    "After": "Po",
+    "Before and after comparison": "Porovnanie pred a po"
 }
