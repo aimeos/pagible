@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Failas per didelis.",
     ":attribute: Too many files.": ":attribute: Per daug failų.",
     ":attribute: The files are too large.": ":attribute: Failai per dideli.",
-    "Please select": "Pasirinkite"
+    "Please select": "Pasirinkite",
+    "Before": "Prieš",
+    "After": "Po",
+    "Before and after comparison": "Palyginimas prieš ir po"
 }

@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Tệp quá lớn.",
     ":attribute: Too many files.": ":attribute: Quá nhiều tệp.",
     ":attribute: The files are too large.": ":attribute: Các tệp quá lớn.",
-    "Please select": "Vui lòng chọn"
+    "Please select": "Vui lòng chọn",
+    "Before": "Trước",
+    "After": "Sau",
+    "Before and after comparison": "So sánh trước và sau"
 }

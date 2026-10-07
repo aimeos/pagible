@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: A fájl túl nagy.",
     ":attribute: Too many files.": ":attribute: Túl sok fájl.",
     ":attribute: The files are too large.": ":attribute: A fájlok túl nagyok.",
-    "Please select": "Kérjük, válasszon"
+    "Please select": "Kérjük, válasszon",
+    "Before": "Előtte",
+    "After": "Utána",
+    "Before and after comparison": "Előtte-utána összehasonlítás"
 }

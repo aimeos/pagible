@@ -50,6 +50,52 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testBeforeAfter() : void
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
+		$files = collect( ['before' => (object) [
+			'id' => 'before',
+			'name' => 'Old roof',
+			'path' => 'https://example.com/before.webp',
+			'previews' => [],
+		], 'after' => (object) [
+			'id' => 'after',
+			'name' => 'New roof',
+			'path' => 'https://example.com/after.webp',
+			'previews' => [],
+		]] );
+
+		$data = (object) ['title' => 'Roof repair', 'before' => (object) ['id' => 'before'], 'after' => (object) ['id' => 'after']];
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertStringContainsString( 'Roof repair', $html );
+		$this->assertSame( 2, substr_count( $html, '<picture' ) );
+		$this->assertStringContainsString( 'Old roof', $html );
+		$this->assertStringContainsString( 'New roof', $html );
+		$this->assertStringContainsString( 'type="range"', $html );
+		$this->assertStringContainsString( 'Before and after comparison', $html );
+		$this->assertStringNotContainsString( 'loading="eager"', $html );
+
+		$data->main = true;
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		$this->assertSame( 2, substr_count( $html, 'loading="eager"' ) );
+
+		$data = (object) ['before' => (object) ['id' => 'before']];
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		$this->assertStringNotContainsString( '<picture', $html );
+
+		try {
+			Theme::locale( 'de' );
+			$data = (object) ['before' => (object) ['id' => 'before'], 'after' => (object) ['id' => 'after']];
+			$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		} finally {
+			Theme::locale( 'en' );
+		}
+
+		$this->assertStringContainsString( 'Vorher-Nachher-Vergleich', $html );
+	}
+
+
 	public function testLocaleUsesBaseLanguageForRegionalTranslations() : void
 	{
 		try {

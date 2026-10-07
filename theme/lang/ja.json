@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: ファイルが大きすぎます。",
     ":attribute: Too many files.": ":attribute: ファイルが多すぎます。",
     ":attribute: The files are too large.": ":attribute: ファイルの合計サイズが大きすぎます。",
-    "Please select": "選択してください"
+    "Please select": "選択してください",
+    "Before": "ビフォー",
+    "After": "アフター",
+    "Before and after comparison": "ビフォーアフターの比較"
 }

@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: الملف كبير جدًا.",
     ":attribute: Too many files.": ":attribute: عدد الملفات كبير جدًا.",
     ":attribute: The files are too large.": ":attribute: الملفات كبيرة جدًا.",
-    "Please select": "يرجى الاختيار"
+    "Please select": "يرجى الاختيار",
+    "Before": "قبل",
+    "After": "بعد",
+    "Before and after comparison": "مقارنة قبل وبعد"
 }

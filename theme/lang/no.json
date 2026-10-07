@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Filen er for stor.",
     ":attribute: Too many files.": ":attribute: For mange filer.",
     ":attribute: The files are too large.": ":attribute: Filene er for store.",
-    "Please select": "Velg"
+    "Please select": "Velg",
+    "Before": "Før",
+    "After": "Etter",
+    "Before and after comparison": "Før og etter-sammenligning"
 }

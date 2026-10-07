@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: Tiedosto on liian suuri.",
     ":attribute: Too many files.": ":attribute: Liian monta tiedostoa.",
     ":attribute: The files are too large.": ":attribute: Tiedostot ovat liian suuria.",
-    "Please select": "Valitse"
+    "Please select": "Valitse",
+    "Before": "Ennen",
+    "After": "Jälkeen",
+    "Before and after comparison": "Ennen ja jälkeen -vertailu"
 }

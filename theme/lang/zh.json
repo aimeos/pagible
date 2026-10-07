@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: 文件太大。",
     ":attribute: Too many files.": ":attribute: 文件太多。",
     ":attribute: The files are too large.": ":attribute: 文件总大小太大。",
-    "Please select": "请选择"
+    "Please select": "请选择",
+    "Before": "之前",
+    "After": "之后",
+    "Before and after comparison": "前后对比"
 }

@@ -2480,731 +2480,752 @@ msgstr "προβολή διαφανειών"
 
 #: js/strings.js:59
 msgctxt "st"
+msgid "before-after"
+msgstr "πριν-μετά"
+
+#: js/strings.js:60
+msgctxt "st"
 msgid "code"
 msgstr "κώδικας"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "table"
 msgstr "πίνακας"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "map"
 msgstr "χάρτης"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "image"
 msgstr "εικόνα"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "video"
 msgstr "βίντεο"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "audio"
 msgstr "ήχος"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "file"
 msgstr "αρχείο"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "cards"
 msgstr "Κάρτες"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "article"
 msgstr "Άρθρο"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "questions"
 msgstr "Συχνές ερωτήσεις"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "toc"
 msgstr "Πίνακας περιεχομένων"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "contact"
 msgstr "Επικοινωνία"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Μετα-ετικέτες"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "social-media"
 msgstr "Μέσα κοινωνικής δικτύωσης"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "canonical"
 msgstr "Κανονική διεύθυνση URL"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "robots"
 msgstr "Μηχανές αναζήτησης"
 
-#: js/strings.js:79
+#: js/strings.js:80
 msgctxt "st"
 msgid "theme"
 msgstr "Θέμα"
 
-#: js/strings.js:80
+#: js/strings.js:81
 msgctxt "st"
 msgid "styles"
 msgstr "στυλ"
 
-#: js/strings.js:81
+#: js/strings.js:82
 msgctxt "st"
 msgid "javascript"
 msgstr "JavaScript"
 
-#: js/strings.js:82
+#: js/strings.js:83
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:83
+#: js/strings.js:84
 msgctxt "st"
 msgid "news"
 msgstr "Νέα"
 
-#: js/strings.js:84
+#: js/strings.js:85
 msgctxt "st"
 msgid "pricing"
 msgstr "Τιμολόγηση"
 
-#: js/strings.js:85
+#: js/strings.js:86
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:86
+#: js/strings.js:87
 msgctxt "st"
 msgid "security"
 msgstr "Ασφάλεια"
 
-#: js/strings.js:87
+#: js/strings.js:88
 msgctxt "st"
 msgid "testimonial"
 msgstr "Γνώμες πελατών"
 
-#: js/strings.js:90
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Επικεφαλίδα ενότητας από H1 έως H6"
 
-#: js/strings.js:91
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Μορφοποιημένο κείμενο με παραγράφους, λίστες και συνδέσμους"
 
-#: js/strings.js:92
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Εικόνα δίπλα σε μορφοποιημένο κείμενο"
 
-#: js/strings.js:93
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Πηγαίος κώδικας με επισήμανση σύνταξης"
 
-#: js/strings.js:94
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Πίνακας δεδομένων με προαιρετική γραμμή ή στήλη κεφαλίδας"
 
-#: js/strings.js:95
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Διαδραστικός χάρτης με τοποθεσία, κείμενο και σύνδεσμο"
 
-#: js/strings.js:96
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Προσαρμοσμένο HTML για ενσωματώσεις και widgets"
 
-#: js/strings.js:97
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Μία προσαρμοζόμενη εικόνα"
 
-#: js/strings.js:98
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Εναλλασσόμενες διαφάνειες με πολλές εικόνες"
 
-#: js/strings.js:99
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Ρυθμιστικό που συγκρίνει δύο εικόνες πριν και μετά από μια αλλαγή"
+
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Ενσωματωμένο βίντεο με χειριστήρια αναπαραγωγής"
 
-#: js/strings.js:100
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Ενσωματωμένος ήχος με χειριστήρια αναπαραγωγής"
 
-#: js/strings.js:101
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Αρχείο για λήψη, π.χ. έγγραφο PDF"
 
-#: js/strings.js:102
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Μεγάλη εισαγωγή με τίτλο, κείμενο, κουμπιά και φόντο"
 
-#: js/strings.js:103
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Πρόσκληση για δράση με κείμενο και κουμπιά"
 
-#: js/strings.js:104
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Πλέγμα καρτών με εικόνα, τίτλο και κείμενο"
 
-#: js/strings.js:105
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Γνώμες πελατών με όνομα, ρόλο και φωτογραφία"
 
-#: js/strings.js:106
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Εισαγωγή άρθρου με συλλογή εικόνων και συντάκτη"
 
-#: js/strings.js:107
+#: js/strings.js:109
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Λίστα άρθρων ιστολογίου από γονική σελίδα"
 
-#: js/strings.js:108
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Λίστα ειδήσεων από γονική σελίδα"
 
-#: js/strings.js:109
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Προβεβλημένη υποσελίδα ακολουθούμενη από άλλες υποσελίδες"
 
-#: js/strings.js:110
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Πακέτα τιμών με συνδρομές ή εφάπαξ πληρωμές"
 
-#: js/strings.js:111
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Συχνές ερωτήσεις με απαντήσεις"
 
-#: js/strings.js:112
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Πίνακας περιεχομένων με συνδέσμους στις επικεφαλίδες της σελίδας"
 
-#: js/strings.js:113
+#: js/strings.js:115
 msgctxt "sd"
 msgid "Contact form with configurable fields and optional file attachments"
 msgstr ""
-"Φόρμα επικοινωνίας με παραμετροποιήσιμα πεδία και προαιρετικά συνημμένα αρχεία"
+"Φόρμα επικοινωνίας με παραμετροποιήσιμα πεδία και προαιρετικά συνημμένα "
+"αρχεία"
 
-#: js/strings.js:116
+#: js/strings.js:118
 msgctxt "fn"
 msgid "button"
 msgstr "κουμπί"
 
-#: js/strings.js:117
+#: js/strings.js:119
 msgctxt "fn"
 msgid "buttons"
 msgstr "κουμπιά"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "cards"
 msgstr "Κάρτες"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "description"
 msgstr "περιγραφή"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "file"
 msgstr "αρχείο"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "files"
 msgstr "αρχεία"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "follow"
 msgstr "Ακολούθηση συνδέσμων"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "header"
 msgstr "επικεφαλίδα"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "index"
 msgstr "Ευρετηρίαση"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "keywords"
 msgstr "λέξεις-κλειδιά"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "language"
 msgstr "γλώσσα"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "label"
 msgstr "ετικέτα"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "level"
 msgstr "επίπεδο"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "limit"
 msgstr "όριο"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "location"
 msgstr "τοποθεσία"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "main"
 msgstr "Κύρια εικόνα"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "order"
 msgstr "σειρά"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Γονική σελίδα"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "position"
 msgstr "θέση"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "text"
 msgstr "κείμενο"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "table"
 msgstr "πίνακας"
 
-#: js/strings.js:137
+#: js/strings.js:139
 msgctxt "fn"
 msgid "title"
 msgstr "τίτλος"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "image"
 msgstr "εικόνα"
 
-#: js/strings.js:141
+#: js/strings.js:143
 msgctxt "fn"
 msgid "images"
 msgstr "εικόνες"
 
-#: js/strings.js:142
+#: js/strings.js:144
+msgctxt "fn"
+msgid "before image"
+msgstr "εικόνα πριν"
+
+#: js/strings.js:145
+msgctxt "fn"
+msgid "after image"
+msgstr "εικόνα μετά"
+
+#: js/strings.js:146
 msgctxt "fn"
 msgid "items"
 msgstr "αντικείμενα"
 
-#: js/strings.js:143
+#: js/strings.js:147
 msgctxt "fn"
 msgid "introduction"
 msgstr "εισαγωγή"
 
-#: js/strings.js:144
+#: js/strings.js:148
 msgctxt "fn"
 msgid "load immediately"
 msgstr "άμεση φόρτωση"
 
-#: js/strings.js:145
+#: js/strings.js:149
 msgctxt "fn"
 msgid "source code"
 msgstr "πηγαίος κώδικας"
 
-#: js/strings.js:146
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Ρόλος πρόσβασης frontend"
 
-#: js/strings.js:147
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Τιμές πληρωμής"
 
-#: js/strings.js:148
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Αναφορά πληρωμής"
 
-#: js/strings.js:149
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Currency"
 msgstr "Νόμισμα"
 
-#: js/strings.js:150
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Διάστημα χρέωσης"
 
-#: js/strings.js:151
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Μονάδα τιμής"
 
-#: js/strings.js:152
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Σελίδα ή σύνδεσμος στόχος"
 
-#: js/strings.js:153
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Πεδία φόρμας"
 
-#: js/strings.js:154
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Field"
 msgstr "Πεδίο"
 
-#: js/strings.js:155
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Required"
 msgstr "Υποχρεωτικό"
 
-#: js/strings.js:156
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Input type"
 msgstr "Τύπος πεδίου"
 
-#: js/strings.js:157
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Choices"
 msgstr "Επιλογές"
 
-#: js/strings.js:158
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Attachments"
 msgstr "Συνημμένα"
 
-#: js/strings.js:159
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Link label"
 msgstr "Κείμενο συνδέσμου"
 
-#: js/strings.js:160
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "URL επικοινωνίας"
 
-#: js/strings.js:161
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Email επικοινωνίας"
 
-#: js/strings.js:162
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Description"
 msgstr "Περιγραφή"
 
-#: js/strings.js:163
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Εμφανιζόμενη τιμή"
 
-#: js/strings.js:164
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Συλλογή"
 
-#: js/strings.js:165
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Κείμενο επισήμανσης"
 
-#: js/strings.js:166
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Επισημασμένο"
 
-#: js/strings.js:167
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Language"
 msgstr "Γλώσσα"
 
-#: js/strings.js:168
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Τύπος πληρωμής"
 
-#: js/strings.js:169
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Προτιμώμενες γλώσσες"
 
-#: js/strings.js:170
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Υπότιτλος"
 
-#: js/strings.js:171
+#: js/strings.js:175
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Ευχαριστίες"
 
-#: js/strings.js:172
+#: js/strings.js:176
 msgctxt "fn"
 msgid "amount"
 msgstr "Ποσό"
 
-#: js/strings.js:173
+#: js/strings.js:177
 msgctxt "fn"
 msgid "background"
 msgstr "Φόντο"
 
-#: js/strings.js:174
+#: js/strings.js:178
 msgctxt "fn"
 msgid "background animation"
 msgstr "Κίνηση φόντου"
 
-#: js/strings.js:175
+#: js/strings.js:179
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Εναλλακτικό κουμπί"
 
-#: js/strings.js:176
+#: js/strings.js:180
 msgctxt "fn"
 msgid "canonical"
 msgstr "Κανονική διεύθυνση URL"
 
-#: js/strings.js:177
+#: js/strings.js:181
 msgctxt "fn"
 msgid "columns"
 msgstr "Στήλες"
 
-#: js/strings.js:178
+#: js/strings.js:182
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:179
+#: js/strings.js:183
 msgctxt "fn"
 msgid "encryption"
 msgstr "Κρυπτογράφηση"
 
-#: js/strings.js:180
+#: js/strings.js:184
 msgctxt "fn"
 msgid "expires"
 msgstr "Λήξη"
 
-#: js/strings.js:181
+#: js/strings.js:185
 msgctxt "fn"
 msgid "features"
 msgstr "Χαρακτηριστικά"
 
-#: js/strings.js:182
+#: js/strings.js:186
 msgctxt "fn"
 msgid "hiring"
 msgstr "Προσλήψεις"
 
-#: js/strings.js:183
+#: js/strings.js:187
 msgctxt "fn"
 msgid "layout"
 msgstr "Διάταξη"
 
-#: js/strings.js:184
+#: js/strings.js:188
 msgctxt "fn"
 msgid "name"
 msgstr "Όνομα"
 
-#: js/strings.js:185
+#: js/strings.js:189
 msgctxt "fn"
 msgid "policy"
 msgstr "Πολιτική"
 
-#: js/strings.js:186
+#: js/strings.js:190
 msgctxt "fn"
 msgid "ratio"
 msgstr "Αναλογία"
 
-#: js/strings.js:187
+#: js/strings.js:191
 msgctxt "fn"
 msgid "role"
 msgstr "Ρόλος"
 
-#: js/strings.js:188
+#: js/strings.js:192
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Υπότιτλος"
 
-#: js/strings.js:189
+#: js/strings.js:193
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Εναλλακτικό URL"
 
-#: js/strings.js:191
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Γραμματοσειρά κειμένου"
 
-#: js/strings.js:192
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Γραμματοσειρά επικεφαλίδων"
 
-#: js/strings.js:193
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Χρώμα κειμένου"
 
-#: js/strings.js:194
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Χρώμα φόντου"
 
-#: js/strings.js:195
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Χρώμα επιλογής"
 
-#: js/strings.js:196
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Χρώμα αντίθεσης"
 
-#: js/strings.js:197
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Χρώμα αντίθεσης κατά την αιώρηση"
 
-#: js/strings.js:198
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Χρώμα κειμένου στην αντίθεση"
 
-#: js/strings.js:199
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Κύριο χρώμα"
 
-#: js/strings.js:200
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Κύριο φόντο"
 
-#: js/strings.js:201
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Κύριο χρώμα κατά την αιώρηση"
 
-#: js/strings.js:202
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Κύριο φόντο κατά την αιώρηση"
 
-#: js/strings.js:203
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Δευτερεύον χρώμα"
 
-#: js/strings.js:204
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Δευτερεύον φόντο"
 
-#: js/strings.js:205
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Δευτερεύον χρώμα κατά την αιώρηση"
 
-#: js/strings.js:206
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Δευτερεύον φόντο κατά την αιώρηση"
 
-#: js/strings.js:207
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Ακτίνα γωνιών"
 
-#: js/strings.js:208
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Διαχωριστικό διαδρομής πλοήγησης"
 
-#: js/strings.js:211
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Κείμενο της επικεφαλίδας"
 
-#: js/strings.js:212
+#: js/strings.js:216
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3212,111 +3233,111 @@ msgstr ""
 "Το επίπεδο 1 είναι η κύρια επικεφαλίδα της σελίδας, τα υψηλότερα επίπεδα "
 "δομούν τις παρακάτω ενότητες"
 
-#: js/strings.js:213
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Μορφοποιημένο κείμενο με παραγράφους, λίστες και συνδέσμους"
 
-#: js/strings.js:214
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Μορφοποιημένο κείμενο που εμφανίζεται δίπλα στην εικόνα"
 
-#: js/strings.js:215
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Εικόνα που εμφανίζεται δίπλα στο κείμενο"
 
-#: js/strings.js:216
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Θέση της εικόνας σε σχέση με το κείμενο"
 
-#: js/strings.js:217
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Αναλογία πλάτους μεταξύ εικόνας και κειμένου"
 
-#: js/strings.js:218
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Γλώσσα προγραμματισμού που χρησιμοποιείται για επισήμανση σύνταξης"
 
-#: js/strings.js:219
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Πηγαίος κώδικας που εμφανίζεται με επισήμανση σύνταξης"
 
-#: js/strings.js:220
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Προαιρετική λεζάντα που εμφανίζεται πάνω από τον πίνακα"
 
-#: js/strings.js:221
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 "Χρήση της πρώτης γραμμής, της πρώτης στήλης ή και των δύο ως κεφαλίδες πίνακα"
 
-#: js/strings.js:222
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Εισαγάγετε δεδομένα στα κελιά· προσθέστε ή αφαιρέστε γραμμές και στήλες όπως "
 "χρειάζεται"
 
-#: js/strings.js:223
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τον χάρτη"
 
-#: js/strings.js:224
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Περιγραφή που εμφανίζεται δίπλα στον χάρτη, π.χ. διεύθυνση ή οδηγίες"
 
-#: js/strings.js:225
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Αναζήτηση τοποθεσίας ή κλικ στον χάρτη για ορισμό της τοποθεσίας"
 
-#: js/strings.js:226
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Κείμενο του συνδέσμου που ανοίγει την τοποθεσία σε υπηρεσία χαρτών"
 
-#: js/strings.js:227
+#: js/strings.js:231
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "Κώδικας HTML που εισάγεται στη σελίδα αυτούσιος, π.χ. για ενσωματώσεις και "
 "widgets"
 
-#: js/strings.js:228
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Εικόνα που εμφανίζεται σε πλήρες πλάτος της περιοχής περιεχομένου"
 
-#: js/strings.js:229
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr ""
 "Φόρτωση της εικόνας χωρίς καθυστέρηση αν είναι ορατή στο επάνω μέρος της "
 "σελίδας"
 
-#: js/strings.js:230
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr ""
 "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από την προβολή διαφανειών"
 
-#: js/strings.js:231
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr ""
 "Εικόνες που εμφανίζονται η μία μετά την άλλη, σύρετε για αλλαγή της σειράς"
 
-#: js/strings.js:232
+#: js/strings.js:236
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
@@ -3324,371 +3345,395 @@ msgstr ""
 "Φόρτωση της πρώτης εικόνας χωρίς καθυστέρηση αν είναι ορατή στο επάνω μέρος "
 "της σελίδας"
 
-#: js/strings.js:233
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Προαιρετική επικεφαλίδα πάνω από τη σύγκριση"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Εικόνα που δείχνει την κατάσταση πριν από την αλλαγή"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr ""
+"Εικόνα που δείχνει το αποτέλεσμα, οι δύο εικόνες πρέπει να έχουν το ίδιο μέγεθος"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid ""
+"Load the images without delay if they are visible at the top of the page"
+msgstr ""
+"Φόρτωση των εικόνων χωρίς καθυστέρηση αν είναι ορατές στο πάνω μέρος της σελίδας"
+
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Αρχείο βίντεο που αναπαράγεται στη σελίδα"
 
-#: js/strings.js:234
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Αρχείο ήχου που αναπαράγεται στη σελίδα"
 
-#: js/strings.js:235
+#: js/strings.js:243
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Αρχείο διαθέσιμο για λήψη"
 
-#: js/strings.js:236
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Κύρια επικεφαλίδα της σελίδας"
 
-#: js/strings.js:237
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Σύντομη γραμμή που εμφανίζεται πάνω από την επικεφαλίδα"
 
-#: js/strings.js:238
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Εισαγωγή που εμφανίζεται κάτω από την επικεφαλίδα"
 
-#: js/strings.js:239
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Σελίδα ή σύνδεσμος στον οποίο οδηγεί το κύριο κουμπί"
 
-#: js/strings.js:240
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Κείμενο του κύριου κουμπιού"
 
-#: js/strings.js:241
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Σελίδα ή σύνδεσμος στον οποίο οδηγεί το δεύτερο κουμπί"
 
-#: js/strings.js:242
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Κείμενο του δεύτερου κουμπιού"
 
-#: js/strings.js:243
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Εικόνα που εμφανίζεται πίσω από το κείμενο"
 
-#: js/strings.js:244
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Εφέ κίνησης της εικόνας φόντου"
 
-#: js/strings.js:245
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Εικόνες που εμφανίζονται δίπλα στο κείμενο"
 
-#: js/strings.js:246
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Επικεφαλίδα που τραβά την προσοχή των επισκεπτών"
 
-#: js/strings.js:247
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Κείμενο που παρακινεί τους επισκέπτες να αναλάβουν δράση"
 
-#: js/strings.js:248
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Κουμπιά που οδηγούν τους επισκέπτες στο επόμενο βήμα"
 
-#: js/strings.js:249
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Κείμενο του κουμπιού"
 
-#: js/strings.js:250
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Σελίδα ή σύνδεσμος στον οποίο οδηγεί το κουμπί"
 
-#: js/strings.js:251
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τις κάρτες"
 
-#: js/strings.js:252
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr ""
 "Αριθμός καρτών ανά σειρά, το \"auto\" προσαρμόζεται στο πλάτος της οθόνης"
 
-#: js/strings.js:253
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Κάρτες που εμφανίζονται στο πλέγμα"
 
-#: js/strings.js:254
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Επικεφαλίδα της κάρτας"
 
-#: js/strings.js:255
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Εικόνα που εμφανίζεται στο επάνω μέρος της κάρτας"
 
-#: js/strings.js:256
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Κείμενο της κάρτας"
 
-#: js/strings.js:257
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Σελίδα ή σύνδεσμος στον οποίο οδηγεί η κάρτα"
 
-#: js/strings.js:258
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τις γνώμες"
 
-#: js/strings.js:259
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Γνώμες πελατών ή συνεργατών"
 
-#: js/strings.js:260
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Γνώμη του ατόμου"
 
-#: js/strings.js:261
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Όνομα του ατόμου"
 
-#: js/strings.js:262
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Θέση ή εταιρεία του ατόμου"
 
-#: js/strings.js:263
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Φωτογραφία του ατόμου"
 
-#: js/strings.js:264
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Εισαγωγή του άρθρου που εμφανίζεται κάτω από τον τίτλο της σελίδας"
 
-#: js/strings.js:265
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Εικόνες του άρθρου, η πρώτη χρησιμοποιείται ως εικόνα προεπισκόπησης"
 
-#: js/strings.js:266
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Όνομα του συγγραφέα του άρθρου"
 
-#: js/strings.js:267
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Σύνδεσμος προς τη σελίδα προφίλ του συγγραφέα"
 
-#: js/strings.js:268
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τη λίστα"
 
-#: js/strings.js:269
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Εμφάνιση των σελίδων ως κάρτες ή ως συμπαγή λίστα"
 
-#: js/strings.js:270
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Σελίδα της οποίας οι υποσελίδες εμφανίζονται στη λίστα"
 
-#: js/strings.js:271
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Σειρά ταξινόμησης των σελίδων στη λίστα"
 
-#: js/strings.js:272
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Μέγιστος αριθμός σελίδων που εμφανίζονται ταυτόχρονα"
 
-#: js/strings.js:273
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Εμφάνιση των υπόλοιπων υποσελίδων ως κάρτες ή ως συμπαγή λίστα"
 
-#: js/strings.js:274
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τα πακέτα τιμών"
 
-#: js/strings.js:275
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Σύντομο κείμενο που εμφανίζεται κάτω από την επικεφαλίδα"
 
-#: js/strings.js:276
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Πακέτα τιμών που εμφανίζονται το ένα δίπλα στο άλλο"
 
-#: js/strings.js:277
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Όνομα του πακέτου τιμών"
 
-#: js/strings.js:278
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Ρόλος που παρέχεται στους πελάτες μετά την πληρωμή για πρόσβαση σε "
 "προστατευμένες σελίδες"
 
-#: js/strings.js:279
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Τιμές του πακέτου, π.χ. μηνιαία και ετήσια"
 
-#: js/strings.js:280
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Επαναλαμβανόμενη συνδρομή ή εφάπαξ πληρωμή"
 
-#: js/strings.js:281
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Αριθμός ημερών μεταξύ δύο πληρωμών, π.χ. 30 για μηνιαία"
 
-#: js/strings.js:282
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Τριγράμματος κωδικός νομίσματος ISO, π.χ. EUR ή USD"
 
-#: js/strings.js:283
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Αναγνωριστικό τιμής ή ποσό που χρησιμοποιείται από τον πάροχο πληρωμών"
 
-#: js/strings.js:284
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Μορφοποιημένη τιμή που εμφανίζεται στους επισκέπτες, π.χ. €9.99"
 
-#: js/strings.js:285
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Αριθμητική τιμή που εμφανίζεται αν δεν έχει οριστεί μορφοποιημένη τιμή"
 
-#: js/strings.js:286
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Κείμενο που εμφανίζεται μετά την τιμή, π.χ. ανά μήνα"
 
-#: js/strings.js:287
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Σύντομη περιγραφή του πακέτου τιμών"
 
-#: js/strings.js:288
+#: js/strings.js:296
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Λίστα των λειτουργιών που περιλαμβάνονται στο πακέτο"
 
-#: js/strings.js:289
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Ανάδειξη αυτού του πακέτου σε σχέση με τα άλλα"
 
-#: js/strings.js:290
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr ""
 "Σύντομη ετικέτα που εμφανίζεται στο επισημασμένο πακέτο, π.χ. Δημοφιλές"
 
-#: js/strings.js:291
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τις ερωτήσεις"
 
-#: js/strings.js:292
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Ερωτήσεις και απαντήσεις που εμφανίζονται ως αναπτυσσόμενη λίστα"
 
-#: js/strings.js:293
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Ερώτηση που τίθεται από τους επισκέπτες"
 
-#: js/strings.js:294
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Απάντηση στην ερώτηση"
 
-#: js/strings.js:295
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr ""
 "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τον πίνακα περιεχομένων"
 
-#: js/strings.js:296
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Προαιρετική επικεφαλίδα που εμφανίζεται πάνω από τη φόρμα επικοινωνίας"
 
-#: js/strings.js:297
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr ""
 "Προαιρετικό κείμενο που εμφανίζεται μεταξύ επικεφαλίδας και φόρμας "
 "επικοινωνίας"
 
-#: js/strings.js:298
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Πεδία φόρμας που εμφανίζονται στους επισκέπτες με αυτή τη σειρά"
 
-#: js/strings.js:299
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Επιλέξτε ένα πεδίο φόρμας ή εισαγάγετε δικό σας όνομα"
 
-#: js/strings.js:300
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Οι επισκέπτες πρέπει να συμπληρώσουν αυτό το πεδίο"
 
-#: js/strings.js:301
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Τύπος πεδίου που εμφανίζεται στους επισκέπτες"
 
-#: js/strings.js:302
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Επιλογές για πεδία επιλογής, μία ανά γραμμή"
 
-#: js/strings.js:303
+#: js/strings.js:311
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr ""
-"Μέγιστος αριθμός εικόνων ή αρχείων PDF που μπορούν να επισυνάψουν οι επισκέπτες, το 0 απενεργοποιεί τη μεταφόρτωση"
+"Μέγιστος αριθμός εικόνων ή αρχείων PDF που μπορούν να επισυνάψουν οι "
+"επισκέπτες, το 0 απενεργοποιεί τη μεταφόρτωση"
 
-#: js/strings.js:304
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3697,426 +3742,426 @@ msgstr ""
 "Περίληψη της σελίδας που εμφανίζεται στα αποτελέσματα αναζήτησης, "
 "συνιστώνται 150 έως 160 χαρακτήρες"
 
-#: js/strings.js:305
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Λίστα λέξεων-κλειδιών χωρισμένων με κόμμα που περιγράφουν τη σελίδα"
 
-#: js/strings.js:306
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr ""
 "Τίτλος που εμφανίζεται όταν η σελίδα κοινοποιείται στα μέσα κοινωνικής "
 "δικτύωσης"
 
-#: js/strings.js:307
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr ""
 "Περίληψη που εμφανίζεται όταν η σελίδα κοινοποιείται στα μέσα κοινωνικής "
 "δικτύωσης"
 
-#: js/strings.js:308
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Εικόνα προεπισκόπησης που εμφανίζεται όταν η σελίδα κοινοποιείται στα μέσα "
 "κοινωνικής δικτύωσης"
 
-#: js/strings.js:309
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr ""
 "Αρχικό URL αν το ίδιο περιεχόμενο είναι διαθέσιμο σε πολλές διευθύνσεις"
 
-#: js/strings.js:310
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 "Να επιτρέπεται ή να αποτρέπεται η καταχώριση αυτής της σελίδας από τις "
 "μηχανές αναζήτησης"
 
-#: js/strings.js:311
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Να επιτρέπεται ή να αποτρέπεται η ακολούθηση των συνδέσμων αυτής της σελίδας "
 "από τις μηχανές αναζήτησης"
 
-#: js/strings.js:312
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Όνομα του ιστότοπου που εμφανίζεται στην καρτέλα του προγράμματος περιήγησης "
 "και στα αποτελέσματα αναζήτησης"
 
-#: js/strings.js:313
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Λογότυπο που εμφανίζεται στην κεφαλίδα της σελίδας"
 
-#: js/strings.js:314
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Παραλλαγή λογότυπου που χρησιμοποιείται για σκούρα φόντα"
 
-#: js/strings.js:315
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Μικρή τετράγωνη εικόνα που εμφανίζεται στις καρτέλες του προγράμματος "
 "περιήγησης και στους σελιδοδείκτες"
 
-#: js/strings.js:316
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr ""
 "Λίστα γραμματοσειρών χωρισμένων με κόμμα που χρησιμοποιούνται για το κείμενο"
 
-#: js/strings.js:317
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Προεπιλεγμένο χρώμα κειμένου"
 
-#: js/strings.js:318
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Χρώμα φόντου των σελίδων"
 
-#: js/strings.js:319
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Χρώμα φόντου επιλεγμένου κειμένου"
 
-#: js/strings.js:320
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Χρώμα στοιχείων με έντονη αντίθεση με το φόντο"
 
-#: js/strings.js:321
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Χρώμα αντίθεσης κατά την αιώρηση ή εστίαση σε ένα στοιχείο"
 
-#: js/strings.js:322
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Χρώμα κειμένου σε στοιχεία που χρησιμοποιούν το χρώμα αντίθεσης"
 
-#: js/strings.js:323
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Κύριο χρώμα επωνυμίας που χρησιμοποιείται για συνδέσμους και κουμπιά"
 
-#: js/strings.js:324
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Χρώμα φόντου κύριων κουμπιών και τονισμένων στοιχείων"
 
-#: js/strings.js:325
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Κύριο χρώμα κατά την αιώρηση ή εστίαση σε ένα στοιχείο"
 
-#: js/strings.js:326
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Κύριο χρώμα φόντου κατά την αιώρηση ή εστίαση σε ένα στοιχείο"
 
-#: js/strings.js:327
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr ""
 "Επιπλέον χρώμα που χρησιμοποιείται για λιγότερο σημαντικούς συνδέσμους και "
 "κουμπιά"
 
-#: js/strings.js:328
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Χρώμα φόντου δευτερευόντων κουμπιών"
 
-#: js/strings.js:329
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Δευτερεύον χρώμα κατά την αιώρηση ή εστίαση σε ένα στοιχείο"
 
-#: js/strings.js:330
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Δευτερεύον χρώμα φόντου κατά την αιώρηση ή εστίαση σε ένα στοιχείο"
 
-#: js/strings.js:331
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Στρογγύλεμα γωνιών ως μήκος CSS, π.χ. 0.25rem ή 0 για αιχμηρές γωνίες"
 
-#: js/strings.js:332
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Χαρακτήρας που εμφανίζεται μεταξύ των συνδέσμων διαδρομής πλοήγησης"
 
-#: js/strings.js:333
+#: js/strings.js:341
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "Σύνδεσμος HTTPS για επικοινωνία με την ομάδα ασφαλείας, π.χ. μια φόρμα"
 
-#: js/strings.js:334
+#: js/strings.js:342
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Διεύθυνση e-mail για αναφορά προβλημάτων ασφαλείας"
 
-#: js/strings.js:335
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr ""
 "Ημερομηνία μετά την οποία οι πληροφορίες ασφαλείας θεωρούνται παρωχημένες"
 
-#: js/strings.js:336
+#: js/strings.js:344
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "Σύνδεσμος HTTPS προς το δημόσιο κλειδί για κρυπτογραφημένα μηνύματα"
 
-#: js/strings.js:337
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr ""
 "Σύνδεσμος HTTPS προς τη σελίδα ευχαριστιών προς τους ερευνητές ασφαλείας"
 
-#: js/strings.js:338
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Κωδικοί γλώσσας χωρισμένοι με κόμμα για αναφορές ασφαλείας, π.χ. en, de"
 
-#: js/strings.js:339
+#: js/strings.js:347
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL HTTPS όπου δημοσιεύεται το αρχείο security.txt"
 
-#: js/strings.js:340
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "Σύνδεσμος HTTPS προς την πολιτική ασφαλείας και αποκάλυψης"
 
-#: js/strings.js:341
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "Σύνδεσμος HTTPS προς ανοιχτές θέσεις εργασίας σχετικές με την ασφάλεια"
 
-#: js/strings.js:342
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "Σύνδεσμος HTTPS προς τα μεταδεδομένα παρόχου CSAF"
 
-#: js/strings.js:343
+#: js/strings.js:351
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Επιπλέον κανόνες που προστίθενται στο αρχείο robots.txt για web crawlers"
 
-#: js/strings.js:344
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Προσαρμοσμένος κώδικας CSS που προστίθεται σε όλες τις σελίδες"
 
-#: js/strings.js:345
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Προσαρμοσμένος κώδικας JavaScript που προστίθεται σε όλες τις σελίδες"
 
-#: js/strings.js:346
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr ""
 "Λίστα γραμματοσειρών χωρισμένων με κόμμα που χρησιμοποιούνται για "
 "επικεφαλίδες"
 
-#: js/strings.js:349
+#: js/strings.js:357
 msgctxt "op"
 msgid "Name"
 msgstr "Όνομα"
 
-#: js/strings.js:350
+#: js/strings.js:358
 msgctxt "op"
 msgid "Company"
 msgstr "Εταιρεία"
 
-#: js/strings.js:351
+#: js/strings.js:359
 msgctxt "op"
 msgid "Telephone"
 msgstr "Τηλέφωνο"
 
-#: js/strings.js:352
+#: js/strings.js:360
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: js/strings.js:353
+#: js/strings.js:361
 msgctxt "op"
 msgid "Subject"
 msgstr "Θέμα"
 
-#: js/strings.js:354
+#: js/strings.js:362
 msgctxt "op"
 msgid "Text"
 msgstr "Κείμενο"
 
-#: js/strings.js:355
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text area"
 msgstr "Περιοχή κειμένου"
 
-#: js/strings.js:356
+#: js/strings.js:364
 msgctxt "op"
 msgid "Selection"
 msgstr "Λίστα επιλογής"
 
-#: js/strings.js:357
+#: js/strings.js:365
 msgctxt "op"
 msgid "Follow"
 msgstr "Ακολούθηση συνδέσμων"
 
-#: js/strings.js:358
+#: js/strings.js:366
 msgctxt "op"
 msgid "Index"
 msgstr "Ευρετηρίαση"
 
-#: js/strings.js:359
+#: js/strings.js:367
 msgctxt "op"
 msgid "No follow"
 msgstr "Χωρίς ακολούθηση συνδέσμων"
 
-#: js/strings.js:360
+#: js/strings.js:368
 msgctxt "op"
 msgid "No index"
 msgstr "Χωρίς ευρετηρίαση"
 
-#: js/strings.js:361
+#: js/strings.js:369
 msgctxt "op"
 msgid "Subscription"
 msgstr "Συνδρομή"
 
-#: js/strings.js:362
+#: js/strings.js:370
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Εφάπαξ πληρωμή"
 
-#: js/strings.js:363
+#: js/strings.js:371
 msgctxt "op"
 msgid "Auto"
 msgstr "Αυτόματο"
 
-#: js/strings.js:364
+#: js/strings.js:372
 msgctxt "op"
 msgid "Cards"
 msgstr "Κάρτες"
 
-#: js/strings.js:365
+#: js/strings.js:373
 msgctxt "op"
 msgid "Default"
 msgstr "Προεπιλογή"
 
-#: js/strings.js:366
+#: js/strings.js:374
 msgctxt "op"
 msgid "End"
 msgstr "Τέλος"
 
-#: js/strings.js:367
+#: js/strings.js:375
 msgctxt "op"
 msgid "First column"
 msgstr "Πρώτη στήλη"
 
-#: js/strings.js:368
+#: js/strings.js:376
 msgctxt "op"
 msgid "First row"
 msgstr "Πρώτη γραμμή"
 
-#: js/strings.js:369
+#: js/strings.js:377
 msgctxt "op"
 msgid "First row and column"
 msgstr "Πρώτη γραμμή και στήλη"
 
-#: js/strings.js:370
+#: js/strings.js:378
 msgctxt "op"
 msgid "Grid end"
 msgstr "Πλέγμα στο τέλος"
 
-#: js/strings.js:371
+#: js/strings.js:379
 msgctxt "op"
 msgid "Grid start"
 msgstr "Πλέγμα στην αρχή"
 
-#: js/strings.js:372
+#: js/strings.js:380
 msgctxt "op"
 msgid "Latest"
 msgstr "Νεότερα"
 
-#: js/strings.js:373
+#: js/strings.js:381
 msgctxt "op"
 msgid "List"
 msgstr "Λίστα"
 
-#: js/strings.js:374
+#: js/strings.js:382
 msgctxt "op"
 msgid "None"
 msgstr "Κανένα"
 
-#: js/strings.js:375
+#: js/strings.js:383
 msgctxt "op"
 msgid "Oldest"
 msgstr "Παλαιότερα"
 
-#: js/strings.js:376
+#: js/strings.js:384
 msgctxt "op"
 msgid "Position"
 msgstr "Θέση"
 
-#: js/strings.js:377
+#: js/strings.js:385
 msgctxt "op"
 msgid "Start"
 msgstr "Αρχή"
 
-#: js/strings.js:378
+#: js/strings.js:386
 msgctxt "op"
 msgid "Zoom"
 msgstr "Μεγέθυνση"
 
-#: js/strings.js:381
+#: js/strings.js:389
 msgctxt "ai"
 msgid "Done"
 msgstr "Έγινε"
 
-#: js/strings.js:382
+#: js/strings.js:390
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Υπάρχει ήδη"
 
-#: js/strings.js:385
+#: js/strings.js:393
 msgctxt "sg"
 msgid "expert"
 msgstr "Για προχωρημένους"
 
-#: js/strings.js:386
+#: js/strings.js:394
 msgctxt "sg"
 msgid "theme"
 msgstr "Θέμα"
 
-#: js/strings.js:387
+#: js/strings.js:395
 msgctxt "st"
 msgid "website"
 msgstr "ιστότοπος"
 
-#: js/strings.js:388
+#: js/strings.js:396
 msgctxt "st"
 msgid "logo"
 msgstr "Λογότυπο"
 
-#: js/strings.js:389
+#: js/strings.js:397
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Εναλλακτικό λογότυπο"
 
-#: js/strings.js:390
+#: js/strings.js:398
 msgctxt "st"
 msgid "icon"
 msgstr "Εικονίδιο"

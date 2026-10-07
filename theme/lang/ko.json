@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: 파일이 너무 큽니다.",
     ":attribute: Too many files.": ":attribute: 파일이 너무 많습니다.",
     ":attribute: The files are too large.": ":attribute: 파일 크기의 합계가 너무 큽니다.",
-    "Please select": "선택하세요"
+    "Please select": "선택하세요",
+    "Before": "전",
+    "After": "후",
+    "Before and after comparison": "전후 비교"
 }

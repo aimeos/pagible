@@ -55,5 +55,8 @@
     ":attribute: The file is too large.": ":attribute: فایل خیلی بزرگ است.",
     ":attribute: Too many files.": ":attribute: تعداد فایل‌ها بیش از حد است.",
     ":attribute: The files are too large.": ":attribute: فایل‌ها خیلی بزرگ هستند.",
-    "Please select": "لطفاً انتخاب کنید"
+    "Please select": "لطفاً انتخاب کنید",
+    "Before": "قبل",
+    "After": "بعد",
+    "Before and after comparison": "مقایسه قبل و بعد"
 }

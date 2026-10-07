@@ -2468,731 +2468,751 @@ msgstr "Presentació de diapositives"
 
 #: js/strings.js:59
 msgctxt "st"
+msgid "before-after"
+msgstr "abans-després"
+
+#: js/strings.js:60
+msgctxt "st"
 msgid "code"
 msgstr "Codi"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "table"
 msgstr "Taula"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "map"
 msgstr "Mapa"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "html"
 msgstr "HTML"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "image"
 msgstr "Imatge"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "video"
 msgstr "Vídeo"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "audio"
 msgstr "Àudio"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "file"
 msgstr "Fitxer"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "CTA"
 msgstr "Crida a l'acció"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "cards"
 msgstr "Targetes"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "article"
 msgstr "Article"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "questions"
 msgstr "Preguntes freqüents"
 
-#: js/strings.js:73
+#: js/strings.js:74
 msgctxt "st"
 msgid "toc"
 msgstr "Taula de continguts"
 
-#: js/strings.js:74
+#: js/strings.js:75
 msgctxt "st"
 msgid "contact"
 msgstr "Contacte"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metaetiquetes"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "social-media"
 msgstr "Xarxes socials"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "canonical"
 msgstr "URL canònic"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "robots"
 msgstr "Cercadors"
 
-#: js/strings.js:79
+#: js/strings.js:80
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:80
+#: js/strings.js:81
 msgctxt "st"
 msgid "styles"
 msgstr "Estils"
 
-#: js/strings.js:81
+#: js/strings.js:82
 msgctxt "st"
 msgid "javascript"
 msgstr "JavaScript"
 
-#: js/strings.js:82
+#: js/strings.js:83
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:83
+#: js/strings.js:84
 msgctxt "st"
 msgid "news"
 msgstr "Notícies"
 
-#: js/strings.js:84
+#: js/strings.js:85
 msgctxt "st"
 msgid "pricing"
 msgstr "Preus"
 
-#: js/strings.js:85
+#: js/strings.js:86
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:86
+#: js/strings.js:87
 msgctxt "st"
 msgid "security"
 msgstr "Seguretat"
 
-#: js/strings.js:87
+#: js/strings.js:88
 msgctxt "st"
 msgid "testimonial"
 msgstr "Testimonis"
 
-#: js/strings.js:90
+#: js/strings.js:91
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Encapçalament de secció de H1 a H6"
 
-#: js/strings.js:91
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Text amb format amb paràgrafs, llistes i enllaços"
 
-#: js/strings.js:92
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Imatge al costat de text amb format"
 
-#: js/strings.js:93
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Codi font amb ressaltat de sintaxi"
 
-#: js/strings.js:94
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Taula de dades amb fila o columna de capçalera opcional"
 
-#: js/strings.js:95
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Mapa interactiu amb ubicació, text i enllaç"
 
-#: js/strings.js:96
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Codi HTML personalitzat per a incrustacions i ginys"
 
-#: js/strings.js:97
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Imatge adaptable única"
 
-#: js/strings.js:98
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Diapositives rotatòries amb diverses imatges"
 
-#: js/strings.js:99
+#: js/strings.js:100
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Control lliscant que compara dues imatges abans i després d'un canvi"
+
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Vídeo incrustat amb controls de reproducció"
 
-#: js/strings.js:100
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Àudio incrustat amb controls de reproducció"
 
-#: js/strings.js:101
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Fitxer descarregable, com ara un document PDF"
 
-#: js/strings.js:102
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Introducció gran amb títol, text, botons i fons"
 
-#: js/strings.js:103
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Crida a l'acció amb text i botons"
 
-#: js/strings.js:104
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Quadrícula de targetes amb imatge, títol i text"
 
-#: js/strings.js:105
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Cites de clients amb nom, càrrec i foto"
 
-#: js/strings.js:106
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Introducció d'article amb galeria d'imatges i autor"
 
-#: js/strings.js:107
+#: js/strings.js:109
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Llista d'articles del blog d'una pàgina pare"
 
-#: js/strings.js:108
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Llista de notícies d'una pàgina pare"
 
-#: js/strings.js:109
+#: js/strings.js:111
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Subpàgina destacada seguida d'altres subpàgines"
 
-#: js/strings.js:110
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Plans de preus amb subscripcions o pagaments únics"
 
-#: js/strings.js:111
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Preguntes freqüents amb respostes"
 
-#: js/strings.js:112
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Taula de continguts amb enllaços als encapçalaments de la pàgina"
 
-#: js/strings.js:113
+#: js/strings.js:115
 msgctxt "sd"
 msgid "Contact form with configurable fields and optional file attachments"
 msgstr ""
 "Formulari de contacte amb camps configurables i fitxers adjunts opcionals"
 
-#: js/strings.js:116
+#: js/strings.js:118
 msgctxt "fn"
 msgid "button"
 msgstr "Botó"
 
-#: js/strings.js:117
+#: js/strings.js:119
 msgctxt "fn"
 msgid "buttons"
 msgstr "Botons"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "cards"
 msgstr "Targetes"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "description"
 msgstr "Descripció"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "file"
 msgstr "Fitxer"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "files"
 msgstr "Fitxers"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "follow"
 msgstr "Segueix els enllaços"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "header"
 msgstr "Capçalera"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "index"
 msgstr "Indexació"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "keywords"
 msgstr "Paraules clau"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "language"
 msgstr "Idioma"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "label"
 msgstr "Etiqueta"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "level"
 msgstr "Nivell"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "limit"
 msgstr "Límit"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "location"
 msgstr "Ubicació"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "main"
 msgstr "Imatge principal"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "order"
 msgstr "Ordre"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Pàgina pare"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "position"
 msgstr "Posició"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "text"
 msgstr "Text"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "table"
 msgstr "Taula"
 
-#: js/strings.js:137
+#: js/strings.js:139
 msgctxt "fn"
 msgid "title"
 msgstr "Títol"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "image"
 msgstr "Imatge"
 
-#: js/strings.js:141
+#: js/strings.js:143
 msgctxt "fn"
 msgid "images"
 msgstr "Imatges"
 
-#: js/strings.js:142
+#: js/strings.js:144
+msgctxt "fn"
+msgid "before image"
+msgstr "imatge d'abans"
+
+#: js/strings.js:145
+msgctxt "fn"
+msgid "after image"
+msgstr "imatge de després"
+
+#: js/strings.js:146
 msgctxt "fn"
 msgid "items"
 msgstr "Elements"
 
-#: js/strings.js:143
+#: js/strings.js:147
 msgctxt "fn"
 msgid "introduction"
 msgstr "Introducció"
 
-#: js/strings.js:144
+#: js/strings.js:148
 msgctxt "fn"
 msgid "load immediately"
 msgstr "Carrega immediatament"
 
-#: js/strings.js:145
+#: js/strings.js:149
 msgctxt "fn"
 msgid "source code"
 msgstr "Codi font"
 
-#: js/strings.js:146
+#: js/strings.js:150
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Rol d'accés al frontend"
 
-#: js/strings.js:147
+#: js/strings.js:151
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Preus de pagament"
 
-#: js/strings.js:148
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Referència de pagament"
 
-#: js/strings.js:149
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Currency"
 msgstr "Moneda"
 
-#: js/strings.js:150
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Interval de facturació"
 
-#: js/strings.js:151
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Unitat de preu"
 
-#: js/strings.js:152
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Pàgina de destinació o enllaç"
 
-#: js/strings.js:153
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Camps del formulari"
 
-#: js/strings.js:154
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Field"
 msgstr "Camp"
 
-#: js/strings.js:155
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Required"
 msgstr "Obligatori"
 
-#: js/strings.js:156
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Input type"
 msgstr "Tipus d'entrada"
 
-#: js/strings.js:157
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Choices"
 msgstr "Opcions"
 
-#: js/strings.js:158
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Attachments"
 msgstr "Fitxers adjunts"
 
-#: js/strings.js:159
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Link label"
 msgstr "Text de l'enllaç"
 
-#: js/strings.js:160
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "URL de contacte"
 
-#: js/strings.js:161
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Correu electrònic de contacte"
 
-#: js/strings.js:162
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Description"
 msgstr "Descripció"
 
-#: js/strings.js:163
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Preu mostrat"
 
-#: js/strings.js:164
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galeria"
 
-#: js/strings.js:165
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Text destacat"
 
-#: js/strings.js:166
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Destacat"
 
-#: js/strings.js:167
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Language"
 msgstr "Idioma"
 
-#: js/strings.js:168
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Tipus de pagament"
 
-#: js/strings.js:169
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Idiomes preferits"
 
-#: js/strings.js:170
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Subtítol"
 
-#: js/strings.js:171
+#: js/strings.js:175
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Agraïments"
 
-#: js/strings.js:172
+#: js/strings.js:176
 msgctxt "fn"
 msgid "amount"
 msgstr "Import"
 
-#: js/strings.js:173
+#: js/strings.js:177
 msgctxt "fn"
 msgid "background"
 msgstr "Fons"
 
-#: js/strings.js:174
+#: js/strings.js:178
 msgctxt "fn"
 msgid "background animation"
 msgstr "Animació del fons"
 
-#: js/strings.js:175
+#: js/strings.js:179
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Botó alternatiu"
 
-#: js/strings.js:176
+#: js/strings.js:180
 msgctxt "fn"
 msgid "canonical"
 msgstr "URL canònic"
 
-#: js/strings.js:177
+#: js/strings.js:181
 msgctxt "fn"
 msgid "columns"
 msgstr "Columnes"
 
-#: js/strings.js:178
+#: js/strings.js:182
 msgctxt "fn"
 msgid "csaf"
 msgstr "Enllaç CSAF"
 
-#: js/strings.js:179
+#: js/strings.js:183
 msgctxt "fn"
 msgid "encryption"
 msgstr "Xifratge"
 
-#: js/strings.js:180
+#: js/strings.js:184
 msgctxt "fn"
 msgid "expires"
 msgstr "Data de caducitat"
 
-#: js/strings.js:181
+#: js/strings.js:185
 msgctxt "fn"
 msgid "features"
 msgstr "Funcionalitats"
 
-#: js/strings.js:182
+#: js/strings.js:186
 msgctxt "fn"
 msgid "hiring"
 msgstr "Ofertes de feina"
 
-#: js/strings.js:183
+#: js/strings.js:187
 msgctxt "fn"
 msgid "layout"
 msgstr "Disseny"
 
-#: js/strings.js:184
+#: js/strings.js:188
 msgctxt "fn"
 msgid "name"
 msgstr "Nom"
 
-#: js/strings.js:185
+#: js/strings.js:189
 msgctxt "fn"
 msgid "policy"
 msgstr "Política"
 
-#: js/strings.js:186
+#: js/strings.js:190
 msgctxt "fn"
 msgid "ratio"
 msgstr "Proporció"
 
-#: js/strings.js:187
+#: js/strings.js:191
 msgctxt "fn"
 msgid "role"
 msgstr "Càrrec"
 
-#: js/strings.js:188
+#: js/strings.js:192
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Subtítol"
 
-#: js/strings.js:189
+#: js/strings.js:193
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "URL alternatiu"
 
-#: js/strings.js:191
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Tipus de lletra del text"
 
-#: js/strings.js:192
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Tipus de lletra dels títols"
 
-#: js/strings.js:193
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Color del text"
 
-#: js/strings.js:194
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Color de fons"
 
-#: js/strings.js:195
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Color de selecció"
 
-#: js/strings.js:196
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Color de contrast"
 
-#: js/strings.js:197
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Color de contrast (en passar-hi el ratolí)"
 
-#: js/strings.js:198
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Color del text de contrast"
 
-#: js/strings.js:199
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Color primari"
 
-#: js/strings.js:200
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Fons primari"
 
-#: js/strings.js:201
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Color primari (en passar-hi el ratolí)"
 
-#: js/strings.js:202
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Fons primari (en passar-hi el ratolí)"
 
-#: js/strings.js:203
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Color secundari"
 
-#: js/strings.js:204
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Fons secundari"
 
-#: js/strings.js:205
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Color secundari (en passar-hi el ratolí)"
 
-#: js/strings.js:206
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Fons secundari (en passar-hi el ratolí)"
 
-#: js/strings.js:207
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Radi de les cantonades"
 
-#: js/strings.js:208
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Separador de les rutes de navegació"
 
-#: js/strings.js:211
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Text de l'encapçalament"
 
-#: js/strings.js:212
+#: js/strings.js:216
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3200,110 +3220,110 @@ msgstr ""
 "El nivell 1 és l'encapçalament principal de la pàgina; els nivells superiors "
 "estructuren les seccions de sota"
 
-#: js/strings.js:213
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Text amb format amb paràgrafs, llistes i enllaços"
 
-#: js/strings.js:214
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Text amb format que es mostra al costat de la imatge"
 
-#: js/strings.js:215
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Imatge que es mostra al costat del text"
 
-#: js/strings.js:216
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Posició de la imatge respecte al text"
 
-#: js/strings.js:217
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Proporció d'amplada entre la imatge i el text"
 
-#: js/strings.js:218
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Llenguatge de programació utilitzat per al ressaltat de sintaxi"
 
-#: js/strings.js:219
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Codi font que es mostra amb ressaltat de sintaxi"
 
-#: js/strings.js:220
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Llegenda opcional que es mostra a sobre de la taula"
 
-#: js/strings.js:221
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 "Utilitzeu la primera fila, la primera columna o totes dues com a capçaleres "
 "de la taula"
 
-#: js/strings.js:222
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Introduïu les dades a les cel·les; afegiu o suprimiu files i columnes segons "
 "calgui"
 
-#: js/strings.js:223
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Encapçalament opcional que es mostra a sobre del mapa"
 
-#: js/strings.js:224
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr ""
 "Descripció que es mostra al costat del mapa, p. ex. adreça o indicacions"
 
-#: js/strings.js:225
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Cerqueu un lloc o feu clic al mapa per definir la ubicació"
 
-#: js/strings.js:226
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Text de l'enllaç que obre la ubicació en un servei de mapes"
 
-#: js/strings.js:227
+#: js/strings.js:231
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "Codi HTML inserit tal qual a la pàgina, p. ex. per a incrustacions i ginys"
 
-#: js/strings.js:228
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Imatge que es mostra a l'amplada completa de l'àrea de contingut"
 
-#: js/strings.js:229
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr ""
 "Carrega la imatge sense demora si és visible a la part superior de la pàgina"
 
-#: js/strings.js:230
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Encapçalament opcional que es mostra a sobre de la presentació"
 
-#: js/strings.js:231
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr ""
 "Imatges que es mostren l'una darrere l'altra; arrossegueu per canviar l'ordre"
 
-#: js/strings.js:232
+#: js/strings.js:236
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
@@ -3311,369 +3331,393 @@ msgstr ""
 "Carrega la primera imatge sense demora si és visible a la part superior de "
 "la pàgina"
 
-#: js/strings.js:233
+#: js/strings.js:237
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Títol opcional que es mostra sobre la comparació"
+
+#: js/strings.js:238
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Imatge que mostra l'estat abans del canvi"
+
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr ""
+"Imatge que mostra el resultat, totes dues imatges han de tenir la mateixa mida"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid ""
+"Load the images without delay if they are visible at the top of the page"
+msgstr ""
+"Carrega les imatges sense demora si són visibles a la part superior de la pàgina"
+
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Fitxer de vídeo que es reprodueix a la pàgina"
 
-#: js/strings.js:234
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Fitxer d'àudio que es reprodueix a la pàgina"
 
-#: js/strings.js:235
+#: js/strings.js:243
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Fitxer que s'ofereix per baixar"
 
-#: js/strings.js:236
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Encapçalament principal de la pàgina"
 
-#: js/strings.js:237
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Línia curta que es mostra a sobre de l'encapçalament"
 
-#: js/strings.js:238
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Introducció que es mostra a sota de l'encapçalament"
 
-#: js/strings.js:239
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Pàgina o enllaç al qual porta el botó principal"
 
-#: js/strings.js:240
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Text del botó principal"
 
-#: js/strings.js:241
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Pàgina o enllaç al qual porta el segon botó"
 
-#: js/strings.js:242
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Text del segon botó"
 
-#: js/strings.js:243
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Imatge que es mostra darrere del text"
 
-#: js/strings.js:244
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Efecte d'animació de la imatge de fons"
 
-#: js/strings.js:245
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Imatges que es mostren al costat del text"
 
-#: js/strings.js:246
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Encapçalament que capta l'atenció dels visitants"
 
-#: js/strings.js:247
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Text que motiva els visitants a actuar"
 
-#: js/strings.js:248
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Botons que porten els visitants al pas següent"
 
-#: js/strings.js:249
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Text del botó"
 
-#: js/strings.js:250
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Pàgina o enllaç al qual porta el botó"
 
-#: js/strings.js:251
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Encapçalament opcional que es mostra a sobre de les targetes"
 
-#: js/strings.js:252
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr ""
 "Nombre de targetes per fila; \"auto\" s'adapta a l'amplada de la pantalla"
 
-#: js/strings.js:253
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Targetes que es mostren a la quadrícula"
 
-#: js/strings.js:254
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Encapçalament de la targeta"
 
-#: js/strings.js:255
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Imatge que es mostra a la part superior de la targeta"
 
-#: js/strings.js:256
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Text de la targeta"
 
-#: js/strings.js:257
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Pàgina o enllaç al qual porta la targeta"
 
-#: js/strings.js:258
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Encapçalament opcional que es mostra a sobre de les cites"
 
-#: js/strings.js:259
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Cites de clients o socis"
 
-#: js/strings.js:260
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Cita de la persona"
 
-#: js/strings.js:261
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Nom de la persona"
 
-#: js/strings.js:262
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Càrrec o empresa de la persona"
 
-#: js/strings.js:263
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Foto de la persona"
 
-#: js/strings.js:264
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Introducció de l'article que es mostra a sota del títol de la pàgina"
 
-#: js/strings.js:265
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr ""
 "Imatges de l'article; la primera s'utilitza com a imatge de previsualització"
 
-#: js/strings.js:266
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Nom de l'autor de l'article"
 
-#: js/strings.js:267
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Enllaç a la pàgina de perfil de l'autor"
 
-#: js/strings.js:268
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Encapçalament opcional que es mostra a sobre de la llista"
 
-#: js/strings.js:269
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Mostra les pàgines com a targetes o com a llista compacta"
 
-#: js/strings.js:270
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Pàgina les subpàgines de la qual es llisten"
 
-#: js/strings.js:271
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Ordenació de les pàgines llistades"
 
-#: js/strings.js:272
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Nombre màxim de pàgines que es mostren alhora"
 
-#: js/strings.js:273
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Mostra les altres subpàgines com a targetes o com a llista compacta"
 
-#: js/strings.js:274
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Encapçalament opcional que es mostra a sobre dels plans de preus"
 
-#: js/strings.js:275
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Text curt que es mostra a sota de l'encapçalament"
 
-#: js/strings.js:276
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Plans de preus que es mostren l'un al costat de l'altre"
 
-#: js/strings.js:277
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Nom del pla de preus"
 
-#: js/strings.js:278
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Rol que s'atorga als clients després del pagament per accedir a pàgines "
 "protegides"
 
-#: js/strings.js:279
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Preus del pla, p. ex. mensual i anual"
 
-#: js/strings.js:280
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Subscripció recurrent o pagament únic"
 
-#: js/strings.js:281
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Nombre de dies entre dos pagaments, p. ex. 30 per a mensual"
 
-#: js/strings.js:282
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Codi de moneda ISO de tres lletres, p. ex. EUR o USD"
 
-#: js/strings.js:283
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID del preu o import que utilitza el proveïdor de pagaments"
 
-#: js/strings.js:284
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Preu amb format que es mostra als visitants, p. ex. 9,99 €"
 
-#: js/strings.js:285
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Preu numèric que es mostra si no s'ha definit cap preu amb format"
 
-#: js/strings.js:286
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Text que es mostra després del preu, p. ex. al mes"
 
-#: js/strings.js:287
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Descripció breu del pla de preus"
 
-#: js/strings.js:288
+#: js/strings.js:296
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Llista de les funcionalitats incloses al pla"
 
-#: js/strings.js:289
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Destaca aquest pla respecte als altres"
 
-#: js/strings.js:290
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Etiqueta curta que es mostra al pla destacat, p. ex. Popular"
 
-#: js/strings.js:291
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Encapçalament opcional que es mostra a sobre de les preguntes"
 
-#: js/strings.js:292
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Preguntes i respostes que es mostren com a llista desplegable"
 
-#: js/strings.js:293
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Pregunta que fan els visitants"
 
-#: js/strings.js:294
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Resposta a la pregunta"
 
-#: js/strings.js:295
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Encapçalament opcional que es mostra a sobre de la taula de continguts"
 
-#: js/strings.js:296
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Encapçalament opcional que es mostra a sobre del formulari de contacte"
 
-#: js/strings.js:297
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr ""
 "Text opcional que es mostra entre l'encapçalament i el formulari de contacte"
 
-#: js/strings.js:298
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Camps del formulari que es mostren als visitants en aquest ordre"
 
-#: js/strings.js:299
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Seleccioneu un camp del formulari o introduïu un nom personalitzat"
 
-#: js/strings.js:300
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Els visitants han d'emplenar aquest camp"
 
-#: js/strings.js:301
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Tipus d'entrada que es mostra als visitants"
 
-#: js/strings.js:302
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Opcions per als camps de selecció, una per línia"
 
-#: js/strings.js:303
+#: js/strings.js:311
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr ""
-"Nombre màxim d'imatges o fitxers PDF que poden adjuntar els visitants, 0 desactiva les pujades"
+"Nombre màxim d'imatges o fitxers PDF que poden adjuntar els visitants, 0 "
+"desactiva les pujades"
 
-#: js/strings.js:304
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3682,421 +3726,421 @@ msgstr ""
 "Resum de la pàgina que es mostra als resultats de cerca; es recomanen de 150 "
 "a 160 caràcters"
 
-#: js/strings.js:305
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Llista de paraules clau separades per comes que descriuen la pàgina"
 
-#: js/strings.js:306
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Títol que es mostra quan la pàgina es comparteix a les xarxes socials"
 
-#: js/strings.js:307
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Resum que es mostra quan la pàgina es comparteix a les xarxes socials"
 
-#: js/strings.js:308
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Imatge de previsualització que es mostra quan la pàgina es comparteix a les "
 "xarxes socials"
 
-#: js/strings.js:309
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "URL original si el mateix contingut està disponible a diverses adreces"
 
-#: js/strings.js:310
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Permet o impedeix que els cercadors llistin aquesta pàgina"
 
-#: js/strings.js:311
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Permet o impedeix que els cercadors segueixin els enllaços d'aquesta pàgina"
 
-#: js/strings.js:312
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Nom del lloc web que es mostra a la pestanya del navegador i als resultats "
 "de cerca"
 
-#: js/strings.js:313
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logotip que es mostra a la capçalera de la pàgina"
 
-#: js/strings.js:314
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Variant del logotip per a fons foscos"
 
-#: js/strings.js:315
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Imatge quadrada petita que es mostra a les pestanyes del navegador i a les "
 "adreces d'interès"
 
-#: js/strings.js:316
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Llista de tipus de lletra separats per comes utilitzats per al text"
 
-#: js/strings.js:317
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Color del text per defecte"
 
-#: js/strings.js:318
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Color de fons de les pàgines"
 
-#: js/strings.js:319
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Color de fons del text seleccionat"
 
-#: js/strings.js:320
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Color dels elements amb un contrast fort respecte al fons"
 
-#: js/strings.js:321
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr ""
 "Color de contrast en passar el ratolí per sobre d'un element o enfocar-lo"
 
-#: js/strings.js:322
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Color del text als elements que utilitzen el color de contrast"
 
-#: js/strings.js:323
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Color principal de la marca utilitzat per a enllaços i botons"
 
-#: js/strings.js:324
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Color de fons dels botons primaris i dels elements destacats"
 
-#: js/strings.js:325
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Color primari en passar el ratolí per sobre d'un element o enfocar-lo"
 
-#: js/strings.js:326
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr ""
 "Color de fons primari en passar el ratolí per sobre d'un element o enfocar-lo"
 
-#: js/strings.js:327
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Color addicional utilitzat per a enllaços i botons menys importants"
 
-#: js/strings.js:328
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Color de fons dels botons secundaris"
 
-#: js/strings.js:329
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr ""
 "Color secundari en passar el ratolí per sobre d'un element o enfocar-lo"
 
-#: js/strings.js:330
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr ""
 "Color de fons secundari en passar el ratolí per sobre d'un element o enfocar-"
 "lo"
 
-#: js/strings.js:331
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Arrodoniment de les cantonades com a longitud CSS, p. ex. 0.25rem o 0 per a "
 "cantonades rectes"
 
-#: js/strings.js:332
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Caràcter que es mostra entre els enllaços de la ruta de navegació"
 
-#: js/strings.js:333
+#: js/strings.js:341
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr ""
 "Enllaç HTTPS per contactar amb l'equip de seguretat, p. ex. un formulari"
 
-#: js/strings.js:334
+#: js/strings.js:342
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Adreça electrònica per informar de problemes de seguretat"
 
-#: js/strings.js:335
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr ""
 "Data a partir de la qual la informació de seguretat es considera obsoleta"
 
-#: js/strings.js:336
+#: js/strings.js:344
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "Enllaç HTTPS a la clau pública per a missatges xifrats"
 
-#: js/strings.js:337
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "Enllaç HTTPS a la pàgina d'agraïment als investigadors de seguretat"
 
-#: js/strings.js:338
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Codis d'idioma separats per comes per als informes de seguretat, p. ex. en, "
 "de"
 
-#: js/strings.js:339
+#: js/strings.js:347
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL HTTPS on es publica el fitxer security.txt"
 
-#: js/strings.js:340
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "Enllaç HTTPS a la política de seguretat i divulgació"
 
-#: js/strings.js:341
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "Enllaç HTTPS a les ofertes de feina relacionades amb la seguretat"
 
-#: js/strings.js:342
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "Enllaç HTTPS a les metadades del proveïdor CSAF"
 
-#: js/strings.js:343
+#: js/strings.js:351
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Regles addicionals afegides al fitxer robots.txt per als rastrejadors web"
 
-#: js/strings.js:344
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Codi CSS personalitzat afegit a totes les pàgines"
 
-#: js/strings.js:345
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Codi JavaScript personalitzat afegit a totes les pàgines"
 
-#: js/strings.js:346
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Llista de tipus de lletra separats per comes utilitzats per als títols"
 
-#: js/strings.js:349
+#: js/strings.js:357
 msgctxt "op"
 msgid "Name"
 msgstr "Nom"
 
-#: js/strings.js:350
+#: js/strings.js:358
 msgctxt "op"
 msgid "Company"
 msgstr "Empresa"
 
-#: js/strings.js:351
+#: js/strings.js:359
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telèfon"
 
-#: js/strings.js:352
+#: js/strings.js:360
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Correu electrònic"
 
-#: js/strings.js:353
+#: js/strings.js:361
 msgctxt "op"
 msgid "Subject"
 msgstr "Assumpte"
 
-#: js/strings.js:354
+#: js/strings.js:362
 msgctxt "op"
 msgid "Text"
 msgstr "Text"
 
-#: js/strings.js:355
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text area"
 msgstr "Àrea de text"
 
-#: js/strings.js:356
+#: js/strings.js:364
 msgctxt "op"
 msgid "Selection"
 msgstr "Selecció"
 
-#: js/strings.js:357
+#: js/strings.js:365
 msgctxt "op"
 msgid "Follow"
 msgstr "Segueix els enllaços"
 
-#: js/strings.js:358
+#: js/strings.js:366
 msgctxt "op"
 msgid "Index"
 msgstr "Indexa"
 
-#: js/strings.js:359
+#: js/strings.js:367
 msgctxt "op"
 msgid "No follow"
 msgstr "No segueixis els enllaços"
 
-#: js/strings.js:360
+#: js/strings.js:368
 msgctxt "op"
 msgid "No index"
 msgstr "No indexis"
 
-#: js/strings.js:361
+#: js/strings.js:369
 msgctxt "op"
 msgid "Subscription"
 msgstr "Subscripció"
 
-#: js/strings.js:362
+#: js/strings.js:370
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Pagament únic"
 
-#: js/strings.js:363
+#: js/strings.js:371
 msgctxt "op"
 msgid "Auto"
 msgstr "Automàtic"
 
-#: js/strings.js:364
+#: js/strings.js:372
 msgctxt "op"
 msgid "Cards"
 msgstr "Targetes"
 
-#: js/strings.js:365
+#: js/strings.js:373
 msgctxt "op"
 msgid "Default"
 msgstr "Per defecte"
 
-#: js/strings.js:366
+#: js/strings.js:374
 msgctxt "op"
 msgid "End"
 msgstr "Final"
 
-#: js/strings.js:367
+#: js/strings.js:375
 msgctxt "op"
 msgid "First column"
 msgstr "Primera columna"
 
-#: js/strings.js:368
+#: js/strings.js:376
 msgctxt "op"
 msgid "First row"
 msgstr "Primera fila"
 
-#: js/strings.js:369
+#: js/strings.js:377
 msgctxt "op"
 msgid "First row and column"
 msgstr "Primera fila i columna"
 
-#: js/strings.js:370
+#: js/strings.js:378
 msgctxt "op"
 msgid "Grid end"
 msgstr "Final de la quadrícula"
 
-#: js/strings.js:371
+#: js/strings.js:379
 msgctxt "op"
 msgid "Grid start"
 msgstr "Inici de la quadrícula"
 
-#: js/strings.js:372
+#: js/strings.js:380
 msgctxt "op"
 msgid "Latest"
 msgstr "Més recents"
 
-#: js/strings.js:373
+#: js/strings.js:381
 msgctxt "op"
 msgid "List"
 msgstr "Llista"
 
-#: js/strings.js:374
+#: js/strings.js:382
 msgctxt "op"
 msgid "None"
 msgstr "Cap"
 
-#: js/strings.js:375
+#: js/strings.js:383
 msgctxt "op"
 msgid "Oldest"
 msgstr "Més antics"
 
-#: js/strings.js:376
+#: js/strings.js:384
 msgctxt "op"
 msgid "Position"
 msgstr "Posició"
 
-#: js/strings.js:377
+#: js/strings.js:385
 msgctxt "op"
 msgid "Start"
 msgstr "Inici"
 
-#: js/strings.js:378
+#: js/strings.js:386
 msgctxt "op"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: js/strings.js:381
+#: js/strings.js:389
 msgctxt "ai"
 msgid "Done"
 msgstr "Fet"
 
-#: js/strings.js:382
+#: js/strings.js:390
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Ja existeix"
 
-#: js/strings.js:385
+#: js/strings.js:393
 msgctxt "sg"
 msgid "expert"
 msgstr "Expert"
 
-#: js/strings.js:386
+#: js/strings.js:394
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:387
+#: js/strings.js:395
 msgctxt "st"
 msgid "website"
 msgstr "Lloc web"
 
-#: js/strings.js:388
+#: js/strings.js:396
 msgctxt "st"
 msgid "logo"
 msgstr "Logotip"
 
-#: js/strings.js:389
+#: js/strings.js:397
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Logotip alternatiu"
 
-#: js/strings.js:390
+#: js/strings.js:398
 msgctxt "st"
 msgid "icon"
 msgstr "Icona"
