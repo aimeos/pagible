@@ -7,6 +7,7 @@ import {
   mdiLock,
   mdiMusic,
   mdiPlusLock,
+  mdiTranslate,
   mdiViewGridOutline,
   mdiYoutube
 } from '@mdi/js'
@@ -17,6 +18,7 @@ import ListStatus from './ListStatus.vue'
 import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
 import { listBase, useList } from '../lists'
+import { useLanguageStore } from '../stores'
 import { fileurl, filesrcset } from '../utils'
 
 const FETCH_FILES = gql`
@@ -56,6 +58,24 @@ const FETCH_FILES = gql`
   }
 `
 
+const TRANSLATE_FILES = gql`
+  ${FILE_FIELDS}
+  mutation ($id: [ID!]!, $lang: [String!]!) {
+    translateFiles(id: $id, lang: $lang) {
+      ...CmsFileFields
+      latest {
+        id
+        published
+        publish_at
+        data
+        editor
+        created_at
+      }
+      byversions_count
+    }
+  }
+`
+
 const SORT_OPTIONS = Object.freeze([
   { column: 'ID', order: 'DESC', label: 'Latest' },
   { column: 'ID', order: 'ASC', label: 'Oldest' },
@@ -85,18 +105,21 @@ export default {
 
   data() {
     return {
-      vgrid: this.user.getData('file', 'grid') ?? this.grid
+      vgrid: this.user.getData('file', 'grid') ?? this.grid,
+      translating: false
     }
   },
 
   setup() {
     return {
       ...useList('file', FETCH_FILES, (vm) => vm.$refs.upload?.click()),
+      languages: useLanguageStore(),
       mdiViewGridOutline,
       mdiFormatListBulletedSquare,
       mdiLock,
       mdiMusic,
       mdiPlusLock,
+      mdiTranslate,
       mdiYoutube,
       sortOptions: SORT_OPTIONS,
       fileurl,
@@ -154,6 +177,11 @@ export default {
       }[action]
     },
 
+    // the descriptions can be translated if there are several languages
+    canTranslate() {
+      return this.languages.available.length > 1 && this.user.can('file:save') && this.user.can('text:translate')
+    },
+
     hydrate(entry) {
       const latest = entry.latest
 
@@ -169,6 +197,48 @@ export default {
         latest_id: latest?.id || null,
         usage: entry.byversions_count
       })
+    },
+
+    // fills in the missing descriptions in all languages as file drafts, at most 100 files per request
+    async translate(item = null) {
+      const list = this.canTranslate() ? (item ? [item] : this.selected()).filter((item) => !item.deleted_at) : []
+
+      if (!list.length || this.translating) {
+        return
+      }
+
+      const ids = list.map((item) => item.id)
+      const files = []
+
+      this.translating = true
+
+      try {
+        for (let i = 0; i < ids.length; i += 100) {
+          const result = await this.$apollo.mutate({
+            mutation: TRANSLATE_FILES,
+            variables: { id: ids.slice(i, i + 100), lang: this.languages.available }
+          })
+
+          files.push(...(result.data?.translateFiles || []))
+        }
+      } catch (error) {
+        this.messages.error(this.$gettext('Error translating descriptions'), error, ids)
+      } finally {
+        this.translating = false
+      }
+
+      if (files.length) {
+        this.patchItems(files.map((entry) => this.hydrate(entry)))
+        this.invalidate()
+        this.messages.add(
+          this.$ngettext('Descriptions of %{num} file translated', 'Descriptions of %{num} files translated', files.length, {
+            num: files.length
+          }),
+          'success'
+        )
+      } else {
+        this.messages.add(this.$gettext('No missing descriptions to translate'), 'info')
+      }
     }
   },
 
@@ -205,6 +275,15 @@ export default {
           </ActionItem>
           <ActionItem v-if="isChecked && user.can('file:save')" :prepend-icon="mdiPencil" @click="edit()">
             {{ $gettext('Edit properties') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem
+            v-if="counts.live && canTranslate()"
+            :prepend-icon="mdiTranslate"
+            :disabled="translating"
+            class="action-translate"
+            @click="translate()"
+          >
+            {{ $gettext('Translate descriptions') }} ({{ counts.live }})
           </ActionItem>
           <ActionItem v-if="counts.live && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop()">
             {{ $gettext('Delete') }} ({{ counts.live }})
@@ -337,6 +416,15 @@ export default {
 
         <ActionItem v-if="user.can('file:save')" :prepend-icon="mdiPencil" @click="edit(item)">
           {{ $gettext('Edit properties') }}
+        </ActionItem>
+        <ActionItem
+          v-if="!item.deleted_at && canTranslate()"
+          :prepend-icon="mdiTranslate"
+          :disabled="translating"
+          class="action-translate"
+          @click="translate(item)"
+        >
+          {{ $gettext('Translate descriptions') }}
         </ActionItem>
 
         <v-divider v-if="user.can('file:save')"></v-divider>

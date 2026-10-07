@@ -1,17 +1,33 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import gql from 'graphql-tag'
 import {
+  mdiAlertCircleOutline,
   mdiClockAlertOutline,
   mdiEye,
   mdiEyeOff,
   mdiEyeOffOutline,
   mdiFileTree,
   mdiFormatListBulletedSquare,
-  mdiPlaylistCheck
+  mdiPlaylistCheck,
+  mdiPlusCircleOutline,
+  mdiRobotOutline,
+  mdiSync
 } from '@mdi/js'
 import PageListItems from '../components/PageListItems.vue'
 import { listViewBase, useListView } from '../listview'
+import { useLanguageStore } from '../stores'
+
+const FETCH_TRANSLATIONS = gql`
+  query ($lang: String!) {
+    pageTranslations(lang: $lang) {
+      stale
+      missing
+      ai
+    }
+  }
+`
 
 export default {
   name: 'PageList',
@@ -33,17 +49,23 @@ export default {
       publish: null,
       status: null,
       editor: null,
-      cache: null
+      cache: null,
+      translation: null
     }
 
     return {
       defaults: defaults,
-      filter: this.user.filter('page', defaults)
+      filter: this.user.filter('page', defaults),
+      translations: null
     }
   },
 
   setup() {
-    return useListView('page')
+    return { ...useListView('page'), languages: useLanguageStore() }
+  },
+
+  created() {
+    this.fetchTranslations()
   },
 
   computed: {
@@ -79,12 +101,87 @@ export default {
             { title: this.$gettext('No cache'), icon: mdiClockAlertOutline, value: { cache: 0 } }
           ]
         },
-        aside.editor
+        aside.editor,
+        ...(this.languages.available.length > 1
+          ? [
+              {
+                key: 'translation',
+                title: this.$gettext('translation'),
+                items: [
+                  { title: this.$gettext('All'), icon: mdiPlaylistCheck, value: { translation: null } },
+                  {
+                    title: this.$gettext('Needs update'),
+                    icon: mdiSync,
+                    count: this.translations?.stale,
+                    value: { translation: 'stale' }
+                  },
+                  {
+                    title: this.$gettext('Missing'),
+                    icon: mdiPlusCircleOutline,
+                    count: this.translations?.missing,
+                    value: { translation: 'missing' }
+                  },
+                  {
+                    title: this.$gettext('AI draft'),
+                    icon: mdiRobotOutline,
+                    count: this.translations?.ai,
+                    value: { translation: 'ai' }
+                  }
+                ]
+              }
+            ]
+          : [])
       ]
+    },
+
+    // current language of the page list, chosen in its language selector
+    lang() {
+      return this.user.getData('page', 'lang', this.languages.default())
+    }
+  },
+
+  watch: {
+    lang() {
+      this.fetchTranslations()
+    },
+
+    'drawer.aside'(open) {
+      open && this.fetchTranslations()
+    },
+
+    filter: {
+      deep: true,
+      handler() {
+        this.fetchTranslations()
+      }
     }
   },
 
   methods: {
+    // counts the pages in each translation state of the current language for the filter
+    fetchTranslations() {
+      if (this.languages.available.length < 2 || !this.user.can('page:view')) {
+        return
+      }
+
+      const lang = this.lang
+
+      return this.$apollo
+        .query({
+          query: FETCH_TRANSLATIONS,
+          variables: { lang },
+          fetchPolicy: 'no-cache'
+        })
+        .then((result) => {
+          if (lang === this.lang) {
+            this.translations = result.data?.pageTranslations || null
+          }
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error fetching translation states'), error)
+        })
+    },
+
     // opens the page in the shown language, the editor offers to create missing ones
     open(item) {
       this.$router.push({

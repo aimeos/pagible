@@ -321,9 +321,73 @@ class Ai
             'model_type' => 'prefer_quality_optimized',
         ];
 
-        return self::provider( 'text', 'translate', null, $config )
-            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-            ->texts();
+        $provider = self::provider( 'text', 'translate', null, $config );
+        $result = [];
+
+        foreach( self::chunks( $texts ) as $chunk )
+        {
+            $list = $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+                ->texts();
+
+            array_push( $result, ...array_values( $list ) );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Splits texts into chunks which can be sent to the translation provider in one request.
+     *
+     * @param array<int, string> $texts Texts to translate
+     * @param int $max Maximum number of texts per chunk
+     * @param int $size Maximum number of bytes per chunk, larger texts get a chunk of their own
+     * @return array<int, array<int, string>> List of chunks with their texts
+     */
+    public static function chunks( array $texts, int $max = 50, int $size = 50000 ) : array
+    {
+        $chunks = [];
+        $chunk = [];
+        $bytes = 0;
+
+        foreach( array_values( $texts ) as $text )
+        {
+            if( $chunk && ( count( $chunk ) >= $max || $bytes + strlen( $text ) > $size ) )
+            {
+                $chunks[] = $chunk;
+                $chunk = [];
+                $bytes = 0;
+            }
+
+            $chunk[] = $text;
+            $bytes += strlen( $text );
+        }
+
+        if( $chunk ) {
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
+    }
+
+
+    /**
+     * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
+     *
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
+     * @param (\Closure(int): void)|null $calls Called with the number of provider calls before translating
+     * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
+     */
+    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user, ?\Closure $calls = null ) : ?\Closure
+    {
+        if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
+            return null;
+        }
+
+        return function( array $texts, string $to, ?string $from, string $context ) use ( $calls ) : array {
+            $calls && $calls( count( self::chunks( $texts ) ) );
+            return self::translate( $texts, $to, $from, $context ?: null );
+        };
     }
 
 

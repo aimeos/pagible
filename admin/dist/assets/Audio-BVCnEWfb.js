@@ -1,1 +1,0 @@
-import e from"./File-BPWlBNnS.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`audio`}};export{t as default};

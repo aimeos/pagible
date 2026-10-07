@@ -96,6 +96,11 @@ extend type Query {
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@page")
 
+  "Get the number of pages in each translation state of the language"
+  pageTranslations(lang: String! @rules(apply: ["required", "max:10"])): PageTranslations!
+    @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@translations")
+
   "Get the available pages, with 'lang' each page in that language or in its source language if it has no variant in that language"
   pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed, lang: String @rules(apply: ["nullable", "string", "max:10"])): [Page!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
@@ -174,6 +179,14 @@ extend type Mutation {
   addVariant(id: ID!, lang: String!): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
+  "Save a reviewed translation as new draft of the page variant; 'hashes' are the hashes of the accepted changes by key from the proposed translation"
+  saveTranslation(id: ID!, lang: String! @rules(apply: ["required", "max:10"]), input: PageInput!, hashes: JSON!, latestId: ID): Page
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+
+  "Mark the page variants in the language as up to date with their source without changing their content"
+  ignoreChanges(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String! @rules(apply: ["required", "max:10"])): [Page!]!
+    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+
   "Copy the page and its sub-pages with all language variants below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   copyPage(id: ID!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
@@ -183,7 +196,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-graphql")
 
   "Update the values of an existing page in the given language or in its source language if no language is passed"
-  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String): Page
+  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String, restore: Boolean): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
@@ -469,6 +482,18 @@ type Page {
   changed: JSON
 }
 
+"Number of pages in each translation state of a language"
+type PageTranslations {
+  "Variants which need an update because their source changed"
+  stale: Int!
+
+  "Pages without a variant in the language"
+  missing: Int!
+
+  "Variants whose latest draft was made by AI and isn't reviewed yet"
+  ai: Int!
+}
+
 type PageLanguage {
   "Unique ID of the page variant or NULL if the language is missing"
   id: ID
@@ -489,6 +514,9 @@ type PageLanguage {
 input PageFilter {
   "Unique page IDs"
   id: [ID!] @rulesForArray(apply: ["nullable", "max:1000"])
+
+  "Translation state in the language passed by 'lang': 'stale' (needs update), 'missing' (no variant) or 'ai' (latest draft made by AI)"
+  translation: String @rules(apply: ["nullable", "in:stale,missing,ai"])
 
 
   "ID of the parent page or NULL if it's a root page"

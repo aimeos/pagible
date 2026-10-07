@@ -427,6 +427,119 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPagesFilterTranslation()
+    {
+        $counts = fn() => $this->actingAs( $this->user )->graphQL( '{
+            pageTranslations(lang: "de") { stale missing ai }
+        }' )->assertGraphQLErrorFree()->json( 'data.pageTranslations' );
+
+        $before = $counts();
+
+        $ai = $this->page();
+        $missing = $this->page();
+        $stale = $this->page();
+
+        Resource::translatePage( $ai->id, 'de', $this->user, $this->translator() );
+        Resource::addVariant( $stale->id, 'de', $this->user );
+
+        $query = fn( string $state ) => array_column( $this->actingAs( $this->user )->graphQL( '{
+            pages(filter: {id: ["' . $ai->id . '", "' . $missing->id . '", "' . $stale->id . '"], translation: "' . $state . '"}, lang: "de") {
+                data { id lang }
+            }
+        }' )->assertGraphQLErrorFree()->json( 'data.pages.data' ), 'lang', 'id' );
+
+        $this->assertEquals( [$missing->id => 'en'], $query( 'missing' ) );
+        $this->assertEquals( [$stale->id => 'de'], $query( 'stale' ) );
+        $this->assertEquals( [$ai->id => 'de'], $query( 'ai' ) );
+
+        $this->assertEquals( [
+            'stale' => $before['stale'] + 1,
+            'missing' => $before['missing'] + 1,
+            'ai' => $before['ai'] + 1,
+        ], $counts() );
+
+        $this->actingAs( $this->user )->graphQL( '{
+            pages(filter: {translation: "invalid"}, lang: "de") { data { id } }
+        }' )->assertGraphQLValidationKeys( ['filter.translation'] );
+    }
+
+
+    public function testSaveTranslation()
+    {
+        $page = $this->page();
+        Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
+        Resource::savePage( $page->id, ['title' => 'Changed'], $this->user );
+
+        $preview = Resource::translation( $page->id, 'de', $this->translator() );
+        $variant = Page::language( 'de' )->findOrFail( $page->id );
+        $this->assertTrue( (bool) $variant->stale || $preview['hashes'] != (array) $variant->hashes );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($id: ID!, $input: PageInput!, $hashes: JSON!, $latestId: ID) {
+                saveTranslation(id: $id, lang: "de", input: $input, hashes: $hashes, latestId: $latestId) { id lang stale }
+            }
+        ', [
+            'id' => $page->id,
+            'input' => ['title' => 'Geändert'],
+            'hashes' => json_encode( $preview['hashes'] ),
+            'latestId' => $preview['latestId'],
+        ] )->assertGraphQLErrorFree();
+
+        $response->assertJson( ['data' => ['saveTranslation' => ['id' => $page->id, 'lang' => 'de', 'stale' => false]]] );
+
+        $variant = Page::language( 'de' )->with( 'latest' )->findOrFail( $page->id );
+        $this->assertEquals( 'Geändert', $variant->latest->data->title );
+        $this->assertEquals( 'editor@testbench', $variant->latest->editor );
+    }
+
+
+    public function testSaveTranslationPermission()
+    {
+        $user = new \App\Models\User( ['email' => 'viewer@testbench', 'cmsperms' => ['page:view']] );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation { saveTranslation(id: "x", lang: "de", input: {}, hashes: "{}") { id } }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testSavePageRestore()
+    {
+        $page = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        Resource::ignoreChanges( $page->id, 'de', $this->user );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation { savePage(id: "' . $page->id . '", input: {title: "Alt"}, lang: "de") { stale } }
+        ' )->assertJson( ['data' => ['savePage' => ['stale' => false]]] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation { savePage(id: "' . $page->id . '", input: {title: "Restored"}, lang: "de", restore: true) { stale } }
+        ' )->assertJson( ['data' => ['savePage' => ['stale' => true]]] );
+
+        $this->assertTrue( (bool) Page::language( 'de' )->findOrFail( $page->id )->stale );
+    }
+
+
+    public function testIgnoreChanges()
+    {
+        $page = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $this->assertTrue( (bool) Page::language( 'de' )->findOrFail( $page->id )->stale );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { ignoreChanges(id: $id, lang: "de") { id lang stale } }
+        ', ['id' => [$page->id]] )->assertJson( ['data' => ['ignoreChanges' => [['id' => $page->id, 'lang' => 'de', 'stale' => false]]]] );
+
+        $this->assertFalse( (bool) Page::language( 'de' )->findOrFail( $page->id )->stale );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { ignoreChanges(id: $id, lang: "en") { id } }
+        ', ['id' => [$page->id]] )->assertGraphQLErrorMessage( 'The source language can\'t be marked as up to date' );
+    }
+
+
     protected function page() : Page
     {
         return Resource::addPage( [
@@ -439,5 +552,14 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     protected function root() : Page
     {
         return Page::where( 'tag', 'root' )->firstOrFail();
+    }
+
+
+    /**
+     * Returns a translate callback prefixing the texts with the language.
+     */
+    protected function translator() : \Closure
+    {
+        return fn( array $texts, string $to ) => array_map( fn( $text ) => '[' . $to . '] ' . $text, $texts );
     }
 }

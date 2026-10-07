@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 import FileListItems from '../../../js/components/FileListItems.vue'
-import { useMessageStore, useUserStore } from '../../../js/stores'
+import { useLanguageStore, useMessageStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
 }
@@ -411,5 +411,82 @@ describe('FileListItems', () => {
     mountList({ defaults, filter: { ...defaults } }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
     cy.get('.notfound').should('contain', 'No entries yet')
     cy.get('.notfound .btn-reset-filter').should('not.exist')
+  })
+
+  describe('translate descriptions', () => {
+    const perms = { 'file:view': true, 'file:save': true, 'text:translate': true }
+
+    function file(id, extra = {}) {
+      return { id, name: id, mime: 'image/png', path: id + '.png', previews: {}, description: { en: 'A cat' }, published: true, ...extra }
+    }
+
+    function translated(id) {
+      return {
+        id, disk: 'public', lang: null, mime: 'image/png', name: id, path: id + '.png', previews: '{}',
+        description: '{}', transcription: '{}', editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+        updated_at: '2026-01-01 00:00:00', deleted_at: null, byversions_count: 0,
+        latest: { id: 'v-' + id, published: false, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+          data: '{}', aux: JSON.stringify({ description: { en: 'A cat', de: 'Eine Katze' } }) },
+      }
+    }
+
+    it('translates the descriptions of the selected files into all languages', () => {
+      const mutate = cy.stub().resolves({ data: { translateFiles: [translated('file-1')] } })
+
+      mountList({}, perms, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = ['en', 'de']
+        const vm = wrapper.findComponent(FileListItems).vm
+        const add = cy.spy(vm.messages, 'add')
+        vm.items = [file('file-1'), file('file-2'), file('file-3', { deleted_at: '2026-01-01 00:00:00' })]
+        vm.checked = new Set(['file-1', 'file-2', 'file-3'])
+
+        return vm.translate().then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['file-1', 'file-2'], lang: ['en', 'de'] })
+          expect(vm.items[0].description).to.deep.equal({ en: 'A cat', de: 'Eine Katze' })
+          expect(vm.items[0].published).to.equal(false)
+          expect(add).to.have.been.calledWithMatch(/1 file translated/, 'success')
+        })
+      })
+    })
+
+    it('sends at most 100 files per request', () => {
+      const mutate = cy.stub().resolves({ data: { translateFiles: [] } })
+
+      mountList({}, perms, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = ['en', 'de']
+        const vm = wrapper.findComponent(FileListItems).vm
+        const add = cy.spy(vm.messages, 'add')
+        vm.items = Array.from({ length: 150 }, (_, i) => file('file-' + i))
+        vm.checked = new Set(vm.items.map((item) => item.id))
+
+        return vm.translate().then(() => {
+          expect(mutate).to.have.been.calledTwice
+          expect(mutate.firstCall.args[0].variables.id).to.have.length(100)
+          expect(mutate.secondCall.args[0].variables.id).to.have.length(50)
+          expect(add).to.have.been.calledWithMatch(/No missing descriptions/, 'info')
+        })
+      })
+    })
+
+    it('does not translate descriptions with one language or without text:translate', () => {
+      const mutate = cy.stub()
+
+      mountList({}, { 'file:view': true, 'file:save': true }, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = ['en', 'de']
+        const vm = wrapper.findComponent(FileListItems).vm
+        vm.items = [file('file-1')]
+
+        expect(vm.canTranslate()).to.equal(false)
+        useUserStore().me.permission['text:translate'] = true
+        expect(vm.canTranslate()).to.equal(true)
+        useLanguageStore().available = ['en']
+        expect(vm.canTranslate()).to.equal(false)
+
+        return vm.translate(vm.items[0]).then(() => {
+          expect(mutate).not.to.have.been.called
+        })
+      })
+    })
   })
 })

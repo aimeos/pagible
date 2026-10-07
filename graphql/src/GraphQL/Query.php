@@ -110,6 +110,26 @@ final class Query
 
 
     /**
+     * Resolver for the number of pages in each translation state of a language.
+     *
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array{stale: int, missing: int, ai: int}
+     */
+    public function translations( $rootValue, array $args ) : array
+    {
+        $lang = (string) $args['lang'];
+        $result = [];
+
+        foreach( ['stale', 'missing', 'ai'] as $state ) {
+            $result[$state] = Filter::translation( Page::query()->fallback( $lang ), $lang, $state )->count();
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Resolver for paginated page list query.
      *
      * @param  null  $rootValue
@@ -124,6 +144,9 @@ final class Query
             : [];
 
         $search = Filter::search( Page::class, $filter['any'] ?? '' );
+        $state = isset( $args['lang'] ) ? ( $filter['translation'] ?? null ) : null;
+        $lang = (string) ( $args['lang'] ?? '' );
+        unset( $filter['translation'] );
 
         if( isset( $args['lang'] ) )
         {
@@ -135,10 +158,14 @@ final class Query
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 
-        if( $route ) {
-            $search->query( function( $query ) use ( $route ) {
+        if( $route || $state ) {
+            $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang ) {
                 foreach( $route as $field => $value ) {
                     $query->where( 'cms_pages.' . $field, (string) ( $value ?? '' ) );
+                }
+
+                if( $state ) {
+                    Filter::translation( $query, $lang, $state );
                 }
             } );
         }

@@ -162,6 +162,25 @@ describe('HistoryDialog', () => {
       })
     })
   })
+  it('reviews proposed changes and applies only the selected ones in review mode', () => {
+    const before = { data: { title: 'Alt', content: [textBlock('one', 'Eins')] }, files: {} }
+    const after = { data: { title: 'Neu', content: [textBlock('one', 'One')] }, files: {} }
+    mountDialog({ current: null, review: true, title: 'Translation', versions: [after, before], onApply: cy.spy().as('apply') })
+    cy.contains('Translation').should('exist')
+    cy.contains('.version-date', 'Proposed changes').should('exist')
+    cy.get('.version-editor').should('not.exist')
+    cy.contains('button', 'Revert selected changes').should('not.exist')
+    cy.contains('2 of 2 selected for applying').should('exist')
+    cy.get('.diff-group input[aria-label="title"]').uncheck()
+    cy.contains('1 of 2 selected for applying').should('exist')
+    cy.contains('button.apply-selected', 'Apply selected changes').click()
+    cy.get('@apply').should('have.been.calledOnce').then(spy => {
+      expect(spy.firstCall.args[0]).to.deep.equal({ content: [textBlock('one', 'One')] })
+      expect(spy.firstCall.args[1]).to.deep.equal(after)
+      expect(spy.firstCall.args[2].selection).to.be.an('object')
+    })
+  })
+
   it('loads and renders the history dialog and closes it through v-model', () => {
     const load = cy.stub().returns(Promise.resolve([])).as('load')
     const onUpdate = cy.spy().as('update')

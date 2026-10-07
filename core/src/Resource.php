@@ -550,6 +550,199 @@ class Resource
     }
 
     /**
+     * Marks a page variant as up to date with the published source variant without changing its content.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Page Page with the variant
+     * @throws Exception If the variant is the source variant
+     */
+    public static function ignoreChanges( string $id, string $lang, ?Authenticatable $user = null ) : Page
+    {
+        $editor = Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $id, $lang ) {
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->language( $lang )->lockForUpdate()->findOrFail( $id );
+
+            if( $page->isSourceVariant() ) {
+                throw new Exception( 'The source language can\'t be marked as up to date' );
+            }
+
+            /** @var Page $source */
+            $source = Page::withTrashed()->findOrFail( $id );
+            $hashes = self::publishedHashes( $source );
+
+            PageVariant::whereKey( $page->variant_id )->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => false] );
+            $page->forceFill( ['hashes' => $hashes, 'stale' => false] )->syncOriginal();
+
+            return $page;
+        } );
+
+        self::watch( 'ignored', $page, [$lang], $editor );
+
+        return $page;
+    }
+
+
+    /**
+     * Saves a reviewed translation as new draft of the page variant.
+     *
+     * The hashes of the accepted changes are taken from the proposed translation, changes
+     * which were not accepted keep their previous hashes and still count as changed.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param array<string, mixed> $input Reviewed page input like in savePage()
+     * @param array<string, string> $hashes Hashes of the accepted changes by key
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @return Page Page with the variant and its new draft
+     * @throws Exception If the variant is the source variant or a hash is invalid
+     */
+    public static function saveTranslation( string $id, string $lang, array $input, array $hashes,
+        ?Authenticatable $user = null, ?string $latestId = null ) : Page
+    {
+        foreach( $hashes as $key => $hash )
+        {
+            if( !preg_match( '/^(el|meta|config|page):./', (string) $key ) || !preg_match( '/^([0-9a-f]{8})?$/', (string) $hash ) ) {
+                throw new Exception( sprintf( 'Invalid hash "%1$s" for "%2$s"', $hash, $key ) );
+            }
+        }
+
+        unset( $input['source'], $input['lang'] );
+
+        $page = Utils::transaction( function() use ( $id, $lang, $input, $hashes, $user, $latestId ) {
+
+            [$source, $variant] = self::translatable( $id, $lang );
+
+            if( !$variant ) {
+                throw new Exception( sprintf( 'Page "%1$s" has no variant in language "%2$s"', $id, $lang ) );
+            }
+
+            $page = self::savePage( $id, $input, $user, $latestId, $lang );
+            $new = array_replace( (array) $variant->hashes, array_map( 'strval', $hashes ) );
+            $stale = Hashes::stale( Sync::hashes( $source ), $new ) || in_array( '', $new, true );
+
+            PageVariant::whereKey( $page->variant_id )->update( ['hashes' => json_encode( (object) $new ), 'stale' => $stale] );
+            $page->forceFill( ['hashes' => $new, 'stale' => $stale] )->syncOriginal();
+
+            return $page;
+        } );
+
+        self::watch( 'translated', $page, [$lang], Utils::editor( $user ), true );
+
+        return $page;
+    }
+
+
+    /**
+     * Translates the source variant of a page into a language variant.
+     *
+     * Missing variants are created as translated copy of the source, existing ones get the
+     * changes of the source merged into a new draft. Without translate callback, the content
+     * is copied untranslated and the variant stays stale.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param (callable(array<int, string>, string, ?string, string): array<int, string>)|null $translate Translate callback
+     * @return Page Page with the variant and its new draft
+     * @throws Exception If the language is the source language or its variant is in the trash
+     */
+    public static function translatePage( string $id, string $lang, ?Authenticatable $user = null, ?callable $translate = null ) : Page
+    {
+        $lang = self::checkLang( $lang );
+        [$source, $variant] = self::translatable( $id, $lang );
+
+        // translate outside of the transaction because the AI call is slow
+        $result = Sync::translate( $source, $variant, $lang, $translate );
+        $editor = $result['translated'] ? Sync::EDITOR : Utils::editor( $user );
+
+        $page = Utils::transaction( function() use ( $source, $variant, $lang, $result, $editor, $user ) {
+
+            $hashes = $result['hashes'];
+            $stale = in_array( '', $hashes, true );
+
+            if( !$variant )
+            {
+                if( PageVariant::withTrashed()->where( 'page_id', $source->id )->where( 'lang', $lang )->exists() ) {
+                    throw new Exception( sprintf( 'Language "%1$s" already exists', $lang ) );
+                }
+
+                $path = $result['slug'] !== '' ? $result['slug'] : (string) ( $result['data']['path'] ?? '' );
+                [$domain, $path] = self::variantPath( $source, $lang, $path );
+                $data = array_replace( $result['data'], ['lang' => $lang, 'domain' => $domain, 'path' => $path, 'status' => 0] );
+
+                $new = new PageVariant();
+                $new->forceFill( array_filter( array_intersect_key( $data, array_flip( ['to', 'name', 'title', 'type', 'theme', 'tag', 'cache'] ) ), fn( $v ) => $v !== null ) + [
+                    'page_id' => $source->id,
+                    'lang' => $lang,
+                    'domain' => $domain,
+                    'path' => $path,
+                    'status' => 0,
+                    'hashes' => $hashes,
+                    'stale' => $stale,
+                    'editor' => $editor,
+                ] )->save();
+
+                return self::addVersion( Page::variant( (string) $new->id )->firstOrFail(), $data, $result['aux'], $editor, $user );
+            }
+
+            /** @var Page $page */
+            $page = Page::withTrashed()->language( $lang )->with( 'latest' )->lockForUpdate()->findOrFail( $source->id );
+
+            // merges with drafts saved by editors in the meantime
+            [$data, $aux, $diffs] = Merge::page( $page, $result['data'], $result['aux'], $variant->latest_id, $user );
+
+            $page->draft( [
+                'data' => $data,
+                'editor' => $editor,
+                'lang' => $lang,
+                'aux' => $aux,
+            ], self::refs( $aux, $user ), $diffs );
+
+            PageVariant::whereKey( $page->variant_id )->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => $stale] );
+            $page->forceFill( ['hashes' => $hashes, 'stale' => $stale] )->syncOriginal();
+            $page->announce( 'saved', $editor );
+
+            return $page;
+        } );
+
+        self::pruneVersions( Page::class, [$page->id] );
+        self::watch( $variant ? 'translated' : 'added', $page, [$lang], Utils::editor( $user ), $result['translated'] );
+
+        return $page;
+    }
+
+
+    /**
+     * Returns the proposed translation of the source variant without saving it.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param (callable(array<int, string>, string, ?string, string): array<int, string>)|null $translate Translate callback
+     * @return array{data: array<string, mixed>, aux: array<string, mixed>, hashes: array<string, string>, translated: bool, latestId: string|null}
+     * @throws Exception If the language is the source language or its variant is in the trash
+     */
+    public static function translation( string $id, string $lang, ?callable $translate = null ) : array
+    {
+        [$source, $variant] = self::translatable( $id, self::checkLang( $lang ) );
+        $result = Sync::translate( $source, $variant, $lang, $translate );
+
+        return [
+            'data' => $result['data'],
+            'aux' => $result['aux'],
+            'hashes' => $result['hashes'],
+            'translated' => $result['translated'],
+            'latestId' => $variant?->latest_id,
+        ];
+    }
+
+
+    /**
      * Trashes, restores or purges the variants of several pages in one language.
      *
      * Pages without a matching variant and source variants, which can't be deleted, are skipped.
@@ -966,6 +1159,34 @@ class Resource
 
 
     /**
+     * Returns the source variant and the variant of the language to translate.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @return array{0: Page, 1: Page|null} Page with the source variant and with the variant if it exists
+     * @throws Exception If the language is the source language or its variant is in the trash
+     */
+    protected static function translatable( string $id, string $lang ) : array
+    {
+        /** @var Page $source */
+        $source = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+
+        if( $source->lang === $lang ) {
+            throw new Exception( 'The source language can\'t be translated' );
+        }
+
+        /** @var Page|null $variant */
+        $variant = Page::withTrashed()->language( $lang, true )->with( 'latest' )->find( $id );
+
+        if( $variant && $variant->getAttribute( 'variant_deleted_at' ) !== null ) {
+            throw new Exception( sprintf( 'Language "%1$s" is in the trash, restore it instead', $lang ) );
+        }
+
+        return [$source, $variant];
+    }
+
+
+    /**
      * Returns a path that isn't used by another page variant in the domain.
      *
      * @param string $domain Domain name
@@ -1027,11 +1248,12 @@ class Resource
      * @param Page $page Affected page
      * @param array<int, string> $langs Affected languages
      * @param string $editor Name of the editing user
+     * @param bool $ai Whether AI was used
      */
-    protected static function watch( string $action, Page $page, array $langs, string $editor ) : void
+    protected static function watch( string $action, Page $page, array $langs, string $editor, bool $ai = false ) : void
     {
         Watch::dispatch( Translation::class, fn() => new Translation(
-            $action, (string) $page->id, $langs, $editor, false, (string) $page->tenant_id
+            $action, (string) $page->id, $langs, $editor, $ai, (string) $page->tenant_id
         ) );
     }
 
@@ -1592,19 +1814,20 @@ class Resource
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @param string|null $lang Language of the page variant or null for the source variant
+     * @param bool $restore TRUE if the input restores an old version, which marks translations as outdated
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      * @throws Exception If the new source language in $input['source'] has no variant
      */
     public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null,
-        ?string $lang = null ) : Page
+        ?string $lang = null, bool $restore = false ) : Page
     {
         $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source ) {
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source, $restore ) {
 
             /** @var Page $page */
             $page = Page::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
@@ -1614,6 +1837,13 @@ class Resource
                 self::applyPage( $page, $input, $editor, $latestId, $user );
                 $page->announce( 'saved', $editor );
                 self::pruneVersions( Page::class, [$page->id] );
+            }
+
+            // a restored old translation may not match the current source anymore
+            if( $restore && !$page->isSourceVariant() )
+            {
+                PageVariant::whereKey( $page->variant_id )->toBase()->update( ['stale' => true] );
+                $page->forceFill( ['stale' => true] )->syncOriginal();
             }
 
             if( $source !== null && $source !== $page->source )

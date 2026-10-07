@@ -26,6 +26,7 @@ final class SavePage
             Auth::user(),
             $args['latestId'] ?? null,
             $args['lang'] ?? null,
+            !empty( $args['restore'] ),
         );
     }
 }

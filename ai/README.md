@@ -38,6 +38,7 @@ Global settings:
 | `timeout` | `CMS_AI_TIMEOUT` | `300` | Maximum seconds an AI request may run |
 | `maxinput` | `CMS_AI_MAXINPUT` | `1048576` | Maximum input size in bytes sent to a provider |
 | `maxdepth` | `CMS_AI_MAXDEPTH` | `20` | Maximum nesting depth of structured input |
+| `ratelimit` | `CMS_AI_RATELIMIT` | `60` | Maximum AI provider calls per minute and tenant made by queued page translations |
 | `middleware` | | `['web', 'throttle:cms-ai']` | Middleware of the `cmsapi/chat` streaming route |
 
 ### Environment Variables
@@ -58,6 +59,36 @@ CMS_AI_WRITE_API_KEY=your-api-key
 ```
 
 The translate feature also supports `CMS_AI_TRANSLATE_URL` for a custom endpoint.
+
+## Page translation
+
+The "Translate" action in the admin page list creates or updates the language variants of the selected pages from their source language. Translations run as queued jobs on the queue configured in `cms.queue` and are saved as new drafts by the editor "AI draft", so they must be reviewed and published like any other change. Only the elements and fields which changed since the last translation are sent to the provider.
+
+A translation is marked as "Needs update" when its source page is published with changes or when an old version of the translation is restored. "Ignore changes" marks it as up to date again without changing its content.
+
+Large pages are split into several provider calls and all calls of a tenant are limited by `CMS_AI_RATELIMIT` (calls per minute). Jobs exceeding the limit are delayed instead of failing, while rate limit, overload and connection errors of the provider are retried after 10 seconds, 1 minute and 5 minutes.
+
+### Excluding content from translation
+
+Texts of the field types `string`, `text`, `plaintext` and `markdown` as well as table cells are translated, including fields within `items`. Add `"translate": false` in the `schema.json` of a theme to keep the value of a field unchanged in all languages, e.g. for codes or reference numbers:
+
+```json
+"currency": {
+    "type": "string",
+    "translate": false,
+    "label": "Currency"
+}
+```
+
+The same flag on an element type excludes all of its fields, e.g. for source code:
+
+```json
+"code": {
+    "group": "basic",
+    "translate": false,
+    "fields": { ... }
+}
+```
 
 ## Commands
 

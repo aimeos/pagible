@@ -136,6 +136,37 @@ class Filter
 
 
     /**
+     * Limits the pages queried with the language fallback to a translation state.
+     *
+     * "stale" are variants in the language which need an update, "missing" are pages without
+     * a variant in the language and "ai" are variants whose latest draft was made by AI.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     * @param \Illuminate\Database\Eloquent\Builder<TModel> $query Page query with the fallback of the language
+     * @param string $lang Language code
+     * @param string $state Translation state, "stale", "missing" or "ai"
+     * @return \Illuminate\Database\Eloquent\Builder<TModel> Same query for fluent calls
+     */
+    public static function translation( \Illuminate\Database\Eloquent\Builder $query, string $lang, string $state ) : \Illuminate\Database\Eloquent\Builder
+    {
+        $table = $query->getModel()->getTable();
+
+        match( $state ) {
+            'missing' => $query->where( $table . '.lang', '<>', $lang ),
+            'stale' => $query->where( $table . '.lang', $lang )->where( $table . '.stale', true ),
+            'ai' => $query->where( $table . '.lang', $lang )->whereExists( fn( $q ) => $q->selectRaw( '1' )
+                ->from( 'cms_versions' )
+                ->whereColumn( 'cms_versions.id', $table . '.latest_id' )
+                ->where( 'cms_versions.editor', Sync::EDITOR )
+            ),
+            default => throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) ),
+        };
+
+        return $query;
+    }
+
+
+    /**
      * Apply publish-status filter.
      *
      * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder

@@ -51,6 +51,18 @@ describe('AsideList', () => {
     cy.contains('.v-btn', 'Reset').should('be.disabled')
   })
 
+  it('renders the counts of the items', () => {
+    const counted = [{ key: 'translation', title: 'Translation', items: [
+      { title: 'All', value: { translation: null } },
+      { title: 'Missing', value: { translation: 'missing' }, count: 3 },
+    ] }]
+
+    mountList({}, { content: counted })
+    cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })
+    cy.contains('.v-btn', 'Missing').find('.count').should('have.text', '3')
+    cy.contains('.v-btn', 'All').find('.count').should('not.exist')
+  })
+
   it('renders item titles inside groups', () => {
     mountList({ status: 'PUBLISHED' })
     cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })

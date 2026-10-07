@@ -35,3 +35,60 @@ extend type Mutation {
   "Generate texts from prompts and passed file IDs"
   write(prompt: String! @rules(apply: ["required", "max:2000"]), context: String @rules(apply: ["max:30000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
 }
+
+extend type Mutation {
+  "Queue translations of the pages into the languages, which create missing variants and merge source changes into existing ones; returns the batch for polling the progress"
+  translatePage(id: [ID!]! @rulesForArray(apply: ["min:1", "max:1000"]), lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+
+  "Translate the descriptions of the files into the languages they are missing in and save them as new file drafts"
+  translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
+}
+
+extend type Query {
+  "Get the proposed translation of the page into the language without saving it"
+  translation(id: ID! @rules(apply: ["max:36"]), lang: String! @rules(apply: ["required", "max:10"])): Translation @guard @cmsPermission(action: "page:save") @throttle(name: "cms-ai")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Queries\\Translation")
+
+  "Get the progress of queued page translations"
+  translateProgress(batch: ID! @rules(apply: ["max:36"])): TranslateProgress @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Queries\\TranslateProgress")
+}
+
+"Queued page translations"
+type TranslateBatch {
+  "ID of the batch for polling the progress"
+  id: ID!
+
+  "Number of queued translations"
+  total: Int!
+}
+
+"Progress of queued page translations"
+type TranslateProgress {
+  "Number of queued translations"
+  total: Int!
+
+  "Number of finished translations"
+  done: Int!
+
+  "Number of failed translations"
+  failed: Int!
+}
+
+"Proposed translation of a page variant"
+type Translation {
+  "Page fields like title, name and path"
+  data: JSON!
+
+  "Content elements, meta data and configuration"
+  aux: JSON!
+
+  "Hashes of the source items by key, empty if the item wasn't translated"
+  hashes: JSON!
+
+  "Whether the texts were translated by AI or copied untranslated"
+  translated: Boolean!
+
+  "ID of the latest version of the variant the translation is based on or NULL for a new variant"
+  latestId: ID
+}
