@@ -3294,8 +3294,7 @@ msgstr "រូបភាពបង្ហាញលទ្ធផល រូបភា�
 msgctxt "fh"
 msgid ""
 "Load the images without delay if they are visible at the top of the page"
-msgstr ""
-"ផ្ទុករូបភាពដោយគ្មានការពន្យារពេល ប្រសិនបើវាអាចមើលឃើញនៅផ្នែកខាងលើនៃទំព័រ"
+msgstr "ផ្ទុករូបភាពដោយគ្មានការពន្យារពេល ប្រសិនបើវាអាចមើលឃើញនៅផ្នែកខាងលើនៃទំព័រ"
 
 #: js/strings.js:241
 msgctxt "fh"
@@ -3399,663 +3398,679 @@ msgstr "ចំនួនកាតក្នុងមួយជួរ \"auto\" ស�
 
 #: js/strings.js:261
 msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr "បង្ហាញកាត ផ្លាកសញ្ញាតូចៗដូចជាវិញ្ញាបនបត្រ ឬលេខធំៗដូចជាតួលេខសំខាន់ៗ"
+
+#: js/strings.js:262
+msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "កាតដែលបង្ហាញក្នុងក្រឡាចត្រង្គ"
 
-#: js/strings.js:262
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "ចំណងជើងនៃកាត"
 
-#: js/strings.js:263
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "រូបភាពដែលបង្ហាញនៅផ្នែកខាងលើនៃកាត"
 
-#: js/strings.js:264
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "អត្ថបទនៃកាត"
 
-#: js/strings.js:265
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "ទំព័រ ឬតំណដែលកាតនាំទៅ"
 
-#: js/strings.js:266
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើសម្រង់សម្តី"
 
-#: js/strings.js:267
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "សម្រង់សម្តីរបស់អតិថិជន ឬដៃគូ"
 
-#: js/strings.js:268
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "សម្រង់សម្តីរបស់បុគ្គល"
 
-#: js/strings.js:269
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "ឈ្មោះរបស់បុគ្គល"
 
-#: js/strings.js:270
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "មុខតំណែង ឬក្រុមហ៊ុនរបស់បុគ្គល"
 
-#: js/strings.js:271
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "រូបថតរបស់បុគ្គល"
 
-#: js/strings.js:272
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "សេចក្តីផ្តើមនៃអត្ថបទ ដែលបង្ហាញនៅខាងក្រោមចំណងជើងទំព័រ"
 
-#: js/strings.js:273
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "រូបភាពនៃអត្ថបទ រូបទីមួយត្រូវបានប្រើជារូបភាពមើលជាមុន"
 
-#: js/strings.js:274
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "ឈ្មោះអ្នកនិពន្ធអត្ថបទ"
 
-#: js/strings.js:275
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "តំណទៅទំព័រប្រវត្តិរូបរបស់អ្នកនិពន្ធ"
 
-#: js/strings.js:276
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើបញ្ជី"
 
-#: js/strings.js:277
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "បង្ហាញទំព័រជាកាត ឬជាបញ្ជីបង្រួម"
 
-#: js/strings.js:278
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "ទំព័រដែលទំព័ររងរបស់វាត្រូវបានរាយបញ្ជី"
 
-#: js/strings.js:279
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "លំដាប់តម្រៀបនៃទំព័រដែលបានរាយបញ្ជី"
 
-#: js/strings.js:280
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "ចំនួនទំព័រអតិបរមាដែលបង្ហាញក្នុងពេលតែមួយ"
 
-#: js/strings.js:281
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "បង្ហាញទំព័ររងផ្សេងទៀតជាកាត ឬជាបញ្ជីបង្រួម"
 
-#: js/strings.js:282
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើគម្រោងតម្លៃ"
 
-#: js/strings.js:283
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "អត្ថបទខ្លីដែលបង្ហាញនៅខាងក្រោមចំណងជើង"
 
-#: js/strings.js:284
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "គម្រោងតម្លៃដែលបង្ហាញនៅជាប់គ្នា"
 
-#: js/strings.js:285
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "ឈ្មោះគម្រោងតម្លៃ"
 
-#: js/strings.js:286
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr "តួនាទីដែលផ្តល់ឱ្យអតិថិជនបន្ទាប់ពីការទូទាត់ ដើម្បីចូលប្រើទំព័រដែលបានការពារ"
 
-#: js/strings.js:287
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "តម្លៃនៃគម្រោង ឧ. ប្រចាំខែ និងប្រចាំឆ្នាំ"
 
-#: js/strings.js:288
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "ការជាវដដែលៗ ឬការទូទាត់តែម្តង"
 
-#: js/strings.js:289
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "ចំនួនថ្ងៃរវាងការទូទាត់ពីរ ឧ. 30 សម្រាប់ប្រចាំខែ"
 
-#: js/strings.js:290
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "លេខកូដរូបិយប័ណ្ណ ISO បីអក្សរ ឧ. EUR ឬ USD"
 
-#: js/strings.js:291
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID តម្លៃ ឬចំនួនទឹកប្រាក់ដែលប្រើដោយអ្នកផ្តល់សេវាទូទាត់"
 
-#: js/strings.js:292
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "តម្លៃដែលបានធ្វើទ្រង់ទ្រាយបង្ហាញដល់អ្នកទស្សនា ឧ. €9.99"
 
-#: js/strings.js:293
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "តម្លៃជាលេខដែលបង្ហាញ ប្រសិនបើមិនបានកំណត់តម្លៃដែលបានធ្វើទ្រង់ទ្រាយ"
 
-#: js/strings.js:294
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "អត្ថបទដែលបង្ហាញបន្ទាប់ពីតម្លៃ ឧ. ក្នុងមួយខែ"
 
-#: js/strings.js:295
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "ការពិពណ៌នាខ្លីនៃគម្រោងតម្លៃ"
 
-#: js/strings.js:296
+#: js/strings.js:297
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "បញ្ជីមុខងារដែលរួមបញ្ចូលក្នុងគម្រោង"
 
-#: js/strings.js:297
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "សង្កត់ធ្ងន់លើគម្រោងនេះធៀបនឹងគម្រោងផ្សេងទៀត"
 
-#: js/strings.js:298
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "ស្លាកខ្លីដែលបង្ហាញលើគម្រោងដែលបានបន្លិច ឧ. ពេញនិយម"
 
-#: js/strings.js:299
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើសំណួរ"
 
-#: js/strings.js:300
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "សំណួរ និងចម្លើយដែលបង្ហាញជាបញ្ជីអាចពង្រីកបាន"
 
-#: js/strings.js:301
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "សំណួរដែលសួរដោយអ្នកទស្សនា"
 
-#: js/strings.js:302
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "ចម្លើយចំពោះសំណួរ"
 
-#: js/strings.js:303
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើតារាងមាតិកា"
 
-#: js/strings.js:304
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "ចំណងជើងជាជម្រើស ដែលបង្ហាញនៅខាងលើទម្រង់ទំនាក់ទំនង"
 
-#: js/strings.js:305
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "អត្ថបទជាជម្រើស ដែលបង្ហាញរវាងចំណងជើង និងទម្រង់ទំនាក់ទំនង"
 
-#: js/strings.js:306
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "វាលទម្រង់ដែលបង្ហាញដល់អ្នកទស្សនាតាមលំដាប់នេះ"
 
-#: js/strings.js:307
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "ជ្រើសរើសវាលទម្រង់ ឬបញ្ចូលឈ្មោះផ្ទាល់ខ្លួនរបស់អ្នក"
 
-#: js/strings.js:308
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "អ្នកទស្សនាត្រូវតែបំពេញវាលនេះ"
 
-#: js/strings.js:309
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "ប្រភេទបញ្ចូលដែលបង្ហាញដល់អ្នកទស្សនា"
 
-#: js/strings.js:310
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "ជម្រើសសម្រាប់វាលជ្រើសរើស មួយក្នុងមួយបន្ទាត់"
 
-#: js/strings.js:311
+#: js/strings.js:312
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr "ចំនួនអតិបរមានៃរូបភាព ឬឯកសារ PDF ដែលអ្នកទស្សនាអាចភ្ជាប់បាន 0 បិទការផ្ទុកឡើង"
 
-#: js/strings.js:312
+#: js/strings.js:313
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
 "recommended"
 msgstr "សេចក្តីសង្ខេបនៃទំព័រដែលបង្ហាញក្នុងលទ្ធផលស្វែងរក ណែនាំឱ្យមាន 150 ទៅ 160 តួអក្សរ"
 
-#: js/strings.js:313
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "បញ្ជីពាក្យគន្លឹះដែលពិពណ៌នាទំព័រ បំបែកដោយសញ្ញាក្បៀស"
 
-#: js/strings.js:314
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "ចំណងជើងដែលបង្ហាញនៅពេលទំព័រត្រូវបានចែករំលែកលើបណ្តាញសង្គម"
 
-#: js/strings.js:315
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "សេចក្តីសង្ខេបដែលបង្ហាញនៅពេលទំព័រត្រូវបានចែករំលែកលើបណ្តាញសង្គម"
 
-#: js/strings.js:316
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "រូបភាពមើលជាមុនដែលបង្ហាញនៅពេលទំព័រត្រូវបានចែករំលែកលើបណ្តាញសង្គម"
 
-#: js/strings.js:317
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "URL ដើម ប្រសិនបើមាតិកាដដែលមាននៅអាសយដ្ឋានច្រើន"
 
-#: js/strings.js:318
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "អនុញ្ញាត ឬរារាំងម៉ាស៊ីនស្វែងរកពីការរាយបញ្ជីទំព័រនេះ"
 
-#: js/strings.js:319
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "អនុញ្ញាត ឬរារាំងម៉ាស៊ីនស្វែងរកពីការតាមដានតំណនៅលើទំព័រនេះ"
 
-#: js/strings.js:320
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "ឈ្មោះគេហទំព័រដែលបង្ហាញក្នុងផ្ទាំងកម្មវិធីរុករក និងលទ្ធផលស្វែងរក"
 
-#: js/strings.js:321
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "ឡូហ្គោដែលបង្ហាញនៅក្បាលទំព័រ"
 
-#: js/strings.js:322
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "កំណែឡូហ្គោដែលប្រើសម្រាប់ផ្ទៃខាងក្រោយងងឹត"
 
-#: js/strings.js:323
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "រូបភាពការ៉េតូចដែលបង្ហាញក្នុងផ្ទាំងកម្មវិធីរុករក និងចំណាំ"
 
-#: js/strings.js:324
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "បញ្ជីពុម្ពអក្សរដែលប្រើសម្រាប់អត្ថបទ បំបែកដោយសញ្ញាក្បៀស"
 
-#: js/strings.js:325
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Default text color"
 msgstr "ពណ៌អត្ថបទលំនាំដើម"
 
-#: js/strings.js:326
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយនៃទំព័រ"
 
-#: js/strings.js:327
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយនៃអត្ថបទដែលបានជ្រើសរើស"
 
-#: js/strings.js:328
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "ពណ៌នៃធាតុដែលមានភាពផ្ទុយខ្លាំងធៀបនឹងផ្ទៃខាងក្រោយ"
 
-#: js/strings.js:329
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "ពណ៌ផ្ទុយនៅពេលដាក់ទស្សន៍ទ្រនិចលើ ឬផ្តោតលើធាតុ"
 
-#: js/strings.js:330
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "ពណ៌អត្ថបទលើធាតុដែលប្រើពណ៌ផ្ទុយ"
 
-#: js/strings.js:331
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "ពណ៌ម៉ាកចម្បងដែលប្រើសម្រាប់តំណ និងប៊ូតុង"
 
-#: js/strings.js:332
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយនៃប៊ូតុងចម្បង និងការបន្លិច"
 
-#: js/strings.js:333
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "ពណ៌ចម្បងនៅពេលដាក់ទស្សន៍ទ្រនិចលើ ឬផ្តោតលើធាតុ"
 
-#: js/strings.js:334
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយចម្បងនៅពេលដាក់ទស្សន៍ទ្រនិចលើ ឬផ្តោតលើធាតុ"
 
-#: js/strings.js:335
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "ពណ៌បន្ថែមដែលប្រើសម្រាប់តំណ និងប៊ូតុងដែលមិនសូវសំខាន់"
 
-#: js/strings.js:336
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយនៃប៊ូតុងបន្ទាប់បន្សំ"
 
-#: js/strings.js:337
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "ពណ៌បន្ទាប់បន្សំនៅពេលដាក់ទស្សន៍ទ្រនិចលើ ឬផ្តោតលើធាតុ"
 
-#: js/strings.js:338
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "ពណ៌ផ្ទៃខាងក្រោយបន្ទាប់បន្សំនៅពេលដាក់ទស្សន៍ទ្រនិចលើ ឬផ្តោតលើធាតុ"
 
-#: js/strings.js:339
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 0.25rem ឬ 0 សម្រាប់ជ្រុងស្រួច"
 
-#: js/strings.js:340
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "តួអក្សរដែលបង្ហាញរវាងតំណផ្លូវរុករក (breadcrumb)"
 
-#: js/strings.js:341
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "តំណ HTTPS ដើម្បីទាក់ទងក្រុមសុវត្ថិភាព ឧ. ទម្រង់បែបបទ"
 
-#: js/strings.js:342
+#: js/strings.js:343
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់រាយការណ៍បញ្ហាសុវត្ថិភាព"
 
-#: js/strings.js:343
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "កាលបរិច្ឆេទដែលបន្ទាប់ពីនោះព័ត៌មានសុវត្ថិភាពត្រូវចាត់ទុកថាហួសសម័យ"
 
-#: js/strings.js:344
+#: js/strings.js:345
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "តំណ HTTPS ទៅកូនសោសាធារណៈសម្រាប់សារដែលបានអ៊ិនគ្រីប"
 
-#: js/strings.js:345
+#: js/strings.js:346
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "តំណ HTTPS ទៅទំព័រថ្លែងអំណរគុណអ្នកស្រាវជ្រាវសុវត្ថិភាព"
 
-#: js/strings.js:346
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "លេខកូដភាសាសម្រាប់របាយការណ៍សុវត្ថិភាព បំបែកដោយសញ្ញាក្បៀស ឧ. en, de"
 
-#: js/strings.js:347
+#: js/strings.js:348
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS URL ដែលឯកសារ security.txt ត្រូវបានបោះផ្សាយ"
 
-#: js/strings.js:348
+#: js/strings.js:349
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "តំណ HTTPS ទៅគោលការណ៍សុវត្ថិភាព និងការបង្ហាញព័ត៌មាន"
 
-#: js/strings.js:349
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "តំណ HTTPS ទៅការងារទំនេរពាក់ព័ន្ធនឹងសុវត្ថិភាព"
 
-#: js/strings.js:350
+#: js/strings.js:351
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "តំណ HTTPS ទៅទិន្នន័យមេតារបស់អ្នកផ្តល់ CSAF"
 
-#: js/strings.js:351
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "ច្បាប់បន្ថែមដែលបន្ថែមទៅឯកសារ robots.txt សម្រាប់រ៉ូបូតស្កេនគេហទំព័រ"
 
-#: js/strings.js:352
+#: js/strings.js:353
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "កូដ CSS ផ្ទាល់ខ្លួនដែលបន្ថែមទៅគ្រប់ទំព័រ"
 
-#: js/strings.js:353
+#: js/strings.js:354
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "កូដ JavaScript ផ្ទាល់ខ្លួនដែលបន្ថែមទៅគ្រប់ទំព័រ"
 
-#: js/strings.js:354
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "បញ្ជីពុម្ពអក្សរដែលប្រើសម្រាប់ចំណងជើង បំបែកដោយសញ្ញាក្បៀស"
 
-#: js/strings.js:357
+#: js/strings.js:358
 msgctxt "op"
 msgid "Name"
 msgstr "ឈ្មោះ"
 
-#: js/strings.js:358
+#: js/strings.js:359
 msgctxt "op"
 msgid "Company"
 msgstr "ក្រុមហ៊ុន"
 
-#: js/strings.js:359
+#: js/strings.js:360
 msgctxt "op"
 msgid "Telephone"
 msgstr "ទូរស័ព្ទ"
 
-#: js/strings.js:360
+#: js/strings.js:361
 msgctxt "op"
 msgid "E-Mail"
 msgstr "អ៊ីមែល"
 
-#: js/strings.js:361
+#: js/strings.js:362
 msgctxt "op"
 msgid "Subject"
 msgstr "ប្រធានបទ"
 
-#: js/strings.js:362
+#: js/strings.js:363
 msgctxt "op"
 msgid "Text"
 msgstr "អត្ថបទ"
 
-#: js/strings.js:363
+#: js/strings.js:364
 msgctxt "op"
 msgid "Text area"
 msgstr "ប្រអប់អត្ថបទ"
 
-#: js/strings.js:364
+#: js/strings.js:365
 msgctxt "op"
 msgid "Selection"
 msgstr "បញ្ជីជ្រើសរើស"
 
-#: js/strings.js:365
+#: js/strings.js:366
 msgctxt "op"
 msgid "Follow"
 msgstr "តាមដានតំណ"
 
-#: js/strings.js:366
+#: js/strings.js:367
 msgctxt "op"
 msgid "Index"
 msgstr "ធ្វើលិបិក្រម"
 
-#: js/strings.js:367
+#: js/strings.js:368
 msgctxt "op"
 msgid "No follow"
 msgstr "មិនតាមដានតំណ"
 
-#: js/strings.js:368
+#: js/strings.js:369
 msgctxt "op"
 msgid "No index"
 msgstr "មិនធ្វើលិបិក្រម"
 
-#: js/strings.js:369
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subscription"
 msgstr "ការជាវ"
 
-#: js/strings.js:370
+#: js/strings.js:371
 msgctxt "op"
 msgid "One-time payment"
 msgstr "ការទូទាត់តែម្តង"
 
-#: js/strings.js:371
+#: js/strings.js:372
 msgctxt "op"
 msgid "Auto"
 msgstr "ស្វ័យប្រវត្តិ"
 
-#: js/strings.js:372
+#: js/strings.js:373
+msgctxt "op"
+msgid "Badges"
+msgstr "ផ្លាកសញ្ញា"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Cards"
 msgstr "កាត"
 
-#: js/strings.js:373
+#: js/strings.js:375
 msgctxt "op"
 msgid "Default"
 msgstr "លំនាំដើម"
 
-#: js/strings.js:374
+#: js/strings.js:376
 msgctxt "op"
 msgid "End"
 msgstr "ចុង"
 
-#: js/strings.js:375
+#: js/strings.js:377
+msgctxt "op"
+msgid "Figures"
+msgstr "តួលេខ"
+
+#: js/strings.js:378
 msgctxt "op"
 msgid "First column"
 msgstr "ជួរឈរទីមួយ"
 
-#: js/strings.js:376
+#: js/strings.js:379
 msgctxt "op"
 msgid "First row"
 msgstr "ជួរដេកទីមួយ"
 
-#: js/strings.js:377
+#: js/strings.js:380
 msgctxt "op"
 msgid "First row and column"
 msgstr "ជួរដេក និងជួរឈរទីមួយ"
 
-#: js/strings.js:378
+#: js/strings.js:381
 msgctxt "op"
 msgid "Grid end"
 msgstr "ចុងក្រឡាចត្រង្គ"
 
-#: js/strings.js:379
+#: js/strings.js:382
 msgctxt "op"
 msgid "Grid start"
 msgstr "ដើមក្រឡាចត្រង្គ"
 
-#: js/strings.js:380
+#: js/strings.js:383
 msgctxt "op"
 msgid "Latest"
 msgstr "ថ្មីបំផុត"
 
-#: js/strings.js:381
+#: js/strings.js:384
 msgctxt "op"
 msgid "List"
 msgstr "បញ្ជី"
 
-#: js/strings.js:382
+#: js/strings.js:385
 msgctxt "op"
 msgid "None"
 msgstr "គ្មាន"
 
-#: js/strings.js:383
+#: js/strings.js:386
 msgctxt "op"
 msgid "Oldest"
 msgstr "ចាស់បំផុត"
 
-#: js/strings.js:384
+#: js/strings.js:387
 msgctxt "op"
 msgid "Position"
 msgstr "ទីតាំង"
 
-#: js/strings.js:385
+#: js/strings.js:388
 msgctxt "op"
 msgid "Start"
 msgstr "ដើម"
 
-#: js/strings.js:386
+#: js/strings.js:389
 msgctxt "op"
 msgid "Zoom"
 msgstr "ពង្រីក"
 
-#: js/strings.js:389
+#: js/strings.js:392
 msgctxt "ai"
 msgid "Done"
 msgstr "រួចរាល់"
 
-#: js/strings.js:390
+#: js/strings.js:393
 msgctxt "ai"
 msgid "Already exists"
 msgstr "មានរួចហើយ"
 
-#: js/strings.js:393
+#: js/strings.js:396
 msgctxt "sg"
 msgid "expert"
 msgstr "កម្រិតខ្ពស់"
 
-#: js/strings.js:394
+#: js/strings.js:397
 msgctxt "sg"
 msgid "theme"
 msgstr "រចនាប័ទ្ម"
 
-#: js/strings.js:395
+#: js/strings.js:398
 msgctxt "st"
 msgid "website"
 msgstr "គេហទំព័រ"
 
-#: js/strings.js:396
+#: js/strings.js:399
 msgctxt "st"
 msgid "logo"
 msgstr "ឡូហ្គោ"
 
-#: js/strings.js:397
+#: js/strings.js:400
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "ឡូហ្គោជំនួស"
 
-#: js/strings.js:398
+#: js/strings.js:401
 msgctxt "st"
 msgid "icon"
 msgstr "រូបតំណាង"

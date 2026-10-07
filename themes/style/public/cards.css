@@ -75,3 +75,91 @@
     color: var(--pico-muted-color);
     margin: 1.5rem;
 }
+
+.cards .card-list:is(.layout-badges, .layout-figures) {
+    width: 100%;
+}
+
+.cards .card-list.layout-badges {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+    gap: 2rem 1.5rem;
+}
+
+.cards .card-list.layout-figures {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 2rem;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item {
+    display: block;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    color: inherit;
+    overflow: visible;
+    padding: 0;
+    text-align: center;
+    transform: none;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-text {
+    margin: 0;
+    padding: 0;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item :is(picture, .card-image) {
+    display: block;
+    aspect-ratio: auto;
+    background: none;
+    border-radius: 0;
+    height: auto;
+    min-height: 0;
+    margin: 0 0 0.75rem;
+    overflow: visible;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item img {
+    display: block;
+    aspect-ratio: auto;
+    background: none;
+    border-radius: 0;
+    height: 4rem;
+    margin-inline: auto;
+    max-width: 100%;
+    object-fit: contain;
+    padding: 0;
+    transform: none;
+    width: auto;
+}
+
+.cards .card-list.layout-badges .title {
+    font-size: calc(var(--pico-font-size) * 0.85);
+    line-height: 1.3;
+    margin: 0 0 0.25rem;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .cms-text,
+.cards .card-list:is(.layout-badges, .layout-figures) .cms-text p {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    margin: 0;
+}
+
+.cards .card-list.layout-figures .card-item img {
+    height: 2.5rem;
+}
+
+.cards .card-list.layout-figures .title {
+    color: var(--pico-contrast);
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 0.5rem;
+}
+
+.cards .card-list.layout-figures .title a {
+    color: inherit;
+    text-decoration: none;
+}

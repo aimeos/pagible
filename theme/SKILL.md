@@ -21,7 +21,7 @@ Minimal, clean, and modern. Pure white background (#FFFFFF) with blue accent (#3
 - Color tokens: --pico-color=#111827, --pico-background-color=#FFFFFF, --pico-muted-color=#6B7280, --pico-muted-border-color=#E5E7EB, --pico-contrast=#111827, --pico-contrast-inverse=#FFFFFF, --pico-primary=#3B82F6, --pico-text-selection-color=#DBEAFE | Surfaces: #FFFFFF for cards, #F9FAFB for alternating sections, #111827 for dark footer
 - Border radius: 0.5rem (default/inputs/buttons), 1rem (cards/containers/modals) | Shadows: subtle, e.g. 0 1px 3px rgba(0,0,0,0.06)
 - Max widths: 80rem (header/docs), 75rem (container), 60rem (blog), 50rem (text) | Breakpoints: 576px, 768px, 992px
-- Components: hero, cards (1->2 col grid), blog (featured+list), questions/FAQ (details/summary accordion), contact form, toc, slideshow, before-after slider (draggable divider), article, search dialog, docs sidebar (20rem, sticky), light footer with top border
+- Components: hero, cards (1->2 col grid, badges and figures layouts), blog (featured+list), questions/FAQ (details/summary accordion), contact form, toc, slideshow, before-after slider (draggable divider), article, search dialog, docs sidebar (20rem, sticky), light footer with top border
 - Buttons: rounded (0.5rem radius), primary=blue gradient (135deg, #3B82F6 to #2563EB) with shadow, secondary=white with border
 
 ## Accessibility
