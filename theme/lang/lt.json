@@ -48,5 +48,12 @@
     "Next page": "Kitas puslapis",
     "Load more": "Įkelti daugiau",
     "No results found": "Rezultatų nerasta",
-    "Search failed": "Paieška nepavyko"
+    "Search failed": "Paieška nepavyko",
+    "Attachments": "Priedai",
+    "Images or PDF files, max. :size MB each": "Paveikslėliai arba PDF failai, kiekvienas iki :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: Šis failo tipas neleidžiamas.",
+    ":attribute: The file is too large.": ":attribute: Failas per didelis.",
+    ":attribute: Too many files.": ":attribute: Per daug failų.",
+    ":attribute: The files are too large.": ":attribute: Failai per dideli.",
+    "Please select": "Pasirinkite"
 }

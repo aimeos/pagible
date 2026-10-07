@@ -48,5 +48,12 @@
     "Next page": "Επόμενη σελίδα",
     "Load more": "Φόρτωση περισσότερων",
     "No results found": "Δεν βρέθηκαν αποτελέσματα",
-    "Search failed": "Η αναζήτηση απέτυχε"
+    "Search failed": "Η αναζήτηση απέτυχε",
+    "Attachments": "Συνημμένα",
+    "Images or PDF files, max. :size MB each": "Εικόνες ή αρχεία PDF, έως :size MB το καθένα",
+    ":attribute: The file type is not allowed.": ":attribute: Ο τύπος αρχείου δεν επιτρέπεται.",
+    ":attribute: The file is too large.": ":attribute: Το αρχείο είναι πολύ μεγάλο.",
+    ":attribute: Too many files.": ":attribute: Πάρα πολλά αρχεία.",
+    ":attribute: The files are too large.": ":attribute: Τα αρχεία είναι πολύ μεγάλα.",
+    "Please select": "Παρακαλώ επιλέξτε"
 }

@@ -48,5 +48,12 @@
     "Next page": "Наступна сторінка",
     "Load more": "Завантажити ще",
     "No results found": "Нічого не знайдено",
-    "Search failed": "Помилка пошуку"
+    "Search failed": "Помилка пошуку",
+    "Attachments": "Вкладення",
+    "Images or PDF files, max. :size MB each": "Зображення або файли PDF, не більше :size МБ кожен",
+    ":attribute: The file type is not allowed.": ":attribute: Цей тип файлу не дозволено.",
+    ":attribute: The file is too large.": ":attribute: Файл завеликий.",
+    ":attribute: Too many files.": ":attribute: Забагато файлів.",
+    ":attribute: The files are too large.": ":attribute: Файли завеликі.",
+    "Please select": "Будь ласка, виберіть"
 }

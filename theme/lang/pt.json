@@ -48,5 +48,12 @@
     "Next page": "Página seguinte",
     "Load more": "Carregar mais",
     "No results found": "Nenhum resultado encontrado",
-    "Search failed": "A pesquisa falhou"
+    "Search failed": "A pesquisa falhou",
+    "Attachments": "Anexos",
+    "Images or PDF files, max. :size MB each": "Imagens ou ficheiros PDF, máx. :size MB cada",
+    ":attribute: The file type is not allowed.": ":attribute: O tipo de ficheiro não é permitido.",
+    ":attribute: The file is too large.": ":attribute: O ficheiro é demasiado grande.",
+    ":attribute: Too many files.": ":attribute: Demasiados ficheiros.",
+    ":attribute: The files are too large.": ":attribute: Os ficheiros são demasiado grandes.",
+    "Please select": "Selecione uma opção"
 }

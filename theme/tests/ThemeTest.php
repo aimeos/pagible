@@ -343,6 +343,9 @@ class ThemeTest extends ThemeTestAbstract
 			['name', 'company', 'telephone', 'email', 'subject'],
 			array_column( $inputs['item']['field']['options'], 'value' )
 		);
+		$this->assertSame( ['text', 'textarea', 'select'], array_column( $inputs['item']['input']['options'], 'value' ) );
+		$this->assertSame( 'plaintext', $inputs['item']['options']['type'] );
+		$this->assertSame( ['type' => 'number', 'min' => 0, 'max' => 5, 'default' => 0], array_intersect_key( $fields['attachments'], array_flip( ['type', 'min', 'max', 'default'] ) ) );
 		$this->assertArrayNotHasKey( 'mandatory', $fields );
 		$this->assertArrayNotHasKey( 'optional', $fields );
 	}
@@ -537,6 +540,32 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testContactRendersInputTypesAndAttachments()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id', 'attachments' => 3, 'inputs' => [
+			(object) ['field' => 'Service', 'required' => true, 'input' => 'select', 'options' => " Repair \n\nInstallation\r\n"],
+			(object) ['field' => 'Details', 'input' => 'textarea'],
+			(object) ['field' => 'email', 'input' => 'textarea'],
+		]];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+		$key = ContactRequest::key( 'Service' );
+
+		$this->assertStringContainsString( 'enctype="multipart/form-data"', $html );
+		$this->assertMatchesRegularExpression( '/<select id="' . $key . '-contact-id" name="' . $key . '"\s+required/', $html );
+		$this->assertMatchesRegularExpression( '/<option value="">Please select<\/option>\s*<option value="Repair">Repair<\/option>\s*<option value="Installation">Installation<\/option>\s*<\/select>/', $html );
+		$this->assertMatchesRegularExpression( '/<textarea id="' . ContactRequest::key( 'Details' ) . '-contact-id"/', $html );
+		$this->assertMatchesRegularExpression( '/<input id="email-contact-id" type="email"/', $html );
+		$this->assertMatchesRegularExpression( '/<input id="files-contact-id" type="file" name="files\[\]"\s+multiple\s+accept="\.jpg,\.jpeg,\.png,\.webp,\.heic,\.pdf"/', $html );
+		$this->assertStringContainsString( 'Images or PDF files, max. 10 MB each', $html );
+		$this->assertStringContainsString( 'data-toolarge="Attachments: The files are too large."', $html );
+		$this->assertStringContainsString( 'value="' . e( ContactRequest::schema(
+			['Service'], ['Service', 'Details', 'email'], ['Service' => ['Repair', 'Installation'], 'Details' => 'textarea'], 3
+		) ) . '"', $html );
+	}
+
+
 	public function testContactRendersDefaultFields()
 	{
 		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
@@ -546,6 +575,8 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="name"[^>]+required[^>]*>/', $html );
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="email"[^>]+required[^>]*>/', $html );
+		$this->assertStringNotContainsString( 'type="file"', $html );
+		$this->assertStringNotContainsString( 'data-toolarge', $html );
 	}
 
 

@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Mails\ContactMail;
 use Aimeos\Cms\Requests\ContactRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -341,6 +342,184 @@ class ContactControllerTest extends ThemeTestAbstract
 
         $response->assertStatus( 422 );
         $response->assertJsonValidationErrors( ['name', 'email', 'message'] );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendAttachments()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( ['name', 'email'], [], [], 2 );
+
+        $response = $this->post( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'name' => 'Test User',
+            'email' => 'sender@google.com',
+            'message' => 'Please see the photos.',
+            'files' => [
+                UploadedFile::fake()->image( '../Roof: damage.jpg', 20, 20 ),
+                UploadedFile::fake()->create( 'plan.pdf', 100, 'application/pdf' ),
+            ],
+        ] );
+
+        $response->assertOk();
+
+        Mail::assertSent( ContactMail::class, function( $mail ) {
+            $mail->build();
+
+            return array_column( $mail->uploads, 'name' ) === ['Roof_ damage.jpg', 'plan.pdf']
+                && array_column( $mail->uploads, 'mime' ) === ['image/jpeg', 'application/pdf']
+                && count( $mail->attachments ) === 2
+                && $mail->attachments[0]['options'] === ['as' => 'Roof_ damage.jpg', 'mime' => 'image/jpeg'];
+        } );
+    }
+
+
+    public function testSendAttachmentsNotAllowed()
+    {
+        Mail::fake();
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'name' => 'Test User',
+            'email' => 'sender@google.com',
+            'message' => 'Hello.',
+            'files' => [UploadedFile::fake()->create( 'plan.pdf', 100, 'application/pdf' )],
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'files' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendTooManyAttachments()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( [], [], [], 1 );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+            'files' => [
+                UploadedFile::fake()->create( 'a.pdf', 100, 'application/pdf' ),
+                UploadedFile::fake()->create( 'b.pdf', 100, 'application/pdf' ),
+            ],
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonPath( 'errors.files.0', 'Attachments: Too many files.' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendAttachmentsTooLarge()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( [], [], [], 3 );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+            'files' => [
+                UploadedFile::fake()->create( 'a.pdf', 9 * 1024, 'application/pdf' ),
+                UploadedFile::fake()->create( 'b.pdf', 9 * 1024, 'application/pdf' ),
+                UploadedFile::fake()->create( 'c.pdf', 9 * 1024, 'application/pdf' ),
+            ],
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonPath( 'errors.files.0', 'Attachments: The files are too large.' );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendAttachmentInvalid()
+    {
+        Mail::fake();
+        config( ['cms.upload.maxpixels' => 100] );
+        $schema = ContactRequest::schema( [], [], [], 3 );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+            'files' => [
+                UploadedFile::fake()->create( 'script.php', 1, 'text/x-php' ),
+                UploadedFile::fake()->create( 'big.pdf', 11 * 1024, 'application/pdf' ),
+                UploadedFile::fake()->image( 'photo.png', 20, 20 ),
+            ],
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonPath( 'errors', [
+            'files.0' => ['Attachments: The file type is not allowed.'],
+            'files.1' => ['Attachments: The file is too large.'],
+            'files.2' => ['Attachments: The file is too large.'],
+        ] );
+        Mail::assertNothingSent();
+    }
+
+
+    public function testSendSelectAndTextareaFields()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( ['Service'], ['Details'], ['Service' => ['Repair', 'Installation'], 'Details' => 'textarea'] );
+        $data = [
+            'schema' => $schema,
+            'signature' => ContactRequest::signature( $schema ),
+            ContactRequest::key( 'Service' ) => 'Demolition',
+            ContactRequest::key( 'Details' ) => str_repeat( 'a', 1000 ),
+            'message' => 'Hello.',
+        ];
+
+        $this->postJson( route( 'cms.api.contact' ), $data )
+            ->assertStatus( 422 )
+            ->assertJsonValidationErrors( ContactRequest::key( 'Service' ) );
+
+        $data[ContactRequest::key( 'Service' )] = 'Repair';
+
+        $this->postJson( route( 'cms.api.contact' ), $data )->assertOk();
+
+        Mail::assertSent( ContactMail::class, fn( $mail ) => $mail->data['fields'] === [
+            ['name' => 'Service', 'value' => 'Repair', 'required' => true],
+            ['name' => 'Details', 'value' => str_repeat( 'a', 1000 ), 'required' => false],
+        ] );
+    }
+
+
+    public function testSchemaTypesAndFiles()
+    {
+        $schema = ContactRequest::schema( ['email', 'Service'], ['0'], [
+            'email' => 'textarea',
+            'Service' => ['Repair', '', "In\nvalid", 'Repair'],
+            '0' => 'textarea',
+            'Unknown' => 'textarea',
+        ], 9 );
+
+        $this->assertSame(
+            '{"mandatory":["email","Service"],"optional":["0"],"types":{"Service":["Repair"],"0":"textarea"},"files":5}',
+            $schema
+        );
+        $this->assertSame( '{"mandatory":["name","email"],"optional":[]}', ContactRequest::schema() );
+    }
+
+
+    public function testSendTamperedFileCount()
+    {
+        Mail::fake();
+        $schema = ContactRequest::schema( [], [], [], 1 );
+
+        $response = $this->postJson( route( 'cms.api.contact' ), [
+            'schema' => str_replace( '"files":1', '"files":5', $schema ),
+            'signature' => ContactRequest::signature( $schema ),
+            'message' => 'Hello.',
+        ] );
+
+        $response->assertStatus( 422 );
+        $response->assertJsonValidationErrors( 'schema' );
         Mail::assertNothingSent();
     }
 

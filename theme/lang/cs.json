@@ -48,5 +48,12 @@
     "Next page": "Další stránka",
     "Load more": "Načíst další",
     "No results found": "Nebyly nalezeny žádné výsledky",
-    "Search failed": "Vyhledávání selhalo"
+    "Search failed": "Vyhledávání selhalo",
+    "Attachments": "Přílohy",
+    "Images or PDF files, max. :size MB each": "Obrázky nebo soubory PDF, max. :size MB každý",
+    ":attribute: The file type is not allowed.": ":attribute: Tento typ souboru není povolen.",
+    ":attribute: The file is too large.": ":attribute: Soubor je příliš velký.",
+    ":attribute: Too many files.": ":attribute: Příliš mnoho souborů.",
+    ":attribute: The files are too large.": ":attribute: Soubory jsou příliš velké.",
+    "Please select": "Vyberte prosím"
 }

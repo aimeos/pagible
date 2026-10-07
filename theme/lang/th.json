@@ -48,5 +48,12 @@
     "Next page": "หน้าถัดไป",
     "Load more": "โหลดเพิ่มเติม",
     "No results found": "ไม่พบผลลัพธ์",
-    "Search failed": "การค้นหาล้มเหลว"
+    "Search failed": "การค้นหาล้มเหลว",
+    "Attachments": "ไฟล์แนบ",
+    "Images or PDF files, max. :size MB each": "รูปภาพหรือไฟล์ PDF สูงสุดไฟล์ละ :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: ไม่อนุญาตให้ใช้ไฟล์ประเภทนี้",
+    ":attribute: The file is too large.": ":attribute: ไฟล์มีขนาดใหญ่เกินไป",
+    ":attribute: Too many files.": ":attribute: ไฟล์มากเกินไป",
+    ":attribute: The files are too large.": ":attribute: ไฟล์มีขนาดรวมใหญ่เกินไป",
+    "Please select": "โปรดเลือก"
 }

@@ -2719,8 +2719,8 @@ msgstr "فهرست مطالب با پیوند به سرتیترهای صفحه"
 
 #: js/strings.js:113
 msgctxt "sd"
-msgid "Contact form with configurable fields"
-msgstr "فرم تماس با فیلدهای قابل پیکربندی"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "فرم تماس با فیلدهای قابل پیکربندی و پیوست فایل اختیاری"
 
 #: js/strings.js:116
 msgctxt "fn"
@@ -2919,707 +2919,739 @@ msgstr "الزامی"
 
 #: js/strings.js:156
 msgctxt "fn"
+msgid "Input type"
+msgstr "نوع ورودی"
+
+#: js/strings.js:157
+msgctxt "fn"
+msgid "Choices"
+msgstr "گزینه‌ها"
+
+#: js/strings.js:158
+msgctxt "fn"
+msgid "Attachments"
+msgstr "پیوست‌ها"
+
+#: js/strings.js:159
+msgctxt "fn"
 msgid "Link label"
 msgstr "متن پیوند"
 
-#: js/strings.js:157
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "URL تماس"
 
-#: js/strings.js:158
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Contact email"
 msgstr "ایمیل تماس"
 
-#: js/strings.js:159
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Description"
 msgstr "توضیحات"
 
-#: js/strings.js:160
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "قیمت نمایش‌داده‌شده"
 
-#: js/strings.js:161
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Gallery"
 msgstr "گالری"
 
-#: js/strings.js:162
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "متن برجسته"
 
-#: js/strings.js:163
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "برجسته"
 
-#: js/strings.js:164
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Language"
 msgstr "زبان"
 
-#: js/strings.js:165
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Payment type"
 msgstr "شیوه پرداخت"
 
-#: js/strings.js:166
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "زبان‌های ترجیحی"
 
-#: js/strings.js:167
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "زیرعنوان"
 
-#: js/strings.js:168
+#: js/strings.js:171
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "قدردانی‌ها"
 
-#: js/strings.js:169
+#: js/strings.js:172
 msgctxt "fn"
 msgid "amount"
 msgstr "مبلغ"
 
-#: js/strings.js:170
+#: js/strings.js:173
 msgctxt "fn"
 msgid "background"
 msgstr "پس‌زمینه"
 
-#: js/strings.js:171
+#: js/strings.js:174
 msgctxt "fn"
 msgid "background animation"
 msgstr "انیمیشن پس‌زمینه"
 
-#: js/strings.js:172
+#: js/strings.js:175
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "دکمه جایگزین"
 
-#: js/strings.js:173
+#: js/strings.js:176
 msgctxt "fn"
 msgid "canonical"
 msgstr "URL متعارف"
 
-#: js/strings.js:174
+#: js/strings.js:177
 msgctxt "fn"
 msgid "columns"
 msgstr "ستون‌ها"
 
-#: js/strings.js:175
+#: js/strings.js:178
 msgctxt "fn"
 msgid "csaf"
 msgstr "پیوند CSAF"
 
-#: js/strings.js:176
+#: js/strings.js:179
 msgctxt "fn"
 msgid "encryption"
 msgstr "رمزنگاری"
 
-#: js/strings.js:177
+#: js/strings.js:180
 msgctxt "fn"
 msgid "expires"
 msgstr "تاریخ انقضا"
 
-#: js/strings.js:178
+#: js/strings.js:181
 msgctxt "fn"
 msgid "features"
 msgstr "ویژگی‌ها"
 
-#: js/strings.js:179
+#: js/strings.js:182
 msgctxt "fn"
 msgid "hiring"
 msgstr "فرصت‌های شغلی"
 
-#: js/strings.js:180
+#: js/strings.js:183
 msgctxt "fn"
 msgid "layout"
 msgstr "چیدمان"
 
-#: js/strings.js:181
+#: js/strings.js:184
 msgctxt "fn"
 msgid "name"
 msgstr "نام"
 
-#: js/strings.js:182
+#: js/strings.js:185
 msgctxt "fn"
 msgid "policy"
 msgstr "سیاست"
 
-#: js/strings.js:183
+#: js/strings.js:186
 msgctxt "fn"
 msgid "ratio"
 msgstr "نسبت"
 
-#: js/strings.js:184
+#: js/strings.js:187
 msgctxt "fn"
 msgid "role"
 msgstr "نقش"
 
-#: js/strings.js:185
+#: js/strings.js:188
 msgctxt "fn"
 msgid "subtitle"
 msgstr "زیرعنوان"
 
-#: js/strings.js:186
+#: js/strings.js:189
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "URL جایگزین"
 
-#: js/strings.js:188
+#: js/strings.js:191
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "قلم متن"
 
-#: js/strings.js:189
+#: js/strings.js:192
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "قلم سرتیتر"
 
-#: js/strings.js:190
+#: js/strings.js:193
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "رنگ متن"
 
-#: js/strings.js:191
+#: js/strings.js:194
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "رنگ پس‌زمینه"
 
-#: js/strings.js:192
+#: js/strings.js:195
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "رنگ انتخاب متن"
 
-#: js/strings.js:193
+#: js/strings.js:196
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "رنگ کنتراست"
 
-#: js/strings.js:194
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "رنگ کنتراست (هنگام اشاره)"
 
-#: js/strings.js:195
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "رنگ متن کنتراست"
 
-#: js/strings.js:196
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "رنگ اصلی"
 
-#: js/strings.js:197
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "پس‌زمینه اصلی"
 
-#: js/strings.js:198
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "رنگ اصلی (هنگام اشاره)"
 
-#: js/strings.js:199
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "پس‌زمینه اصلی (هنگام اشاره)"
 
-#: js/strings.js:200
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "رنگ ثانویه"
 
-#: js/strings.js:201
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "پس‌زمینه ثانویه"
 
-#: js/strings.js:202
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "رنگ ثانویه (هنگام اشاره)"
 
-#: js/strings.js:203
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "پس‌زمینه ثانویه (هنگام اشاره)"
 
-#: js/strings.js:204
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "شعاع گوشه"
 
-#: js/strings.js:205
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "جداکننده مسیر راهنما"
 
-#: js/strings.js:208
+#: js/strings.js:211
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "متن سرتیتر"
 
-#: js/strings.js:209
+#: js/strings.js:212
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
 msgstr ""
 "سطح ۱ سرتیتر اصلی صفحه است و سطوح بالاتر بخش‌های زیرین را ساختاربندی می‌کنند"
 
-#: js/strings.js:210
+#: js/strings.js:213
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "متن قالب‌بندی‌شده با پاراگراف، فهرست و پیوند"
 
-#: js/strings.js:211
+#: js/strings.js:214
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "متن قالب‌بندی‌شده‌ای که در کنار تصویر نمایش داده می‌شود"
 
-#: js/strings.js:212
+#: js/strings.js:215
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "تصویری که در کنار متن نمایش داده می‌شود"
 
-#: js/strings.js:213
+#: js/strings.js:216
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "موقعیت تصویر نسبت به متن"
 
-#: js/strings.js:214
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "نسبت عرض بین تصویر و متن"
 
-#: js/strings.js:215
+#: js/strings.js:218
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "زبان برنامه‌نویسی مورد استفاده برای برجسته‌سازی نحو"
 
-#: js/strings.js:216
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "کد منبعی که با برجسته‌سازی نحو نمایش داده می‌شود"
 
-#: js/strings.js:217
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "عنوان اختیاری که بالای جدول نمایش داده می‌شود"
 
-#: js/strings.js:218
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "استفاده از سطر اول، ستون اول یا هر دو به‌عنوان سرعنوان جدول"
 
-#: js/strings.js:219
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "داده‌ها را در سلول‌ها وارد کنید؛ در صورت نیاز سطرها و ستون‌ها را اضافه یا حذف "
 "کنید"
 
-#: js/strings.js:220
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "سرتیتر اختیاری که بالای نقشه نمایش داده می‌شود"
 
-#: js/strings.js:221
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "توضیحاتی که در کنار نقشه نمایش داده می‌شود، مثلاً نشانی یا مسیریابی"
 
-#: js/strings.js:222
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "مکانی را جستجو کنید یا برای تعیین مکان روی نقشه کلیک کنید"
 
-#: js/strings.js:223
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "متن پیوندی که مکان را در یک سرویس نقشه باز می‌کند"
 
-#: js/strings.js:224
+#: js/strings.js:227
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr "کد HTML که بدون تغییر در صفحه درج می‌شود، مثلاً برای جاسازی‌ها و ویجت‌ها"
 
-#: js/strings.js:225
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "تصویری که در تمام عرض ناحیه محتوا نمایش داده می‌شود"
 
-#: js/strings.js:226
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "اگر تصویر در بالای صفحه قابل مشاهده است، بدون تأخیر بارگذاری شود"
 
-#: js/strings.js:227
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "سرتیتر اختیاری که بالای اسلایدشو نمایش داده می‌شود"
 
-#: js/strings.js:228
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "تصاویری که یکی پس از دیگری نمایش داده می‌شوند؛ برای تغییر ترتیب بکشید"
 
-#: js/strings.js:229
+#: js/strings.js:232
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr ""
 "اگر نخستین تصویر در بالای صفحه قابل مشاهده است، بدون تأخیر بارگذاری شود"
 
-#: js/strings.js:230
+#: js/strings.js:233
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "فایل ویدیویی که در صفحه پخش می‌شود"
 
-#: js/strings.js:231
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "فایل صوتی که در صفحه پخش می‌شود"
 
-#: js/strings.js:232
+#: js/strings.js:235
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "فایلی که برای دانلود ارائه می‌شود"
 
-#: js/strings.js:233
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "سرتیتر اصلی صفحه"
 
-#: js/strings.js:234
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "خط کوتاهی که بالای سرتیتر نمایش داده می‌شود"
 
-#: js/strings.js:235
+#: js/strings.js:238
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "مقدمه‌ای که زیر سرتیتر نمایش داده می‌شود"
 
-#: js/strings.js:236
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "صفحه یا پیوندی که دکمه اصلی به آن می‌رود"
 
-#: js/strings.js:237
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "متن دکمه اصلی"
 
-#: js/strings.js:238
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "صفحه یا پیوندی که دکمه دوم به آن می‌رود"
 
-#: js/strings.js:239
+#: js/strings.js:242
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "متن دکمه دوم"
 
-#: js/strings.js:240
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "تصویری که پشت متن نمایش داده می‌شود"
 
-#: js/strings.js:241
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "جلوه انیمیشن تصویر پس‌زمینه"
 
-#: js/strings.js:242
+#: js/strings.js:245
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "تصاویری که در کنار متن نمایش داده می‌شوند"
 
-#: js/strings.js:243
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "سرتیتری که توجه بازدیدکنندگان را جلب می‌کند"
 
-#: js/strings.js:244
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "متنی که بازدیدکنندگان را به اقدام ترغیب می‌کند"
 
-#: js/strings.js:245
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "دکمه‌هایی که بازدیدکنندگان را به مرحله بعد هدایت می‌کنند"
 
-#: js/strings.js:246
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "متن دکمه"
 
-#: js/strings.js:247
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "صفحه یا پیوندی که دکمه به آن می‌رود"
 
-#: js/strings.js:248
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "سرتیتر اختیاری که بالای کارت‌ها نمایش داده می‌شود"
 
-#: js/strings.js:249
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "تعداد کارت‌ها در هر ردیف؛ \"auto\" خود را با عرض صفحه‌نمایش تطبیق می‌دهد"
 
-#: js/strings.js:250
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "کارت‌هایی که در شبکه نمایش داده می‌شوند"
 
-#: js/strings.js:251
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "سرتیتر کارت"
 
-#: js/strings.js:252
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "تصویری که در بالای کارت نمایش داده می‌شود"
 
-#: js/strings.js:253
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "متن کارت"
 
-#: js/strings.js:254
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "صفحه یا پیوندی که کارت به آن می‌رود"
 
-#: js/strings.js:255
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "سرتیتر اختیاری که بالای نقل‌قول‌ها نمایش داده می‌شود"
 
-#: js/strings.js:256
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "نقل‌قول‌های مشتریان یا شرکا"
 
-#: js/strings.js:257
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "نقل‌قول شخص"
 
-#: js/strings.js:258
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "نام شخص"
 
-#: js/strings.js:259
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "سمت یا شرکت شخص"
 
-#: js/strings.js:260
+#: js/strings.js:263
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "عکس شخص"
 
-#: js/strings.js:261
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "مقدمه مقاله که زیر عنوان صفحه نمایش داده می‌شود"
 
-#: js/strings.js:262
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "تصاویر مقاله؛ نخستین تصویر به‌عنوان تصویر پیش‌نمایش استفاده می‌شود"
 
-#: js/strings.js:263
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "نام نویسنده مقاله"
 
-#: js/strings.js:264
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "پیوند به صفحه نمایه نویسنده"
 
-#: js/strings.js:265
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "سرتیتر اختیاری که بالای فهرست نمایش داده می‌شود"
 
-#: js/strings.js:266
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "نمایش صفحه‌ها به‌صورت کارت یا فهرست فشرده"
 
-#: js/strings.js:267
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "صفحه‌ای که زیرصفحه‌های آن فهرست می‌شوند"
 
-#: js/strings.js:268
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "ترتیب مرتب‌سازی صفحه‌های فهرست‌شده"
 
-#: js/strings.js:269
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "حداکثر تعداد صفحه‌هایی که هم‌زمان نمایش داده می‌شوند"
 
-#: js/strings.js:270
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "نمایش سایر زیرصفحه‌ها به‌صورت کارت یا فهرست فشرده"
 
-#: js/strings.js:271
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "سرتیتر اختیاری که بالای طرح‌های قیمت نمایش داده می‌شود"
 
-#: js/strings.js:272
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "متن کوتاهی که زیر سرتیتر نمایش داده می‌شود"
 
-#: js/strings.js:273
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "طرح‌های قیمت که کنار هم نمایش داده می‌شوند"
 
-#: js/strings.js:274
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "نام طرح قیمت"
 
-#: js/strings.js:275
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "نقشی که پس از پرداخت برای دسترسی به صفحات محافظت‌شده به مشتریان داده می‌شود"
 
-#: js/strings.js:276
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "قیمت‌های طرح، مثلاً ماهانه و سالانه"
 
-#: js/strings.js:277
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "اشتراک دوره‌ای یا پرداخت یک‌باره"
 
-#: js/strings.js:278
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "تعداد روزهای بین دو پرداخت، مثلاً ۳۰ برای ماهانه"
 
-#: js/strings.js:279
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "کد سه‌حرفی ISO واحد پول، مثلاً EUR یا USD"
 
-#: js/strings.js:280
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "شناسه قیمت یا مبلغی که درگاه پرداخت استفاده می‌کند"
 
-#: js/strings.js:281
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "قیمت قالب‌بندی‌شده‌ای که به بازدیدکنندگان نمایش داده می‌شود، مثلاً €9.99"
 
-#: js/strings.js:282
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "قیمت عددی که در صورت تعیین نشدن قیمت قالب‌بندی‌شده نمایش داده می‌شود"
 
-#: js/strings.js:283
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "متنی که پس از قیمت نمایش داده می‌شود، مثلاً در ماه"
 
-#: js/strings.js:284
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "توضیح کوتاه طرح قیمت"
 
-#: js/strings.js:285
+#: js/strings.js:288
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "فهرست ویژگی‌های موجود در طرح"
 
-#: js/strings.js:286
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "برجسته کردن این طرح نسبت به سایر طرح‌ها"
 
-#: js/strings.js:287
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "برچسب کوتاهی که روی طرح برجسته نمایش داده می‌شود، مثلاً محبوب"
 
-#: js/strings.js:288
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "سرتیتر اختیاری که بالای پرسش‌ها نمایش داده می‌شود"
 
-#: js/strings.js:289
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "پرسش‌ها و پاسخ‌هایی که به‌صورت فهرست بازشونده نمایش داده می‌شوند"
 
-#: js/strings.js:290
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "پرسشی که بازدیدکنندگان مطرح می‌کنند"
 
-#: js/strings.js:291
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "پاسخ به پرسش"
 
-#: js/strings.js:292
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "سرتیتر اختیاری که بالای فهرست مطالب نمایش داده می‌شود"
 
-#: js/strings.js:293
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "سرتیتر اختیاری که بالای فرم تماس نمایش داده می‌شود"
 
-#: js/strings.js:294
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "متن اختیاری که بین سرتیتر و فرم تماس نمایش داده می‌شود"
 
-#: js/strings.js:295
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "فیلدهای فرم که به همین ترتیب به بازدیدکنندگان نمایش داده می‌شوند"
 
-#: js/strings.js:296
+#: js/strings.js:299
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "یک فیلد فرم انتخاب کنید یا نام دلخواه خود را وارد کنید"
 
-#: js/strings.js:297
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "بازدیدکنندگان باید این فیلد را پر کنند"
 
-#: js/strings.js:298
+#: js/strings.js:301
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "نوع ورودی که به بازدیدکنندگان نمایش داده می‌شود"
+
+#: js/strings.js:302
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "گزینه‌های فیلدهای انتخابی، هر گزینه در یک خط"
+
+#: js/strings.js:303
+msgctxt "fh"
+msgid ""
+"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr ""
+"حداکثر تعداد تصاویر یا فایل‌های PDF که بازدیدکنندگان می‌توانند پیوست کنند، 0 بارگذاری را غیرفعال می‌کند"
+
+#: js/strings.js:304
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3627,389 +3659,404 @@ msgid ""
 msgstr ""
 "خلاصه صفحه که در نتایج جستجو نمایش داده می‌شود؛ ۱۵۰ تا ۱۶۰ نویسه توصیه می‌شود"
 
-#: js/strings.js:299
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "فهرست کلیدواژه‌های توصیف‌کننده صفحه، جداشده با کاما"
 
-#: js/strings.js:300
+#: js/strings.js:306
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "عنوانی که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
 
-#: js/strings.js:301
+#: js/strings.js:307
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "خلاصه‌ای که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
 
-#: js/strings.js:302
+#: js/strings.js:308
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "تصویر پیش‌نمایشی که هنگام اشتراک‌گذاری صفحه در شبکه‌های اجتماعی نمایش داده می‌شود"
 
-#: js/strings.js:303
+#: js/strings.js:309
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "URL اصلی، در صورتی که همان محتوا در چند نشانی در دسترس باشد"
 
-#: js/strings.js:304
+#: js/strings.js:310
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "اجازه دادن یا جلوگیری از فهرست شدن این صفحه توسط موتورهای جستجو"
 
-#: js/strings.js:305
+#: js/strings.js:311
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "اجازه دادن یا جلوگیری از دنبال کردن پیوندهای این صفحه توسط موتورهای جستجو"
 
-#: js/strings.js:306
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "نام وب‌سایت که در زبانه مرورگر و نتایج جستجو نمایش داده می‌شود"
 
-#: js/strings.js:307
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "لوگویی که در سربرگ صفحه نمایش داده می‌شود"
 
-#: js/strings.js:308
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "نسخه‌ای از لوگو برای پس‌زمینه‌های تیره"
 
-#: js/strings.js:309
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "تصویر مربعی کوچکی که در زبانه‌ها و نشانک‌های مرورگر نمایش داده می‌شود"
 
-#: js/strings.js:310
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "فهرست قلم‌های مورد استفاده برای متن، جداشده با کاما"
 
-#: js/strings.js:311
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Default text color"
 msgstr "رنگ پیش‌فرض متن"
 
-#: js/strings.js:312
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "رنگ پس‌زمینه صفحه‌ها"
 
-#: js/strings.js:313
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "رنگ پس‌زمینه متن انتخاب‌شده"
 
-#: js/strings.js:314
+#: js/strings.js:320
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "رنگ عناصری با کنتراست زیاد نسبت به پس‌زمینه"
 
-#: js/strings.js:315
+#: js/strings.js:321
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "رنگ کنتراست هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
 
-#: js/strings.js:316
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "رنگ متن روی عناصری که از رنگ کنتراست استفاده می‌کنند"
 
-#: js/strings.js:317
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "رنگ اصلی برند که برای پیوندها و دکمه‌ها استفاده می‌شود"
 
-#: js/strings.js:318
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "رنگ پس‌زمینه دکمه‌های اصلی و موارد برجسته"
 
-#: js/strings.js:319
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "رنگ اصلی هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
 
-#: js/strings.js:320
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "رنگ پس‌زمینه اصلی هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
 
-#: js/strings.js:321
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "رنگ تکمیلی برای پیوندها و دکمه‌های کم‌اهمیت‌تر"
 
-#: js/strings.js:322
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "رنگ پس‌زمینه دکمه‌های ثانویه"
 
-#: js/strings.js:323
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "رنگ ثانویه هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
 
-#: js/strings.js:324
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "رنگ پس‌زمینه ثانویه هنگام قرار گرفتن نشانگر روی عنصر یا متمرکز شدن آن"
 
-#: js/strings.js:325
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "میزان گردی گوشه‌ها به‌صورت طول CSS، مثلاً 0.25rem یا 0 برای گوشه‌های تیز"
 
-#: js/strings.js:326
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "نویسه‌ای که بین پیوندهای مسیر راهنما نمایش داده می‌شود"
 
-#: js/strings.js:327
+#: js/strings.js:333
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "پیوند HTTPS برای تماس با تیم امنیت، مثلاً یک فرم"
 
-#: js/strings.js:328
+#: js/strings.js:334
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "نشانی ایمیل برای گزارش مشکلات امنیتی"
 
-#: js/strings.js:329
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "تاریخی که پس از آن اطلاعات امنیتی منسوخ تلقی می‌شود"
 
-#: js/strings.js:330
+#: js/strings.js:336
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "پیوند HTTPS به کلید عمومی برای پیام‌های رمزنگاری‌شده"
 
-#: js/strings.js:331
+#: js/strings.js:337
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "پیوند HTTPS به صفحه قدردانی از پژوهشگران امنیتی"
 
-#: js/strings.js:332
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "کدهای زبان برای گزارش‌های امنیتی، جداشده با کاما، مثلاً en, de"
 
-#: js/strings.js:333
+#: js/strings.js:339
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "URL HTTPS که فایل security.txt در آن منتشر می‌شود"
 
-#: js/strings.js:334
+#: js/strings.js:340
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "پیوند HTTPS به سیاست امنیت و افشا"
 
-#: js/strings.js:335
+#: js/strings.js:341
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "پیوند HTTPS به فرصت‌های شغلی مرتبط با امنیت"
 
-#: js/strings.js:336
+#: js/strings.js:342
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "پیوند HTTPS به فراداده ارائه‌دهنده CSAF"
 
-#: js/strings.js:337
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "قواعد تکمیلی که برای خزنده‌های وب به فایل robots.txt افزوده می‌شوند"
 
-#: js/strings.js:338
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "کد CSS سفارشی که به همه صفحه‌ها افزوده می‌شود"
 
-#: js/strings.js:339
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "کد JavaScript سفارشی که به همه صفحه‌ها افزوده می‌شود"
 
-#: js/strings.js:340
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "فهرست قلم‌های مورد استفاده برای سرتیترها، جداشده با کاما"
 
-#: js/strings.js:343
+#: js/strings.js:349
 msgctxt "op"
 msgid "Name"
 msgstr "نام"
 
-#: js/strings.js:344
+#: js/strings.js:350
 msgctxt "op"
 msgid "Company"
 msgstr "شرکت"
 
-#: js/strings.js:345
+#: js/strings.js:351
 msgctxt "op"
 msgid "Telephone"
 msgstr "تلفن"
 
-#: js/strings.js:346
+#: js/strings.js:352
 msgctxt "op"
 msgid "E-Mail"
 msgstr "ایمیل"
 
-#: js/strings.js:347
+#: js/strings.js:353
 msgctxt "op"
 msgid "Subject"
 msgstr "موضوع"
 
-#: js/strings.js:348
+#: js/strings.js:354
+msgctxt "op"
+msgid "Text"
+msgstr "متن"
+
+#: js/strings.js:355
+msgctxt "op"
+msgid "Text area"
+msgstr "ناحیه متن"
+
+#: js/strings.js:356
+msgctxt "op"
+msgid "Selection"
+msgstr "فهرست انتخابی"
+
+#: js/strings.js:357
 msgctxt "op"
 msgid "Follow"
 msgstr "دنبال کردن"
 
-#: js/strings.js:349
+#: js/strings.js:358
 msgctxt "op"
 msgid "Index"
 msgstr "نمایه‌سازی"
 
-#: js/strings.js:350
+#: js/strings.js:359
 msgctxt "op"
 msgid "No follow"
 msgstr "عدم دنبال کردن"
 
-#: js/strings.js:351
+#: js/strings.js:360
 msgctxt "op"
 msgid "No index"
 msgstr "عدم نمایه‌سازی"
 
-#: js/strings.js:352
+#: js/strings.js:361
 msgctxt "op"
 msgid "Subscription"
 msgstr "اشتراک"
 
-#: js/strings.js:353
+#: js/strings.js:362
 msgctxt "op"
 msgid "One-time payment"
 msgstr "پرداخت یک‌باره"
 
-#: js/strings.js:354
+#: js/strings.js:363
 msgctxt "op"
 msgid "Auto"
 msgstr "خودکار"
 
-#: js/strings.js:355
+#: js/strings.js:364
 msgctxt "op"
 msgid "Cards"
 msgstr "کارت‌ها"
 
-#: js/strings.js:356
+#: js/strings.js:365
 msgctxt "op"
 msgid "Default"
 msgstr "پیش‌فرض"
 
-#: js/strings.js:357
+#: js/strings.js:366
 msgctxt "op"
 msgid "End"
 msgstr "انتها"
 
-#: js/strings.js:358
+#: js/strings.js:367
 msgctxt "op"
 msgid "First column"
 msgstr "ستون اول"
 
-#: js/strings.js:359
+#: js/strings.js:368
 msgctxt "op"
 msgid "First row"
 msgstr "سطر اول"
 
-#: js/strings.js:360
+#: js/strings.js:369
 msgctxt "op"
 msgid "First row and column"
 msgstr "سطر و ستون اول"
 
-#: js/strings.js:361
+#: js/strings.js:370
 msgctxt "op"
 msgid "Grid end"
 msgstr "انتهای شبکه"
 
-#: js/strings.js:362
+#: js/strings.js:371
 msgctxt "op"
 msgid "Grid start"
 msgstr "ابتدای شبکه"
 
-#: js/strings.js:363
+#: js/strings.js:372
 msgctxt "op"
 msgid "Latest"
 msgstr "جدیدترین"
 
-#: js/strings.js:364
+#: js/strings.js:373
 msgctxt "op"
 msgid "List"
 msgstr "فهرست"
 
-#: js/strings.js:365
+#: js/strings.js:374
 msgctxt "op"
 msgid "None"
 msgstr "هیچ‌کدام"
 
-#: js/strings.js:366
+#: js/strings.js:375
 msgctxt "op"
 msgid "Oldest"
 msgstr "قدیمی‌ترین"
 
-#: js/strings.js:367
+#: js/strings.js:376
 msgctxt "op"
 msgid "Position"
 msgstr "موقعیت"
 
-#: js/strings.js:368
+#: js/strings.js:377
 msgctxt "op"
 msgid "Start"
 msgstr "ابتدا"
 
-#: js/strings.js:369
+#: js/strings.js:378
 msgctxt "op"
 msgid "Zoom"
 msgstr "بزرگ‌نمایی"
 
-#: js/strings.js:372
+#: js/strings.js:381
 msgctxt "ai"
 msgid "Done"
 msgstr "انجام شد"
 
-#: js/strings.js:373
+#: js/strings.js:382
 msgctxt "ai"
 msgid "Already exists"
 msgstr "از قبل وجود دارد"
 
-#: js/strings.js:376
+#: js/strings.js:385
 msgctxt "sg"
 msgid "expert"
 msgstr "پیشرفته"
 
-#: js/strings.js:377
+#: js/strings.js:386
 msgctxt "sg"
 msgid "theme"
 msgstr "پوسته"
 
-#: js/strings.js:378
+#: js/strings.js:387
 msgctxt "st"
 msgid "website"
 msgstr "وب‌سایت"
 
-#: js/strings.js:379
+#: js/strings.js:388
 msgctxt "st"
 msgid "logo"
 msgstr "لوگو"
 
-#: js/strings.js:380
+#: js/strings.js:389
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "لوگوی جایگزین"
 
-#: js/strings.js:381
+#: js/strings.js:390
 msgctxt "st"
 msgid "icon"
 msgstr "نماد"
@@ -4224,6 +4271,10 @@ msgid ""
 msgstr ""
 "هوش مصنوعی می‌تواند بر اساس ورودی شما یک صفحه و محتوای آن را ایجاد کرده و به "
 "درخت صفحات اضافه کند"
+
+#~ msgctxt "sd"
+#~ msgid "Contact form with configurable fields"
+#~ msgstr "فرم تماس با فیلدهای قابل پیکربندی"
 
 #~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 #~ msgstr "%{name} (%{lang}، مسیر: %{path}، دامنه: %{domain})"

@@ -48,5 +48,12 @@
     "Next page": "次のページ",
     "Load more": "さらに読み込む",
     "No results found": "結果が見つかりません",
-    "Search failed": "検索に失敗しました"
+    "Search failed": "検索に失敗しました",
+    "Attachments": "添付ファイル",
+    "Images or PDF files, max. :size MB each": "画像またはPDFファイル、1ファイルあたり最大:size MB",
+    ":attribute: The file type is not allowed.": ":attribute: このファイル形式は許可されていません。",
+    ":attribute: The file is too large.": ":attribute: ファイルが大きすぎます。",
+    ":attribute: Too many files.": ":attribute: ファイルが多すぎます。",
+    ":attribute: The files are too large.": ":attribute: ファイルの合計サイズが大きすぎます。",
+    "Please select": "選択してください"
 }

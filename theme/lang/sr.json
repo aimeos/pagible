@@ -48,5 +48,12 @@
     "Next page": "Следећа страница",
     "Load more": "Учитај још",
     "No results found": "Нема резултата",
-    "Search failed": "Претрага није успела"
+    "Search failed": "Претрага није успела",
+    "Attachments": "Прилози",
+    "Images or PDF files, max. :size MB each": "Слике или PDF датотеке, највише :size MB по датотеци",
+    ":attribute: The file type is not allowed.": ":attribute: Тип датотеке није дозвољен.",
+    ":attribute: The file is too large.": ":attribute: Датотека је превелика.",
+    ":attribute: Too many files.": ":attribute: Превише датотека.",
+    ":attribute: The files are too large.": ":attribute: Датотеке су превелике.",
+    "Please select": "Изаберите"
 }
