@@ -688,6 +688,32 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testTimeline()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$items = [
+			(object) ['label' => 'Week 1', 'title' => 'Planning', 'text' => 'Site visit and **quote**'],
+			(object) ['title' => 'Handover'],
+		];
+
+		$html = view( 'cms::timeline', ['data' => (object) ['title' => 'How we work', 'items' => $items], 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'How we work', $html );
+		$this->assertStringContainsString( 'layout-vertical', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="step"' ) );
+		$this->assertSame( 1, substr_count( $html, 'class="label"' ) );
+		$this->assertStringContainsString( 'Week 1', $html );
+		$this->assertStringContainsString( '<strong>quote</strong>', $html );
+		$this->assertStringContainsString( 'Handover', $html );
+
+		$data = (object) ['layout' => 'horizontal', 'items' => $items];
+		$html = view( 'cms::timeline', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'layout-horizontal', $html );
+		$this->assertStringNotContainsString( '<h2', $html );
+	}
+
+
 	public function testCtaRendersOptionalTextAndThreeButtons()
 	{
 		$page = ( new Page() )->forceFill( ['lang' => 'en'] );

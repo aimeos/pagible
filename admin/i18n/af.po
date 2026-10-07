@@ -2536,675 +2536,685 @@ msgstr "Gereelde vrae"
 
 #: js/strings.js:74
 msgctxt "st"
+msgid "timeline"
+msgstr "Tydlyn"
+
+#: js/strings.js:75
+msgctxt "st"
 msgid "toc"
 msgstr "Inhoudsopgawe"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "Kontak"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metamerkers"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "Sosiale media"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanonieke URL"
 
-#: js/strings.js:79
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "Soekenjins"
 
-#: js/strings.js:80
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:81
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "Style"
 
-#: js/strings.js:82
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "JavaScript"
 
-#: js/strings.js:83
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "Hoofbaniere"
 
-#: js/strings.js:84
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "Nuus"
 
-#: js/strings.js:85
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "Pryse"
 
-#: js/strings.js:86
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:87
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "Sekuriteit"
 
-#: js/strings.js:88
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "Getuigskrifte"
 
-#: js/strings.js:91
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Afdelingsopskrif van H1 tot H6"
 
-#: js/strings.js:92
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Geformateerde teks met paragrawe, lyste en skakels"
 
-#: js/strings.js:93
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Prent langs geformateerde teks"
 
-#: js/strings.js:94
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Bronkode met sintaksisuitlig"
 
-#: js/strings.js:95
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Datatabel met opsionele opskrifry of -kolom"
 
-#: js/strings.js:96
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktiewe kaart met ligging, teks en skakel"
 
-#: js/strings.js:97
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Pasgemaakte HTML-opmaak vir inbeddings en widgets"
 
-#: js/strings.js:98
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Enkele responsiewe prent"
 
-#: js/strings.js:99
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Wisselende skyfies met verskeie prente"
 
-#: js/strings.js:100
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Slider comparing two images before and after a change"
 msgstr "Skuifbalk wat twee beelde voor en na 'n verandering vergelyk"
 
-#: js/strings.js:101
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Ingebedde video met spelerkontroles"
 
-#: js/strings.js:102
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Ingebedde oudio met spelerkontroles"
 
-#: js/strings.js:103
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Aflaaibare lêer soos 'n PDF-dokument"
 
-#: js/strings.js:104
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Groot inleiding met titel, teks, knoppies en agtergrond"
 
-#: js/strings.js:105
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Oproep tot aksie met teks en knoppies"
 
-#: js/strings.js:106
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Rooster van kaarte met prent, titel en teks"
 
-#: js/strings.js:107
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Kliëntaanhalings met naam, rol en foto"
 
-#: js/strings.js:108
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Artikelinleiding met prentgalery en outeur"
 
-#: js/strings.js:109
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Lys van blogartikels van 'n ouerbladsy"
 
-#: js/strings.js:110
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Lys van nuusartikels van 'n ouerbladsy"
 
-#: js/strings.js:111
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Uitgeligte subbladsy gevolg deur verdere subbladsye"
 
-#: js/strings.js:112
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Prysplanne met intekeninge of eenmalige betalings"
 
-#: js/strings.js:113
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Gereelde vrae met antwoorde"
 
-#: js/strings.js:114
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Genommerde stappe of gebeure in chronologiese volgorde"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Inhoudsopgawe met skakels na bladsyopskrifte"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "sd"
 msgid "Contact form with configurable fields and optional file attachments"
 msgstr "Kontakvorm met konfigureerbare velde en opsionele lêeraanhegsels"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "Knoppie"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "Knoppies"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "Kaarte"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "Beskrywing"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "Lêer"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "Lêers"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "Volg skakels"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "Opskrif"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "Indeksering"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "Sleutelwoorde"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "Taal"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "Etiket"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "Vlak"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "Limiet"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "Ligging"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "Hoofprent"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "Volgorde"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Ouerbladsy"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "Posisie"
 
-#: js/strings.js:137
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "Teks"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "Tabel"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "Titel"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "URL"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "Prent"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "Prente"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "before image"
 msgstr "voor-beeld"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "after image"
 msgstr "na-beeld"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "Items"
 
-#: js/strings.js:147
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "Inleiding"
 
-#: js/strings.js:148
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "Laai onmiddellik"
 
-#: js/strings.js:149
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "Bronkode"
 
-#: js/strings.js:150
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Frontend-toegangsrol"
 
-#: js/strings.js:151
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Betalingspryse"
 
-#: js/strings.js:152
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Betalingsverwysing"
 
-#: js/strings.js:153
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "Geldeenheid"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Faktureringsinterval"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Pryseenheid"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Teikenbladsy of skakel"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Vormvelde"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "Veld"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "Verpligtend"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Input type"
 msgstr "Invoertipe"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Choices"
 msgstr "Keuses"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Attachments"
 msgstr "Aanhegsels"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "Skakeletiket"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontak-URL"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kontak-e-pos"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "Beskrywing"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Vertoonde prys"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galery"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Uitligteks"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Uitgelig"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "Taal"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Betalingstipe"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Voorkeurtale"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Subtitel"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Erkennings"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "Bedrag"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "Agtergrond"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "Agtergrondanimasie"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatiewe knoppie"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanonieke URL"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "Kolomme"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF-skakel"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "Enkripsie"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "Verval"
 
-#: js/strings.js:185
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "Kenmerke"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "Vakatures"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "Uitleg"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "Naam"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "Beleid"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "Verhouding"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "Rol"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Subtitel"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatiewe URL"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Teksfont"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Opskriffont"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Tekskleur"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Agtergrondkleur"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Seleksiekleur"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontraskleur"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontraskleur (sweef)"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrasteks-kleur"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Primêre kleur"
 
-#: js/strings.js:204
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Primêre agtergrond"
 
-#: js/strings.js:205
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Primêre kleur (sweef)"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Primêre agtergrond (sweef)"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Sekondêre kleur"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Sekondêre agtergrond"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Sekondêre kleur (sweef)"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Sekondêre agtergrond (sweef)"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Hoekradius"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Broodkrummelskeier"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Teks van die opskrif"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3212,493 +3222,526 @@ msgstr ""
 "Vlak 1 is die hoofopskrif van die bladsy, hoër vlakke struktureer die "
 "afdelings daaronder"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Geformateerde teks met paragrawe, lyste en skakels"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Geformateerde teks wat langs die prent gewys word"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Prent wat langs die teks gewys word"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Posisie van die prent relatief tot die teks"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Breedteverhouding tussen prent en teks"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Programmeertaal wat vir sintaksisuitlig gebruik word"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Bronkode wat met sintaksisuitlig gewys word"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Opsionele onderskrif bo die tabel"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Gebruik die eerste ry, die eerste kolom of albei as tabelopskrifte"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Voer data in die selle in; voeg rye en kolomme by of verwyder dit soos nodig"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Opsionele opskrif bo die kaart"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Beskrywing langs die kaart, bv. adres of aanwysings"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Soek 'n plek of klik op die kaart om die ligging te stel"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Teks van die skakel wat die ligging in 'n kaartdiens oopmaak"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML-kode wat net so in die bladsy ingevoeg word, bv. vir inbeddings en "
 "widgets"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Prent wat oor die volle breedte van die inhoudsarea gewys word"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Laai die prent sonder vertraging as dit bo-aan die bladsy sigbaar is"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Opsionele opskrif bo die skyfievertoning"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr ""
 "Prente wat een na die ander gewys word, sleep om die volgorde te verander"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr ""
 "Laai die eerste prent sonder vertraging as dit bo-aan die bladsy sigbaar is"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Optional headline shown above the comparison"
 msgstr "Opsionele opskrif bo die vergelyking"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image showing the state before the change"
 msgstr "Beeld wat die toestand voor die verandering wys"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Image showing the result, both images should have the same size"
 msgstr "Beeld wat die resultaat wys, albei beelde moet dieselfde grootte hê"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid ""
 "Load the images without delay if they are visible at the top of the page"
 msgstr ""
 "Laai die beelde sonder vertraging as hulle bo-aan die bladsy sigbaar is"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Videolêer wat op die bladsy gespeel word"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Oudiolêer wat op die bladsy gespeel word"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Lêer wat vir aflaai aangebied word"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Hoofopskrif van die bladsy"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Kort reël wat bo die opskrif gewys word"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Inleiding wat onder die opskrif gewys word"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Bladsy of skakel waarheen die hoofknoppie lei"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Teks van die hoofknoppie"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Bladsy of skakel waarheen die tweede knoppie lei"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Teks van die tweede knoppie"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Prent wat agter die teks gewys word"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Animasie-effek van die agtergrondprent"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Prente wat langs die teks gewys word"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Opskrif wat besoekers se aandag trek"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Teks wat besoekers motiveer om aksie te neem"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Knoppies wat besoekers na die volgende stap lei"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Teks van die knoppie"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Bladsy of skakel waarheen die knoppie lei"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Opsionele opskrif bo die kaarte"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Aantal kaarte per ry, \"auto\" pas aan by die skermbreedte"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid ""
 "Show cards, small badges like certificates or large figures like key numbers"
 msgstr ""
 "Wys kaarte, klein kentekens soos sertifikate of groot syfers soos kerngetalle"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Kaarte wat in die rooster gewys word"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Opskrif van die kaart"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Prent wat bo-aan die kaart gewys word"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Teks van die kaart"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Bladsy of skakel waarheen die kaart lei"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Opsionele opskrif bo die aanhalings"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Aanhalings van kliënte of vennote"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Aanhaling van die persoon"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Naam van die persoon"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Pos of maatskappy van die persoon"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Foto van die persoon"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Inleiding van die artikel wat onder die bladsytitel gewys word"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Prente van die artikel, die eerste word as voorskouprent gebruik"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Naam van die outeur van die artikel"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Skakel na die profielbladsy van die outeur"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Opsionele opskrif bo die lys"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Vertoon die bladsye as kaarte of as 'n kompakte lys"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Bladsy waarvan die subbladsye gelys word"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Sorteervolgorde van die gelyste bladsye"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Maksimum aantal bladsye wat gelyktydig gewys word"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Vertoon die verdere subbladsye as kaarte of as 'n kompakte lys"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Opsionele opskrif bo die prysplanne"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Kort teks wat onder die opskrif gewys word"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Prysplanne wat langs mekaar gewys word"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Naam van die prysplan"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Rol wat ná betaling aan kliënte toegeken word om beskermde bladsye te verkry"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Pryse van die plan, bv. maandeliks en jaarliks"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Herhalende intekening of eenmalige betaling"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Aantal dae tussen twee betalings, bv. 30 vir maandeliks"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Drieletter-ISO-geldeenheidkode, bv. EUR of USD"
 
-#: js/strings.js:292
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Prys-ID of bedrag wat deur die betalingsverskaffer gebruik word"
 
-#: js/strings.js:293
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Geformateerde prys wat aan besoekers gewys word, bv. €9.99"
 
-#: js/strings.js:294
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Numeriese prys wat gewys word as geen geformateerde prys gestel is nie"
 
-#: js/strings.js:295
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Teks wat ná die prys gewys word, bv. per maand"
 
-#: js/strings.js:296
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Kort beskrywing van die prysplan"
 
-#: js/strings.js:297
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Lys van die kenmerke wat by die plan ingesluit is"
 
-#: js/strings.js:298
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Beklemtoon hierdie plan in vergelyking met die ander"
 
-#: js/strings.js:299
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Kort etiket wat op die uitgeligte plan gewys word, bv. Gewild"
 
-#: js/strings.js:300
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Opsionele opskrif bo die vrae"
 
-#: js/strings.js:301
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Vrae en antwoorde wat as uitvoubare lys gewys word"
 
-#: js/strings.js:302
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Vraag wat deur besoekers gevra word"
 
-#: js/strings.js:303
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Antwoord op die vraag"
 
-#: js/strings.js:304
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Opsionele opskrif bo die tydlyn"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "Wys die stappe onder mekaar of langs mekaar, langs mekaar pas by tot vyf stappe"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Stappe of gebeure in die volgorde waarin hulle plaasvind"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Opsionele datum, tydperk of fase bo die titel, bv. 2024 of Week 1"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Naam van die stap of gebeurtenis"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Beskrywing van die stap of gebeurtenis"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Opsionele opskrif bo die inhoudsopgawe"
 
-#: js/strings.js:305
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Opsionele opskrif bo die kontakvorm"
 
-#: js/strings.js:306
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Opsionele teks tussen opskrif en kontakvorm"
 
-#: js/strings.js:307
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Vormvelde wat in hierdie volgorde aan besoekers gewys word"
 
-#: js/strings.js:308
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Kies 'n vormveld of voer u eie naam in"
 
-#: js/strings.js:309
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Besoekers moet hierdie veld invul"
 
-#: js/strings.js:310
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "Tipe invoer wat aan besoekers gewys word"
 
-#: js/strings.js:311
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "Keuses vir keuse-invoere, een per reël"
 
-#: js/strings.js:312
+#: js/strings.js:320
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
@@ -3706,7 +3749,7 @@ msgstr ""
 "Maksimum aantal beelde of PDF-lêers wat besoekers kan aanheg, 0 deaktiveer "
 "oplaaie"
 
-#: js/strings.js:313
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3715,418 +3758,428 @@ msgstr ""
 "Opsomming van die bladsy wat in soekresultate gewys word, 150 tot 160 "
 "karakters word aanbeveel"
 
-#: js/strings.js:314
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Kommageskeide lys van sleutelwoorde wat die bladsy beskryf"
 
-#: js/strings.js:315
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Titel wat gewys word wanneer die bladsy op sosiale media gedeel word"
 
-#: js/strings.js:316
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr ""
 "Opsomming wat gewys word wanneer die bladsy op sosiale media gedeel word"
 
-#: js/strings.js:317
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Voorskouprent wat gewys word wanneer die bladsy op sosiale media gedeel word"
 
-#: js/strings.js:318
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr ""
 "Oorspronklike URL as dieselfde inhoud by verskeie adresse beskikbaar is"
 
-#: js/strings.js:319
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Laat soekenjins toe of verhoed hulle om hierdie bladsy te lys"
 
-#: js/strings.js:320
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Laat soekenjins toe of verhoed hulle om die skakels op hierdie bladsy te volg"
 
-#: js/strings.js:321
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 "Naam van die webwerf wat in die blaaieroortjie en soekresultate gewys word"
 
-#: js/strings.js:322
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Logo wat in die bladsykopstuk gewys word"
 
-#: js/strings.js:323
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Logovariant wat vir donker agtergronde gebruik word"
 
-#: js/strings.js:324
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Klein vierkantige prent wat in blaaieroortjies en boekmerke gewys word"
 
-#: js/strings.js:325
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Kommageskeide lys van fonte wat vir die teks gebruik word"
 
-#: js/strings.js:326
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Verstek-tekskleur"
 
-#: js/strings.js:327
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Agtergrondkleur van die bladsye"
 
-#: js/strings.js:328
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Agtergrondkleur van gekose teks"
 
-#: js/strings.js:329
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Kleur van elemente met sterk kontras teen die agtergrond"
 
-#: js/strings.js:330
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontraskleur wanneer 'n element gesweef of gefokus word"
 
-#: js/strings.js:331
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Tekskleur op elemente wat die kontraskleur gebruik"
 
-#: js/strings.js:332
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Hoofhandelsmerkkleur wat vir skakels en knoppies gebruik word"
 
-#: js/strings.js:333
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Agtergrondkleur van primêre knoppies en uitligte"
 
-#: js/strings.js:334
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Primêre kleur wanneer 'n element gesweef of gefokus word"
 
-#: js/strings.js:335
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Primêre agtergrondkleur wanneer 'n element gesweef of gefokus word"
 
-#: js/strings.js:336
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr ""
 "Bykomende kleur wat vir minder belangrike skakels en knoppies gebruik word"
 
-#: js/strings.js:337
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Agtergrondkleur van sekondêre knoppies"
 
-#: js/strings.js:338
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Sekondêre kleur wanneer 'n element gesweef of gefokus word"
 
-#: js/strings.js:339
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Sekondêre agtergrondkleur wanneer 'n element gesweef of gefokus word"
 
-#: js/strings.js:340
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Afronding van hoeke as CSS-lengte, bv. 0.25rem of 0 vir skerp hoeke"
 
-#: js/strings.js:341
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Karakter wat tussen die broodkrummelskakels gewys word"
 
-#: js/strings.js:342
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS-skakel om die sekuriteitspan te kontak, bv. 'n vorm"
 
-#: js/strings.js:343
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "E-posadres om sekuriteitsprobleme aan te meld"
 
-#: js/strings.js:344
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Datum waarna die sekuriteitsinligting as verouderd beskou word"
 
-#: js/strings.js:345
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS-skakel na die publieke sleutel vir geënkripteerde boodskappe"
 
-#: js/strings.js:346
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS-skakel na die bladsy wat sekuriteitsnavorsers bedank"
 
-#: js/strings.js:347
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Kommageskeide taalkodes vir sekuriteitsverslae, bv. en, de"
 
-#: js/strings.js:348
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS-URL waar die security.txt-lêer gepubliseer word"
 
-#: js/strings.js:349
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS-skakel na die sekuriteits- en openbaarmakingsbeleid"
 
-#: js/strings.js:350
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS-skakel na oop sekuriteitsverwante poste"
 
-#: js/strings.js:351
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS-skakel na die CSAF-verskaffermetadata"
 
-#: js/strings.js:352
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Bykomende reëls wat vir webkruipers by die robots.txt-lêer gevoeg word"
 
-#: js/strings.js:353
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Pasgemaakte CSS-kode wat by alle bladsye gevoeg word"
 
-#: js/strings.js:354
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pasgemaakte JavaScript-kode wat by alle bladsye gevoeg word"
 
-#: js/strings.js:355
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Kommageskeide lys van fonte wat vir opskrifte gebruik word"
 
-#: js/strings.js:358
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "Naam"
 
-#: js/strings.js:359
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "Maatskappy"
 
-#: js/strings.js:360
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefoon"
 
-#: js/strings.js:361
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-pos"
 
-#: js/strings.js:362
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "Onderwerp"
 
-#: js/strings.js:363
+#: js/strings.js:371
 msgctxt "op"
 msgid "Text"
 msgstr "Teks"
 
-#: js/strings.js:364
+#: js/strings.js:372
 msgctxt "op"
 msgid "Text area"
 msgstr "Teksarea"
 
-#: js/strings.js:365
+#: js/strings.js:373
 msgctxt "op"
 msgid "Selection"
 msgstr "Keuselys"
 
-#: js/strings.js:366
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "Volg skakels"
 
-#: js/strings.js:367
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "Indekseer"
 
-#: js/strings.js:368
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "Moenie skakels volg nie"
 
-#: js/strings.js:369
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "Moenie indekseer nie"
 
-#: js/strings.js:370
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "Intekening"
 
-#: js/strings.js:371
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Eenmalige betaling"
 
-#: js/strings.js:372
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "Outomaties"
 
-#: js/strings.js:373
+#: js/strings.js:381
 msgctxt "op"
 msgid "Badges"
 msgstr "Kentekens"
 
-#: js/strings.js:374
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "Kaarte"
 
-#: js/strings.js:375
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "Verstek"
 
-#: js/strings.js:376
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "Einde"
 
-#: js/strings.js:377
+#: js/strings.js:385
 msgctxt "op"
 msgid "Figures"
 msgstr "Syfers"
 
-#: js/strings.js:378
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "Eerste kolom"
 
-#: js/strings.js:379
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "Eerste ry"
 
-#: js/strings.js:380
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "Eerste ry en kolom"
 
-#: js/strings.js:381
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "Roostereinde"
 
-#: js/strings.js:382
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "Roosterbegin"
 
-#: js/strings.js:383
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Horisontaal"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "Nuutste"
 
-#: js/strings.js:384
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "Lys"
 
-#: js/strings.js:385
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "Geen"
 
-#: js/strings.js:386
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "Oudste"
 
-#: js/strings.js:387
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "Posisie"
 
-#: js/strings.js:388
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "Begin"
 
-#: js/strings.js:389
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "Vertikaal"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "Zoem"
 
-#: js/strings.js:392
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "Klaar"
 
-#: js/strings.js:393
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Bestaan reeds"
 
-#: js/strings.js:396
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "Gevorderd"
 
-#: js/strings.js:397
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "Tema"
 
-#: js/strings.js:398
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "Webwerf"
 
-#: js/strings.js:399
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:400
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatiewe logo"
 
-#: js/strings.js:401
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "Ikoon"

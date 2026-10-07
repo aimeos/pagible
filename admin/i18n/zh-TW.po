@@ -2495,1577 +2495,1630 @@ msgstr "常見問題"
 
 #: js/strings.js:74
 msgctxt "st"
+msgid "timeline"
+msgstr "時間軸"
+
+#: js/strings.js:75
+msgctxt "st"
 msgid "toc"
 msgstr "目錄"
 
-#: js/strings.js:75
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "聯絡"
 
-#: js/strings.js:76
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Meta 標籤"
 
-#: js/strings.js:77
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "社群媒體"
 
-#: js/strings.js:78
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "標準網址"
 
-#: js/strings.js:79
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "搜尋引擎"
 
-#: js/strings.js:80
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "主題"
 
-#: js/strings.js:81
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "樣式"
 
-#: js/strings.js:82
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "JavaScript"
 
-#: js/strings.js:83
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "主視覺清單"
 
-#: js/strings.js:84
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "新聞"
 
-#: js/strings.js:85
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "價格方案"
 
-#: js/strings.js:86
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:87
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "安全性"
 
-#: js/strings.js:88
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "客戶推薦"
 
-#: js/strings.js:91
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "H1 至 H6 的段落標題"
 
-#: js/strings.js:92
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "含段落、清單和連結的格式化文字"
 
-#: js/strings.js:93
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "格式化文字旁的圖片"
 
-#: js/strings.js:94
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "含語法醒目提示的原始碼"
 
-#: js/strings.js:95
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "可選擇標題列或標題欄的資料表格"
 
-#: js/strings.js:96
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "含位置、文字和連結的互動式地圖"
 
-#: js/strings.js:97
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "用於嵌入內容和小工具的自訂 HTML"
 
-#: js/strings.js:98
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "單張響應式圖片"
 
-#: js/strings.js:99
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "多張圖片輪播的幻燈片"
 
-#: js/strings.js:100
+#: js/strings.js:101
 msgctxt "sd"
 msgid "Slider comparing two images before and after a change"
 msgstr "比較變更前後兩張圖片的滑桿"
 
-#: js/strings.js:101
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "含播放控制項的嵌入影片"
 
-#: js/strings.js:102
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "含播放控制項的嵌入音訊"
 
-#: js/strings.js:103
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "可下載的檔案，例如 PDF 文件"
 
-#: js/strings.js:104
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "含標題、文字、按鈕和背景的大型開場區塊"
 
-#: js/strings.js:105
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "含文字和按鈕的行動呼籲"
 
-#: js/strings.js:106
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "含圖片、標題和文字的卡片格狀排列"
 
-#: js/strings.js:107
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "含姓名、職稱和照片的客戶推薦"
 
-#: js/strings.js:108
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "含圖庫和作者的文章開場"
 
-#: js/strings.js:109
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "上層頁面的部落格文章清單"
 
-#: js/strings.js:110
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "上層頁面的新聞文章清單"
 
-#: js/strings.js:111
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "精選子頁面及其後的其他子頁面"
 
-#: js/strings.js:112
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "訂閱制或一次性付款的價格方案"
 
-#: js/strings.js:113
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "常見問題與解答"
 
-#: js/strings.js:114
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "依時間順序編號的步驟或事件"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "連結至頁面標題的目錄"
 
-#: js/strings.js:115
+#: js/strings.js:117
 msgctxt "sd"
 msgid "Contact form with configurable fields and optional file attachments"
 msgstr "具有可設定欄位與選用檔案附件的聯絡表單"
 
-#: js/strings.js:118
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "按鈕"
 
-#: js/strings.js:119
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "按鈕"
 
-#: js/strings.js:120
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "卡片"
 
-#: js/strings.js:121
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "說明"
 
-#: js/strings.js:122
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "檔案"
 
-#: js/strings.js:123
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "檔案"
 
-#: js/strings.js:124
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "追蹤連結"
 
-#: js/strings.js:125
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "頁首"
 
-#: js/strings.js:126
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "索引"
 
-#: js/strings.js:127
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "關鍵字"
 
-#: js/strings.js:128
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "語言"
 
-#: js/strings.js:129
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "標籤"
 
-#: js/strings.js:130
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "層級"
 
-#: js/strings.js:131
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "數量上限"
 
-#: js/strings.js:132
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "位置"
 
-#: js/strings.js:133
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "主圖"
 
-#: js/strings.js:134
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "順序"
 
-#: js/strings.js:135
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "上層頁面"
 
-#: js/strings.js:136
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "位置"
 
-#: js/strings.js:137
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "文字"
 
-#: js/strings.js:138
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "表格"
 
-#: js/strings.js:139
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "標題"
 
-#: js/strings.js:140
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "網址"
 
-#: js/strings.js:142
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "圖片"
 
-#: js/strings.js:143
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "圖片"
 
-#: js/strings.js:144
+#: js/strings.js:146
 msgctxt "fn"
 msgid "before image"
 msgstr "變更前圖片"
 
-#: js/strings.js:145
+#: js/strings.js:147
 msgctxt "fn"
 msgid "after image"
 msgstr "變更後圖片"
 
-#: js/strings.js:146
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "項目"
 
-#: js/strings.js:147
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "簡介"
 
-#: js/strings.js:148
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "立即載入"
 
-#: js/strings.js:149
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "原始碼"
 
-#: js/strings.js:150
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "前台存取角色"
 
-#: js/strings.js:151
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "付款價格"
 
-#: js/strings.js:152
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "付款參考"
 
-#: js/strings.js:153
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "幣別"
 
-#: js/strings.js:154
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "計費週期"
 
-#: js/strings.js:155
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "價格單位"
 
-#: js/strings.js:156
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "目標頁面或連結"
 
-#: js/strings.js:157
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "表單欄位"
 
-#: js/strings.js:158
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "欄位"
 
-#: js/strings.js:159
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "必填"
 
-#: js/strings.js:160
+#: js/strings.js:162
 msgctxt "fn"
 msgid "Input type"
 msgstr "輸入類型"
 
-#: js/strings.js:161
+#: js/strings.js:163
 msgctxt "fn"
 msgid "Choices"
 msgstr "選項"
 
-#: js/strings.js:162
+#: js/strings.js:164
 msgctxt "fn"
 msgid "Attachments"
 msgstr "附件"
 
-#: js/strings.js:163
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "連結文字"
 
-#: js/strings.js:164
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "聯絡網址"
 
-#: js/strings.js:165
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "聯絡電子郵件"
 
-#: js/strings.js:166
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "說明"
 
-#: js/strings.js:167
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "顯示價格"
 
-#: js/strings.js:168
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "圖庫"
 
-#: js/strings.js:169
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "強調文字"
 
-#: js/strings.js:170
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "醒目顯示"
 
-#: js/strings.js:171
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "語言"
 
-#: js/strings.js:172
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "付款類型"
 
-#: js/strings.js:173
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "偏好語言"
 
-#: js/strings.js:174
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "副標題"
 
-#: js/strings.js:175
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "致謝"
 
-#: js/strings.js:176
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "金額"
 
-#: js/strings.js:177
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "背景"
 
-#: js/strings.js:178
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "背景動畫"
 
-#: js/strings.js:179
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "替代按鈕"
 
-#: js/strings.js:180
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "標準網址"
 
-#: js/strings.js:181
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "欄數"
 
-#: js/strings.js:182
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:183
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "加密"
 
-#: js/strings.js:184
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "到期時間"
 
-#: js/strings.js:185
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "功能"
 
-#: js/strings.js:186
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "徵才資訊"
 
-#: js/strings.js:187
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "版面配置"
 
-#: js/strings.js:188
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "名稱"
 
-#: js/strings.js:189
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "政策"
 
-#: js/strings.js:190
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "比例"
 
-#: js/strings.js:191
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "職稱"
 
-#: js/strings.js:192
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "副標題"
 
-#: js/strings.js:193
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "替代網址"
 
-#: js/strings.js:195
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "文字字型"
 
-#: js/strings.js:196
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "標題字型"
 
-#: js/strings.js:197
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "文字顏色"
 
-#: js/strings.js:198
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "背景顏色"
 
-#: js/strings.js:199
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "選取顏色"
 
-#: js/strings.js:200
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "對比顏色"
 
-#: js/strings.js:201
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "對比懸停顏色"
 
-#: js/strings.js:202
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "對比文字顏色"
 
-#: js/strings.js:203
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "主要顏色"
 
-#: js/strings.js:204
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "主要背景"
 
-#: js/strings.js:205
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "主要懸停顏色"
 
-#: js/strings.js:206
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "主要懸停背景"
 
-#: js/strings.js:207
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "次要顏色"
 
-#: js/strings.js:208
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "次要背景"
 
-#: js/strings.js:209
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "次要懸停顏色"
 
-#: js/strings.js:210
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "次要懸停背景"
 
-#: js/strings.js:211
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "圓角半徑"
 
-#: js/strings.js:212
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "導覽路徑分隔符號"
 
-#: js/strings.js:215
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "標題文字"
 
-#: js/strings.js:216
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
 msgstr "第 1 層是頁面主標題，更高層級用於組織下方的段落"
 
-#: js/strings.js:217
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "含段落、清單和連結的格式化文字"
 
-#: js/strings.js:218
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "顯示在圖片旁的格式化文字"
 
-#: js/strings.js:219
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "顯示在文字旁的圖片"
 
-#: js/strings.js:220
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "圖片相對於文字的位置"
 
-#: js/strings.js:221
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "圖片與文字的寬度比例"
 
-#: js/strings.js:222
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "用於語法醒目提示的程式語言"
 
-#: js/strings.js:223
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "以語法醒目提示顯示的原始碼"
 
-#: js/strings.js:224
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "顯示在表格上方的選用標題"
 
-#: js/strings.js:225
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "將第一列、第一欄或兩者作為表格標題"
 
-#: js/strings.js:226
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr "在儲存格中輸入資料，並視需要新增或刪除列與欄"
 
-#: js/strings.js:227
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "顯示在地圖上方的選用標題"
 
-#: js/strings.js:228
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "顯示在地圖旁的說明，例如地址或路線"
 
-#: js/strings.js:229
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "搜尋地點或點擊地圖以設定位置"
 
-#: js/strings.js:230
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "在地圖服務中開啟此位置的連結文字"
 
-#: js/strings.js:231
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr "原樣插入頁面的 HTML 程式碼，例如用於嵌入內容和小工具"
 
-#: js/strings.js:232
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "以內容區域全寬顯示的圖片"
 
-#: js/strings.js:233
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "若圖片顯示在頁面頂端，則立即載入而不延遲"
 
-#: js/strings.js:234
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "顯示在幻燈片上方的選用標題"
 
-#: js/strings.js:235
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "依序顯示的圖片，拖曳可變更順序"
 
-#: js/strings.js:236
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "若第一張圖片顯示在頁面頂端，則立即載入而不延遲"
 
-#: js/strings.js:237
+#: js/strings.js:239
 msgctxt "fh"
 msgid "Optional headline shown above the comparison"
 msgstr "顯示在對比上方的選用標題"
 
-#: js/strings.js:238
+#: js/strings.js:240
 msgctxt "fh"
 msgid "Image showing the state before the change"
 msgstr "顯示變更前狀態的圖片"
 
-#: js/strings.js:239
+#: js/strings.js:241
 msgctxt "fh"
 msgid "Image showing the result, both images should have the same size"
 msgstr "顯示結果的圖片，兩張圖片應尺寸相同"
 
-#: js/strings.js:240
+#: js/strings.js:242
 msgctxt "fh"
 msgid ""
 "Load the images without delay if they are visible at the top of the page"
 msgstr "如果圖片顯示在頁面頂部，則立即載入"
 
-#: js/strings.js:241
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "在頁面中播放的影片檔案"
 
-#: js/strings.js:242
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "在頁面中播放的音訊檔案"
 
-#: js/strings.js:243
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "提供下載的檔案"
 
-#: js/strings.js:244
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "頁面的主標題"
 
-#: js/strings.js:245
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "顯示在標題上方的短行文字"
 
-#: js/strings.js:246
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "顯示在標題下方的簡介"
 
-#: js/strings.js:247
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "主要按鈕連往的頁面或連結"
 
-#: js/strings.js:248
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "主要按鈕的文字"
 
-#: js/strings.js:249
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "第二個按鈕連往的頁面或連結"
 
-#: js/strings.js:250
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "第二個按鈕的文字"
 
-#: js/strings.js:251
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "顯示在文字後方的圖片"
 
-#: js/strings.js:252
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "背景圖片的動畫效果"
 
-#: js/strings.js:253
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "顯示在文字旁的圖片"
 
-#: js/strings.js:254
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "吸引訪客注意的標題"
 
-#: js/strings.js:255
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "促使訪客採取行動的文字"
 
-#: js/strings.js:256
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "引導訪客進行下一步的按鈕"
 
-#: js/strings.js:257
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "按鈕的文字"
 
-#: js/strings.js:258
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "按鈕連往的頁面或連結"
 
-#: js/strings.js:259
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "顯示在卡片上方的選用標題"
 
-#: js/strings.js:260
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "每列的卡片數量，「auto」會依螢幕寬度自動調整"
 
-#: js/strings.js:261
+#: js/strings.js:263
 msgctxt "fh"
 msgid ""
 "Show cards, small badges like certificates or large figures like key numbers"
 msgstr "顯示卡片、證書等小徽章或關鍵數據等大型數字"
 
-#: js/strings.js:262
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "顯示在格狀排列中的卡片"
 
-#: js/strings.js:263
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "卡片的標題"
 
-#: js/strings.js:264
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "顯示在卡片頂端的圖片"
 
-#: js/strings.js:265
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "卡片的文字"
 
-#: js/strings.js:266
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "卡片連往的頁面或連結"
 
-#: js/strings.js:267
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "顯示在推薦語上方的選用標題"
 
-#: js/strings.js:268
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "客戶或合作夥伴的推薦語"
 
-#: js/strings.js:269
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "此人的推薦語"
 
-#: js/strings.js:270
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "此人的姓名"
 
-#: js/strings.js:271
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "此人的職稱或公司"
 
-#: js/strings.js:272
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "此人的照片"
 
-#: js/strings.js:273
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "顯示在頁面標題下方的文章簡介"
 
-#: js/strings.js:274
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "文章的圖片，第一張用作預覽圖片"
 
-#: js/strings.js:275
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "文章作者的姓名"
 
-#: js/strings.js:276
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "連往作者個人頁面的連結"
 
-#: js/strings.js:277
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "顯示在清單上方的選用標題"
 
-#: js/strings.js:278
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "以卡片或精簡清單顯示頁面"
 
-#: js/strings.js:279
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "要列出其子頁面的頁面"
 
-#: js/strings.js:280
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "所列頁面的排序方式"
 
-#: js/strings.js:281
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "一次顯示的最大頁面數"
 
-#: js/strings.js:282
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "以卡片或精簡清單顯示其他子頁面"
 
-#: js/strings.js:283
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "顯示在價格方案上方的選用標題"
 
-#: js/strings.js:284
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "顯示在標題下方的簡短文字"
 
-#: js/strings.js:285
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "並排顯示的價格方案"
 
-#: js/strings.js:286
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "價格方案的名稱"
 
-#: js/strings.js:287
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr "客戶付款後授予的角色，用於存取受保護的頁面"
 
-#: js/strings.js:288
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "方案的價格，例如月繳和年繳"
 
-#: js/strings.js:289
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "定期訂閱或一次性付款"
 
-#: js/strings.js:290
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "兩次付款之間的天數，例如每月為 30"
 
-#: js/strings.js:291
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "三個字母的 ISO 貨幣代碼，例如 EUR 或 USD"
 
-#: js/strings.js:292
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "金流服務商使用的價格 ID 或金額"
 
-#: js/strings.js:293
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "向訪客顯示的格式化價格，例如 €9.99"
 
-#: js/strings.js:294
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "未設定格式化價格時顯示的數字價格"
 
-#: js/strings.js:295
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "顯示在價格後的文字，例如「每月」"
 
-#: js/strings.js:296
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "價格方案的簡短說明"
 
-#: js/strings.js:297
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "方案包含的功能清單"
 
-#: js/strings.js:298
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "與其他方案相比突顯此方案"
 
-#: js/strings.js:299
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "顯示在突顯方案上的簡短標籤，例如「熱門」"
 
-#: js/strings.js:300
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "顯示在問題上方的選用標題"
 
-#: js/strings.js:301
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "以可展開清單顯示的問題與解答"
 
-#: js/strings.js:302
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "訪客提出的問題"
 
-#: js/strings.js:303
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "問題的解答"
 
-#: js/strings.js:304
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "顯示在時間軸上方的選用標題"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "將步驟上下排列或並排顯示，並排適合最多五個步驟"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "依發生順序排列的步驟或事件"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "顯示在標題上方的選用日期、期間或階段，例如 2024 或第 1 週"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "步驟或事件的名稱"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "步驟或事件的描述"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "顯示在目錄上方的選用標題"
 
-#: js/strings.js:305
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "顯示在聯絡表單上方的選用標題"
 
-#: js/strings.js:306
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "顯示在標題與聯絡表單之間的選用文字"
 
-#: js/strings.js:307
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "依此順序向訪客顯示的表單欄位"
 
-#: js/strings.js:308
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "選取表單欄位或輸入自訂名稱"
 
-#: js/strings.js:309
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "訪客必須填寫此欄位"
 
-#: js/strings.js:310
+#: js/strings.js:318
 msgctxt "fh"
 msgid "Type of input shown to visitors"
 msgstr "向訪客顯示的輸入類型"
 
-#: js/strings.js:311
+#: js/strings.js:319
 msgctxt "fh"
 msgid "Choices for selection inputs, one per line"
 msgstr "選擇欄位的選項，每行一個"
 
-#: js/strings.js:312
+#: js/strings.js:320
 msgctxt "fh"
 msgid ""
 "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr "訪客可附加的圖片或 PDF 檔案數量上限，0 表示停用上傳"
 
-#: js/strings.js:313
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
 "recommended"
 msgstr "顯示在搜尋結果中的頁面摘要，建議 150 至 160 個字元"
 
-#: js/strings.js:314
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "以逗號分隔、描述此頁面的關鍵字清單"
 
-#: js/strings.js:315
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "頁面分享至社群媒體時顯示的標題"
 
-#: js/strings.js:316
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "頁面分享至社群媒體時顯示的摘要"
 
-#: js/strings.js:317
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "頁面分享至社群媒體時顯示的預覽圖片"
 
-#: js/strings.js:318
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "相同內容可於多個網址取得時的原始網址"
 
-#: js/strings.js:319
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "允許或禁止搜尋引擎收錄此頁面"
 
-#: js/strings.js:320
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "允許或禁止搜尋引擎追蹤此頁面上的連結"
 
-#: js/strings.js:321
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "顯示在瀏覽器分頁和搜尋結果中的網站名稱"
 
-#: js/strings.js:322
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "顯示在頁首的標誌"
 
-#: js/strings.js:323
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "用於深色背景的標誌版本"
 
-#: js/strings.js:324
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "顯示在瀏覽器分頁和書籤中的小型正方形圖片"
 
-#: js/strings.js:325
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "以逗號分隔、用於文字的字型清單"
 
-#: js/strings.js:326
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "預設文字顏色"
 
-#: js/strings.js:327
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "頁面的背景顏色"
 
-#: js/strings.js:328
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "選取文字的背景顏色"
 
-#: js/strings.js:329
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "與背景形成強烈對比的元素顏色"
 
-#: js/strings.js:330
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "懸停或聚焦元素時的對比顏色"
 
-#: js/strings.js:331
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "使用對比顏色之元素上的文字顏色"
 
-#: js/strings.js:332
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "用於連結和按鈕的主要品牌顏色"
 
-#: js/strings.js:333
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "主要按鈕和醒目區塊的背景顏色"
 
-#: js/strings.js:334
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "懸停或聚焦元素時的主要顏色"
 
-#: js/strings.js:335
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "懸停或聚焦元素時的主要背景顏色"
 
-#: js/strings.js:336
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "用於較不重要連結和按鈕的輔助顏色"
 
-#: js/strings.js:337
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "次要按鈕的背景顏色"
 
-#: js/strings.js:338
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "懸停或聚焦元素時的次要顏色"
 
-#: js/strings.js:339
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "懸停或聚焦元素時的次要背景顏色"
 
-#: js/strings.js:340
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "以 CSS 長度表示的圓角，例如 0.25rem，0 為直角"
 
-#: js/strings.js:341
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "顯示在導覽路徑連結之間的字元"
 
-#: js/strings.js:342
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "聯絡資安團隊的 HTTPS 連結，例如表單"
 
-#: js/strings.js:343
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "用於回報安全性問題的電子郵件地址"
 
-#: js/strings.js:344
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "安全性資訊被視為過時的日期"
 
-#: js/strings.js:345
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "用於加密訊息之公開金鑰的 HTTPS 連結"
 
-#: js/strings.js:346
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "感謝資安研究人員頁面的 HTTPS 連結"
 
-#: js/strings.js:347
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "安全性報告使用的語言代碼，以逗號分隔，例如 en, de"
 
-#: js/strings.js:348
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "發佈 security.txt 檔案的 HTTPS 網址"
 
-#: js/strings.js:349
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "安全性與揭露政策的 HTTPS 連結"
 
-#: js/strings.js:350
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "資安相關職缺的 HTTPS 連結"
 
-#: js/strings.js:351
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "CSAF 提供者中繼資料的 HTTPS 連結"
 
-#: js/strings.js:352
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "新增至 robots.txt 檔案、供網路爬蟲使用的額外規則"
 
-#: js/strings.js:353
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "新增至所有頁面的自訂 CSS 程式碼"
 
-#: js/strings.js:354
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "新增至所有頁面的自訂 JavaScript 程式碼"
 
-#: js/strings.js:355
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "以逗號分隔、用於標題的字型清單"
 
-#: js/strings.js:358
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "姓名"
 
-#: js/strings.js:359
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "公司"
 
-#: js/strings.js:360
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "電話"
 
-#: js/strings.js:361
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "電子郵件"
 
-#: js/strings.js:362
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "主旨"
 
-#: js/strings.js:363
+#: js/strings.js:371
 msgctxt "op"
 msgid "Text"
 msgstr "文字"
 
-#: js/strings.js:364
+#: js/strings.js:372
 msgctxt "op"
 msgid "Text area"
 msgstr "文字區域"
 
-#: js/strings.js:365
+#: js/strings.js:373
 msgctxt "op"
 msgid "Selection"
 msgstr "下拉選單"
 
-#: js/strings.js:366
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "追蹤連結"
 
-#: js/strings.js:367
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "允許索引"
 
-#: js/strings.js:368
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "不追蹤連結"
 
-#: js/strings.js:369
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "禁止索引"
 
-#: js/strings.js:370
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "訂閱"
 
-#: js/strings.js:371
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "一次性付款"
 
-#: js/strings.js:372
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "自動"
 
-#: js/strings.js:373
+#: js/strings.js:381
 msgctxt "op"
 msgid "Badges"
 msgstr "徽章"
 
-#: js/strings.js:374
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "卡片"
 
-#: js/strings.js:375
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "預設"
 
-#: js/strings.js:376
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "結尾"
 
-#: js/strings.js:377
+#: js/strings.js:385
 msgctxt "op"
 msgid "Figures"
 msgstr "數字"
 
-#: js/strings.js:378
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "第一欄"
 
-#: js/strings.js:379
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "第一列"
 
-#: js/strings.js:380
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "第一列和第一欄"
 
-#: js/strings.js:381
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "格狀結尾"
 
-#: js/strings.js:382
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "格狀開頭"
 
-#: js/strings.js:383
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "水平"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "最新"
 
-#: js/strings.js:384
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "清單"
 
-#: js/strings.js:385
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "無"
 
-#: js/strings.js:386
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "最舊"
 
-#: js/strings.js:387
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "位置"
 
-#: js/strings.js:388
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "開頭"
 
-#: js/strings.js:389
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "垂直"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "縮放"
 
-#: js/strings.js:392
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "完成"
 
-#: js/strings.js:393
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "已存在"
 
-#: js/strings.js:396
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "進階"
 
-#: js/strings.js:397
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "主題"
 
-#: js/strings.js:398
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "網站"
 
-#: js/strings.js:399
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "標誌"
 
-#: js/strings.js:400
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "替代標誌"
 
-#: js/strings.js:401
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "圖示"
