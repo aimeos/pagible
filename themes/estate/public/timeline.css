@@ -27,9 +27,9 @@
     position: absolute;
     top: calc(var(--marker) + 0.5rem);
     bottom: calc(0.5rem - var(--gap));
-    inset-inline-start: calc(var(--marker) / 2 - 1px);
-    width: 2px;
-    background-color: var(--pico-muted-border-color);
+    inset-inline-start: calc(var(--marker) / 2 - 0.5px);
+    width: 1px;
+    background-color: var(--pico-contrast-border);
 }
 
 .timeline .marker {
@@ -41,10 +41,13 @@
     justify-content: center;
     width: var(--marker);
     height: var(--marker);
-    border: 2px solid var(--pico-primary);
-    border-radius: 50%;
-    color: #60B0FF;
-    font-weight: 700;
+    background-color: var(--pico-background-color);
+    border: 1px solid var(--pico-contrast);
+    border-radius: 0;
+    color: var(--pico-contrast);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.1);
+    font-weight: 400;
     line-height: 1;
 }
 
@@ -54,14 +57,18 @@
 
 .timeline .label {
     margin: 0 0 0.25rem;
-    color: #60B0FF;
-    font-size: calc(var(--pico-font-size) * 0.75);
+    color: var(--pico-primary);
+    font-size: max(0.75rem, calc(var(--pico-font-size) * 0.65));
     font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .timeline .title {
     margin: 0 0 0.5rem;
-    font-size: calc(var(--pico-font-size) * 1.1);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.25);
+    font-weight: 400;
 }
 
 .timeline .step .cms-text,
@@ -83,10 +90,10 @@
     }
 
     .timeline .layout-horizontal .step:not(:last-child)::before {
-        top: calc(var(--marker) / 2 - 1px);
+        top: calc(var(--marker) / 2 - 0.5px);
         bottom: auto;
         inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
         width: auto;
-        height: 2px;
+        height: 1px;
     }
 }

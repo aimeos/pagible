@@ -27,8 +27,8 @@
     position: absolute;
     top: calc(var(--marker) + 0.5rem);
     bottom: calc(0.5rem - var(--gap));
-    inset-inline-start: calc(var(--marker) / 2 - 1px);
-    width: 2px;
+    inset-inline-start: calc(var(--marker) / 2 - 0.5px);
+    width: 1px;
     background-color: var(--pico-muted-border-color);
 }
 
@@ -41,9 +41,11 @@
     justify-content: center;
     width: var(--marker);
     height: var(--marker);
-    border: 2px solid var(--pico-primary);
-    border-radius: 50%;
-    color: #60B0FF;
+    background-color: var(--pico-contrast);
+    border-radius: 0;
+    color: var(--pico-contrast-inverse);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.1);
     font-weight: 700;
     line-height: 1;
 }
@@ -54,14 +56,19 @@
 
 .timeline .label {
     margin: 0 0 0.25rem;
-    color: #60B0FF;
-    font-size: calc(var(--pico-font-size) * 0.75);
-    font-weight: 600;
+    color: var(--pico-primary);
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: calc(var(--pico-font-size) * 0.7);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .timeline .title {
     margin: 0 0 0.5rem;
-    font-size: calc(var(--pico-font-size) * 1.1);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.2);
+    line-height: 1.2;
 }
 
 .timeline .step .cms-text,
@@ -83,10 +90,10 @@
     }
 
     .timeline .layout-horizontal .step:not(:last-child)::before {
-        top: calc(var(--marker) / 2 - 1px);
+        top: calc(var(--marker) / 2 - 0.5px);
         bottom: auto;
         inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
         width: auto;
-        height: 2px;
+        height: 1px;
     }
 }

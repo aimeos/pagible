@@ -136,6 +136,7 @@
 
 .cards .card-list.layout-badges .title {
     font-size: calc(var(--pico-font-size) * 0.85);
+    letter-spacing: 0.02em;
     line-height: 1.3;
     margin: 0 0 0.25rem;
 }
@@ -153,8 +154,9 @@
 
 .cards .card-list.layout-figures .title {
     color: var(--pico-contrast);
-    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    font-size: clamp(3.5rem, 8vw, 6rem);
     font-weight: 700;
+    letter-spacing: -0.04em;
     line-height: 1;
     margin: 0 0 0.5rem;
 }

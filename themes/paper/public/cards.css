@@ -164,7 +164,8 @@
 .cards .card-list.layout-figures .title {
     color: var(--pico-primary);
     font-size: clamp(2.5rem, 6vw, 3.5rem);
-    font-weight: 700;
+    font-weight: 400;
+    letter-spacing: -0.03em;
     line-height: 1;
     margin: 0 0 0.5rem;
 }

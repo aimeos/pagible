@@ -12,23 +12,29 @@
     padding: 0;
 }
 
+.timeline .steps.layout-vertical {
+    max-width: 50rem;
+    margin-inline: auto;
+}
+
 .timeline .step {
     counter-increment: step;
     position: relative;
     min-height: var(--marker);
     margin: 0;
-    padding-top: 0.4rem;
-    padding-inline-start: calc(var(--marker) + 1.25rem);
+    padding-top: 0.25rem;
+    padding-inline-start: calc(var(--marker) + 1.5rem);
     list-style: none;
 }
 
 .timeline .step:not(:last-child)::before {
     content: "";
     position: absolute;
-    top: calc(var(--marker) + 0.5rem);
-    bottom: calc(0.5rem - var(--gap));
+    top: calc(var(--marker) + 0.75rem);
+    bottom: calc(0.75rem - var(--gap));
     inset-inline-start: calc(var(--marker) / 2 - 1px);
     width: 2px;
+    border-radius: 1px;
     background-color: var(--pico-muted-border-color);
 }
 
@@ -41,10 +47,12 @@
     justify-content: center;
     width: var(--marker);
     height: var(--marker);
-    border: 2px solid var(--pico-primary);
     border-radius: 50%;
-    color: #60B0FF;
-    font-weight: 700;
+    background-color: var(--pico-primary);
+    box-shadow: 0 0 0 0.375rem var(--pico-primary-background), 0 1px 3px #0F172A0A;
+    color: var(--pico-primary-inverse);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 600;
     line-height: 1;
 }
 
@@ -54,20 +62,25 @@
 
 .timeline .label {
     margin: 0 0 0.25rem;
-    color: #60B0FF;
-    font-size: calc(var(--pico-font-size) * 0.75);
-    font-weight: 600;
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.65);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .timeline .title {
     margin: 0 0 0.5rem;
-    font-size: calc(var(--pico-font-size) * 1.1);
+    font-size: calc(var(--pico-font-size) * 1.05);
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .timeline .step .cms-text,
 .timeline .step .cms-text p {
     margin-bottom: 0;
     color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
 }
 
 @media (min-width: 768px) {
@@ -78,14 +91,14 @@
     }
 
     .timeline .layout-horizontal .step {
-        padding-top: calc(var(--marker) + 1rem);
+        padding-top: calc(var(--marker) + 1.25rem);
         padding-inline-start: 0;
     }
 
     .timeline .layout-horizontal .step:not(:last-child)::before {
         top: calc(var(--marker) / 2 - 1px);
         bottom: auto;
-        inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
+        inset-inline: calc(var(--marker) + 0.75rem) calc(0.75rem - var(--gap));
         width: auto;
         height: 2px;
     }

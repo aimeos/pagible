@@ -29,7 +29,7 @@
     bottom: calc(0.5rem - var(--gap));
     inset-inline-start: calc(var(--marker) / 2 - 1px);
     width: 2px;
-    background-color: var(--pico-muted-border-color);
+    background: linear-gradient(var(--pico-primary-background), var(--pico-contrast-border));
 }
 
 .timeline .marker {
@@ -41,10 +41,14 @@
     justify-content: center;
     width: var(--marker);
     height: var(--marker);
-    border: 2px solid var(--pico-primary);
-    border-radius: 50%;
-    color: #60B0FF;
-    font-weight: 700;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: 9999px;
+    box-shadow: 0 0 1.25rem -0.25rem var(--pico-primary-background);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    color: var(--pico-primary);
+    font-weight: 500;
     line-height: 1;
 }
 
@@ -54,20 +58,23 @@
 
 .timeline .label {
     margin: 0 0 0.25rem;
-    color: #60B0FF;
+    color: var(--pico-primary);
     font-size: calc(var(--pico-font-size) * 0.75);
-    font-weight: 600;
+    font-weight: 500;
+    letter-spacing: 0.04em;
 }
 
 .timeline .title {
     margin: 0 0 0.5rem;
     font-size: calc(var(--pico-font-size) * 1.1);
+    font-weight: 500;
 }
 
 .timeline .step .cms-text,
 .timeline .step .cms-text p {
     margin-bottom: 0;
     color: var(--pico-muted-color);
+    font-weight: 300;
 }
 
 @media (min-width: 768px) {
@@ -88,5 +95,6 @@
         inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
         width: auto;
         height: 2px;
+        background: linear-gradient(90deg, var(--pico-primary-background), var(--pico-contrast-border));
     }
 }

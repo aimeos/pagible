@@ -3,8 +3,8 @@
  */
 
 .timeline .steps {
-    --marker: 2.5rem;
-    --gap: 2rem;
+    --marker: 2.75rem;
+    --gap: 2.5rem;
     counter-reset: step;
     display: grid;
     gap: var(--gap);
@@ -17,18 +17,18 @@
     position: relative;
     min-height: var(--marker);
     margin: 0;
-    padding-top: 0.4rem;
-    padding-inline-start: calc(var(--marker) + 1.25rem);
+    padding-top: 0.35rem;
+    padding-inline-start: calc(var(--marker) + 1.5rem);
     list-style: none;
 }
 
 .timeline .step:not(:last-child)::before {
     content: "";
     position: absolute;
-    top: calc(var(--marker) + 0.5rem);
-    bottom: calc(0.5rem - var(--gap));
-    inset-inline-start: calc(var(--marker) / 2 - 1px);
-    width: 2px;
+    top: calc(var(--marker) + 0.75rem);
+    bottom: calc(0.75rem - var(--gap));
+    inset-inline-start: calc(var(--marker) / 2);
+    width: 1px;
     background-color: var(--pico-muted-border-color);
 }
 
@@ -41,27 +41,34 @@
     justify-content: center;
     width: var(--marker);
     height: var(--marker);
-    border: 2px solid var(--pico-primary);
-    border-radius: 50%;
-    color: #60B0FF;
-    font-weight: 700;
+    border: 1px solid var(--pico-secondary);
+    border-radius: 0;
+    background-color: var(--pico-contrast-background);
+    color: var(--pico-color);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 0.95);
+    font-weight: 400;
     line-height: 1;
 }
 
 .timeline .marker::before {
-    content: counter(step);
+    content: counter(step, decimal-leading-zero);
 }
 
 .timeline .label {
-    margin: 0 0 0.25rem;
-    color: #60B0FF;
-    font-size: calc(var(--pico-font-size) * 0.75);
-    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--pico-secondary);
+    font-size: calc(var(--pico-font-size) * 0.62);
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
 }
 
 .timeline .title {
     margin: 0 0 0.5rem;
-    font-size: calc(var(--pico-font-size) * 1.1);
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.15);
+    font-weight: 400;
 }
 
 .timeline .step .cms-text,
@@ -72,21 +79,21 @@
 
 @media (min-width: 768px) {
     .timeline .steps.layout-horizontal {
-        --gap: 1.5rem;
+        --gap: 2rem;
         grid-auto-columns: minmax(0, 1fr);
         grid-auto-flow: column;
     }
 
     .timeline .layout-horizontal .step {
-        padding-top: calc(var(--marker) + 1rem);
+        padding-top: calc(var(--marker) + 1.5rem);
         padding-inline-start: 0;
     }
 
     .timeline .layout-horizontal .step:not(:last-child)::before {
-        top: calc(var(--marker) / 2 - 1px);
+        top: calc(var(--marker) / 2);
         bottom: auto;
-        inset-inline: calc(var(--marker) + 0.5rem) calc(0.5rem - var(--gap));
+        inset-inline: calc(var(--marker) + 1rem) calc(1rem - var(--gap));
         width: auto;
-        height: 2px;
+        height: 1px;
     }
 }
