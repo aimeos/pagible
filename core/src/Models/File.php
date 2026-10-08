@@ -467,7 +467,7 @@ class File extends Base
      */
     public function fetchUrl( string $url, ?DriverInterface $driver = null )
     {
-        $response = Utils::http( $url, ['stream' => true] );
+        $response = Utils::http( $url, ['stream' => true], ['User-Agent' => 'Pagible/1.0 (+https://pagible.com)'] );
 
         if( !$response->successful() ) {
             throw new \Aimeos\Cms\InvalidException( sprintf( 'Failed to download "%s"', $url ) );

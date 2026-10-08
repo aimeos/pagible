@@ -254,6 +254,7 @@ export default {
         <v-col cols="12" md="6">
           <v-text-field
             ref="path"
+            class="path"
             :rules="pathRules"
             :error="!!(messages.path || []).length"
             :error-messages="messages.path"
@@ -363,5 +364,9 @@ export default {
 
 :deep(.v-text-field--prefixed.v-text-field .v-field:not(.v-field--reverse) .v-field__input) {
   --v-field-padding-start: 0;
+}
+
+.path :deep(.v-field__input) {
+  padding-inline: 0;
 }
 </style>
