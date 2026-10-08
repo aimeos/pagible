@@ -11,6 +11,7 @@ providers:
   - Aimeos\Cms\PaperServiceProvider
   - Aimeos\Cms\PremiumServiceProvider
   - Aimeos\Cms\PulseServiceProvider
+  - Aimeos\Cms\SolarServiceProvider
   - Aimeos\Cms\SolidServiceProvider
   - Aimeos\Cms\StyleServiceProvider
   - Aimeos\Cms\TasteServiceProvider
