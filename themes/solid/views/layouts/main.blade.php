@@ -80,26 +80,26 @@
                 ]
             }
             @endif
-            @if($contractor = $page->ancestorsAndSelf->reverse()->map(fn($item) => cms($item, 'config.solid::contractor.data'))->first(fn($data) => $data))
+            @if($business = $page->ancestorsAndSelf->reverse()->map(fn($item) => cms($item, 'config.solid::business.data'))->first(fn($data) => $data))
             ,{
                 "@@context": "https://schema.org",
-                "@@type": {!! cmsjson($contractor->{'business-type'} ?? 'GeneralContractor') !!},
-                "name": {!! cmsjson($contractor->name ?? '') !!},
+                "@@type": {!! cmsjson($business->{'business-type'} ?? 'GeneralContractor') !!},
+                "name": {!! cmsjson($business->name ?? '') !!},
                 "url": {!! cmsjson(url('/')) !!},
                 "address": {
                     "@@type": "PostalAddress",
-                    "streetAddress": {!! cmsjson($contractor->{'street-address'} ?? '') !!},
-                    "postalCode": {!! cmsjson($contractor->{'postal-code'} ?? '') !!},
-                    "addressLocality": {!! cmsjson($contractor->locality ?? '') !!},
-                    "addressCountry": {!! cmsjson($contractor->country ?? '') !!}
+                    "streetAddress": {!! cmsjson($business->{'street-address'} ?? '') !!},
+                    "postalCode": {!! cmsjson($business->{'postal-code'} ?? '') !!},
+                    "addressLocality": {!! cmsjson($business->locality ?? '') !!},
+                    "addressCountry": {!! cmsjson($business->country ?? '') !!}
                 },
                 "areaServed": [
-                    @foreach(array_values(array_filter(array_map('trim', explode(',', (string) ($contractor->area ?? ''))))) as $place)
+                    @foreach(array_values(array_filter(array_map('trim', explode(',', (string) ($business->area ?? ''))))) as $place)
                     {"@@type": "Place", "name": {!! cmsjson($place) !!}}@if(!$loop->last),@endif
                     @endforeach
                 ],
                 "openingHoursSpecification": [
-                    @foreach(array_values((array) ($contractor->hours ?? [])) as $hours)
+                    @foreach(array_values((array) ($business->hours ?? [])) as $hours)
                     {
                         "@@type": "OpeningHoursSpecification",
                         "dayOfWeek": {!! cmsjson('https://schema.org/' . ($hours->day ?? '')) !!},
@@ -108,13 +108,13 @@
                     }@if(!$loop->last),@endif
                     @endforeach
                 ],
-                @if($contractor->email ?? null)
-                "email": {!! cmsjson($contractor->email) !!},
+                @if($business->email ?? null)
+                "email": {!! cmsjson($business->email) !!},
                 @endif
-                @if($contractor->{'price-range'} ?? null)
-                "priceRange": {!! cmsjson($contractor->{'price-range'}) !!},
+                @if($business->{'price-range'} ?? null)
+                "priceRange": {!! cmsjson($business->{'price-range'}) !!},
                 @endif
-                "telephone": {!! cmsjson($contractor->telephone ?? '') !!}
+                "telephone": {!! cmsjson($business->telephone ?? '') !!}
             }
             @endif
             ]
@@ -248,20 +248,20 @@
                 <span class="copyright">
                     &copy; {{ date('Y') }} {{ cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}
                 </span>
-                @if($contractor)
+                @if($business)
                     <span class="contact">
-                        @if($tel = preg_replace('/[^+0-9]/', '', (string) ($contractor->telephone ?? '')))
-                            <a href="tel:{{ $tel }}">{{ $contractor->telephone }}</a>
+                        @if($tel = preg_replace('/[^+0-9]/', '', (string) ($business->telephone ?? '')))
+                            <a href="tel:{{ $tel }}">{{ $business->telephone }}</a>
                         @endif
-                        @if($contractor->email ?? null)
-                            <a href="mailto:{{ $contractor->email }}">{{ $contractor->email }}</a>
+                        @if($business->email ?? null)
+                            <a href="mailto:{{ $business->email }}">{{ $business->email }}</a>
                         @endif
                     </span>
                 @endif
             </div>
         </footer>
 
-        @if(($contractor->{'call-button'} ?? true) && ($tel = preg_replace('/[^+0-9]/', '', (string) ($contractor->telephone ?? ''))))
+        @if(($business->{'call-button'} ?? true) && ($tel = preg_replace('/[^+0-9]/', '', (string) ($business->telephone ?? ''))))
             <a class="call-button" href="tel:{{ $tel }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                     <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>

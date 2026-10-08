@@ -72,7 +72,7 @@ class SolidDemoTest extends ThemeTestAbstract
     {
         $home = Page::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
-        $config->{'solid::contractor'}->data->{'call-button'} = false;
+        $config->{'solid::business'}->data->{'call-button'} = false;
         $home->config = $config;
         $home->saveQuietly();
 

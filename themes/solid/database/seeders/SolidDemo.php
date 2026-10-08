@@ -385,8 +385,8 @@ class SolidDemo extends AbstractDemo
         $config = [
             'website' => Validation::entry( 'website', ['title' => 'Brickline Build & Renovation'], 'config' ),
         ] + $this->logos( $this->logoFile() ) + [
-            'solid::contractor' => [
-                'type' => 'solid::contractor',
+            'solid::business' => [
+                'type' => 'solid::business',
                 'files' => [],
                 'data' => [
                     'name' => 'Brickline Build & Renovation Ltd',

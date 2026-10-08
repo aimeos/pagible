@@ -29,7 +29,7 @@ Use a sturdy, no-nonsense layout that builds trust with homeowners. Put services
 - Process: a horizontal timeline from site visit to handover.
 - Projects: `blog` pages below the projects page, each with an article, key figures, a before/after comparison of same-sized photos, a vertical phase timeline and a slideshow.
 - Contact: a contact form with a project type select and attachments for photos or drawings.
-- Business details: the `contractor` config adds the local business JSON-LD and the call button for phones.
+- Business details: the `business` config adds the local business JSON-LD and the call button for phones.
 
 ## Accessibility
 

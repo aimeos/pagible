@@ -25,7 +25,7 @@
         }
     },
     "config": {
-        "contractor": {
+        "business": {
             "group": "basic",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M2 22V20H4V12L2 13.5L.8 11.9L12 3.5L23.2 11.9L22 13.5L20 12V20H22V22H2M6 20H11V15H13V20H18V10.5L12 6L6 10.5V20Z\"/></svg>",
             "fields": {
