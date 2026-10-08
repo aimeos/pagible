@@ -324,6 +324,35 @@
                 }
             }
         },
+        "before-after": {
+            "group": "media",
+            "description": "Slider comparing two images before and after a change",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19,3H14V5H19V18L14,12V21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10,18H5L10,12M10,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H10V23H12V1H10V3Z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string",
+                    "hint": "Optional headline shown above the comparison"
+                },
+                "before": {
+                    "type": "image",
+                    "label": "before image",
+                    "hint": "Image showing the state before the change",
+                    "required": true
+                },
+                "after": {
+                    "type": "image",
+                    "label": "after image",
+                    "hint": "Image showing the result, both images should have the same size",
+                    "required": true
+                },
+                "main": {
+                    "type": "switch",
+                    "label": "load immediately",
+                    "hint": "Load the images without delay if they are visible at the top of the page",
+                    "default": false
+                }
+            }
+        },
         "video": {
             "group": "media",
             "description": "Embedded video with player controls",
@@ -467,6 +496,25 @@
                 "title": {
                     "type": "string",
                     "hint": "Optional headline shown above the cards"
+                },
+                "layout": {
+                    "type": "select",
+                    "hint": "Show cards, small badges like certificates or large figures like key numbers",
+                    "default": "cards",
+                    "options": [
+                        {
+                            "value": "cards",
+                            "label": "Cards"
+                        },
+                        {
+                            "value": "badges",
+                            "label": "Badges"
+                        },
+                        {
+                            "value": "figures",
+                            "label": "Figures"
+                        }
+                    ]
                 },
                 "columns": {
                     "type": "select",
@@ -952,6 +1000,52 @@
                 }
             }
         },
+        "timeline": {
+            "group": "content",
+            "description": "Numbered steps or events in chronological order",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M5,3A2,2 0 1,1 5,7A2,2 0 1,1 5,3M5,10A2,2 0 1,1 5,14A2,2 0 1,1 5,10M5,17A2,2 0 1,1 5,21A2,2 0 1,1 5,17M4.25,7H5.75V10H4.25V7M4.25,14H5.75V17H4.25V14M9,4H21V6H9V4M9,11H21V13H9V11M9,18H18V20H9V18Z\" /></svg>",
+            "fields": {
+                "title": {
+                    "type": "string",
+                    "hint": "Optional headline shown above the timeline"
+                },
+                "layout": {
+                    "type": "select",
+                    "hint": "Show the steps one below the other or side by side, side by side suits up to five steps",
+                    "default": "vertical",
+                    "options": [
+                        {
+                            "value": "vertical",
+                            "label": "Vertical"
+                        },
+                        {
+                            "value": "horizontal",
+                            "label": "Horizontal"
+                        }
+                    ]
+                },
+                "items": {
+                    "type": "items",
+                    "hint": "Steps or events in the order they happen",
+                    "required": true,
+                    "item": {
+                        "label": {
+                            "type": "string",
+                            "hint": "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+                        },
+                        "title": {
+                            "type": "string",
+                            "hint": "Name of the step or event",
+                            "required": true
+                        },
+                        "text": {
+                            "type": "markdown",
+                            "hint": "Description of the step or event"
+                        }
+                    }
+                }
+            }
+        },
         "toc": {
             "group": "content",
             "description": "Table of contents linking to page headings",
@@ -969,7 +1063,7 @@
         },
         "contact": {
             "group": "forms",
-            "description": "Contact form with configurable fields",
+            "description": "Contact form with configurable fields and optional file attachments",
             "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M13 19C13 18.66 13.04 18.33 13.09 18H4V8L12 13L20 8V13.09C20.72 13.21 21.39 13.46 22 13.81V6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H13.09C13.04 19.67 13 19.34 13 19M20 6L12 11L4 6H20M20 22V20H16V18H20V16L23 19L20 22Z\" /></svg>",
             "fields": {
                 "title": {
@@ -1029,8 +1123,42 @@
                             "label": "Required",
                             "hint": "Visitors must fill out this field",
                             "default": false
+                        },
+                        "input": {
+                            "type": "select",
+                            "label": "Input type",
+                            "hint": "Type of input shown to visitors",
+                            "default": "text",
+                            "options": [
+                                {
+                                    "value": "text",
+                                    "label": "Text"
+                                },
+                                {
+                                    "value": "textarea",
+                                    "label": "Text area"
+                                },
+                                {
+                                    "value": "select",
+                                    "label": "Selection"
+                                }
+                            ]
+                        },
+                        "options": {
+                            "type": "plaintext",
+                            "label": "Choices",
+                            "hint": "Choices for selection inputs, one per line",
+                            "max": 1300
                         }
                     }
+                },
+                "attachments": {
+                    "type": "number",
+                    "label": "Attachments",
+                    "hint": "Maximum number of images or PDF files visitors can attach, 0 disables uploads",
+                    "min": 0,
+                    "max": 5,
+                    "default": 0
                 }
             }
         }

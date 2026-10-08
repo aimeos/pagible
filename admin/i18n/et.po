@@ -2456,715 +2456,760 @@ msgstr "slaidiesitlus"
 
 #: js/strings.js:59
 msgctxt "st"
+msgid "before-after"
+msgstr "enne-pärast"
+
+#: js/strings.js:60
+msgctxt "st"
 msgid "code"
 msgstr "kood"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "table"
 msgstr "tabel"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "map"
 msgstr "kaart"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "image"
 msgstr "pilt"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "video"
 msgstr "video"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "file"
 msgstr "fail"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "cards"
 msgstr "Kaardid"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "blog"
 msgstr "Blogi"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "article"
 msgstr "Artikkel"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "questions"
 msgstr "KKK"
 
-#: js/strings.js:73
+#: js/strings.js:74
+msgctxt "st"
+msgid "timeline"
+msgstr "Ajajoon"
+
+#: js/strings.js:75
 msgctxt "st"
 msgid "toc"
 msgstr "sisukord"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "kontakt"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metasildid"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "Sotsiaalmeedia"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanooniline URL"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "Otsingumootorid"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "Teema"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "stiilid"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "Uudised"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "Hinnaplaanid"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:86
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "Turvalisus"
 
-#: js/strings.js:87
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "Arvamused"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Jaotise pealkiri tasemetel H1 kuni H6"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Vormindatud tekst lõikude, loendite ja linkidega"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Pilt vormindatud teksti kõrval"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Lähtekood süntaksi esiletõstuga"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Andmetabel valikulise päiserea või -veeruga"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktiivne kaart asukoha, teksti ja lingiga"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Kohandatud HTML manustuste ja vidinate jaoks"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Üksik kohanduv pilt"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Vahetuvad slaidid mitme pildiga"
 
-#: js/strings.js:99
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Liugur, mis võrdleb kahte pilti enne ja pärast muudatust"
+
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Manustatud video esitusnuppudega"
 
-#: js/strings.js:100
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Manustatud heli esitusnuppudega"
 
-#: js/strings.js:101
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Allalaaditav fail, näiteks PDF-dokument"
 
-#: js/strings.js:102
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Suur sissejuhatus pealkirja, teksti, nuppude ja taustaga"
 
-#: js/strings.js:103
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Tegevusele kutse teksti ja nuppudega"
 
-#: js/strings.js:104
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Kaartide ruudustik pildi, pealkirja ja tekstiga"
 
-#: js/strings.js:105
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Klientide tsitaadid nime, rolli ja fotoga"
 
-#: js/strings.js:106
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Artikli sissejuhatus pildigalerii ja autoriga"
 
-#: js/strings.js:107
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Ülemlehe blogiartiklite loend"
 
-#: js/strings.js:108
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Ülemlehe uudisteartiklite loend"
 
-#: js/strings.js:109
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Esiletõstetud alamleht, millele järgnevad teised alamlehed"
 
-#: js/strings.js:110
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Hinnapaketid tellimuste või ühekordsete maksetega"
 
-#: js/strings.js:111
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Korduma kippuvad küsimused koos vastustega"
 
-#: js/strings.js:112
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Nummerdatud sammud või sündmused ajalises järjekorras"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Sisukord linkidega lehe pealkirjadele"
 
-#: js/strings.js:113
+#: js/strings.js:117
 msgctxt "sd"
-msgid "Contact form with configurable fields"
-msgstr "Kontaktivorm seadistatavate väljadega"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "Kontaktivorm seadistatavate väljade ja valikuliste failimanustega"
 
-#: js/strings.js:116
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "nupp"
 
-#: js/strings.js:117
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "nupud"
 
-#: js/strings.js:118
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "Kaardid"
 
-#: js/strings.js:119
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "kirjeldus"
 
-#: js/strings.js:120
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "fail"
 
-#: js/strings.js:121
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "failid"
 
-#: js/strings.js:122
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "Linkide järgimine"
 
-#: js/strings.js:123
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "päis"
 
-#: js/strings.js:124
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "Indekseerimine"
 
-#: js/strings.js:125
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "märksõnad"
 
-#: js/strings.js:126
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "keel"
 
-#: js/strings.js:127
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "silt"
 
-#: js/strings.js:128
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "tase"
 
-#: js/strings.js:129
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "piirang"
 
-#: js/strings.js:130
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "asukoht"
 
-#: js/strings.js:131
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "Põhipilt"
 
-#: js/strings.js:132
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "järjekord"
 
-#: js/strings.js:133
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Ülemleht"
 
-#: js/strings.js:134
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "positsioon"
 
-#: js/strings.js:135
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "tekst"
 
-#: js/strings.js:136
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "tabel"
 
-#: js/strings.js:137
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "pealkiri"
 
-#: js/strings.js:138
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:140
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "pilt"
 
-#: js/strings.js:141
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "pildid"
 
-#: js/strings.js:142
+#: js/strings.js:146
+msgctxt "fn"
+msgid "before image"
+msgstr "enne-pilt"
+
+#: js/strings.js:147
+msgctxt "fn"
+msgid "after image"
+msgstr "pärast-pilt"
+
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "üksused"
 
-#: js/strings.js:143
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "sissejuhatus"
 
-#: js/strings.js:144
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "laadi kohe"
 
-#: js/strings.js:145
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "lähtekood"
 
-#: js/strings.js:146
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Avaliku osa juurdepääsuroll"
 
-#: js/strings.js:147
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Maksehinnad"
 
-#: js/strings.js:148
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Makseviide"
 
-#: js/strings.js:149
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "Valuuta"
 
-#: js/strings.js:150
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Arveldusintervall"
 
-#: js/strings.js:151
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Hinnaühik"
 
-#: js/strings.js:152
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Sihtleht või link"
 
-#: js/strings.js:153
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Vormi väljad"
 
-#: js/strings.js:154
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "Väli"
 
-#: js/strings.js:155
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "Kohustuslik"
 
-#: js/strings.js:156
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Input type"
+msgstr "Sisestuse tüüp"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Choices"
+msgstr "Valikud"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Manused"
+
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "Lingi tekst"
 
-#: js/strings.js:157
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kontakti URL"
 
-#: js/strings.js:158
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kontakti e-posti aadress"
 
-#: js/strings.js:159
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "Kirjeldus"
 
-#: js/strings.js:160
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Kuvatav hind"
 
-#: js/strings.js:161
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galerii"
 
-#: js/strings.js:162
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Esiletõstu tekst"
 
-#: js/strings.js:163
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Esile tõstetud"
 
-#: js/strings.js:164
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "Keel"
 
-#: js/strings.js:165
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Maksetüüp"
 
-#: js/strings.js:166
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Eelistatud keeled"
 
-#: js/strings.js:167
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Alapealkiri"
 
-#: js/strings.js:168
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Tänuavaldused"
 
-#: js/strings.js:169
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "Summa"
 
-#: js/strings.js:170
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "Taust"
 
-#: js/strings.js:171
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "Taustaanimatsioon"
 
-#: js/strings.js:172
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatiivne nupp"
 
-#: js/strings.js:173
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanooniline URL"
 
-#: js/strings.js:174
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "Veerud"
 
-#: js/strings.js:175
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:176
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "Krüpteerimine"
 
-#: js/strings.js:177
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "Aegumiskuupäev"
 
-#: js/strings.js:178
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "Omadused"
 
-#: js/strings.js:179
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "Värbamine"
 
-#: js/strings.js:180
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "Paigutus"
 
-#: js/strings.js:181
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "Nimi"
 
-#: js/strings.js:182
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "Turvapoliitika"
 
-#: js/strings.js:183
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "Suhe"
 
-#: js/strings.js:184
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "Amet"
 
-#: js/strings.js:185
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Alapealkiri"
 
-#: js/strings.js:186
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatiivne link"
 
-#: js/strings.js:188
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Tekstifont"
 
-#: js/strings.js:189
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Pealkirjafont"
 
-#: js/strings.js:190
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Teksti värv"
 
-#: js/strings.js:191
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Tausta värv"
 
-#: js/strings.js:192
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Valiku värv"
 
-#: js/strings.js:193
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrastvärv"
 
-#: js/strings.js:194
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontrastvärv hõljutamisel"
 
-#: js/strings.js:195
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrasti tekstivärv"
 
-#: js/strings.js:196
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Põhivärv"
 
-#: js/strings.js:197
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Põhitaust"
 
-#: js/strings.js:198
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Põhivärv hõljutamisel"
 
-#: js/strings.js:199
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Põhitaust hõljutamisel"
 
-#: js/strings.js:200
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Teisene värv"
 
-#: js/strings.js:201
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Teisene taust"
 
-#: js/strings.js:202
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Teisene värv hõljutamisel"
 
-#: js/strings.js:203
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Teisene taust hõljutamisel"
 
-#: js/strings.js:204
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Nurgaraadius"
 
-#: js/strings.js:205
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Teekonnaviida eraldaja"
 
-#: js/strings.js:208
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Pealkirja tekst"
 
-#: js/strings.js:209
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3172,452 +3217,532 @@ msgstr ""
 "Tase 1 on lehe põhipealkiri, kõrgemad tasemed struktureerivad allolevaid "
 "jaotisi"
 
-#: js/strings.js:210
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Vormindatud tekst lõikude, loendite ja linkidega"
 
-#: js/strings.js:211
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Pildi kõrval kuvatav vormindatud tekst"
 
-#: js/strings.js:212
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Teksti kõrval kuvatav pilt"
 
-#: js/strings.js:213
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Pildi asukoht teksti suhtes"
 
-#: js/strings.js:214
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Pildi ja teksti laiuse suhe"
 
-#: js/strings.js:215
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Süntaksi esiletõstuks kasutatav programmeerimiskeel"
 
-#: js/strings.js:216
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Lähtekood süntaksi esiletõstuga"
 
-#: js/strings.js:217
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Valikuline pealdis tabeli kohal"
 
-#: js/strings.js:218
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr "Kasutage tabelipäisena esimest rida, esimest veergu või mõlemat"
 
-#: js/strings.js:219
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Sisestage andmed lahtritesse; lisage või eemaldage ridu ja veerge vastavalt "
 "vajadusele"
 
-#: js/strings.js:220
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Valikuline pealkiri kaardi kohal"
 
-#: js/strings.js:221
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Kaardi kõrval kuvatav kirjeldus, nt aadress või teejuhis"
 
-#: js/strings.js:222
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Otsige kohta või klõpsake kaardil, et määrata asukoht"
 
-#: js/strings.js:223
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Lingi tekst, mis avab asukoha kaarditeenuses"
 
-#: js/strings.js:224
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "Lehele muutmata kujul lisatav HTML-kood, nt manustuste ja vidinate jaoks"
 
-#: js/strings.js:225
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Pilt kogu sisuala laiuses"
 
-#: js/strings.js:226
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "Laadi pilt viivituseta, kui see on lehe algul nähtav"
 
-#: js/strings.js:227
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Valikuline pealkiri slaidiesitluse kohal"
 
-#: js/strings.js:228
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Üksteise järel kuvatavad pildid, järjestuse muutmiseks lohistage"
 
-#: js/strings.js:229
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Laadi esimene pilt viivituseta, kui see on lehe algul nähtav"
 
-#: js/strings.js:230
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Valikuline pealkiri võrdluse kohal"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Pilt, mis näitab olukorda enne muudatust"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "Pilt, mis näitab tulemust, mõlemad pildid peaksid olema sama suurusega"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid ""
+"Load the images without delay if they are visible at the top of the page"
+msgstr "Laadi pildid viivituseta, kui need on lehe ülaosas nähtavad"
+
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Lehel esitatav videofail"
 
-#: js/strings.js:231
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Lehel esitatav helifail"
 
-#: js/strings.js:232
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Allalaadimiseks pakutav fail"
 
-#: js/strings.js:233
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Lehe põhipealkiri"
 
-#: js/strings.js:234
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Lühike rida pealkirja kohal"
 
-#: js/strings.js:235
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Sissejuhatus pealkirja all"
 
-#: js/strings.js:236
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Leht või link, kuhu peanupp suunab"
 
-#: js/strings.js:237
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Peanupu tekst"
 
-#: js/strings.js:238
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Leht või link, kuhu teine nupp suunab"
 
-#: js/strings.js:239
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Teise nupu tekst"
 
-#: js/strings.js:240
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Teksti taga kuvatav pilt"
 
-#: js/strings.js:241
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Taustapildi animatsiooniefekt"
 
-#: js/strings.js:242
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Teksti kõrval kuvatavad pildid"
 
-#: js/strings.js:243
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Külastajate tähelepanu köitev pealkiri"
 
-#: js/strings.js:244
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Külastajaid tegutsema õhutav tekst"
 
-#: js/strings.js:245
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Nupud, mis suunavad külastajaid järgmise sammuni"
 
-#: js/strings.js:246
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Nupu tekst"
 
-#: js/strings.js:247
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Leht või link, kuhu nupp suunab"
 
-#: js/strings.js:248
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Valikuline pealkiri kaartide kohal"
 
-#: js/strings.js:249
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Kaartide arv rea kohta, \"auto\" kohandub ekraani laiusega"
 
-#: js/strings.js:250
+#: js/strings.js:263
+msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Kuva kaarte, väikseid märke nagu sertifikaadid või suuri arve nagu "
+"põhinäitajad"
+
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Ruudustikus kuvatavad kaardid"
 
-#: js/strings.js:251
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Kaardi pealkiri"
 
-#: js/strings.js:252
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Kaardi ülaosas kuvatav pilt"
 
-#: js/strings.js:253
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Kaardi tekst"
 
-#: js/strings.js:254
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Leht või link, kuhu kaart suunab"
 
-#: js/strings.js:255
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Valikuline pealkiri tsitaatide kohal"
 
-#: js/strings.js:256
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Klientide või partnerite tsitaadid"
 
-#: js/strings.js:257
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Isiku tsitaat"
 
-#: js/strings.js:258
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Isiku nimi"
 
-#: js/strings.js:259
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Isiku ametikoht või ettevõte"
 
-#: js/strings.js:260
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Isiku foto"
 
-#: js/strings.js:261
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Artikli sissejuhatus lehe pealkirja all"
 
-#: js/strings.js:262
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Artikli pildid, esimest kasutatakse eelvaatepildina"
 
-#: js/strings.js:263
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Artikli autori nimi"
 
-#: js/strings.js:264
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Link autori profiililehele"
 
-#: js/strings.js:265
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Valikuline pealkiri loendi kohal"
 
-#: js/strings.js:266
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Kuva lehed kaartide või kompaktse loendina"
 
-#: js/strings.js:267
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Leht, mille alamlehti loetletakse"
 
-#: js/strings.js:268
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Loetletud lehtede sorteerimisjärjestus"
 
-#: js/strings.js:269
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Korraga kuvatavate lehtede maksimaalne arv"
 
-#: js/strings.js:270
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "Kuva ülejäänud alamlehed kaartide või kompaktse loendina"
 
-#: js/strings.js:271
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Valikuline pealkiri hinnapakettide kohal"
 
-#: js/strings.js:272
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Lühike tekst pealkirja all"
 
-#: js/strings.js:273
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Kõrvuti kuvatavad hinnapaketid"
 
-#: js/strings.js:274
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Hinnapaketi nimi"
 
-#: js/strings.js:275
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Roll, mis antakse kliendile pärast maksmist kaitstud lehtedele juurdepääsuks"
 
-#: js/strings.js:276
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Paketi hinnad, nt kuu- ja aastahind"
 
-#: js/strings.js:277
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Korduv tellimus või ühekordne makse"
 
-#: js/strings.js:278
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "Päevade arv kahe makse vahel, nt 30 igakuise puhul"
 
-#: js/strings.js:279
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Kolmetäheline ISO valuutakood, nt EUR või USD"
 
-#: js/strings.js:280
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "Maksepakkuja kasutatav hinna ID või summa"
 
-#: js/strings.js:281
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Külastajatele kuvatav vormindatud hind, nt 9,99 €"
 
-#: js/strings.js:282
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Numbriline hind, kui vormindatud hinda pole määratud"
 
-#: js/strings.js:283
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Hinna järel kuvatav tekst, nt kuus"
 
-#: js/strings.js:284
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Hinnapaketi lühikirjeldus"
 
-#: js/strings.js:285
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Paketi funktsioonide loend"
 
-#: js/strings.js:286
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Rõhuta seda paketti teiste seas"
 
-#: js/strings.js:287
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Lühike silt esiletõstetud paketil, nt Populaarne"
 
-#: js/strings.js:288
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Valikuline pealkiri küsimuste kohal"
 
-#: js/strings.js:289
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Küsimused ja vastused laienevas loendis"
 
-#: js/strings.js:290
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Külastajate küsimus"
 
-#: js/strings.js:291
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Vastus küsimusele"
 
-#: js/strings.js:292
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Valikuline pealkiri ajajoone kohal"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "Näita samme üksteise all või kõrvuti, kõrvuti sobib kuni viie sammu jaoks"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Sammud või sündmused nende toimumise järjekorras"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Valikuline kuupäev, periood või etapp pealkirja kohal, nt 2024 või Nädal 1"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Sammu või sündmuse nimi"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Sammu või sündmuse kirjeldus"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Valikuline pealkiri sisukorra kohal"
 
-#: js/strings.js:293
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Valikuline pealkiri kontaktivormi kohal"
 
-#: js/strings.js:294
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Valikuline tekst pealkirja ja kontaktivormi vahel"
 
-#: js/strings.js:295
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Külastajatele selles järjekorras kuvatavad vormi väljad"
 
-#: js/strings.js:296
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Valige vormi väli või sisestage oma nimi"
 
-#: js/strings.js:297
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Külastajad peavad selle välja täitma"
 
-#: js/strings.js:298
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "Külastajatele kuvatava sisestuse tüüp"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Valikuväljade valikud, üks rea kohta"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid ""
+"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr ""
+"Piltide või PDF-failide maksimaalne arv, mida külastajad saavad lisada, 0 "
+"keelab üleslaadimise"
+
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3626,387 +3751,422 @@ msgstr ""
 "Lehe kokkuvõte, mida kuvatakse otsingutulemustes, soovitatavalt 150–160 "
 "tähemärki"
 
-#: js/strings.js:299
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Komadega eraldatud lehte kirjeldavate märksõnade loend"
 
-#: js/strings.js:300
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Pealkiri, mida kuvatakse lehte sotsiaalmeedias jagades"
 
-#: js/strings.js:301
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "Kokkuvõte, mida kuvatakse lehte sotsiaalmeedias jagades"
 
-#: js/strings.js:302
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "Eelvaatepilt, mida kuvatakse lehte sotsiaalmeedias jagades"
 
-#: js/strings.js:303
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Algne URL, kui sama sisu on saadaval mitmel aadressil"
 
-#: js/strings.js:304
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Luba või keela otsingumootoritel selle lehe indekseerimine"
 
-#: js/strings.js:305
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr "Luba või keela otsingumootoritel selle lehe linkide järgimine"
 
-#: js/strings.js:306
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "Veebisaidi nimi, mida kuvatakse brauseri sakil ja otsingutulemustes"
 
-#: js/strings.js:307
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Lehe päises kuvatav logo"
 
-#: js/strings.js:308
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Tumeda tausta jaoks kasutatav logovariant"
 
-#: js/strings.js:309
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "Väike ruudukujuline pilt brauseri sakkidel ja järjehoidjatel"
 
-#: js/strings.js:310
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Komadega eraldatud teksti jaoks kasutatavate fontide loend"
 
-#: js/strings.js:311
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Vaikimisi tekstivärv"
 
-#: js/strings.js:312
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Lehtede taustavärv"
 
-#: js/strings.js:313
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Valitud teksti taustavärv"
 
-#: js/strings.js:314
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Taustaga tugevas kontrastis elementide värv"
 
-#: js/strings.js:315
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrastvärv elemendi hõljutamisel või fookuses"
 
-#: js/strings.js:316
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Teksti värv elementidel, mis kasutavad kontrastvärvi"
 
-#: js/strings.js:317
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Linkide ja nuppude jaoks kasutatav põhibrändivärv"
 
-#: js/strings.js:318
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Peanuppude ja esiletõstude taustavärv"
 
-#: js/strings.js:319
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Põhivärv elemendi hõljutamisel või fookuses"
 
-#: js/strings.js:320
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Põhitaustavärv elemendi hõljutamisel või fookuses"
 
-#: js/strings.js:321
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Vähemtähtsate linkide ja nuppude jaoks kasutatav lisavärv"
 
-#: js/strings.js:322
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Teiseste nuppude taustavärv"
 
-#: js/strings.js:323
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Teisene värv elemendi hõljutamisel või fookuses"
 
-#: js/strings.js:324
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Teisene taustavärv elemendi hõljutamisel või fookuses"
 
-#: js/strings.js:325
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr "Nurkade ümardus CSS-pikkusena, nt 0.25rem või 0 teravate nurkade jaoks"
 
-#: js/strings.js:326
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Märk, mida kuvatakse teekonnaviitade linkide vahel"
 
-#: js/strings.js:327
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS-link turvameeskonnaga ühenduse võtmiseks, nt vorm"
 
-#: js/strings.js:328
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "E-posti aadress turvaprobleemidest teatamiseks"
 
-#: js/strings.js:329
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Kuupäev, mille järel loetakse turbeteave aegunuks"
 
-#: js/strings.js:330
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS-link krüpteeritud sõnumite avaliku võtmeni"
 
-#: js/strings.js:331
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS-link turvateadlasi tänavale lehele"
 
-#: js/strings.js:332
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Komadega eraldatud keelekoodid turberaportite jaoks, nt en, de"
 
-#: js/strings.js:333
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS-URL, kus security.txt fail avaldatakse"
 
-#: js/strings.js:334
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS-link turvalisuse ja avaldamise põhimõtetele"
 
-#: js/strings.js:335
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS-link avatud turvalisusega seotud töökohtadele"
 
-#: js/strings.js:336
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS-link CSAF pakkuja metaandmetele"
 
-#: js/strings.js:337
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr "Veebiroomajate jaoks robots.txt faili lisatavad täiendavad reeglid"
 
-#: js/strings.js:338
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Kõikidele lehtedele lisatav kohandatud CSS-kood"
 
-#: js/strings.js:339
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Kõikidele lehtedele lisatav kohandatud JavaScript-kood"
 
-#: js/strings.js:340
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Komadega eraldatud pealkirjade jaoks kasutatavate fontide loend"
 
-#: js/strings.js:343
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "Nimi"
 
-#: js/strings.js:344
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "Ettevõte"
 
-#: js/strings.js:345
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefon"
 
-#: js/strings.js:346
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-post"
 
-#: js/strings.js:347
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "Teema"
 
-#: js/strings.js:348
+#: js/strings.js:371
+msgctxt "op"
+msgid "Text"
+msgstr "Tekst"
+
+#: js/strings.js:372
+msgctxt "op"
+msgid "Text area"
+msgstr "Tekstiala"
+
+#: js/strings.js:373
+msgctxt "op"
+msgid "Selection"
+msgstr "Valikuloend"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "Järgi linke"
 
-#: js/strings.js:349
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "Indekseeri"
 
-#: js/strings.js:350
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "Ära järgi linke"
 
-#: js/strings.js:351
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "Ära indekseeri"
 
-#: js/strings.js:352
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "Tellimus"
 
-#: js/strings.js:353
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Ühekordne makse"
 
-#: js/strings.js:354
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "Automaatne"
 
-#: js/strings.js:355
+#: js/strings.js:381
+msgctxt "op"
+msgid "Badges"
+msgstr "Märgid"
+
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "Kaardid"
 
-#: js/strings.js:356
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "Vaikimisi"
 
-#: js/strings.js:357
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "Lõpp"
 
-#: js/strings.js:358
+#: js/strings.js:385
+msgctxt "op"
+msgid "Figures"
+msgstr "Arvud"
+
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "Esimene veerg"
 
-#: js/strings.js:359
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "Esimene rida"
 
-#: js/strings.js:360
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "Esimene rida ja veerg"
 
-#: js/strings.js:361
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "Ruudustiku lõpp"
 
-#: js/strings.js:362
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "Ruudustiku algus"
 
-#: js/strings.js:363
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Horisontaalne"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "Uusimad"
 
-#: js/strings.js:364
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "Loend"
 
-#: js/strings.js:365
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "Puudub"
 
-#: js/strings.js:366
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "Vanimad"
 
-#: js/strings.js:367
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "Positsioon"
 
-#: js/strings.js:368
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "Algus"
 
-#: js/strings.js:369
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "Vertikaalne"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "Suum"
 
-#: js/strings.js:372
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "Valmis"
 
-#: js/strings.js:373
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Juba olemas"
 
-#: js/strings.js:376
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "Täpsemad"
 
-#: js/strings.js:377
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "Teema"
 
-#: js/strings.js:378
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "veebisait"
 
-#: js/strings.js:379
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "Logo"
 
-#: js/strings.js:380
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatiivne logo"
 
-#: js/strings.js:381
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "Ikoon"
@@ -4221,6 +4381,10 @@ msgid ""
 msgstr ""
 "Tehisintellekt saab teie sisendi põhjal luua lehekülje ja sisu ning lisada "
 "selle lehekülgede puusse"
+
+#~ msgctxt "sd"
+#~ msgid "Contact form with configurable fields"
+#~ msgstr "Kontaktivorm seadistatavate väljadega"
 
 #~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 #~ msgstr "%{name} (%{lang}, tee: %{path}, domeen: %{domain})"

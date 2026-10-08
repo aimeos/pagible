@@ -38,7 +38,7 @@ class ContactController extends Controller
         ];
 
         Mail::to(config('mail.from.address'))->send(
-            ( new ContactMail( $data ) )->locale( config( 'app.locale' ) )
+            ( new ContactMail( $data, $this->files( $request ) ) )->locale( config( 'app.locale' ) )
         );
 
         $duration = Watch::duration( $start );
@@ -60,5 +60,31 @@ class ContactController extends Controller
         );
 
         return response()->json( ['message' => 'Message sent successfully', 'status' => true] );
+    }
+
+
+    /**
+     * Returns the validated uploads with safe file names and MIME types detected from the content.
+     *
+     * @return array<int, array{path: string, name: string, mime: string}>
+     */
+    protected function files( ContactRequest $request ): array
+    {
+        $result = [];
+        $files = $request->files() ? $request->file( 'files', [] ) : [];
+
+        foreach( is_array( $files ) ? array_values( $files ) : [] as $idx => $file )
+        {
+            $name = pathinfo( $file->getClientOriginalName(), PATHINFO_FILENAME );
+            $name = mb_substr( trim( (string) preg_replace( '/[^\pL\pN._ -]+/u', '_', $name ), ' ._' ), 0, 100 );
+
+            $result[] = [
+                'path' => (string) $file->getRealPath(),
+                'name' => ( $name ?: 'attachment-' . ( $idx + 1 ) ) . '.' . $file->guessExtension(),
+                'mime' => (string) $file->getMimeType(),
+            ];
+        }
+
+        return $result;
     }
 }

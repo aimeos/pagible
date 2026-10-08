@@ -36,6 +36,8 @@ parameters:
 		- themes/bold/database/seeders
 		- themes/estate/src
 		- themes/estate/database/seeders
+		- themes/flow/src
+		- themes/flow/database/seeders
 		- themes/glass/src
 		- themes/glass/database/seeders
 		- themes/journal/src
@@ -50,6 +52,12 @@ parameters:
 		- themes/paper/database/seeders
 		- themes/premium/src
 		- themes/premium/database/seeders
+		- themes/solar/src
+		- themes/solar/database/seeders
+		- themes/solid/src
+		- themes/solid/database/seeders
+		- themes/volt/src
+		- themes/volt/database/seeders
 		- themes/style/src
 		- themes/style/database/seeders
 		- themes/taste/src

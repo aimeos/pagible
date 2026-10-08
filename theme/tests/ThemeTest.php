@@ -50,6 +50,52 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testBeforeAfter() : void
+	{
+		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
+		$files = collect( ['before' => (object) [
+			'id' => 'before',
+			'name' => 'Old roof',
+			'path' => 'https://example.com/before.webp',
+			'previews' => [],
+		], 'after' => (object) [
+			'id' => 'after',
+			'name' => 'New roof',
+			'path' => 'https://example.com/after.webp',
+			'previews' => [],
+		]] );
+
+		$data = (object) ['title' => 'Roof repair', 'before' => (object) ['id' => 'before'], 'after' => (object) ['id' => 'after']];
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+
+		$this->assertStringContainsString( 'Roof repair', $html );
+		$this->assertSame( 2, substr_count( $html, '<picture' ) );
+		$this->assertStringContainsString( 'Old roof', $html );
+		$this->assertStringContainsString( 'New roof', $html );
+		$this->assertStringContainsString( 'type="range"', $html );
+		$this->assertStringContainsString( 'Before and after comparison', $html );
+		$this->assertStringNotContainsString( 'loading="eager"', $html );
+
+		$data->main = true;
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		$this->assertSame( 2, substr_count( $html, 'loading="eager"' ) );
+
+		$data = (object) ['before' => (object) ['id' => 'before']];
+		$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		$this->assertStringNotContainsString( '<picture', $html );
+
+		try {
+			Theme::locale( 'de' );
+			$data = (object) ['before' => (object) ['id' => 'before'], 'after' => (object) ['id' => 'after']];
+			$html = view( 'cms::before-after', compact( 'data', 'files', 'page' ) )->render();
+		} finally {
+			Theme::locale( 'en' );
+		}
+
+		$this->assertStringContainsString( 'Vorher-Nachher-Vergleich', $html );
+	}
+
+
 	public function testLocaleUsesBaseLanguageForRegionalTranslations() : void
 	{
 		try {
@@ -343,6 +389,9 @@ class ThemeTest extends ThemeTestAbstract
 			['name', 'company', 'telephone', 'email', 'subject'],
 			array_column( $inputs['item']['field']['options'], 'value' )
 		);
+		$this->assertSame( ['text', 'textarea', 'select'], array_column( $inputs['item']['input']['options'], 'value' ) );
+		$this->assertSame( 'plaintext', $inputs['item']['options']['type'] );
+		$this->assertSame( ['type' => 'number', 'min' => 0, 'max' => 5, 'default' => 0], array_intersect_key( $fields['attachments'], array_flip( ['type', 'min', 'max', 'default'] ) ) );
 		$this->assertArrayNotHasKey( 'mandatory', $fields );
 		$this->assertArrayNotHasKey( 'optional', $fields );
 	}
@@ -537,6 +586,32 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testContactRendersInputTypesAndAttachments()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$data = (object) ['id' => 'contact-id', 'attachments' => 3, 'inputs' => [
+			(object) ['field' => 'Service', 'required' => true, 'input' => 'select', 'options' => " Repair \n\nInstallation\r\n"],
+			(object) ['field' => 'Details', 'input' => 'textarea'],
+			(object) ['field' => 'email', 'input' => 'textarea'],
+		]];
+
+		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
+		$key = ContactRequest::key( 'Service' );
+
+		$this->assertStringContainsString( 'enctype="multipart/form-data"', $html );
+		$this->assertMatchesRegularExpression( '/<select id="' . $key . '-contact-id" name="' . $key . '"\s+required/', $html );
+		$this->assertMatchesRegularExpression( '/<option value="">Please select<\/option>\s*<option value="Repair">Repair<\/option>\s*<option value="Installation">Installation<\/option>\s*<\/select>/', $html );
+		$this->assertMatchesRegularExpression( '/<textarea id="' . ContactRequest::key( 'Details' ) . '-contact-id"/', $html );
+		$this->assertMatchesRegularExpression( '/<input id="email-contact-id" type="email"/', $html );
+		$this->assertMatchesRegularExpression( '/<input id="files-contact-id" type="file" name="files\[\]"\s+multiple\s+accept="\.jpg,\.jpeg,\.png,\.webp,\.heic,\.pdf"/', $html );
+		$this->assertStringContainsString( 'Images or PDF files, max. 10 MB each', $html );
+		$this->assertStringContainsString( 'data-toolarge="Attachments: The files are too large."', $html );
+		$this->assertStringContainsString( 'value="' . e( ContactRequest::schema(
+			['Service'], ['Service', 'Details', 'email'], ['Service' => ['Repair', 'Installation'], 'Details' => 'textarea'], 3
+		) ) . '"', $html );
+	}
+
+
 	public function testContactRendersDefaultFields()
 	{
 		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
@@ -546,6 +621,8 @@ class ThemeTest extends ThemeTestAbstract
 
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="name"[^>]+required[^>]*>/', $html );
 		$this->assertMatchesRegularExpression( '/<input[^>]+name="email"[^>]+required[^>]*>/', $html );
+		$this->assertStringNotContainsString( 'type="file"', $html );
+		$this->assertStringNotContainsString( 'data-toolarge', $html );
 	}
 
 
@@ -591,6 +668,49 @@ class ThemeTest extends ThemeTestAbstract
 		$this->assertSame( 3, substr_count( $html, '<picture class="image"' ) );
 		$this->assertSame( 1, substr_count( $html, '<a class="card-image"' ) );
 		$this->assertMatchesRegularExpression( '#<a class="card-image" href="/target" rel="">\s*<picture class="image".*?</picture>\s*</a>#s', $html );
+	}
+
+
+	public function testCardsLayout()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$cards = [(object) ['title' => '25', 'text' => 'Years in business']];
+
+		$html = view( 'cms::cards', ['data' => (object) ['cards' => $cards], 'files' => collect(), 'page' => $page] )->render();
+		$this->assertStringContainsString( 'layout-cards', $html );
+
+		$data = (object) ['layout' => 'figures', 'cards' => $cards];
+		$html = view( 'cms::cards', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'layout-figures', $html );
+		$this->assertStringContainsString( '25', $html );
+		$this->assertStringContainsString( 'Years in business', $html );
+	}
+
+
+	public function testTimeline()
+	{
+		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$items = [
+			(object) ['label' => 'Week 1', 'title' => 'Planning', 'text' => 'Site visit and **quote**'],
+			(object) ['title' => 'Handover'],
+		];
+
+		$html = view( 'cms::timeline', ['data' => (object) ['title' => 'How we work', 'items' => $items], 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'How we work', $html );
+		$this->assertStringContainsString( 'layout-vertical', $html );
+		$this->assertSame( 2, substr_count( $html, 'class="step"' ) );
+		$this->assertSame( 1, substr_count( $html, 'class="label"' ) );
+		$this->assertStringContainsString( 'Week 1', $html );
+		$this->assertStringContainsString( '<strong>quote</strong>', $html );
+		$this->assertStringContainsString( 'Handover', $html );
+
+		$data = (object) ['layout' => 'horizontal', 'items' => $items];
+		$html = view( 'cms::timeline', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
+
+		$this->assertStringContainsString( 'layout-horizontal', $html );
+		$this->assertStringNotContainsString( '<h2', $html );
 	}
 
 

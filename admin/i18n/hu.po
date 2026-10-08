@@ -2472,715 +2472,762 @@ msgstr "diavetítés"
 
 #: js/strings.js:59
 msgctxt "st"
+msgid "before-after"
+msgstr "előtte-utána"
+
+#: js/strings.js:60
+msgctxt "st"
 msgid "code"
 msgstr "kód"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "table"
 msgstr "táblázat"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "map"
 msgstr "térkép"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "image"
 msgstr "kép"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "video"
 msgstr "videó"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "audio"
 msgstr "audio"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "file"
 msgstr "fájl"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "cards"
 msgstr "Kártyák"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "blog"
 msgstr "Blog"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "article"
 msgstr "Cikk"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "questions"
 msgstr "GYIK"
 
-#: js/strings.js:73
+#: js/strings.js:74
+msgctxt "st"
+msgid "timeline"
+msgstr "Idővonal"
+
+#: js/strings.js:75
 msgctxt "st"
 msgid "toc"
 msgstr "tartalomjegyzék"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "kapcsolatfelvétel"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Metacímkék"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "Közösségi média"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "Kanonikus URL"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "Keresőmotorok"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "Téma"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "stílusok"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "Hírek"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "Árazás"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:86
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "Biztonság"
 
-#: js/strings.js:87
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "Vélemények"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Szakaszcím H1-től H6-ig"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formázott szöveg bekezdésekkel, listákkal és hivatkozásokkal"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Kép formázott szöveg mellett"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Forráskód szintaxiskiemeléssel"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Adattábla opcionális fejlécsorral vagy -oszloppal"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Interaktív térkép helyszínnel, szöveggel és hivatkozással"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Egyéni HTML-kód beágyazásokhoz és widgetekhez"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Egyetlen reszponzív kép"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Váltakozó diák több képpel"
 
-#: js/strings.js:99
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Csúszka, amely két képet hasonlít össze egy változás előtt és után"
+
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Beágyazott videó lejátszásvezérlőkkel"
 
-#: js/strings.js:100
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Beágyazott hang lejátszásvezérlőkkel"
 
-#: js/strings.js:101
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Letölthető fájl, például PDF-dokumentum"
 
-#: js/strings.js:102
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Nagy bevezető címmel, szöveggel, gombokkal és háttérrel"
 
-#: js/strings.js:103
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Cselekvésre ösztönzés szöveggel és gombokkal"
 
-#: js/strings.js:104
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Kártyák rácsa képpel, címmel és szöveggel"
 
-#: js/strings.js:105
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Ügyfélvélemények névvel, beosztással és fotóval"
 
-#: js/strings.js:106
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Cikk bevezetője képgalériával és szerzővel"
 
-#: js/strings.js:107
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Egy szülőoldal blogcikkeinek listája"
 
-#: js/strings.js:108
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Egy szülőoldal híreinek listája"
 
-#: js/strings.js:109
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Kiemelt aloldal, majd további aloldalak"
 
-#: js/strings.js:110
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Árcsomagok előfizetéssel vagy egyszeri fizetéssel"
 
-#: js/strings.js:111
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Gyakran ismételt kérdések válaszokkal"
 
-#: js/strings.js:112
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Számozott lépések vagy események időrendben"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Tartalomjegyzék az oldal címsoraira mutató hivatkozásokkal"
 
-#: js/strings.js:113
+#: js/strings.js:117
 msgctxt "sd"
-msgid "Contact form with configurable fields"
-msgstr "Kapcsolatfelvételi űrlap testreszabható mezőkkel"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr ""
+"Kapcsolatfelvételi űrlap testreszabható mezőkkel és opcionális "
+"fájlmellékletekkel"
 
-#: js/strings.js:116
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "gomb"
 
-#: js/strings.js:117
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "gombok"
 
-#: js/strings.js:118
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "Kártyák"
 
-#: js/strings.js:119
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "leírás"
 
-#: js/strings.js:120
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "fájl"
 
-#: js/strings.js:121
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "fájlok"
 
-#: js/strings.js:122
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "Hivatkozások követése"
 
-#: js/strings.js:123
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "fejléc"
 
-#: js/strings.js:124
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "Indexelés"
 
-#: js/strings.js:125
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "kulcsszavak"
 
-#: js/strings.js:126
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "nyelv"
 
-#: js/strings.js:127
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "felirat"
 
-#: js/strings.js:128
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "szint"
 
-#: js/strings.js:129
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "limit"
 
-#: js/strings.js:130
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "hely"
 
-#: js/strings.js:131
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "Fő kép"
 
-#: js/strings.js:132
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "sorrend"
 
-#: js/strings.js:133
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "Szülőoldal"
 
-#: js/strings.js:134
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "pozíció"
 
-#: js/strings.js:135
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "szöveg"
 
-#: js/strings.js:136
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "táblázat"
 
-#: js/strings.js:137
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "cím"
 
-#: js/strings.js:138
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:140
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "kép"
 
-#: js/strings.js:141
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "képek"
 
-#: js/strings.js:142
+#: js/strings.js:146
+msgctxt "fn"
+msgid "before image"
+msgstr "előtte kép"
+
+#: js/strings.js:147
+msgctxt "fn"
+msgid "after image"
+msgstr "utána kép"
+
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "tételek"
 
-#: js/strings.js:143
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "bevezetés"
 
-#: js/strings.js:144
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "azonnali betöltés"
 
-#: js/strings.js:145
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "forráskód"
 
-#: js/strings.js:146
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Frontend-hozzáférési szerepkör"
 
-#: js/strings.js:147
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Fizetési árak"
 
-#: js/strings.js:148
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Fizetési hivatkozás"
 
-#: js/strings.js:149
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "Pénznem"
 
-#: js/strings.js:150
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Számlázási időköz"
 
-#: js/strings.js:151
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Áregység"
 
-#: js/strings.js:152
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Céloldal vagy hivatkozás"
 
-#: js/strings.js:153
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Űrlapmezők"
 
-#: js/strings.js:154
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "Mező"
 
-#: js/strings.js:155
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "Kötelező"
 
-#: js/strings.js:156
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Input type"
+msgstr "Beviteli típus"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Choices"
+msgstr "Választási lehetőségek"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Mellékletek"
+
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "Hivatkozás szövege"
 
-#: js/strings.js:157
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Kapcsolati URL"
 
-#: js/strings.js:158
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Kapcsolati e-mail"
 
-#: js/strings.js:159
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "Leírás"
 
-#: js/strings.js:160
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Megjelenített ár"
 
-#: js/strings.js:161
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Galéria"
 
-#: js/strings.js:162
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Kiemelés szövege"
 
-#: js/strings.js:163
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Kiemelt"
 
-#: js/strings.js:164
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "Nyelv"
 
-#: js/strings.js:165
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Fizetés típusa"
 
-#: js/strings.js:166
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Preferált nyelvek"
 
-#: js/strings.js:167
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Alcím"
 
-#: js/strings.js:168
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Köszönetnyilvánítás"
 
-#: js/strings.js:169
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "Összeg"
 
-#: js/strings.js:170
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "Háttér"
 
-#: js/strings.js:171
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "Háttéranimáció"
 
-#: js/strings.js:172
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Alternatív gomb"
 
-#: js/strings.js:173
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "Kanonikus URL"
 
-#: js/strings.js:174
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "Oszlopok"
 
-#: js/strings.js:175
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:176
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "Titkosítás"
 
-#: js/strings.js:177
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "Lejár"
 
-#: js/strings.js:178
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "Funkciók"
 
-#: js/strings.js:179
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "Toborzás"
 
-#: js/strings.js:180
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "Elrendezés"
 
-#: js/strings.js:181
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "Név"
 
-#: js/strings.js:182
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "Szabályzat"
 
-#: js/strings.js:183
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "Arány"
 
-#: js/strings.js:184
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "Beosztás"
 
-#: js/strings.js:185
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Alcím"
 
-#: js/strings.js:186
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Alternatív URL"
 
-#: js/strings.js:188
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Szöveg betűtípusa"
 
-#: js/strings.js:189
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Címsor betűtípusa"
 
-#: js/strings.js:190
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Szöveg színe"
 
-#: js/strings.js:191
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Háttérszín"
 
-#: js/strings.js:192
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Kijelölés színe"
 
-#: js/strings.js:193
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Kontrasztszín"
 
-#: js/strings.js:194
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Kontrasztszín rámutatáskor"
 
-#: js/strings.js:195
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Kontrasztos szöveg színe"
 
-#: js/strings.js:196
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Elsődleges szín"
 
-#: js/strings.js:197
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Elsődleges háttér"
 
-#: js/strings.js:198
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Elsődleges szín rámutatáskor"
 
-#: js/strings.js:199
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Elsődleges háttér rámutatáskor"
 
-#: js/strings.js:200
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Másodlagos szín"
 
-#: js/strings.js:201
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Másodlagos háttér"
 
-#: js/strings.js:202
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Másodlagos szín rámutatáskor"
 
-#: js/strings.js:203
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Másodlagos háttér rámutatáskor"
 
-#: js/strings.js:204
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Sarok lekerekítése"
 
-#: js/strings.js:205
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Morzsamenü-elválasztó"
 
-#: js/strings.js:208
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "A címsor szövege"
 
-#: js/strings.js:209
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3188,457 +3235,537 @@ msgstr ""
 "Az 1. szint az oldal fő címe, a magasabb szintek az alábbi szakaszokat "
 "strukturálják"
 
-#: js/strings.js:210
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Formázott szöveg bekezdésekkel, listákkal és hivatkozásokkal"
 
-#: js/strings.js:211
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Formázott szöveg a kép mellett megjelenítve"
 
-#: js/strings.js:212
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Kép a szöveg mellett megjelenítve"
 
-#: js/strings.js:213
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "A kép helyzete a szöveghez képest"
 
-#: js/strings.js:214
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Szélességarány a kép és a szöveg között"
 
-#: js/strings.js:215
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "A szintaxiskiemeléshez használt programozási nyelv"
 
-#: js/strings.js:216
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Forráskód szintaxiskiemeléssel megjelenítve"
 
-#: js/strings.js:217
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Opcionális felirat a táblázat felett megjelenítve"
 
-#: js/strings.js:218
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 "Az első sor, az első oszlop vagy mindkettő használata táblázatfejlécként"
 
-#: js/strings.js:219
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Írja be az adatokat a cellákba; szükség szerint adjon hozzá vagy távolítson "
 "el sorokat és oszlopokat"
 
-#: js/strings.js:220
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Opcionális cím a térkép felett megjelenítve"
 
-#: js/strings.js:221
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "A térkép mellett megjelenített leírás, pl. cím vagy útvonal"
 
-#: js/strings.js:222
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Keressen egy helyet, vagy kattintson a térképre a hely beállításához"
 
-#: js/strings.js:223
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr ""
 "Annak a hivatkozásnak a szövege, amely megnyitja a helyet egy "
 "térképszolgáltatásban"
 
-#: js/strings.js:224
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "A weboldalba változtatás nélkül beillesztett HTML-kód, pl. beágyazásokhoz és "
 "widgetekhez"
 
-#: js/strings.js:225
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "A tartalmi terület teljes szélességében megjelenített kép"
 
-#: js/strings.js:226
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr "A kép azonnali betöltése, ha az az oldal tetején látható"
 
-#: js/strings.js:227
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Opcionális cím a diavetítés felett megjelenítve"
 
-#: js/strings.js:228
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr "Egymás után megjelenített képek, a sorrend módosításához húzza őket"
 
-#: js/strings.js:229
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
 msgstr "Az első kép azonnali betöltése, ha az az oldal tetején látható"
 
-#: js/strings.js:230
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Az összehasonlítás felett megjelenő opcionális címsor"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "A változás előtti állapotot mutató kép"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "Az eredményt mutató kép, a két képnek azonos méretűnek kell lennie"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid ""
+"Load the images without delay if they are visible at the top of the page"
+msgstr "A képek késleltetés nélküli betöltése, ha az oldal tetején láthatók"
+
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Az oldalon lejátszott videófájl"
 
-#: js/strings.js:231
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Az oldalon lejátszott hangfájl"
 
-#: js/strings.js:232
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Letöltésre kínált fájl"
 
-#: js/strings.js:233
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Az oldal fő címe"
 
-#: js/strings.js:234
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Rövid sor a cím felett megjelenítve"
 
-#: js/strings.js:235
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "A cím alatt megjelenített bevezető"
 
-#: js/strings.js:236
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Az oldal vagy hivatkozás, amelyre a fő gomb mutat"
 
-#: js/strings.js:237
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "A fő gomb szövege"
 
-#: js/strings.js:238
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Az oldal vagy hivatkozás, amelyre a második gomb mutat"
 
-#: js/strings.js:239
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "A második gomb szövege"
 
-#: js/strings.js:240
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "A szöveg mögött megjelenített kép"
 
-#: js/strings.js:241
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "A háttérkép animációs effektje"
 
-#: js/strings.js:242
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "A szöveg mellett megjelenített képek"
 
-#: js/strings.js:243
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "A látogatók figyelmét felkeltő cím"
 
-#: js/strings.js:244
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "A látogatókat cselekvésre ösztönző szöveg"
 
-#: js/strings.js:245
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "A látogatókat a következő lépéshez vezető gombok"
 
-#: js/strings.js:246
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "A gomb szövege"
 
-#: js/strings.js:247
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Az oldal vagy hivatkozás, amelyre a gomb mutat"
 
-#: js/strings.js:248
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Opcionális cím a kártyák felett megjelenítve"
 
-#: js/strings.js:249
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr ""
 "Kártyák száma soronként, az \"auto\" alkalmazkodik a képernyő szélességéhez"
 
-#: js/strings.js:250
+#: js/strings.js:263
+msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Kártyák, kis jelvények, például tanúsítványok vagy nagy számok, például "
+"kulcsadatok megjelenítése"
+
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "A rácsban megjelenített kártyák"
 
-#: js/strings.js:251
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "A kártya címe"
 
-#: js/strings.js:252
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "A kártya tetején megjelenített kép"
 
-#: js/strings.js:253
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "A kártya szövege"
 
-#: js/strings.js:254
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Az oldal vagy hivatkozás, amelyre a kártya mutat"
 
-#: js/strings.js:255
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Opcionális cím az idézetek felett megjelenítve"
 
-#: js/strings.js:256
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Ügyfelek vagy partnerek idézetei"
 
-#: js/strings.js:257
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "A személy idézete"
 
-#: js/strings.js:258
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "A személy neve"
 
-#: js/strings.js:259
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "A személy beosztása vagy cége"
 
-#: js/strings.js:260
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "A személy fényképe"
 
-#: js/strings.js:261
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "A cikk bevezetője az oldal címe alatt megjelenítve"
 
-#: js/strings.js:262
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "A cikk képei, az első kerül felhasználásra előnézeti képként"
 
-#: js/strings.js:263
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "A cikk szerzőjének neve"
 
-#: js/strings.js:264
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Hivatkozás a szerző profiloldalára"
 
-#: js/strings.js:265
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Opcionális cím a lista felett megjelenítve"
 
-#: js/strings.js:266
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Az oldalak megjelenítése kártyákként vagy tömör listaként"
 
-#: js/strings.js:267
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Az az oldal, amelynek aloldalai listázva vannak"
 
-#: js/strings.js:268
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "A listázott oldalak rendezési sorrendje"
 
-#: js/strings.js:269
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Az egyszerre megjelenített oldalak maximális száma"
 
-#: js/strings.js:270
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr "A további aloldalak megjelenítése kártyákként vagy tömör listaként"
 
-#: js/strings.js:271
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Opcionális cím az árcsomagok felett megjelenítve"
 
-#: js/strings.js:272
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Rövid szöveg a cím alatt megjelenítve"
 
-#: js/strings.js:273
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Egymás mellett megjelenített árcsomagok"
 
-#: js/strings.js:274
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Az árcsomag neve"
 
-#: js/strings.js:275
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "A fizetés után az ügyfeleknek adott szerepkör a védett oldalak eléréséhez"
 
-#: js/strings.js:276
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "A csomag árai, pl. havi és éves"
 
-#: js/strings.js:277
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Ismétlődő előfizetés vagy egyszeri fizetés"
 
-#: js/strings.js:278
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr "A két fizetés közötti napok száma, pl. 30 a havi esetén"
 
-#: js/strings.js:279
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Hárombetűs ISO pénznemkód, pl. EUR vagy USD"
 
-#: js/strings.js:280
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "A fizetési szolgáltató által használt ár-azonosító vagy összeg"
 
-#: js/strings.js:281
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "A látogatóknak megjelenített formázott ár, pl. 9,99 €"
 
-#: js/strings.js:282
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Numerikus ár megjelenítve, ha nincs beállítva formázott ár"
 
-#: js/strings.js:283
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Az ár után megjelenített szöveg, pl. havonta"
 
-#: js/strings.js:284
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Az árcsomag rövid leírása"
 
-#: js/strings.js:285
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "A csomagban foglalt funkciók listája"
 
-#: js/strings.js:286
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Ezen csomag kiemelése a többihez képest"
 
-#: js/strings.js:287
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Rövid felirat a kiemelt csomagon, pl. Népszerű"
 
-#: js/strings.js:288
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Opcionális cím a kérdések felett megjelenítve"
 
-#: js/strings.js:289
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Kérdések és válaszok kibontható listaként megjelenítve"
 
-#: js/strings.js:290
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "A látogatók által feltett kérdés"
 
-#: js/strings.js:291
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Válasz a kérdésre"
 
-#: js/strings.js:292
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Az idővonal felett megjelenő opcionális címsor"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "A lépések egymás alatt vagy egymás mellett jelennek meg, az egymás melletti elrendezés legfeljebb öt lépéshez illik"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Lépések vagy események a bekövetkezésük sorrendjében"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "A cím felett megjelenő opcionális dátum, időszak vagy szakasz, pl. 2024 vagy 1. hét"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "A lépés vagy esemény neve"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "A lépés vagy esemény leírása"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Opcionális cím a tartalomjegyzék felett megjelenítve"
 
-#: js/strings.js:293
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Opcionális cím a kapcsolatfelvételi űrlap felett megjelenítve"
 
-#: js/strings.js:294
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Opcionális szöveg a címsor és a kapcsolatfelvételi űrlap között"
 
-#: js/strings.js:295
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "A látogatóknak ebben a sorrendben megjelenített űrlapmezők"
 
-#: js/strings.js:296
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Válasszon űrlapmezőt, vagy adjon meg saját nevet"
 
-#: js/strings.js:297
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "A látogatóknak ki kell tölteniük ezt a mezőt"
 
-#: js/strings.js:298
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "A látogatóknak megjelenített beviteli mező típusa"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Választómezők lehetőségei, soronként egy"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid ""
+"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr ""
+"A látogatók által csatolható képek vagy PDF-fájlok maximális száma, 0 esetén "
+"a feltöltés ki van kapcsolva"
+
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3647,394 +3774,429 @@ msgstr ""
 "Az oldal összefoglalója a keresési találatokban, javasolt hossz 150–160 "
 "karakter"
 
-#: js/strings.js:299
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Az oldalt leíró kulcsszavak vesszővel elválasztott listája"
 
-#: js/strings.js:300
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "A közösségi médiában megosztáskor megjelenített cím"
 
-#: js/strings.js:301
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr "A közösségi médiában megosztáskor megjelenített összefoglaló"
 
-#: js/strings.js:302
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr "A közösségi médiában megosztáskor megjelenített előnézeti kép"
 
-#: js/strings.js:303
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Az eredeti URL, ha ugyanaz a tartalom több címen is elérhető"
 
-#: js/strings.js:304
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 "A keresőmotorok számára engedélyezi vagy megtiltja az oldal indexelését"
 
-#: js/strings.js:305
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "A keresőmotorok számára engedélyezi vagy megtiltja az oldalon lévő "
 "hivatkozások követését"
 
-#: js/strings.js:306
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "A böngészőfülön és a keresési találatokban megjelenített weboldalnév"
 
-#: js/strings.js:307
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Az oldal fejlécében megjelenített logó"
 
-#: js/strings.js:308
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Sötét háttérhez használt logóváltozat"
 
-#: js/strings.js:309
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr "A böngészőfüleken és könyvjelzőkön megjelenített kis négyzetes kép"
 
-#: js/strings.js:310
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "A szöveghez használt betűtípusok vesszővel elválasztott listája"
 
-#: js/strings.js:311
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Alapértelmezett szövegszín"
 
-#: js/strings.js:312
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Az oldalak háttérszíne"
 
-#: js/strings.js:313
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "A kijelölt szöveg háttérszíne"
 
-#: js/strings.js:314
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "A háttérrel erős kontrasztot alkotó elemek színe"
 
-#: js/strings.js:315
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Kontrasztszín egy elem fölé vitelekor vagy fókuszálásakor"
 
-#: js/strings.js:316
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "A kontrasztszínt használó elemek szövegszíne"
 
-#: js/strings.js:317
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "A hivatkozásokhoz és gombokhoz használt fő márkaszín"
 
-#: js/strings.js:318
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Az elsődleges gombok és kiemelések háttérszíne"
 
-#: js/strings.js:319
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Elsődleges szín egy elem fölé vitelekor vagy fókuszálásakor"
 
-#: js/strings.js:320
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Elsődleges háttérszín egy elem fölé vitelekor vagy fókuszálásakor"
 
-#: js/strings.js:321
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Kevésbé fontos hivatkozásokhoz és gombokhoz használt kiegészítő szín"
 
-#: js/strings.js:322
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "A másodlagos gombok háttérszíne"
 
-#: js/strings.js:323
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Másodlagos szín egy elem fölé vitelekor vagy fókuszálásakor"
 
-#: js/strings.js:324
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Másodlagos háttérszín egy elem fölé vitelekor vagy fókuszálásakor"
 
-#: js/strings.js:325
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "A sarkok lekerekítése CSS hosszként megadva, pl. 0.25rem vagy 0 az éles "
 "sarkokhoz"
 
-#: js/strings.js:326
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "A morzsamenü-hivatkozások között megjelenített karakter"
 
-#: js/strings.js:327
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS-hivatkozás a biztonsági csapat eléréséhez, pl. egy űrlap"
 
-#: js/strings.js:328
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "E-mail-cím biztonsági problémák bejelentéséhez"
 
-#: js/strings.js:329
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Az a dátum, amely után a biztonsági információk elavultnak számítanak"
 
-#: js/strings.js:330
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS-hivatkozás a titkosított üzenetekhez tartozó nyilvános kulcsra"
 
-#: js/strings.js:331
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS-hivatkozás a biztonsági kutatóknak köszönetet mondó oldalra"
 
-#: js/strings.js:332
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 "Vesszővel elválasztott nyelvi kódok a biztonsági jelentésekhez, pl. en, de"
 
-#: js/strings.js:333
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "A HTTPS-URL, ahol a security.txt fájl közzé van téve"
 
-#: js/strings.js:334
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS-hivatkozás a biztonsági és közzétételi irányelvre"
 
-#: js/strings.js:335
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS-hivatkozás a nyitott biztonsági állásokra"
 
-#: js/strings.js:336
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS-hivatkozás a CSAF-szolgáltató metaadataira"
 
-#: js/strings.js:337
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "A robots.txt fájlhoz hozzáadott további szabályok a keresőrobotok számára"
 
-#: js/strings.js:338
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Egyéni CSS-kód minden oldalhoz hozzáadva"
 
-#: js/strings.js:339
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Egyéni JavaScript-kód minden oldalhoz hozzáadva"
 
-#: js/strings.js:340
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "A címsorokhoz használt betűtípusok vesszővel elválasztott listája"
 
-#: js/strings.js:343
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "Név"
 
-#: js/strings.js:344
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "Cég"
 
-#: js/strings.js:345
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "Telefon"
 
-#: js/strings.js:346
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "E-mail"
 
-#: js/strings.js:347
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "Tárgy"
 
-#: js/strings.js:348
+#: js/strings.js:371
+msgctxt "op"
+msgid "Text"
+msgstr "Szöveg"
+
+#: js/strings.js:372
+msgctxt "op"
+msgid "Text area"
+msgstr "Szövegterület"
+
+#: js/strings.js:373
+msgctxt "op"
+msgid "Selection"
+msgstr "Legördülő lista"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "Hivatkozások követése"
 
-#: js/strings.js:349
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "Indexelés"
 
-#: js/strings.js:350
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "Hivatkozások követésének tiltása"
 
-#: js/strings.js:351
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "Indexelés tiltása"
 
-#: js/strings.js:352
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "Előfizetés"
 
-#: js/strings.js:353
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Egyszeri fizetés"
 
-#: js/strings.js:354
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "Automatikus"
 
-#: js/strings.js:355
+#: js/strings.js:381
+msgctxt "op"
+msgid "Badges"
+msgstr "Jelvények"
+
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "Kártyák"
 
-#: js/strings.js:356
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "Alapértelmezett"
 
-#: js/strings.js:357
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "Vége"
 
-#: js/strings.js:358
+#: js/strings.js:385
+msgctxt "op"
+msgid "Figures"
+msgstr "Számok"
+
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "Első oszlop"
 
-#: js/strings.js:359
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "Első sor"
 
-#: js/strings.js:360
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "Első sor és oszlop"
 
-#: js/strings.js:361
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "Rács vége"
 
-#: js/strings.js:362
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "Rács eleje"
 
-#: js/strings.js:363
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Vízszintes"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "Legújabb"
 
-#: js/strings.js:364
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "Lista"
 
-#: js/strings.js:365
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "Nincs"
 
-#: js/strings.js:366
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "Legrégebbi"
 
-#: js/strings.js:367
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "Pozíció"
 
-#: js/strings.js:368
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "Eleje"
 
-#: js/strings.js:369
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "Függőleges"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "Nagyítás"
 
-#: js/strings.js:372
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "Kész"
 
-#: js/strings.js:373
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Már létezik"
 
-#: js/strings.js:376
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "Haladó"
 
-#: js/strings.js:377
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "Téma"
 
-#: js/strings.js:378
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "webhely"
 
-#: js/strings.js:379
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "Logó"
 
-#: js/strings.js:380
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Alternatív logó"
 
-#: js/strings.js:381
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "Ikon"
@@ -4252,6 +4414,10 @@ msgid ""
 msgstr ""
 "A mesterséges intelligencia képes létrehozni egy oldalt és tartalmat az Ön "
 "által megadott adatok alapján, és hozzáadni az oldalfához."
+
+#~ msgctxt "sd"
+#~ msgid "Contact form with configurable fields"
+#~ msgstr "Kapcsolatfelvételi űrlap testreszabható mezőkkel"
 
 #~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 #~ msgstr "%{name} (%{lang}, elérési út: %{path}, domain: %{domain})"

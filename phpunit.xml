@@ -44,6 +44,18 @@
     <testsuite name="Estate">
       <directory>./themes/estate/tests/</directory>
     </testsuite>
+    <testsuite name="Solid">
+      <directory>./themes/solid/tests/</directory>
+    </testsuite>
+    <testsuite name="Volt">
+      <directory>./themes/volt/tests/</directory>
+    </testsuite>
+    <testsuite name="Flow">
+      <directory>./themes/flow/tests/</directory>
+    </testsuite>
+    <testsuite name="Solar">
+      <directory>./themes/solar/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>

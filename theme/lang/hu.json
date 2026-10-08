@@ -49,5 +49,15 @@
     "Load more": "Továbbiak betöltése",
     "No results found": "Nincs találat",
     "Search failed": "A keresés sikertelen",
-    "Language": "Nyelv"
+    "Language": "Nyelv",
+    "Attachments": "Mellékletek",
+    "Images or PDF files, max. :size MB each": "Képek vagy PDF-fájlok, fájlonként max. :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: A fájltípus nem engedélyezett.",
+    ":attribute: The file is too large.": ":attribute: A fájl túl nagy.",
+    ":attribute: Too many files.": ":attribute: Túl sok fájl.",
+    ":attribute: The files are too large.": ":attribute: A fájlok túl nagyok.",
+    "Please select": "Kérjük, válasszon",
+    "Before": "Előtte",
+    "After": "Utána",
+    "Before and after comparison": "Előtte-utána összehasonlítás"
 }

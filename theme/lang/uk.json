@@ -49,5 +49,15 @@
     "Load more": "Завантажити ще",
     "No results found": "Нічого не знайдено",
     "Search failed": "Помилка пошуку",
-    "Language": "Мова"
+    "Language": "Мова",
+    "Attachments": "Вкладення",
+    "Images or PDF files, max. :size MB each": "Зображення або файли PDF, не більше :size МБ кожен",
+    ":attribute: The file type is not allowed.": ":attribute: Цей тип файлу не дозволено.",
+    ":attribute: The file is too large.": ":attribute: Файл завеликий.",
+    ":attribute: Too many files.": ":attribute: Забагато файлів.",
+    ":attribute: The files are too large.": ":attribute: Файли завеликі.",
+    "Please select": "Будь ласка, виберіть",
+    "Before": "До",
+    "After": "Після",
+    "Before and after comparison": "Порівняння до та після"
 }

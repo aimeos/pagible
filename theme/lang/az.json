@@ -49,5 +49,15 @@
     "Load more": "Daha çox yüklə",
     "No results found": "Nəticə tapılmadı",
     "Search failed": "Axtarış uğursuz oldu",
-    "Language": "Dil"
+    "Language": "Dil",
+    "Attachments": "Əlavələr",
+    "Images or PDF files, max. :size MB each": "Şəkillər və ya PDF faylları, hər biri maks. :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: Bu fayl növünə icazə verilmir.",
+    ":attribute: The file is too large.": ":attribute: Fayl çox böyükdür.",
+    ":attribute: Too many files.": ":attribute: Həddindən artıq çox fayl.",
+    ":attribute: The files are too large.": ":attribute: Fayllar çox böyükdür.",
+    "Please select": "Zəhmət olmasa, seçin",
+    "Before": "Əvvəl",
+    "After": "Sonra",
+    "Before and after comparison": "Əvvəl və sonra müqayisəsi"
 }

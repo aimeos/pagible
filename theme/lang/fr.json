@@ -49,5 +49,15 @@
     "Load more": "Charger plus",
     "No results found": "Aucun résultat trouvé",
     "Search failed": "La recherche a échoué",
-    "Language": "Langue"
+    "Language": "Langue",
+    "Attachments": "Pièces jointes",
+    "Images or PDF files, max. :size MB each": "Images ou fichiers PDF, :size Mo max. chacun",
+    ":attribute: The file type is not allowed.": ":attribute: Ce type de fichier n'est pas autorisé.",
+    ":attribute: The file is too large.": ":attribute: Le fichier est trop volumineux.",
+    ":attribute: Too many files.": ":attribute: Trop de fichiers.",
+    ":attribute: The files are too large.": ":attribute: Les fichiers sont trop volumineux.",
+    "Please select": "Veuillez sélectionner",
+    "Before": "Avant",
+    "After": "Après",
+    "Before and after comparison": "Comparaison avant et après"
 }

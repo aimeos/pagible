@@ -49,5 +49,15 @@
     "Load more": "載入更多",
     "No results found": "找不到結果",
     "Search failed": "搜尋失敗",
-    "Language": "語言"
+    "Language": "語言",
+    "Attachments": "附件",
+    "Images or PDF files, max. :size MB each": "圖片或 PDF 檔案，每個最大 :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: 不允許此檔案類型。",
+    ":attribute: The file is too large.": ":attribute: 檔案太大。",
+    ":attribute: Too many files.": ":attribute: 檔案太多。",
+    ":attribute: The files are too large.": ":attribute: 檔案總大小太大。",
+    "Please select": "請選擇",
+    "Before": "之前",
+    "After": "之後",
+    "Before and after comparison": "前後對比"
 }

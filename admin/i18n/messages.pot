@@ -2605,1545 +2605,1695 @@ msgstr ""
 
 #: js/strings.js:59
 msgctxt "st"
-msgid "code"
+msgid "before-after"
 msgstr ""
 
 #: js/strings.js:60
 msgctxt "st"
-msgid "table"
+msgid "code"
 msgstr ""
 
 #: js/strings.js:61
 msgctxt "st"
-msgid "map"
+msgid "table"
 msgstr ""
 
 #: js/strings.js:62
 msgctxt "st"
-msgid "html"
+msgid "map"
 msgstr ""
 
 #: js/strings.js:63
 msgctxt "st"
-msgid "image"
+msgid "html"
 msgstr ""
 
 #: js/strings.js:64
 msgctxt "st"
-msgid "video"
+msgid "image"
 msgstr ""
 
 #: js/strings.js:65
 msgctxt "st"
-msgid "audio"
+msgid "video"
 msgstr ""
 
 #: js/strings.js:66
 msgctxt "st"
-msgid "file"
+msgid "audio"
 msgstr ""
 
 #: js/strings.js:67
 msgctxt "st"
-msgid "hero"
+msgid "file"
 msgstr ""
 
 #: js/strings.js:68
 msgctxt "st"
-msgid "CTA"
+msgid "hero"
 msgstr ""
 
 #: js/strings.js:69
 msgctxt "st"
-msgid "cards"
+msgid "CTA"
 msgstr ""
 
 #: js/strings.js:70
 msgctxt "st"
-msgid "blog"
+msgid "cards"
 msgstr ""
 
 #: js/strings.js:71
 msgctxt "st"
-msgid "article"
+msgid "blog"
 msgstr ""
 
 #: js/strings.js:72
 msgctxt "st"
-msgid "questions"
+msgid "article"
 msgstr ""
 
 #: js/strings.js:73
 msgctxt "st"
-msgid "toc"
+msgid "questions"
 msgstr ""
 
 #: js/strings.js:74
 msgctxt "st"
-msgid "contact"
+msgid "timeline"
 msgstr ""
 
 #: js/strings.js:75
 msgctxt "st"
-msgid "meta-tags"
+msgid "toc"
 msgstr ""
 
 #: js/strings.js:76
 msgctxt "st"
-msgid "social-media"
+msgid "contact"
 msgstr ""
 
 #: js/strings.js:77
 msgctxt "st"
-msgid "canonical"
+msgid "meta-tags"
 msgstr ""
 
 #: js/strings.js:78
 msgctxt "st"
-msgid "robots"
+msgid "social-media"
 msgstr ""
 
 #: js/strings.js:79
 msgctxt "st"
-msgid "theme"
+msgid "canonical"
 msgstr ""
 
 #: js/strings.js:80
 msgctxt "st"
-msgid "styles"
+msgid "robots"
 msgstr ""
 
 #: js/strings.js:81
 msgctxt "st"
-msgid "javascript"
+msgid "theme"
 msgstr ""
 
 #: js/strings.js:82
 msgctxt "st"
-msgid "heros"
+msgid "styles"
 msgstr ""
 
 #: js/strings.js:83
 msgctxt "st"
-msgid "news"
+msgid "javascript"
 msgstr ""
 
 #: js/strings.js:84
 msgctxt "st"
-msgid "pricing"
+msgid "heros"
 msgstr ""
 
 #: js/strings.js:85
 msgctxt "st"
-msgid "robots.txt"
+msgid "news"
 msgstr ""
 
 #: js/strings.js:86
 msgctxt "st"
-msgid "security"
+msgid "pricing"
 msgstr ""
 
 #: js/strings.js:87
 msgctxt "st"
+msgid "robots.txt"
+msgstr ""
+
+#: js/strings.js:88
+msgctxt "st"
+msgid "security"
+msgstr ""
+
+#: js/strings.js:89
+msgctxt "st"
 msgid "testimonial"
-msgstr ""
-
-#: js/strings.js:90
-msgctxt "sd"
-msgid "Section headline from H1 to H6"
-msgstr ""
-
-#: js/strings.js:91
-msgctxt "sd"
-msgid "Formatted text with paragraphs, lists and links"
 msgstr ""
 
 #: js/strings.js:92
 msgctxt "sd"
-msgid "Image next to formatted text"
+msgid "Section headline from H1 to H6"
 msgstr ""
 
 #: js/strings.js:93
 msgctxt "sd"
-msgid "Source code with syntax highlighting"
+msgid "Formatted text with paragraphs, lists and links"
 msgstr ""
 
 #: js/strings.js:94
 msgctxt "sd"
-msgid "Data table with optional header row or column"
+msgid "Image next to formatted text"
 msgstr ""
 
 #: js/strings.js:95
 msgctxt "sd"
-msgid "Interactive map with location, text and link"
+msgid "Source code with syntax highlighting"
 msgstr ""
 
 #: js/strings.js:96
 msgctxt "sd"
-msgid "Custom HTML markup for embeds and widgets"
+msgid "Data table with optional header row or column"
 msgstr ""
 
 #: js/strings.js:97
 msgctxt "sd"
-msgid "Single responsive image"
+msgid "Interactive map with location, text and link"
 msgstr ""
 
 #: js/strings.js:98
 msgctxt "sd"
-msgid "Rotating slides with multiple images"
+msgid "Custom HTML markup for embeds and widgets"
 msgstr ""
 
 #: js/strings.js:99
 msgctxt "sd"
-msgid "Embedded video with player controls"
+msgid "Single responsive image"
 msgstr ""
 
 #: js/strings.js:100
 msgctxt "sd"
-msgid "Embedded audio with player controls"
+msgid "Rotating slides with multiple images"
 msgstr ""
 
 #: js/strings.js:101
 msgctxt "sd"
-msgid "Downloadable file such as a PDF document"
+msgid "Slider comparing two images before and after a change"
 msgstr ""
 
 #: js/strings.js:102
 msgctxt "sd"
-msgid "Large introduction with title, text, buttons and background"
+msgid "Embedded video with player controls"
 msgstr ""
 
 #: js/strings.js:103
 msgctxt "sd"
-msgid "Call to action with text and buttons"
+msgid "Embedded audio with player controls"
 msgstr ""
 
 #: js/strings.js:104
 msgctxt "sd"
-msgid "Grid of cards with image, title and text"
+msgid "Downloadable file such as a PDF document"
 msgstr ""
 
 #: js/strings.js:105
 msgctxt "sd"
-msgid "Customer quotes with name, role and photo"
+msgid "Large introduction with title, text, buttons and background"
 msgstr ""
 
 #: js/strings.js:106
 msgctxt "sd"
-msgid "Article introduction with image gallery and author"
+msgid "Call to action with text and buttons"
 msgstr ""
 
 #: js/strings.js:107
 msgctxt "sd"
-msgid "List of blog articles from a parent page"
+msgid "Grid of cards with image, title and text"
 msgstr ""
 
 #: js/strings.js:108
 msgctxt "sd"
-msgid "List of news articles from a parent page"
+msgid "Customer quotes with name, role and photo"
 msgstr ""
 
 #: js/strings.js:109
 msgctxt "sd"
-msgid "Featured subpage followed by further subpages"
+msgid "Article introduction with image gallery and author"
 msgstr ""
 
 #: js/strings.js:110
 msgctxt "sd"
-msgid "Price plans with subscriptions or one-time payments"
+msgid "List of blog articles from a parent page"
 msgstr ""
 
 #: js/strings.js:111
 msgctxt "sd"
-msgid "Frequently asked questions with answers"
+msgid "List of news articles from a parent page"
 msgstr ""
 
 #: js/strings.js:112
 msgctxt "sd"
-msgid "Table of contents linking to page headings"
+msgid "Featured subpage followed by further subpages"
 msgstr ""
 
 #: js/strings.js:113
 msgctxt "sd"
-msgid "Contact form with configurable fields"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr ""
+
+#: js/strings.js:114
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr ""
+
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
 msgstr ""
 
 #: js/strings.js:116
-msgctxt "fn"
-msgid "button"
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
 msgstr ""
 
 #: js/strings.js:117
-msgctxt "fn"
-msgid "buttons"
-msgstr ""
-
-#: js/strings.js:118
-msgctxt "fn"
-msgid "cards"
-msgstr ""
-
-#: js/strings.js:119
-msgctxt "fn"
-msgid "description"
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
 msgstr ""
 
 #: js/strings.js:120
 msgctxt "fn"
-msgid "file"
+msgid "button"
 msgstr ""
 
 #: js/strings.js:121
 msgctxt "fn"
-msgid "files"
+msgid "buttons"
 msgstr ""
 
 #: js/strings.js:122
 msgctxt "fn"
-msgid "follow"
+msgid "cards"
 msgstr ""
 
 #: js/strings.js:123
 msgctxt "fn"
-msgid "header"
+msgid "description"
 msgstr ""
 
 #: js/strings.js:124
 msgctxt "fn"
-msgid "index"
+msgid "file"
 msgstr ""
 
 #: js/strings.js:125
 msgctxt "fn"
-msgid "keywords"
+msgid "files"
 msgstr ""
 
 #: js/strings.js:126
 msgctxt "fn"
-msgid "language"
+msgid "follow"
 msgstr ""
 
 #: js/strings.js:127
 msgctxt "fn"
-msgid "label"
+msgid "header"
 msgstr ""
 
 #: js/strings.js:128
 msgctxt "fn"
-msgid "level"
+msgid "index"
 msgstr ""
 
 #: js/strings.js:129
 msgctxt "fn"
-msgid "limit"
+msgid "keywords"
 msgstr ""
 
 #: js/strings.js:130
 msgctxt "fn"
-msgid "location"
+msgid "language"
 msgstr ""
 
 #: js/strings.js:131
 msgctxt "fn"
-msgid "main"
+msgid "label"
 msgstr ""
 
 #: js/strings.js:132
 msgctxt "fn"
-msgid "order"
+msgid "level"
 msgstr ""
 
 #: js/strings.js:133
 msgctxt "fn"
-msgid "parent-page"
+msgid "limit"
 msgstr ""
 
 #: js/strings.js:134
 msgctxt "fn"
-msgid "position"
+msgid "location"
 msgstr ""
 
 #: js/strings.js:135
 msgctxt "fn"
-msgid "text"
+msgid "main"
 msgstr ""
 
 #: js/strings.js:136
 msgctxt "fn"
-msgid "table"
+msgid "order"
 msgstr ""
 
 #: js/strings.js:137
 msgctxt "fn"
-msgid "title"
+msgid "parent-page"
 msgstr ""
 
 #: js/strings.js:138
 msgctxt "fn"
-msgid "url"
+msgid "position"
+msgstr ""
+
+#: js/strings.js:139
+msgctxt "fn"
+msgid "text"
 msgstr ""
 
 #: js/strings.js:140
 msgctxt "fn"
-msgid "image"
+msgid "table"
 msgstr ""
 
 #: js/strings.js:141
 msgctxt "fn"
-msgid "images"
+msgid "title"
 msgstr ""
 
 #: js/strings.js:142
 msgctxt "fn"
-msgid "items"
-msgstr ""
-
-#: js/strings.js:143
-msgctxt "fn"
-msgid "introduction"
+msgid "url"
 msgstr ""
 
 #: js/strings.js:144
 msgctxt "fn"
-msgid "load immediately"
+msgid "image"
 msgstr ""
 
 #: js/strings.js:145
 msgctxt "fn"
-msgid "source code"
+msgid "images"
 msgstr ""
 
 #: js/strings.js:146
 msgctxt "fn"
-msgid "Frontend access role"
+msgid "before image"
 msgstr ""
 
 #: js/strings.js:147
 msgctxt "fn"
-msgid "Payment prices"
+msgid "after image"
 msgstr ""
 
 #: js/strings.js:148
 msgctxt "fn"
-msgid "Payment reference"
+msgid "items"
 msgstr ""
 
 #: js/strings.js:149
 msgctxt "fn"
-msgid "Currency"
+msgid "introduction"
 msgstr ""
 
 #: js/strings.js:150
 msgctxt "fn"
-msgid "Billing interval"
+msgid "load immediately"
 msgstr ""
 
 #: js/strings.js:151
 msgctxt "fn"
-msgid "Price unit"
+msgid "source code"
 msgstr ""
 
 #: js/strings.js:152
 msgctxt "fn"
-msgid "Target page or link"
+msgid "Frontend access role"
 msgstr ""
 
 #: js/strings.js:153
 msgctxt "fn"
-msgid "Form fields"
+msgid "Payment prices"
 msgstr ""
 
 #: js/strings.js:154
 msgctxt "fn"
-msgid "Field"
+msgid "Payment reference"
 msgstr ""
 
 #: js/strings.js:155
 msgctxt "fn"
-msgid "Required"
+msgid "Currency"
 msgstr ""
 
 #: js/strings.js:156
 msgctxt "fn"
-msgid "Link label"
+msgid "Billing interval"
 msgstr ""
 
 #: js/strings.js:157
 msgctxt "fn"
-msgid "Contact URL"
+msgid "Price unit"
 msgstr ""
 
 #: js/strings.js:158
 msgctxt "fn"
-msgid "Contact email"
+msgid "Target page or link"
 msgstr ""
 
 #: js/strings.js:159
 msgctxt "fn"
-msgid "Description"
+msgid "Form fields"
 msgstr ""
 
 #: js/strings.js:160
 msgctxt "fn"
-msgid "Displayed price"
+msgid "Field"
 msgstr ""
 
 #: js/strings.js:161
 msgctxt "fn"
-msgid "Gallery"
+msgid "Required"
 msgstr ""
 
 #: js/strings.js:162
 msgctxt "fn"
-msgid "Highlight text"
+msgid "Input type"
 msgstr ""
 
 #: js/strings.js:163
 msgctxt "fn"
-msgid "Highlighted"
+msgid "Choices"
 msgstr ""
 
 #: js/strings.js:164
 msgctxt "fn"
-msgid "Language"
+msgid "Attachments"
 msgstr ""
 
 #: js/strings.js:165
 msgctxt "fn"
-msgid "Payment type"
+msgid "Link label"
 msgstr ""
 
 #: js/strings.js:166
 msgctxt "fn"
-msgid "Preferred languages"
+msgid "Contact URL"
 msgstr ""
 
 #: js/strings.js:167
 msgctxt "fn"
-msgid "Subtitle"
+msgid "Contact email"
 msgstr ""
 
 #: js/strings.js:168
 msgctxt "fn"
-msgid "acknowledgments"
+msgid "Description"
 msgstr ""
 
 #: js/strings.js:169
 msgctxt "fn"
-msgid "amount"
+msgid "Displayed price"
 msgstr ""
 
 #: js/strings.js:170
 msgctxt "fn"
-msgid "background"
+msgid "Gallery"
 msgstr ""
 
 #: js/strings.js:171
 msgctxt "fn"
-msgid "background animation"
+msgid "Highlight text"
 msgstr ""
 
 #: js/strings.js:172
 msgctxt "fn"
-msgid "button-alternative"
+msgid "Highlighted"
 msgstr ""
 
 #: js/strings.js:173
 msgctxt "fn"
-msgid "canonical"
+msgid "Language"
 msgstr ""
 
 #: js/strings.js:174
 msgctxt "fn"
-msgid "columns"
+msgid "Payment type"
 msgstr ""
 
 #: js/strings.js:175
 msgctxt "fn"
-msgid "csaf"
+msgid "Preferred languages"
 msgstr ""
 
 #: js/strings.js:176
 msgctxt "fn"
-msgid "encryption"
+msgid "Subtitle"
 msgstr ""
 
 #: js/strings.js:177
 msgctxt "fn"
-msgid "expires"
+msgid "acknowledgments"
 msgstr ""
 
 #: js/strings.js:178
 msgctxt "fn"
-msgid "features"
+msgid "amount"
 msgstr ""
 
 #: js/strings.js:179
 msgctxt "fn"
-msgid "hiring"
+msgid "background"
 msgstr ""
 
 #: js/strings.js:180
 msgctxt "fn"
-msgid "layout"
+msgid "background animation"
 msgstr ""
 
 #: js/strings.js:181
 msgctxt "fn"
-msgid "name"
+msgid "button-alternative"
 msgstr ""
 
 #: js/strings.js:182
 msgctxt "fn"
-msgid "policy"
+msgid "canonical"
 msgstr ""
 
 #: js/strings.js:183
 msgctxt "fn"
-msgid "ratio"
+msgid "columns"
 msgstr ""
 
 #: js/strings.js:184
 msgctxt "fn"
-msgid "role"
+msgid "csaf"
 msgstr ""
 
 #: js/strings.js:185
 msgctxt "fn"
-msgid "subtitle"
+msgid "encryption"
 msgstr ""
 
 #: js/strings.js:186
 msgctxt "fn"
-msgid "url-alternative"
+msgid "expires"
+msgstr ""
+
+#: js/strings.js:187
+msgctxt "fn"
+msgid "features"
 msgstr ""
 
 #: js/strings.js:188
 msgctxt "fn"
-msgid "--pico-font-family-sans-serif"
+msgid "hiring"
 msgstr ""
 
 #: js/strings.js:189
 msgctxt "fn"
-msgid "--pico-font-family-display"
+msgid "layout"
 msgstr ""
 
 #: js/strings.js:190
 msgctxt "fn"
-msgid "--pico-color"
+msgid "name"
 msgstr ""
 
 #: js/strings.js:191
 msgctxt "fn"
-msgid "--pico-background-color"
+msgid "policy"
 msgstr ""
 
 #: js/strings.js:192
 msgctxt "fn"
-msgid "--pico-text-selection-color"
+msgid "ratio"
 msgstr ""
 
 #: js/strings.js:193
 msgctxt "fn"
-msgid "--pico-contrast"
+msgid "role"
 msgstr ""
 
 #: js/strings.js:194
 msgctxt "fn"
-msgid "--pico-contrast-hover"
+msgid "subtitle"
 msgstr ""
 
 #: js/strings.js:195
 msgctxt "fn"
-msgid "--pico-contrast-inverse"
-msgstr ""
-
-#: js/strings.js:196
-msgctxt "fn"
-msgid "--pico-primary"
+msgid "url-alternative"
 msgstr ""
 
 #: js/strings.js:197
 msgctxt "fn"
-msgid "--pico-primary-background"
+msgid "--pico-font-family-sans-serif"
 msgstr ""
 
 #: js/strings.js:198
 msgctxt "fn"
-msgid "--pico-primary-hover"
+msgid "--pico-font-family-display"
 msgstr ""
 
 #: js/strings.js:199
 msgctxt "fn"
-msgid "--pico-primary-hover-background"
+msgid "--pico-color"
 msgstr ""
 
 #: js/strings.js:200
 msgctxt "fn"
-msgid "--pico-secondary"
+msgid "--pico-background-color"
 msgstr ""
 
 #: js/strings.js:201
 msgctxt "fn"
-msgid "--pico-secondary-background"
+msgid "--pico-text-selection-color"
 msgstr ""
 
 #: js/strings.js:202
 msgctxt "fn"
-msgid "--pico-secondary-hover"
+msgid "--pico-contrast"
 msgstr ""
 
 #: js/strings.js:203
 msgctxt "fn"
-msgid "--pico-secondary-hover-background"
+msgid "--pico-contrast-hover"
 msgstr ""
 
 #: js/strings.js:204
 msgctxt "fn"
-msgid "--pico-border-radius"
+msgid "--pico-contrast-inverse"
 msgstr ""
 
 #: js/strings.js:205
 msgctxt "fn"
-msgid "--pico-nav-breadcrumb-divider"
+msgid "--pico-primary"
+msgstr ""
+
+#: js/strings.js:206
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr ""
+
+#: js/strings.js:207
+msgctxt "fn"
+msgid "--pico-primary-hover"
 msgstr ""
 
 #: js/strings.js:208
-msgctxt "fh"
-msgid "Text of the headline"
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
 msgstr ""
 
 #: js/strings.js:209
-msgctxt "fh"
-msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgctxt "fn"
+msgid "--pico-secondary"
 msgstr ""
 
 #: js/strings.js:210
-msgctxt "fh"
-msgid "Formatted text with paragraphs, lists and links"
+msgctxt "fn"
+msgid "--pico-secondary-background"
 msgstr ""
 
 #: js/strings.js:211
-msgctxt "fh"
-msgid "Formatted text shown next to the image"
+msgctxt "fn"
+msgid "--pico-secondary-hover"
 msgstr ""
 
 #: js/strings.js:212
-msgctxt "fh"
-msgid "Image shown next to the text"
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
 msgstr ""
 
 #: js/strings.js:213
-msgctxt "fh"
-msgid "Position of the image relative to the text"
+msgctxt "fn"
+msgid "--pico-border-radius"
 msgstr ""
 
 #: js/strings.js:214
-msgctxt "fh"
-msgid "Width ratio between image and text"
-msgstr ""
-
-#: js/strings.js:215
-msgctxt "fh"
-msgid "Programming language used for syntax highlighting"
-msgstr ""
-
-#: js/strings.js:216
-msgctxt "fh"
-msgid "Source code shown with syntax highlighting"
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
 msgstr ""
 
 #: js/strings.js:217
 msgctxt "fh"
-msgid "Optional caption shown above the table"
+msgid "Text of the headline"
 msgstr ""
 
 #: js/strings.js:218
 msgctxt "fh"
-msgid "Use the first row, the first column or both as table headers"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
 msgstr ""
 
 #: js/strings.js:219
 msgctxt "fh"
-msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgid "Formatted text with paragraphs, lists and links"
 msgstr ""
 
 #: js/strings.js:220
 msgctxt "fh"
-msgid "Optional headline shown above the map"
+msgid "Formatted text shown next to the image"
 msgstr ""
 
 #: js/strings.js:221
 msgctxt "fh"
-msgid "Description shown next to the map, e.g. address or directions"
+msgid "Image shown next to the text"
 msgstr ""
 
 #: js/strings.js:222
 msgctxt "fh"
-msgid "Search for a place or click on the map to set the location"
+msgid "Position of the image relative to the text"
 msgstr ""
 
 #: js/strings.js:223
 msgctxt "fh"
-msgid "Text of the link that opens the location in a map service"
+msgid "Width ratio between image and text"
 msgstr ""
 
 #: js/strings.js:224
 msgctxt "fh"
-msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgid "Programming language used for syntax highlighting"
 msgstr ""
 
 #: js/strings.js:225
 msgctxt "fh"
-msgid "Image shown in full width of the content area"
+msgid "Source code shown with syntax highlighting"
 msgstr ""
 
 #: js/strings.js:226
 msgctxt "fh"
-msgid "Load the image without delay if it is visible at the top of the page"
+msgid "Optional caption shown above the table"
 msgstr ""
 
 #: js/strings.js:227
 msgctxt "fh"
-msgid "Optional headline shown above the slideshow"
+msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 
 #: js/strings.js:228
 msgctxt "fh"
-msgid "Images shown one after another, drag to change the order"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 
 #: js/strings.js:229
 msgctxt "fh"
-msgid "Load the first image without delay if it is visible at the top of the page"
+msgid "Optional headline shown above the map"
 msgstr ""
 
 #: js/strings.js:230
 msgctxt "fh"
-msgid "Video file played in the page"
+msgid "Description shown next to the map, e.g. address or directions"
 msgstr ""
 
 #: js/strings.js:231
 msgctxt "fh"
-msgid "Audio file played in the page"
+msgid "Search for a place or click on the map to set the location"
 msgstr ""
 
 #: js/strings.js:232
 msgctxt "fh"
-msgid "File offered for download"
+msgid "Text of the link that opens the location in a map service"
 msgstr ""
 
 #: js/strings.js:233
 msgctxt "fh"
-msgid "Main headline of the page"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 
 #: js/strings.js:234
 msgctxt "fh"
-msgid "Short line shown above the headline"
+msgid "Image shown in full width of the content area"
 msgstr ""
 
 #: js/strings.js:235
 msgctxt "fh"
-msgid "Introduction shown below the headline"
+msgid "Load the image without delay if it is visible at the top of the page"
 msgstr ""
 
 #: js/strings.js:236
 msgctxt "fh"
-msgid "Page or link the main button leads to"
+msgid "Optional headline shown above the slideshow"
 msgstr ""
 
 #: js/strings.js:237
 msgctxt "fh"
-msgid "Text of the main button"
+msgid "Images shown one after another, drag to change the order"
 msgstr ""
 
 #: js/strings.js:238
 msgctxt "fh"
-msgid "Page or link the second button leads to"
+msgid "Load the first image without delay if it is visible at the top of the page"
 msgstr ""
 
 #: js/strings.js:239
 msgctxt "fh"
-msgid "Text of the second button"
+msgid "Optional headline shown above the comparison"
 msgstr ""
 
 #: js/strings.js:240
 msgctxt "fh"
-msgid "Image shown behind the text"
+msgid "Image showing the state before the change"
 msgstr ""
 
 #: js/strings.js:241
 msgctxt "fh"
-msgid "Animation effect of the background image"
+msgid "Image showing the result, both images should have the same size"
 msgstr ""
 
 #: js/strings.js:242
 msgctxt "fh"
-msgid "Images shown next to the text"
+msgid "Load the images without delay if they are visible at the top of the page"
 msgstr ""
 
 #: js/strings.js:243
 msgctxt "fh"
-msgid "Headline catching the attention of visitors"
+msgid "Video file played in the page"
 msgstr ""
 
 #: js/strings.js:244
 msgctxt "fh"
-msgid "Text motivating visitors to take action"
+msgid "Audio file played in the page"
 msgstr ""
 
 #: js/strings.js:245
 msgctxt "fh"
-msgid "Buttons leading visitors to the next step"
+msgid "File offered for download"
 msgstr ""
 
 #: js/strings.js:246
 msgctxt "fh"
-msgid "Text of the button"
+msgid "Main headline of the page"
 msgstr ""
 
 #: js/strings.js:247
 msgctxt "fh"
-msgid "Page or link the button leads to"
+msgid "Short line shown above the headline"
 msgstr ""
 
 #: js/strings.js:248
 msgctxt "fh"
-msgid "Optional headline shown above the cards"
+msgid "Introduction shown below the headline"
 msgstr ""
 
 #: js/strings.js:249
 msgctxt "fh"
-msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgid "Page or link the main button leads to"
 msgstr ""
 
 #: js/strings.js:250
 msgctxt "fh"
-msgid "Cards shown in the grid"
+msgid "Text of the main button"
 msgstr ""
 
 #: js/strings.js:251
 msgctxt "fh"
-msgid "Headline of the card"
+msgid "Page or link the second button leads to"
 msgstr ""
 
 #: js/strings.js:252
 msgctxt "fh"
-msgid "Image shown at the top of the card"
+msgid "Text of the second button"
 msgstr ""
 
 #: js/strings.js:253
 msgctxt "fh"
-msgid "Text of the card"
+msgid "Image shown behind the text"
 msgstr ""
 
 #: js/strings.js:254
 msgctxt "fh"
-msgid "Page or link the card leads to"
+msgid "Animation effect of the background image"
 msgstr ""
 
 #: js/strings.js:255
 msgctxt "fh"
-msgid "Optional headline shown above the quotes"
+msgid "Images shown next to the text"
 msgstr ""
 
 #: js/strings.js:256
 msgctxt "fh"
-msgid "Quotes of customers or partners"
+msgid "Headline catching the attention of visitors"
 msgstr ""
 
 #: js/strings.js:257
 msgctxt "fh"
-msgid "Quote of the person"
+msgid "Text motivating visitors to take action"
 msgstr ""
 
 #: js/strings.js:258
 msgctxt "fh"
-msgid "Name of the person"
+msgid "Buttons leading visitors to the next step"
 msgstr ""
 
 #: js/strings.js:259
 msgctxt "fh"
-msgid "Position or company of the person"
+msgid "Text of the button"
 msgstr ""
 
 #: js/strings.js:260
 msgctxt "fh"
-msgid "Photo of the person"
+msgid "Page or link the button leads to"
 msgstr ""
 
 #: js/strings.js:261
 msgctxt "fh"
-msgid "Introduction of the article shown below the page title"
+msgid "Optional headline shown above the cards"
 msgstr ""
 
 #: js/strings.js:262
 msgctxt "fh"
-msgid "Images of the article, the first one is used as preview image"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr ""
 
 #: js/strings.js:263
 msgctxt "fh"
-msgid "Name of the author of the article"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
 msgstr ""
 
 #: js/strings.js:264
 msgctxt "fh"
-msgid "Link to the profile page of the author"
+msgid "Cards shown in the grid"
 msgstr ""
 
 #: js/strings.js:265
 msgctxt "fh"
-msgid "Optional headline shown above the list"
+msgid "Headline of the card"
 msgstr ""
 
 #: js/strings.js:266
 msgctxt "fh"
-msgid "Display the pages as cards or as a compact list"
+msgid "Image shown at the top of the card"
 msgstr ""
 
 #: js/strings.js:267
 msgctxt "fh"
-msgid "Page whose subpages are listed"
+msgid "Text of the card"
 msgstr ""
 
 #: js/strings.js:268
 msgctxt "fh"
-msgid "Sort order of the listed pages"
+msgid "Page or link the card leads to"
 msgstr ""
 
 #: js/strings.js:269
 msgctxt "fh"
-msgid "Maximum number of pages shown at once"
+msgid "Optional headline shown above the quotes"
 msgstr ""
 
 #: js/strings.js:270
 msgctxt "fh"
-msgid "Display the further subpages as cards or as a compact list"
+msgid "Quotes of customers or partners"
 msgstr ""
 
 #: js/strings.js:271
 msgctxt "fh"
-msgid "Optional headline shown above the price plans"
+msgid "Quote of the person"
 msgstr ""
 
 #: js/strings.js:272
 msgctxt "fh"
-msgid "Short text shown below the headline"
+msgid "Name of the person"
 msgstr ""
 
 #: js/strings.js:273
 msgctxt "fh"
-msgid "Price plans shown side by side"
+msgid "Position or company of the person"
 msgstr ""
 
 #: js/strings.js:274
 msgctxt "fh"
-msgid "Name of the price plan"
+msgid "Photo of the person"
 msgstr ""
 
 #: js/strings.js:275
 msgctxt "fh"
-msgid "Role granted to customers after the payment to access protected pages"
+msgid "Introduction of the article shown below the page title"
 msgstr ""
 
 #: js/strings.js:276
 msgctxt "fh"
-msgid "Prices of the plan, e.g. monthly and yearly"
+msgid "Images of the article, the first one is used as preview image"
 msgstr ""
 
 #: js/strings.js:277
 msgctxt "fh"
-msgid "Recurring subscription or one-time payment"
+msgid "Name of the author of the article"
 msgstr ""
 
 #: js/strings.js:278
 msgctxt "fh"
-msgid "Number of days between two payments, e.g. 30 for monthly"
+msgid "Link to the profile page of the author"
 msgstr ""
 
 #: js/strings.js:279
 msgctxt "fh"
-msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgid "Optional headline shown above the list"
 msgstr ""
 
 #: js/strings.js:280
 msgctxt "fh"
-msgid "Price ID or amount used by the payment provider"
+msgid "Display the pages as cards or as a compact list"
 msgstr ""
 
 #: js/strings.js:281
 msgctxt "fh"
-msgid "Formatted price shown to visitors, e.g. €9.99"
+msgid "Page whose subpages are listed"
 msgstr ""
 
 #: js/strings.js:282
 msgctxt "fh"
-msgid "Numeric price shown if no formatted price is set"
+msgid "Sort order of the listed pages"
 msgstr ""
 
 #: js/strings.js:283
 msgctxt "fh"
-msgid "Text shown after the price, e.g. per month"
+msgid "Maximum number of pages shown at once"
 msgstr ""
 
 #: js/strings.js:284
 msgctxt "fh"
-msgid "Short description of the price plan"
+msgid "Display the further subpages as cards or as a compact list"
 msgstr ""
 
 #: js/strings.js:285
 msgctxt "fh"
-msgid "List of the features included in the plan"
+msgid "Optional headline shown above the price plans"
 msgstr ""
 
 #: js/strings.js:286
 msgctxt "fh"
-msgid "Emphasize this plan compared to the others"
+msgid "Short text shown below the headline"
 msgstr ""
 
 #: js/strings.js:287
 msgctxt "fh"
-msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgid "Price plans shown side by side"
 msgstr ""
 
 #: js/strings.js:288
 msgctxt "fh"
-msgid "Optional headline shown above the questions"
+msgid "Name of the price plan"
 msgstr ""
 
 #: js/strings.js:289
 msgctxt "fh"
-msgid "Questions and answers shown as expandable list"
+msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 
 #: js/strings.js:290
 msgctxt "fh"
-msgid "Question asked by visitors"
+msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr ""
 
 #: js/strings.js:291
 msgctxt "fh"
-msgid "Answer to the question"
+msgid "Recurring subscription or one-time payment"
 msgstr ""
 
 #: js/strings.js:292
 msgctxt "fh"
-msgid "Optional headline shown above the table of contents"
+msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr ""
 
 #: js/strings.js:293
 msgctxt "fh"
-msgid "Optional headline shown above the contact form"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr ""
 
 #: js/strings.js:294
 msgctxt "fh"
-msgid "Optional text shown between headline and contact form"
+msgid "Price ID or amount used by the payment provider"
 msgstr ""
 
 #: js/strings.js:295
 msgctxt "fh"
-msgid "Form fields shown to visitors in this order"
+msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr ""
 
 #: js/strings.js:296
 msgctxt "fh"
-msgid "Select a form field or enter your own name"
+msgid "Numeric price shown if no formatted price is set"
 msgstr ""
 
 #: js/strings.js:297
 msgctxt "fh"
-msgid "Visitors must fill out this field"
+msgid "Text shown after the price, e.g. per month"
 msgstr ""
 
 #: js/strings.js:298
 msgctxt "fh"
-msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgid "Short description of the price plan"
 msgstr ""
 
 #: js/strings.js:299
 msgctxt "fh"
-msgid "Comma separated list of keywords describing the page"
+msgid "List of the features included in the plan"
 msgstr ""
 
 #: js/strings.js:300
 msgctxt "fh"
-msgid "Title shown when the page is shared in social media"
+msgid "Emphasize this plan compared to the others"
 msgstr ""
 
 #: js/strings.js:301
 msgctxt "fh"
-msgid "Summary shown when the page is shared in social media"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr ""
 
 #: js/strings.js:302
 msgctxt "fh"
-msgid "Preview image shown when the page is shared in social media"
+msgid "Optional headline shown above the questions"
 msgstr ""
 
 #: js/strings.js:303
 msgctxt "fh"
-msgid "Original URL if the same content is available at several addresses"
+msgid "Questions and answers shown as expandable list"
 msgstr ""
 
 #: js/strings.js:304
 msgctxt "fh"
-msgid "Allow or prevent search engines from listing this page"
+msgid "Question asked by visitors"
 msgstr ""
 
 #: js/strings.js:305
 msgctxt "fh"
-msgid "Allow or prevent search engines from following the links on this page"
+msgid "Answer to the question"
 msgstr ""
 
 #: js/strings.js:306
 msgctxt "fh"
-msgid "Name of the website shown in the browser tab and search results"
+msgid "Optional headline shown above the timeline"
 msgstr ""
 
 #: js/strings.js:307
 msgctxt "fh"
-msgid "Logo shown in the page header"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
 msgstr ""
 
 #: js/strings.js:308
 msgctxt "fh"
-msgid "Logo variant used for dark backgrounds"
+msgid "Steps or events in the order they happen"
 msgstr ""
 
 #: js/strings.js:309
 msgctxt "fh"
-msgid "Small square image shown in browser tabs and bookmarks"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
 msgstr ""
 
 #: js/strings.js:310
 msgctxt "fh"
-msgid "Comma separated list of fonts used for the text"
+msgid "Name of the step or event"
 msgstr ""
 
 #: js/strings.js:311
 msgctxt "fh"
-msgid "Default text color"
+msgid "Description of the step or event"
 msgstr ""
 
 #: js/strings.js:312
 msgctxt "fh"
-msgid "Background color of the pages"
+msgid "Optional headline shown above the table of contents"
 msgstr ""
 
 #: js/strings.js:313
 msgctxt "fh"
-msgid "Background color of selected text"
+msgid "Optional headline shown above the contact form"
 msgstr ""
 
 #: js/strings.js:314
 msgctxt "fh"
-msgid "Color of elements with strong contrast to the background"
+msgid "Optional text shown between headline and contact form"
 msgstr ""
 
 #: js/strings.js:315
 msgctxt "fh"
-msgid "Contrast color when hovering or focusing an element"
+msgid "Form fields shown to visitors in this order"
 msgstr ""
 
 #: js/strings.js:316
 msgctxt "fh"
-msgid "Text color on elements using the contrast color"
+msgid "Select a form field or enter your own name"
 msgstr ""
 
 #: js/strings.js:317
 msgctxt "fh"
-msgid "Main brand color used for links and buttons"
+msgid "Visitors must fill out this field"
 msgstr ""
 
 #: js/strings.js:318
 msgctxt "fh"
-msgid "Background color of primary buttons and highlights"
+msgid "Type of input shown to visitors"
 msgstr ""
 
 #: js/strings.js:319
 msgctxt "fh"
-msgid "Primary color when hovering or focusing an element"
+msgid "Choices for selection inputs, one per line"
 msgstr ""
 
 #: js/strings.js:320
 msgctxt "fh"
-msgid "Primary background color when hovering or focusing an element"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
 msgstr ""
 
 #: js/strings.js:321
 msgctxt "fh"
-msgid "Additional color used for less important links and buttons"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
 msgstr ""
 
 #: js/strings.js:322
 msgctxt "fh"
-msgid "Background color of secondary buttons"
+msgid "Comma separated list of keywords describing the page"
 msgstr ""
 
 #: js/strings.js:323
 msgctxt "fh"
-msgid "Secondary color when hovering or focusing an element"
+msgid "Title shown when the page is shared in social media"
 msgstr ""
 
 #: js/strings.js:324
 msgctxt "fh"
-msgid "Secondary background color when hovering or focusing an element"
+msgid "Summary shown when the page is shared in social media"
 msgstr ""
 
 #: js/strings.js:325
 msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 
 #: js/strings.js:326
 msgctxt "fh"
-msgid "Character shown between the breadcrumb links"
+msgid "Original URL if the same content is available at several addresses"
 msgstr ""
 
 #: js/strings.js:327
 msgctxt "fh"
-msgid "HTTPS link to contact the security team, e.g. a form"
+msgid "Allow or prevent search engines from listing this page"
 msgstr ""
 
 #: js/strings.js:328
 msgctxt "fh"
-msgid "E-mail address for reporting security issues"
+msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 
 #: js/strings.js:329
 msgctxt "fh"
-msgid "Date after which the security information is considered outdated"
+msgid "Name of the website shown in the browser tab and search results"
 msgstr ""
 
 #: js/strings.js:330
 msgctxt "fh"
-msgid "HTTPS link to the public key for encrypted messages"
+msgid "Logo shown in the page header"
 msgstr ""
 
 #: js/strings.js:331
 msgctxt "fh"
-msgid "HTTPS link to the page thanking security researchers"
+msgid "Logo variant used for dark backgrounds"
 msgstr ""
 
 #: js/strings.js:332
 msgctxt "fh"
-msgid "Comma separated language codes for security reports, e.g. en, de"
+msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 
 #: js/strings.js:333
 msgctxt "fh"
-msgid "HTTPS URL where the security.txt file is published"
+msgid "Comma separated list of fonts used for the text"
 msgstr ""
 
 #: js/strings.js:334
 msgctxt "fh"
-msgid "HTTPS link to the security and disclosure policy"
+msgid "Default text color"
 msgstr ""
 
 #: js/strings.js:335
 msgctxt "fh"
-msgid "HTTPS link to open security related jobs"
+msgid "Background color of the pages"
 msgstr ""
 
 #: js/strings.js:336
 msgctxt "fh"
-msgid "HTTPS link to the CSAF provider metadata"
+msgid "Background color of selected text"
 msgstr ""
 
 #: js/strings.js:337
 msgctxt "fh"
-msgid "Additional rules added to the robots.txt file for web crawlers"
+msgid "Color of elements with strong contrast to the background"
 msgstr ""
 
 #: js/strings.js:338
 msgctxt "fh"
-msgid "Custom CSS code added to all pages"
+msgid "Contrast color when hovering or focusing an element"
 msgstr ""
 
 #: js/strings.js:339
 msgctxt "fh"
-msgid "Custom JavaScript code added to all pages"
+msgid "Text color on elements using the contrast color"
 msgstr ""
 
 #: js/strings.js:340
 msgctxt "fh"
-msgid "Comma separated list of fonts used for headlines"
+msgid "Main brand color used for links and buttons"
+msgstr ""
+
+#: js/strings.js:341
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr ""
+
+#: js/strings.js:342
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
 msgstr ""
 
 #: js/strings.js:343
-msgctxt "op"
-msgid "Name"
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
 msgstr ""
 
 #: js/strings.js:344
-msgctxt "op"
-msgid "Company"
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
 msgstr ""
 
 #: js/strings.js:345
-msgctxt "op"
-msgid "Telephone"
+msgctxt "fh"
+msgid "Background color of secondary buttons"
 msgstr ""
 
 #: js/strings.js:346
-msgctxt "op"
-msgid "E-Mail"
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
 msgstr ""
 
 #: js/strings.js:347
-msgctxt "op"
-msgid "Subject"
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
 msgstr ""
 
 #: js/strings.js:348
-msgctxt "op"
-msgid "Follow"
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 
 #: js/strings.js:349
-msgctxt "op"
-msgid "Index"
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
 msgstr ""
 
 #: js/strings.js:350
-msgctxt "op"
-msgid "No follow"
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr ""
 
 #: js/strings.js:351
-msgctxt "op"
-msgid "No index"
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
 msgstr ""
 
 #: js/strings.js:352
-msgctxt "op"
-msgid "Subscription"
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
 msgstr ""
 
 #: js/strings.js:353
-msgctxt "op"
-msgid "One-time payment"
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
 msgstr ""
 
 #: js/strings.js:354
-msgctxt "op"
-msgid "Auto"
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
 msgstr ""
 
 #: js/strings.js:355
-msgctxt "op"
-msgid "Cards"
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr ""
 
 #: js/strings.js:356
-msgctxt "op"
-msgid "Default"
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
 msgstr ""
 
 #: js/strings.js:357
-msgctxt "op"
-msgid "End"
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
 msgstr ""
 
 #: js/strings.js:358
-msgctxt "op"
-msgid "First column"
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
 msgstr ""
 
 #: js/strings.js:359
-msgctxt "op"
-msgid "First row"
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
 msgstr ""
 
 #: js/strings.js:360
-msgctxt "op"
-msgid "First row and column"
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 
 #: js/strings.js:361
-msgctxt "op"
-msgid "Grid end"
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
 msgstr ""
 
 #: js/strings.js:362
-msgctxt "op"
-msgid "Grid start"
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
 msgstr ""
 
 #: js/strings.js:363
-msgctxt "op"
-msgid "Latest"
-msgstr ""
-
-#: js/strings.js:364
-msgctxt "op"
-msgid "List"
-msgstr ""
-
-#: js/strings.js:365
-msgctxt "op"
-msgid "None"
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
 msgstr ""
 
 #: js/strings.js:366
 msgctxt "op"
-msgid "Oldest"
+msgid "Name"
 msgstr ""
 
 #: js/strings.js:367
 msgctxt "op"
-msgid "Position"
+msgid "Company"
 msgstr ""
 
 #: js/strings.js:368
 msgctxt "op"
-msgid "Start"
+msgid "Telephone"
 msgstr ""
 
 #: js/strings.js:369
 msgctxt "op"
-msgid "Zoom"
+msgid "E-Mail"
+msgstr ""
+
+#: js/strings.js:370
+msgctxt "op"
+msgid "Subject"
+msgstr ""
+
+#: js/strings.js:371
+msgctxt "op"
+msgid "Text"
 msgstr ""
 
 #: js/strings.js:372
+msgctxt "op"
+msgid "Text area"
+msgstr ""
+
+#: js/strings.js:373
+msgctxt "op"
+msgid "Selection"
+msgstr ""
+
+#: js/strings.js:374
+msgctxt "op"
+msgid "Follow"
+msgstr ""
+
+#: js/strings.js:375
+msgctxt "op"
+msgid "Index"
+msgstr ""
+
+#: js/strings.js:376
+msgctxt "op"
+msgid "No follow"
+msgstr ""
+
+#: js/strings.js:377
+msgctxt "op"
+msgid "No index"
+msgstr ""
+
+#: js/strings.js:378
+msgctxt "op"
+msgid "Subscription"
+msgstr ""
+
+#: js/strings.js:379
+msgctxt "op"
+msgid "One-time payment"
+msgstr ""
+
+#: js/strings.js:380
+msgctxt "op"
+msgid "Auto"
+msgstr ""
+
+#: js/strings.js:381
+msgctxt "op"
+msgid "Badges"
+msgstr ""
+
+#: js/strings.js:382
+msgctxt "op"
+msgid "Cards"
+msgstr ""
+
+#: js/strings.js:383
+msgctxt "op"
+msgid "Default"
+msgstr ""
+
+#: js/strings.js:384
+msgctxt "op"
+msgid "End"
+msgstr ""
+
+#: js/strings.js:385
+msgctxt "op"
+msgid "Figures"
+msgstr ""
+
+#: js/strings.js:386
+msgctxt "op"
+msgid "First column"
+msgstr ""
+
+#: js/strings.js:387
+msgctxt "op"
+msgid "First row"
+msgstr ""
+
+#: js/strings.js:388
+msgctxt "op"
+msgid "First row and column"
+msgstr ""
+
+#: js/strings.js:389
+msgctxt "op"
+msgid "Grid end"
+msgstr ""
+
+#: js/strings.js:390
+msgctxt "op"
+msgid "Grid start"
+msgstr ""
+
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr ""
+
+#: js/strings.js:392
+msgctxt "op"
+msgid "Latest"
+msgstr ""
+
+#: js/strings.js:393
+msgctxt "op"
+msgid "List"
+msgstr ""
+
+#: js/strings.js:394
+msgctxt "op"
+msgid "None"
+msgstr ""
+
+#: js/strings.js:395
+msgctxt "op"
+msgid "Oldest"
+msgstr ""
+
+#: js/strings.js:396
+msgctxt "op"
+msgid "Position"
+msgstr ""
+
+#: js/strings.js:397
+msgctxt "op"
+msgid "Start"
+msgstr ""
+
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr ""
+
+#: js/strings.js:399
+msgctxt "op"
+msgid "Zoom"
+msgstr ""
+
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr ""
 
-#: js/strings.js:373
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr ""
 
-#: js/strings.js:376
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr ""
 
-#: js/strings.js:377
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr ""
 
-#: js/strings.js:378
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr ""
 
-#: js/strings.js:379
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr ""
 
-#: js/strings.js:380
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr ""
 
-#: js/strings.js:381
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr ""

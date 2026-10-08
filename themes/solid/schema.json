@@ -1,0 +1,281 @@
+{
+    "label": "Solid",
+    "description": "Dependable design for builders, renovation companies and general contractors with charcoal, concrete grey and safety yellow, condensed uppercase headings, square edges and a faint blueprint grid",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "business": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M2 22V20H4V12L2 13.5L.8 11.9L12 3.5L23.2 11.9L22 13.5L20 12V20H22V22H2M6 20H11V15H13V20H18V10.5L12 6L6 10.5V20Z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Name of the company",
+                    "required": true
+                },
+                "business-type": {
+                    "type": "select",
+                    "label": "Business type",
+                    "hint": "Kind of business shown to search engines",
+                    "default": "GeneralContractor",
+                    "options": [
+                        {
+                            "value": "GeneralContractor",
+                            "label": "General contractor"
+                        },
+                        {
+                            "value": "HomeAndConstructionBusiness",
+                            "label": "Home and construction business"
+                        },
+                        {
+                            "value": "RoofingContractor",
+                            "label": "Roofing contractor"
+                        },
+                        {
+                            "value": "Electrician",
+                            "label": "Electrician"
+                        },
+                        {
+                            "value": "Plumber",
+                            "label": "Plumber"
+                        },
+                        {
+                            "value": "HVACBusiness",
+                            "label": "Heating and air conditioning"
+                        },
+                        {
+                            "value": "HousePainter",
+                            "label": "House painter"
+                        },
+                        {
+                            "value": "Locksmith",
+                            "label": "Locksmith"
+                        },
+                        {
+                            "value": "MovingCompany",
+                            "label": "Moving company"
+                        }
+                    ],
+                    "required": true
+                },
+                "street-address": {
+                    "type": "string",
+                    "label": "Street address",
+                    "hint": "Street and house number",
+                    "required": true
+                },
+                "postal-code": {
+                    "type": "string",
+                    "label": "Postal code",
+                    "hint": "Postal code of the company",
+                    "required": true
+                },
+                "locality": {
+                    "type": "string",
+                    "label": "City",
+                    "hint": "City the company is located in",
+                    "required": true
+                },
+                "country": {
+                    "type": "string",
+                    "label": "Country code",
+                    "hint": "Two letter ISO country code, e.g. DE or US",
+                    "default": "DE",
+                    "min": 2,
+                    "max": 2,
+                    "uppercase": true,
+                    "required": true
+                },
+                "telephone": {
+                    "type": "string",
+                    "hint": "Phone number in international format, also used by the call button",
+                    "required": true
+                },
+                "email": {
+                    "type": "string",
+                    "hint": "Email address for enquiries"
+                },
+                "area": {
+                    "type": "string",
+                    "label": "Places served",
+                    "hint": "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+                },
+                "price-range": {
+                    "type": "string",
+                    "label": "Price range",
+                    "hint": "Price level of the company, e.g. $$ or €€"
+                },
+                "call-button": {
+                    "type": "switch",
+                    "label": "Call button",
+                    "hint": "Show a call button at the bottom of the screen on phones",
+                    "default": true
+                },
+                "hours": {
+                    "type": "items",
+                    "label": "Opening hours",
+                    "hint": "Opening hours for each day of the week",
+                    "identity": "id",
+                    "item": {
+                        "day": {
+                            "type": "select",
+                            "hint": "Day of the week",
+                            "options": [
+                                {
+                                    "value": "Monday",
+                                    "label": "Monday"
+                                },
+                                {
+                                    "value": "Tuesday",
+                                    "label": "Tuesday"
+                                },
+                                {
+                                    "value": "Wednesday",
+                                    "label": "Wednesday"
+                                },
+                                {
+                                    "value": "Thursday",
+                                    "label": "Thursday"
+                                },
+                                {
+                                    "value": "Friday",
+                                    "label": "Friday"
+                                },
+                                {
+                                    "value": "Saturday",
+                                    "label": "Saturday"
+                                },
+                                {
+                                    "value": "Sunday",
+                                    "label": "Sunday"
+                                }
+                            ]
+                        },
+                        "opens": {
+                            "type": "string",
+                            "hint": "Opening time in 24 hour format, e.g. 07:30",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        },
+                        "closes": {
+                            "type": "string",
+                            "hint": "Closing time in 24 hour format, e.g. 17:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        }
+                    }
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M2 22V20H4V12L2 13.5L.8 11.9L12 3.5L23.2 11.9L22 13.5L20 12V20H22V22H2M6 20H11V15H13V20H18V10.5L12 6L6 10.5V20Z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#1F2328"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#F4F3EF"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#F2B70566"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#1F2328"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#0E1013"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#F2B705"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#F2B705"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#D9A300"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#D9A300"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#3A3F46"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#3A3F46"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#1F2328"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#1F2328"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners",
+                    "default": "0"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}

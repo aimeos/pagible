@@ -49,5 +49,15 @@
     "Load more": "Загрузить ещё",
     "No results found": "Ничего не найдено",
     "Search failed": "Ошибка поиска",
-    "Language": "Язык"
+    "Language": "Язык",
+    "Attachments": "Вложения",
+    "Images or PDF files, max. :size MB each": "Изображения или файлы PDF, не более :size МБ каждый",
+    ":attribute: The file type is not allowed.": ":attribute: Этот тип файла не разрешён.",
+    ":attribute: The file is too large.": ":attribute: Файл слишком большой.",
+    ":attribute: Too many files.": ":attribute: Слишком много файлов.",
+    ":attribute: The files are too large.": ":attribute: Файлы слишком большие.",
+    "Please select": "Пожалуйста, выберите",
+    "Before": "До",
+    "After": "После",
+    "Before and after comparison": "Сравнение до и после"
 }

@@ -49,5 +49,15 @@
     "Load more": "Indlæs flere",
     "No results found": "Ingen resultater fundet",
     "Search failed": "Søgningen mislykkedes",
-    "Language": "Sprog"
+    "Language": "Sprog",
+    "Attachments": "Vedhæftede filer",
+    "Images or PDF files, max. :size MB each": "Billeder eller PDF-filer, maks. :size MB pr. fil",
+    ":attribute: The file type is not allowed.": ":attribute: Filtypen er ikke tilladt.",
+    ":attribute: The file is too large.": ":attribute: Filen er for stor.",
+    ":attribute: Too many files.": ":attribute: For mange filer.",
+    ":attribute: The files are too large.": ":attribute: Filerne er for store.",
+    "Please select": "Vælg venligst",
+    "Before": "Før",
+    "After": "Efter",
+    "Before and after comparison": "Før og efter-sammenligning"
 }

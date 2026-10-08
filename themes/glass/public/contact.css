@@ -10,7 +10,7 @@
     font-size: calc(var(--pico-font-size) * 0.75);
 }
 
-.contact input, .contact textarea {
+.contact input, .contact select, .contact textarea {
     border: 1px solid #FFFFFF59;
     background: var(--pico-contrast-background);
     backdrop-filter: blur(20px);
@@ -30,6 +30,7 @@
 }
 
 .contact input:focus,
+.contact select:focus,
 .contact textarea:focus {
     border-color: var(--pico-primary);
     box-shadow: 0 0 0 3px var(--pico-primary-background);

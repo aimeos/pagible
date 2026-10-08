@@ -76,6 +76,10 @@ document.querySelectorAll('.contact form').forEach(form => {
             },
             body: new FormData(e.target)
         }).then(response => {
+            if(response.status === 413) {
+                throw {files: [form.dataset.toolarge]};
+            }
+
             return response.json();
         }).then(result => {
             if(!result.status) {
@@ -88,7 +92,7 @@ document.querySelectorAll('.contact form').forEach(form => {
             const container = form.querySelector('.errors');
 
             Object.keys(errors || {}).forEach(key => {
-                const field = form.querySelector('[name="' + key + '"]');
+                const field = form.querySelector('[name="' + key + '"], [name="' + key.split('.')[0] + '[]"]');
 
                 field?.classList?.add('error');
                 field?.addEventListener('change', () => {

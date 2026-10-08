@@ -49,5 +49,15 @@
     "Load more": "بارگذاری بیشتر",
     "No results found": "نتیجه‌ای یافت نشد",
     "Search failed": "جست‌وجو ناموفق بود",
-    "Language": "زبان"
+    "Language": "زبان",
+    "Attachments": "پیوست‌ها",
+    "Images or PDF files, max. :size MB each": "تصاویر یا فایل‌های PDF، حداکثر :size مگابایت برای هر فایل",
+    ":attribute: The file type is not allowed.": ":attribute: نوع فایل مجاز نیست.",
+    ":attribute: The file is too large.": ":attribute: فایل خیلی بزرگ است.",
+    ":attribute: Too many files.": ":attribute: تعداد فایل‌ها بیش از حد است.",
+    ":attribute: The files are too large.": ":attribute: فایل‌ها خیلی بزرگ هستند.",
+    "Please select": "لطفاً انتخاب کنید",
+    "Before": "قبل",
+    "After": "بعد",
+    "Before and after comparison": "مقایسه قبل و بعد"
 }

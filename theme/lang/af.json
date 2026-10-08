@@ -49,5 +49,15 @@
     "Load more": "Laai meer",
     "No results found": "Geen resultate gevind nie",
     "Search failed": "Soektog het misluk",
-    "Language": "Taal"
+    "Language": "Taal",
+    "Attachments": "Aanhegsels",
+    "Images or PDF files, max. :size MB each": "Beelde of PDF-lêers, maks. :size MB elk",
+    ":attribute: The file type is not allowed.": ":attribute: Die lêertipe word nie toegelaat nie.",
+    ":attribute: The file is too large.": ":attribute: Die lêer is te groot.",
+    ":attribute: Too many files.": ":attribute: Te veel lêers.",
+    ":attribute: The files are too large.": ":attribute: Die lêers is te groot.",
+    "Please select": "Kies asseblief",
+    "Before": "Voor",
+    "After": "Na",
+    "Before and after comparison": "Voor-en-na-vergelyking"
 }

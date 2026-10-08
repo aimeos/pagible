@@ -15,7 +15,7 @@
     font-size: max(0.875rem, calc(var(--pico-font-size) * 0.7));
 }
 
-.contact input, .contact textarea {
+.contact input, .contact select, .contact textarea {
     border: 1px solid var(--pico-contrast-border);
     background-color: #FFFFFF;
     color: var(--pico-color);

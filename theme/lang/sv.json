@@ -49,5 +49,15 @@
     "Load more": "Läs in fler",
     "No results found": "Inga resultat hittades",
     "Search failed": "Sökningen misslyckades",
-    "Language": "Språk"
+    "Language": "Språk",
+    "Attachments": "Bilagor",
+    "Images or PDF files, max. :size MB each": "Bilder eller PDF-filer, max. :size MB per fil",
+    ":attribute: The file type is not allowed.": ":attribute: Filtypen är inte tillåten.",
+    ":attribute: The file is too large.": ":attribute: Filen är för stor.",
+    ":attribute: Too many files.": ":attribute: För många filer.",
+    ":attribute: The files are too large.": ":attribute: Filerna är för stora.",
+    "Please select": "Välj",
+    "Before": "Före",
+    "After": "Efter",
+    "Before and after comparison": "Jämförelse före och efter"
 }

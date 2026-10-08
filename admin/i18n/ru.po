@@ -2494,715 +2494,760 @@ msgstr "слайд-шоу"
 
 #: js/strings.js:59
 msgctxt "st"
+msgid "before-after"
+msgstr "до-после"
+
+#: js/strings.js:60
+msgctxt "st"
 msgid "code"
 msgstr "код"
 
-#: js/strings.js:60
+#: js/strings.js:61
 msgctxt "st"
 msgid "table"
 msgstr "таблица"
 
-#: js/strings.js:61
+#: js/strings.js:62
 msgctxt "st"
 msgid "map"
 msgstr "карта"
 
-#: js/strings.js:62
+#: js/strings.js:63
 msgctxt "st"
 msgid "html"
 msgstr "html"
 
-#: js/strings.js:63
+#: js/strings.js:64
 msgctxt "st"
 msgid "image"
 msgstr "изображение"
 
-#: js/strings.js:64
+#: js/strings.js:65
 msgctxt "st"
 msgid "video"
 msgstr "видео"
 
-#: js/strings.js:65
+#: js/strings.js:66
 msgctxt "st"
 msgid "audio"
 msgstr "аудио"
 
-#: js/strings.js:66
+#: js/strings.js:67
 msgctxt "st"
 msgid "file"
 msgstr "файл"
 
-#: js/strings.js:67
+#: js/strings.js:68
 msgctxt "st"
 msgid "hero"
 msgstr "Hero"
 
-#: js/strings.js:68
+#: js/strings.js:69
 msgctxt "st"
 msgid "CTA"
 msgstr "CTA"
 
-#: js/strings.js:69
+#: js/strings.js:70
 msgctxt "st"
 msgid "cards"
 msgstr "Карточки"
 
-#: js/strings.js:70
+#: js/strings.js:71
 msgctxt "st"
 msgid "blog"
 msgstr "Блог"
 
-#: js/strings.js:71
+#: js/strings.js:72
 msgctxt "st"
 msgid "article"
 msgstr "Статья"
 
-#: js/strings.js:72
+#: js/strings.js:73
 msgctxt "st"
 msgid "questions"
 msgstr "FAQ"
 
-#: js/strings.js:73
+#: js/strings.js:74
+msgctxt "st"
+msgid "timeline"
+msgstr "Хронология"
+
+#: js/strings.js:75
 msgctxt "st"
 msgid "toc"
 msgstr "оглавление"
 
-#: js/strings.js:74
+#: js/strings.js:76
 msgctxt "st"
 msgid "contact"
 msgstr "Контакты"
 
-#: js/strings.js:75
+#: js/strings.js:77
 msgctxt "st"
 msgid "meta-tags"
 msgstr "Метатеги"
 
-#: js/strings.js:76
+#: js/strings.js:78
 msgctxt "st"
 msgid "social-media"
 msgstr "Социальные сети"
 
-#: js/strings.js:77
+#: js/strings.js:79
 msgctxt "st"
 msgid "canonical"
 msgstr "Канонический URL"
 
-#: js/strings.js:78
+#: js/strings.js:80
 msgctxt "st"
 msgid "robots"
 msgstr "Поисковые системы"
 
-#: js/strings.js:79
+#: js/strings.js:81
 msgctxt "st"
 msgid "theme"
 msgstr "Тема оформления"
 
-#: js/strings.js:80
+#: js/strings.js:82
 msgctxt "st"
 msgid "styles"
 msgstr "стили"
 
-#: js/strings.js:81
+#: js/strings.js:83
 msgctxt "st"
 msgid "javascript"
 msgstr "javascript"
 
-#: js/strings.js:82
+#: js/strings.js:84
 msgctxt "st"
 msgid "heros"
 msgstr "Heros"
 
-#: js/strings.js:83
+#: js/strings.js:85
 msgctxt "st"
 msgid "news"
 msgstr "Новости"
 
-#: js/strings.js:84
+#: js/strings.js:86
 msgctxt "st"
 msgid "pricing"
 msgstr "Тарифы"
 
-#: js/strings.js:85
+#: js/strings.js:87
 msgctxt "st"
 msgid "robots.txt"
 msgstr "robots.txt"
 
-#: js/strings.js:86
+#: js/strings.js:88
 msgctxt "st"
 msgid "security"
 msgstr "Безопасность"
 
-#: js/strings.js:87
+#: js/strings.js:89
 msgctxt "st"
 msgid "testimonial"
 msgstr "Отзыв"
 
-#: js/strings.js:90
+#: js/strings.js:92
 msgctxt "sd"
 msgid "Section headline from H1 to H6"
 msgstr "Заголовок раздела от H1 до H6"
 
-#: js/strings.js:91
+#: js/strings.js:93
 msgctxt "sd"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Форматированный текст с абзацами, списками и ссылками"
 
-#: js/strings.js:92
+#: js/strings.js:94
 msgctxt "sd"
 msgid "Image next to formatted text"
 msgstr "Изображение рядом с форматированным текстом"
 
-#: js/strings.js:93
+#: js/strings.js:95
 msgctxt "sd"
 msgid "Source code with syntax highlighting"
 msgstr "Исходный код с подсветкой синтаксиса"
 
-#: js/strings.js:94
+#: js/strings.js:96
 msgctxt "sd"
 msgid "Data table with optional header row or column"
 msgstr "Таблица данных с необязательной строкой или столбцом заголовка"
 
-#: js/strings.js:95
+#: js/strings.js:97
 msgctxt "sd"
 msgid "Interactive map with location, text and link"
 msgstr "Интерактивная карта с местоположением, текстом и ссылкой"
 
-#: js/strings.js:96
+#: js/strings.js:98
 msgctxt "sd"
 msgid "Custom HTML markup for embeds and widgets"
 msgstr "Собственный HTML для встраиваний и виджетов"
 
-#: js/strings.js:97
+#: js/strings.js:99
 msgctxt "sd"
 msgid "Single responsive image"
 msgstr "Одно адаптивное изображение"
 
-#: js/strings.js:98
+#: js/strings.js:100
 msgctxt "sd"
 msgid "Rotating slides with multiple images"
 msgstr "Сменяющиеся слайды с несколькими изображениями"
 
-#: js/strings.js:99
+#: js/strings.js:101
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Ползунок для сравнения двух изображений до и после изменения"
+
+#: js/strings.js:102
 msgctxt "sd"
 msgid "Embedded video with player controls"
 msgstr "Встроенное видео с элементами управления"
 
-#: js/strings.js:100
+#: js/strings.js:103
 msgctxt "sd"
 msgid "Embedded audio with player controls"
 msgstr "Встроенное аудио с элементами управления"
 
-#: js/strings.js:101
+#: js/strings.js:104
 msgctxt "sd"
 msgid "Downloadable file such as a PDF document"
 msgstr "Файл для скачивания, например PDF-документ"
 
-#: js/strings.js:102
+#: js/strings.js:105
 msgctxt "sd"
 msgid "Large introduction with title, text, buttons and background"
 msgstr "Большое вступление с заголовком, текстом, кнопками и фоном"
 
-#: js/strings.js:103
+#: js/strings.js:106
 msgctxt "sd"
 msgid "Call to action with text and buttons"
 msgstr "Призыв к действию с текстом и кнопками"
 
-#: js/strings.js:104
+#: js/strings.js:107
 msgctxt "sd"
 msgid "Grid of cards with image, title and text"
 msgstr "Сетка карточек с изображением, заголовком и текстом"
 
-#: js/strings.js:105
+#: js/strings.js:108
 msgctxt "sd"
 msgid "Customer quotes with name, role and photo"
 msgstr "Отзывы клиентов с именем, должностью и фото"
 
-#: js/strings.js:106
+#: js/strings.js:109
 msgctxt "sd"
 msgid "Article introduction with image gallery and author"
 msgstr "Вступление статьи с галереей изображений и автором"
 
-#: js/strings.js:107
+#: js/strings.js:110
 msgctxt "sd"
 msgid "List of blog articles from a parent page"
 msgstr "Список статей блога с родительской страницы"
 
-#: js/strings.js:108
+#: js/strings.js:111
 msgctxt "sd"
 msgid "List of news articles from a parent page"
 msgstr "Список новостей с родительской страницы"
 
-#: js/strings.js:109
+#: js/strings.js:112
 msgctxt "sd"
 msgid "Featured subpage followed by further subpages"
 msgstr "Выделенная подстраница, за которой следуют другие подстраницы"
 
-#: js/strings.js:110
+#: js/strings.js:113
 msgctxt "sd"
 msgid "Price plans with subscriptions or one-time payments"
 msgstr "Тарифные планы с подпиской или разовой оплатой"
 
-#: js/strings.js:111
+#: js/strings.js:114
 msgctxt "sd"
 msgid "Frequently asked questions with answers"
 msgstr "Часто задаваемые вопросы с ответами"
 
-#: js/strings.js:112
+#: js/strings.js:115
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Пронумерованные шаги или события в хронологическом порядке"
+
+#: js/strings.js:116
 msgctxt "sd"
 msgid "Table of contents linking to page headings"
 msgstr "Оглавление со ссылками на заголовки страницы"
 
-#: js/strings.js:113
+#: js/strings.js:117
 msgctxt "sd"
-msgid "Contact form with configurable fields"
-msgstr "Контактная форма с настраиваемыми полями"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "Контактная форма с настраиваемыми полями и необязательными вложениями"
 
-#: js/strings.js:116
+#: js/strings.js:120
 msgctxt "fn"
 msgid "button"
 msgstr "кнопка"
 
-#: js/strings.js:117
+#: js/strings.js:121
 msgctxt "fn"
 msgid "buttons"
 msgstr "кнопки"
 
-#: js/strings.js:118
+#: js/strings.js:122
 msgctxt "fn"
 msgid "cards"
 msgstr "Карточки"
 
-#: js/strings.js:119
+#: js/strings.js:123
 msgctxt "fn"
 msgid "description"
 msgstr "описание"
 
-#: js/strings.js:120
+#: js/strings.js:124
 msgctxt "fn"
 msgid "file"
 msgstr "файл"
 
-#: js/strings.js:121
+#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "файлы"
 
-#: js/strings.js:122
+#: js/strings.js:126
 msgctxt "fn"
 msgid "follow"
 msgstr "Переход по ссылкам"
 
-#: js/strings.js:123
+#: js/strings.js:127
 msgctxt "fn"
 msgid "header"
 msgstr "заголовок"
 
-#: js/strings.js:124
+#: js/strings.js:128
 msgctxt "fn"
 msgid "index"
 msgstr "Индексирование"
 
-#: js/strings.js:125
+#: js/strings.js:129
 msgctxt "fn"
 msgid "keywords"
 msgstr "ключевые слова"
 
-#: js/strings.js:126
+#: js/strings.js:130
 msgctxt "fn"
 msgid "language"
 msgstr "язык"
 
-#: js/strings.js:127
+#: js/strings.js:131
 msgctxt "fn"
 msgid "label"
 msgstr "подпись"
 
-#: js/strings.js:128
+#: js/strings.js:132
 msgctxt "fn"
 msgid "level"
 msgstr "уровень"
 
-#: js/strings.js:129
+#: js/strings.js:133
 msgctxt "fn"
 msgid "limit"
 msgstr "ограничение"
 
-#: js/strings.js:130
+#: js/strings.js:134
 msgctxt "fn"
 msgid "location"
 msgstr "местоположение"
 
-#: js/strings.js:131
+#: js/strings.js:135
 msgctxt "fn"
 msgid "main"
 msgstr "Главное изображение"
 
-#: js/strings.js:132
+#: js/strings.js:136
 msgctxt "fn"
 msgid "order"
 msgstr "порядок"
 
-#: js/strings.js:133
+#: js/strings.js:137
 msgctxt "fn"
 msgid "parent-page"
 msgstr "родительская страница"
 
-#: js/strings.js:134
+#: js/strings.js:138
 msgctxt "fn"
 msgid "position"
 msgstr "позиция"
 
-#: js/strings.js:135
+#: js/strings.js:139
 msgctxt "fn"
 msgid "text"
 msgstr "текст"
 
-#: js/strings.js:136
+#: js/strings.js:140
 msgctxt "fn"
 msgid "table"
 msgstr "таблица"
 
-#: js/strings.js:137
+#: js/strings.js:141
 msgctxt "fn"
 msgid "title"
 msgstr "название"
 
-#: js/strings.js:138
+#: js/strings.js:142
 msgctxt "fn"
 msgid "url"
 msgstr "url"
 
-#: js/strings.js:140
+#: js/strings.js:144
 msgctxt "fn"
 msgid "image"
 msgstr "изображение"
 
-#: js/strings.js:141
+#: js/strings.js:145
 msgctxt "fn"
 msgid "images"
 msgstr "изображения"
 
-#: js/strings.js:142
+#: js/strings.js:146
+msgctxt "fn"
+msgid "before image"
+msgstr "изображение до"
+
+#: js/strings.js:147
+msgctxt "fn"
+msgid "after image"
+msgstr "изображение после"
+
+#: js/strings.js:148
 msgctxt "fn"
 msgid "items"
 msgstr "пункты"
 
-#: js/strings.js:143
+#: js/strings.js:149
 msgctxt "fn"
 msgid "introduction"
 msgstr "введение"
 
-#: js/strings.js:144
+#: js/strings.js:150
 msgctxt "fn"
 msgid "load immediately"
 msgstr "загружать сразу"
 
-#: js/strings.js:145
+#: js/strings.js:151
 msgctxt "fn"
 msgid "source code"
 msgstr "исходный код"
 
-#: js/strings.js:146
+#: js/strings.js:152
 msgctxt "fn"
 msgid "Frontend access role"
 msgstr "Роль доступа к пользовательской части"
 
-#: js/strings.js:147
+#: js/strings.js:153
 msgctxt "fn"
 msgid "Payment prices"
 msgstr "Цены оплаты"
 
-#: js/strings.js:148
+#: js/strings.js:154
 msgctxt "fn"
 msgid "Payment reference"
 msgstr "Платёжная ссылка"
 
-#: js/strings.js:149
+#: js/strings.js:155
 msgctxt "fn"
 msgid "Currency"
 msgstr "Валюта"
 
-#: js/strings.js:150
+#: js/strings.js:156
 msgctxt "fn"
 msgid "Billing interval"
 msgstr "Интервал выставления счетов"
 
-#: js/strings.js:151
+#: js/strings.js:157
 msgctxt "fn"
 msgid "Price unit"
 msgstr "Единица цены"
 
-#: js/strings.js:152
+#: js/strings.js:158
 msgctxt "fn"
 msgid "Target page or link"
 msgstr "Целевая страница или ссылка"
 
-#: js/strings.js:153
+#: js/strings.js:159
 msgctxt "fn"
 msgid "Form fields"
 msgstr "Поля формы"
 
-#: js/strings.js:154
+#: js/strings.js:160
 msgctxt "fn"
 msgid "Field"
 msgstr "Поле"
 
-#: js/strings.js:155
+#: js/strings.js:161
 msgctxt "fn"
 msgid "Required"
 msgstr "Обязательное"
 
-#: js/strings.js:156
+#: js/strings.js:162
+msgctxt "fn"
+msgid "Input type"
+msgstr "Тип поля"
+
+#: js/strings.js:163
+msgctxt "fn"
+msgid "Choices"
+msgstr "Варианты"
+
+#: js/strings.js:164
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Вложения"
+
+#: js/strings.js:165
 msgctxt "fn"
 msgid "Link label"
 msgstr "Текст ссылки"
 
-#: js/strings.js:157
+#: js/strings.js:166
 msgctxt "fn"
 msgid "Contact URL"
 msgstr "Контактный URL"
 
-#: js/strings.js:158
+#: js/strings.js:167
 msgctxt "fn"
 msgid "Contact email"
 msgstr "Контактный email"
 
-#: js/strings.js:159
+#: js/strings.js:168
 msgctxt "fn"
 msgid "Description"
 msgstr "Описание"
 
-#: js/strings.js:160
+#: js/strings.js:169
 msgctxt "fn"
 msgid "Displayed price"
 msgstr "Отображаемая цена"
 
-#: js/strings.js:161
+#: js/strings.js:170
 msgctxt "fn"
 msgid "Gallery"
 msgstr "Галерея"
 
-#: js/strings.js:162
+#: js/strings.js:171
 msgctxt "fn"
 msgid "Highlight text"
 msgstr "Текст метки"
 
-#: js/strings.js:163
+#: js/strings.js:172
 msgctxt "fn"
 msgid "Highlighted"
 msgstr "Выделенный"
 
-#: js/strings.js:164
+#: js/strings.js:173
 msgctxt "fn"
 msgid "Language"
 msgstr "Язык"
 
-#: js/strings.js:165
+#: js/strings.js:174
 msgctxt "fn"
 msgid "Payment type"
 msgstr "Тип оплаты"
 
-#: js/strings.js:166
+#: js/strings.js:175
 msgctxt "fn"
 msgid "Preferred languages"
 msgstr "Предпочитаемые языки"
 
-#: js/strings.js:167
+#: js/strings.js:176
 msgctxt "fn"
 msgid "Subtitle"
 msgstr "Подзаголовок"
 
-#: js/strings.js:168
+#: js/strings.js:177
 msgctxt "fn"
 msgid "acknowledgments"
 msgstr "Благодарности"
 
-#: js/strings.js:169
+#: js/strings.js:178
 msgctxt "fn"
 msgid "amount"
 msgstr "Сумма"
 
-#: js/strings.js:170
+#: js/strings.js:179
 msgctxt "fn"
 msgid "background"
 msgstr "Фон"
 
-#: js/strings.js:171
+#: js/strings.js:180
 msgctxt "fn"
 msgid "background animation"
 msgstr "Анимация фона"
 
-#: js/strings.js:172
+#: js/strings.js:181
 msgctxt "fn"
 msgid "button-alternative"
 msgstr "Альтернативная кнопка"
 
-#: js/strings.js:173
+#: js/strings.js:182
 msgctxt "fn"
 msgid "canonical"
 msgstr "Канонический URL"
 
-#: js/strings.js:174
+#: js/strings.js:183
 msgctxt "fn"
 msgid "columns"
 msgstr "Столбцы"
 
-#: js/strings.js:175
+#: js/strings.js:184
 msgctxt "fn"
 msgid "csaf"
 msgstr "CSAF"
 
-#: js/strings.js:176
+#: js/strings.js:185
 msgctxt "fn"
 msgid "encryption"
 msgstr "Шифрование"
 
-#: js/strings.js:177
+#: js/strings.js:186
 msgctxt "fn"
 msgid "expires"
 msgstr "Истекает"
 
-#: js/strings.js:178
+#: js/strings.js:187
 msgctxt "fn"
 msgid "features"
 msgstr "Функции"
 
-#: js/strings.js:179
+#: js/strings.js:188
 msgctxt "fn"
 msgid "hiring"
 msgstr "Вакансии"
 
-#: js/strings.js:180
+#: js/strings.js:189
 msgctxt "fn"
 msgid "layout"
 msgstr "Макет"
 
-#: js/strings.js:181
+#: js/strings.js:190
 msgctxt "fn"
 msgid "name"
 msgstr "Название"
 
-#: js/strings.js:182
+#: js/strings.js:191
 msgctxt "fn"
 msgid "policy"
 msgstr "Политика"
 
-#: js/strings.js:183
+#: js/strings.js:192
 msgctxt "fn"
 msgid "ratio"
 msgstr "Соотношение"
 
-#: js/strings.js:184
+#: js/strings.js:193
 msgctxt "fn"
 msgid "role"
 msgstr "Должность"
 
-#: js/strings.js:185
+#: js/strings.js:194
 msgctxt "fn"
 msgid "subtitle"
 msgstr "Подзаголовок"
 
-#: js/strings.js:186
+#: js/strings.js:195
 msgctxt "fn"
 msgid "url-alternative"
 msgstr "Альтернативный URL"
 
-#: js/strings.js:188
+#: js/strings.js:197
 msgctxt "fn"
 msgid "--pico-font-family-sans-serif"
 msgstr "Шрифт текста"
 
-#: js/strings.js:189
+#: js/strings.js:198
 msgctxt "fn"
 msgid "--pico-font-family-display"
 msgstr "Шрифт заголовков"
 
-#: js/strings.js:190
+#: js/strings.js:199
 msgctxt "fn"
 msgid "--pico-color"
 msgstr "Цвет текста"
 
-#: js/strings.js:191
+#: js/strings.js:200
 msgctxt "fn"
 msgid "--pico-background-color"
 msgstr "Цвет фона"
 
-#: js/strings.js:192
+#: js/strings.js:201
 msgctxt "fn"
 msgid "--pico-text-selection-color"
 msgstr "Цвет выделения"
 
-#: js/strings.js:193
+#: js/strings.js:202
 msgctxt "fn"
 msgid "--pico-contrast"
 msgstr "Контрастный цвет"
 
-#: js/strings.js:194
+#: js/strings.js:203
 msgctxt "fn"
 msgid "--pico-contrast-hover"
 msgstr "Контрастный цвет при наведении"
 
-#: js/strings.js:195
+#: js/strings.js:204
 msgctxt "fn"
 msgid "--pico-contrast-inverse"
 msgstr "Цвет текста на контрасте"
 
-#: js/strings.js:196
+#: js/strings.js:205
 msgctxt "fn"
 msgid "--pico-primary"
 msgstr "Основной цвет"
 
-#: js/strings.js:197
+#: js/strings.js:206
 msgctxt "fn"
 msgid "--pico-primary-background"
 msgstr "Основной фон"
 
-#: js/strings.js:198
+#: js/strings.js:207
 msgctxt "fn"
 msgid "--pico-primary-hover"
 msgstr "Основной цвет при наведении"
 
-#: js/strings.js:199
+#: js/strings.js:208
 msgctxt "fn"
 msgid "--pico-primary-hover-background"
 msgstr "Основной фон при наведении"
 
-#: js/strings.js:200
+#: js/strings.js:209
 msgctxt "fn"
 msgid "--pico-secondary"
 msgstr "Второстепенный цвет"
 
-#: js/strings.js:201
+#: js/strings.js:210
 msgctxt "fn"
 msgid "--pico-secondary-background"
 msgstr "Второстепенный фон"
 
-#: js/strings.js:202
+#: js/strings.js:211
 msgctxt "fn"
 msgid "--pico-secondary-hover"
 msgstr "Второстепенный цвет при наведении"
 
-#: js/strings.js:203
+#: js/strings.js:212
 msgctxt "fn"
 msgid "--pico-secondary-hover-background"
 msgstr "Второстепенный фон при наведении"
 
-#: js/strings.js:204
+#: js/strings.js:213
 msgctxt "fn"
 msgid "--pico-border-radius"
 msgstr "Радиус углов"
 
-#: js/strings.js:205
+#: js/strings.js:214
 msgctxt "fn"
 msgid "--pico-nav-breadcrumb-divider"
 msgstr "Разделитель хлебных крошек"
 
-#: js/strings.js:208
+#: js/strings.js:217
 msgctxt "fh"
 msgid "Text of the headline"
 msgstr "Текст заголовка"
 
-#: js/strings.js:209
+#: js/strings.js:218
 msgctxt "fh"
 msgid ""
 "Level 1 is the main page headline, higher levels structure the sections below"
@@ -3210,110 +3255,110 @@ msgstr ""
 "Уровень 1 — это главный заголовок страницы, более высокие уровни "
 "структурируют разделы ниже"
 
-#: js/strings.js:210
+#: js/strings.js:219
 msgctxt "fh"
 msgid "Formatted text with paragraphs, lists and links"
 msgstr "Форматированный текст с абзацами, списками и ссылками"
 
-#: js/strings.js:211
+#: js/strings.js:220
 msgctxt "fh"
 msgid "Formatted text shown next to the image"
 msgstr "Форматированный текст, отображаемый рядом с изображением"
 
-#: js/strings.js:212
+#: js/strings.js:221
 msgctxt "fh"
 msgid "Image shown next to the text"
 msgstr "Изображение, отображаемое рядом с текстом"
 
-#: js/strings.js:213
+#: js/strings.js:222
 msgctxt "fh"
 msgid "Position of the image relative to the text"
 msgstr "Положение изображения относительно текста"
 
-#: js/strings.js:214
+#: js/strings.js:223
 msgctxt "fh"
 msgid "Width ratio between image and text"
 msgstr "Соотношение ширины изображения и текста"
 
-#: js/strings.js:215
+#: js/strings.js:224
 msgctxt "fh"
 msgid "Programming language used for syntax highlighting"
 msgstr "Язык программирования, используемый для подсветки синтаксиса"
 
-#: js/strings.js:216
+#: js/strings.js:225
 msgctxt "fh"
 msgid "Source code shown with syntax highlighting"
 msgstr "Исходный код, отображаемый с подсветкой синтаксиса"
 
-#: js/strings.js:217
+#: js/strings.js:226
 msgctxt "fh"
 msgid "Optional caption shown above the table"
 msgstr "Необязательная подпись, отображаемая над таблицей"
 
-#: js/strings.js:218
+#: js/strings.js:227
 msgctxt "fh"
 msgid "Use the first row, the first column or both as table headers"
 msgstr ""
 "Использовать первую строку, первый столбец или оба варианта как заголовки "
 "таблицы"
 
-#: js/strings.js:219
+#: js/strings.js:228
 msgctxt "fh"
 msgid "Enter data in the cells; add or remove rows and columns as needed"
 msgstr ""
 "Введите данные в ячейки; при необходимости добавьте или удалите строки и "
 "столбцы"
 
-#: js/strings.js:220
+#: js/strings.js:229
 msgctxt "fh"
 msgid "Optional headline shown above the map"
 msgstr "Необязательный заголовок, отображаемый над картой"
 
-#: js/strings.js:221
+#: js/strings.js:230
 msgctxt "fh"
 msgid "Description shown next to the map, e.g. address or directions"
 msgstr "Описание, отображаемое рядом с картой, например адрес или маршрут"
 
-#: js/strings.js:222
+#: js/strings.js:231
 msgctxt "fh"
 msgid "Search for a place or click on the map to set the location"
 msgstr "Найдите место или щёлкните на карте, чтобы задать местоположение"
 
-#: js/strings.js:223
+#: js/strings.js:232
 msgctxt "fh"
 msgid "Text of the link that opens the location in a map service"
 msgstr "Текст ссылки, открывающей местоположение в картографическом сервисе"
 
-#: js/strings.js:224
+#: js/strings.js:233
 msgctxt "fh"
 msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
 msgstr ""
 "HTML-код, вставляемый на страницу как есть, например для встраиваний и "
 "виджетов"
 
-#: js/strings.js:225
+#: js/strings.js:234
 msgctxt "fh"
 msgid "Image shown in full width of the content area"
 msgstr "Изображение, отображаемое на всю ширину области содержимого"
 
-#: js/strings.js:226
+#: js/strings.js:235
 msgctxt "fh"
 msgid "Load the image without delay if it is visible at the top of the page"
 msgstr ""
 "Загружать изображение без задержки, если оно видно в верхней части страницы"
 
-#: js/strings.js:227
+#: js/strings.js:236
 msgctxt "fh"
 msgid "Optional headline shown above the slideshow"
 msgstr "Необязательный заголовок, отображаемый над слайд-шоу"
 
-#: js/strings.js:228
+#: js/strings.js:237
 msgctxt "fh"
 msgid "Images shown one after another, drag to change the order"
 msgstr ""
 "Изображения, показываемые одно за другим; перетащите, чтобы изменить порядок"
 
-#: js/strings.js:229
+#: js/strings.js:238
 msgctxt "fh"
 msgid ""
 "Load the first image without delay if it is visible at the top of the page"
@@ -3321,351 +3366,433 @@ msgstr ""
 "Загружать первое изображение без задержки, если оно видно в верхней части "
 "страницы"
 
-#: js/strings.js:230
+#: js/strings.js:239
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Необязательный заголовок над сравнением"
+
+#: js/strings.js:240
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Изображение, показывающее состояние до изменения"
+
+#: js/strings.js:241
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr ""
+"Изображение, показывающее результат, оба изображения должны быть одного "
+"размера"
+
+#: js/strings.js:242
+msgctxt "fh"
+msgid ""
+"Load the images without delay if they are visible at the top of the page"
+msgstr "Загружать изображения без задержки, если они видны вверху страницы"
+
+#: js/strings.js:243
 msgctxt "fh"
 msgid "Video file played in the page"
 msgstr "Видеофайл, воспроизводимый на странице"
 
-#: js/strings.js:231
+#: js/strings.js:244
 msgctxt "fh"
 msgid "Audio file played in the page"
 msgstr "Аудиофайл, воспроизводимый на странице"
 
-#: js/strings.js:232
+#: js/strings.js:245
 msgctxt "fh"
 msgid "File offered for download"
 msgstr "Файл, доступный для скачивания"
 
-#: js/strings.js:233
+#: js/strings.js:246
 msgctxt "fh"
 msgid "Main headline of the page"
 msgstr "Главный заголовок страницы"
 
-#: js/strings.js:234
+#: js/strings.js:247
 msgctxt "fh"
 msgid "Short line shown above the headline"
 msgstr "Короткая строка, отображаемая над заголовком"
 
-#: js/strings.js:235
+#: js/strings.js:248
 msgctxt "fh"
 msgid "Introduction shown below the headline"
 msgstr "Вступление, отображаемое под заголовком"
 
-#: js/strings.js:236
+#: js/strings.js:249
 msgctxt "fh"
 msgid "Page or link the main button leads to"
 msgstr "Страница или ссылка, к которой ведёт основная кнопка"
 
-#: js/strings.js:237
+#: js/strings.js:250
 msgctxt "fh"
 msgid "Text of the main button"
 msgstr "Текст основной кнопки"
 
-#: js/strings.js:238
+#: js/strings.js:251
 msgctxt "fh"
 msgid "Page or link the second button leads to"
 msgstr "Страница или ссылка, к которой ведёт вторая кнопка"
 
-#: js/strings.js:239
+#: js/strings.js:252
 msgctxt "fh"
 msgid "Text of the second button"
 msgstr "Текст второй кнопки"
 
-#: js/strings.js:240
+#: js/strings.js:253
 msgctxt "fh"
 msgid "Image shown behind the text"
 msgstr "Изображение, отображаемое позади текста"
 
-#: js/strings.js:241
+#: js/strings.js:254
 msgctxt "fh"
 msgid "Animation effect of the background image"
 msgstr "Анимационный эффект фонового изображения"
 
-#: js/strings.js:242
+#: js/strings.js:255
 msgctxt "fh"
 msgid "Images shown next to the text"
 msgstr "Изображения, отображаемые рядом с текстом"
 
-#: js/strings.js:243
+#: js/strings.js:256
 msgctxt "fh"
 msgid "Headline catching the attention of visitors"
 msgstr "Заголовок, привлекающий внимание посетителей"
 
-#: js/strings.js:244
+#: js/strings.js:257
 msgctxt "fh"
 msgid "Text motivating visitors to take action"
 msgstr "Текст, побуждающий посетителей к действию"
 
-#: js/strings.js:245
+#: js/strings.js:258
 msgctxt "fh"
 msgid "Buttons leading visitors to the next step"
 msgstr "Кнопки, ведущие посетителей к следующему шагу"
 
-#: js/strings.js:246
+#: js/strings.js:259
 msgctxt "fh"
 msgid "Text of the button"
 msgstr "Текст кнопки"
 
-#: js/strings.js:247
+#: js/strings.js:260
 msgctxt "fh"
 msgid "Page or link the button leads to"
 msgstr "Страница или ссылка, к которой ведёт кнопка"
 
-#: js/strings.js:248
+#: js/strings.js:261
 msgctxt "fh"
 msgid "Optional headline shown above the cards"
 msgstr "Необязательный заголовок, отображаемый над карточками"
 
-#: js/strings.js:249
+#: js/strings.js:262
 msgctxt "fh"
 msgid "Number of cards per row, \"auto\" adapts to the screen width"
 msgstr "Количество карточек в ряду, \"auto\" адаптируется к ширине экрана"
 
-#: js/strings.js:250
+#: js/strings.js:263
+msgctxt "fh"
+msgid ""
+"Show cards, small badges like certificates or large figures like key numbers"
+msgstr ""
+"Показывать карточки, небольшие значки, например сертификаты, или крупные "
+"числа, например ключевые показатели"
+
+#: js/strings.js:264
 msgctxt "fh"
 msgid "Cards shown in the grid"
 msgstr "Карточки, отображаемые в сетке"
 
-#: js/strings.js:251
+#: js/strings.js:265
 msgctxt "fh"
 msgid "Headline of the card"
 msgstr "Заголовок карточки"
 
-#: js/strings.js:252
+#: js/strings.js:266
 msgctxt "fh"
 msgid "Image shown at the top of the card"
 msgstr "Изображение, отображаемое в верхней части карточки"
 
-#: js/strings.js:253
+#: js/strings.js:267
 msgctxt "fh"
 msgid "Text of the card"
 msgstr "Текст карточки"
 
-#: js/strings.js:254
+#: js/strings.js:268
 msgctxt "fh"
 msgid "Page or link the card leads to"
 msgstr "Страница или ссылка, к которой ведёт карточка"
 
-#: js/strings.js:255
+#: js/strings.js:269
 msgctxt "fh"
 msgid "Optional headline shown above the quotes"
 msgstr "Необязательный заголовок, отображаемый над отзывами"
 
-#: js/strings.js:256
+#: js/strings.js:270
 msgctxt "fh"
 msgid "Quotes of customers or partners"
 msgstr "Отзывы клиентов или партнёров"
 
-#: js/strings.js:257
+#: js/strings.js:271
 msgctxt "fh"
 msgid "Quote of the person"
 msgstr "Отзыв человека"
 
-#: js/strings.js:258
+#: js/strings.js:272
 msgctxt "fh"
 msgid "Name of the person"
 msgstr "Имя человека"
 
-#: js/strings.js:259
+#: js/strings.js:273
 msgctxt "fh"
 msgid "Position or company of the person"
 msgstr "Должность или компания человека"
 
-#: js/strings.js:260
+#: js/strings.js:274
 msgctxt "fh"
 msgid "Photo of the person"
 msgstr "Фото человека"
 
-#: js/strings.js:261
+#: js/strings.js:275
 msgctxt "fh"
 msgid "Introduction of the article shown below the page title"
 msgstr "Вступление статьи, отображаемое под заголовком страницы"
 
-#: js/strings.js:262
+#: js/strings.js:276
 msgctxt "fh"
 msgid "Images of the article, the first one is used as preview image"
 msgstr "Изображения статьи, первое используется как изображение предпросмотра"
 
-#: js/strings.js:263
+#: js/strings.js:277
 msgctxt "fh"
 msgid "Name of the author of the article"
 msgstr "Имя автора статьи"
 
-#: js/strings.js:264
+#: js/strings.js:278
 msgctxt "fh"
 msgid "Link to the profile page of the author"
 msgstr "Ссылка на страницу профиля автора"
 
-#: js/strings.js:265
+#: js/strings.js:279
 msgctxt "fh"
 msgid "Optional headline shown above the list"
 msgstr "Необязательный заголовок, отображаемый над списком"
 
-#: js/strings.js:266
+#: js/strings.js:280
 msgctxt "fh"
 msgid "Display the pages as cards or as a compact list"
 msgstr "Отображать страницы как карточки или как компактный список"
 
-#: js/strings.js:267
+#: js/strings.js:281
 msgctxt "fh"
 msgid "Page whose subpages are listed"
 msgstr "Страница, подстраницы которой выводятся в списке"
 
-#: js/strings.js:268
+#: js/strings.js:282
 msgctxt "fh"
 msgid "Sort order of the listed pages"
 msgstr "Порядок сортировки страниц в списке"
 
-#: js/strings.js:269
+#: js/strings.js:283
 msgctxt "fh"
 msgid "Maximum number of pages shown at once"
 msgstr "Максимальное количество страниц, показываемых одновременно"
 
-#: js/strings.js:270
+#: js/strings.js:284
 msgctxt "fh"
 msgid "Display the further subpages as cards or as a compact list"
 msgstr ""
 "Отображать остальные подстраницы как карточки или как компактный список"
 
-#: js/strings.js:271
+#: js/strings.js:285
 msgctxt "fh"
 msgid "Optional headline shown above the price plans"
 msgstr "Необязательный заголовок, отображаемый над тарифными планами"
 
-#: js/strings.js:272
+#: js/strings.js:286
 msgctxt "fh"
 msgid "Short text shown below the headline"
 msgstr "Короткий текст, отображаемый под заголовком"
 
-#: js/strings.js:273
+#: js/strings.js:287
 msgctxt "fh"
 msgid "Price plans shown side by side"
 msgstr "Тарифные планы, отображаемые рядом друг с другом"
 
-#: js/strings.js:274
+#: js/strings.js:288
 msgctxt "fh"
 msgid "Name of the price plan"
 msgstr "Название тарифного плана"
 
-#: js/strings.js:275
+#: js/strings.js:289
 msgctxt "fh"
 msgid "Role granted to customers after the payment to access protected pages"
 msgstr ""
 "Роль, предоставляемая клиентам после оплаты для доступа к защищённым "
 "страницам"
 
-#: js/strings.js:276
+#: js/strings.js:290
 msgctxt "fh"
 msgid "Prices of the plan, e.g. monthly and yearly"
 msgstr "Цены плана, например ежемесячная и годовая"
 
-#: js/strings.js:277
+#: js/strings.js:291
 msgctxt "fh"
 msgid "Recurring subscription or one-time payment"
 msgstr "Периодическая подписка или разовый платёж"
 
-#: js/strings.js:278
+#: js/strings.js:292
 msgctxt "fh"
 msgid "Number of days between two payments, e.g. 30 for monthly"
 msgstr ""
 "Количество дней между двумя платежами, например 30 для ежемесячной оплаты"
 
-#: js/strings.js:279
+#: js/strings.js:293
 msgctxt "fh"
 msgid "Three letter ISO currency code, e.g. EUR or USD"
 msgstr "Трёхбуквенный ISO-код валюты, например EUR или USD"
 
-#: js/strings.js:280
+#: js/strings.js:294
 msgctxt "fh"
 msgid "Price ID or amount used by the payment provider"
 msgstr "ID цены или сумма, используемые платёжным провайдером"
 
-#: js/strings.js:281
+#: js/strings.js:295
 msgctxt "fh"
 msgid "Formatted price shown to visitors, e.g. €9.99"
 msgstr "Форматированная цена, отображаемая посетителям, например €9.99"
 
-#: js/strings.js:282
+#: js/strings.js:296
 msgctxt "fh"
 msgid "Numeric price shown if no formatted price is set"
 msgstr "Числовая цена, отображаемая, если форматированная цена не задана"
 
-#: js/strings.js:283
+#: js/strings.js:297
 msgctxt "fh"
 msgid "Text shown after the price, e.g. per month"
 msgstr "Текст, отображаемый после цены, например в месяц"
 
-#: js/strings.js:284
+#: js/strings.js:298
 msgctxt "fh"
 msgid "Short description of the price plan"
 msgstr "Краткое описание тарифного плана"
 
-#: js/strings.js:285
+#: js/strings.js:299
 msgctxt "fh"
 msgid "List of the features included in the plan"
 msgstr "Список функций, включённых в план"
 
-#: js/strings.js:286
+#: js/strings.js:300
 msgctxt "fh"
 msgid "Emphasize this plan compared to the others"
 msgstr "Выделить этот план на фоне остальных"
 
-#: js/strings.js:287
+#: js/strings.js:301
 msgctxt "fh"
 msgid "Short label shown on the highlighted plan, e.g. Popular"
 msgstr "Короткая метка, отображаемая на выделенном плане, например Популярный"
 
-#: js/strings.js:288
+#: js/strings.js:302
 msgctxt "fh"
 msgid "Optional headline shown above the questions"
 msgstr "Необязательный заголовок, отображаемый над вопросами"
 
-#: js/strings.js:289
+#: js/strings.js:303
 msgctxt "fh"
 msgid "Questions and answers shown as expandable list"
 msgstr "Вопросы и ответы, отображаемые в виде раскрывающегося списка"
 
-#: js/strings.js:290
+#: js/strings.js:304
 msgctxt "fh"
 msgid "Question asked by visitors"
 msgstr "Вопрос, задаваемый посетителями"
 
-#: js/strings.js:291
+#: js/strings.js:305
 msgctxt "fh"
 msgid "Answer to the question"
 msgstr "Ответ на вопрос"
 
-#: js/strings.js:292
+#: js/strings.js:306
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Необязательный заголовок над хронологией"
+
+#: js/strings.js:307
+msgctxt "fh"
+msgid ""
+"Show the steps one below the other or side by side, side by side suits up to "
+"five steps"
+msgstr "Показывать шаги друг под другом или рядом, расположение рядом подходит для пяти шагов и меньше"
+
+#: js/strings.js:308
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Шаги или события в том порядке, в котором они происходят"
+
+#: js/strings.js:309
+msgctxt "fh"
+msgid ""
+"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Необязательная дата, период или этап над заголовком, например 2024 или Неделя 1"
+
+#: js/strings.js:310
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Название шага или события"
+
+#: js/strings.js:311
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Описание шага или события"
+
+#: js/strings.js:312
 msgctxt "fh"
 msgid "Optional headline shown above the table of contents"
 msgstr "Необязательный заголовок, отображаемый над оглавлением"
 
-#: js/strings.js:293
+#: js/strings.js:313
 msgctxt "fh"
 msgid "Optional headline shown above the contact form"
 msgstr "Необязательный заголовок, отображаемый над контактной формой"
 
-#: js/strings.js:294
+#: js/strings.js:314
 msgctxt "fh"
 msgid "Optional text shown between headline and contact form"
 msgstr "Необязательный текст между заголовком и контактной формой"
 
-#: js/strings.js:295
+#: js/strings.js:315
 msgctxt "fh"
 msgid "Form fields shown to visitors in this order"
 msgstr "Поля формы, показываемые посетителям в этом порядке"
 
-#: js/strings.js:296
+#: js/strings.js:316
 msgctxt "fh"
 msgid "Select a form field or enter your own name"
 msgstr "Выберите поле формы или введите собственное название"
 
-#: js/strings.js:297
+#: js/strings.js:317
 msgctxt "fh"
 msgid "Visitors must fill out this field"
 msgstr "Посетители должны заполнить это поле"
 
-#: js/strings.js:298
+#: js/strings.js:318
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "Тип поля, показываемого посетителям"
+
+#: js/strings.js:319
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Варианты для полей выбора, по одному в строке"
+
+#: js/strings.js:320
+msgctxt "fh"
+msgid ""
+"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr ""
+"Максимальное количество изображений или PDF-файлов, которые могут прикрепить "
+"посетители, 0 отключает загрузку"
+
+#: js/strings.js:321
 msgctxt "fh"
 msgid ""
 "Summary of the page shown in search results, 150 to 160 characters "
@@ -3674,397 +3801,432 @@ msgstr ""
 "Краткое описание страницы, отображаемое в результатах поиска, рекомендуется "
 "150–160 символов"
 
-#: js/strings.js:299
+#: js/strings.js:322
 msgctxt "fh"
 msgid "Comma separated list of keywords describing the page"
 msgstr "Список ключевых слов через запятую, описывающих страницу"
 
-#: js/strings.js:300
+#: js/strings.js:323
 msgctxt "fh"
 msgid "Title shown when the page is shared in social media"
 msgstr "Заголовок, отображаемый при публикации страницы в социальных сетях"
 
-#: js/strings.js:301
+#: js/strings.js:324
 msgctxt "fh"
 msgid "Summary shown when the page is shared in social media"
 msgstr ""
 "Краткое описание, отображаемое при публикации страницы в социальных сетях"
 
-#: js/strings.js:302
+#: js/strings.js:325
 msgctxt "fh"
 msgid "Preview image shown when the page is shared in social media"
 msgstr ""
 "Изображение предпросмотра, отображаемое при публикации страницы в социальных "
 "сетях"
 
-#: js/strings.js:303
+#: js/strings.js:326
 msgctxt "fh"
 msgid "Original URL if the same content is available at several addresses"
 msgstr "Исходный URL, если то же содержимое доступно по нескольким адресам"
 
-#: js/strings.js:304
+#: js/strings.js:327
 msgctxt "fh"
 msgid "Allow or prevent search engines from listing this page"
 msgstr "Разрешить или запретить поисковым системам индексировать эту страницу"
 
-#: js/strings.js:305
+#: js/strings.js:328
 msgctxt "fh"
 msgid "Allow or prevent search engines from following the links on this page"
 msgstr ""
 "Разрешить или запретить поисковым системам переходить по ссылкам на этой "
 "странице"
 
-#: js/strings.js:306
+#: js/strings.js:329
 msgctxt "fh"
 msgid "Name of the website shown in the browser tab and search results"
 msgstr "Название сайта, отображаемое во вкладке браузера и результатах поиска"
 
-#: js/strings.js:307
+#: js/strings.js:330
 msgctxt "fh"
 msgid "Logo shown in the page header"
 msgstr "Логотип, отображаемый в шапке страницы"
 
-#: js/strings.js:308
+#: js/strings.js:331
 msgctxt "fh"
 msgid "Logo variant used for dark backgrounds"
 msgstr "Вариант логотипа для тёмного фона"
 
-#: js/strings.js:309
+#: js/strings.js:332
 msgctxt "fh"
 msgid "Small square image shown in browser tabs and bookmarks"
 msgstr ""
 "Маленькое квадратное изображение, отображаемое во вкладках браузера и "
 "закладках"
 
-#: js/strings.js:310
+#: js/strings.js:333
 msgctxt "fh"
 msgid "Comma separated list of fonts used for the text"
 msgstr "Список шрифтов через запятую, используемых для текста"
 
-#: js/strings.js:311
+#: js/strings.js:334
 msgctxt "fh"
 msgid "Default text color"
 msgstr "Цвет текста по умолчанию"
 
-#: js/strings.js:312
+#: js/strings.js:335
 msgctxt "fh"
 msgid "Background color of the pages"
 msgstr "Цвет фона страниц"
 
-#: js/strings.js:313
+#: js/strings.js:336
 msgctxt "fh"
 msgid "Background color of selected text"
 msgstr "Цвет фона выделенного текста"
 
-#: js/strings.js:314
+#: js/strings.js:337
 msgctxt "fh"
 msgid "Color of elements with strong contrast to the background"
 msgstr "Цвет элементов с сильным контрастом к фону"
 
-#: js/strings.js:315
+#: js/strings.js:338
 msgctxt "fh"
 msgid "Contrast color when hovering or focusing an element"
 msgstr "Контрастный цвет при наведении или фокусировке на элементе"
 
-#: js/strings.js:316
+#: js/strings.js:339
 msgctxt "fh"
 msgid "Text color on elements using the contrast color"
 msgstr "Цвет текста на элементах, использующих контрастный цвет"
 
-#: js/strings.js:317
+#: js/strings.js:340
 msgctxt "fh"
 msgid "Main brand color used for links and buttons"
 msgstr "Основной фирменный цвет, используемый для ссылок и кнопок"
 
-#: js/strings.js:318
+#: js/strings.js:341
 msgctxt "fh"
 msgid "Background color of primary buttons and highlights"
 msgstr "Цвет фона основных кнопок и акцентов"
 
-#: js/strings.js:319
+#: js/strings.js:342
 msgctxt "fh"
 msgid "Primary color when hovering or focusing an element"
 msgstr "Основной цвет при наведении или фокусировке на элементе"
 
-#: js/strings.js:320
+#: js/strings.js:343
 msgctxt "fh"
 msgid "Primary background color when hovering or focusing an element"
 msgstr "Основной цвет фона при наведении или фокусировке на элементе"
 
-#: js/strings.js:321
+#: js/strings.js:344
 msgctxt "fh"
 msgid "Additional color used for less important links and buttons"
 msgstr "Дополнительный цвет для менее важных ссылок и кнопок"
 
-#: js/strings.js:322
+#: js/strings.js:345
 msgctxt "fh"
 msgid "Background color of secondary buttons"
 msgstr "Цвет фона второстепенных кнопок"
 
-#: js/strings.js:323
+#: js/strings.js:346
 msgctxt "fh"
 msgid "Secondary color when hovering or focusing an element"
 msgstr "Второстепенный цвет при наведении или фокусировке на элементе"
 
-#: js/strings.js:324
+#: js/strings.js:347
 msgctxt "fh"
 msgid "Secondary background color when hovering or focusing an element"
 msgstr "Второстепенный цвет фона при наведении или фокусировке на элементе"
 
-#: js/strings.js:325
+#: js/strings.js:348
 msgctxt "fh"
 msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
 msgstr ""
 "Скругление углов как значение длины CSS, например 0.25rem или 0 для острых "
 "углов"
 
-#: js/strings.js:326
+#: js/strings.js:349
 msgctxt "fh"
 msgid "Character shown between the breadcrumb links"
 msgstr "Символ, отображаемый между ссылками хлебных крошек"
 
-#: js/strings.js:327
+#: js/strings.js:350
 msgctxt "fh"
 msgid "HTTPS link to contact the security team, e.g. a form"
 msgstr "HTTPS-ссылка для связи с командой безопасности, например форма"
 
-#: js/strings.js:328
+#: js/strings.js:351
 msgctxt "fh"
 msgid "E-mail address for reporting security issues"
 msgstr "Адрес электронной почты для сообщения о проблемах безопасности"
 
-#: js/strings.js:329
+#: js/strings.js:352
 msgctxt "fh"
 msgid "Date after which the security information is considered outdated"
 msgstr "Дата, после которой информация о безопасности считается устаревшей"
 
-#: js/strings.js:330
+#: js/strings.js:353
 msgctxt "fh"
 msgid "HTTPS link to the public key for encrypted messages"
 msgstr "HTTPS-ссылка на открытый ключ для зашифрованных сообщений"
 
-#: js/strings.js:331
+#: js/strings.js:354
 msgctxt "fh"
 msgid "HTTPS link to the page thanking security researchers"
 msgstr "HTTPS-ссылка на страницу благодарности исследователям безопасности"
 
-#: js/strings.js:332
+#: js/strings.js:355
 msgctxt "fh"
 msgid "Comma separated language codes for security reports, e.g. en, de"
 msgstr "Коды языков через запятую для отчётов о безопасности, например en, de"
 
-#: js/strings.js:333
+#: js/strings.js:356
 msgctxt "fh"
 msgid "HTTPS URL where the security.txt file is published"
 msgstr "HTTPS-адрес, по которому опубликован файл security.txt"
 
-#: js/strings.js:334
+#: js/strings.js:357
 msgctxt "fh"
 msgid "HTTPS link to the security and disclosure policy"
 msgstr "HTTPS-ссылка на политику безопасности и раскрытия информации"
 
-#: js/strings.js:335
+#: js/strings.js:358
 msgctxt "fh"
 msgid "HTTPS link to open security related jobs"
 msgstr "HTTPS-ссылка на открытые вакансии, связанные с безопасностью"
 
-#: js/strings.js:336
+#: js/strings.js:359
 msgctxt "fh"
 msgid "HTTPS link to the CSAF provider metadata"
 msgstr "HTTPS-ссылка на метаданные поставщика CSAF"
 
-#: js/strings.js:337
+#: js/strings.js:360
 msgctxt "fh"
 msgid "Additional rules added to the robots.txt file for web crawlers"
 msgstr ""
 "Дополнительные правила, добавляемые в файл robots.txt для поисковых роботов"
 
-#: js/strings.js:338
+#: js/strings.js:361
 msgctxt "fh"
 msgid "Custom CSS code added to all pages"
 msgstr "Пользовательский CSS-код, добавляемый на все страницы"
 
-#: js/strings.js:339
+#: js/strings.js:362
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Пользовательский JavaScript-код, добавляемый на все страницы"
 
-#: js/strings.js:340
+#: js/strings.js:363
 msgctxt "fh"
 msgid "Comma separated list of fonts used for headlines"
 msgstr "Список шрифтов через запятую, используемых для заголовков"
 
-#: js/strings.js:343
+#: js/strings.js:366
 msgctxt "op"
 msgid "Name"
 msgstr "Имя"
 
-#: js/strings.js:344
+#: js/strings.js:367
 msgctxt "op"
 msgid "Company"
 msgstr "Компания"
 
-#: js/strings.js:345
+#: js/strings.js:368
 msgctxt "op"
 msgid "Telephone"
 msgstr "Телефон"
 
-#: js/strings.js:346
+#: js/strings.js:369
 msgctxt "op"
 msgid "E-Mail"
 msgstr "Электронная почта"
 
-#: js/strings.js:347
+#: js/strings.js:370
 msgctxt "op"
 msgid "Subject"
 msgstr "Тема"
 
-#: js/strings.js:348
+#: js/strings.js:371
+msgctxt "op"
+msgid "Text"
+msgstr "Текст"
+
+#: js/strings.js:372
+msgctxt "op"
+msgid "Text area"
+msgstr "Текстовая область"
+
+#: js/strings.js:373
+msgctxt "op"
+msgid "Selection"
+msgstr "Список выбора"
+
+#: js/strings.js:374
 msgctxt "op"
 msgid "Follow"
 msgstr "Переходить по ссылкам"
 
-#: js/strings.js:349
+#: js/strings.js:375
 msgctxt "op"
 msgid "Index"
 msgstr "Индексировать"
 
-#: js/strings.js:350
+#: js/strings.js:376
 msgctxt "op"
 msgid "No follow"
 msgstr "Не переходить по ссылкам"
 
-#: js/strings.js:351
+#: js/strings.js:377
 msgctxt "op"
 msgid "No index"
 msgstr "Не индексировать"
 
-#: js/strings.js:352
+#: js/strings.js:378
 msgctxt "op"
 msgid "Subscription"
 msgstr "Подписка"
 
-#: js/strings.js:353
+#: js/strings.js:379
 msgctxt "op"
 msgid "One-time payment"
 msgstr "Разовый платёж"
 
-#: js/strings.js:354
+#: js/strings.js:380
 msgctxt "op"
 msgid "Auto"
 msgstr "Авто"
 
-#: js/strings.js:355
+#: js/strings.js:381
+msgctxt "op"
+msgid "Badges"
+msgstr "Значки"
+
+#: js/strings.js:382
 msgctxt "op"
 msgid "Cards"
 msgstr "Карточки"
 
-#: js/strings.js:356
+#: js/strings.js:383
 msgctxt "op"
 msgid "Default"
 msgstr "По умолчанию"
 
-#: js/strings.js:357
+#: js/strings.js:384
 msgctxt "op"
 msgid "End"
 msgstr "Конец"
 
-#: js/strings.js:358
+#: js/strings.js:385
+msgctxt "op"
+msgid "Figures"
+msgstr "Числа"
+
+#: js/strings.js:386
 msgctxt "op"
 msgid "First column"
 msgstr "Первый столбец"
 
-#: js/strings.js:359
+#: js/strings.js:387
 msgctxt "op"
 msgid "First row"
 msgstr "Первая строка"
 
-#: js/strings.js:360
+#: js/strings.js:388
 msgctxt "op"
 msgid "First row and column"
 msgstr "Первая строка и столбец"
 
-#: js/strings.js:361
+#: js/strings.js:389
 msgctxt "op"
 msgid "Grid end"
 msgstr "Сетка в конце"
 
-#: js/strings.js:362
+#: js/strings.js:390
 msgctxt "op"
 msgid "Grid start"
 msgstr "Сетка в начале"
 
-#: js/strings.js:363
+#: js/strings.js:391
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Горизонтально"
+
+#: js/strings.js:392
 msgctxt "op"
 msgid "Latest"
 msgstr "Новые"
 
-#: js/strings.js:364
+#: js/strings.js:393
 msgctxt "op"
 msgid "List"
 msgstr "Список"
 
-#: js/strings.js:365
+#: js/strings.js:394
 msgctxt "op"
 msgid "None"
 msgstr "Нет"
 
-#: js/strings.js:366
+#: js/strings.js:395
 msgctxt "op"
 msgid "Oldest"
 msgstr "Старые"
 
-#: js/strings.js:367
+#: js/strings.js:396
 msgctxt "op"
 msgid "Position"
 msgstr "Позиция"
 
-#: js/strings.js:368
+#: js/strings.js:397
 msgctxt "op"
 msgid "Start"
 msgstr "Начало"
 
-#: js/strings.js:369
+#: js/strings.js:398
+msgctxt "op"
+msgid "Vertical"
+msgstr "Вертикально"
+
+#: js/strings.js:399
 msgctxt "op"
 msgid "Zoom"
 msgstr "Увеличение"
 
-#: js/strings.js:372
+#: js/strings.js:402
 msgctxt "ai"
 msgid "Done"
 msgstr "Готово"
 
-#: js/strings.js:373
+#: js/strings.js:403
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Уже существует"
 
-#: js/strings.js:376
+#: js/strings.js:406
 msgctxt "sg"
 msgid "expert"
 msgstr "Расширенные"
 
-#: js/strings.js:377
+#: js/strings.js:407
 msgctxt "sg"
 msgid "theme"
 msgstr "Тема оформления"
 
-#: js/strings.js:378
+#: js/strings.js:408
 msgctxt "st"
 msgid "website"
 msgstr "веб-сайт"
 
-#: js/strings.js:379
+#: js/strings.js:409
 msgctxt "st"
 msgid "logo"
 msgstr "Логотип"
 
-#: js/strings.js:380
+#: js/strings.js:410
 msgctxt "st"
 msgid "logo-alternative"
 msgstr "Альтернативный логотип"
 
-#: js/strings.js:381
+#: js/strings.js:411
 msgctxt "st"
 msgid "icon"
 msgstr "Значок"
@@ -4280,6 +4442,10 @@ msgid ""
 msgstr ""
 "ИИ может создать страницу и контент на основе ваших данных и добавить их в "
 "дерево страниц"
+
+#~ msgctxt "sd"
+#~ msgid "Contact form with configurable fields"
+#~ msgstr "Контактная форма с настраиваемыми полями"
 
 #~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
 #~ msgstr "%{name} (%{lang}, путь: %{path}, домен: %{domain})"

@@ -1,0 +1,100 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.timeline .steps {
+    --marker: 3rem;
+    --gap: 2.5rem;
+    counter-reset: step;
+    display: grid;
+    gap: var(--gap);
+    margin: 0;
+    padding: 0;
+}
+
+.timeline .step {
+    counter-increment: step;
+    position: relative;
+    min-height: var(--marker);
+    margin: 0;
+    padding-top: 0.25rem;
+    padding-inline-start: calc(var(--marker) + 1.5rem);
+    list-style: none;
+}
+
+.timeline .step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--marker) + 0.75rem);
+    bottom: calc(0.75rem - var(--gap));
+    inset-inline-start: calc(var(--marker) / 2 - 0.5px);
+    width: 1px;
+    background-color: var(--pico-contrast-border);
+}
+
+.timeline .marker {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--marker);
+    height: var(--marker);
+    border-radius: 9999px;
+    background-color: var(--pico-color);
+    color: var(--pico-background-color);
+    font-family: var(--pico-font-family-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+    line-height: 1;
+}
+
+.timeline .marker::before {
+    content: counter(step, decimal-leading-zero);
+}
+
+.timeline .label {
+    margin: 0 0 0.5rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.timeline .title {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.timeline .step .cms-text,
+.timeline .step .cms-text p {
+    margin-bottom: 0;
+    color: var(--pico-muted-color);
+}
+
+@media (min-width: 768px) {
+    .timeline .steps.layout-horizontal {
+        --gap: 2rem;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+    }
+
+    .timeline .layout-horizontal .step {
+        padding-top: calc(var(--marker) + 1.5rem);
+        padding-inline-start: 0;
+    }
+
+    .timeline .layout-horizontal .step:not(:last-child)::before {
+        top: calc(var(--marker) / 2 - 0.5px);
+        bottom: auto;
+        inset-inline: calc(var(--marker) + 0.75rem) calc(0.75rem - var(--gap));
+        width: auto;
+        height: 1px;
+    }
+}

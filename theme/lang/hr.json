@@ -49,5 +49,15 @@
     "Load more": "Učitaj još",
     "No results found": "Nema rezultata",
     "Search failed": "Pretraživanje nije uspjelo",
-    "Language": "Jezik"
+    "Language": "Jezik",
+    "Attachments": "Privici",
+    "Images or PDF files, max. :size MB each": "Slike ili PDF datoteke, najviše :size MB po datoteci",
+    ":attribute: The file type is not allowed.": ":attribute: Vrsta datoteke nije dopuštena.",
+    ":attribute: The file is too large.": ":attribute: Datoteka je prevelika.",
+    ":attribute: Too many files.": ":attribute: Previše datoteka.",
+    ":attribute: The files are too large.": ":attribute: Datoteke su prevelike.",
+    "Please select": "Odaberite",
+    "Before": "Prije",
+    "After": "Poslije",
+    "Before and after comparison": "Usporedba prije i poslije"
 }

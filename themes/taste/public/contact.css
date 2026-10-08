@@ -38,6 +38,7 @@
 }
 
 .contact input:not([type=hidden]),
+.contact select,
 .contact textarea {
     display: block;
     width: 100%;
@@ -60,11 +61,13 @@
 }
 
 .contact input:not([type=hidden]):hover,
+.contact select:hover,
 .contact textarea:hover {
     border-color: color-mix(in srgb, var(--pico-secondary) 50%, transparent);
 }
 
 .contact input:not([type=hidden]):focus,
+.contact select:focus,
 .contact textarea:focus {
     border-color: var(--pico-secondary);
     box-shadow: 0 0 0 0.25rem var(--pico-secondary-focus);

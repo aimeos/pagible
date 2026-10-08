@@ -35,6 +35,7 @@ jobs:
           - { package: webhooks, repo: pagible-webhooks }
           - { package: themes/bold, repo: pagible-themes-bold }
           - { package: themes/estate, repo: pagible-themes-estate }
+          - { package: themes/flow, repo: pagible-themes-flow }
           - { package: themes/glass, repo: pagible-themes-glass }
           - { package: themes/journal, repo: pagible-themes-journal }
           - { package: themes/luxury, repo: pagible-themes-luxury }
@@ -42,6 +43,9 @@ jobs:
           - { package: themes/pagible, repo: pagible-themes-pagible }
           - { package: themes/paper, repo: pagible-themes-paper }
           - { package: themes/premium, repo: pagible-themes-premium }
+          - { package: themes/solar, repo: pagible-themes-solar }
+          - { package: themes/solid, repo: pagible-themes-solid }
+          - { package: themes/volt, repo: pagible-themes-volt }
           - { package: themes/style, repo: pagible-themes-style }
           - { package: themes/taste, repo: pagible-themes-taste }
     steps:

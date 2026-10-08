@@ -49,5 +49,15 @@
     "Load more": "Muat lebih banyak",
     "No results found": "Tidak ada hasil",
     "Search failed": "Pencarian gagal",
-    "Language": "Bahasa"
+    "Language": "Bahasa",
+    "Attachments": "Lampiran",
+    "Images or PDF files, max. :size MB each": "Gambar atau file PDF, maks. :size MB per file",
+    ":attribute: The file type is not allowed.": ":attribute: Jenis file tidak diizinkan.",
+    ":attribute: The file is too large.": ":attribute: File terlalu besar.",
+    ":attribute: Too many files.": ":attribute: Terlalu banyak file.",
+    ":attribute: The files are too large.": ":attribute: Ukuran total file terlalu besar.",
+    "Please select": "Silakan pilih",
+    "Before": "Sebelum",
+    "After": "Sesudah",
+    "Before and after comparison": "Perbandingan sebelum dan sesudah"
 }

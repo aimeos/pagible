@@ -49,5 +49,15 @@
     "Load more": "Încarcă mai multe",
     "No results found": "Nu s-au găsit rezultate",
     "Search failed": "Căutarea a eșuat",
-    "Language": "Limbă"
+    "Language": "Limbă",
+    "Attachments": "Atașamente",
+    "Images or PDF files, max. :size MB each": "Imagini sau fișiere PDF, max. :size MB fiecare",
+    ":attribute: The file type is not allowed.": ":attribute: Tipul de fișier nu este permis.",
+    ":attribute: The file is too large.": ":attribute: Fișierul este prea mare.",
+    ":attribute: Too many files.": ":attribute: Prea multe fișiere.",
+    ":attribute: The files are too large.": ":attribute: Fișierele sunt prea mari.",
+    "Please select": "Vă rugăm să selectați",
+    "Before": "Înainte",
+    "After": "După",
+    "Before and after comparison": "Comparație înainte și după"
 }

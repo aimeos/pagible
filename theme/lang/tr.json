@@ -49,5 +49,15 @@
     "Load more": "Daha fazla yükle",
     "No results found": "Sonuç bulunamadı",
     "Search failed": "Arama başarısız oldu",
-    "Language": "Dil"
+    "Language": "Dil",
+    "Attachments": "Ekler",
+    "Images or PDF files, max. :size MB each": "Görseller veya PDF dosyaları, dosya başına en fazla :size MB",
+    ":attribute: The file type is not allowed.": ":attribute: Bu dosya türüne izin verilmiyor.",
+    ":attribute: The file is too large.": ":attribute: Dosya çok büyük.",
+    ":attribute: Too many files.": ":attribute: Çok fazla dosya.",
+    ":attribute: The files are too large.": ":attribute: Dosyalar çok büyük.",
+    "Please select": "Lütfen seçin",
+    "Before": "Önce",
+    "After": "Sonra",
+    "Before and after comparison": "Önce ve sonra karşılaştırması"
 }

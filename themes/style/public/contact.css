@@ -11,6 +11,7 @@
 }
 
 .contact input,
+.contact select,
 .contact textarea {
     border: 1px solid var(--pico-muted-background-color);
     background-color: var(--pico-muted-background-color);
@@ -29,6 +30,7 @@
 }
 
 .contact input:focus,
+.contact select:focus,
 .contact textarea:focus {
     border-color: var(--pico-color);
     box-shadow: 0 0 0 0.1875rem var(--pico-muted-background-color);
