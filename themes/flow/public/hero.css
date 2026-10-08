@@ -8,6 +8,17 @@
     position: relative;
 }
 
+.hero::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: clamp(1.5rem, 4vw, 3rem);
+    background-color: var(--pico-background-color);
+    -webkit-mask: var(--flow-wave-edge) bottom / 100% 100% no-repeat;
+    mask: var(--flow-wave-edge) bottom / 100% 100% no-repeat;
+}
+
 .hero .background {
     position: absolute;
     inset: 0;
@@ -40,12 +51,12 @@
 }
 
 .hero:has(.background) {
-    background-color: var(--volt-dark);
+    background-color: var(--flow-dark);
 }
 
 .cms-content > .hero:not(:has(.background)) {
     color-scheme: dark;
-    background: var(--volt-circuit), var(--volt-dark);
+    background: var(--flow-waves), var(--flow-dark);
 }
 
 .hero:not(:has(.background)) :is(h1, p, .cms-text) {
@@ -71,7 +82,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: var(--volt-circuit), linear-gradient(90deg, #0B1530F2 0%, #0B1530D9 45%, #0B153059 100%);
+    background: var(--flow-waves), linear-gradient(90deg, #0A2B3BF2 0%, #0A2B3BD9 45%, #0A2B3B59 100%);
 }
 
 .hero:has(.background) :is(h1, p, .cms-text) {
@@ -142,7 +153,7 @@
 .hero .second picture {
     border-radius: calc(var(--pico-border-radius) * 2);
     overflow: hidden;
-    box-shadow: 0 1.5rem 3rem -1rem #0B153059;
+    box-shadow: 0 1.5rem 3rem -1rem #0A2B3B59;
     width: fit-content;
     margin: 3rem 0 0;
     display: block;

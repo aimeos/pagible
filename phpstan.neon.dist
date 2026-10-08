@@ -36,6 +36,8 @@ parameters:
 		- themes/bold/database/seeders
 		- themes/estate/src
 		- themes/estate/database/seeders
+		- themes/flow/src
+		- themes/flow/database/seeders
 		- themes/glass/src
 		- themes/glass/database/seeders
 		- themes/journal/src

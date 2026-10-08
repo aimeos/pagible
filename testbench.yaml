@@ -2,6 +2,7 @@ providers:
   - Aimeos\Cms\BenchmarkServiceProvider
   - Aimeos\Cms\BoldServiceProvider
   - Aimeos\Cms\EstateServiceProvider
+  - Aimeos\Cms\FlowServiceProvider
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\JournalServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider

@@ -51,7 +51,7 @@
 
 .cards .card-item:hover {
     border-color: var(--pico-primary);
-    box-shadow: 0 1rem 2rem -0.5rem #1F6FEB40;
+    box-shadow: 0 1rem 2rem -0.5rem #0B7A9E40;
     transform: translateY(-0.25rem);
 }
 
