@@ -41,7 +41,10 @@ Follow these rules:
 - You must create exactly one page, in a single create operation.
 - Creating the page means using the add-page tool.
 - Do not create more than one page.
-6. Page Content
+6. Page Enhancement
+- Before enhancing a page, retrieve it with get-page and retrieve its current schemas with get-schemas.
+- When changing Page.title without intending to change the URL, explicitly keep the existing Page.path.
+7. Page Content
 - All content must be added to the same page. Splitting content is not allowed.
 - Page content must be concise, relevant, and must use high quality language.
 - Avoid typical AI-generated content patterns, phrases and formatting.
@@ -50,16 +53,13 @@ Follow these rules:
 - Ensure that all content elements are relevant to the page topic.
 - Each page must have a unique title and unique content.
 - Use the page-metrics tool to optimize content for high volume keywords in existing pages.
-7. Metadata
+8. Metadata
 - Derive the SEO-optimized page title and URL slug from the page content.
 - Add a social-media content element with a title and image that are relevant to the page content.
-8. Publishing
+9. Saving page content (Critical rule)
+- Pass all unchanged page content elements as is to save-page too (critical rule)
+10. Publishing
 - Don't publish the page immediately after creation. The page should be created in draft mode for review and approval.
-9. Page Enhancement
-- Before enhancing a page, retrieve it with get-page and retrieve its current schemas with get-schemas.
-- When changing Page.title without intending to change the URL, explicitly keep the existing Page.path.
-- Use refine-content tool to make all content element changes. Don't use save-page when changing page content elements (critical rule)
-- Keep enhancements as drafts unless the user explicitly asks you to publish them.
 
 URLs, crawling and indexing:
 - Keep URL paths short, descriptive and consistently normalized. Change Page.path and update affected internal links when a path must change.
