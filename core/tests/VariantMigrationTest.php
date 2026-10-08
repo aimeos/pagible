@@ -32,7 +32,13 @@ class VariantMigrationTest extends CoreTestAbstract
         $elements = $db->table( 'cms_page_element' )->orderBy( 'variant_id' )->orderBy( 'element_id' )->get()->all();
 
         // interrupted after the new page/element table replaced the old one but before the indexes were added
-        $schema->table( 'cms_page_element', function( $table ) {
+        $schema->table( 'cms_page_element', function( $table ) use ( $db ) {
+            // MySQL/MariaDB require an index for each foreign key and create one named like the constraint
+            if( in_array( $db->getDriverName(), ['mysql', 'mariadb'] ) ) {
+                $table->index( 'variant_id', 'cms_page_element_variant_fk' );
+                $table->index( 'element_id', 'cms_page_element_element_id_fk' );
+            }
+
             $table->dropUnique( ['variant_id', 'element_id'] );
             $table->dropIndex( ['element_id'] );
         } );

@@ -183,6 +183,7 @@ class CashierControllerTest extends CashierTestAbstract
     public function testCheckoutAllowsDefaultSingleTenant(): void
     {
         DB::table( 'cms_pages' )->where( 'id', $this->page->id )->update( ['tenant_id' => ''] );
+        DB::table( 'cms_page_variants' )->where( 'page_id', $this->page->id )->update( ['tenant_id' => ''] );
         $previous = Tenancy::$callback;
         Tenancy::$callback = null;
         app()->forgetInstance( Tenancy::class );
