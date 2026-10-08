@@ -53,6 +53,9 @@
     <testsuite name="Flow">
       <directory>./themes/flow/tests/</directory>
     </testsuite>
+    <testsuite name="Solar">
+      <directory>./themes/solar/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
