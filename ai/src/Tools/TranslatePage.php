@@ -9,9 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Jobs\TranslatePage as Job;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Illuminate\Support\Str;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -46,15 +44,9 @@ class TranslatePage extends Tool
 
         $page = Page::findOrFail( (string) $v['id'] );
         $langs = array_values( array_unique( $v['lang'] ) );
-        $batch = (string) Str::uuid();
+        $batch = Job::dispatchBatch( [(string) $page->id], $langs, $request->user()?->getAuthIdentifier() );
 
-        Job::batch( $batch, count( $langs ) );
-
-        foreach( $langs as $lang ) {
-            Job::dispatch( (string) $page->id, $lang, Tenancy::value(), $request->user()?->getAuthIdentifier(), $batch );
-        }
-
-        return Response::structured( ['id' => $page->id, 'lang' => $langs] + ( Job::progress( $batch ) ?? [] ) );
+        return Response::structured( ['id' => $page->id, 'lang' => $langs] + ( Job::progress( $batch['id'] ) ?? [] ) );
     }
 
 

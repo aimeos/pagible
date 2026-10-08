@@ -636,7 +636,7 @@ describe('PageDetail', () => {
         const vm = wrapper.findComponent(PageDetail).vm
         vm.languages.available = ['en', 'de']
 
-        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
         cy.then(() => vm.switchLang({ code: 'de', state: 'stale' }))
         cy.then(() => {
           expect(query.lastCall.args[0].variables).to.deep.include({ id: '1', lang: 'de' })
@@ -662,7 +662,7 @@ describe('PageDetail', () => {
       mountDetail({ 'page:view': true, 'page:add': true }, {}, { query, mutate }).then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageDetail).vm
 
-        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
         cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
         cy.then(() => {
           expect(mutate).to.have.been.calledOnce
@@ -680,7 +680,7 @@ describe('PageDetail', () => {
       mountDetail({ 'page:view': true }, {}, { query, mutate }).then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageDetail).vm
 
-        cy.wrap(null).should(() => expect(vm.variants).to.have.length(2))
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
         cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
         cy.then(() => {
           expect(mutate).not.to.have.been.called
@@ -719,82 +719,68 @@ describe('PageDetail', () => {
         return page
       }
 
-      const translation = {
-        data: JSON.stringify({ title: 'Neu', name: 'Test Page', lang: 'de' }),
-        aux: JSON.stringify({
-          content: [{ ...content[0], data: { title: 'Neu' } }, content[1]],
-          meta: {},
-          config: {},
-        }),
-        hashes: JSON.stringify({ 'page:title': 'h1', 'el:el1': 'h2', 'el:el2': 'h3' }),
-        translated: true,
-        latestId: 'v-de',
-      }
-
       function mountVariant(perms, apollo) {
-        const query = cy.stub().resolves({ data: { page: variant(), translation } })
-        return mountDetail({ 'page:view': true, ...perms }, {}, { query, ...apollo }).then(({ wrapper }) => {
+        const query = apollo.query || cy.stub().resolves({ data: { page: variant() } })
+        return mountDetail({ 'page:view': true, ...perms }, {}, { ...apollo, query }).then(({ wrapper }) => {
           const vm = wrapper.findComponent(PageDetail).vm
           cy.wrap(null).should(() => expect(vm.item.lang).to.equal('de'))
           return cy.wrap(vm)
         })
       }
 
-      it('proposes the translated texts compared to the current variant', () => {
-        mountVariant({ 'page:save': true, 'text:translate': true }, {}).then((vm) => {
+      function progressQuery(progress) {
+        return cy.stub().callsFake(({ variables }) => Promise.resolve(variables.batch
+          ? { data: { translateProgress: progress } }
+          : { data: { page: variant() } }
+        ))
+      }
+
+      it('translates the variant into a new draft and reloads it', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 1, failed: 0 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
+
           return vm.translate().then(() => {
-            expect(vm.vtranslate).to.equal(true)
-            return vm.loadTranslation()
-          }).then(([proposed, current]) => {
-            expect(vm.translation).to.deep.equal({ hashes: { 'page:title': 'h1', 'el:el1': 'h2', 'el:el2': 'h3' }, latestId: 'v-de' })
-            expect(Object.keys(sections(current.data, proposed.data)).sort()).to.deep.equal(['content', 'data'])
-            expect(proposed.data.title).to.equal('Neu')
-            expect(proposed.data.path).to.equal(current.data.path)
+            expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['1'], lang: ['de'] })
+            expect(query).to.have.been.calledWithMatch({ variables: { batch: 'batch-1' }, fetchPolicy: 'no-cache' })
+            expect(add).to.have.been.calledWithMatch(/Translation saved as draft/, 'success')
+            expect(refresh).to.have.been.calledOnce
+            expect(vm.translating).to.equal(false)
           })
         })
       })
 
-      it('saves the selected changes and keeps the old hashes of the unselected ones', () => {
-        const mutate = cy.stub().resolves({ data: { saveTranslation: { id: '1', stale: true } } })
+      it('reports an already running translation', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 0 } } })
+        const query = progressQuery({ total: 0, done: 0, failed: 0 })
 
-        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate }).then((vm) => {
-          vm.historyData = vm.historyCurrent()
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
 
-          return vm.loadTranslation().then(([proposed, current]) => {
-            const diffs = sections(current.data, proposed.data)
-            const keys = Object.entries(diffs).flatMap(([section, entries]) => section === 'content' ? entries.flatMap(block => block.keys) : entries.map(entry => entry.key))
-            const selection = Object.fromEntries(keys.map((key) => [key, true]))
-            const title = diffs.data.find((entry) => entry.path[0] === 'title')
-            selection[title.key] = false
-
-            const card = { before: current, after: proposed, diffs, selection }
-            expect([...vm.unselected(card)]).to.deep.equal(['page:title'])
-
-            return vm.translated({ content: proposed.data.content }, proposed, card)
-          }).then(() => {
-            const call = mutate.getCalls().find((c) => c.args[0].variables.hashes)
-            const vars = call.args[0].variables
-            expect(vars).to.deep.include({ id: '1', lang: 'de', latestId: 'v-de' })
-            expect(JSON.parse(vars.hashes)).to.deep.equal({ 'el:el1': 'h2', 'el:el2': 'h3' })
-            expect(vars.input.title).to.equal('Alt')
-            expect(JSON.parse(vars.input.content)[0].data.title).to.equal('Neu')
+          return vm.translate().then(() => {
+            expect(query).not.to.have.been.calledWithMatch({ variables: { batch: 'batch-1' } })
+            expect(add).to.have.been.calledWithMatch(/already running/, 'info')
+            expect(refresh).not.to.have.been.called
+            expect(vm.translating).to.equal(false)
           })
         })
       })
 
-      it('marks unselected content blocks and moves as changed', () => {
-        mountVariant({ 'page:save': true }, {}).then((vm) => {
-          const before = { content: content }
-          const after = { content: [content[1], { ...content[0], data: { title: 'Neu' } }] }
-          const diffs = sections(before, after)
-          const keys = diffs.content.flatMap((block) => block.keys)
-          const selection = Object.fromEntries(keys.map((key) => [key, false]))
+      it('shows an error if the translation failed', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 0, failed: 1 })
 
-          expect([...vm.unselected({ diffs, selection })].sort()).to.deep.equal(['el:el1', 'page:order'])
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const error = cy.stub(vm.messages, 'error')
 
-          const moved = diffs.content.find((block) => block.fields.length === 1 && block.fields[0].position)
-          const only = Object.fromEntries(keys.map((key) => [key, key !== moved.fields[0].key]))
-          expect([...vm.unselected({ diffs, selection: only })]).to.deep.equal(['page:order'])
+          return vm.translate().then(() => {
+            expect(error).to.have.been.calledWithMatch(/Error translating page/)
+            expect(vm.translating).to.equal(false)
+          })
         })
       })
 
@@ -807,7 +793,7 @@ describe('PageDetail', () => {
           return cy.then(() => vm.ignoreChanges()).then(() => {
             expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['1'], lang: 'de' })
             expect(vm.item.stale).to.equal(false)
-            expect(vm.variants.find((v) => v.lang === 'de').state).to.equal('current')
+            expect(vm.item.variants.find((v) => v.lang === 'de').state).to.equal('current')
           })
         })
         cy.get('button.btn-ignore-changes').should('not.exist')
@@ -819,7 +805,7 @@ describe('PageDetail', () => {
 
         mountVariant({ 'page:save': true }, { mutate }).then((vm) => {
           vm.item.stale = false
-          vm.variants = vm.variants.map((v) => (v.lang === 'de' ? { ...v, state: 'current' } : v))
+          vm.item.variants = vm.item.variants.map((v) => (v.lang === 'de' ? { ...v, state: 'current' } : v))
           vm.use({ data: { title: 'Older' }, elements: [], files: {} })
           expect(vm.restored).to.equal(true)
 
@@ -828,7 +814,7 @@ describe('PageDetail', () => {
             expect(call.args[0].variables).to.deep.include({ lang: 'de', restore: true })
             expect(vm.restored).to.equal(false)
             expect(vm.item.stale).to.equal(true)
-            expect(vm.variants.find((v) => v.lang === 'de').state).to.equal('stale')
+            expect(vm.item.variants.find((v) => v.lang === 'de').state).to.equal('stale')
           })
         })
       })

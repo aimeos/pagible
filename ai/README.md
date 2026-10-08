@@ -38,7 +38,8 @@ Global settings:
 | `timeout` | `CMS_AI_TIMEOUT` | `300` | Maximum seconds an AI request may run |
 | `maxinput` | `CMS_AI_MAXINPUT` | `1048576` | Maximum input size in bytes sent to a provider |
 | `maxdepth` | `CMS_AI_MAXDEPTH` | `20` | Maximum nesting depth of structured input |
-| `ratelimit` | `CMS_AI_RATELIMIT` | `60` | Maximum AI provider calls per minute and tenant made by queued page translations |
+| `ratelimit` | `CMS_AI_RATELIMIT` | `60` | Maximum AI provider calls per minute and tenant made by page and file description translations |
+| `maxtranslate` | `CMS_AI_MAXTRANSLATE` | `100` | Maximum files times languages per file description translation request |
 | `middleware` | | `['web', 'throttle:cms-ai']` | Middleware of the `cmsapi/chat` streaming route |
 
 ### Environment Variables
@@ -62,7 +63,7 @@ The translate feature also supports `CMS_AI_TRANSLATE_URL` for a custom endpoint
 
 ## Page translation
 
-The "Translate" action in the admin page list creates or updates the language variants of the selected pages from their source language. Translations run as queued jobs on the queue configured in `cms.queue` and are saved as new drafts by the editor "AI draft", so they must be reviewed and published like any other change. Only the elements and fields which changed since the last translation are sent to the provider.
+The "Translate" action in the admin page list and in the page editor creates or updates the language variants of the selected pages from their source language. Translations run as batch of queued jobs on the queue configured in `cms.queue`, which requires the `job_batches` table of Laravel (`php artisan make:queue-batches-table` if it doesn't exist), and are saved as new drafts by the editor "AI draft", so they must be reviewed and published like any other change. The page history shows the changes of the translation and unwanted ones can be reverted there. Only the elements and fields which changed since the last translation are sent to the provider.
 
 A translation is marked as "Needs update" when its source page is published with changes or when an old version of the translation is restored. "Ignore changes" marks it as up to date again without changing its content.
 

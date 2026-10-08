@@ -450,21 +450,77 @@ describe('FileListItems', () => {
       })
     })
 
-    it('sends at most 100 files per request', () => {
+    it('sends at most 10 files per request and tracks the progress without messages per chunk', () => {
+      const progress = []
+      let vm = null
+      const mutate = cy.stub().callsFake(() => {
+        progress.push({ ...vm.translating })
+        return Promise.resolve({ data: { translateFiles: [] } })
+      })
+
+      mountList({}, perms, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = ['en', 'de']
+        vm = wrapper.findComponent(FileListItems).vm
+        const add = cy.spy(vm.messages, 'add')
+        vm.items = Array.from({ length: 25 }, (_, i) => file('file-' + i))
+        vm.checked = new Set(vm.items.map((item) => item.id))
+
+        return vm.translate().then(() => {
+          expect(mutate).to.have.been.calledThrice
+          expect(mutate.firstCall.args[0].variables.id).to.have.length(10)
+          expect(mutate.secondCall.args[0].variables.id).to.have.length(10)
+          expect(mutate.thirdCall.args[0].variables.id).to.have.length(5)
+          expect(progress).to.deep.equal([
+            { done: 0, total: 25 },
+            { done: 10, total: 25 },
+            { done: 20, total: 25 }
+          ])
+          expect(add).to.have.been.calledOnce
+          expect(add).to.have.been.calledWithMatch(/No missing descriptions/, 'info')
+          expect(vm.translating).to.equal(null)
+        })
+      })
+    })
+
+    it('sends fewer files per request with many languages', () => {
       const mutate = cy.stub().resolves({ data: { translateFiles: [] } })
+
+      mountList({}, perms, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = Array.from({ length: 30 }, (_, i) => 'l' + i)
+        const vm = wrapper.findComponent(FileListItems).vm
+        vm.items = Array.from({ length: 7 }, (_, i) => file('file-' + i))
+        vm.checked = new Set(vm.items.map((item) => item.id))
+
+        return vm.translate().then(() => {
+          expect(mutate).to.have.been.calledThrice
+          expect(mutate.firstCall.args[0].variables.id).to.have.length(3)
+          expect(mutate.secondCall.args[0].variables.id).to.have.length(3)
+          expect(mutate.thirdCall.args[0].variables.id).to.have.length(1)
+        })
+      })
+    })
+
+    it('keeps the translated chunks when a later chunk fails', () => {
+      const mutate = cy.stub()
+      mutate.onFirstCall().resolves({ data: { translateFiles: [translated('file-0')] } })
+      mutate.onSecondCall().rejects(new Error('Timeout'))
 
       mountList({}, perms, { mutate }).then(({ wrapper }) => {
         useLanguageStore().available = ['en', 'de']
         const vm = wrapper.findComponent(FileListItems).vm
         const add = cy.spy(vm.messages, 'add')
-        vm.items = Array.from({ length: 150 }, (_, i) => file('file-' + i))
+        const error = cy.stub(vm.messages, 'error')
+        vm.items = Array.from({ length: 25 }, (_, i) => file('file-' + i))
         vm.checked = new Set(vm.items.map((item) => item.id))
 
         return vm.translate().then(() => {
           expect(mutate).to.have.been.calledTwice
-          expect(mutate.firstCall.args[0].variables.id).to.have.length(100)
-          expect(mutate.secondCall.args[0].variables.id).to.have.length(50)
-          expect(add).to.have.been.calledWithMatch(/No missing descriptions/, 'info')
+          expect(vm.items[0].description).to.deep.equal({ en: 'A cat', de: 'Eine Katze' })
+          expect(add).to.have.been.calledOnce
+          expect(add).to.have.been.calledWithMatch(/1 file translated/, 'success')
+          expect(error).to.have.been.calledWithMatch(/after 10 of 25 files/)
+          expect(error.firstCall.args[2]).to.have.length(15)
+          expect(vm.translating).to.equal(null)
         })
       })
     })

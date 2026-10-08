@@ -45,10 +45,6 @@ extend type Mutation {
 }
 
 extend type Query {
-  "Get the proposed translation of the page into the language without saving it"
-  translation(id: ID! @rules(apply: ["max:36"]), lang: String! @rules(apply: ["required", "max:10"])): Translation @guard @cmsPermission(action: "page:save") @throttle(name: "cms-ai")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Queries\\Translation")
-
   "Get the progress of queued page translations"
   translateProgress(batch: ID! @rules(apply: ["max:36"])): TranslateProgress @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Queries\\TranslateProgress")
@@ -73,22 +69,4 @@ type TranslateProgress {
 
   "Number of failed translations"
   failed: Int!
-}
-
-"Proposed translation of a page variant"
-type Translation {
-  "Page fields like title, name and path"
-  data: JSON!
-
-  "Content elements, meta data and configuration"
-  aux: JSON!
-
-  "Hashes of the source items by key, empty if the item wasn't translated"
-  hashes: JSON!
-
-  "Whether the texts were translated by AI or copied untranslated"
-  translated: Boolean!
-
-  "ID of the latest version of the variant the translation is based on or NULL for a new variant"
-  latestId: ID
 }

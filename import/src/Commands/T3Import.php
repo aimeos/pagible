@@ -1348,19 +1348,13 @@ class T3Import extends Command
         foreach ($records as $record) {
             $code = strtolower(trim((string) ($record->language_isocode ?? '')));
 
-            if ($code !== '' && Variants::valid($code)) {
+            if ($code !== '' && Utils::isValidLang($code)) {
                 $languages[(int) $record->uid] = Variants::language($code);
             }
         }
 
-        foreach ((array) $this->option('language') as $value) {
-            $parts = explode(':', (string) $value, 3);
-
-            if (count($parts) < 2 || ! ctype_digit($parts[0]) || (int) $parts[0] < 1 || ! Variants::valid($parts[1])) {
-                throw new \InvalidArgumentException("Invalid TYPO3 language: {$value}");
-            }
-
-            $languages[(int) $parts[0]] = Variants::language($parts[1], $parts[2] ?? null);
+        foreach (Variants::options((array) $this->option('language'), 'TYPO3', '/^0*[1-9][0-9]*$/D') as $uid => $language) {
+            $languages[(int) $uid] = $language;
         }
 
         return $languages;
@@ -1457,17 +1451,25 @@ class T3Import extends Command
     /**
      * Returns the source records used by a TYPO3 page.
      *
+     * For translations, the translated records and the records for all languages are returned.
+     *
      * @param  Collection<int|string, mixed>  $contentElements
+     * @param  int|null  $langUid  TYPO3 language UID of the translation or NULL for the default language
      * @return Collection<int, mixed>
      */
-    protected function recordsForPage(object $t3Page, Collection $contentElements): Collection
+    protected function recordsForPage(object $t3Page, Collection $contentElements, ?int $langUid = null): Collection
     {
         $pageUid = (int) ($t3Page->uid ?? 0);
         $contentPageUid = $this->contentSourcePageUid($t3Page);
-        $records = $this->sortRecordsBySourceLayout(
-            $contentElements->get($contentPageUid, Collection::make()),
-            $t3Page,
-        );
+        $records = $contentElements->get($contentPageUid, Collection::make());
+
+        if ($langUid !== null) {
+            $records = ($this->translatedContent?->get($langUid)?->get($contentPageUid) ?? Collection::make())
+                ->concat($records->filter(fn ($record) => (int) ($record->sys_language_uid ?? 0) === -1))
+                ->sortBy(fn ($record) => [(int) ($record->sorting ?? 0), (int) ($record->uid ?? 0)])->values();
+        }
+
+        $records = $this->sortRecordsBySourceLayout($records, $t3Page);
 
         return $contentPageUid === $pageUid
             ? $records
@@ -1706,20 +1708,15 @@ class T3Import extends Command
             return '/'.$path;
         }
 
-        if ($record = $this->translatedRecord($t3Page, $this->translation['uid'])) {
+        $langUid = $this->translation['uid'];
+        $record = $this->translatedPages?->get((int) ($t3Page->uid ?? 0))
+            ?->first(fn ($record) => (int) ($record->sys_language_uid ?? 0) === $langUid);
+
+        if ($record) {
             return '/'.$this->slugFromPath($record->slug ?? '');
         }
 
         return $this->translation['source'] !== '' ? 'https://'.$this->translation['source'].'/'.$path : '/'.$path;
-    }
-
-    /**
-     * Returns the translation record of a TYPO3 page in the given language.
-     */
-    protected function translatedRecord(object $t3Page, int $langUid): ?object
-    {
-        return $this->translatedPages?->get((int) ($t3Page->uid ?? 0))
-            ?->first(fn ($record) => (int) ($record->sys_language_uid ?? 0) === $langUid);
     }
 
     /**
@@ -1960,75 +1957,40 @@ class T3Import extends Command
      */
     protected function saveTranslations(object $t3Page, Page $page, array $pageData, Collection $contentElements): void
     {
+        $sourceLang = $this->lang;
+        $sourceDomain = (string) ($pageData['domain'] ?? '');
         $records = $this->translatedPages?->get((int) ($t3Page->uid ?? 0)) ?? Collection::make();
 
         foreach ($records->unique('sys_language_uid') as $record) {
-            $language = $this->languages[(int) ($record->sys_language_uid ?? 0)] ?? null;
+            $langUid = (int) ($record->sys_language_uid ?? 0);
+            $language = $this->languages[$langUid] ?? null;
 
-            if ($language && $language['lang'] !== $this->lang) {
-                $this->saveTranslation($t3Page, $record, $language, $page, $pageData, $contentElements);
+            if (! $language || $language['lang'] === $sourceLang) {
+                continue;
+            }
+
+            $this->lang = $language['lang'];
+            $this->translation = [
+                'uid' => $langUid,
+                'source' => $language['domain'] !== '' && $language['domain'] !== $sourceDomain ? $sourceDomain : '',
+            ];
+
+            try {
+                $content = $this->buildContent($this->recordsForPage($t3Page, $contentElements, $langUid));
+                $data = array_replace($this->buildPageData($record, '', '', (string) ($pageData['to'] ?? '')), [
+                    'tag' => $pageData['tag'] ?? 'page',
+                ]);
+            } finally {
+                $this->lang = $sourceLang;
+                $this->translation = null;
+            }
+
+            $path = $this->slugFromPath($record->slug ?? '');
+
+            if (! Variants::save($page, $language, $path, $data, $content, $this->editor)) {
+                $this->warn("  Skipped translation: {$data['title']} (/{$path}) [{$language['lang']}] (URL is used by another page)");
             }
         }
-    }
-
-    /**
-     * Creates or updates one variant of the page from a TYPO3 page translation.
-     *
-     * @param  array{lang: string, domain: string}  $language
-     * @param  array<string, mixed>  $pageData  Data of the source variant
-     * @param  Collection<int|string, mixed>  $contentElements
-     */
-    protected function saveTranslation(object $t3Page, object $record, array $language, Page $page, array $pageData,
-        Collection $contentElements): void
-    {
-        $sourceLang = $this->lang;
-        $sourceDomain = (string) ($pageData['domain'] ?? '');
-        $this->lang = $language['lang'];
-        $this->translation = [
-            'uid' => (int) ($record->sys_language_uid ?? 0),
-            'source' => $language['domain'] !== '' && $language['domain'] !== $sourceDomain ? $sourceDomain : '',
-        ];
-
-        try {
-            $content = $this->buildContent($this->translatedRecords($t3Page, (int) ($record->sys_language_uid ?? 0), $contentElements));
-            $data = array_replace($this->buildPageData($record, '', '', (string) ($pageData['to'] ?? '')), [
-                'tag' => $pageData['tag'] ?? 'page',
-            ]);
-        } finally {
-            $this->lang = $sourceLang;
-            $this->translation = null;
-        }
-
-        $path = $this->slugFromPath($record->slug ?? '');
-
-        if (! Variants::save($page, $language, $path, $data, $content, $this->editor)) {
-            $this->warn("  Skipped translation: {$data['title']} (/{$path}) [{$language['lang']}] (URL is used by another page)");
-        }
-    }
-
-    /**
-     * Returns the translated source records of a TYPO3 page including the records for all languages.
-     *
-     * @param  int  $langUid  TYPO3 language UID
-     * @param  Collection<int|string, mixed>  $contentElements
-     * @return Collection<int, mixed>
-     */
-    protected function translatedRecords(object $t3Page, int $langUid, Collection $contentElements): Collection
-    {
-        $pageUid = (int) ($t3Page->uid ?? 0);
-        $contentPageUid = $this->contentSourcePageUid($t3Page);
-        $all = $contentElements->get($contentPageUid, Collection::make())
-            ->filter(fn ($record) => (int) ($record->sys_language_uid ?? 0) === -1);
-
-        $records = $this->translatedContent?->get($langUid)?->get($contentPageUid) ?? Collection::make();
-        $records = $this->sortRecordsBySourceLayout(
-            $records->concat($all)->sortBy(fn ($record) => [(int) ($record->sorting ?? 0), (int) ($record->uid ?? 0)])->values(),
-            $t3Page,
-        );
-
-        return $contentPageUid === $pageUid
-            ? $records
-            : $this->markSharedRecords($records, 'reference', $contentPageUid);
     }
 
     /**

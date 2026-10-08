@@ -13,9 +13,6 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     readonly: { type: Boolean, default: false },
-    // compares the current version (before) with a proposed one (after) to apply selected changes
-    review: { type: Boolean, default: false },
-    title: { type: String, default: '' },
     current: { type: Object, default: null },
     load: { type: Function, required: true }
   },
@@ -53,11 +50,6 @@ export default {
   methods: {
     apply(card) {
       if (this.readonly || !this.selected(card)) return
-      if (this.review) {
-        const changes = restore(card.before.data || {}, card.after.data || {}, card.diffs, key => card.selection[key])
-        return this.$emit('apply', changes, card.after, card)
-      }
-
       const source = this.current || this.cards[0].after
       const changes = restore(source.data || {}, card.before.data || {}, card.diffs, key => card.selection[key])
       this.$emit('apply', changes, card.before)
@@ -197,7 +189,7 @@ export default {
 <template>
   <CmsDialog
     :model-value="modelValue"
-    :title="title || $gettext('History')"
+    :title="$gettext('History')"
     @update:model-value="$emit('update:modelValue', $event)"
     content-class="history-body"
     max-width="1200"
@@ -223,10 +215,10 @@ export default {
               <v-expansion-panel :value="card.key" class="version-panel">
                 <v-expansion-panel-title class="version-heading version-panel-title">
                   <span class="version-title" role="heading" aria-level="3">
-                    <span class="version-date">{{ review ? $gettext('Proposed changes') : card.unsaved ? $gettext('Current changes') : date(card.after.created_at) }}</span>
+                    <span class="version-date">{{ card.unsaved ? $gettext('Current changes') : date(card.after.created_at) }}</span>
                     <span class="version-summary">{{ summary(card) }}</span>
                   </span>
-                  <span v-if="!card.unsaved && !review" class="version-editor">
+                  <span v-if="!card.unsaved" class="version-editor">
                     {{ card.after.editor }}
                     <template v-if="!card.after.published && card.after.publish_at">
                       {{ card.after.editor ? ' · ' : '' }}{{ $gettext('Scheduled for %{date}', { date: date(card.after.publish_at) }) }}
@@ -316,15 +308,7 @@ export default {
     </v-expansion-panels>
 
     <template #footer>
-      <div v-if="active && !readonly && review" class="history-actions">
-        <div class="restore-source">
-          <span role="status">{{ $gettext('%{selected} of %{total} selected for applying', { selected: selected(active), total: active.keys.length }) }}</span>
-        </div>
-        <v-btn class="apply-selected" variant="tonal" color="primary" :disabled="!selected(active)" @click="apply(active)">
-          {{ $gettext('Apply selected changes') }}
-        </v-btn>
-      </div>
-      <div v-else-if="active && !readonly" class="history-actions">
+      <div v-if="active && !readonly" class="history-actions">
         <div class="restore-source">
           <span>{{ active.unsaved ? $gettext('Previous version: Latest saved version') : $gettext('Previous version: %{date}', { date: date(active.before.created_at) }) }}</span>
           <span role="status">{{ $gettext('%{selected} of %{total} selected for reverting', { selected: selected(active), total: active.keys.length }) }}</span>
@@ -566,7 +550,7 @@ export default {
   font-size: 0.8rem;
 }
 
-.restore-selected, .apply-selected {
+.restore-selected {
   order: 2;
   margin-inline-start: auto;
 }

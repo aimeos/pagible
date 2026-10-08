@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Models\Page;
+
 
 /**
  * Computes the sync hashes of page variants
@@ -70,23 +72,14 @@ class Hashes
 
 
     /**
-     * Returns the IDs of the content elements in the hashes.
+     * Returns the hashes of the published variant of the page.
      *
-     * @param array<string, string> $hashes Hashes by key
-     * @return array<int, string> Element IDs
+     * @param Page $page Page with the variant
+     * @return array<string, string> Hashes by key
      */
-    public static function elements( array $hashes ) : array
+    public static function published( Page $page ) : array
     {
-        $ids = [];
-
-        foreach( array_keys( $hashes ) as $key )
-        {
-            if( str_starts_with( (string) $key, 'el:' ) ) {
-                $ids[] = substr( (string) $key, 3 );
-            }
-        }
-
-        return $ids;
+        return self::page( $page->only( self::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
     }
 
 
@@ -120,9 +113,9 @@ class Hashes
         }
 
         // elements removed in the source
-        foreach( self::elements( $variant ) as $id )
+        foreach( array_keys( $variant ) as $key )
         {
-            if( !isset( $source['el:' . $id] ) ) {
+            if( str_starts_with( (string) $key, 'el:' ) && !isset( $source[$key] ) ) {
                 return true;
             }
         }

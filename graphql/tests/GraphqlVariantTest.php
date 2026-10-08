@@ -464,45 +464,6 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
-    public function testSaveTranslation()
-    {
-        $page = $this->page();
-        Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
-        Resource::savePage( $page->id, ['title' => 'Changed'], $this->user );
-
-        $preview = Resource::translation( $page->id, 'de', $this->translator() );
-        $variant = Page::language( 'de' )->findOrFail( $page->id );
-        $this->assertTrue( (bool) $variant->stale || $preview['hashes'] != (array) $variant->hashes );
-
-        $response = $this->actingAs( $this->user )->graphQL( '
-            mutation($id: ID!, $input: PageInput!, $hashes: JSON!, $latestId: ID) {
-                saveTranslation(id: $id, lang: "de", input: $input, hashes: $hashes, latestId: $latestId) { id lang stale }
-            }
-        ', [
-            'id' => $page->id,
-            'input' => ['title' => 'Geändert'],
-            'hashes' => json_encode( $preview['hashes'] ),
-            'latestId' => $preview['latestId'],
-        ] )->assertGraphQLErrorFree();
-
-        $response->assertJson( ['data' => ['saveTranslation' => ['id' => $page->id, 'lang' => 'de', 'stale' => false]]] );
-
-        $variant = Page::language( 'de' )->with( 'latest' )->findOrFail( $page->id );
-        $this->assertEquals( 'Geändert', $variant->latest->data->title );
-        $this->assertEquals( 'editor@testbench', $variant->latest->editor );
-    }
-
-
-    public function testSaveTranslationPermission()
-    {
-        $user = new \App\Models\User( ['email' => 'viewer@testbench', 'cmsperms' => ['page:view']] );
-
-        $this->actingAs( $user )->graphQL( '
-            mutation { saveTranslation(id: "x", lang: "de", input: {}, hashes: "{}") { id } }
-        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
-    }
-
-
     public function testSavePageRestore()
     {
         $page = $this->page();

@@ -258,6 +258,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         $modelTable = $builder->model->getTable();
         $isDraft = false;
         $query = $builder->model->newQuery();
+        $scope = \Illuminate\Database\Eloquent\SoftDeletingScope::class;
+        $softDeleted = false;
 
         // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
@@ -270,7 +272,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
 
             if( $field === '__soft_deleted' ) {
-                $scope = \Illuminate\Database\Eloquent\SoftDeletingScope::class;
+                $softDeleted = true;
 
                 if( $value === null ) {
                     $query->withoutGlobalScope( $scope );
@@ -281,12 +283,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
         }
 
-        // Pages are indexed per variant, a language filter selects the variants of that language
-        if( $query instanceof \Aimeos\Cms\Query\PageQuery && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
-            $query->language( $lang, $query->removedScopes() !== [] );
+        // withTrashed() removes the soft delete filter, like the collection engine, trashed items are included then
+        if( !$softDeleted && config( 'scout.soft_delete', false ) ) {
+            $query->withoutGlobalScope( $scope );
         }
 
-        ScoutHelper::fallback( $query, $builder );
+        // Pages are indexed per variant, a language filter selects the variants of that language
+        ScoutHelper::variants( $query, $builder );
 
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {

@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\PageQuery;
+use Aimeos\Cms\Query\SubtreeRelation;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NodeTrait;
@@ -22,7 +23,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 
@@ -69,7 +69,7 @@ use Illuminate\Support\Collection;
  * @method static PageQuery<static> allVariants(bool $trashed = false)
  * @method static PageQuery<static> fallback(string $lang, bool $trashed = false)
  * @method static PageQuery<static> visible(string $lang)
- * @method static PageQuery<static> sourceVariant()
+ * @method static PageQuery<static> localized(string $lang, bool $editor)
  */
 class Page extends Base
 {
@@ -214,7 +214,6 @@ class Page extends Base
     protected static function booted() : void
     {
         static::creating( function( Page $page ) {
-            $page->setAttribute( 'variant_id', $page->getAttribute( 'variant_id' ) ?: $page->getKey() );
             $page->setAttribute( 'source', $page->getAttribute( 'source' ) ?: (string) $page->lang );
         } );
     }
@@ -346,6 +345,24 @@ class Page extends Base
 
 
     /**
+     * Returns the references of the latest versions of the given pages in the language.
+     *
+     * @param array<string> $ids Page IDs
+     * @param string|null $lang Language of the variants or NULL for the source variants
+     * @return array<string, array<string, array<string>>> Referenced IDs by relation, keyed by latest version ID
+     */
+    public static function refs( array $ids, ?string $lang = null ) : array
+    {
+        if( empty( $ids ) ) {
+            return [];
+        }
+
+        return static::versionRefs( static::withTrashed()->language( $lang, true )->whereIn( 'id', $ids )
+            ->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all() );
+    }
+
+
+    /**
      * Resets the cached schema state, e.g. while migrations are running.
      */
     public static function resetSchema() : void
@@ -435,11 +452,24 @@ class Page extends Base
      */
     public static function variantLists( array $pages ) : array
     {
-        $variants = PageVariant::withTrashed()->whereIn( 'page_id', array_keys( $pages ) )
-            ->orderBy( 'lang' )->get( ['id', 'page_id', 'lang', 'stale', 'latest_id', 'deleted_at'] );
+        $variants = [];
 
-        $published = Version::whereIn( 'id', $variants->pluck( 'latest_id' )->filter()->unique()->values()->all() )
-            ->pluck( 'published', 'id' );
+        // the publish state of the latest version is joined to avoid a second ID list
+        foreach( array_chunk( array_map( 'strval', array_keys( $pages ) ), 1000 ) as $chunk )
+        {
+            $list = PageVariant::withTrashed()
+                ->leftJoin( 'cms_versions', 'cms_versions.id', '=', 'cms_page_variants.latest_id' )
+                ->whereIn( 'cms_page_variants.page_id', $chunk )
+                ->orderBy( 'cms_page_variants.lang' )
+                ->get( [
+                    'cms_page_variants.id', 'cms_page_variants.page_id', 'cms_page_variants.lang', 'cms_page_variants.stale',
+                    'cms_page_variants.deleted_at', 'cms_versions.published',
+                ] );
+
+            foreach( $list as $variant ) {
+                $variants[] = $variant;
+            }
+        }
 
         $locales = array_fill_keys( array_map( 'strval', (array) config( 'cms.locales', [] ) ), null );
         $result = array_fill_keys( array_keys( $pages ), $locales );
@@ -455,7 +485,7 @@ class Page extends Base
                     $variant->stale => 'stale',
                     default => 'current',
                 },
-                'published' => (bool) ( $published[$variant->latest_id] ?? false ),
+                'published' => (bool) $variant->getAttribute( 'published' ),
             ];
         }
 
@@ -615,6 +645,18 @@ class Page extends Base
 
 
     /**
+     * Relation to the languages of all variants of the page including the trashed ones.
+     *
+     * @return HasMany<PageVariant, $this>
+     */
+    public function languages() : HasMany
+    {
+        return $this->hasMany( PageVariant::class, 'page_id' )->withTrashed()
+            ->select( 'id', 'tenant_id', 'page_id', 'lang', 'deleted_at' );
+    }
+
+
+    /**
      * Relation to the published language variants of the page.
      *
      * Contains enabled variants which aren't in the trash, ordered by language.
@@ -735,17 +777,20 @@ class Page extends Base
      */
     protected function pruning() : void
     {
-        $tenant = (string) $this->tenant_id;
-        $ids = PageVariant::withoutTenancy()->withTrashed()
-            ->where( 'tenant_id', $tenant )
-            ->whereIn( 'page_id', fn( $query ) => $query->select( 'id' )->from( 'cms_pages' )
-                ->where( 'tenant_id', $tenant )
-                ->where( NestedSet::LFT, '>=', $this->getLft() )
-                ->where( NestedSet::RGT, '<=', $this->getRgt() )
-            )
-            ->pluck( 'id' )->all();
+        if( \Aimeos\Cms\Scout::usesSearchIndex() )
+        {
+            $tenant = (string) $this->tenant_id;
 
-        \Aimeos\Cms\Tenancy::run( $tenant, fn() => \Aimeos\Cms\Scout::unindex( static::class, $ids ) );
+            PageVariant::withoutTenancy()->withTrashed()->select( 'id' )
+                ->where( 'tenant_id', $tenant )
+                ->whereIn( 'page_id', fn( $query ) => $query->select( 'id' )->from( 'cms_pages' )
+                    ->where( 'tenant_id', $tenant )
+                    ->where( NestedSet::LFT, '>=', $this->getLft() )
+                    ->where( NestedSet::RGT, '<=', $this->getRgt() )
+                )
+                ->chunkById( 500, fn( $variants ) => \Aimeos\Cms\Tenancy::run( $tenant,
+                    fn() => \Aimeos\Cms\Scout::unindex( static::class, $variants->pluck( 'id' )->all() ) ) );
+        }
 
         parent::pruning();
     }
@@ -758,9 +803,6 @@ class Page extends Base
      */
     public function subtree() : DescendantsRelation
     {
-        $table = $this->getTable();
-        $lft = $this->getLftName();
-        $rgt = $this->getRgtName();
         $depth = $this->getDepthName();
 
         // restrict maximum depth to three levels for performance reasons
@@ -769,44 +811,17 @@ class Page extends Base
         $builder = $this->newScopedQuery()
             ->select( Nav::SELECT_COLUMNS )
             ->whereIn( $depth, range( 0, $maxDepth ) )
-            ->whereNotExists( function( $query ) use ( $table, $lft, $rgt ) {
-                $query->select( DB::raw( 1 ) )
-                    ->from( $table . ' as disabled' )
-                    ->join( 'cms_page_variants as disabled_variant', 'disabled_variant.page_id', '=', 'disabled.id' )
-                    ->whereColumn( 'disabled_variant.lang', "$table.lang" )
-                    ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->where( 'disabled_variant.status', 0 )
-                    ->whereNull( 'disabled.deleted_at' )
-                    ->whereColumn( "disabled.$lft", '<=', "$table.$lft" )
-                    ->whereColumn( "disabled.$rgt", '>=', "$table.$rgt" );
-            })
             ->defaultOrder();
 
-        if( $this->localize( $builder ) && ( $lang = $this->attributes['lang'] ?? null ) && !self::fallbackToSource() )
-        {
-            // leave out the sub-pages of pages without a variant in that language too
-            $builder->whereNotExists( function( $query ) use ( $table, $lft, $rgt, $lang ) {
-                $query->select( DB::raw( 1 ) )
-                    ->from( $table . ' as missing' )
-                    ->where( 'missing.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->whereNull( 'missing.deleted_at' )
-                    ->whereColumn( "missing.$lft", '<=', "$table.$lft" )
-                    ->whereColumn( "missing.$rgt", '>=', "$table.$rgt" )
-                    ->whereNotExists( function( $query ) use ( $lang ) {
-                        $query->select( DB::raw( 1 ) )
-                            ->from( 'cms_page_variants as missing_variant' )
-                            ->whereColumn( 'missing_variant.page_id', 'missing.id' )
-                            ->where( 'missing_variant.lang', '=', $lang )
-                            ->whereNull( 'missing_variant.deleted_at' );
-                    } );
-            } );
-        }
+        // sub-pages of disabled pages and, when hiding untranslated pages, of pages
+        // without a variant in that language are pruned by the relation
+        $this->localize( $builder );
 
         if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
             $builder->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
         }
 
-        return new DescendantsRelation( $builder->setModel( new Nav() ), $this );
+        return new SubtreeRelation( $builder->setModel( new Nav() ), $this );
     }
 
 
@@ -841,13 +856,9 @@ class Page extends Base
             return false;
         }
 
-        if( $hide && !self::fallbackToSource() ) {
-            $builder->language( $lang );
-        } elseif( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
-            $builder->fallback( $lang );
-        } else {
-            $builder->visible( $lang );
-        }
+        $hide && !self::fallbackToSource()
+            ? $builder->language( $lang )
+            : $builder->localized( $lang, \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) );
 
         return true;
     }
@@ -975,7 +986,11 @@ class Page extends Base
 
             // frontend access hint for fast filtering
             'restricted' => $this->restricted(),
-        ];
+        ] + ( Scout::usesExternalSearch() ? [
+            // languages for searches with language fallback in external engines
+            'langs' => Scout::langs( $this, false ),
+            'langs_trashed' => Scout::langs( $this, true ),
+        ] : [] );
     }
 
 
@@ -1032,7 +1047,7 @@ class Page extends Base
             'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
             'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-        ] );
+        ] )->when( Scout::usesExternalSearch(), fn( $q ) => $q->with( 'languages' ) );
     }
 
 
@@ -1104,8 +1119,9 @@ class Page extends Base
      */
     protected function domain(): Attribute
     {
+        // host names are case insensitive and requests use lower case hosts
         return Attribute::make(
-            set: fn( $value ) => (string) $value,
+            set: fn( $value ) => mb_strtolower( (string) $value ),
         );
     }
 

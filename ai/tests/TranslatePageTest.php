@@ -25,7 +25,8 @@ use Database\Seeders\TestSeeder;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
@@ -82,7 +83,7 @@ class TranslatePageTest extends AiTestAbstract
 
     protected function tearDown(): void
     {
-        config( ['cms.ai.ratelimit' => 60, 'queue.default' => 'sync'] );
+        config( ['cms.ai.ratelimit' => 60, 'cms.ai.maxtranslate' => 100, 'queue.default' => 'sync'] );
         parent::tearDown();
     }
 
@@ -107,6 +108,98 @@ class TranslatePageTest extends AiTestAbstract
 
         $this->assertCount( 3, $fake->calls() );
         $this->assertSame( array_map( 'strtoupper', $texts ), $result );
+    }
+
+
+    public function testTranslateRetryCached()
+    {
+        $texts = array_map( fn( $i ) => 'retry ' . $i, range( 1, 120 ) );
+        $chunks = Ai::chunks( $texts );
+        $responses = array_map( fn( $chunk ) => TextResponse::fromTexts( array_map( 'strtoupper', $chunk ) ), $chunks );
+        $calls = [];
+
+        $translator = Ai::translator( $this->user, function( int $num ) use ( &$calls ) {
+            $calls[] = $num;
+        } );
+        $this->assertInstanceOf( \Closure::class, $translator );
+
+        $fake = Prisma::fake( [$responses[0], new RateLimitException( 'Too many requests' )] );
+
+        try {
+            $translator( $texts, 'de', 'en', '' );
+            $this->fail( 'Rate limit error not thrown' );
+        } catch( RateLimitException $e ) {
+            $this->assertCount( 2, $fake->calls() );
+            $this->assertSame( [3], $calls );
+        }
+
+        // the retry only sends the chunks which haven't been translated yet
+        $fake = Prisma::fake( [$responses[1], $responses[2]] );
+        $result = $translator( $texts, 'de', 'en', '' );
+
+        $this->assertSame( array_map( 'strtoupper', $texts ), $result );
+        $this->assertSame( [$chunks[1], $chunks[2]], array_map( fn( $call ) => $call['arguments'][0], $fake->calls() ) );
+        $this->assertSame( [3, 2], $calls );
+
+        // all chunks are cached now
+        $fake = Prisma::fake( [] );
+        $this->assertSame( array_map( 'strtoupper', $texts ), $translator( $texts, 'de', 'en', '' ) );
+        $this->assertCount( 0, $fake->calls() );
+        $this->assertSame( [3, 2], $calls );
+    }
+
+
+    public function testTranslateForget()
+    {
+        $texts = array_map( fn( $i ) => 'forget ' . $i, range( 1, 60 ) );
+        $fake = Prisma::fake( array_map( fn( $chunk ) => TextResponse::fromTexts( $chunk ), Ai::chunks( $texts ) ) );
+
+        Ai::translate( $texts, 'de', 'en', null, null, $keys );
+
+        $this->assertCount( 2, $keys );
+        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[1] ) );
+
+        Ai::forget( $keys );
+
+        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[1] ) );
+    }
+
+
+    public function testTranslateCacheScope()
+    {
+        $texts = ['scope text'];
+        $fake = Prisma::fake( array_fill( 0, 5, TextResponse::fromTexts( ['translated'] ) ) );
+
+        Ai::translate( $texts, 'de', 'en' );
+        Ai::translate( $texts, 'de', 'en' );
+        $this->assertCount( 1, $fake->calls() );
+
+        Ai::translate( $texts, 'fr', 'en' );
+        Ai::translate( $texts, 'de', null );
+        Ai::translate( $texts, 'de', 'en', 'Other context' );
+        Tenancy::run( 'other', fn() => Ai::translate( $texts, 'de', 'en' ) );
+        $this->assertCount( 5, $fake->calls() );
+    }
+
+
+    public function testTranslateCacheDisabled()
+    {
+        config( ['cms.ai.translatettl' => 0] );
+
+        try
+        {
+            $fake = Prisma::fake( [TextResponse::fromTexts( ['eins'] ), TextResponse::fromTexts( ['zwei'] )] );
+
+            $this->assertSame( ['eins'], Ai::translate( ['disabled'], 'de' ) );
+            $this->assertSame( ['zwei'], Ai::translate( ['disabled'], 'de' ) );
+            $this->assertCount( 2, $fake->calls() );
+        }
+        finally
+        {
+            config( ['cms.ai.translatettl' => 3600] );
+        }
     }
 
 
@@ -137,6 +230,53 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobForgetsCache()
+    {
+        $page = $this->page();
+        $fake = $this->fake( $page );
+        $keys = [];
+
+        $translator = Ai::translator( $this->user, null, function( array $list ) use ( &$keys ) {
+            $keys = $list;
+        } );
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', $translator );
+
+        $this->assertCount( 1, $fake->calls() );
+        $this->assertNotEmpty( $keys );
+        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+
+        // the job uses the cached chunks and removes them after it succeeded
+        $fake = Prisma::fake( [] );
+        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
+
+        $this->assertCount( 0, $fake->calls() );
+        $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
+        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+    }
+
+
+    public function testJobFailedKeepsCache()
+    {
+        $page = $this->page();
+        $texts = $this->texts( $page );
+        $keys = [];
+
+        $translator = Ai::translator( $this->user, null, function( array $list ) use ( &$keys ) {
+            $keys = $list;
+        } );
+
+        $fake = Prisma::fake( [TextResponse::fromTexts( $texts )] );
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', $translator );
+
+        // job fails before translating, cached chunks stay for retries
+        $job = $this->job( $page->id, 'de', $this->user( ['page:save', 'text:translate'] ) );
+        $job->handle();
+
+        $job->assertFailed();
+        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+    }
+
+
     public function testJobSameAsEditor()
     {
         $page = $this->page();
@@ -146,7 +286,7 @@ class TranslatePageTest extends AiTestAbstract
         TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
 
         $this->fake( $other );
-        $preview = Resource::translation( $other->id, 'de', Ai::translator( $this->user ) );
+        $preview = Sync::translate( Page::with( 'latest' )->findOrFail( $other->id ), null, 'de', Ai::translator( $this->user ) );
 
         $de = Page::language( 'de' )->with( 'latest' )->findOrFail( $page->id );
 
@@ -211,19 +351,20 @@ class TranslatePageTest extends AiTestAbstract
     public function testJobRetries()
     {
         $page = $this->page();
-        Prisma::fake( array_fill( 0, 4, new RateLimitException( 'Too many requests' ) ) );
-
-        foreach( TranslatePage::BACKOFF as $delay )
-        {
-            $job = $this->job( $page->id, 'de' );
-            $job->handle();
-            $job->assertReleased( $delay );
-        }
+        Prisma::fake( [new RateLimitException( 'Too many requests' )] );
 
         $job = $this->job( $page->id, 'de' );
-        $job->handle();
 
-        $job->assertFailed();
+        try {
+            $job->handle();
+            $this->fail( 'Rate limit error not thrown for retrying' );
+        } catch( RateLimitException $e ) {
+            $job->assertNotFailed();
+            $job->assertNotReleased();
+        }
+
+        $this->assertSame( [10, 60, 300], $job->backoff );
+        $this->assertSame( 4, $job->maxExceptions );
         $this->assertFalse( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
     }
 
@@ -236,13 +377,15 @@ class TranslatePageTest extends AiTestAbstract
 
         Prisma::fake( [$error, new OverloadedException( 'Overloaded' ), TextResponse::fromTexts( $texts )] );
 
-        $job = $this->job( $page->id, 'de' );
-        $job->handle();
-        $job->assertReleased( TranslatePage::BACKOFF[0] );
-
-        $job = $this->job( $page->id, 'de' );
-        $job->handle();
-        $job->assertReleased( TranslatePage::BACKOFF[1] );
+        foreach( [ConnectException::class, OverloadedException::class] as $class )
+        {
+            try {
+                $this->job( $page->id, 'de' )->handle();
+                $this->fail( $class . ' not thrown for retrying' );
+            } catch( \Throwable $e ) {
+                $this->assertInstanceOf( $class, $e );
+            }
+        }
 
         $job = $this->job( $page->id, 'de' );
         $job->handle();
@@ -292,6 +435,7 @@ class TranslatePageTest extends AiTestAbstract
         $job->assertReleased();
         $job->assertNotFailed();
         $this->assertCount( 0, $fake->calls() );
+        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
 
         RateLimiter::clear( 'cms-translate:' . Tenancy::value() );
 
@@ -301,6 +445,34 @@ class TranslatePageTest extends AiTestAbstract
         $job->assertNotReleased();
         $this->assertCount( 1, $fake->calls() );
         $this->assertSame( 1, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
+    }
+
+
+    public function testJobThrottledReservesAll()
+    {
+        config( ['cms.ai.ratelimit' => 2] );
+
+        $key = 'cms-translate:' . Tenancy::value();
+        $method = new \ReflectionMethod( TranslatePage::class, 'throttle' );
+        $job = $this->job( 'page-id', 'de' );
+
+        RateLimiter::hit( $key, 60 );
+
+        // the reservation of all calls exceeds the limit and is given back
+        try {
+            $method->invoke( $job, 2 );
+            $this->fail( 'Throttled not thrown' );
+        } catch( \Aimeos\Cms\Jobs\Throttled $e ) {
+            $this->assertSame( 1, RateLimiter::attempts( $key ) );
+        }
+
+        $method->invoke( $job, 1 );
+        $this->assertSame( 2, RateLimiter::attempts( $key ) );
+
+        // more calls than the limit are reserved if no other calls were made
+        RateLimiter::clear( $key );
+        $method->invoke( $job, 5 );
+        $this->assertSame( 5, RateLimiter::attempts( $key ) );
     }
 
 
@@ -317,18 +489,110 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobQueueSkipsQueued()
+    {
+        Queue::fake();
+        $page = $this->page();
+
+        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
+        $batch = TranslatePage::dispatchBatch( [$page->id], ['de', 'en'], $this->user->id );
+
+        $this->assertSame( 1, $batch['total'] );
+        $this->assertSame( ['total' => 1, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
+        Queue::assertPushed( TranslatePage::class, 2 );
+    }
+
+
+    public function testJobQueueChunks()
+    {
+        Queue::fake();
+
+        $ids = array_map( fn( $idx ) => 'page-' . $idx, range( 1, 300 ) );
+        $batch = TranslatePage::dispatchBatch( $ids, ['de', 'en', 'de'], $this->user->id );
+
+        $this->assertSame( 600, $batch['total'] );
+        $this->assertSame( ['total' => 600, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
+        Queue::assertPushed( TranslatePage::class, 600 );
+    }
+
+
+    public function testJobQueueInvalidLang()
+    {
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectExceptionMessage( 'Invalid language code "xx"' );
+
+        TranslatePage::dispatchBatch( ['page-1'], ['de', 'xx'], $this->user->id );
+    }
+
+
+    public function testJobQueueVariantLangNotConfigured()
+    {
+        Queue::fake();
+
+        $page = \Aimeos\Cms\Models\Page::firstOrFail();
+        \Aimeos\Cms\Models\PageVariant::whereKey( $page->variant_id )->update( ['lang' => 'fr'] );
+
+        $batch = TranslatePage::dispatchBatch( ['page-1'], ['fr'], $this->user->id );
+        $this->assertSame( 1, $batch['total'] );
+    }
+
+
+    public function testJobQueueNoLocales()
+    {
+        Queue::fake();
+        config( ['cms.locales' => []] );
+
+        try {
+            $batch = TranslatePage::dispatchBatch( ['page-1'], ['es'], $this->user->id );
+            $this->assertSame( 1, $batch['total'] );
+
+            $this->expectException( \Aimeos\Cms\Exception::class );
+            TranslatePage::dispatchBatch( ['page-1'], ['no language'], $this->user->id );
+        } finally {
+            config( ['cms.locales' => ['en', 'de']] );
+        }
+    }
+
+
+    public function testJobQueueTooMany()
+    {
+        $this->expectException( \Aimeos\Cms\Exception::class );
+        $this->expectExceptionMessage( 'No more than 1000 items' );
+
+        TranslatePage::dispatchBatch( array_map( fn( $idx ) => 'page-' . $idx, range( 1, 501 ) ), ['de', 'en'], $this->user->id );
+    }
+
+
+    public function testJobFailedLogs()
+    {
+        $page = $this->page();
+
+        Log::shouldReceive( 'error' )->once()->with( 'Page translation failed', \Mockery::on( fn( $ctx ) => $ctx['page'] === $page->id && $ctx['error'] === 'Retries exceeded' ) );
+        ( new TranslatePage( $page->id, 'de', Tenancy::value(), $this->user->id ) )->failed( new \RuntimeException( 'Retries exceeded' ) );
+    }
+
+
     public function testJobProgress()
     {
         $page = $this->page();
         $this->fake( $page );
 
-        TranslatePage::batch( 'batch1', 2 );
-        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id, 'batch1' );
+        config( ['cms.queue.connection' => 'database'] );
 
-        $job = new TranslatePage( $page->id, 'xx', Tenancy::value(), $this->user->id, 'batch1' );
-        $job->withFakeQueueInteractions()->handle();
+        try
+        {
+            $batch = TranslatePage::dispatchBatch( [$page->id], ['de', 'en'], $this->user->id );
+            $this->assertSame( ['total' => 2, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
 
-        $this->assertSame( ['total' => 2, 'done' => 1, 'failed' => 1], TranslatePage::progress( 'batch1' ) );
+            Artisan::call( 'queue:work', ['connection' => 'database', '--queue' => config( 'cms.queue.name' ) ?: 'default', '--stop-when-empty' => true] );
+        }
+        finally
+        {
+            config( ['cms.queue.connection' => null] );
+        }
+
+        $this->assertSame( ['total' => 2, 'done' => 1, 'failed' => 1], TranslatePage::progress( $batch['id'] ) );
+        $this->assertEquals( '[de] Title', Page::language( 'de' )->findOrFail( $page->id )->latest->data->title );
         $this->assertNull( TranslatePage::progress( 'unknown' ) );
     }
 
@@ -363,26 +627,6 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
-    public function testGraphqlTranslation()
-    {
-        $page = $this->page();
-        $this->fake( $page );
-
-        $response = $this->actingAs( $this->user )->graphQL( '
-            query($id: ID!) { translation(id: $id, lang: "de") { data aux hashes translated latestId } }
-        ', ['id' => $page->id] )->assertGraphQLErrorFree();
-
-        $data = json_decode( $response->json( 'data.translation.data' ) );
-        $aux = json_decode( $response->json( 'data.translation.aux' ) );
-
-        $this->assertTrue( $response->json( 'data.translation.translated' ) );
-        $this->assertEquals( '[de] Title', $data->title );
-        $this->assertEquals( '[de] Hello', $aux->content[0]->data->text );
-        $this->assertNull( $response->json( 'data.translation.latestId' ) );
-        $this->assertFalse( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
-    }
-
-
     public function testGraphqlTranslateFiles()
     {
         $file = File::firstOrFail();
@@ -400,6 +644,87 @@ class TranslatePageTest extends AiTestAbstract
         $this->assertCount( 1, $fake->calls() );
         $this->assertEquals( 'Ein Testbild', $file->latest->aux->description->de );
         $this->assertEquals( 'A test image', $file->latest->aux->description->en );
+    }
+
+
+    public function testGraphqlTranslateFilesBatched()
+    {
+        $files = File::with( 'latest' )->take( 2 )->get();
+
+        foreach( $files as $file )
+        {
+            $file->forceFill( ['lang' => 'en', 'description' => ['en' => 'A test image']] )->saveQuietly();
+            $file->latest?->forceFill( ['aux' => ['description' => ['en' => 'A test image']]] )->saveQuietly();
+        }
+
+        $fake = Prisma::fake( [TextResponse::fromTexts( ['Ein Testbild'] ), TextResponse::fromTexts( ['Une image de test'] )] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { translateFiles(id: $id, lang: ["de", "fr"]) { id } }
+        ', ['id' => $files->pluck( 'id' )->all()] )->assertGraphQLErrorFree();
+
+        // one call per language, identical descriptions are sent once
+        $this->assertCount( 2, $fake->calls() );
+        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
+
+        foreach( $files as $file )
+        {
+            $file = File::with( 'latest' )->findOrFail( $file->id );
+
+            $this->assertEquals( 'Ein Testbild', $file->latest->aux->description->de );
+            $this->assertEquals( 'Une image de test', $file->latest->aux->description->fr );
+        }
+    }
+
+
+    public function testGraphqlTranslateFilesMaximum()
+    {
+        config( ['cms.ai.maxtranslate' => 3] );
+
+        $fake = Prisma::fake( [] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { translateFiles(id: $id, lang: ["de", "fr"]) { id } }
+        ', ['id' => File::take( 2 )->pluck( 'id' )->all()] )
+            ->assertGraphQLErrorMessage( 'No more than 3 file translations (files × languages) may be requested at once' );
+
+        $this->assertCount( 0, $fake->calls() );
+    }
+
+
+    public function testGraphqlTranslateFilesThrottled()
+    {
+        config( ['cms.ai.ratelimit' => 2] );
+
+        $key = 'cms-translate:' . Tenancy::value();
+        $file = File::firstOrFail();
+        $file->forceFill( ['lang' => 'en', 'description' => ['en' => 'A test image']] )->saveQuietly();
+        $file->latest?->forceFill( ['aux' => ['description' => ['en' => 'A test image']]] )->saveQuietly();
+        $latestId = $file->latest_id;
+
+        RateLimiter::hit( $key, 60 );
+        RateLimiter::hit( $key, 60 );
+
+        $fake = Prisma::fake( [TextResponse::fromTexts( ['Ein Testbild'] )] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { translateFiles(id: $id, lang: ["de"]) { id } }
+        ', ['id' => [$file->id]] )->assertGraphQLErrorMessage( 'Too many translations, please try again later' );
+
+        // the reservation is given back and nothing is translated or saved
+        $this->assertCount( 0, $fake->calls() );
+        $this->assertSame( 2, RateLimiter::attempts( $key ) );
+        $this->assertSame( $latestId, File::findOrFail( $file->id )->latest_id );
+
+        RateLimiter::clear( $key );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: [ID!]!) { translateFiles(id: $id, lang: ["de"]) { id } }
+        ', ['id' => [$file->id]] )->assertJson( ['data' => ['translateFiles' => [['id' => $file->id]]]] );
+
+        $this->assertCount( 1, $fake->calls() );
+        $this->assertSame( 1, RateLimiter::attempts( $key ) );
+        $this->assertEquals( 'Ein Testbild', File::with( 'latest' )->findOrFail( $file->id )->latest->aux->description->de );
     }
 
 
@@ -466,7 +791,7 @@ class TranslatePageTest extends AiTestAbstract
     {
         $texts = [];
 
-        Resource::translation( $page->id, 'de', function( array $list ) use ( &$texts ) {
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', function( array $list ) use ( &$texts ) {
             return $texts = array_map( fn( $text ) => '[de] ' . $text, $list );
         } );
 

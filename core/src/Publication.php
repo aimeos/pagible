@@ -29,7 +29,7 @@ final class Publication
     /** @var array<string, Element> */
     private array $elements = [];
 
-    /** @var array<class-string<Base>, array<string, Base>> */
+    /** @var array<class-string<Base>, array<string, Base>> Models by version key, pages per variant */
     private array $models = [];
 
     /** @var array<class-string<Base>, array<string, array{version_id: string, path?: string, domain?: string, lang?: string}>> */
@@ -93,7 +93,7 @@ final class Publication
         Resource::staleVariants( array_filter( $this->models[Page::class] ?? [], fn( $item ) => $item instanceof Page ) );
 
         foreach( $this->models as $model => $items ) {
-            Scout::index( $model, array_keys( $items ), collect( array_values( $items ) ) );
+            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->id, array_values( $items ) ), collect( array_values( $items ) ) );
         }
 
         foreach( $this->models as $model => $items ) {
@@ -855,7 +855,8 @@ final class Publication
      */
     private function track( Base $model, Version $version ) : void
     {
-        $id = (string) $model->id;
+        // pages are published per variant, several variants of a page can be published together
+        $id = (string) ( $model->getVersionKey() ?? $model->id );
         $versionId = (string) $version->id;
         $projection = ['version_id' => $versionId];
 
@@ -890,23 +891,13 @@ final class Publication
      */
     private static function variantRow( Page $page, array $row, array $columns ) : array
     {
-        $result = ['id' => $page->variant_id];
-        $names = [];
+        [$pageRow, $variantRow] = PageBuilder::split( array_intersect_key( $row, array_flip( $columns ) ) );
 
-        foreach( $columns as $column )
-        {
-            $name = PageBuilder::VARIANT_COLUMNS[$column]
-                ?? ( in_array( $column, PageBuilder::SHARED_COLUMNS, true ) ? $column : null );
-
-            if( $name === null ) {
-                throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
-            }
-
-            $result[$name] = $row[$column];
-            $names[] = $name;
+        if( $column = array_key_first( array_diff_key( $pageRow, array_flip( PageBuilder::SHARED_COLUMNS ) ) ) ) {
+            throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
         }
 
-        return [$result, $names];
+        return [['id' => $page->variant_id] + $variantRow, array_keys( $variantRow )];
     }
 
 

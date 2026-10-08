@@ -667,4 +667,36 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertSame( [], $indexed( true ) );
         $this->assertSame( [], $indexed( false ) );
     }
+
+
+    public function testWithTrashedLikeCollectionEngine()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page->delete();
+
+        $softDelete = config( 'scout.soft_delete' );
+        $results = [];
+
+        try
+        {
+            foreach( [true, false] as $flag )
+            {
+                config( ['scout.soft_delete' => $flag] );
+
+                foreach( ['cms', 'collection'] as $driver )
+                {
+                    config( ['scout.driver' => $driver] );
+                    $ids = Page::search( '' )->searchFields( 'draft' )->withTrashed()->take( 50 )->get()->pluck( 'id' )->all();
+                    $results[$driver][(int) $flag] = in_array( $page->id, $ids );
+                }
+            }
+        }
+        finally
+        {
+            config( ['scout.driver' => 'cms', 'scout.soft_delete' => $softDelete] );
+        }
+
+        $this->assertEquals( [1 => true, 0 => false], $results['collection'] );
+        $this->assertEquals( $results['collection'], $results['cms'] );
+    }
 }

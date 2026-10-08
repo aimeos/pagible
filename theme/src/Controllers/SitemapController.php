@@ -249,7 +249,7 @@ class SitemapController extends Controller
      * Streams a `<urlset>` XML document.
      *
      * When `$limit` is null all rows are streamed (single-file mode); otherwise
-     * the result is sliced via `ORDER BY id, lang LIMIT/OFFSET` for chunked output.
+     * the result is sliced via `ORDER BY variant_id LIMIT/OFFSET` for chunked output.
      * The route URL is resolved once with placeholders and substituted per row
      * to avoid the per-iteration cost of Laravel's URL generator.
      *
@@ -265,7 +265,7 @@ class SitemapController extends Controller
         $query = $this->query()->select( 'path', 'domain', 'updated_at', 'meta' );
 
         if( $limit !== null ) {
-            $query->orderBy( 'id' )->orderBy( 'lang' )->offset( (int) $offset )->limit( $limit );
+            $query->orderBy( 'variant_id' )->offset( (int) $offset )->limit( $limit );
         }
 
         return response()->stream( function() use ( $tz, $template, $query ) {

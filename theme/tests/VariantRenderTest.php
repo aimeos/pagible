@@ -11,7 +11,6 @@ use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Navigation;
-use Aimeos\Cms\PageLinks;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
@@ -133,54 +132,6 @@ class VariantRenderTest extends ThemeTestAbstract
         $response = $this->get( '/blog' );
         $response->assertSee( 'hreflang="de"', false );
         $response->assertDontSee( 'hreflang="fr"', false );
-    }
-
-
-    public function testPageLinks()
-    {
-        $blog = $this->blog();
-        $links = app( PageLinks::class );
-
-        app()->setLocale( 'de' );
-        $this->assertSame( url( 'blog' ), cmslink( 'page:' . $blog->id ) );
-
-        $this->variant( $blog, 'de', 'blog-de' );
-        $this->app->forgetScopedInstances();
-
-        $this->assertSame( url( 'blog-de' ), cmslink( 'page:' . $blog->id ) );
-        $this->assertSame( '', app( PageLinks::class )->url( 'page:unknown' ) );
-
-        app()->setLocale( 'en' );
-        $this->assertSame( url( 'blog' ), cmslink( 'page:' . $blog->id ) );
-        $this->assertTrue( PageLinks::is( 'page:' . $blog->id ) );
-        $this->assertFalse( PageLinks::is( 'page:<script>' ) );
-        $this->assertNotSame( $links, app( PageLinks::class ) );
-    }
-
-
-    public function testPageLinksTrashedVariant()
-    {
-        $blog = $this->blog();
-        $this->variant( $blog, 'de', 'blog-de' );
-        Resource::dropVariant( $blog->id, 'de', $this->user );
-
-        app()->setLocale( 'de' );
-        $this->assertSame( url( 'blog' ), cmslink( 'page:' . $blog->id ) );
-    }
-
-
-    public function testMarkdownPageLinks()
-    {
-        $blog = $this->blog();
-        $this->variant( $blog, 'de', 'blog-de' );
-        app()->setLocale( 'de' );
-
-        $text = '[Blog](page:' . $blog->id . ') and [missing](page:unknown)';
-        $html = Blade::render( '@markdown($text)', ['text' => $text], true );
-
-        $this->assertStringContainsString( '<a href="' . url( 'blog-de' ) . '">Blog</a>', $html );
-        $this->assertStringContainsString( 'and missing', $html );
-        $this->assertStringNotContainsString( 'page:', $html );
     }
 
 

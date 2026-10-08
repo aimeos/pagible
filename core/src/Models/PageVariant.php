@@ -10,11 +10,11 @@ namespace Aimeos\Cms\Models;
 use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\Tenancy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Events\ModelsPruned;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Date;
 
 
@@ -58,6 +58,11 @@ class PageVariant extends Model
     use Prunable;
     use SoftDeletes;
     use Tenancy;
+
+    /**
+     * Page fields stored in the variant besides its language.
+     */
+    public const FIELDS = [...\Aimeos\Cms\Hashes::PAGE_FIELDS, 'path', 'domain', 'to', 'status'];
 
 
     /**
@@ -132,17 +137,6 @@ class PageVariant extends Model
 
 
     /**
-     * Relation to the page the variant belongs to.
-     *
-     * @return BelongsTo<Page, $this>
-     */
-    public function page() : BelongsTo
-    {
-        return $this->belongsTo( Page::class, 'page_id' );
-    }
-
-
-    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder for pruning trashed variants
@@ -155,25 +149,37 @@ class PageVariant extends Model
 
 
     /**
-     * Get all versions of the variant.
+     * Prunes the trashed variants including their versions and search index entries in chunks.
      *
-     * @return MorphMany<Version, $this>
+     * @param int $chunkSize Number of variants pruned at once
+     * @return int Number of pruned variants
      */
-    public function versions() : MorphMany
+    public function pruneAll( int $chunkSize = 1000 ) : int
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
-    }
+        $total = 0;
 
+        $this->prunable()->withoutGlobalScope( SoftDeletingScope::class )->select( 'id', 'page_id', 'tenant_id' )->chunkById( $chunkSize, function( \Illuminate\Database\Eloquent\Collection $models ) use ( &$total ) {
 
-    /**
-     * Deletes the versions before pruning a variant.
-     */
-    protected function pruning() : void
-    {
-        \Aimeos\Cms\Tenancy::run( (string) $this->tenant_id, fn() => \Aimeos\Cms\Scout::unindex( Page::class, [(string) $this->id] ) );
+            $ids = $models->modelKeys();
 
-        Version::withoutTenancy()->where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
-            ->delete();
+            Version::withoutTenancy()->whereIn( 'versionable_id', $ids )
+                ->where( 'versionable_type', static::class )
+                ->delete();
+
+            $count = static::withoutTenancy()->withTrashed()->whereKey( $ids )->forceDelete();
+            $total += $count;
+
+            // source variants are listed for the languages of the pruned variants afterwards
+            foreach( $models->groupBy( 'tenant_id' ) as $tenant => $list ) {
+                \Aimeos\Cms\Tenancy::run( (string) $tenant, function() use ( $list ) {
+                    \Aimeos\Cms\Scout::unindex( Page::class, array_map( strval( ... ), $list->modelKeys() ) );
+                    \Aimeos\Cms\Scout::sources( $list->pluck( 'page_id' )->map( strval( ... ) )->all() );
+                } );
+            }
+
+            event( new ModelsPruned( static::class, $count ) );
+        } );
+
+        return $total;
     }
 }

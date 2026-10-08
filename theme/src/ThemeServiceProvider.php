@@ -70,7 +70,6 @@ class ThemeServiceProvider extends Provider
     public function register()
     {
         $this->mergeConfigFrom( dirname( __DIR__ ) . '/config/cms/theme.php', 'cms.theme' );
-        $this->app->scoped( PageLinks::class );
 
         // Page languages are BCP 47 tags ("pt-BR") but Laravel's plural rules expect "pt_BR"
         $this->app->extend( 'translator', function( Translator $translator ) {
@@ -117,7 +116,6 @@ class ThemeServiceProvider extends Provider
                             'inner_separator' => ''
                         ]
                     ]);
-                    \$__cmsMarkdown->getEnvironment()->addExtension( new \Aimeos\Cms\PageLinkExtension() );
                 }
                 echo trim((string) \$__cmsMarkdown->convert($expression ?? ''));
             ?>";
@@ -139,7 +137,6 @@ class ThemeServiceProvider extends Provider
                             ]
                         ]);
                         \$__cmsTextEnv->addExtension( new \\League\\CommonMark\\Extension\\InlinesOnly\\InlinesOnlyExtension() );
-                        \$__cmsTextEnv->addExtension( new \\Aimeos\\Cms\\PageLinkExtension() );
                         \$__cmsText = new \\League\\CommonMark\\MarkdownConverter( \$__cmsTextEnv );
                     }
                     echo trim((string) \$__cmsText->convert( \$__cmsTextVal ));

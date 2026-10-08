@@ -21,6 +21,12 @@ use Illuminate\Support\Facades\Schema;
  */
 return new class extends Migration
 {
+    /**
+     * Each step commits on its own and can be continued after an interruption, so the
+     * large data copies don't run in one huge transaction on PostgreSQL and SQL Server.
+     */
+    public $withinTransaction = false;
+
     /** @var list<string> Page columns moved to the variants */
     private const MOVED = [
         'name', 'path', 'to', 'title', 'domain', 'lang', 'tag', 'type', 'theme', 'cache', 'status',
@@ -40,20 +46,20 @@ return new class extends Migration
         $schema = Schema::connection( $name );
         $db = DB::connection( $name );
 
-        if( $schema->hasTable( 'cms_page_variants' ) ) {
-            return;
+        // all steps skip the work already done to continue an interrupted migration
+        if( !$schema->hasTable( 'cms_page_variants' ) ) {
+            $this->variants( $schema, $db );
         }
 
-        $this->variants( $schema, $db );
-        $this->copy( $db );
+        if( $schema->hasColumn( 'cms_pages', 'lang' ) ) {
+            $this->copy( $db );
+        }
+
         $this->pivot( $schema, $db, 'cms_page_element', 'element_id', 'cms_elements' );
         $this->pivot( $schema, $db, 'cms_page_file', 'file_id', 'cms_files' );
         $this->pages( $schema, $db );
         $this->langs( $schema, $db );
-
-        $db->table( 'cms_versions' )
-            ->where( 'versionable_type', 'Aimeos\Cms\Models\Page' )
-            ->update( ['versionable_type' => 'Aimeos\Cms\Models\PageVariant'] );
+        $this->versions( $db );
     }
 
 
@@ -67,10 +73,33 @@ return new class extends Migration
             'cache', 'status', 'meta', 'config', 'content', 'latest_id', 'editor', 'created_at', 'updated_at',
         ];
 
-        $db->table( 'cms_page_variants' )->insertUsing(
-            ['id', 'page_id', ...$cols, 'hashes'],
-            $db->table( 'cms_pages' )->select( ['id', 'id as page_id', ...$cols] )->selectRaw( "'{}' as hashes" )
-        );
+        // in batches to limit the transaction size for sites with many pages, already copied pages are skipped
+        $db->table( 'cms_pages' )->select( 'id' )
+            ->whereNotExists( fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants' )
+                ->whereColumn( 'cms_page_variants.page_id', 'cms_pages.id' ) )
+            ->chunkById( 1000, fn( $rows ) => $db->table( 'cms_page_variants' )->insertUsing(
+                ['id', 'page_id', ...$cols, 'hashes'],
+                $db->table( 'cms_pages' )->select( ['id', 'id as page_id', ...$cols] )->selectRaw( "'{}' as hashes" )
+                    ->whereIn( 'id', $rows->pluck( 'id' )->all() )
+            ) );
+    }
+
+
+    /**
+     * Assigns the page versions to the page variants which have the same IDs as their pages.
+     *
+     * Updates in batches to limit the undo log and lock escalation for sites with many versions.
+     * Can be continued after interruptions because only versions of the old type are updated.
+     */
+    private function versions( Connection $db ): void
+    {
+        // walks the primary key of all versions because filtering by type can make the database
+        // use the type index and sort the remaining versions for each batch
+        // SQL Server allows 2100 parameters per statement at most
+        $db->table( 'cms_versions' )->select( 'id' )
+            ->chunkById( 2000, fn( $rows ) => $db->table( 'cms_versions' )->whereIn( 'id', $rows->pluck( 'id' )->all() )
+                ->where( 'versionable_type', 'Aimeos\Cms\Models\Page' )
+                ->update( ['versionable_type' => 'Aimeos\Cms\Models\PageVariant'] ) );
     }
 
 
@@ -79,11 +108,17 @@ return new class extends Migration
      */
     private function pages( Builder $schema, Connection $db ): void
     {
-        $schema->table( 'cms_pages', function( Blueprint $table ) {
-            $table->string( 'source', 10 )->default( '' );
-        } );
+        if( !$schema->hasColumn( 'cms_pages', 'source' ) ) {
+            $schema->table( 'cms_pages', fn( Blueprint $table ) => $table->string( 'source', 10 )->default( '' ) );
+        }
 
-        $db->table( 'cms_pages' )->update( ['source' => $db->raw( $db->getQueryGrammar()->wrap( 'lang' ) )] );
+        if( $schema->hasColumn( 'cms_pages', 'lang' ) )
+        {
+            // in batches to limit the transaction size for sites with many pages
+            $db->table( 'cms_pages' )->select( 'id' )->chunkById( 1000, fn( $rows ) => $db->table( 'cms_pages' )
+                ->whereIn( 'id', $rows->pluck( 'id' )->all() )
+                ->update( ['source' => $db->raw( $db->getQueryGrammar()->wrap( 'lang' ) )] ) );
+        }
 
         foreach( $schema->getIndexes( 'cms_pages' ) as $index )
         {
@@ -92,7 +127,11 @@ return new class extends Migration
             }
         }
 
-        $schema->table( 'cms_pages', fn( Blueprint $table ) => $table->dropColumn( self::MOVED ) );
+        $moved = array_values( array_filter( self::MOVED, fn( $col ) => $schema->hasColumn( 'cms_pages', $col ) ) );
+
+        if( $moved ) {
+            $schema->table( 'cms_pages', fn( Blueprint $table ) => $table->dropColumn( $moved ) );
+        }
 
         $names = array_column( $schema->getIndexes( 'cms_pages' ), 'name' );
 
@@ -101,7 +140,7 @@ return new class extends Migration
                 $table->index( ['deleted_at', 'tenant_id', '_lft', '_rgt'] );
             }
 
-            if( $db->getDriverName() === 'sqlite' ) {
+            if( $db->getDriverName() === 'sqlite' && !in_array( 'cms_pages_covering_index', $names, true ) ) {
                 $table->index( ['deleted_at', 'tenant_id', 'depth', '_lft', '_rgt', 'id', 'parent_id', 'source'], 'cms_pages_covering_index' );
             }
         } );
@@ -146,6 +185,44 @@ return new class extends Migration
     {
         $tmp = $name . '_tmp';
 
+        // the old table is only dropped after the new one is complete
+        if( $schema->hasTable( $name ) && !$schema->hasColumn( $name, 'variant_id' ) )
+        {
+            $schema->dropIfExists( $tmp );
+            $this->create( $schema, $tmp, $name, $column, $target );
+
+            // in batches to limit the transaction size, the variants have the same IDs as their pages
+            $db->table( 'cms_pages' )->select( 'id' )->chunkById( 1000, fn( $rows ) => $db->table( $tmp )->insertUsing(
+                ['variant_id', $column],
+                $db->table( $name )->select( ['page_id', $column] )->whereIn( 'page_id', $rows->pluck( 'id' )->all() )
+            ) );
+
+            $schema->drop( $name );
+        }
+
+        if( !$schema->hasTable( $name ) ) {
+            $schema->rename( $tmp, $name );
+        }
+
+        $names = array_column( $schema->getIndexes( $name ), 'name' );
+
+        $schema->table( $name, function( Blueprint $table ) use ( $name, $column, $names ) {
+            if( !in_array( $name . '_variant_id_' . $column . '_unique', $names, true ) ) {
+                $table->unique( ['variant_id', $column] );
+            }
+
+            if( !in_array( $name . '_' . $column . '_index', $names, true ) ) {
+                $table->index( $column );
+            }
+        } );
+    }
+
+
+    /**
+     * Creates the new page pivot table referencing the page variants.
+     */
+    private function create( Builder $schema, string $tmp, string $name, string $column, string $target ): void
+    {
         $schema->create( $tmp, function( Blueprint $table ) use ( $name, $column, $target ) {
             $table->uuid( 'variant_id' );
             $table->uuid( $column );
@@ -154,16 +231,6 @@ return new class extends Migration
                 ->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign( $column, $name . '_' . $column . '_fk' )->references( 'id' )->on( $target )
                 ->cascadeOnUpdate()->cascadeOnDelete();
-        } );
-
-        $db->table( $tmp )->insertUsing( ['variant_id', $column], $db->table( $name )->select( ['page_id', $column] ) );
-
-        $schema->drop( $name );
-        $schema->rename( $tmp, $name );
-
-        $schema->table( $name, function( Blueprint $table ) use ( $column ) {
-            $table->unique( ['variant_id', $column] );
-            $table->index( $column );
         } );
     }
 
@@ -208,6 +275,7 @@ return new class extends Migration
             $table->index( ['lang', 'tenant_id', 'status'] );
             $table->index( ['tenant_id', 'type', 'deleted_at', 'created_at'], 'cms_page_variants_news_sitemap_index' );
             $table->index( ['latest_id'] );
+            $table->index( ['deleted_at', 'tenant_id'] );
 
             if( $db->getDriverName() === 'sqlite' ) {
                 $table->index( ['page_id', 'lang', 'tenant_id', 'deleted_at', 'name', 'title', 'tag', 'path', 'domain', 'to', 'status', 'config', 'latest_id'], 'cms_page_variants_covering_index' );

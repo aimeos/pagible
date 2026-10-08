@@ -50,6 +50,7 @@ import {
   useChangeStore
 } from '../stores'
 import { listBase, mutation, tally, useListShortcuts } from '../lists'
+import { pageVariants } from '../variants'
 import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, listEcho } from '../echo'
@@ -153,33 +154,6 @@ const ADD_VARIANT = gql`
   }
 `
 
-const IGNORE_CHANGES = gql`
-  mutation ($id: [ID!]!, $lang: String!) {
-    ignoreChanges(id: $id, lang: $lang) {
-      id
-    }
-  }
-`
-
-const TRANSLATE_PAGE = gql`
-  mutation ($id: [ID!]!, $lang: [String!]!) {
-    translatePage(id: $id, lang: $lang) {
-      id
-      total
-    }
-  }
-`
-
-const TRANSLATE_PROGRESS = gql`
-  query ($batch: ID!) {
-    translateProgress(batch: $batch) {
-      total
-      done
-      failed
-    }
-  }
-`
-
 const COPY_PAGE = gql`
   mutation ($id: ID!, $parent: ID, $ref: ID) {
     copyPage(id: $id, parent: $parent, ref: $ref) {
@@ -219,9 +193,6 @@ const FETCH_PAGES = gql`
   }
 `
 
-// editor of the drafts created by the AI translation
-const AI_EDITOR = 'AI draft'
-
 const SORT_OPTIONS = Object.freeze([
   { column: 'LFT', order: 'ASC', label: 'Tree' },
   { column: 'ID', order: 'DESC', label: 'Latest' },
@@ -231,6 +202,9 @@ const SORT_OPTIONS = Object.freeze([
   { column: 'NAME', order: 'ASC', label: 'Name' },
   { column: 'EDITOR', order: 'ASC', label: 'Editor' }
 ])
+
+// editor name of AI translated drafts, same as Aimeos\Cms\Sync::EDITOR
+const AI_EDITOR = 'AI draft'
 
 export default {
   components: {
@@ -244,6 +218,8 @@ export default {
     PageAccess,
     PageBulkDialog
   },
+
+  mixins: [pageVariants],
 
   props: listBase.props,
 
@@ -278,8 +254,7 @@ export default {
       destroyed: false,
       loadId: 0,
       origin: null,
-      outdated: false,
-      progress: null
+      outdated: false
     }
   },
 
@@ -369,7 +344,6 @@ export default {
   beforeUnmount() {
     this.destroyed = true
     this.unsubscribe?.()
-    clearTimeout(this.polling)
   },
 
   computed: {
@@ -466,7 +440,7 @@ export default {
           const page = { ...result.data.addPage, lang: this.lang, source: this.lang }
 
           this.$refs.tree.add(page)
-          this.invalidate()
+          this.invalidate(true)
           this.$emit('select', page)
         })
         .catch((error) => {
@@ -601,7 +575,7 @@ export default {
         draft: own.filter((item) => !item.published).length,
         own: own.length,
         langLive: own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length,
-        langSource: own.filter((item) => item.lang === item.source).length,
+        langVariant: own.filter((item) => item.lang !== item.source).length,
         langTrashed: own.filter((item) => item.variant_deleted_at).length,
         stale: own.filter((item) => this.isStale(item)).length,
         translate: items.filter((item) => this.translatable(item)).length
@@ -625,242 +599,10 @@ export default {
           }
 
           Object.assign(stat.data, this.hydrate(result.data.addVariant))
-          this.invalidate()
+          this.invalidate(true)
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error adding language'), error, stat.data.id)
-        })
-    },
-
-    // moves the variants in the current language to the trash, source variants are skipped
-    async dropLang(stat = null) {
-      const all = this.allowed('drop') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : []
-      const list = all.filter((item) => item.data.lang !== item.data.source && !item.data.variant_deleted_at)
-      const skipped = all.filter((item) => item.data.lang === item.data.source).length
-
-      if (!list.length) {
-        if (skipped) {
-          this.messages.add(this.$gettext('Pages in their source language are deleted as whole pages only'), 'info')
-        }
-        return
-      }
-
-      if (
-        !stat &&
-        !(await this.confirm.ask(
-          this.$gettext('Delete language'),
-          this.$ngettext(
-            'Move %{num} page in "%{lang}" to the trash?',
-            'Move %{num} pages in "%{lang}" to the trash?',
-            list.length,
-            { num: list.length, lang: this.languages.translate(this.lang) }
-          ),
-          [],
-          skipped
-            ? this.$ngettext(
-                '%{num} page in its source language is skipped.',
-                '%{num} pages in their source language are skipped.',
-                skipped,
-                { num: skipped }
-              )
-            : ''
-        ))
-      ) {
-        return
-      }
-
-      const ids = list.map((item) => item.data.id)
-
-      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang).then((ok) => {
-        if (!ok) {
-          return
-        }
-
-        const action = this.user.can('page:keep')
-          ? {
-              label: this.$gettext('Undo'),
-              handler: () => {
-                this.mutate('keep', ids, this.$gettext('Error restoring language'), this.lang).then((ok) => {
-                  ok && this.reload(false)
-                })
-              }
-            }
-          : null
-
-        this.messages.add(
-          this.$ngettext('Moved to trash', '%{num} entries moved to trash', ids.length, { num: ids.length }),
-          'success',
-          null,
-          action
-        )
-
-        return this.refetch(list)
-      })
-    },
-
-    // restores the trashed variants in the current language
-    keepLang(stat = null) {
-      const list = this.allowed('keep') ? (stat ? [stat] : this.selected((page) => page.variant_deleted_at && !this.missing(page))) : []
-
-      if (!list.length) {
-        return
-      }
-
-      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang).then((ok) => {
-        ok && this.refetch(list)
-      })
-    },
-
-    // permanently removes the variants in the current language, source variants are skipped
-    async purgeLang(stat = null) {
-      const list = (this.allowed('purge') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : [])
-        .filter((item) => item.data.lang !== item.data.source)
-
-      if (
-        !list.length ||
-        !(await this.confirm.purge(
-          list.map((stat) => ({
-            name: stat.data.name + ' (' + this.languages.translate(this.lang) + ')',
-            info: '/' + (stat.data.path || '')
-          }))
-        ))
-      ) {
-        return
-      }
-
-      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang).then((ok) => {
-        ok && this.refetch(list)
-      })
-    },
-
-    // marks the variants in the current language as up to date without changing their content
-    ignore(stat = null) {
-      const list = this.user.can('page:save') ? (stat ? [stat] : this.selected((page) => this.isStale(page))) : []
-
-      if (!list.length) {
-        return
-      }
-
-      return this.$apollo
-        .mutate({
-          mutation: IGNORE_CHANGES,
-          variables: { id: list.map((item) => item.data.id), lang: this.lang }
-        })
-        .then(() => {
-          for (const item of list) {
-            item.data.stale = false
-            item._checked = false
-          }
-          this.invalidate()
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error ignoring changes'), error, list.map((item) => item.data.id))
-        })
-    },
-
-    // variant in the current language whose source changed since it was translated
-    isStale(page) {
-      return !!page.stale && page.lang !== page.source && !this.missing(page)
-    },
-
-    // polls the progress of the queued translations until all are finished
-    poll(batch) {
-      return this.$apollo
-        .query({
-          query: TRANSLATE_PROGRESS,
-          variables: { batch },
-          fetchPolicy: 'no-cache'
-        })
-        .then((result) => {
-          const progress = result.data?.translateProgress
-
-          if (!progress || this.destroyed) {
-            this.progress = null
-            return
-          }
-
-          this.progress = { ...progress, batch }
-
-          if (progress.done + progress.failed < progress.total) {
-            this.polling = setTimeout(() => this.poll(batch), 2000)
-            return
-          }
-
-          this.progress = null
-          this.reload(false)
-
-          if (progress.failed) {
-            this.messages.add(
-              this.$ngettext('%{num} translation failed', '%{num} translations failed', progress.failed, {
-                num: progress.failed
-              }),
-              'error'
-            )
-          } else {
-            this.messages.add(this.$gettext('Translation finished'), 'success')
-          }
-        })
-        .catch((error) => {
-          this.progress = null
-          this.messages.error(this.$gettext('Error fetching translation progress'), error)
-        })
-    },
-
-    // pages which can be translated into the current language, missing variants require page:add
-    translatable(page) {
-      return (
-        !page.deleted_at &&
-        !!page.source &&
-        page.source !== this.lang &&
-        (this.missing(page) ? this.user.can('page:add') : !page.variant_deleted_at)
-      )
-    },
-
-    // queues the translations of the pages into the current language and shows the progress
-    async translate(stat = null) {
-      const list = this.user.can('page:save') && this.user.can('text:translate')
-        ? stat ? [stat] : this.selected((page) => this.translatable(page))
-        : []
-
-      if (!list.length || this.progress) {
-        return
-      }
-
-      if (
-        !stat &&
-        !(await this.confirm.ask(
-          this.$gettext('Translate'),
-          this.$ngettext(
-            'Translate %{num} page into "%{lang}"?',
-            'Translate %{num} pages into "%{lang}"?',
-            list.length,
-            { num: list.length, lang: this.languages.translate(this.lang) }
-          ),
-          [],
-          this.$gettext('The translations run in the background and are saved as drafts for review.')
-        ))
-      ) {
-        return
-      }
-
-      return this.$apollo
-        .mutate({
-          mutation: TRANSLATE_PAGE,
-          variables: { id: list.map((item) => item.data.id), lang: [this.lang] }
-        })
-        .then((result) => {
-          const batch = result.data?.translatePage
-
-          if (!batch) {
-            throw new Error('No data in translatePage mutation result')
-          }
-
-          list.forEach((item) => (item._checked = false))
-          this.progress = { batch: batch.id, total: batch.total, done: 0, failed: 0 }
-          return this.poll(batch.id)
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error translating pages'), error, list.map((item) => item.data.id))
         })
     },
 
@@ -903,12 +645,14 @@ export default {
       })
     },
 
-    trashed(ids) {
+    // shows the undo message for the trashed pages (or their variants in the language)
+    trashed(ids, lang = null) {
       const action = this.user.can('page:keep')
         ? {
             label: this.$gettext('Undo'),
             handler: () => {
-              this.mutate('keep', ids, this.$gettext('Error restoring page')).then((ok) => {
+              const msg = lang ? this.$gettext('Error restoring language') : this.$gettext('Error restoring page')
+              this.mutate('keep', ids, msg, lang).then((ok) => {
                 ok && this.reload(false)
               })
             }
@@ -1021,15 +765,17 @@ export default {
 
           this.updateHas(parent, 1)
 
-          this.invalidate()
+          this.invalidate(true)
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error inserting page'), error)
         })
     },
 
-    invalidate() {
+    // clears the cached page lists, only actions altering translation states refresh their counts
+    invalidate(changed = false) {
       invalidateList('pages')
+      changed && this.$emit('changed')
     },
 
     newPage() {
@@ -1156,7 +902,7 @@ export default {
           variables: lang ? { id: ids, lang } : { id: ids }
         })
         .then(() => {
-          this.invalidate()
+          this.invalidate(action !== 'pub')
           return true
         })
         .catch((error) => {
@@ -1222,7 +968,7 @@ export default {
             throw new Error('No page data returned')
           }
 
-          this.invalidate()
+          this.invalidate(true)
           return this.pages({ id: [id] }, 1, 1, undefined, this.$gettext('Error fetching page'), 'WITH')
         })
         .then((result) => {
@@ -1274,33 +1020,12 @@ export default {
       })
     },
 
-    async publish(stat) {
+    publish(stat) {
       const list = this.allowed('publish')
         ? stat ? [stat] : this.selected((page) => !page.published && !this.missing(page))
         : []
 
       if (!list.length) {
-        return
-      }
-
-      // unreviewed AI translations are only published after a confirmation
-      const ai = list.filter((item) => item.data.editor === AI_EDITOR).length
-
-      if (
-        !stat &&
-        ai &&
-        !(await this.confirm.ask(
-          this.$gettext('Publish'),
-          this.$ngettext('Publish %{num} page?', 'Publish %{num} pages?', list.length, { num: list.length }),
-          [],
-          this.$ngettext(
-            '%{num} page is an unreviewed AI translation.',
-            '%{num} pages are unreviewed AI translations.',
-            ai,
-            { num: ai }
-          )
-        ))
-      ) {
         return
       }
 
@@ -1344,27 +1069,40 @@ export default {
     },
 
     // reloads the rows after their variant changed, e.g. the source variant is shown after
-    // trashing the variant in the current language; rows not matching the filter anymore are removed
-    refetch(list) {
-      const ids = list.map((stat) => stat.data.id)
+    // trashing the variant in the current language; rows not matching the filter anymore are removed.
+    // The rows are fetched in parallel chunks of 100 to stay below the GraphQL complexity limit
+    refetch(list, size = 100) {
+      const chunks = []
 
-      return this.pages({ id: ids }, 1, ids.length, undefined, this.$gettext('Error fetching pages')).then((result) => {
-        if (!result) {
-          return
-        }
+      for (let i = 0; i < list.length; i += size) {
+        chunks.push(list.slice(i, i + size))
+      }
 
-        const byId = new Map(result.data.map((item) => [item.id, item]))
-
-        for (const stat of list) {
-          const item = byId.get(stat.data.id)
-
-          if (item) {
-            Object.assign(stat.data, item, { has: stat.data.has })
-            stat._checked = false
-          } else if (this.$refs.tree?.statsFlat.includes(stat)) {
-            this.$refs.tree.remove(stat)
+      return Promise.all(
+        chunks.map((chunk) => {
+          const ids = chunk.map((stat) => stat.data.id)
+          return this.pages({ id: ids }, 1, ids.length, undefined, this.$gettext('Error fetching pages'))
+        })
+      ).then((results) => {
+        results.forEach((result, idx) => {
+          // rows of failed requests are left unchanged
+          if (!result?.data) {
+            return
           }
-        }
+
+          const byId = new Map(result.data.map((item) => [item.id, item]))
+
+          for (const stat of chunks[idx]) {
+            const item = byId.get(stat.data.id)
+
+            if (item) {
+              Object.assign(stat.data, item, { has: stat.data.has })
+              stat._checked = false
+            } else if (this.$refs.tree?.statsFlat.includes(stat)) {
+              this.$refs.tree.remove(stat)
+            }
+          }
+        })
       })
     },
 
@@ -1482,12 +1220,17 @@ export default {
             }
           })
 
+          // new drafts replace AI drafts, which changes the translation counts too
+          const aiDraft = (this.$refs.tree?.statsFlat || []).some(
+            (stat) => ids.has(stat.data?.id) && stat.data.editor === AI_EDITOR
+          )
+
           this.propsIds = []
           if (this.propsSelected) {
             this.checked = false
           }
           this.propsSelected = false
-          this.invalidate()
+          this.invalidate('lang' in input || aiDraft)
 
           // best effort: the server reports how many attempted pages could not be saved
           if (res.failed > 0) {
@@ -1554,7 +1297,8 @@ export default {
             }
           })
 
-          this.invalidate()
+          // new drafts replace AI drafts, which changes the translation counts too
+          this.invalidate(list.some((stat) => ids.has(stat.data.id) && stat.data.editor === AI_EDITOR))
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error saving page'), error, list, val)
@@ -1751,11 +1495,11 @@ export default {
             {{ $gettext('Purge') }} ({{ counts.all }})
           </ActionItem>
 
-          <template v-if="counts.langLive || counts.langTrashed || counts.translate || counts.stale">
+          <template v-if="counts.langVariant || counts.translate || counts.stale">
             <v-divider></v-divider>
 
             <ActionItem
-              v-if="counts.translate && user.can('page:save') && user.can('text:translate')"
+              v-if="counts.translate"
               :prepend-icon="mdiTranslate"
               :disabled="!!progress"
               class="action-translate"
@@ -1789,12 +1533,12 @@ export default {
               {{ $gettext('Restore this language') }} ({{ counts.langTrashed }})
             </ActionItem>
             <ActionItem
-              v-if="counts.langTrashed && user.can('page:purge')"
+              v-if="counts.langVariant && user.can('page:purge')"
               :prepend-icon="mdiDeleteForever"
               class="action-purge-lang"
               @click="purgeLang()"
             >
-              {{ $gettext('Purge this language') }} ({{ counts.langTrashed }})
+              {{ $gettext('Purge this language') }} ({{ counts.langVariant }})
             </ActionItem>
           </template>
         </ActionMenu>
@@ -1993,7 +1737,7 @@ export default {
               {{ $gettext('Purge') }}
             </ActionItem>
 
-            <template v-if="translatable(node) && user.can('page:save') && user.can('text:translate')">
+            <template v-if="translatable(node)">
               <v-divider></v-divider>
 
               <ActionItem :prepend-icon="mdiTranslate" :disabled="!!progress" class="action-translate" @click="translate(stat)">

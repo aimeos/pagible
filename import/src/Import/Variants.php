@@ -10,6 +10,9 @@ namespace Aimeos\Cms\Import;
 use Aimeos\Cms\Hashes;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Resource;
+use Aimeos\Cms\Scout;
+use Aimeos\Cms\Utils;
 
 
 /**
@@ -42,6 +45,34 @@ class Variants
 
 
     /**
+     * Returns the languages from the --language option values like "key:code[:url]" keyed by their key.
+     *
+     * @param array<mixed> $values Option values
+     * @param string $system Name of the imported system used in the error message
+     * @param string $keyPattern Regular expression the key must match
+     * @return array<string, array{lang: string, domain: string}> Languages keyed by the key of the values
+     * @throws \InvalidArgumentException If a value is invalid
+     */
+    public static function options( array $values, string $system, string $keyPattern = '/^.+$/sD' ) : array
+    {
+        $languages = [];
+
+        foreach( $values as $value )
+        {
+            $parts = explode( ':', is_string( $value ) ? $value : '', 3 );
+
+            if( count( $parts ) < 2 || !preg_match( $keyPattern, $parts[0] ) || !Utils::isValidLang( $parts[1] ) ) {
+                throw new \InvalidArgumentException( "Invalid {$system} language: {$value}" );
+            }
+
+            $languages[$parts[0]] = self::language( $parts[1], $parts[2] ?? null );
+        }
+
+        return $languages;
+    }
+
+
+    /**
      * Returns the translated elements with the IDs of the source elements if both match.
      *
      * @param array<int, array<string, mixed>> $source Content elements of the source variant
@@ -69,21 +100,6 @@ class Variants
         }
 
         return $translation;
-    }
-
-
-    /**
-     * Tests if the path is already used by another page variant in the domain.
-     *
-     * @param string $domain Domain of the variant
-     * @param string $path Path to test
-     * @param string|null $variantId ID of the variant which may keep its path
-     * @return bool TRUE if the path is used
-     */
-    public static function used( string $domain, string $path, ?string $variantId = null ) : bool
-    {
-        return PageVariant::withTrashed()->where( 'domain', $domain )->where( 'path', $path )
-            ->when( $variantId, fn( $query ) => $query->whereKeyNot( $variantId ) )->exists();
     }
 
 
@@ -121,56 +137,36 @@ class Variants
         $path = trim( $slug, '/' );
 
         // URLs are imported as they are, so translations whose URL is taken are skipped
-        if( self::used( $domain, $path, $variant?->variant_id ) ) {
+        if( PageVariant::withTrashed()->where( 'domain', $domain )->where( 'path', $path )
+            ->when( $variant?->variant_id, fn( $query, $id ) => $query->whereKeyNot( $id ) )->exists()
+        ) {
             return null;
         }
 
         $data = array_replace( $data, ['domain' => $domain, 'path' => $path, 'lang' => $lang] );
+        $hashes = $linked !== null ? Hashes::published( $source ) : [];
 
-        if( !$variant )
+        if( $variant )
         {
-            $new = new PageVariant();
-            $new->forceFill( array_intersect_key( $data, array_flip( ['to', 'name', 'title', 'theme', 'tag'] ) ) + [
-                'page_id' => $page->id,
-                'lang' => $lang,
-                'domain' => $domain,
-                'path' => $path,
-                'status' => $data['status'] ?? 1,
-                'editor' => $editor,
-            ] )->save();
+            PageVariant::withTrashed()->whereKey( $variant->variant_id )->update( [
+                'deleted_at' => null,
+                'hashes' => json_encode( (object) $hashes ),
+                'stale' => $linked === null,
+            ] );
 
-            $variant = Page::variant( (string) $new->id )->firstOrFail();
+            $variant->forceFill( ['variant_deleted_at' => null, 'hashes' => $hashes, 'stale' => $linked === null] )->syncOriginal();
         }
-        elseif( $variant->getAttribute( 'variant_deleted_at' ) !== null )
+        else
         {
-            PageVariant::withTrashed()->findOrFail( $variant->variant_id )->restore();
-            $variant = Page::variant( $variant->variant_id )->firstOrFail();
+            $variant = Resource::insertVariant( $source, $data + ['status' => 1], $hashes, $linked === null, $editor );
         }
 
         $aux = ['content' => $linked ?? $content['elements']];
         Pages::publish( $variant, $data, $aux, $content['fileIds'] ?? [], $content['elementIds'] ?? [], $lang, $editor );
 
-        $hashes = $linked !== null
-            ? Hashes::page( $source->only( Hashes::PAGE_FIELDS ), $source->content, $source->meta, $source->config )
-            : [];
-
-        PageVariant::whereKey( $variant->variant_id )->update( [
-            'hashes' => json_encode( (object) $hashes ),
-            'stale' => $linked === null,
-        ] );
+        // the source variant isn't listed for the language of the new variant any more
+        Scout::sources( [(string) $page->id] );
 
         return $variant;
-    }
-
-
-    /**
-     * Tests if the value is a valid language code like "de" or "zh-Hant".
-     *
-     * @param string $code Language code
-     * @return bool TRUE if the code is valid
-     */
-    public static function valid( string $code ) : bool
-    {
-        return strlen( $code ) <= 10 && preg_match( '/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/', $code ) === 1;
     }
 }

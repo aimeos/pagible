@@ -26,8 +26,9 @@ class IndexModels implements ShouldQueue
      * @param class-string<\Aimeos\Cms\Models\Base> $model
      * @param array<string> $ids
      * @param string $tenant Tenant ID
+     * @param bool $sources TRUE to reindex only the source variants of the pages
      */
-    public function __construct( public string $model, public array $ids, public string $tenant )
+    public function __construct( public string $model, public array $ids, public string $tenant, public bool $sources = false )
     {
         $this->configureJob();
     }
@@ -35,6 +36,8 @@ class IndexModels implements ShouldQueue
 
     public function handle(): void
     {
-        Tenancy::run( $this->tenant, fn() => Scout::sync( $this->model, $this->ids ) );
+        Tenancy::run( $this->tenant, fn() => $this->sources
+            ? Scout::syncSources( $this->ids )
+            : Scout::sync( $this->model, $this->ids ) );
     }
 }

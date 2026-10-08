@@ -8,8 +8,12 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Cms\Exception;
+use Aimeos\Cms\Jobs\Throttled;
+use Aimeos\Cms\Jobs\TranslatePage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Resource;
+use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -21,14 +25,24 @@ final class TranslateFiles
     /**
      * Translates the descriptions of the files into the languages they are missing in and saves them as file drafts.
      *
+     * The number of files times languages is limited by "cms.ai.maxtranslate" and the provider
+     * calls count against the "cms.ai.ratelimit" of the tenant like queued page translations.
+     *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      * @return array<int, File> Files with new drafts
      */
     public function __invoke( $rootValue, array $args ) : array
     {
+        $ids = array_values( array_unique( array_map( 'strval', $args['id'] ) ) );
         $langs = array_values( array_unique( array_map( 'strval', $args['lang'] ) ) );
-        $files = File::with( 'latest' )->whereIn( 'id', array_unique( $args['id'] ) )->get();
+        $max = max( 1, (int) config( 'cms.ai.maxtranslate', 100 ) );
+
+        if( count( $ids ) * count( $langs ) > $max ) {
+            throw new Exception( sprintf( 'No more than %d file translations (files × languages) may be requested at once', $max ) );
+        }
+
+        $files = File::with( 'latest' )->whereIn( 'id', $ids )->get()->keyBy( 'id' );
         $descs = $todo = [];
 
         foreach( $files as $file )
@@ -53,34 +67,49 @@ final class TranslateFiles
             $descs[$id] = $desc;
         }
 
-        $changed = [];
+        $tenant = Tenancy::value();
+        $changed = $keys = [];
 
-        foreach( $todo as $to => $sources )
+        try
         {
-            foreach( $sources as $from => $texts )
+            foreach( $todo as $to => $sources )
             {
-                $result = $this->ai( fn() => Ai::translate( array_values( $texts ), $to, $from ) );
-
-                foreach( array_keys( $texts ) as $idx => $id )
+                foreach( $sources as $from => $texts )
                 {
-                    if( isset( $result[$idx] ) ) {
-                        $descs[$id][$to] = $result[$idx];
-                        $changed[$id] = true;
+                    // identical descriptions are translated only once
+                    $unique = array_values( array_unique( $texts ) );
+                    $result = $this->ai( function() use ( $unique, $to, $from, $tenant, &$keys ) {
+                        $list = Ai::translate( $unique, $to, $from, null, fn( int $calls ) => TranslatePage::reserve( $tenant, $calls ), $used );
+                        array_push( $keys, ...$used );
+                        return $list;
+                    } );
+
+                    foreach( $texts as $id => $text )
+                    {
+                        $idx = array_search( $text, $unique, true );
+
+                        if( $idx !== false && isset( $result[$idx] ) ) {
+                            $descs[$id][$to] = $result[$idx];
+                            $changed[$id] = $files->get( $id )?->latest_id;
+                        }
                     }
                 }
             }
         }
+        catch( Throttled $e )
+        {
+            // already translated chunks stay cached, so retrying doesn't count them again
+            throw new Exception( 'Too many translations, please try again later' );
+        }
 
         $saved = [];
 
-        foreach( $files as $file )
-        {
-            $id = (string) $file->id;
-
-            if( isset( $changed[$id] ) ) {
-                $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $file->latest_id );
-            }
+        foreach( $changed as $id => $latestId ) {
+            $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
         }
+
+        // cached chunks are only kept for retrying failed translations
+        Ai::forget( $keys );
 
         return $saved;
     }

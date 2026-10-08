@@ -174,7 +174,7 @@
                                 <ul class="align">
                                     @foreach($variants as $variant)
                                         <li>
-                                            <a href="{{ cmsroute('cms.page', ['path' => $variant->path], $variant->domain) }}" hreflang="{{ $variant->lang }}" lang="{{ $variant->lang }}" class="{{ $variant->lang === cms($page, 'lang') ? 'active' : '' }}">
+                                            <a href="{{ $variant->url }}" hreflang="{{ $variant->lang }}" lang="{{ $variant->lang }}" class="{{ $variant->lang === cms($page, 'lang') ? 'active' : '' }}">
                                                 {{ class_exists(\Locale::class) ? \Locale::getDisplayLanguage($variant->lang, $variant->lang) : $variant->lang }}
                                             </a>
                                         </li>

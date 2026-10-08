@@ -15,13 +15,16 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cache;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Scopes\Status;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Theme;
 
 
@@ -152,11 +155,20 @@ class PageController extends Controller
             'latest.elements.files.latest',
         ];
 
+        // the domain is required to use the version index on domain and path,
+        // without domain in the route, the few domains of the site are used instead
+        $domains = $domain !== '' ? $domain : Cache::remember( 'cms-domains:' . Tenancy::value(), 60,
+            fn() => PageVariant::distinct()->pluck( 'domain' )->map( strval( ... ) )->all()
+        );
+
         // every variant has its own URL, so look up the variant and not only the source variant
+        // drafts can use domains which aren't used by any variant yet or aren't in the cached list,
+        // then the path is looked up in all domains which is slower but only required for editors
         $page = Page::with( $with )
             ->allVariants()
-            ->whereLatest( ['path' => $path] + ( $domain !== '' ? ['domain' => $domain] : [] ) )
+            ->whereLatest( ['domain' => $domains ?: '', 'path' => $path], true )
             ->first()
+            ?? ( $domain === '' ? Page::with( $with )->allVariants()->whereLatest( ['path' => $path], true )->first() : null )
             ?? Page::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         $version = $page->latest;

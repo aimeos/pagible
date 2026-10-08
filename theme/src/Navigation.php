@@ -8,6 +8,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -23,7 +24,7 @@ final class Navigation
     /** @var array<int, Collection<int, Page>> */
     private array $items = [];
 
-    /** @var Collection<int, \stdClass>|null */
+    /** @var Collection<int, object{lang: string, url: string}&\stdClass>|null */
     private ?Collection $variants = null;
 
     /**
@@ -85,18 +86,17 @@ final class Navigation
      *
      * Only variants which are enabled and don't redirect are listed, without fallbacks.
      *
-     * @return Collection<int, \stdClass> Variant rows ordered by language
+     * @return Collection<int, object{lang: string, url: string}&\stdClass> Variants with language and URL ordered by language
      */
     public function variants() : Collection
     {
-        return $this->variants ??= Nav::query()->allVariants()
-            ->select( 'id', 'tenant_id', 'lang', 'source', 'path', 'domain', 'to', 'name', 'status' )
-            ->where( 'id', $this->page->id )
-            ->whereIn( 'status', [1, 2] )
-            ->where( fn( $q ) => $q->whereNull( 'to' )->orWhere( 'to', '' ) )
-            ->orderBy( 'lang' )
-            ->toBase()
-            ->get();
+        return $this->variants ??= $this->page->variants
+            ->filter( fn( PageVariant $variant ) => $variant->to === '' )
+            ->map( fn( PageVariant $variant ) => (object) [
+                'lang' => $variant->lang,
+                'url' => cmsroute( 'cms.page', ['path' => $variant->path], $variant->domain ),
+            ] )
+            ->values();
     }
 
 
@@ -113,15 +113,10 @@ final class Navigation
         $query = Nav::select( Nav::SELECT_COLUMNS )->access( $this->user );
         $lang = (string) $this->page->lang;
 
-        if( Permission::can( 'page:view', $this->user ) )
-        {
-            $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
-            $lang !== '' && $query->fallback( $lang );
-        }
-        elseif( $lang !== '' )
-        {
-            $query->visible( $lang );
-        }
+        $editor = Permission::can( 'page:view', $this->user );
+
+        $editor && $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
+        $lang !== '' && $query->localized( $lang, $editor );
 
         return $query;
     }

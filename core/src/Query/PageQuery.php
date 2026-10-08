@@ -82,18 +82,6 @@ class PageQuery extends QueryBuilder
 
 
     /**
-     * Uses the variant of the source language (default).
-     *
-     * @return static Same builder for fluent interface
-     */
-    public function sourceVariant() : static
-    {
-        $this->base()->variants( 'source' );
-        return $this;
-    }
-
-
-    /**
      * Uses the variant of the given language if it's published and enabled, else the source variant.
      *
      * Pages whose variant in that language is missing, unpublished or disabled are returned
@@ -106,6 +94,19 @@ class PageQuery extends QueryBuilder
     {
         $this->base()->variants( 'visible', $lang );
         return $this;
+    }
+
+
+    /**
+     * Uses the variant of the given language editors or visitors see.
+     *
+     * @param string $lang Language code
+     * @param bool $editor TRUE for editors who see unpublished variants, FALSE for visitors
+     * @return static Same builder for fluent interface
+     */
+    public function localized( string $lang, bool $editor ) : static
+    {
+        return $editor ? $this->fallback( $lang ) : $this->visible( $lang );
     }
 
 

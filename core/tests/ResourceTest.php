@@ -46,6 +46,15 @@ class ResourceTest extends CoreTestAbstract
     protected $seeder = TestSeeder::class;
 
 
+    protected function tearDown(): void
+    {
+        // the collection driver doesn't index, so queue tests use the cms driver
+        config( ['scout.driver' => 'collection', 'scout.queue' => false, 'scout.soft_delete' => false] );
+
+        parent::tearDown();
+    }
+
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -1216,7 +1225,7 @@ class ResourceTest extends CoreTestAbstract
         }
 
         // per 50 roots: subtree query; per 50 pages: prefetch latest refs; per page: load page and latest version, create version, update page
-        $this->expectsDatabaseQueryCount( 223 );
+        $this->expectsDatabaseQueryCount( 215 );
 
         $saved = Resource::bulkPage( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
 
@@ -1320,7 +1329,7 @@ class ResourceTest extends CoreTestAbstract
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         Resource::bulkPage( [$page->id], ['title' => 'Renamed'], $this->user );
@@ -1361,7 +1370,7 @@ class ResourceTest extends CoreTestAbstract
     public function testScoutQueueDefersModelLoading()
     {
         $page = Page::firstOrFail();
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->expectsDatabaseQueryCount( 0 );
@@ -1381,6 +1390,7 @@ class ResourceTest extends CoreTestAbstract
             $loaded[] = $page->tenant_id;
         } );
         $this->app->instance( Tenancy::class, new Tenancy( 'other' ) );
+        config( ['scout.driver' => 'cms'] );
 
         ( new IndexModels( Page::class, [$page->id], $tenant ) )->handle();
 
@@ -1404,7 +1414,7 @@ class ResourceTest extends CoreTestAbstract
             }
         } );
 
-        config( ['scout.queue' => true, 'scout.soft_delete' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true, 'scout.soft_delete' => true] );
 
         Queue::fake();
         Publication::publish( Element::class, $ids, $this->user );
@@ -1439,7 +1449,7 @@ class ResourceTest extends CoreTestAbstract
             $this->assertCount( 2, $ids[$model] );
         }
 
-        $this->expectsDatabaseQueryCount( 22 );
+        $this->expectsDatabaseQueryCount( 20 );
 
         foreach( $ids as $model => $modelIds ) {
             Resource::drop( $model, $modelIds, $this->user );
@@ -1561,7 +1571,7 @@ class ResourceTest extends CoreTestAbstract
         Element::withoutSyncingToSearch( fn() => Element::whereKey( $published->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         Publication::publish( Element::class, [$published->id, $draft->id], $this->user );

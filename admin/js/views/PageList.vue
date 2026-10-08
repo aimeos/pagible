@@ -3,7 +3,6 @@
 <script>
 import gql from 'graphql-tag'
 import {
-  mdiAlertCircleOutline,
   mdiClockAlertOutline,
   mdiEye,
   mdiEyeOff,
@@ -17,7 +16,8 @@ import {
 } from '@mdi/js'
 import PageListItems from '../components/PageListItems.vue'
 import { listViewBase, useListView } from '../listview'
-import { useLanguageStore } from '../stores'
+import { useChangeStore, useLanguageStore } from '../stores'
+import { debounce } from '../utils'
 
 const FETCH_TRANSLATIONS = gql`
   query ($lang: String!) {
@@ -56,19 +56,43 @@ export default {
     return {
       defaults: defaults,
       filter: this.user.filter('page', defaults),
-      translations: null
+      translations: null,
+      // translation counts must be fetched again when the aside opens
+      outdated: false
     }
   },
 
   setup() {
-    return { ...useListView('page'), languages: useLanguageStore() }
+    return { ...useListView('page'), changes: useChangeStore(), languages: useLanguageStore() }
   },
 
   created() {
-    this.fetchTranslations()
+    // collapses bursts of changes into one query of the translation counts
+    this.fetchTranslations = debounce(this.queryTranslations, 400)
+    this.changed()
+  },
+
+  beforeUnmount() {
+    this.fetchTranslations.cancel()
+  },
+
+  // counts are only fetched again if pages were changed while the cached list view was inactive
+  activated() {
+    this.inactive = false
+    this.outdated && this.drawer.aside && this.fetchTranslations()
+  },
+
+  deactivated() {
+    this.inactive = true
+    this.fetchTranslations.cancel()
   },
 
   computed: {
+    // pages saved or published in the detail views, the list patches and removes them when activated
+    pendingChanges() {
+      return this.changes.get('page')
+    },
+
     asideContent() {
       const aside = this.aside()
 
@@ -142,29 +166,28 @@ export default {
 
   watch: {
     lang() {
-      this.fetchTranslations()
+      this.changed()
     },
 
     'drawer.aside'(open) {
-      open && this.fetchTranslations()
+      open && this.outdated && this.fetchTranslations()
     },
 
-    filter: {
-      deep: true,
-      handler() {
-        this.fetchTranslations()
-      }
+    // saving or publishing pages elsewhere can change the translation states of their variants
+    pendingChanges(list) {
+      list.length && this.changed()
     }
   },
 
   methods: {
     // counts the pages in each translation state of the current language for the filter
-    fetchTranslations() {
+    queryTranslations() {
       if (this.languages.available.length < 2 || !this.user.can('page:view')) {
         return
       }
 
       const lang = this.lang
+      this.outdated = false
 
       return this.$apollo
         .query({
@@ -178,8 +201,19 @@ export default {
           }
         })
         .catch((error) => {
+          this.outdated = true
           this.messages.error(this.$gettext('Error fetching translation states'), error)
         })
+    },
+
+    // translation states changed, the counts are only fetched when they are visible; they stay
+    // outdated until the query runs, so a fetch cancelled by deactivating is repeated afterwards
+    changed() {
+      this.outdated = true
+
+      if (this.drawer.aside && !this.inactive) {
+        this.fetchTranslations()
+      }
     },
 
     // opens the page in the shown language, the editor offers to create missing ones
@@ -285,7 +319,13 @@ export default {
           </ul>
         </div>
 
-        <PageListItems ref="pagelist" @select="open($event)" :filter="filter" :defaults="defaults" />
+        <PageListItems
+          ref="pagelist"
+          @select="open($event)"
+          @changed="changed()"
+          :filter="filter"
+          :defaults="defaults"
+        />
       </v-sheet>
     </v-container>
   </v-main>

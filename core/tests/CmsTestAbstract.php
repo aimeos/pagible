@@ -32,6 +32,8 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
             'foreign_key_constraints' => true,
         ]);
 
+        $app['config']->set('queue.batching.database', 'testing');
+        $app['config']->set('queue.failed.database', 'testing');
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
         $app['config']->set('scout.driver', 'collection');
         // Pulse rescues missing-storage errors, which leaves PostgreSQL test transactions aborted.

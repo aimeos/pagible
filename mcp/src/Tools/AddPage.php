@@ -74,7 +74,6 @@ class AddPage extends Tool
         // the author's order. The raw input preserves it; Validation::content()
         // still whitelists each element's keys.
         $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
-        $v['lang'] = ( $v['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
         $v['to'] = $v['to'] ?? '';

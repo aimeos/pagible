@@ -1,5 +1,5 @@
 import PageList from '../../../js/views/PageList.vue'
-import { useLanguageStore, useUserStore } from '../../../js/stores'
+import { useChangeStore, useDrawerStore, useLanguageStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   PageListItems: { template: '<div class="page-list-items-stub" />' },
@@ -100,13 +100,14 @@ describe('PageList', () => {
   })
 
   describe('translation filter', () => {
-    function mountLangs(query) {
+    function mountLangs(query, aside = true) {
       return cy.mount(PageList, {
         global: {
           stubs,
           mocks: { $apollo: { query } },
           plugins: [{
             install() {
+              useDrawerStore().aside = aside
               useLanguageStore().available = ['en', 'de']
               const user = useUserStore()
               user.me = { permission: { 'page:view': true }, email: 'test@test.com', settings: { page: { lang: 'de' } } }
@@ -139,6 +140,98 @@ describe('PageList', () => {
         cy.wrap(null).should(() => {
           expect(query).to.have.been.calledWithMatch({ variables: { lang: 'en' } })
         })
+      })
+    })
+
+    it('fetches the counts only when the aside is opened', () => {
+      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+
+      mountLangs(query, false).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        useUserStore().saveData('page', 'lang', 'en')
+        cy.wait(600).then(() => {
+          expect(query).not.to.have.been.called
+          expect(vm.outdated).to.equal(true)
+          useDrawerStore().aside = true
+        })
+        cy.wrap(null).should(() => {
+          expect(query).to.have.been.calledOnce
+          expect(query).to.have.been.calledWithMatch({ variables: { lang: 'en' } })
+        })
+      })
+    })
+
+    it('collapses bursts of changes into one query', () => {
+      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        vm.changed()
+        vm.changed()
+        vm.changed()
+        cy.wait(600).then(() => {
+          expect(query).to.have.been.calledOnce
+        })
+      })
+    })
+
+    it('does not refetch the counts after returning without changed pages', () => {
+      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        cy.wrap(null).should(() => expect(query).to.have.been.calledOnce)
+        cy.then(() => {
+          PageList.deactivated.call(vm)
+          PageList.activated.call(vm)
+        })
+        cy.wait(600).then(() => {
+          expect(query).to.have.been.calledOnce
+          expect(vm.outdated).to.equal(false)
+        })
+      })
+    })
+
+    it('refetches the counts after returning when pages changed while inactive', () => {
+      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        cy.wrap(null).should(() => expect(query).to.have.been.calledOnce)
+        cy.then(() => {
+          PageList.deactivated.call(vm)
+          useChangeStore().notify('page', { id: 'page-1' })
+        })
+        cy.wait(600).then(() => {
+          expect(query).to.have.been.calledOnce
+          expect(vm.outdated).to.equal(true)
+          PageList.activated.call(vm)
+        })
+        cy.wrap(null).should(() => expect(query).to.have.been.calledTwice)
+      })
+    })
+
+    it('cancels a pending query when deactivated and repeats it after returning', () => {
+      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        cy.wrap(null).should(() => expect(query).to.have.been.calledOnce)
+        cy.then(() => {
+          vm.changed()
+          PageList.deactivated.call(vm)
+        })
+        cy.wait(600).then(() => {
+          expect(query).to.have.been.calledOnce
+          expect(vm.outdated).to.equal(true)
+          PageList.activated.call(vm)
+        })
+        cy.wrap(null).should(() => expect(query).to.have.been.calledTwice)
       })
     })
 

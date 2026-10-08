@@ -128,7 +128,7 @@ class WebhookListener
             return array_map( fn( string $id ) => [
                 'id' => $id,
                 'version_id' => $event->projected[$id] ?? $event->latest[$id] ?? '',
-            ], $event->ids );
+            ] + ( isset( $event->langs[$id] ) ? ['lang' => $event->langs[$id]] : [] ), $event->ids );
         }
 
         $projection = $event instanceof Published ? $event->projection : [];

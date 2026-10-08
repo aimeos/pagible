@@ -83,6 +83,11 @@ class Validation
         // the source language is changed by Resource::setSource() only
         unset( $input['source'] );
 
+        // host names are case insensitive and requests use lower case hosts
+        if( is_string( $input['domain'] ?? null ) ) {
+            $input['domain'] = mb_strtolower( $input['domain'] );
+        }
+
         if( isset( $input['content'] ) )
         {
             foreach( $input['content'] as &$item )

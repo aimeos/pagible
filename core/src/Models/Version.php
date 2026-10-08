@@ -321,12 +321,37 @@ class Version extends Model
      */
     public function owner() : ?Base
     {
+        if( $this->relationLoaded( 'owner' ) ) {
+            $model = $this->getRelation( 'owner' );
+            return $model instanceof Base ? $model : null;
+        }
+
         if( $this->versionable_type === PageVariant::class ) {
             return Page::variant( $this->versionable_id )->first();
         }
 
         $model = $this->versionable;
         return $model instanceof Base ? $model : null;
+    }
+
+
+    /**
+     * Loads the CMS models the versions belong to with one query per model type.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection<int, Version> $versions Versions to load the owners for
+     * @return \Illuminate\Database\Eloquent\Collection<int, Version> Same versions for fluent interface
+     */
+    public static function loadOwners( \Illuminate\Database\Eloquent\Collection $versions ) : \Illuminate\Database\Eloquent\Collection
+    {
+        $variants = $versions->where( 'versionable_type', PageVariant::class );
+        $pages = Page::allVariants( true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
+
+        foreach( $variants as $version ) {
+            $version->setRelation( 'owner', $pages->get( $version->versionable_id ) );
+        }
+
+        $versions->where( 'versionable_type', '!=', PageVariant::class )->load( 'versionable' );
+        return $versions;
     }
 
 

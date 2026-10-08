@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Query;
 use Aimeos\Cms\Models\PageVariant;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 
 
 /**
@@ -46,6 +47,9 @@ class PageBuilder extends Builder
     /** @var string|null Variant ID if the derived table joins a single variant */
     protected ?string $variantId = null;
 
+    /** @var Builder|null Query of the derived page table */
+    protected ?Builder $derivedQuery = null;
+
 
     /**
      * Uses the variant joined by the given condition.
@@ -74,7 +78,8 @@ class PageBuilder extends Builder
 
         $sub = $this->newQuery()->from( 'cms_pages as p' )->select( $cols )
             ->join( 'cms_page_variants as v', function( $join ) use ( $mode, $value, $trashed ) {
-                $join->on( 'v.page_id', '=', 'p.id' );
+                // tenant condition lets the tenant scope use the variant indexes
+                $join->on( 'v.page_id', '=', 'p.id' )->on( 'v.tenant_id', '=', 'p.tenant_id' );
 
                 switch( $mode )
                 {
@@ -85,28 +90,21 @@ class PageBuilder extends Builder
                         $join->where( 'v.lang', '=', (string) $value );
                         break;
                     case 'fallback':
-                        $join->where( function( $q ) use ( $value, $trashed ) {
-                            $q->where( 'v.lang', '=', (string) $value )->orWhere( function( $q ) use ( $value, $trashed ) {
-                                $q->whereColumn( 'v.lang', '=', 'p.source' )->whereNotExists( function( $q ) use ( $value, $trashed ) {
-                                    $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
-                                        ->whereColumn( 'w.page_id', '=', 'p.id' )
-                                        ->where( 'w.lang', '=', (string) $value )
-                                        ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
-                                } );
-                            } );
-                        } );
-                        break;
                     case 'visible':
-                        $join->where( function( $q ) use ( $value ) {
-                            $q->where( function( $q ) use ( $value ) {
-                                $q->where( 'v.lang', '=', (string) $value )->where( 'v.status', '<>', 0 );
-                            } )->orWhere( function( $q ) use ( $value ) {
-                                $q->whereColumn( 'v.lang', '=', 'p.source' )->whereNotExists( function( $q ) use ( $value ) {
+                        // "visible" only uses published and enabled variants of the language
+                        $visible = $mode === 'visible';
+                        $trashed = $trashed && !$visible;
+
+                        $join->where( function( $q ) use ( $value, $trashed, $visible ) {
+                            $q->where( function( $q ) use ( $value, $visible ) {
+                                $q->where( 'v.lang', '=', (string) $value )->when( $visible, fn( $q ) => $q->where( 'v.status', '<>', 0 ) );
+                            } )->orWhere( function( $q ) use ( $value, $trashed, $visible ) {
+                                $q->whereColumn( 'v.lang', '=', 'p.source' )->whereNotExists( function( $q ) use ( $value, $trashed, $visible ) {
                                     $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
                                         ->whereColumn( 'w.page_id', '=', 'p.id' )
                                         ->where( 'w.lang', '=', (string) $value )
-                                        ->where( 'w.status', '<>', 0 )
-                                        ->whereNull( 'w.deleted_at' );
+                                        ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', 0 ) )
+                                        ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
                                 } );
                             } );
                         } );
@@ -126,13 +124,32 @@ class PageBuilder extends Builder
                 }
             } );
 
-        $this->bindings['from'] = [];
-        $this->fromSub( $sub, 'cms_pages' );
-
-        $this->derivedSql = $this->from instanceof Expression ? (string) $this->from->getValue( $this->getGrammar() ) : null;
+        $this->derive( $sub );
         $this->variantId = $mode === 'variant' ? (string) $value : null;
 
         return $this;
+    }
+
+
+    /**
+     * Set the lock for the selected rows.
+     *
+     * SQL Server doesn't allow table hints for derived tables, so the rows of the
+     * pages are locked within the derived table instead, which serializes all
+     * operations locking the same pages.
+     *
+     * @param string|bool $value TRUE for update locks, FALSE for shared locks or the lock clause
+     * @return $this
+     */
+    public function lock( $value = true )
+    {
+        if( $this->derived() && $this->derivedQuery && $this->getGrammar() instanceof SqlServerGrammar )
+        {
+            $this->derive( ( clone $this->derivedQuery )->lock( $value ) );
+            return $this;
+        }
+
+        return parent::lock( $value );
     }
 
 
@@ -152,47 +169,54 @@ class PageBuilder extends Builder
             $this->where( 'cms_pages.id', '=', $id );
         }
 
-        if( empty( $this->joins ) && $this->pageOnly( $this->wheres ) )
+        // page IDs only, the variants of the same page would multiply the IDs
+        $query = clone $this;
+        $query->columns = ['cms_pages.id'];
+        $query->bindings['select'] = [];
+        $query->aggregate = null;
+
+        // fetch the IDs without joining the variants if only page columns are filtered
+        if( $page = empty( $this->joins ) && $this->pageOnly( $this->wheres ) )
         {
-            // delete without fetching the IDs first
-            $query = clone $this;
             $query->from = 'cms_pages';
             $query->bindings['from'] = [];
-
-            $pages = ( clone $query )->select( 'cms_pages.id' );
-            $pages->orders = $pages->limit = $pages->offset = null;
-            $pages->bindings['order'] = [];
-            $variants = $this->table( 'cms_page_variants' )->select( 'id' )->whereIn( 'page_id', $pages );
-
-            $this->table( 'cms_versions' )
-                ->where( 'versionable_type', PageVariant::class )
-                ->whereIn( 'versionable_id', $variants )
-                ->delete();
-
-            $this->table( 'cms_page_variants' )->whereIn( 'page_id', $pages )->delete();
-
-            return $query->baseDelete();
         }
 
-        $ids = array_values( array_unique( array_column( $this->rows()->all(), 'id' ) ) );
+        // DISTINCT requires the ORDER BY columns to be selected, which only matter for limits
+        if( $query->limit === null && $query->offset === null )
+        {
+            $query->distinct = !$page;
+            $query->orders = null;
+            $query->bindings['order'] = [];
+        }
+
+        $ids = array_values( array_unique( $query->pluck( 'id' )->all() ) );
 
         foreach( array_chunk( $ids, 500 ) as $chunk )
         {
-            $vids = $this->table( 'cms_page_variants' )->whereIn( 'page_id', $chunk )->pluck( 'id' )->all();
-
-            foreach( array_chunk( $vids, 500 ) as $vchunk )
-            {
-                $this->table( 'cms_versions' )
-                    ->where( 'versionable_type', PageVariant::class )
-                    ->whereIn( 'versionable_id', $vchunk )
-                    ->delete();
-            }
-
-            $this->table( 'cms_page_variants' )->whereIn( 'page_id', $chunk )->delete();
+            $this->deleteVariants( $this->table( 'cms_page_variants' )->whereIn( 'page_id', $chunk )->pluck( 'id' )->all() );
             $this->table( 'cms_pages' )->whereIn( 'id', $chunk )->delete();
         }
 
         return count( $ids );
+    }
+
+
+    /**
+     * Deletes the page variants and their versions.
+     *
+     * Uses ID lists instead of subqueries because older MySQL/MariaDB versions
+     * evaluate IN subqueries of single table deletes for each row.
+     *
+     * @param array<int, mixed> $ids Page variant IDs
+     */
+    protected function deleteVariants( array $ids ) : void
+    {
+        foreach( array_chunk( $ids, 500 ) as $chunk )
+        {
+            $this->table( 'cms_versions' )->where( 'versionable_type', PageVariant::class )->whereIn( 'versionable_id', $chunk )->delete();
+            $this->table( 'cms_page_variants' )->whereIn( 'id', $chunk )->delete();
+        }
     }
 
 
@@ -221,7 +245,7 @@ class PageBuilder extends Builder
         foreach( $values as $row )
         {
             $row = $this->unqualify( $row );
-            [$page, $variant] = $this->split( $row );
+            [$page, $variant] = self::split( $row );
 
             $page['source'] ??= $variant['lang'] ?? '';
             $variant['id'] ??= $page['id'];
@@ -268,7 +292,7 @@ class PageBuilder extends Builder
         }
 
         $values = $this->unqualify( $values );
-        [$page, $variant] = $this->split( $values );
+        [$page, $variant] = self::split( $values );
 
         // the timestamps of the pages only change if the page structure changes
         if( !empty( $variant ) && empty( array_diff_key( $page, array_flip( self::SHARED_COLUMNS ) ) ) ) {
@@ -302,7 +326,7 @@ class PageBuilder extends Builder
             $query->from = 'cms_pages';
             $query->bindings['from'] = [];
 
-            return $query->baseUpdate( $page );
+            return $query->update( $page );
         }
 
         $rows = $this->rows();
@@ -332,25 +356,17 @@ class PageBuilder extends Builder
 
 
     /**
-     * Runs the delete of the parent class.
+     * Uses the given query as derived page table.
      *
-     * @return int Number of deleted records
+     * @param Builder $sub Query joining the pages and their variants
      */
-    protected function baseDelete() : int
+    protected function derive( Builder $sub ) : void
     {
-        return parent::delete();
-    }
+        $this->bindings['from'] = [];
+        $this->fromSub( $sub, 'cms_pages' );
 
-
-    /**
-     * Runs the update of the parent class.
-     *
-     * @param array<string, mixed> $values Column/value pairs
-     * @return int Number of affected records
-     */
-    protected function baseUpdate( array $values ) : int
-    {
-        return parent::update( $values );
+        $this->derivedQuery = $sub;
+        $this->derivedSql = $this->from instanceof Expression ? (string) $this->from->getValue( $this->getGrammar() ) : null;
     }
 
 
@@ -463,7 +479,7 @@ class PageBuilder extends Builder
      * @param array<string, mixed> $values Column/value pairs
      * @return array{0: array<string, mixed>, 1: array<string, mixed>} Page and variant values
      */
-    protected function split( array $values ) : array
+    public static function split( array $values ) : array
     {
         $page = $variant = [];
 

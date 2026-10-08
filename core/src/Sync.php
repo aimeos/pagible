@@ -8,6 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 
 
 /**
@@ -20,23 +21,6 @@ class Sync
 {
     /** @var string Editor name of drafts created by AI translations */
     public const EDITOR = 'AI draft';
-
-    /** @var list<string> Field types containing text to translate */
-    public const TEXT_TYPES = ['string', 'text', 'plaintext', 'markdown'];
-
-
-    /**
-     * Returns the hashes of the latest version of the source variant.
-     *
-     * @param Page $source Page with its source variant and the "latest" relation loaded
-     * @return array<string, string> Hashes of the page fields, content elements, meta and config entries
-     */
-    public static function hashes( Page $source ) : array
-    {
-        [$data, $aux] = self::version( $source );
-
-        return Hashes::page( $data, array_values( (array) ( $aux->content ?? [] ) ), (array) ( $aux->meta ?? [] ), (array) ( $aux->config ?? [] ) );
-    }
 
 
     /**
@@ -55,7 +39,7 @@ class Sync
     public static function translate( Page $source, ?Page $variant, string $lang, ?callable $translate = null ) : array
     {
         [$sdata, $saux] = self::version( $source );
-        [$vdata, $vaux] = $variant ? self::version( $variant ) : [[], (object) []];
+        [$vdata, $vaux] = $variant ? self::version( $variant ) : [[], null];
 
         $scontent = array_values( (array) ( $saux->content ?? [] ) );
         $smeta = (array) ( $saux->meta ?? [] );
@@ -64,6 +48,11 @@ class Sync
         $shashes = Hashes::page( $sdata, $scontent, $smeta, $sconfig );
         $vhashes = $variant ? (array) $variant->hashes : [];
         $linked = !empty( $vhashes );
+
+        // variants without hashes get a fresh copy of the source
+        if( !$linked ) {
+            $vaux = (object) [];
+        }
 
         $changed = fn( string $key ) => !$linked || ( $vhashes[$key] ?? null ) !== ( $shashes[$key] ?? null );
         $texts = new Texts();
@@ -89,36 +78,36 @@ class Sync
             }
         }
 
-        // slug of the path for new variants
-        $slug = ['slug' => str_replace( '-', ' ', basename( (string) ( $sdata['path'] ?? '' ) ) )];
+        // translated slug of the path for new variants, empty if untranslated
+        $slug = ['slug' => $variant ? '' : str_replace( '-', ' ', basename( (string) ( $sdata['path'] ?? '' ) ) )];
 
-        if( !$variant ) {
+        if( !$variant )
+        {
             $texts->add( '', $slug, 'slug' );
+
+            if( isset( $data['to'] ) ) {
+                $texts->url( $data['to'] );
+            }
         }
 
-        $content = self::content( $scontent, array_values( (array) ( $vaux->content ?? [] ) ), $vhashes, $linked, $changed, $texts );
-        $meta = self::entries( $smeta, (array) ( $vaux->meta ?? [] ), 'meta', $vhashes, $linked, $changed, $texts );
-        $config = self::entries( $sconfig, (array) ( $vaux->config ?? [] ), 'config', $vhashes, $linked, $changed );
+        $content = self::content( $scontent, array_values( (array) ( $vaux->content ?? [] ) ), $vhashes, $changed, $texts );
+        $meta = self::entries( $smeta, (array) ( $vaux->meta ?? [] ), 'meta', $vhashes, $changed, $texts );
+        $config = self::entries( $sconfig, (array) ( $vaux->config ?? [] ), 'config', $vhashes, $changed );
 
         unset( $meta['canonical'] );
 
         $context = trim( 'Website: ' . config( 'app.name' ) . '. Page: ' . ( $sdata['title'] ?? $sdata['name'] ?? '' ) );
         $translated = $texts->translate( $translate, $lang, $source->lang, $context );
+        $texts->links( fn( array $urls ) => self::links( $urls, (string) $source->domain, $lang ) );
 
-        $hashes = $shashes;
-
-        foreach( $texts->keys() as $key )
-        {
-            if( !$translated && $key !== '' ) {
-                $hashes[$key] = '';
-            }
-        }
+        // untranslated texts get empty hashes so they still count as changed
+        $hashes = $translated ? $shashes : array_fill_keys( array_diff( $texts->keys(), [''] ), '' ) + $shashes;
 
         return [
             'data' => $data,
             'aux' => ['content' => $content, 'meta' => (object) $meta, 'config' => (object) $config],
             'hashes' => $hashes,
-            'slug' => Utils::slugify( (string) $slug['slug'] ),
+            'slug' => $translated ? Utils::slugify( (string) $slug['slug'] ) : '',
             'translated' => $translated,
         ];
     }
@@ -134,16 +123,15 @@ class Sync
      * @param array<int, \stdClass> $source Content elements of the source variant
      * @param array<int, \stdClass> $variant Content elements of the target variant
      * @param array<string, string> $hashes Hashes the target variant was last synced with
-     * @param bool $linked TRUE if the target variant has hashes to merge with
      * @param \Closure(string): bool $changed Tests if the item of the key changed in the source
      * @param Texts $texts Collected texts to translate
      * @return array<int, \stdClass> Content elements of the translation
      */
-    protected static function content( array $source, array $variant, array $hashes, bool $linked, \Closure $changed, Texts $texts ) : array
+    protected static function content( array $source, array $variant, array $hashes, \Closure $changed, Texts $texts ) : array
     {
         $mine = $sids = $result = [];
 
-        foreach( $linked ? $variant : [] as $el ) {
+        foreach( $variant as $el ) {
             $mine[(string) ( $el->id ?? '' )] = $el;
         }
 
@@ -154,7 +142,7 @@ class Sync
             $key = 'el:' . $id;
             $own = $mine[$id] ?? null;
 
-            if( !$own && $linked && isset( $hashes[$key] ) ) {
+            if( !$own && isset( $hashes[$key] ) ) {
                 continue; // deleted in the translation
             }
 
@@ -202,6 +190,103 @@ class Sync
 
 
     /**
+     * Returns the URLs of the same pages in the target language for the URLs of internal pages.
+     *
+     * URLs of pages without a variant in the target language and external URLs are skipped.
+     *
+     * @param array<int, string> $urls Absolute URLs or site-relative paths
+     * @param string $domain Domain of the source page the relative paths belong to
+     * @param string $lang Language code of the target variant
+     * @return array<string, string> New URLs by old URL
+     */
+    protected static function links( array $urls, string $domain, string $lang ) : array
+    {
+        if( !( $url = Utils::pageUrl( '_path_', '_domain_' ) ) ) {
+            return [];
+        }
+
+        $multi = (bool) config( 'cms.multidomain' );
+        $base = (array) parse_url( $url );
+        $prefix = strstr( (string) ( $base['path'] ?? '' ), '_path_', true ) ?: '/';
+        $found = [];
+
+        foreach( $urls as $url )
+        {
+            if( !is_array( $parts = parse_url( $url ) ) || isset( $parts['user'] ) ) {
+                continue;
+            }
+
+            if( isset( $parts['scheme'], $parts['host'] ) && in_array( strtolower( $parts['scheme'] ), ['http', 'https'], true )
+                && ( $multi || strtolower( $parts['host'] ) === strtolower( (string) ( $base['host'] ?? '' ) ) )
+            ) {
+                $dom = $multi ? strtolower( $parts['host'] ) : '';
+            } elseif( !isset( $parts['scheme'] ) && str_starts_with( $url, '/' ) && !str_starts_with( $url, '//' ) ) {
+                $dom = $multi ? $domain : '';
+            } else {
+                continue;
+            }
+
+            if( str_starts_with( ( $path = $parts['path'] ?? '/' ) . '/', $prefix ) ) {
+                $found[$url] = [$dom, trim( rawurldecode( substr( $path, strlen( $prefix ) ) ), '/' ), $parts];
+            }
+        }
+
+        if( empty( $found ) ) {
+            return [];
+        }
+
+        // variants in the target language of the pages the URLs point to, keyed by the linked domain and path
+        $table = ( new PageVariant() )->getTable();
+        $targets = collect();
+
+        // chunked to stay below the parameter limits of the databases for pages with many links
+        foreach( collect( $found )->groupBy( fn( array $item ) => $item[0] ) as $domain => $list )
+        {
+            foreach( $list->pluck( 1 )->unique()->chunk( 1000 ) as $paths )
+            {
+                $targets = $targets->merge( PageVariant::join( $table . ' as src', fn( $join ) => $join
+                        ->on( 'src.page_id', '=', $table . '.page_id' )
+                        ->on( 'src.tenant_id', '=', $table . '.tenant_id' )
+                        ->whereNull( 'src.deleted_at' )
+                    )
+                    ->where( $table . '.lang', $lang )
+                    ->where( 'src.domain', (string) $domain )
+                    ->whereIn( 'src.path', $paths->values()->all() )
+                    ->get( ['src.domain as src_domain', 'src.path as src_path', $table . '.domain', $table . '.path'] )
+                    ->keyBy( fn( $v ) => $v->getAttribute( 'src_domain' ) . '/' . $v->getAttribute( 'src_path' ) ) );
+            }
+        }
+
+        $map = [];
+
+        foreach( $found as $url => [$dom, $path, $parts] )
+        {
+            if( !( $target = $targets->get( $dom . '/' . $path ) ) ) {
+                continue;
+            }
+
+            $new = $prefix . $target->path
+                . ( isset( $parts['query'] ) ? '?' . $parts['query'] : '' )
+                . ( isset( $parts['fragment'] ) ? '#' . $parts['fragment'] : '' );
+
+            // relative paths only stay relative if the target is on the same domain
+            if( isset( $parts['host'] ) || $multi && $target->domain !== $dom )
+            {
+                $host = $multi ? ( $target->domain ?: ( $parts['host'] ?? $dom ) ) : $parts['host'];
+                $new = ( $parts['scheme'] ?? $base['scheme'] ?? 'https' ) . '://' . $host
+                    . ( isset( $parts['port'] ) && !$multi ? ':' . $parts['port'] : '' ) . $new;
+            }
+
+            if( $new !== $url ) {
+                $map[$url] = $new;
+            }
+        }
+
+        return $map;
+    }
+
+
+    /**
      * Returns a deep copy of the value.
      *
      * @param mixed $value Value to copy
@@ -220,21 +305,20 @@ class Sync
      * @param array<string, mixed> $variant Entries of the target variant by key
      * @param string $kind Kind of the entries, "meta" or "config"
      * @param array<string, string> $hashes Hashes the target variant was last synced with
-     * @param bool $linked TRUE if the target variant has hashes to merge with
      * @param \Closure(string): bool $changed Tests if the item of the key changed in the source
      * @param Texts|null $texts Collected texts to translate or NULL to copy the entries unchanged
      * @return array<string, mixed> Entries of the translation by key
      */
-    protected static function entries( array $source, array $variant, string $kind, array $hashes, bool $linked,
+    protected static function entries( array $source, array $variant, string $kind, array $hashes,
         \Closure $changed, ?Texts $texts = null ) : array
     {
-        $result = $linked ? $variant : [];
+        $result = $variant;
 
         foreach( $source as $name => $entry )
         {
             $key = $kind . ':' . $name;
 
-            if( $linked && ( isset( $result[$name] ) ? !$changed( $key ) : isset( $hashes[$key] ) ) ) {
+            if( isset( $result[$name] ) ? !$changed( $key ) : isset( $hashes[$key] ) ) {
                 continue; // unchanged or deleted in the translation
             }
 
@@ -287,7 +371,7 @@ class Sync
         }
 
         return [
-            $page->only( [...Hashes::PAGE_FIELDS, 'path', 'domain', 'to', 'status'] ),
+            $page->only( PageVariant::FIELDS ),
             self::copy( (object) ['content' => $page->content, 'meta' => $page->meta, 'config' => $page->config] )
         ];
     }

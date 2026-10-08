@@ -390,8 +390,7 @@ if( !function_exists( 'cmslink' ) )
      * scheme are only allowed for http, https, mailto and tel; dangerous schemes such as
      * javascript:, vbscript: and data: are rejected (returning an empty string) so they cannot
      * execute when the link is followed. Whitespace/control characters are ignored during scheme
-     * detection because browsers strip them (e.g. "java\tscript:"). Page links ("page:<id>") are
-     * resolved to the URL of the page in the current language or an empty string if not available.
+     * detection because browsers strip them (e.g. "java\tscript:").
      *
      * @param string|null $url The URL to sanitize
      * @return string The original URL if safe, otherwise an empty string
@@ -400,10 +399,6 @@ if( !function_exists( 'cmslink' ) )
     {
         if( !$url ) {
             return '';
-        }
-
-        if( \Aimeos\Cms\PageLinks::is( $url ) ) {
-            return app( \Aimeos\Cms\PageLinks::class )->url( $url );
         }
 
         $clean = preg_replace( '/[\x00-\x20]+/', '', $url );

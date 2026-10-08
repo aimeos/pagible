@@ -23,10 +23,13 @@ class Scout
     /**
      * Builder fields handled out-of-band; never translated to SQL columns.
      */
-    public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
+    public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id', 'langs', 'langs_trashed'];
 
     /** @var \WeakMap<Builder<\Illuminate\Database\Eloquent\Model>, array{0: string, 1: bool, 2: bool}>|null Language fallbacks of the page searches */
     private static ?\WeakMap $fallbacks = null;
+
+    /** @var array<string, array<string, bool>> Page IDs per tenant whose source variants are reindexed after commit */
+    private static array $sources = [];
 
 
     /**
@@ -41,13 +44,7 @@ class Scout
     {
         $isDraft = in_array( 'draft', $fields );
 
-        if( $query instanceof PageQuery && ( $lang = static::language( $builder ) ) !== null )
-        {
-            $where = collect( $builder->wheres )->firstWhere( 'field', '__soft_deleted' );
-            $query->language( $lang, $where ? $where['value'] === 1 : (bool) config( 'scout.soft_delete', false ) );
-        }
-
-        static::fallback( $query, $builder );
+        static::variants( $query, $builder );
         static::apply( $query, $builder, $isDraft );
 
         if( $builder->query === '' && $builder->queryCallback ) {
@@ -144,7 +141,9 @@ class Scout
         }
 
         [$lang, $trashed, $only] = $entry;
-        $query->fallback( $lang, $trashed );
+
+        // external engines only contain trashed variants if soft deleted models are indexed
+        $query->fallback( $lang, $trashed && ( !self::usesExternalSearch() || config( 'scout.soft_delete', false ) ) );
 
         if( $trashed ) {
             $query->withoutGlobalScope( SoftDeletingScope::class );
@@ -164,6 +163,26 @@ class Scout
 
 
     /**
+     * Selects the page variants of the language the search is limited to and applies the language fallback.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     */
+    public static function variants( \Illuminate\Database\Eloquent\Builder $query, Builder $builder ) : void
+    {
+        // withTrashed() removes the soft delete filter, so trashed variants are included if soft deletes are indexed
+        $where = collect( $builder->wheres )->firstWhere( 'field', '__soft_deleted' );
+        $trashed = $where ? $where['value'] === 1 : (bool) config( 'scout.soft_delete', false );
+
+        if( $query instanceof PageQuery && ( $lang = static::language( $builder ) ) !== null ) {
+            $query->language( $lang, $trashed );
+        }
+
+        static::fallback( $query, $builder );
+    }
+
+
+    /**
      * Lists the pages in the given language or in their source language if they have no variant in that language.
      *
      * Use "with" for the trashed filter of the search, the trashed variants are
@@ -176,10 +195,47 @@ class Scout
      */
     public static function prefer( Builder $builder, string $lang, ?string $trashed = null ) : Builder
     {
+        $with = in_array( $trashed, ['with', 'only'], true );
+
         self::$fallbacks ??= new \WeakMap();
-        self::$fallbacks[$builder] = [$lang, in_array( $trashed, ['with', 'only'], true ), $trashed === 'only'];
+        self::$fallbacks[$builder] = [$lang, $with, $trashed === 'only'];
+
+        // the index contains the languages each variant is listed for, so the engine returns one variant per page
+        if( self::usesExternalSearch() ) {
+            $builder->where( $with && config( 'scout.soft_delete', false ) ? 'langs_trashed' : 'langs', $lang );
+        }
 
         return $builder;
+    }
+
+
+    /**
+     * Returns the languages a page variant is listed for by searches with language fallback.
+     *
+     * Variants are listed for their own language and source variants also for the languages
+     * from "cms.locales" the page has no variant for.
+     *
+     * @param Models\Page $page Page variant
+     * @param bool $trashed TRUE if trashed variants are listed too
+     * @return array<int, string> Language codes
+     */
+    public static function langs( Models\Page $page, bool $trashed ) : array
+    {
+        $lang = (string) $page->lang;
+
+        if( !$trashed && $page->getAttribute( 'variant_deleted_at' ) !== null ) {
+            return [];
+        }
+
+        if( $lang !== (string) $page->source ) {
+            return [$lang];
+        }
+
+        $variants = $page->languages;
+        $existing = ( $trashed ? $variants : $variants->whereNull( 'deleted_at' ) )->pluck( 'lang' )->all();
+        $locales = array_map( strval( ... ), (array) config( 'cms.locales', [] ) );
+
+        return array_values( array_unique( [$lang, ...array_diff( $locales, $existing )] ) );
     }
 
 
@@ -219,6 +275,10 @@ class Scout
      */
     public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
     {
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
         $instance = new $model();
         $models = [];
 
@@ -238,6 +298,12 @@ class Scout
             } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
                 $loaded = $instance->newCollection( array_merge( ...array_map( array_values( ... ), array_values( $items ) ) ) );
                 $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
+
+                // eager loads don't contain the access count, which is required for each page otherwise
+                if( $instance instanceof Models\Page ) {
+                    $loaded->filter( fn( $item ) => !array_key_exists( 'access_count', $item->getAttributes() ) )->loadCount( 'access' );
+                }
+
                 $instance->syncMakeSearchable( $loaded );
             } else {
                 self::sync( $model, $chunk );
@@ -280,6 +346,82 @@ class Scout
 
 
     /**
+     * Reindexes the source variants of the pages, which are listed for the languages without variant.
+     *
+     * Required after language variants are added or removed, only for external search engines.
+     * The pages are collected and reindexed once after the surrounding transaction commits.
+     *
+     * @param array<string> $ids Page IDs
+     */
+    public static function sources( array $ids ) : void
+    {
+        if( !$ids || !self::usesExternalSearch() ) {
+            return;
+        }
+
+        $tenant = Tenancy::value();
+
+        foreach( $ids as $id ) {
+            self::$sources[$tenant][(string) $id] = true;
+        }
+
+        // pages of rolled back transactions are reindexed with the next commit, which is harmless
+        ( new Models\Page() )->getConnection()->afterCommit( function() {
+            $list = self::$sources;
+            self::$sources = [];
+
+            foreach( $list as $tenant => $ids ) {
+                Tenancy::run( (string) $tenant, fn() => self::dispatchSources( array_map( strval( ... ), array_keys( $ids ) ) ) );
+            }
+        } );
+    }
+
+
+    /**
+     * Reindexes the source variants of the pages now.
+     *
+     * @param array<string> $ids Page IDs
+     */
+    public static function syncSources( array $ids ) : void
+    {
+        $instance = new Models\Page();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
+
+            if( $query instanceof PageQuery ) {
+                $query->language( null );
+            }
+
+            $instance->syncMakeSearchable( $query->whereKey( $chunk )->get() );
+        }
+    }
+
+
+    /**
+     * Reindexes the source variants of the pages in queued jobs or now.
+     *
+     * @param array<string> $ids Page IDs
+     */
+    private static function dispatchSources( array $ids ) : void
+    {
+        if( !config( 'scout.queue' ) ) {
+            self::syncSources( $ids );
+            return;
+        }
+
+        $instance = new Models\Page();
+
+        foreach( array_chunk( $ids, 50 ) as $chunk ) {
+            dispatch( ( new IndexModels( Models\Page::class, $chunk, Tenancy::value(), true ) )
+                ->onQueue( $instance->syncWithSearchUsingQueue() )
+                ->onConnection( $instance->syncWithSearchUsing() ) );
+        }
+    }
+
+
+    /**
      * Reindexes models after the surrounding transaction commits.
      *
      * @param class-string<Models\Base> $model Model class
@@ -310,15 +452,21 @@ class Scout
      */
     public static function sync( string $model, array $ids ) : void
     {
-        $instance = new $model();
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
 
+        $instance = new $model();
+        $key = $instance->getScoutKeyName();
+        $column = $instance->qualifyColumn( $key );
+
+        // batches by search key to limit the number of page variants for many languages,
+        // larger than the ID batches to load pages with only one language in one query
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
-            $items = $instance::makeAllSearchableQuery()
+            $instance::makeAllSearchableQuery()
                 ->withoutGlobalScope( SoftDeletingScope::class )
                 ->whereKey( $chunk )
-                ->get();
-
-            $instance->syncMakeSearchable( $items );
+                ->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
         }
     }
 
@@ -362,6 +510,10 @@ class Scout
      */
     public static function unindex( string $model, array $ids ) : void
     {
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
         $instance = new $model();
         $key = $instance->getScoutKeyName();
 

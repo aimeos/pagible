@@ -168,6 +168,6 @@ class Publish extends Command
             }
         }
 
-        return Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get();
+        return Version::loadOwners( Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get() );
     }
 }

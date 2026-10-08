@@ -11,7 +11,10 @@ use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Scout;
+use Aimeos\Cms\Sync;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
@@ -119,13 +122,37 @@ final class Query
     public function translations( $rootValue, array $args ) : array
     {
         $lang = (string) $args['lang'];
-        $result = [];
 
-        foreach( ['stale', 'missing', 'ai'] as $state ) {
-            $result[$state] = Filter::translation( Page::query()->fallback( $lang ), $lang, $state )->count();
-        }
+        // same conditions as Filter::translation() but counted on the variants of the language
+        // using their indexes instead of the fallback join over all pages
+        $row = PageVariant::query()
+            ->join( 'cms_pages as p', fn( $join ) => $join
+                ->on( 'p.id', '=', 'cms_page_variants.page_id' )
+                ->on( 'p.tenant_id', '=', 'cms_page_variants.tenant_id' )
+            )
+            ->whereNull( 'p.deleted_at' )
+            ->where( 'cms_page_variants.lang', $lang )
+            ->toBase()
+            ->selectRaw( '
+                COUNT(*) AS total,
+                SUM(CASE WHEN cms_page_variants.stale = ? THEN 1 ELSE 0 END) AS stale,
+                SUM(CASE WHEN EXISTS (
+                    SELECT 1 FROM cms_versions WHERE cms_versions.id = cms_page_variants.latest_id AND cms_versions.editor = ?
+                ) THEN 1 ELSE 0 END) AS ai
+            ', [true, Sync::EDITOR] )
+            ->first();
 
-        return $result;
+        // pages without a variant in the language
+        $pages = Page::query()->getConnection()->table( 'cms_pages' )
+            ->where( 'tenant_id', Tenancy::value() )
+            ->whereNull( 'deleted_at' )
+            ->count();
+
+        return [
+            'stale' => (int) ( $row->stale ?? 0 ),
+            'missing' => max( 0, $pages - (int) ( $row->total ?? 0 ) ),
+            'ai' => (int) ( $row->ai ?? 0 ),
+        ];
     }
 
 
@@ -144,17 +171,20 @@ final class Query
             : [];
 
         $search = Filter::search( Page::class, $filter['any'] ?? '' );
-        $state = isset( $args['lang'] ) ? ( $filter['translation'] ?? null ) : null;
         $lang = (string) ( $args['lang'] ?? '' );
-        unset( $filter['translation'] );
+        $trashed = $args['trashed'] ?? null;
+        $state = null;
 
         if( isset( $args['lang'] ) )
         {
             // trashed variants of the language are selected by the fallback
-            Scout::prefer( $search, (string) $args['lang'], $args['trashed'] ?? null );
-            $args['trashed'] = ( $args['trashed'] ?? null ) === 'only' ? 'with' : ( $args['trashed'] ?? null );
+            $state = $filter['translation'] ?? null;
+            Scout::prefer( $search, $lang, $trashed );
+            $args['trashed'] = $trashed === 'only' ? 'with' : $trashed;
             unset( $filter['lang'], $args['lang'] );
         }
+
+        unset( $filter['translation'] );
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 

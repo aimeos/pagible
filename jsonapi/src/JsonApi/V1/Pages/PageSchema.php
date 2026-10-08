@@ -29,9 +29,9 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
+use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
 
 class PageSchema extends Schema
@@ -115,7 +115,7 @@ class PageSchema extends Schema
                     'lang' => $variant->lang,
                     'path' => $variant->path,
                     'domain' => $variant->domain,
-                    'url' => $this->variantUrl( $variant->path, $variant->domain ),
+                    'url' => Utils::pageUrl( $variant->path, $variant->domain ),
                 ] )->values()->all()
             ),
             HasOne::make( 'parent' )->type( 'navs' )->readOnly()->serializeUsing(
@@ -201,24 +201,6 @@ class PageSchema extends Schema
     public function pagination(): ?Paginator
     {
         return PagePagination::make();
-    }
-
-
-    /**
-     * Returns the URL of a page variant if the page route of the theme package is available.
-     *
-     * @param string $path Page path
-     * @param string $domain Page domain
-     * @return string|null Absolute URL or NULL if pages aren't rendered by the CMS
-     */
-    protected function variantUrl( string $path, string $domain ) : ?string
-    {
-        if( !Route::has( 'cms.page' ) ) {
-            return null;
-        }
-
-        $params = config( 'cms.multidomain' ) ? ['domain' => $domain ?: request()->getHost()] : [];
-        return route( 'cms.page', $params + ['path' => $path] );
     }
 
 

@@ -21,12 +21,6 @@ final class IgnoreChanges
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        $pages = [];
-
-        foreach( array_unique( $args['id'] ) as $id ) {
-            $pages[] = Resource::ignoreChanges( $id, $args['lang'], Auth::user() );
-        }
-
-        return $pages;
+        return Resource::ignoreVariants( $args['id'], $args['lang'], Auth::user() )->all();
     }
 }

@@ -20,6 +20,7 @@ use Aimeos\Cms\Models\Version;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 
 
 class SyncTest extends CoreTestAbstract
@@ -242,6 +243,40 @@ class SyncTest extends CoreTestAbstract
     }
 
 
+    public function testTranslateRewritesLinks()
+    {
+        Route::get( '{path?}', fn() => '' )->where( 'path', '.*' )->name( 'cms.page' );
+        Route::getRoutes()->refreshNameLookups();
+
+        $about = $this->page();
+        $other = $this->page();
+        $de = Resource::translatePage( $about->id, 'de', $this->user, $this->translator() );
+        $dePath = PageVariant::where( 'page_id', $about->id )->where( 'lang', 'de' )->value( 'path' );
+
+        $page = $this->page( [
+            ['id' => 'h1', 'type' => 'hero', 'data' => ['title' => 'Hero', 'buttons' => [
+                ['label' => 'About', 'url' => '/' . $about->path . '?a=1#team'],
+                ['label' => 'Other', 'url' => '/' . $other->path],
+                ['label' => 'Absolute', 'url' => url( $about->path )],
+                ['label' => 'External', 'url' => 'https://example.org/' . $about->path],
+            ]]],
+            ['id' => 't1', 'type' => 'text', 'data' => ['text' => "[About](/{$about->path}) and [Other](/{$other->path})\n\n[ref]: /{$about->path}"]],
+        ], ['to' => '/' . $about->path] );
+
+        $result = Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
+        $content = (array) $result->latest->aux->content;
+        $buttons = $content[0]->data->buttons;
+
+        $this->assertNotEquals( $about->path, $dePath );
+        $this->assertEquals( '/' . $dePath . '?a=1#team', $buttons[0]->url );
+        $this->assertEquals( '/' . $other->path, $buttons[1]->url );
+        $this->assertEquals( url( $dePath ), $buttons[2]->url );
+        $this->assertEquals( 'https://example.org/' . $about->path, $buttons[3]->url );
+        $this->assertEquals( "[de] [About](/{$dePath}) and [Other](/{$other->path})\n\n[ref]: /{$dePath}", $content[1]->data->text );
+        $this->assertEquals( '/' . $dePath, $result->latest->data->to );
+    }
+
+
     public function testTranslateMetaAndConfig()
     {
         $page = $this->page( null, [
@@ -370,47 +405,6 @@ class SyncTest extends CoreTestAbstract
 
         $this->expectException( Exception::class );
         Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
-    }
-
-
-    public function testTranslationPreview()
-    {
-        $page = $this->page();
-        $de = Resource::translatePage( $page->id, 'de', $this->user );
-        $this->savePage( $page->id, ['title' => 'Changed'] );
-
-        $result = Resource::translation( $page->id, 'de', $this->translator() );
-
-        $this->assertEquals( '[de] Changed', $result['data']['title'] );
-        $this->assertEquals( '[de] Hello', $result['aux']['content'][0]->data->text );
-        $this->assertEquals( $de->latest_id, $result['latestId'] );
-        $this->assertEquals( $de->latest_id, Page::language( 'de' )->findOrFail( $page->id )->latest_id );
-    }
-
-
-    public function testSaveTranslation()
-    {
-        $page = $this->page();
-        Resource::translatePage( $page->id, 'de', $this->user );
-        $result = Resource::translation( $page->id, 'de', $this->translator() );
-
-        // the change of the second element isn't accepted
-        $content = $result['aux']['content'];
-        $content[1] = Page::language( 'de' )->with( 'latest' )->findOrFail( $page->id )->latest->aux->content[1];
-        $hashes = array_diff_key( $result['hashes'], ['el:el2' => 1] );
-
-        $de = Resource::saveTranslation( $page->id, 'de', ['title' => $result['data']['title'], 'content' => $content],
-            $hashes, $this->user );
-        $variant = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
-
-        $this->assertEquals( '[de] Title', $de->latest->data->title );
-        $this->assertEquals( 'editor@testbench', $de->latest->editor );
-        $this->assertTrue( $variant->stale );
-        $this->assertSame( '', $variant->hashes['el:el2'] );
-        $this->assertSame( $result['hashes']['el:el1'], $variant->hashes['el:el1'] );
-
-        $this->expectException( Exception::class );
-        Resource::saveTranslation( $page->id, 'de', [], ['el:x' => 'invalid'], $this->user );
     }
 
 

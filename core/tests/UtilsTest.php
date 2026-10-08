@@ -363,6 +363,18 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testIsValidLang()
+    {
+        $this->assertTrue( Utils::isValidLang( 'de' ) );
+        $this->assertTrue( Utils::isValidLang( 'zh-Hant' ) );
+        $this->assertTrue( Utils::isValidLang( 'pt-BR' ) );
+        $this->assertFalse( Utils::isValidLang( 'DE' ) );
+        $this->assertFalse( Utils::isValidLang( 'de_DE' ) );
+        $this->assertFalse( Utils::isValidLang( 'zh-Hant-TW-x' ) );
+        $this->assertFalse( Utils::isValidLang( '' ) );
+    }
+
+
     public function testSlugify()
     {
         $this->assertEquals( 'hello-world', Utils::slugify( 'Hello World' ) );

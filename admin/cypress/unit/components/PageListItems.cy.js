@@ -984,6 +984,129 @@ describe('PageListItems', () => {
       })
     })
 
+    it('reports already running bulk translations', () => {
+      const query = cy.stub().callsFake(({ variables }) => Promise.resolve(variables.batch
+        ? { data: { translateProgress: { total: 0, done: 0, failed: 0 } } }
+        : { data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } } }
+      ))
+      const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 0 } } })
+      const perms = { 'page:add': true, 'page:save': true, 'text:translate': true, 'page:view': true }
+
+      mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const add = cy.spy(vm.messages, 'add')
+        vm.confirm.ask = cy.stub().resolves(true)
+        vm.$refs.tree.statsFlat = [variant('page-1', 'en')]
+
+        return vm.translate().then(() => {
+          expect(query).not.to.have.been.calledWithMatch({ variables: { batch: 'batch-1' } })
+          expect(vm.progress).to.equal(null)
+          expect(add).to.have.been.calledWithMatch(/already running/, 'info')
+        })
+      })
+    })
+
+    it('refetches many rows in parallel chunks of 100 ids', () => {
+      const query = cy.stub().callsFake(({ variables }) => {
+        // every 10th page doesn't match the filter anymore
+        const ids = (variables.filter.id || []).filter((id) => !id.endsWith('0'))
+        return Promise.resolve({
+          data: {
+            pages: {
+              data: ids.map((id) => ({ id, lang: 'de', source: 'en', name: id + '-new', has: 5 })),
+              paginatorInfo: { currentPage: 1, lastPage: 1 }
+            }
+          }
+        })
+      })
+
+      mountList({}, { 'page:view': true }, { query }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const stats = Array.from({ length: 250 }, (_, idx) => variant('page-' + idx, 'en', 'en', { has: 2 }))
+        const remove = cy.spy(vm.$refs.tree, 'remove')
+        vm.$refs.tree.statsFlat = stats
+        query.resetHistory()
+
+        return vm.refetch(stats).then(() => {
+          expect(query).to.have.been.calledThrice
+          expect(query.getCalls().map((call) => call.args[0].variables.filter.id.length)).to.deep.equal([100, 100, 50])
+          expect(query.getCalls().map((call) => call.args[0].variables.limit)).to.deep.equal([100, 100, 50])
+          expect(query.thirdCall.args[0].variables.filter.id[0]).to.equal('page-200')
+          expect(stats[1].data).to.deep.include({ name: 'page-1-new', lang: 'de', has: 2 })
+          expect(stats[1]._checked).to.equal(false)
+          expect(stats[249].data.name).to.equal('page-249-new')
+          expect(remove).to.have.callCount(25)
+          expect(remove).to.have.been.calledWith(stats[10])
+        })
+      })
+    })
+
+    it('keeps the rows of failed chunks unchanged', () => {
+      const query = cy.stub().callsFake(({ variables }) => {
+        const ids = variables.filter.id || []
+        return ids[0] === 'page-100'
+          ? Promise.reject(new Error('failed'))
+          : Promise.resolve({
+              data: {
+                pages: {
+                  data: ids.map((id) => ({ id, lang: 'de', source: 'en', name: id + '-new' })),
+                  paginatorInfo: { currentPage: 1, lastPage: 1 }
+                }
+              }
+            })
+      })
+
+      mountList({}, { 'page:view': true }, { query }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const stats = Array.from({ length: 150 }, (_, idx) => variant('page-' + idx, 'en'))
+        const remove = cy.spy(vm.$refs.tree, 'remove')
+        vm.$refs.tree.statsFlat = stats
+
+        return vm.refetch(stats).then(() => {
+          expect(stats[0].data.name).to.equal('page-0-new')
+          expect(stats[100].data.name).to.equal('page-100')
+          expect(stats[100]._checked).to.equal(true)
+          expect(remove).not.to.have.been.called
+        })
+      })
+    })
+
+    it('refreshes only the translated rows after the translation finished', () => {
+      const query = cy.stub().callsFake(({ variables }) => Promise.resolve(variables.batch
+        ? { data: { translateProgress: { total: 1, done: 1, failed: 0 } } }
+        : {
+            data: {
+              pages: {
+                data: (variables.filter.id || []).map((id) => ({ id, lang: 'de', source: 'en', name: id + '-de' })),
+                paginatorInfo: { currentPage: 1, lastPage: 1 }
+              }
+            }
+          }
+      ))
+      const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+      const perms = { 'page:add': true, 'page:save': true, 'text:translate': true, 'page:view': true }
+
+      mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const translated = variant('page-1', 'en')
+        const other = variant('page-2', 'en')
+        const reload = cy.spy(vm, 'reload')
+        vm.$refs.tree.statsFlat = [translated, other]
+        query.resetHistory()
+
+        return vm.translate(translated).then(() => {
+          const fetches = query.getCalls().filter((call) => !call.args[0].variables.batch)
+
+          expect(reload).not.to.have.been.called
+          expect(fetches).to.have.length(1)
+          expect(fetches[0].args[0].variables.filter.id).to.deep.equal(['page-1'])
+          expect(translated.data).to.deep.include({ name: 'page-1-de', lang: 'de' })
+          expect(other.data.name).to.equal('page-2')
+          expect(wrapper.findComponent(PageListItems).emitted('changed')).to.have.length.of.at.least(1)
+        })
+      })
+    })
+
     it('shows the translation progress until all translations are finished', () => {
       const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 3 } } })
       const query = cy.stub().callsFake(({ variables }) => Promise.resolve(variables.batch
@@ -994,10 +1117,9 @@ describe('PageListItems', () => {
 
       mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
-        return vm.translate(variant('page-1', 'de')).then(() => {
-          clearTimeout(vm.polling)
-          expect(vm.progress).to.deep.include({ total: 3, done: 1, failed: 0 })
-        })
+        // polling continues until the component is unmounted, so the promise isn't awaited
+        vm.translate(variant('page-1', 'de'))
+        cy.wrap(vm).its('progress').should('deep.include', { total: 3, done: 1, failed: 0 })
       })
       cy.get('.translate-progress').should('contain', 'Translating 1 of 3')
     })
@@ -1047,24 +1169,6 @@ describe('PageListItems', () => {
           expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'de' })
           expect(stale.data.stale).to.equal(false)
           expect(stale._checked).to.equal(false)
-        })
-      })
-    })
-
-    it('asks before publishing unreviewed AI drafts', () => {
-      const mutate = cy.stub().resolves({ data: { pubPage: [{ id: 'page-1' }] } })
-
-      mountList({}, { 'page:publish': true, 'page:view': true }, { mutate }, 'de').then(({ wrapper }) => {
-        const vm = wrapper.findComponent(PageListItems).vm
-        const ask = cy.stub().resolves(false)
-        vm.confirm.ask = ask
-        vm.$refs.tree.statsFlat = [variant('page-1', 'de', 'en', { editor: 'AI draft' }), variant('page-2', 'de')]
-
-        return vm.publish().then(() => {
-          expect(ask).to.have.been.calledOnce
-          expect(ask.firstCall.args[1]).to.contain('2 pages')
-          expect(ask.firstCall.args[3]).to.contain('1 page is an unreviewed AI translation')
-          expect(mutate).not.to.have.been.called
         })
       })
     })

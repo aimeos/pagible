@@ -19,6 +19,7 @@ use Aimeos\Prisma\Schema\Schema;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Values\Observation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 
@@ -306,13 +307,21 @@ class Ai
     /**
      * Translates texts into another language.
      *
+     * Translated chunks are cached for "cms.ai.translatettl" seconds per tenant, so retrying
+     * after a provider error doesn't translate the chunks which already succeeded again.
+     * Pass the cache keys from $keys to forget() to remove the entries once they aren't needed.
+     *
      * @param array<int, string> $texts Texts to translate
      * @param string $to Target language code
      * @param string|null $from Source language code, auto-detected if NULL
      * @param string|null $context Additional context like the topic of the texts
+     * @param (\Closure(int): void)|null $before Called once with the number of provider requests before the first one is sent
+     * @param array<int, string>|null $keys Receives the cache keys of the translated chunks
+     * @param-out array<int, string> $keys
      * @return array<int, string> Translated texts in the same order
      */
-    public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null ) : array
+    public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null,
+        ?\Closure $before = null, ?array &$keys = null ) : array
     {
         $config = config( 'cms.ai.translate', [] ) + [
             'ignore_tags' => ['x'],
@@ -321,18 +330,59 @@ class Ai
             'model_type' => 'prefer_quality_optimized',
         ];
 
-        $provider = self::provider( 'text', 'translate', null, $config );
+        $ttl = max( 0, (int) config( 'cms.ai.translatettl', 3600 ) );
+        $options = array_diff_key( $config, ['api_key' => true] );
+        $provider = null;
+        $lists = [];
+        $keys = [];
+
+        $chunks = self::chunks( $texts );
+
+        foreach( $chunks as $idx => $chunk )
+        {
+            $keys[$idx] = 'cms-translation:' . Tenancy::value() . ':' . hash( 'sha256', serialize( [$chunk, $to, $from, $context, $options] ) );
+
+            if( $ttl > 0 && ( $list = self::cached( $keys[$idx], count( $chunk ) ) ) !== null ) {
+                $lists[$idx] = $list;
+            }
+        }
+
+        // reserve the requests for all uncached chunks at once before sending the first one
+        if( $before && ( $count = count( $chunks ) - count( $lists ) ) > 0 ) {
+            $before( $count );
+        }
+
         $result = [];
 
-        foreach( self::chunks( $texts ) as $chunk )
+        foreach( $chunks as $idx => $chunk )
         {
-            $list = $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-                ->texts();
+            if( !isset( $lists[$idx] ) )
+            {
+                $provider ??= self::provider( 'text', 'translate', null, $config );
 
-            array_push( $result, ...array_values( $list ) );
+                $lists[$idx] = array_values( $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+                    ->texts() );
+
+                $ttl && Cache::put( $keys[$idx], $lists[$idx], $ttl );
+            }
+
+            array_push( $result, ...$lists[$idx] );
         }
 
         return $result;
+    }
+
+
+    /**
+     * Removes cached translations which aren't needed anymore.
+     *
+     * @param array<int, string> $keys Cache keys passed back by translate()
+     */
+    public static function forget( array $keys ) : void
+    {
+        foreach( array_unique( $keys ) as $key ) {
+            Cache::forget( $key );
+        }
     }
 
 
@@ -375,18 +425,21 @@ class Ai
      * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
      *
      * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
-     * @param (\Closure(int): void)|null $calls Called with the number of provider calls before translating
+     * @param (\Closure(int): void)|null $calls Called once with the number of provider calls before the first call to the provider
+     * @param (\Closure(array<int, string>): void)|null $used Called with the cache keys of the translated chunks
      * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
      */
-    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user, ?\Closure $calls = null ) : ?\Closure
+    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user, ?\Closure $calls = null,
+        ?\Closure $used = null ) : ?\Closure
     {
         if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
             return null;
         }
 
-        return function( array $texts, string $to, ?string $from, string $context ) use ( $calls ) : array {
-            $calls && $calls( count( self::chunks( $texts ) ) );
-            return self::translate( $texts, $to, $from, $context ?: null );
+        return function( array $texts, string $to, ?string $from, string $context ) use ( $calls, $used ) : array {
+            $result = self::translate( $texts, $to, $from, $context ?: null, $calls, $keys );
+            $used && $used( $keys );
+            return $result;
         };
     }
 
@@ -443,6 +496,36 @@ class Ai
             ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
             ->write( $prompt, $files, config( 'cms.ai.write', [] ) ) // @phpstan-ignore-line method.notFound
             ->text() );
+    }
+
+
+    /**
+     * Returns the cached translations of a chunk.
+     *
+     * @param string $key Cache key of the chunk
+     * @param int $count Number of texts in the chunk
+     * @return array<int, string>|null Translated texts or NULL if not cached or invalid
+     */
+    protected static function cached( string $key, int $count ) : ?array
+    {
+        $list = Cache::get( $key );
+
+        if( !is_array( $list ) || count( $list ) !== $count ) {
+            return null;
+        }
+
+        $result = [];
+
+        foreach( $list as $text )
+        {
+            if( !is_string( $text ) ) {
+                return null;
+            }
+
+            $result[] = $text;
+        }
+
+        return $result;
     }
 
 

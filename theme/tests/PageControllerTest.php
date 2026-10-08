@@ -285,6 +285,20 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testLatestFindsChangedPathWithNewDomain()
+    {
+        $page = Page::where( 'tag', 'article' )->firstOrFail();
+
+        // populates the cached list of the domains used by the variants
+        $this->actingAs( $this->user )->get( '/welcome-to-laravelcms' )->assertOk();
+
+        Resource::savePage( $page->id, ['path' => 'new-domain-path', 'domain' => 'New.Example.com'], $this->user );
+
+        $this->assertSame( 'new.example.com', Page::find( $page->id )->latest?->data->domain );
+        $this->actingAs( $this->user )->get( '/new-domain-path' )->assertOk();
+    }
+
+
     public function testNewsPageUsesBlogLayout()
     {
         $page = Page::where( 'tag', 'article' )->firstOrFail();

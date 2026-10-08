@@ -40,7 +40,7 @@ class RestorePage extends Tool
         if( isset( $v['lang'] ) )
         {
             $item = Resource::restoreVariant( $v['id'], $v['lang'], $request->user() );
-            return Response::structured( Presenter::item( $item, true ) + ['stale' => $item->stale] );
+            return Response::structured( Presenter::item( $item, true ) );
         }
 
         /** @var Page $item */

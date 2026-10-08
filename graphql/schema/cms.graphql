@@ -92,7 +92,7 @@ extend type Query {
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@catalog")
 
   "Get page by ID in the given language or in its source language if no language is passed"
-  page(id: ID!, lang: String, trashed: Trashed): Page
+  page(id: ID!, lang: String @rules(apply: ["max:10"]), trashed: Trashed): Page
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@page")
 
@@ -176,12 +176,8 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Add a language variant to the page as untranslated copy of the latest source draft"
-  addVariant(id: ID!, lang: String!): Page
+  addVariant(id: ID!, lang: String! @rules(apply: ["required", "max:10"])): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
-
-  "Save a reviewed translation as new draft of the page variant; 'hashes' are the hashes of the accepted changes by key from the proposed translation"
-  saveTranslation(id: ID!, lang: String! @rules(apply: ["required", "max:10"]), input: PageInput!, hashes: JSON!, latestId: ID): Page
-    @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Mark the page variants in the language as up to date with their source without changing their content"
   ignoreChanges(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String! @rules(apply: ["required", "max:10"])): [Page!]!
@@ -196,7 +192,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-graphql")
 
   "Update the values of an existing page in the given language or in its source language if no language is passed"
-  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String, restore: Boolean): Page
+  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String @rules(apply: ["max:10"]), restore: Boolean): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"

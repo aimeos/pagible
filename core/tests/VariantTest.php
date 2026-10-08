@@ -7,11 +7,14 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Hashes;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
+use Aimeos\Nestedset\NestedSet;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
@@ -19,6 +22,7 @@ use Aimeos\Cms\Models\Version;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 
 class VariantTest extends CoreTestAbstract
@@ -71,6 +75,33 @@ class VariantTest extends CoreTestAbstract
         // the source variant is unchanged
         $this->assertEquals( 'en', Page::findOrFail( $page->id )->lang );
         $this->assertEquals( 1, Version::where( 'versionable_id', $page->variant_id )->count() );
+    }
+
+
+    public function testAddVariantUniquePath()
+    {
+        $page = $this->page();
+        $other = $this->page();
+
+        PageVariant::where( 'page_id', $other->id )->update( ['path' => $page->path . '-de'] );
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $this->assertEquals( $page->path . '-de-2', Page::language( 'de' )->findOrFail( $page->id )->path );
+    }
+
+
+    public function testAddVariantNullFields()
+    {
+        $page = $this->page();
+        $version = Version::findOrFail( $page->latest_id );
+        $version->data = (object) ( ['to' => null, 'theme' => null] + (array) $version->data );
+        $version->save();
+
+        Resource::addVariant( $page->id, 'de', $this->user );
+        $variant = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
+
+        $this->assertSame( '', $variant->to );
+        $this->assertSame( '', $variant->theme );
     }
 
 
@@ -424,6 +455,49 @@ class VariantTest extends CoreTestAbstract
     }
 
 
+    public function testDropAndPurgeInvalidateVariantUrls()
+    {
+        $page = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+        $de = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
+
+        $paths = [];
+        Event::listen( PageInvalidated::class, function( PageInvalidated $event ) use ( &$paths ) {
+            array_push( $paths, ...$event->paths );
+        } );
+
+        Resource::drop( Page::class, [$page->id], $this->user );
+
+        $this->assertContains( $page->path, $paths );
+        $this->assertContains( $de->path, $paths );
+
+        $paths = [];
+        Resource::purge( Page::class, [$page->id], $this->user );
+
+        $this->assertContains( $page->path, $paths );
+        $this->assertContains( $de->path, $paths );
+    }
+
+
+    public function testAnnounceManyGroupsVariantsByLanguage()
+    {
+        $page = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        $events = [];
+        Event::listen( Bulk::class, function( Bulk $event ) use ( &$events ) {
+            $events[] = $event;
+        } );
+
+        $items = collect( [Page::findOrFail( $page->id ), Page::language( 'de', true )->findOrFail( $page->id )] );
+        Page::announceMany( $items, 'published', 'editor', ['published' => true], true );
+
+        $this->assertCount( 2, $events );
+        $this->assertEquals( [[$page->id => 'en'], [$page->id => 'de']], array_map( fn( Bulk $event ) => $event->langs, $events ) );
+        $this->assertEquals( [[$page->id], [$page->id]], array_map( fn( Bulk $event ) => $event->ids, $events ) );
+    }
+
+
     public function testCopyPage()
     {
         $page = $this->page();
@@ -453,6 +527,91 @@ class VariantTest extends CoreTestAbstract
         $this->assertCount( 1, $children );
         $this->assertEquals( 2, PageVariant::where( 'page_id', $children[0]->id )->count() );
         $this->assertEquals( 'el2', Page::language( 'de' )->findOrFail( $children[0]->id )->latest->aux->content[0]->id );
+    }
+
+
+    public function testCopyPageResetsScheduled()
+    {
+        $page = $this->page();
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        // translations are copied in bulk without firing the "saving" event of the versions
+        $orig = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
+        $version = Version::findOrFail( $orig->latest_id );
+        $version->forceFill( ['publish_at' => now()->addDay()] )->save();
+
+        $this->assertEquals( 1, $version->fresh()?->data->scheduled );
+
+        $copy = Resource::copyPage( $page->id, null, $this->root()->id, $this->user );
+        $latest = Page::language( 'de' )->findOrFail( $copy->id )->latest;
+
+        $this->assertNull( $latest?->publish_at );
+        $this->assertEquals( 0, $latest?->data->scheduled );
+    }
+
+
+    public function testCopyPageSubtree()
+    {
+        $page = $this->page();
+        $add = fn( string $name, string $parent ) => Resource::addPage( ['lang' => 'en', 'name' => $name, 'title' => $name,
+            'path' => strtolower( $name ) . '-' . Utils::uid()], $this->user, parent: $parent );
+
+        $first = $add( 'First', $page->id );
+        $add( 'Deep', $first->id );
+        $add( 'Second', $page->id );
+        $next = $this->page();
+
+        // copied before a following page to check that the nodes after the gap are moved
+        $copy = Resource::copyPage( $page->id, $next->id, null, $this->user );
+
+        $this->assertFalse( Page::withTrashed()->isBroken() );
+
+        $tree = Page::select( 'id', 'parent_id', 'name', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
+            ->where( NestedSet::LFT, '>=', $copy->fresh()?->getLft() )
+            ->where( NestedSet::RGT, '<=', $copy->fresh()?->getRgt() )
+            ->orderBy( NestedSet::LFT )->get();
+
+        $this->assertEquals( ['Test', 'First', 'Deep', 'Second'], $tree->pluck( 'name' )->all() );
+        $this->assertEquals( [$copy->id, $tree[1]->id, $copy->id], $tree->slice( 1 )->pluck( 'parent_id' )->all() );
+        $this->assertEquals( [0, 1, 2, 1], $tree->map( fn( $p ) => $p->getDepth() - $copy->fresh()?->getDepth() )->all() );
+        $this->assertLessThan( $next->fresh()?->getLft(), $copy->fresh()?->getRgt() );
+    }
+
+
+    public function testSubtreePrunesHiddenBranches()
+    {
+        $page = $this->page();
+        $add = fn( string $name, string $parent ) => Resource::addPage( ['lang' => 'en', 'name' => $name, 'title' => $name,
+            'path' => strtolower( $name ) . '-' . Utils::uid()], $this->user, parent: $parent );
+
+        $first = $add( 'First', $page->id );
+        $deep = $add( 'Deep', $first->id );
+        $second = $add( 'Second', $page->id );
+        $add( 'Inner', $second->id );
+
+        PageVariant::whereIn( 'page_id', [$page->id, $first->id, $deep->id] )->update( ['status' => 1] );
+        $names = fn( $page ) => $page->subtree->pluck( 'name' )->all();
+
+        // disabled pages are left out together with their sub-pages
+        $this->assertEquals( ['First', 'Deep'], $names( Page::findOrFail( $page->id ) ) );
+
+        // eager loading limits the depth relative to the tree root
+        $eager = $names( Page::with( 'subtree' )->findOrFail( $page->id ) );
+        $this->assertContains( 'First', $eager );
+        $this->assertNotContains( 'Second', $eager );
+        $this->assertNotContains( 'Inner', $eager );
+
+        // sub-pages of a hidden page without variant in the language are hidden too
+        foreach( [$page->id, $deep->id] as $id ) {
+            Resource::addVariant( $id, 'de', $this->user );
+        }
+
+        PageVariant::where( 'lang', 'de' )->update( ['status' => 1] );
+        $this->assertEquals( [], $names( Page::language( 'de' )->findOrFail( $page->id ) ) );
+
+        // nothing is shown below a disabled page
+        PageVariant::where( 'page_id', $page->id )->update( ['status' => 0] );
+        $this->assertEquals( [], $names( Page::findOrFail( $page->id ) ) );
     }
 
 

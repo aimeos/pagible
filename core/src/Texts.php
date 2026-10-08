@@ -13,11 +13,23 @@ namespace Aimeos\Cms;
  */
 class Texts
 {
+    /** @var list<string> Field types containing text to translate */
+    public const TYPES = ['string', 'text', 'plaintext', 'markdown'];
+
     /** @var array<int, string> Hash keys of the collected texts */
     private array $keys = [];
 
+    /** @var string Pattern matching the URLs of inline links and link reference definitions in Markdown */
+    private const LINKS = '/(\]\(\s*<?|^ {0,3}\[[^\]\n]+\]:[ \t]*<?)([^\s()<>]+)/m';
+
     /** @var array<int, mixed> References to the collected texts */
     private array $refs = [];
+
+    /** @var array<int, int> Indexes of the collected texts containing Markdown */
+    private array $markdown = [];
+
+    /** @var array<int, mixed> References to the collected URLs */
+    private array $urls = [];
 
 
     /**
@@ -26,26 +38,55 @@ class Texts
      * @param string $key Hash key of the item the text belongs to
      * @param array<string, mixed> $data Array containing the text
      * @param string $name Key of the text in the array
-     * @return self Same object for fluent calls
      */
-    public function add( string $key, array &$data, string $name ) : self
+    public function add( string $key, array &$data, string $name ) : void
     {
         if( is_string( $data[$name] ?? null ) && trim( $data[$name] ) !== '' ) {
             $this->push( $key, $data[$name] );
         }
-
-        return $this;
     }
 
 
     /**
-     * Returns the number of collected texts.
+     * Adds an URL to rewrite.
      *
-     * @return int Number of texts
+     * @param mixed $url Reference to the URL
      */
-    public function count() : int
+    public function url( mixed &$url ) : void
     {
-        return count( $this->refs );
+        if( is_string( $url ) && trim( $url ) !== '' ) {
+            $this->urls[] = &$url;
+        }
+    }
+
+
+    /**
+     * Rewrites the collected URLs and the links in the collected Markdown texts.
+     *
+     * @param \Closure(array<int, string>): array<string, string> $rewrite Gets the URLs and returns the new URLs by old URL
+     */
+    public function links( \Closure $rewrite ) : void
+    {
+        $urls = array_map( fn( $url ) => trim( (string) $url ), $this->urls );
+
+        foreach( $this->markdown as $idx )
+        {
+            if( preg_match_all( self::LINKS, (string) $this->refs[$idx], $matches ) ) {
+                array_push( $urls, ...$matches[2] );
+            }
+        }
+
+        if( empty( $urls ) || empty( $map = $rewrite( array_values( array_unique( $urls ) ) ) ) ) {
+            return;
+        }
+
+        foreach( $this->urls as $idx => $url ) {
+            $this->urls[$idx] = $map[trim( (string) $url )] ?? $url;
+        }
+
+        foreach( $this->markdown as $idx ) {
+            $this->refs[$idx] = preg_replace_callback( self::LINKS, fn( $m ) => $m[1] . ( $map[$m[2]] ?? $m[2] ), (string) $this->refs[$idx] );
+        }
     }
 
 
@@ -57,17 +98,6 @@ class Texts
     public function keys() : array
     {
         return array_values( array_unique( $this->keys ) );
-    }
-
-
-    /**
-     * Returns the collected texts.
-     *
-     * @return array<int, string> Texts in the order they were collected
-     */
-    public function texts() : array
-    {
-        return array_map( fn( $ref ) => (string) $ref, $this->refs );
     }
 
 
@@ -90,7 +120,7 @@ class Texts
             return true;
         }
 
-        $result = array_values( $translate( $this->texts(), $to, $from, $context ) );
+        $result = array_values( $translate( array_map( fn( $ref ) => (string) $ref, $this->refs ), $to, $from, $context ) );
 
         if( count( $result ) !== count( $this->refs ) ) {
             throw new Exception( sprintf( 'Expected %1$d translated texts, got %2$d', count( $this->refs ), count( $result ) ) );
@@ -108,19 +138,17 @@ class Texts
      * Adds the texts of the data according to the schema of its type.
      *
      * Follows items nested in items and skips types and fields with "translate": false.
+     * URL fields are collected to rewrite the links to other pages.
      *
      * @param string $key Hash key of the item the texts belong to
      * @param mixed $data Data object of the item
      * @param array<string, mixed> $schema Schema of the item type with its fields
-     * @return self Same object for fluent calls
      */
-    public function walk( string $key, mixed $data, array $schema ) : self
+    public function walk( string $key, mixed $data, array $schema ) : void
     {
         if( ( $schema['translate'] ?? true ) !== false && is_object( $data ) ) {
             $this->fields( $key, $data, (array) ( $schema['fields'] ?? [] ) );
         }
-
-        return $this;
     }
 
 
@@ -135,14 +163,26 @@ class Texts
     {
         foreach( $fields as $name => $field )
         {
-            if( !isset( $data->{$name} ) || !is_array( $field ) || ( $field['translate'] ?? true ) === false ) {
+            if( !isset( $data->{$name} ) || !is_array( $field ) ) {
                 continue;
             }
 
             $type = $field['type'] ?? '';
 
-            if( in_array( $type, Sync::TEXT_TYPES, true ) && is_string( $data->{$name} ) && trim( $data->{$name} ) !== '' )
+            if( $type === 'url' )
             {
+                $this->url( $data->{$name} );
+            }
+            elseif( ( $field['translate'] ?? true ) === false )
+            {
+                continue;
+            }
+            elseif( in_array( $type, self::TYPES, true ) && is_string( $data->{$name} ) && trim( $data->{$name} ) !== '' )
+            {
+                if( in_array( $type, ['text', 'markdown'], true ) ) {
+                    $this->markdown[] = count( $this->refs );
+                }
+
                 $this->push( $key, $data->{$name} );
             }
             elseif( $type === 'table' && is_array( $data->{$name} ) )
