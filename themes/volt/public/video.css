@@ -1,0 +1,15 @@
+/**
+ * Volt Theme - Bright, trustworthy design for electricians and electrical contractors
+
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    filter: drop-shadow(0 1.5rem 3rem #0B153014);
+    max-width: 100%;
+    display: block;
+    padding: 2rem;
+}

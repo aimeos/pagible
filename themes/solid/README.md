@@ -27,9 +27,9 @@ php artisan vendor:publish --tag=cms-theme
 | `docs` | Documentation with sidebar navigation |
 | `blog` | Project and news pages listed by the blog element |
 
-## Contractor Details
+## Business Details
 
-The **Contractor** settings in the page config add a local business JSON-LD to every page below the configured page:
+The **Business** settings in the page config add a local business JSON-LD to every page below the configured page:
 
 | Field | Description |
 |-------|-------------|
@@ -62,7 +62,7 @@ php artisan cms:demo --theme=solid
 
 ```
 ├── composer.json
-├── schema.json          Theme and contractor configuration schema
+├── schema.json          Theme and business configuration schema
 ├── database/seeders/    SolidDemo seeder
 ├── lang/                Frontend translations
 ├── src/

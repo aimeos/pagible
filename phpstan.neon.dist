@@ -52,6 +52,8 @@ parameters:
 		- themes/premium/database/seeders
 		- themes/solid/src
 		- themes/solid/database/seeders
+		- themes/volt/src
+		- themes/volt/database/seeders
 		- themes/style/src
 		- themes/style/database/seeders
 		- themes/taste/src
