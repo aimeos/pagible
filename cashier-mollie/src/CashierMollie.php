@@ -9,7 +9,7 @@ namespace Aimeos\Cms;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Charge\ChargeItemBuilder;
@@ -356,7 +356,7 @@ class CashierMollie extends CashierProvider
         if( $order instanceof Model )
         {
             $order->load( [
-                'items' => fn( HasMany $relation ) => $this->items( $relation->getQuery() ),
+                'items' => fn( Relation $relation ) => $this->items( $relation->getQuery() ),
                 'owner',
             ] );
 
