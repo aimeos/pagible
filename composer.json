@@ -63,6 +63,7 @@
 				"themes/news/src/",
 				"themes/pagible/src/",
 				"themes/paper/src/",
+				"themes/solid/src/",
 				"themes/bold/src/",
 				"themes/premium/src/",
 				"themes/luxury/src/",
@@ -88,6 +89,7 @@
 				"search/tests/",
 				"theme/tests/",
 				"themes/estate/tests/",
+				"themes/solid/tests/",
 				"backup/tests/",
 				"webhooks/tests/"
 			]

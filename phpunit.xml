@@ -44,6 +44,9 @@
     <testsuite name="Estate">
       <directory>./themes/estate/tests/</directory>
     </testsuite>
+    <testsuite name="Solid">
+      <directory>./themes/solid/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
