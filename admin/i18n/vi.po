@@ -106,7 +106,7 @@ msgstr "Dán trang"
 
 #: js/commands.js:178 js/components/CommandPalette.vue:106
 #: js/components/DetailRefs.vue:128 js/components/Navigation.vue:30
-#: js/views/PageList.vue:102 js/views/PageList.vue:119
+#: js/views/PageList.vue:242 js/views/PageList.vue:259
 msgid "Pages"
 msgstr "Trang"
 
@@ -126,7 +126,7 @@ msgid "Go to media"
 msgstr "Đi tới phương tiện"
 
 #: js/commands.js:190 js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:48
 #: js/views/ElementList.vue:51
 msgid "Shared elements"
 msgstr "Phần tử dùng chung"
@@ -293,7 +293,7 @@ msgid "Configuration"
 msgstr "Cấu hình"
 
 #: js/components/ChangesDialog.vue:61 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:663
+#: js/views/PageDetail.vue:803
 msgid "Content"
 msgstr "Nội dung"
 
@@ -351,7 +351,7 @@ msgid "New chat"
 msgstr "Trò chuyện mới"
 
 #: js/components/ChatDialog.vue:330 js/views/ElementList.vue:74
-#: js/views/FileList.vue:74 js/views/PageList.vue:125
+#: js/views/FileList.vue:74 js/views/PageList.vue:265
 msgid "What shall I do for you?"
 msgstr "Tôi có thể giúp gì cho bạn?"
 
@@ -361,7 +361,7 @@ msgstr "Đang suy nghĩ ..."
 
 #: js/components/ChatDialog.vue:353 js/components/PageDetailContentList.vue:745
 #: js/components/PageDetailContentList.vue:831
-#: js/components/PageListItems.vue:1518 js/fields/Items.vue:303
+#: js/components/PageListItems.vue:1809 js/fields/Items.vue:303
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Sao chép"
@@ -375,7 +375,7 @@ msgstr "Gửi tin nhắn..."
 #: js/components/FileDetailItem.vue:416
 #: js/components/PageDetailContentList.vue:716 js/fields/Items.vue:372
 #: js/views/ElementList.vue:107 js/views/FileList.vue:107
-#: js/views/PageList.vue:158
+#: js/views/PageList.vue:298
 msgid "Dictate"
 msgstr "Đọc chính tả"
 
@@ -393,7 +393,7 @@ msgid "Go to"
 msgstr "Đi tới"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1573
+#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1923
 msgid "New"
 msgstr "Mới"
 
@@ -424,9 +424,9 @@ msgstr "Không có kết quả"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:216
-#: js/components/FileListItems.vue:354 js/components/PageListItems.vue:1380
-#: js/components/PageListItems.vue:1546 js/views/AccessList.vue:279
+#: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:309
+#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1595
+#: js/components/PageListItems.vue:1837 js/views/AccessList.vue:279
 msgid "Purge"
 msgstr "Xóa vĩnh viễn"
 
@@ -438,13 +438,14 @@ msgid_plural ""
 msgstr[0] "%{num} mục sau sẽ bị xóa vĩnh viễn và không thể khôi phục:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:597
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:346
+#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
+#: js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "Hủy"
 
 #: js/components/DetailAppBar.vue:156 js/views/AccessList.vue:231
 #: js/views/ElementList.vue:41 js/views/FileList.vue:41
-#: js/views/PageList.vue:92 js/views/PluginPanel.vue:66
+#: js/views/PageList.vue:232 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "Menu"
 
@@ -458,9 +459,9 @@ msgstr "Xem các thay đổi sau khi hợp nhất"
 
 #: js/components/DetailAppBar.vue:210 js/components/DetailAppBar.vue:226
 #: js/components/DetailAppBar.vue:230 js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:204
-#: js/components/FileListItems.vue:329 js/components/PageListItems.vue:1352
-#: js/components/PageListItems.vue:1482
+#: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:287
+#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1567
+#: js/components/PageListItems.vue:1773
 msgid "Publish"
 msgstr "Xuất bản"
 
@@ -477,7 +478,7 @@ msgid "Schedule & Close"
 msgstr "Lên lịch & đóng"
 
 #: js/components/DetailAppBar.vue:281 js/views/ElementList.vue:59
-#: js/views/FileList.vue:59 js/views/PageList.vue:110
+#: js/views/FileList.vue:59 js/views/PageList.vue:250
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "Bật/tắt menu bên"
@@ -501,7 +502,7 @@ msgid "Name"
 msgstr "Tên"
 
 #: js/components/DetailRefs.vue:147 js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:388
+#: js/components/PageListItems.vue:485
 msgid "Restricted"
 msgstr "Bị hạn chế"
 
@@ -523,9 +524,9 @@ msgid "Published"
 msgstr "Đã xuất bản"
 
 #: js/components/EditBulkDialog.vue:53 js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:207
-#: js/components/FileListItems.vue:339 js/components/PageBulkDialog.vue:135
-#: js/components/PageListItems.vue:1362 js/components/PageListItems.vue:1503
+#: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:290
+#: js/components/FileListItems.vue:432 js/components/PageBulkDialog.vue:133
+#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1794
 msgid "Edit properties"
 msgstr "Chỉnh sửa thuộc tính"
 
@@ -536,8 +537,8 @@ msgstr[0] "Áp dụng các thuộc tính đã chọn cho %{num} mục."
 
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:79
 #: js/components/FileDetailItem.vue:338 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:222
+#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageListItems.vue:1663 js/views/PageDetail.vue:735
 msgid "Language"
 msgstr "Ngôn ngữ"
 
@@ -546,7 +547,7 @@ msgid "Language of the content"
 msgstr "Ngôn ngữ của nội dung"
 
 #: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:250
+#: js/components/PageBulkDialog.vue:236
 msgid "Apply"
 msgstr "Áp dụng"
 
@@ -582,24 +583,24 @@ msgstr "Lỗi khi lưu phần tử dùng chung"
 msgid "Error fetching shared elements"
 msgstr "Lỗi khi lấy các phần tử dùng chung"
 
-#: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:189
+#: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:272
 #: js/components/PageDetailContentList.vue:732
-#: js/components/PageListItems.vue:1336 js/views/AccessList.vue:274
+#: js/components/PageListItems.vue:1551 js/views/AccessList.vue:274
 #: js/views/AccessList.vue:318
 msgid "Toggle selection"
 msgstr "Chuyển đổi lựa chọn"
 
 #: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:210
-#: js/components/FileListItems.vue:345 js/components/PageListItems.vue:1374
-#: js/components/PageListItems.vue:1537
+#: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:303
+#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1589
+#: js/components/PageListItems.vue:1828
 msgid "Delete"
 msgstr "Xóa"
 
 #: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:213
-#: js/components/FileListItems.vue:351 js/components/PageListItems.vue:1377
-#: js/components/PageListItems.vue:1543
+#: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:306
+#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1592
+#: js/components/PageListItems.vue:1834
 msgid "Restore"
 msgstr "Khôi phục"
 
@@ -610,19 +611,19 @@ msgstr "Khôi phục"
 msgid "Add element"
 msgstr "Thêm phần tử"
 
-#: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:250
+#: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:343
 #: js/components/PageDetailContentList.vue:765
-#: js/components/PageListItems.vue:1401 js/components/SchemaItems.vue:140
+#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:140
 #: js/views/AccessList.vue:303
 msgid "Search for"
 msgstr "Tìm kiếm"
 
-#: js/components/ElementListItems.vue:263 js/components/FileListItems.vue:263
+#: js/components/ElementListItems.vue:263 js/components/FileListItems.vue:356
 msgid "Updated by another user"
 msgstr "Được cập nhật bởi người dùng khác"
 
-#: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:269
-#: js/components/PageListItems.vue:1419
+#: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:362
+#: js/components/PageListItems.vue:1690
 msgid "Refresh"
 msgstr "Làm mới"
 
@@ -631,6 +632,8 @@ msgid "Reload elements"
 msgstr "Tải lại các phần tử"
 
 #: js/components/Fields.vue:242 js/components/Fields.vue:248
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1844
+#: js/components/TranslateDialog.vue:77 js/components/TranslateDialog.vue:128
 #: js/fields/Items.vue:337 js/fields/Items.vue:343
 msgid "Translate"
 msgstr "Dịch"
@@ -702,7 +705,7 @@ msgstr "Chỉnh sửa"
 msgid "Remove"
 msgstr "Gỡ bỏ"
 
-#: js/components/FileAiDialog.vue:116 js/components/FileListItems.vue:136
+#: js/components/FileAiDialog.vue:116 js/components/FileListItems.vue:153
 #: js/components/FileUrlDialog.vue:59 js/components/FileUrlDialog.vue:158
 #: js/fields/File.vue:102 js/fields/Images.vue:95
 msgid "Error adding file %{path}"
@@ -748,7 +751,7 @@ msgstr "Đã sao chép vào khay nhớ tạm"
 msgid "Error describing file"
 msgstr "Lỗi mô tả tệp"
 
-#: js/components/FileDetailItem.vue:174 js/components/FileListItems.vue:152
+#: js/components/FileDetailItem.vue:174 js/components/FileListItems.vue:169
 #: js/fields/File.vue:184 js/fields/Images.vue:185 js/views/FileDetail.vue:218
 msgid "Error saving file"
 msgstr "Lỗi khi lưu tệp"
@@ -943,8 +946,8 @@ msgstr "Tải xuống"
 
 #: js/components/FileDetailItemImage.vue:783
 #: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:438 js/components/PageListItems.vue:587
-#: js/lists.js:243
+#: js/components/PageListItems.vue:535 js/components/PageListItems.vue:719
+#: js/lists.js:247
 msgid "Undo"
 msgstr "Hoàn tác"
 
@@ -984,47 +987,68 @@ msgstr "Sử dụng làm hình ảnh bìa"
 msgid "Upload cover image"
 msgstr "Tải lên hình ảnh bìa"
 
-#: js/components/FileListItems.vue:148
+#: js/components/FileListItems.vue:165
 msgid "Error trashing file"
 msgstr "Lỗi khi chuyển tệp vào thùng rác"
 
-#: js/components/FileListItems.vue:149
+#: js/components/FileListItems.vue:166
 msgid "Error restoring file"
 msgstr "Lỗi khôi phục tệp"
 
-#: js/components/FileListItems.vue:150 js/detail.js:55
+#: js/components/FileListItems.vue:167 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Lỗi khi xuất bản tệp"
 
-#: js/components/FileListItems.vue:151
+#: js/components/FileListItems.vue:168
 msgid "Error purging file"
 msgstr "Lỗi khi xóa tệp vĩnh viễn"
 
-#: js/components/FileListItems.vue:153
+#: js/components/FileListItems.vue:170
 msgid "Error fetching files"
 msgstr "Lỗi khi lấy tệp"
 
-#: js/components/FileListItems.vue:226 js/components/FileListItems.vue:236
-#: js/components/FileListItems.vue:449 js/components/FileListItems.vue:459
+#: js/components/FileListItems.vue:237
+msgid "Descriptions of %{num} file translated"
+msgid_plural "Descriptions of %{num} files translated"
+msgstr[0] "Đã dịch mô tả của %{num} tệp"
+
+#: js/components/FileListItems.vue:247
+msgid "Error translating descriptions after %{done} of %{total} files"
+msgstr "Lỗi khi dịch mô tả sau %{done} trên %{total} tệp"
+
+#: js/components/FileListItems.vue:248
+msgid "Error translating descriptions"
+msgstr "Lỗi khi dịch mô tả"
+
+#: js/components/FileListItems.vue:253
+msgid "No missing descriptions to translate"
+msgstr "Không có mô tả nào bị thiếu cần dịch"
+
+#: js/components/FileListItems.vue:299 js/components/FileListItems.vue:441
+msgid "Translate descriptions"
+msgstr "Dịch mô tả"
+
+#: js/components/FileListItems.vue:319 js/components/FileListItems.vue:329
+#: js/components/FileListItems.vue:552 js/components/FileListItems.vue:562
 #: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:297
 #: js/fields/Images.vue:321
 msgid "Add files"
 msgstr "Thêm tệp"
 
-#: js/components/FileListItems.vue:236 js/components/FileListItems.vue:419
-#: js/components/FileListItems.vue:459 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:329 js/components/FileListItems.vue:522
+#: js/components/FileListItems.vue:562 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Bảo vệ bằng quyền truy cập trang"
 
-#: js/components/FileListItems.vue:275
+#: js/components/FileListItems.vue:368
 msgid "Reload files"
 msgstr "Tải lại tệp"
 
-#: js/components/FileListItems.vue:284
+#: js/components/FileListItems.vue:377
 msgid "Grid view"
 msgstr "Chế độ xem lưới"
 
-#: js/components/FileListItems.vue:292
+#: js/components/FileListItems.vue:385
 msgid "List view"
 msgstr "Chế độ xem danh sách"
 
@@ -1152,7 +1176,7 @@ msgstr "Lịch sử"
 
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:5
 #: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:177
-#: js/fields/Url.vue:144
+#: js/fields/Url.vue:150
 msgid "Loading"
 msgstr "Đang tải"
 
@@ -1168,8 +1192,8 @@ msgstr "Thử lại"
 msgid "Current changes"
 msgstr "Những thay đổi hiện tại"
 
-#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1212
-#: js/lists.js:472
+#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1423
+#: js/lists.js:476
 msgid "Scheduled for %{date}"
 msgstr "Đã lên lịch cho %{date}"
 
@@ -1279,7 +1303,7 @@ msgstr "Sửa đổi lần đầu"
 msgid "Position"
 msgstr "Vị trí"
 
-#: js/components/ListSort.vue:36 js/views/PageList.vue:59
+#: js/components/ListSort.vue:36 js/views/PageList.vue:104
 msgid "Tree"
 msgstr "Cây"
 
@@ -1328,13 +1352,13 @@ msgstr ""
 msgid "Public"
 msgstr "Công khai"
 
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:392
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:489
 msgid "Authenticated users"
 msgstr "Người dùng đã xác thực"
 
 #: js/components/PageAccess.vue:183 js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:391 js/components/PageListItems.vue:1365
-#: js/components/PageListItems.vue:1506 js/components/PageListItems.vue:1621
+#: js/components/PageListItems.vue:488 js/components/PageListItems.vue:1580
+#: js/components/PageListItems.vue:1797 js/components/PageListItems.vue:1991
 #: js/views/AccessList.vue:240 js/views/AccessList.vue:249
 msgid "Access"
 msgstr "Quyền truy cập"
@@ -1343,30 +1367,30 @@ msgstr "Quyền truy cập"
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Chỉ khách truy cập có một trong các vai trò này mới có thể xem trang"
 
-#: js/components/PageAccess.vue:193 js/components/PageBulkDialog.vue:264
+#: js/components/PageAccess.vue:193 js/components/PageBulkDialog.vue:250
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Thay đổi hàng loạt trang được giới hạn ở 1.000 trang"
 
-#: js/components/PageAccess.vue:213 js/components/PageBulkDialog.vue:258
+#: js/components/PageAccess.vue:213 js/components/PageBulkDialog.vue:244
 msgid "Apply recursively"
 msgstr "Áp dụng đệ quy"
 
-#: js/components/PageBulkDialog.vue:141
+#: js/components/PageBulkDialog.vue:139
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Áp dụng các thuộc tính đã chọn cho %{num} trang."
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:150
 msgid "Change status"
 msgstr "Thay đổi trạng thái"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:208
+#: js/components/PageBulkDialog.vue:155
+#: js/components/PageDetailItemProps.vue:219
 msgid "Status"
 msgstr "Trạng thái"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:208
+#: js/components/PageBulkDialog.vue:155
+#: js/components/PageDetailItemProps.vue:219
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1374,86 +1398,77 @@ msgstr ""
 "Trang bị tắt sẽ ngoại tuyến, trang bị ẩn vẫn trực tuyến nhưng không hiển thị "
 "trong thanh điều hướng"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:164
 msgid "Change cache time"
 msgstr "Thay đổi thời gian lưu bộ nhớ đệm"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:1228
+#: js/components/PageBulkDialog.vue:169
+#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageListItems.vue:1439
 msgid "Cache time"
 msgstr "Thời gian lưu trữ trong bộ nhớ đệm"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:325
+#: js/components/PageBulkDialog.vue:169
+#: js/components/PageDetailItemProps.vue:337
 msgid "How long the generated page is cached before it is created again"
 msgstr "Thời gian trang được tạo lưu trong bộ nhớ đệm trước khi được tạo lại"
 
-#: js/components/PageBulkDialog.vue:180
-msgid "Change language"
-msgstr "Thay đổi ngôn ngữ"
-
-#: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:222
-msgid "Language of the page content"
-msgstr "Ngôn ngữ của nội dung trang"
-
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:178
 msgid "Change theme"
 msgstr "Thay đổi giao diện"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:294
-#: js/components/PageListItems.vue:1216
+#: js/components/PageBulkDialog.vue:183
+#: js/components/PageDetailItemProps.vue:306
+#: js/components/PageListItems.vue:1427
 msgid "Theme"
 msgstr "Giao diện"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:294
+#: js/components/PageBulkDialog.vue:183
+#: js/components/PageDetailItemProps.vue:306
 msgid "Design used to display the page"
 msgstr "Thiết kế được dùng để hiển thị trang"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:190
 msgid "Change page type"
 msgstr "Thay đổi loại trang"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:303
-#: js/components/PageListItems.vue:1220
+#: js/components/PageBulkDialog.vue:195
+#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageListItems.vue:1431
 msgid "Page type"
 msgstr "Loại trang"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:303
+#: js/components/PageBulkDialog.vue:195
+#: js/components/PageDetailItemProps.vue:315
 msgid "Template of the theme which defines the page layout"
 msgstr "Mẫu của giao diện xác định bố cục trang"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:202
 msgid "Change tag"
 msgstr "Thay đổi thẻ"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:1224
+#: js/components/PageBulkDialog.vue:206
+#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageListItems.vue:1435
 msgid "Page tag"
 msgstr "Thẻ trang"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:314
+#: js/components/PageBulkDialog.vue:206
+#: js/components/PageDetailItemProps.vue:326
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Mã định danh nội bộ để tìm trang trong mẫu, ví dụ blog"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:215
 msgid "Change domain"
 msgstr "Thay đổi tên miền"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:279
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:291
 msgid "Domain"
 msgstr "Tên miền"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:279
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:291
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Tên miền mà trang có thể truy cập, ví dụ example.com"
 
@@ -1492,12 +1507,12 @@ msgid "Describe the task you want to perform"
 msgstr "Mô tả công việc bạn muốn thực hiện."
 
 #: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:140
+#: js/views/FileList.vue:89 js/views/PageList.vue:280
 msgid "Hide help"
 msgstr "Ẩn trợ giúp"
 
 #: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:140
+#: js/views/FileList.vue:89 js/views/PageList.vue:280
 msgid "Show help"
 msgstr "Hiển thị trợ giúp"
 
@@ -1510,7 +1525,7 @@ msgid "Refine content based on prompt"
 msgstr "Tinh chỉnh nội dung dựa trên lời nhắc"
 
 #: js/components/PageDetailContentList.vue:724 js/views/ElementList.vue:115
-#: js/views/FileList.vue:115 js/views/PageList.vue:166
+#: js/views/FileList.vue:115 js/views/PageList.vue:306
 msgid "Help"
 msgstr "Trợ giúp"
 
@@ -1528,13 +1543,13 @@ msgstr ""
 
 #: js/components/PageDetailContentList.vue:748
 #: js/components/PageDetailContentList.vue:834
-#: js/components/PageListItems.vue:1515 js/fields/Items.vue:304
+#: js/components/PageListItems.vue:1806 js/fields/Items.vue:304
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Cắt"
 
 #: js/components/PageDetailContentList.vue:751
-#: js/components/PageListItems.vue:339 js/components/PageListItems.vue:341
+#: js/components/PageListItems.vue:398 js/components/PageListItems.vue:400
 msgid "Paste"
 msgstr "Dán"
 
@@ -1615,39 +1630,43 @@ msgstr "URL không hợp lệ"
 msgid "Field is required"
 msgstr "Trường này là bắt buộc."
 
-#: js/components/PageDetailItemProps.vue:89
+#: js/components/PageDetailItemProps.vue:95
 msgid "The path is already in use by another page"
 msgstr "Đường dẫn này đã được sử dụng bởi một trang khác."
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:233
+msgid "Language of the page content"
+msgstr "Ngôn ngữ của nội dung trang"
+
+#: js/components/PageDetailItemProps.vue:247
 msgid "Page title"
 msgstr "Tiêu đề trang"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:247
 msgid "Shown in the browser tab and search results"
 msgstr "Hiển thị trên tab trình duyệt và kết quả tìm kiếm"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:258
 msgid "Page name"
 msgstr "Tên trang"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:258
 msgid "Short name shown in the navigation menus"
 msgstr "Tên ngắn hiển thị trong menu điều hướng"
 
-#: js/components/PageDetailItemProps.vue:262
+#: js/components/PageDetailItemProps.vue:274
 msgid "URL path"
 msgstr "Đường dẫn URL"
 
-#: js/components/PageDetailItemProps.vue:262
+#: js/components/PageDetailItemProps.vue:274
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Phần của URL trang sau tên miền, ví dụ about-us"
 
-#: js/components/PageDetailItemProps.vue:341
+#: js/components/PageDetailItemProps.vue:353
 msgid "Redirect URL"
 msgstr "URL chuyển hướng"
 
-#: js/components/PageDetailItemProps.vue:341
+#: js/components/PageDetailItemProps.vue:353
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Khách truy cập sẽ được chuyển hướng đến URL này thay vì xem trang"
 
@@ -1791,154 +1810,215 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Vị trí"
 
-#: js/components/PageListItems.vue:345
+#: js/components/PageListItems.vue:404
 msgid "Insert"
 msgstr "Chèn"
 
-#: js/components/PageListItems.vue:353
+#: js/components/PageListItems.vue:412
 msgid "Before"
 msgstr "Trước"
 
-#: js/components/PageListItems.vue:354
+#: js/components/PageListItems.vue:413
 msgid "Into"
 msgstr "Vào"
 
-#: js/components/PageListItems.vue:355
+#: js/components/PageListItems.vue:414
 msgid "After"
 msgstr "Sau"
 
-#: js/components/PageListItems.vue:417
+#: js/components/PageListItems.vue:435 js/views/PageList.vue:205
+msgid "Error fetching translation states"
+msgstr "Lỗi khi tải trạng thái bản dịch"
+
+#: js/components/PageListItems.vue:442
+msgid "Translating into %{langs}"
+msgstr "Đang dịch sang %{langs}"
+
+#: js/components/PageListItems.vue:450 js/components/PageListItems.vue:1907
+#: js/views/PageDetail.vue:757 js/views/PageList.vue:137
+msgid "Needs update"
+msgstr "Cần cập nhật"
+
+#: js/components/PageListItems.vue:451 js/views/PageList.vue:143
+msgid "Missing"
+msgstr "Còn thiếu"
+
+#: js/components/PageListItems.vue:452 js/views/PageList.vue:149
+msgid "AI draft"
+msgstr "Bản nháp AI"
+
+#: js/components/PageListItems.vue:455 js/views/PageDetail.vue:756
+msgid "Up to date"
+msgstr "Đã cập nhật"
+
+#: js/components/PageListItems.vue:514
 msgid "Error adding root page"
 msgstr "Lỗi khi thêm trang gốc"
 
-#: js/components/PageListItems.vue:437
+#: js/components/PageListItems.vue:534
 msgid "Page moved"
 msgstr "Đã di chuyển trang"
 
-#: js/components/PageListItems.vue:508
+#: js/components/PageListItems.vue:605
 msgid "Cache cleared"
 msgstr "Đã xóa bộ nhớ đệm"
 
-#: js/components/PageListItems.vue:509
+#: js/components/PageListItems.vue:606
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Đã xóa bộ nhớ đệm cho %{num} trang."
 
-#: js/components/PageListItems.vue:519
+#: js/components/PageListItems.vue:616
 msgid "Error clearing cache"
 msgstr "Lỗi xóa bộ nhớ đệm"
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:672 js/views/PageDetail.vue:611
+msgid "Error adding language"
+msgstr "Lỗi khi thêm ngôn ngữ"
+
+#: js/components/PageListItems.vue:693
 msgid "Error trashing page"
 msgstr "Lỗi khi chuyển trang vào thùng rác"
 
-#: js/components/PageListItems.vue:589 js/components/PageListItems.vue:726
+#: js/components/PageListItems.vue:721 js/variants.js:237
+msgid "Error restoring language"
+msgstr "Lỗi khôi phục ngôn ngữ"
+
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:866
 msgid "Error restoring page"
 msgstr "Lỗi khôi phục trang"
 
-#: js/components/PageListItems.vue:597 js/lists.js:237
+#: js/components/PageListItems.vue:730 js/lists.js:241
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "Đã chuyển %{num} mục vào thùng rác"
 
-#: js/components/PageListItems.vue:649
+#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:1180
 msgid "Error fetching pages"
 msgstr "Lỗi khi tải trang"
 
-#: js/components/PageListItems.vue:700
+#: js/components/PageListItems.vue:838
 msgid "Error inserting page"
 msgstr "Lỗi khi chèn trang"
 
-#: js/components/PageListItems.vue:805
+#: js/components/PageListItems.vue:945
 msgid "Error moving page"
 msgstr "Lỗi di chuyển trang"
 
-#: js/components/PageListItems.vue:919
-msgid "Error copying page"
-msgstr "Lỗi sao chép trang"
-
-#: js/components/PageListItems.vue:923 js/views/PageDetail.vue:204
+#: js/components/PageListItems.vue:1068 js/views/PageDetail.vue:272
 msgid "Error fetching page"
 msgstr "Lỗi khi tải trang"
 
-#: js/components/PageListItems.vue:967 js/detail.js:61
+#: js/components/PageListItems.vue:1082
+msgid "Error copying page"
+msgstr "Lỗi sao chép trang"
+
+#: js/components/PageListItems.vue:1128 js/detail.js:61
 msgid "Error publishing page"
 msgstr "Lỗi khi xuất bản trang"
 
-#: js/components/PageListItems.vue:986
+#: js/components/PageListItems.vue:1147
 msgid "All subpages of these pages will be purged as well."
 msgstr "Tất cả trang con của các trang này cũng sẽ bị xóa vĩnh viễn."
 
-#: js/components/PageListItems.vue:995
+#: js/components/PageListItems.vue:1156
 msgid "Error purging page"
 msgstr "Lỗi khi xóa trang vĩnh viễn"
 
-#: js/components/PageListItems.vue:1129
+#: js/components/PageListItems.vue:1334
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "Không thể cập nhật %{num} trang"
 
-#: js/components/PageListItems.vue:1140 js/components/PageListItems.vue:1193
-#: js/views/PageDetail.vue:494
+#: js/components/PageListItems.vue:1345 js/components/PageListItems.vue:1400
+#: js/views/PageDetail.vue:573
 msgid "Error saving page"
 msgstr "Lỗi khi lưu trang"
 
-#: js/components/PageListItems.vue:1150
+#: js/components/PageListItems.vue:1355
 msgid "Error searching pages"
 msgstr "Lỗi tìm kiếm trang"
 
-#: js/components/PageListItems.vue:1228 js/utils.js:37
+#: js/components/PageListItems.vue:1439 js/utils.js:37
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} phút"
 
-#: js/components/PageListItems.vue:1355 js/components/PageListItems.vue:1489
+#: js/components/PageListItems.vue:1570 js/components/PageListItems.vue:1780
 msgctxt "page status"
 msgid "Enable"
 msgstr "Bật"
 
-#: js/components/PageListItems.vue:1358 js/components/PageListItems.vue:1495
+#: js/components/PageListItems.vue:1573 js/components/PageListItems.vue:1786
 msgctxt "page status"
 msgid "Disable"
 msgstr "Vô hiệu hóa"
 
-#: js/components/PageListItems.vue:1368 js/components/PageListItems.vue:1509
+#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1800
 msgid "Clear cache"
 msgstr "Xóa bộ nhớ đệm"
 
-#: js/components/PageListItems.vue:1389 js/components/PageListItems.vue:1606
+#: js/components/PageListItems.vue:1615 js/components/PageListItems.vue:1857
+msgid "Ignore changes"
+msgstr "Bỏ qua thay đổi"
+
+#: js/components/PageListItems.vue:1624 js/components/PageListItems.vue:1866
+msgid "Delete this language"
+msgstr "Xóa ngôn ngữ này"
+
+#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1874
+msgid "Restore this language"
+msgstr "Khôi phục ngôn ngữ này"
+
+#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1882
+msgid "Purge this language"
+msgstr "Xóa vĩnh viễn ngôn ngữ này"
+
+#: js/components/PageListItems.vue:1650 js/components/PageListItems.vue:1967
 msgid "Add page"
 msgstr "Thêm trang"
 
-#: js/components/PageListItems.vue:1413
+#: js/components/PageListItems.vue:1684
 msgid "Reload page tree"
 msgstr "Tải lại cây trang"
 
-#: js/components/PageListItems.vue:1437
+#: js/components/PageListItems.vue:1705
+msgid "Translating %{done} of %{total}"
+msgstr "Đang dịch %{done} trên %{total}"
+
+#: js/components/PageListItems.vue:1720
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Sử dụng các phím mũi tên để di chuyển. Nhấn phím Alt cùng với các phím mũi "
 "tên để sắp xếp lại thứ tự."
 
-#: js/components/PageListItems.vue:1439
+#: js/components/PageListItems.vue:1722
 msgid "Moved to position %{position} of %{total}"
 msgstr "Đã chuyển đến vị trí %{position} trong tổng số %{total}"
 
-#: js/components/PageListItems.vue:1441
+#: js/components/PageListItems.vue:1724
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "Đã giảm thụt lề xuống cấp %{level}, vị trí %{position} trong tổng số %{total}"
 
-#: js/components/PageListItems.vue:1447
+#: js/components/PageListItems.vue:1730
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "Đã tăng thụt lề lên cấp %{level}, vị trí %{position} trong tổng số %{total}"
 
-#: js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1750
 msgid "Toggle child nodes"
 msgstr "Bật/tắt các nút con"
 
-#: js/components/PageListItems.vue:1624
+#: js/components/PageListItems.vue:1766
+msgid "Create in %{lang}"
+msgstr "Tạo bằng %{lang}"
+
+#: js/components/PageListItems.vue:1935 js/views/PageDetail.vue:759
+msgid "Create"
+msgstr "Tạo"
+
+#: js/components/PageListItems.vue:1994
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Áp dụng cài đặt quyền truy cập cho %{num} trang."
@@ -1948,7 +2028,7 @@ msgid "You are not signed in yet"
 msgstr "Bạn chưa đăng nhập"
 
 #: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
-#: js/stores.js:335 js/views/Login.vue:146
+#: js/stores.js:338 js/views/Login.vue:146
 msgid "Login failed"
 msgstr "Đăng nhập thất bại"
 
@@ -2003,13 +2083,17 @@ msgstr "Tiếp tục"
 msgid "Login"
 msgstr "Đăng nhập"
 
-#: js/components/SchemaDialog.vue:33
+#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "Các phần tử nội dung"
 
-#: js/components/SchemaDialog.vue:38
+#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "Phần tử mới"
+
+#: js/components/SchemaDialog.vue:59
+msgid "Only elements in %{lang}"
+msgstr "Chỉ các phần tử bằng %{lang}"
 
 #: js/components/SchemaItems.vue:106
 msgid "Uncategorized"
@@ -2091,6 +2175,42 @@ msgstr "Xuống dòng"
 msgid "Recall previous messages"
 msgstr "Gọi lại tin nhắn trước"
 
+#: js/components/TranslateDialog.vue:81
+msgid "Translate into"
+msgstr "Dịch sang"
+
+#: js/components/TranslateDialog.vue:83
+msgid "Languages"
+msgstr "Ngôn ngữ"
+
+#: js/components/TranslateDialog.vue:100
+msgid "Selected page (%{num})"
+msgid_plural "Selected pages (%{num})"
+msgstr[0] "Trang đã chọn (%{num})"
+
+#: js/components/TranslateDialog.vue:107
+msgid "All pages matching the filter (%{num})"
+msgstr "Tất cả trang khớp với bộ lọc (%{num})"
+
+#: js/components/TranslateDialog.vue:108
+msgid "All pages (%{num})"
+msgstr "Tất cả trang (%{num})"
+
+#: js/components/TranslateDialog.vue:114
+msgid "%{num} page selected."
+msgid_plural "%{num} pages selected."
+msgstr[0] "Đã chọn %{num} trang."
+
+#: js/components/TranslateDialog.vue:119
+msgid ""
+"Only missing and outdated translations are created. Pages in their source "
+"language and up to date translations are skipped. The translations run in "
+"the background and are saved as drafts for review."
+msgstr ""
+"Chỉ các bản dịch còn thiếu và đã lỗi thời mới được tạo. Các trang ở ngôn ngữ "
+"nguồn và các bản dịch đã cập nhật sẽ bị bỏ qua. Các bản dịch chạy ở chế độ "
+"nền và được lưu dưới dạng bản nháp để xem xét."
+
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Các thay đổi chưa được lưu"
@@ -2153,11 +2273,11 @@ msgstr "Trang đã được xuất bản thành công."
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Trang được lên lịch xuất bản vào lúc %{date}"
 
-#: js/detail.js:303 js/fields/Autocomplete.vue:176
+#: js/detail.js:308 js/fields/Autocomplete.vue:176
 msgid "No data available"
 msgstr "Không có dữ liệu"
 
-#: js/detail.js:337
+#: js/detail.js:342
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Có các trường không hợp lệ, vui lòng khắc phục các lỗi trước."
 
@@ -2225,31 +2345,31 @@ msgstr "Di chuyển hàng"
 msgid "Row actions"
 msgstr "Các thao tác trên hàng"
 
-#: js/fields/Url.vue:56 js/utils.js:280
+#: js/fields/Url.vue:61 js/utils.js:280
 msgid "None"
 msgstr "Không có"
 
-#: js/fields/Url.vue:57
+#: js/fields/Url.vue:62
 msgid "Sponsored"
 msgstr "Được tài trợ"
 
-#: js/fields/Url.vue:58
+#: js/fields/Url.vue:63
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:70
+#: js/fields/Url.vue:75
 msgid "Not a valid URL"
 msgstr "Đây không phải là một URL hợp lệ."
 
-#: js/fields/Url.vue:80
+#: js/fields/Url.vue:85
 msgid "Invalid URL schema configuration"
 msgstr "Cấu hình lược đồ URL không hợp lệ"
 
-#: js/fields/Url.vue:144
+#: js/fields/Url.vue:150
 msgid "No pages found"
 msgstr "Không tìm thấy trang nào"
 
-#: js/fields/Url.vue:156
+#: js/fields/Url.vue:162
 msgid "Link attribute"
 msgstr "Thuộc tính liên kết"
 
@@ -2258,7 +2378,8 @@ msgid "publish"
 msgstr "xuất bản"
 
 #: js/listview.js:105 js/listview.js:115 js/listview.js:124 js/utils.js:267
-#: js/views/PageList.vue:69 js/views/PageList.vue:79
+#: js/views/PageList.vue:114 js/views/PageList.vue:124
+#: js/views/PageList.vue:135
 msgid "All"
 msgstr "Tất cả"
 
@@ -2336,17 +2457,34 @@ msgid "At most %{num} column is allowed"
 msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Cho phép tối đa %{num} cột."
 
-#: js/stores.js:494
+#: js/stores.js:497
 msgid "Failed to save user settings"
 msgstr "Không thể lưu cài đặt người dùng"
 
-#: js/stores.js:550
+#: js/stores.js:553
 msgid "Failed to load plugin"
 msgstr "Không thể tải plugin"
 
-#: js/stores.js:657
+#: js/stores.js:660
 msgid "Permission denied"
 msgstr "Quyền truy cập bị từ chối"
+
+#: js/stores.js:1062
+msgid "Error fetching translation progress"
+msgstr "Lỗi khi tải tiến độ dịch"
+
+#: js/stores.js:1080
+msgid "Translation is still running in the background"
+msgstr "Quá trình dịch vẫn đang chạy ở chế độ nền"
+
+#: js/stores.js:1083
+msgid "%{num} translation failed"
+msgid_plural "%{num} translations failed"
+msgstr[0] "%{num} bản dịch thất bại"
+
+#: js/stores.js:1089
+msgid "Translation finished"
+msgstr "Đã dịch xong"
 
 #: js/strings.js:32
 msgctxt "cs"
@@ -3659,7 +3797,9 @@ msgctxt "fh"
 msgid ""
 "Show the steps one below the other or side by side, side by side suits up to "
 "five steps"
-msgstr "Hiển thị các bước xếp chồng hoặc cạnh nhau, cạnh nhau phù hợp với tối đa năm bước"
+msgstr ""
+"Hiển thị các bước xếp chồng hoặc cạnh nhau, cạnh nhau phù hợp với tối đa năm "
+"bước"
 
 #: js/strings.js:308
 msgctxt "fh"
@@ -3670,7 +3810,9 @@ msgstr "Các bước hoặc sự kiện theo thứ tự diễn ra"
 msgctxt "fh"
 msgid ""
 "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
-msgstr "Ngày, khoảng thời gian hoặc giai đoạn tùy chọn hiển thị phía trên tiêu đề, ví dụ 2024 hoặc Tuần 1"
+msgstr ""
+"Ngày, khoảng thời gian hoặc giai đoạn tùy chọn hiển thị phía trên tiêu đề, "
+"ví dụ 2024 hoặc Tuần 1"
 
 #: js/strings.js:310
 msgctxt "fh"
@@ -4160,7 +4302,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Biểu tượng"
 
-#: js/utils.js:36 js/views/PageList.vue:80
+#: js/utils.js:36 js/views/PageList.vue:125
 msgid "No cache"
 msgstr "Không lưu vào bộ nhớ đệm"
 
@@ -4169,17 +4311,56 @@ msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} giờ"
 
-#: js/utils.js:317 js/views/PageList.vue:72
+#: js/utils.js:317 js/views/PageList.vue:117
 msgid "Disabled"
 msgstr "Đã tắt"
 
-#: js/utils.js:318 js/views/PageList.vue:70
+#: js/utils.js:318 js/views/PageList.vue:115
 msgid "Enabled"
 msgstr "Đã bật"
 
 #: js/utils.js:319
 msgid "Hidden in navigation"
 msgstr "Ẩn trong thanh điều hướng"
+
+#: js/variants.js:190
+msgid "Pages in their source language are deleted as whole pages only"
+msgstr "Các trang ở ngôn ngữ nguồn chỉ có thể bị xóa toàn bộ trang"
+
+#: js/variants.js:198
+msgid "Delete language"
+msgstr "Xóa ngôn ngữ"
+
+#: js/variants.js:199
+msgid "Move %{num} page in \"%{lang}\" to the trash?"
+msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
+msgstr[0] "Chuyển %{num} trang bằng \"%{lang}\" vào thùng rác?"
+
+#: js/variants.js:207
+msgid "%{num} page in its source language is skipped."
+msgid_plural "%{num} pages in their source language are skipped."
+msgstr[0] "Đã bỏ qua %{num} trang ở ngôn ngữ nguồn."
+
+#: js/variants.js:221
+msgid "Error trashing language"
+msgstr "Lỗi khi chuyển ngôn ngữ vào thùng rác"
+
+#: js/variants.js:259
+msgid "Error purging language"
+msgstr "Lỗi khi xóa vĩnh viễn ngôn ngữ"
+
+#: js/variants.js:281
+msgid "Error ignoring changes"
+msgstr "Lỗi khi bỏ qua thay đổi"
+
+#: js/variants.js:354
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
+msgstr "Không có gì để dịch, các trang đã được cập nhật hoặc đang được dịch"
+
+#: js/variants.js:361
+msgid "Error translating pages"
+msgstr "Lỗi khi dịch các trang"
 
 #: js/views/AccessList.vue:170
 msgid "Error adding access value"
@@ -4198,13 +4379,13 @@ msgid "Error purging access values"
 msgstr "Lỗi khi xóa giá trị truy cập vĩnh viễn"
 
 #: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:96
+#: js/views/FileList.vue:45 js/views/PageList.vue:236
 #: js/views/PluginPanel.vue:70
 msgid "Close navigation"
 msgstr "Đóng thanh điều hướng"
 
 #: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:96
+#: js/views/FileList.vue:45 js/views/PageList.vue:236
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
 msgstr "Mở thanh điều hướng"
@@ -4251,7 +4432,7 @@ msgid "Used by"
 msgstr "Được sử dụng bởi"
 
 #: js/views/ElementList.vue:74 js/views/FileList.vue:74
-#: js/views/PageList.vue:125
+#: js/views/PageList.vue:265
 msgid "Press Enter to open the chat"
 msgstr "Nhấn Enter để mở cuộc trò chuyện"
 
@@ -4262,7 +4443,7 @@ msgstr ""
 "đầu vào của bạn."
 
 #: js/views/ElementList.vue:117 js/views/FileList.vue:117
-#: js/views/PageList.vue:176
+#: js/views/PageList.vue:316
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Nhấn Enter hoặc mũi tên để mở trợ lý AI và tinh chỉnh nội dung trong cuộc "
@@ -4303,7 +4484,7 @@ msgstr "Truy cập bị từ chối"
 msgid "Error"
 msgstr "Lỗi"
 
-#: js/views/PageDetail.vue:150
+#: js/views/PageDetail.vue:190
 msgid ""
 "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
 "page\", use get-page with that ID."
@@ -4311,67 +4492,109 @@ msgstr ""
 "Người dùng đang xem trang có ID \"%{id}\". Khi họ đề cập đến \"trang này\", "
 "hãy dùng get-page với ID đó."
 
-#: js/views/PageDetail.vue:429 js/views/PageDetail.vue:623
+#: js/views/PageDetail.vue:502 js/views/PageDetail.vue:769
 msgid "Rate this page and suggest improvements"
 msgstr "Đánh giá trang này và đề xuất các cải tiến"
 
-#: js/views/PageDetail.vue:479
+#: js/views/PageDetail.vue:558
 msgid "Page saved successfully"
 msgstr "Trang đã được lưu thành công."
 
-#: js/views/PageDetail.vue:505
-msgid "No page schema for \"content\" found"
-msgstr "Không tìm thấy lược đồ trang cho \"content\"."
+#: js/views/PageDetail.vue:634
+msgid "Marked as up to date"
+msgstr "Đã đánh dấu là đã cập nhật"
 
-#: js/views/PageDetail.vue:618 js/views/PageDetail.vue:651
-#: js/views/PageDetail.vue:670
+#: js/views/PageDetail.vue:637
+msgid "Error marking as up to date"
+msgstr "Lỗi khi đánh dấu là đã cập nhật"
+
+#: js/views/PageDetail.vue:658
+msgid ""
+"Nothing to translate, the page is up to date or already being translated"
+msgstr "Không có gì để dịch, trang đã được cập nhật hoặc đang được dịch"
+
+#: js/views/PageDetail.vue:665
+msgid "Translation saved as draft, review the changes"
+msgstr "Bản dịch đã được lưu dưới dạng bản nháp, hãy xem lại các thay đổi"
+
+#: js/views/PageDetail.vue:669
+msgid "Error translating page"
+msgstr "Lỗi khi dịch trang"
+
+#: js/views/PageDetail.vue:732 js/views/PageDetail.vue:791
+#: js/views/PageDetail.vue:810
 msgid "Page"
 msgstr "Trang"
 
-#: js/views/PageDetail.vue:628
-msgid "Translate page"
-msgstr "Dịch trang"
+#: js/views/PageDetail.vue:754
+msgid "Source"
+msgstr "Nguồn"
 
-#: js/views/PageDetail.vue:656
+#: js/views/PageDetail.vue:758
+msgid "Trashed"
+msgstr "Trong thùng rác"
+
+#: js/views/PageDetail.vue:777
+msgid "Translate changes of the source language"
+msgstr "Dịch các thay đổi của ngôn ngữ nguồn"
+
+#: js/views/PageDetail.vue:784
+msgid "Ignore changes of the source language"
+msgstr "Bỏ qua các thay đổi của ngôn ngữ nguồn"
+
+#: js/views/PageDetail.vue:796
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Trình biên tập"
 
-#: js/views/PageDetail.vue:673
+#: js/views/PageDetail.vue:813
 msgid "Metrics"
 msgstr "Chỉ số"
 
-#: js/views/PageList.vue:57
+#: js/views/PageList.vue:102
 msgid "view"
 msgstr "Chế độ xem"
 
-#: js/views/PageList.vue:60
+#: js/views/PageList.vue:105
 msgid "List"
 msgstr "Danh sách"
 
-#: js/views/PageList.vue:67
+#: js/views/PageList.vue:112
 msgid "status"
 msgstr "trạng thái"
 
-#: js/views/PageList.vue:71
+#: js/views/PageList.vue:116
 msgid "Hidden"
 msgstr "Ẩn"
 
-#: js/views/PageList.vue:77
+#: js/views/PageList.vue:122
 msgid "cache"
 msgstr "bộ nhớ đệm"
 
-#: js/views/PageList.vue:151
+#: js/views/PageList.vue:133
+msgid "translation"
+msgstr "bản dịch"
+
+#: js/views/PageList.vue:291
 msgid "Generate page based on prompt"
 msgstr "Tạo trang dựa trên lời nhắc"
 
-#: js/views/PageList.vue:169
+#: js/views/PageList.vue:309
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr ""
 "AI có thể tạo trang và nội dung dựa trên đầu vào của bạn và thêm trang vào "
 "cây trang."
+
+#~ msgid "Change language"
+#~ msgstr "Thay đổi ngôn ngữ"
+
+#~ msgid "No page schema for \"content\" found"
+#~ msgstr "Không tìm thấy lược đồ trang cho \"content\"."
+
+#~ msgid "Translate page"
+#~ msgstr "Dịch trang"
 
 #~ msgctxt "sd"
 #~ msgid "Contact form with configurable fields"

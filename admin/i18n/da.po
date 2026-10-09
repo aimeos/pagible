@@ -106,7 +106,7 @@ msgstr "Indsæt side"
 
 #: js/commands.js:178 js/components/CommandPalette.vue:106
 #: js/components/DetailRefs.vue:128 js/components/Navigation.vue:30
-#: js/views/PageList.vue:102 js/views/PageList.vue:119
+#: js/views/PageList.vue:242 js/views/PageList.vue:259
 msgid "Pages"
 msgstr "Sider"
 
@@ -126,7 +126,7 @@ msgid "Go to media"
 msgstr "Gå til medier"
 
 #: js/commands.js:190 js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:39
+#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:48
 #: js/views/ElementList.vue:51
 msgid "Shared elements"
 msgstr "Delte elementer"
@@ -293,7 +293,7 @@ msgid "Configuration"
 msgstr "Konfiguration"
 
 #: js/components/ChangesDialog.vue:61 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:663
+#: js/views/PageDetail.vue:803
 msgid "Content"
 msgstr "Indhold"
 
@@ -351,7 +351,7 @@ msgid "New chat"
 msgstr "Ny chat"
 
 #: js/components/ChatDialog.vue:330 js/views/ElementList.vue:74
-#: js/views/FileList.vue:74 js/views/PageList.vue:125
+#: js/views/FileList.vue:74 js/views/PageList.vue:265
 msgid "What shall I do for you?"
 msgstr "Hvad kan jeg gøre for dig?"
 
@@ -361,7 +361,7 @@ msgstr "Tænker ..."
 
 #: js/components/ChatDialog.vue:353 js/components/PageDetailContentList.vue:745
 #: js/components/PageDetailContentList.vue:831
-#: js/components/PageListItems.vue:1518 js/fields/Items.vue:303
+#: js/components/PageListItems.vue:1809 js/fields/Items.vue:303
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopiér"
@@ -375,7 +375,7 @@ msgstr "Send en besked..."
 #: js/components/FileDetailItem.vue:416
 #: js/components/PageDetailContentList.vue:716 js/fields/Items.vue:372
 #: js/views/ElementList.vue:107 js/views/FileList.vue:107
-#: js/views/PageList.vue:158
+#: js/views/PageList.vue:298
 msgid "Dictate"
 msgstr "Diktér"
 
@@ -393,7 +393,7 @@ msgid "Go to"
 msgstr "Gå til"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1573
+#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1923
 msgid "New"
 msgstr "Ny"
 
@@ -424,9 +424,9 @@ msgstr "Ingen resultater"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:216
-#: js/components/FileListItems.vue:354 js/components/PageListItems.vue:1380
-#: js/components/PageListItems.vue:1546 js/views/AccessList.vue:279
+#: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:309
+#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1595
+#: js/components/PageListItems.vue:1837 js/views/AccessList.vue:279
 msgid "Purge"
 msgstr "Slet permanent"
 
@@ -440,13 +440,14 @@ msgstr[1] ""
 "Følgende %{num} poster bliver slettet permanent og kan ikke gendannes:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:597
-#: js/components/UnsavedDialog.vue:56 js/views/AccessList.vue:346
+#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
+#: js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "Annuller"
 
 #: js/components/DetailAppBar.vue:156 js/views/AccessList.vue:231
 #: js/views/ElementList.vue:41 js/views/FileList.vue:41
-#: js/views/PageList.vue:92 js/views/PluginPanel.vue:66
+#: js/views/PageList.vue:232 js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "Menu"
 
@@ -460,9 +461,9 @@ msgstr "Vis flettede ændringer"
 
 #: js/components/DetailAppBar.vue:210 js/components/DetailAppBar.vue:226
 #: js/components/DetailAppBar.vue:230 js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:204
-#: js/components/FileListItems.vue:329 js/components/PageListItems.vue:1352
-#: js/components/PageListItems.vue:1482
+#: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:287
+#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1567
+#: js/components/PageListItems.vue:1773
 msgid "Publish"
 msgstr "Udgiv"
 
@@ -479,7 +480,7 @@ msgid "Schedule & Close"
 msgstr "Planlæg og luk"
 
 #: js/components/DetailAppBar.vue:281 js/views/ElementList.vue:59
-#: js/views/FileList.vue:59 js/views/PageList.vue:110
+#: js/views/FileList.vue:59 js/views/PageList.vue:250
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "Vis/skjul sidemenu"
@@ -503,7 +504,7 @@ msgid "Name"
 msgstr "Navn"
 
 #: js/components/DetailRefs.vue:147 js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:388
+#: js/components/PageListItems.vue:485
 msgid "Restricted"
 msgstr "Begrænset"
 
@@ -525,9 +526,9 @@ msgid "Published"
 msgstr "Udgivet"
 
 #: js/components/EditBulkDialog.vue:53 js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:207
-#: js/components/FileListItems.vue:339 js/components/PageBulkDialog.vue:135
-#: js/components/PageListItems.vue:1362 js/components/PageListItems.vue:1503
+#: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:290
+#: js/components/FileListItems.vue:432 js/components/PageBulkDialog.vue:133
+#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1794
 msgid "Edit properties"
 msgstr "Rediger egenskaber"
 
@@ -539,8 +540,8 @@ msgstr[1] "Anvend de valgte egenskaber på %{num} poster."
 
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:79
 #: js/components/FileDetailItem.vue:338 js/components/ListSort.vue:28
-#: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:222
+#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageListItems.vue:1663 js/views/PageDetail.vue:735
 msgid "Language"
 msgstr "Sprog"
 
@@ -549,7 +550,7 @@ msgid "Language of the content"
 msgstr "Sprog for indholdet"
 
 #: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:250
+#: js/components/PageBulkDialog.vue:236
 msgid "Apply"
 msgstr "Anvend"
 
@@ -585,24 +586,24 @@ msgstr "Fejl ved lagring af delt element"
 msgid "Error fetching shared elements"
 msgstr "Fejl ved hentning af delte elementer"
 
-#: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:189
+#: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:272
 #: js/components/PageDetailContentList.vue:732
-#: js/components/PageListItems.vue:1336 js/views/AccessList.vue:274
+#: js/components/PageListItems.vue:1551 js/views/AccessList.vue:274
 #: js/views/AccessList.vue:318
 msgid "Toggle selection"
 msgstr "Vælg/fravælg"
 
 #: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:210
-#: js/components/FileListItems.vue:345 js/components/PageListItems.vue:1374
-#: js/components/PageListItems.vue:1537
+#: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:303
+#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1589
+#: js/components/PageListItems.vue:1828
 msgid "Delete"
 msgstr "Slet"
 
 #: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:213
-#: js/components/FileListItems.vue:351 js/components/PageListItems.vue:1377
-#: js/components/PageListItems.vue:1543
+#: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:306
+#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1592
+#: js/components/PageListItems.vue:1834
 msgid "Restore"
 msgstr "Gendan"
 
@@ -613,19 +614,19 @@ msgstr "Gendan"
 msgid "Add element"
 msgstr "Tilføj element"
 
-#: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:250
+#: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:343
 #: js/components/PageDetailContentList.vue:765
-#: js/components/PageListItems.vue:1401 js/components/SchemaItems.vue:140
+#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:140
 #: js/views/AccessList.vue:303
 msgid "Search for"
 msgstr "Søg efter"
 
-#: js/components/ElementListItems.vue:263 js/components/FileListItems.vue:263
+#: js/components/ElementListItems.vue:263 js/components/FileListItems.vue:356
 msgid "Updated by another user"
 msgstr "Opdateret af en anden bruger"
 
-#: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:269
-#: js/components/PageListItems.vue:1419
+#: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:362
+#: js/components/PageListItems.vue:1690
 msgid "Refresh"
 msgstr "Opdater"
 
@@ -634,6 +635,8 @@ msgid "Reload elements"
 msgstr "Genindlæs elementer"
 
 #: js/components/Fields.vue:242 js/components/Fields.vue:248
+#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1844
+#: js/components/TranslateDialog.vue:77 js/components/TranslateDialog.vue:128
 #: js/fields/Items.vue:337 js/fields/Items.vue:343
 msgid "Translate"
 msgstr "Oversæt"
@@ -705,7 +708,7 @@ msgstr "Rediger"
 msgid "Remove"
 msgstr "Fjern"
 
-#: js/components/FileAiDialog.vue:116 js/components/FileListItems.vue:136
+#: js/components/FileAiDialog.vue:116 js/components/FileListItems.vue:153
 #: js/components/FileUrlDialog.vue:59 js/components/FileUrlDialog.vue:158
 #: js/fields/File.vue:102 js/fields/Images.vue:95
 msgid "Error adding file %{path}"
@@ -751,7 +754,7 @@ msgstr "Kopieret til udklipsholderen"
 msgid "Error describing file"
 msgstr "Fejl ved beskrivelse af fil"
 
-#: js/components/FileDetailItem.vue:174 js/components/FileListItems.vue:152
+#: js/components/FileDetailItem.vue:174 js/components/FileListItems.vue:169
 #: js/fields/File.vue:184 js/fields/Images.vue:185 js/views/FileDetail.vue:218
 msgid "Error saving file"
 msgstr "Fejl ved lagring af fil"
@@ -942,8 +945,8 @@ msgstr "Download"
 
 #: js/components/FileDetailItemImage.vue:783
 #: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:438 js/components/PageListItems.vue:587
-#: js/lists.js:243
+#: js/components/PageListItems.vue:535 js/components/PageListItems.vue:719
+#: js/lists.js:247
 msgid "Undo"
 msgstr "Fortryd"
 
@@ -983,47 +986,69 @@ msgstr "Brug som coverbillede"
 msgid "Upload cover image"
 msgstr "Upload coverbillede"
 
-#: js/components/FileListItems.vue:148
+#: js/components/FileListItems.vue:165
 msgid "Error trashing file"
 msgstr "Fejl ved flytning af filen til papirkurven"
 
-#: js/components/FileListItems.vue:149
+#: js/components/FileListItems.vue:166
 msgid "Error restoring file"
 msgstr "Fejl ved gendannelse af fil"
 
-#: js/components/FileListItems.vue:150 js/detail.js:55
+#: js/components/FileListItems.vue:167 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Fejl ved udgivelse af fil"
 
-#: js/components/FileListItems.vue:151
+#: js/components/FileListItems.vue:168
 msgid "Error purging file"
 msgstr "Fejl ved permanent sletning af filen"
 
-#: js/components/FileListItems.vue:153
+#: js/components/FileListItems.vue:170
 msgid "Error fetching files"
 msgstr "Fejl ved hentning af filer"
 
-#: js/components/FileListItems.vue:226 js/components/FileListItems.vue:236
-#: js/components/FileListItems.vue:449 js/components/FileListItems.vue:459
+#: js/components/FileListItems.vue:237
+msgid "Descriptions of %{num} file translated"
+msgid_plural "Descriptions of %{num} files translated"
+msgstr[0] "Beskrivelser af %{num} fil oversat"
+msgstr[1] "Beskrivelser af %{num} filer oversat"
+
+#: js/components/FileListItems.vue:247
+msgid "Error translating descriptions after %{done} of %{total} files"
+msgstr "Fejl ved oversættelse af beskrivelser efter %{done} af %{total} filer"
+
+#: js/components/FileListItems.vue:248
+msgid "Error translating descriptions"
+msgstr "Fejl ved oversættelse af beskrivelser"
+
+#: js/components/FileListItems.vue:253
+msgid "No missing descriptions to translate"
+msgstr "Ingen manglende beskrivelser at oversætte"
+
+#: js/components/FileListItems.vue:299 js/components/FileListItems.vue:441
+msgid "Translate descriptions"
+msgstr "Oversæt beskrivelser"
+
+#: js/components/FileListItems.vue:319 js/components/FileListItems.vue:329
+#: js/components/FileListItems.vue:552 js/components/FileListItems.vue:562
 #: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:297
 #: js/fields/Images.vue:321
 msgid "Add files"
 msgstr "Tilføj filer"
 
-#: js/components/FileListItems.vue:236 js/components/FileListItems.vue:419
-#: js/components/FileListItems.vue:459 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:329 js/components/FileListItems.vue:522
+#: js/components/FileListItems.vue:562 js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "Beskyt med sideadgang"
 
-#: js/components/FileListItems.vue:275
+#: js/components/FileListItems.vue:368
 msgid "Reload files"
 msgstr "Genindlæs filer"
 
-#: js/components/FileListItems.vue:284
+#: js/components/FileListItems.vue:377
 msgid "Grid view"
 msgstr "Gittervisning"
 
-#: js/components/FileListItems.vue:292
+#: js/components/FileListItems.vue:385
 msgid "List view"
 msgstr "Listevisning"
 
@@ -1156,7 +1181,7 @@ msgstr "Historik"
 
 #: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:5
 #: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:177
-#: js/fields/Url.vue:144
+#: js/fields/Url.vue:150
 msgid "Loading"
 msgstr "Indlæser"
 
@@ -1172,8 +1197,8 @@ msgstr "Prøv igen"
 msgid "Current changes"
 msgstr "Aktuelle ændringer"
 
-#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1212
-#: js/lists.js:472
+#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1423
+#: js/lists.js:476
 msgid "Scheduled for %{date}"
 msgstr "Planlagt til %{date}"
 
@@ -1284,7 +1309,7 @@ msgstr "Ældste ændring"
 msgid "Position"
 msgstr "Position"
 
-#: js/components/ListSort.vue:36 js/views/PageList.vue:59
+#: js/components/ListSort.vue:36 js/views/PageList.vue:104
 msgid "Tree"
 msgstr "Træ"
 
@@ -1332,13 +1357,13 @@ msgstr ""
 msgid "Public"
 msgstr "Offentlig"
 
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:392
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:489
 msgid "Authenticated users"
 msgstr "Indloggede brugere"
 
 #: js/components/PageAccess.vue:183 js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:391 js/components/PageListItems.vue:1365
-#: js/components/PageListItems.vue:1506 js/components/PageListItems.vue:1621
+#: js/components/PageListItems.vue:488 js/components/PageListItems.vue:1580
+#: js/components/PageListItems.vue:1797 js/components/PageListItems.vue:1991
 #: js/views/AccessList.vue:240 js/views/AccessList.vue:249
 msgid "Access"
 msgstr "Adgang"
@@ -1347,31 +1372,31 @@ msgstr "Adgang"
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Kun besøgende med en af disse roller kan se siden"
 
-#: js/components/PageAccess.vue:193 js/components/PageBulkDialog.vue:264
+#: js/components/PageAccess.vue:193 js/components/PageBulkDialog.vue:250
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "Masseændringer af sider er begrænset til 1.000 sider"
 
-#: js/components/PageAccess.vue:213 js/components/PageBulkDialog.vue:258
+#: js/components/PageAccess.vue:213 js/components/PageBulkDialog.vue:244
 msgid "Apply recursively"
 msgstr "Anvend rekursivt"
 
-#: js/components/PageBulkDialog.vue:141
+#: js/components/PageBulkDialog.vue:139
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Anvend de valgte egenskaber på %{num} side."
 msgstr[1] "Anvend de valgte egenskaber på %{num} sider."
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:150
 msgid "Change status"
 msgstr "Skift status"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:208
+#: js/components/PageBulkDialog.vue:155
+#: js/components/PageDetailItemProps.vue:219
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:208
+#: js/components/PageBulkDialog.vue:155
+#: js/components/PageDetailItemProps.vue:219
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1379,86 +1404,77 @@ msgstr ""
 "Deaktiverede sider er offline, skjulte sider er online, men vises ikke i "
 "navigationen"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:164
 msgid "Change cache time"
 msgstr "Skift cachetid"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:1228
+#: js/components/PageBulkDialog.vue:169
+#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageListItems.vue:1439
 msgid "Cache time"
 msgstr "Cache-tid"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:325
+#: js/components/PageBulkDialog.vue:169
+#: js/components/PageDetailItemProps.vue:337
 msgid "How long the generated page is cached before it is created again"
 msgstr "Hvor længe den genererede side caches, før den oprettes igen"
 
-#: js/components/PageBulkDialog.vue:180
-msgid "Change language"
-msgstr "Skift sprog"
-
-#: js/components/PageBulkDialog.vue:185
-#: js/components/PageDetailItemProps.vue:222
-msgid "Language of the page content"
-msgstr "Sprog for sidens indhold"
-
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:178
 msgid "Change theme"
 msgstr "Skift tema"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:294
-#: js/components/PageListItems.vue:1216
+#: js/components/PageBulkDialog.vue:183
+#: js/components/PageDetailItemProps.vue:306
+#: js/components/PageListItems.vue:1427
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:294
+#: js/components/PageBulkDialog.vue:183
+#: js/components/PageDetailItemProps.vue:306
 msgid "Design used to display the page"
 msgstr "Design brugt til at vise siden"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:190
 msgid "Change page type"
 msgstr "Skift sidetype"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:303
-#: js/components/PageListItems.vue:1220
+#: js/components/PageBulkDialog.vue:195
+#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageListItems.vue:1431
 msgid "Page type"
 msgstr "Sidetype"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:303
+#: js/components/PageBulkDialog.vue:195
+#: js/components/PageDetailItemProps.vue:315
 msgid "Template of the theme which defines the page layout"
 msgstr "Temaets skabelon, der definerer sidens layout"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:202
 msgid "Change tag"
 msgstr "Skift tag"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:1224
+#: js/components/PageBulkDialog.vue:206
+#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageListItems.vue:1435
 msgid "Page tag"
 msgstr "Side-tag"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:314
+#: js/components/PageBulkDialog.vue:206
+#: js/components/PageDetailItemProps.vue:326
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Internt id til at finde siden i skabeloner, f.eks. blog"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:215
 msgid "Change domain"
 msgstr "Skift domæne"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:279
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:291
 msgid "Domain"
 msgstr "Domæne"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:279
+#: js/components/PageBulkDialog.vue:220
+#: js/components/PageDetailItemProps.vue:291
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domænet, hvor siden er tilgængelig, f.eks. example.com"
 
@@ -1497,12 +1513,12 @@ msgid "Describe the task you want to perform"
 msgstr "Beskriv den opgave, du vil udføre"
 
 #: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:140
+#: js/views/FileList.vue:89 js/views/PageList.vue:280
 msgid "Hide help"
 msgstr "Skjul hjælp"
 
 #: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:140
+#: js/views/FileList.vue:89 js/views/PageList.vue:280
 msgid "Show help"
 msgstr "Vis hjælp"
 
@@ -1515,7 +1531,7 @@ msgid "Refine content based on prompt"
 msgstr "Forbedr indhold baseret på prompt"
 
 #: js/components/PageDetailContentList.vue:724 js/views/ElementList.vue:115
-#: js/views/FileList.vue:115 js/views/PageList.vue:166
+#: js/views/FileList.vue:115 js/views/PageList.vue:306
 msgid "Help"
 msgstr "Hjælp"
 
@@ -1529,13 +1545,13 @@ msgstr "Det kan tage lang tid afhængigt af opgaven og indholdets størrelse"
 
 #: js/components/PageDetailContentList.vue:748
 #: js/components/PageDetailContentList.vue:834
-#: js/components/PageListItems.vue:1515 js/fields/Items.vue:304
+#: js/components/PageListItems.vue:1806 js/fields/Items.vue:304
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Klip"
 
 #: js/components/PageDetailContentList.vue:751
-#: js/components/PageListItems.vue:339 js/components/PageListItems.vue:341
+#: js/components/PageListItems.vue:398 js/components/PageListItems.vue:400
 msgid "Paste"
 msgstr "Indsæt"
 
@@ -1616,39 +1632,43 @@ msgstr "URL'en er ikke gyldig"
 msgid "Field is required"
 msgstr "Feltet er påkrævet"
 
-#: js/components/PageDetailItemProps.vue:89
+#: js/components/PageDetailItemProps.vue:95
 msgid "The path is already in use by another page"
 msgstr "Stien er allerede i brug af en anden side"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:233
+msgid "Language of the page content"
+msgstr "Sprog for sidens indhold"
+
+#: js/components/PageDetailItemProps.vue:247
 msgid "Page title"
 msgstr "Sidens titel"
 
-#: js/components/PageDetailItemProps.vue:236
+#: js/components/PageDetailItemProps.vue:247
 msgid "Shown in the browser tab and search results"
 msgstr "Vises i browserfanen og søgeresultater"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:258
 msgid "Page name"
 msgstr "Sidens navn"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:258
 msgid "Short name shown in the navigation menus"
 msgstr "Kort navn vist i navigationsmenuerne"
 
-#: js/components/PageDetailItemProps.vue:262
+#: js/components/PageDetailItemProps.vue:274
 msgid "URL path"
 msgstr "URL-sti"
 
-#: js/components/PageDetailItemProps.vue:262
+#: js/components/PageDetailItemProps.vue:274
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Del af side-URL'en efter domænet, f.eks. about-us"
 
-#: js/components/PageDetailItemProps.vue:341
+#: js/components/PageDetailItemProps.vue:353
 msgid "Redirect URL"
 msgstr "Omdirigerings-URL"
 
-#: js/components/PageDetailItemProps.vue:341
+#: js/components/PageDetailItemProps.vue:353
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Besøgende omdirigeres til denne URL i stedet for at se siden"
 
@@ -1792,156 +1812,217 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Position"
 
-#: js/components/PageListItems.vue:345
+#: js/components/PageListItems.vue:404
 msgid "Insert"
 msgstr "Tilføj"
 
-#: js/components/PageListItems.vue:353
+#: js/components/PageListItems.vue:412
 msgid "Before"
 msgstr "Før"
 
-#: js/components/PageListItems.vue:354
+#: js/components/PageListItems.vue:413
 msgid "Into"
 msgstr "Ind i"
 
-#: js/components/PageListItems.vue:355
+#: js/components/PageListItems.vue:414
 msgid "After"
 msgstr "Efter"
 
-#: js/components/PageListItems.vue:417
+#: js/components/PageListItems.vue:435 js/views/PageList.vue:205
+msgid "Error fetching translation states"
+msgstr "Fejl ved hentning af oversættelsesstatus"
+
+#: js/components/PageListItems.vue:442
+msgid "Translating into %{langs}"
+msgstr "Oversætter til %{langs}"
+
+#: js/components/PageListItems.vue:450 js/components/PageListItems.vue:1907
+#: js/views/PageDetail.vue:757 js/views/PageList.vue:137
+msgid "Needs update"
+msgstr "Skal opdateres"
+
+#: js/components/PageListItems.vue:451 js/views/PageList.vue:143
+msgid "Missing"
+msgstr "Mangler"
+
+#: js/components/PageListItems.vue:452 js/views/PageList.vue:149
+msgid "AI draft"
+msgstr "AI-kladde"
+
+#: js/components/PageListItems.vue:455 js/views/PageDetail.vue:756
+msgid "Up to date"
+msgstr "Opdateret"
+
+#: js/components/PageListItems.vue:514
 msgid "Error adding root page"
 msgstr "Fejl ved tilføjelse af rodside"
 
-#: js/components/PageListItems.vue:437
+#: js/components/PageListItems.vue:534
 msgid "Page moved"
 msgstr "Side flyttet"
 
-#: js/components/PageListItems.vue:508
+#: js/components/PageListItems.vue:605
 msgid "Cache cleared"
 msgstr "Cache ryddet"
 
-#: js/components/PageListItems.vue:509
+#: js/components/PageListItems.vue:606
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache ryddet for %{num} side."
 msgstr[1] "Cache ryddet for %{num} sider."
 
-#: js/components/PageListItems.vue:519
+#: js/components/PageListItems.vue:616
 msgid "Error clearing cache"
 msgstr "Fejl ved rydning af cache"
 
-#: js/components/PageListItems.vue:562
+#: js/components/PageListItems.vue:672 js/views/PageDetail.vue:611
+msgid "Error adding language"
+msgstr "Fejl ved tilføjelse af sprog"
+
+#: js/components/PageListItems.vue:693
 msgid "Error trashing page"
 msgstr "Fejl ved flytning af siden til papirkurven"
 
-#: js/components/PageListItems.vue:589 js/components/PageListItems.vue:726
+#: js/components/PageListItems.vue:721 js/variants.js:237
+msgid "Error restoring language"
+msgstr "Fejl ved gendannelse af sprog"
+
+#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:866
 msgid "Error restoring page"
 msgstr "Fejl ved gendannelse af side"
 
-#: js/components/PageListItems.vue:597 js/lists.js:237
+#: js/components/PageListItems.vue:730 js/lists.js:241
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "Flyttet til papirkurven"
 msgstr[1] "%{num} poster flyttet til papirkurven"
 
-#: js/components/PageListItems.vue:649
+#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:1180
 msgid "Error fetching pages"
 msgstr "Fejl ved hentning af sider"
 
-#: js/components/PageListItems.vue:700
+#: js/components/PageListItems.vue:838
 msgid "Error inserting page"
 msgstr "Fejl ved indsættelse af side"
 
-#: js/components/PageListItems.vue:805
+#: js/components/PageListItems.vue:945
 msgid "Error moving page"
 msgstr "Fejl ved flytning af side"
 
-#: js/components/PageListItems.vue:919
-msgid "Error copying page"
-msgstr "Fejl ved kopiering af side"
-
-#: js/components/PageListItems.vue:923 js/views/PageDetail.vue:204
+#: js/components/PageListItems.vue:1068 js/views/PageDetail.vue:272
 msgid "Error fetching page"
 msgstr "Fejl ved hentning af side"
 
-#: js/components/PageListItems.vue:967 js/detail.js:61
+#: js/components/PageListItems.vue:1082
+msgid "Error copying page"
+msgstr "Fejl ved kopiering af side"
+
+#: js/components/PageListItems.vue:1128 js/detail.js:61
 msgid "Error publishing page"
 msgstr "Fejl ved udgivelse af side"
 
-#: js/components/PageListItems.vue:986
+#: js/components/PageListItems.vue:1147
 msgid "All subpages of these pages will be purged as well."
 msgstr "Alle undersider til disse sider bliver også slettet permanent."
 
-#: js/components/PageListItems.vue:995
+#: js/components/PageListItems.vue:1156
 msgid "Error purging page"
 msgstr "Fejl ved permanent sletning af siden"
 
-#: js/components/PageListItems.vue:1129
+#: js/components/PageListItems.vue:1334
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} side kunne ikke opdateres"
 msgstr[1] "%{num} sider kunne ikke opdateres"
 
-#: js/components/PageListItems.vue:1140 js/components/PageListItems.vue:1193
-#: js/views/PageDetail.vue:494
+#: js/components/PageListItems.vue:1345 js/components/PageListItems.vue:1400
+#: js/views/PageDetail.vue:573
 msgid "Error saving page"
 msgstr "Fejl ved lagring af side"
 
-#: js/components/PageListItems.vue:1150
+#: js/components/PageListItems.vue:1355
 msgid "Error searching pages"
 msgstr "Fejl ved søgning efter sider"
 
-#: js/components/PageListItems.vue:1228 js/utils.js:37
+#: js/components/PageListItems.vue:1439 js/utils.js:37
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minut"
 msgstr[1] "%{num} minutter"
 
-#: js/components/PageListItems.vue:1355 js/components/PageListItems.vue:1489
+#: js/components/PageListItems.vue:1570 js/components/PageListItems.vue:1780
 msgctxt "page status"
 msgid "Enable"
 msgstr "Aktivér"
 
-#: js/components/PageListItems.vue:1358 js/components/PageListItems.vue:1495
+#: js/components/PageListItems.vue:1573 js/components/PageListItems.vue:1786
 msgctxt "page status"
 msgid "Disable"
 msgstr "Deaktiver"
 
-#: js/components/PageListItems.vue:1368 js/components/PageListItems.vue:1509
+#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1800
 msgid "Clear cache"
 msgstr "Ryd cache"
 
-#: js/components/PageListItems.vue:1389 js/components/PageListItems.vue:1606
+#: js/components/PageListItems.vue:1615 js/components/PageListItems.vue:1857
+msgid "Ignore changes"
+msgstr "Ignorer ændringer"
+
+#: js/components/PageListItems.vue:1624 js/components/PageListItems.vue:1866
+msgid "Delete this language"
+msgstr "Slet dette sprog"
+
+#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1874
+msgid "Restore this language"
+msgstr "Gendan dette sprog"
+
+#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1882
+msgid "Purge this language"
+msgstr "Slet dette sprog permanent"
+
+#: js/components/PageListItems.vue:1650 js/components/PageListItems.vue:1967
 msgid "Add page"
 msgstr "Tilføj side"
 
-#: js/components/PageListItems.vue:1413
+#: js/components/PageListItems.vue:1684
 msgid "Reload page tree"
 msgstr "Genindlæs sidetræet"
 
-#: js/components/PageListItems.vue:1437
+#: js/components/PageListItems.vue:1705
+msgid "Translating %{done} of %{total}"
+msgstr "Oversætter %{done} af %{total}"
+
+#: js/components/PageListItems.vue:1720
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Brug piletasterne til at navigere. Brug Alt-tasten sammen med piletasterne "
 "til at ændre rækkefølgen."
 
-#: js/components/PageListItems.vue:1439
+#: js/components/PageListItems.vue:1722
 msgid "Moved to position %{position} of %{total}"
 msgstr "Flyttet til position %{position} af %{total}"
 
-#: js/components/PageListItems.vue:1441
+#: js/components/PageListItems.vue:1724
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Rykket ud til niveau %{level}, position %{position} af %{total}"
 
-#: js/components/PageListItems.vue:1447
+#: js/components/PageListItems.vue:1730
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Rykket ind til niveau %{level}, position %{position} af %{total}"
 
-#: js/components/PageListItems.vue:1467
+#: js/components/PageListItems.vue:1750
 msgid "Toggle child nodes"
 msgstr "Vis/skjul underordnede noder"
 
-#: js/components/PageListItems.vue:1624
+#: js/components/PageListItems.vue:1766
+msgid "Create in %{lang}"
+msgstr "Opret på %{lang}"
+
+#: js/components/PageListItems.vue:1935 js/views/PageDetail.vue:759
+msgid "Create"
+msgstr "Opret"
+
+#: js/components/PageListItems.vue:1994
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Anvend adgangsindstillingerne på %{num} side."
@@ -1952,7 +2033,7 @@ msgid "You are not signed in yet"
 msgstr "Du er endnu ikke logget ind"
 
 #: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
-#: js/stores.js:335 js/views/Login.vue:146
+#: js/stores.js:338 js/views/Login.vue:146
 msgid "Login failed"
 msgstr "Login mislykkedes"
 
@@ -2006,13 +2087,17 @@ msgstr "Fortsæt"
 msgid "Login"
 msgstr "Log ind"
 
-#: js/components/SchemaDialog.vue:33
+#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "Indholdselementer"
 
-#: js/components/SchemaDialog.vue:38
+#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "Nye elementer"
+
+#: js/components/SchemaDialog.vue:59
+msgid "Only elements in %{lang}"
+msgstr "Kun elementer på %{lang}"
 
 #: js/components/SchemaItems.vue:106
 msgid "Uncategorized"
@@ -2094,6 +2179,44 @@ msgstr "Ny linje"
 msgid "Recall previous messages"
 msgstr "Hent tidligere beskeder"
 
+#: js/components/TranslateDialog.vue:81
+msgid "Translate into"
+msgstr "Oversæt til"
+
+#: js/components/TranslateDialog.vue:83
+msgid "Languages"
+msgstr "Sprog"
+
+#: js/components/TranslateDialog.vue:100
+msgid "Selected page (%{num})"
+msgid_plural "Selected pages (%{num})"
+msgstr[0] "Valgt side (%{num})"
+msgstr[1] "Valgte sider (%{num})"
+
+#: js/components/TranslateDialog.vue:107
+msgid "All pages matching the filter (%{num})"
+msgstr "Alle sider, der matcher filteret (%{num})"
+
+#: js/components/TranslateDialog.vue:108
+msgid "All pages (%{num})"
+msgstr "Alle sider (%{num})"
+
+#: js/components/TranslateDialog.vue:114
+msgid "%{num} page selected."
+msgid_plural "%{num} pages selected."
+msgstr[0] "%{num} side valgt."
+msgstr[1] "%{num} sider valgt."
+
+#: js/components/TranslateDialog.vue:119
+msgid ""
+"Only missing and outdated translations are created. Pages in their source "
+"language and up to date translations are skipped. The translations run in "
+"the background and are saved as drafts for review."
+msgstr ""
+"Kun manglende og forældede oversættelser oprettes. Sider på deres kildesprog "
+"og opdaterede oversættelser springes over. Oversættelserne kører i "
+"baggrunden og gemmes som kladder til gennemsyn."
+
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Ugemte ændringer"
@@ -2154,11 +2277,11 @@ msgstr "Siden er udgivet med succes"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Siden er planlagt til udgivelse den %{date}"
 
-#: js/detail.js:303 js/fields/Autocomplete.vue:176
+#: js/detail.js:308 js/fields/Autocomplete.vue:176
 msgid "No data available"
 msgstr "Ingen tilgængelige data"
 
-#: js/detail.js:337
+#: js/detail.js:342
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Der er ugyldige felter, ret venligst fejlene først"
 
@@ -2226,31 +2349,31 @@ msgstr "Flyt række"
 msgid "Row actions"
 msgstr "Rækkehandlinger"
 
-#: js/fields/Url.vue:56 js/utils.js:280
+#: js/fields/Url.vue:61 js/utils.js:280
 msgid "None"
 msgstr "Ingen"
 
-#: js/fields/Url.vue:57
+#: js/fields/Url.vue:62
 msgid "Sponsored"
 msgstr "Sponsoreret"
 
-#: js/fields/Url.vue:58
+#: js/fields/Url.vue:63
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:70
+#: js/fields/Url.vue:75
 msgid "Not a valid URL"
 msgstr "Ikke en gyldig URL"
 
-#: js/fields/Url.vue:80
+#: js/fields/Url.vue:85
 msgid "Invalid URL schema configuration"
 msgstr "Ugyldig konfiguration af URL-skema"
 
-#: js/fields/Url.vue:144
+#: js/fields/Url.vue:150
 msgid "No pages found"
 msgstr "Der blev ikke fundet nogen sider"
 
-#: js/fields/Url.vue:156
+#: js/fields/Url.vue:162
 msgid "Link attribute"
 msgstr "Linkattribut"
 
@@ -2259,7 +2382,8 @@ msgid "publish"
 msgstr "Udgivelse"
 
 #: js/listview.js:105 js/listview.js:115 js/listview.js:124 js/utils.js:267
-#: js/views/PageList.vue:69 js/views/PageList.vue:79
+#: js/views/PageList.vue:114 js/views/PageList.vue:124
+#: js/views/PageList.vue:135
 msgid "All"
 msgstr "Alle"
 
@@ -2343,17 +2467,35 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "Højst %{num} kolonne er tilladt"
 msgstr[1] "Højst %{num} kolonner er tilladt"
 
-#: js/stores.js:494
+#: js/stores.js:497
 msgid "Failed to save user settings"
 msgstr "Brugerindstillingerne kunne ikke gemmes"
 
-#: js/stores.js:550
+#: js/stores.js:553
 msgid "Failed to load plugin"
 msgstr "Kunne ikke indlæse plugin"
 
-#: js/stores.js:657
+#: js/stores.js:660
 msgid "Permission denied"
 msgstr "Tilladelse nægtet"
+
+#: js/stores.js:1062
+msgid "Error fetching translation progress"
+msgstr "Fejl ved hentning af oversættelsesforløb"
+
+#: js/stores.js:1080
+msgid "Translation is still running in the background"
+msgstr "Oversættelsen kører stadig i baggrunden"
+
+#: js/stores.js:1083
+msgid "%{num} translation failed"
+msgid_plural "%{num} translations failed"
+msgstr[0] "%{num} oversættelse mislykkedes"
+msgstr[1] "%{num} oversættelser mislykkedes"
+
+#: js/stores.js:1089
+msgid "Translation finished"
+msgstr "Oversættelse fuldført"
 
 #: js/strings.js:32
 msgctxt "cs"
@@ -3667,7 +3809,9 @@ msgctxt "fh"
 msgid ""
 "Show the steps one below the other or side by side, side by side suits up to "
 "five steps"
-msgstr "Vis trinene under hinanden eller side om side, side om side passer til op til fem trin"
+msgstr ""
+"Vis trinene under hinanden eller side om side, side om side passer til op "
+"til fem trin"
 
 #: js/strings.js:308
 msgctxt "fh"
@@ -4167,7 +4311,7 @@ msgctxt "st"
 msgid "icon"
 msgstr "Ikon"
 
-#: js/utils.js:36 js/views/PageList.vue:80
+#: js/utils.js:36 js/views/PageList.vue:125
 msgid "No cache"
 msgstr "Ingen cache"
 
@@ -4177,17 +4321,59 @@ msgid_plural "%{num} hours"
 msgstr[0] "%{num} time"
 msgstr[1] "%{num} timer"
 
-#: js/utils.js:317 js/views/PageList.vue:72
+#: js/utils.js:317 js/views/PageList.vue:117
 msgid "Disabled"
 msgstr "Deaktiveret"
 
-#: js/utils.js:318 js/views/PageList.vue:70
+#: js/utils.js:318 js/views/PageList.vue:115
 msgid "Enabled"
 msgstr "Aktiveret"
 
 #: js/utils.js:319
 msgid "Hidden in navigation"
 msgstr "Skjult i navigationen"
+
+#: js/variants.js:190
+msgid "Pages in their source language are deleted as whole pages only"
+msgstr "Sider på deres kildesprog slettes kun som hele sider"
+
+#: js/variants.js:198
+msgid "Delete language"
+msgstr "Slet sprog"
+
+#: js/variants.js:199
+msgid "Move %{num} page in \"%{lang}\" to the trash?"
+msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
+msgstr[0] "Flyt %{num} side på \"%{lang}\" til papirkurven?"
+msgstr[1] "Flyt %{num} sider på \"%{lang}\" til papirkurven?"
+
+#: js/variants.js:207
+msgid "%{num} page in its source language is skipped."
+msgid_plural "%{num} pages in their source language are skipped."
+msgstr[0] "%{num} side på sit kildesprog springes over."
+msgstr[1] "%{num} sider på deres kildesprog springes over."
+
+#: js/variants.js:221
+msgid "Error trashing language"
+msgstr "Fejl ved flytning af sprog til papirkurven"
+
+#: js/variants.js:259
+msgid "Error purging language"
+msgstr "Fejl ved permanent sletning af sprog"
+
+#: js/variants.js:281
+msgid "Error ignoring changes"
+msgstr "Fejl ved ignorering af ændringer"
+
+#: js/variants.js:354
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
+msgstr ""
+"Intet at oversætte, siderne er opdaterede eller bliver allerede oversat"
+
+#: js/variants.js:361
+msgid "Error translating pages"
+msgstr "Fejl ved oversættelse af sider"
 
 #: js/views/AccessList.vue:170
 msgid "Error adding access value"
@@ -4206,13 +4392,13 @@ msgid "Error purging access values"
 msgstr "Fejl ved permanent sletning af adgangsværdier"
 
 #: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:96
+#: js/views/FileList.vue:45 js/views/PageList.vue:236
 #: js/views/PluginPanel.vue:70
 msgid "Close navigation"
 msgstr "Luk navigation"
 
 #: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:96
+#: js/views/FileList.vue:45 js/views/PageList.vue:236
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
 msgstr "Åbn navigation"
@@ -4259,7 +4445,7 @@ msgid "Used by"
 msgstr "Brugt af"
 
 #: js/views/ElementList.vue:74 js/views/FileList.vue:74
-#: js/views/PageList.vue:125
+#: js/views/PageList.vue:265
 msgid "Press Enter to open the chat"
 msgstr "Tryk på Enter for at åbne chatten"
 
@@ -4268,7 +4454,7 @@ msgid "AI can find and manage shared elements based on your input"
 msgstr "AI kan finde og administrere delte elementer baseret på dit input"
 
 #: js/views/ElementList.vue:117 js/views/FileList.vue:117
-#: js/views/PageList.vue:176
+#: js/views/PageList.vue:316
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Tryk på Enter eller pilen for at åbne AI-assistenten og finjustere indholdet "
@@ -4307,7 +4493,7 @@ msgstr "Adgang nægtet"
 msgid "Error"
 msgstr "Fejl"
 
-#: js/views/PageDetail.vue:150
+#: js/views/PageDetail.vue:190
 msgid ""
 "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
 "page\", use get-page with that ID."
@@ -4315,67 +4501,109 @@ msgstr ""
 "Brugeren ser siden med ID \"%{id}\". Når vedkommende henviser til \"denne "
 "side\", skal du bruge get-page med dette ID."
 
-#: js/views/PageDetail.vue:429 js/views/PageDetail.vue:623
+#: js/views/PageDetail.vue:502 js/views/PageDetail.vue:769
 msgid "Rate this page and suggest improvements"
 msgstr "Vurder denne side, og foreslå forbedringer"
 
-#: js/views/PageDetail.vue:479
+#: js/views/PageDetail.vue:558
 msgid "Page saved successfully"
 msgstr "Siden er gemt med succes"
 
-#: js/views/PageDetail.vue:505
-msgid "No page schema for \"content\" found"
-msgstr "Intet sideskema for \"content\" fundet"
+#: js/views/PageDetail.vue:634
+msgid "Marked as up to date"
+msgstr "Markeret som opdateret"
 
-#: js/views/PageDetail.vue:618 js/views/PageDetail.vue:651
-#: js/views/PageDetail.vue:670
+#: js/views/PageDetail.vue:637
+msgid "Error marking as up to date"
+msgstr "Fejl ved markering som opdateret"
+
+#: js/views/PageDetail.vue:658
+msgid ""
+"Nothing to translate, the page is up to date or already being translated"
+msgstr "Intet at oversætte, siden er opdateret eller bliver allerede oversat"
+
+#: js/views/PageDetail.vue:665
+msgid "Translation saved as draft, review the changes"
+msgstr "Oversættelse gemt som kladde, gennemgå ændringerne"
+
+#: js/views/PageDetail.vue:669
+msgid "Error translating page"
+msgstr "Fejl ved oversættelse af side"
+
+#: js/views/PageDetail.vue:732 js/views/PageDetail.vue:791
+#: js/views/PageDetail.vue:810
 msgid "Page"
 msgstr "Side"
 
-#: js/views/PageDetail.vue:628
-msgid "Translate page"
-msgstr "Oversæt side"
+#: js/views/PageDetail.vue:754
+msgid "Source"
+msgstr "Kilde"
 
-#: js/views/PageDetail.vue:656
+#: js/views/PageDetail.vue:758
+msgid "Trashed"
+msgstr "I papirkurven"
+
+#: js/views/PageDetail.vue:777
+msgid "Translate changes of the source language"
+msgstr "Oversæt ændringer i kildesproget"
+
+#: js/views/PageDetail.vue:784
+msgid "Ignore changes of the source language"
+msgstr "Ignorer ændringer i kildesproget"
+
+#: js/views/PageDetail.vue:796
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editor"
 
-#: js/views/PageDetail.vue:673
+#: js/views/PageDetail.vue:813
 msgid "Metrics"
 msgstr "Metrikker"
 
-#: js/views/PageList.vue:57
+#: js/views/PageList.vue:102
 msgid "view"
 msgstr "Visning"
 
-#: js/views/PageList.vue:60
+#: js/views/PageList.vue:105
 msgid "List"
 msgstr "Liste"
 
-#: js/views/PageList.vue:67
+#: js/views/PageList.vue:112
 msgid "status"
 msgstr "Status"
 
-#: js/views/PageList.vue:71
+#: js/views/PageList.vue:116
 msgid "Hidden"
 msgstr "Skjult"
 
-#: js/views/PageList.vue:77
+#: js/views/PageList.vue:122
 msgid "cache"
 msgstr "Cache"
 
-#: js/views/PageList.vue:151
+#: js/views/PageList.vue:133
+msgid "translation"
+msgstr "oversættelse"
+
+#: js/views/PageList.vue:291
 msgid "Generate page based on prompt"
 msgstr "Generer side baseret på prompt"
 
-#: js/views/PageList.vue:169
+#: js/views/PageList.vue:309
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr ""
 "AI kan oprette en side og indhold baseret på dit input og tilføje det til "
 "sidetræet"
+
+#~ msgid "Change language"
+#~ msgstr "Skift sprog"
+
+#~ msgid "No page schema for \"content\" found"
+#~ msgstr "Intet sideskema for \"content\" fundet"
+
+#~ msgid "Translate page"
+#~ msgstr "Oversæt side"
 
 #~ msgctxt "sd"
 #~ msgid "Contact form with configurable fields"

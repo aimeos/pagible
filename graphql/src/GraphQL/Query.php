@@ -117,22 +117,49 @@ final class Query
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return array{stale: int, missing: int, ai: int}
+     * @return array{lang: string, stale: int, missing: int, ai: int}
      */
     public function translations( $rootValue, array $args ) : array
     {
-        $lang = (string) $args['lang'];
+        return $this->states( [(string) $args['lang']] )[0];
+    }
 
-        // same conditions as Filter::translation() but counted on the variants of the language
+
+    /**
+     * Resolver for the number of pages in each translation state of all configured languages.
+     *
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, array{lang: string, stale: int, missing: int, ai: int}>
+     */
+    public function translationStates( $rootValue, array $args ) : array
+    {
+        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) config( 'cms.locales', [] ) );
+        $langs = array_values( array_unique( array_filter( $langs ) ) );
+
+        return $langs ? $this->states( $langs ) : [];
+    }
+
+
+    /**
+     * Counts the pages in each translation state of the languages.
+     *
+     * @param  array<int, string>  $langs Language codes
+     * @return array<int, array{lang: string, stale: int, missing: int, ai: int}>
+     */
+    protected function states( array $langs ) : array
+    {
+        // same conditions as Filter::translation() but counted on the variants of the languages
         // using their indexes instead of the fallback join over all pages
-        $row = PageVariant::query()
+        $rows = PageVariant::query()
             ->join( 'cms_pages as p', fn( $join ) => $join
                 ->on( 'p.id', '=', 'cms_page_variants.page_id' )
                 ->on( 'p.tenant_id', '=', 'cms_page_variants.tenant_id' )
             )
             ->whereNull( 'p.deleted_at' )
-            ->where( 'cms_page_variants.lang', $lang )
+            ->whereIn( 'cms_page_variants.lang', $langs )
             ->toBase()
+            ->select( 'cms_page_variants.lang' )
             ->selectRaw( '
                 COUNT(*) AS total,
                 SUM(CASE WHEN cms_page_variants.stale = ? THEN 1 ELSE 0 END) AS stale,
@@ -140,7 +167,9 @@ final class Query
                     SELECT 1 FROM cms_versions WHERE cms_versions.id = cms_page_variants.latest_id AND cms_versions.editor = ?
                 ) THEN 1 ELSE 0 END) AS ai
             ', [true, Sync::EDITOR] )
-            ->first();
+            ->groupBy( 'cms_page_variants.lang' )
+            ->get()
+            ->keyBy( 'lang' );
 
         // pages without a variant in the language
         $pages = Page::query()->getConnection()->table( 'cms_pages' )
@@ -148,11 +177,16 @@ final class Query
             ->whereNull( 'deleted_at' )
             ->count();
 
-        return [
-            'stale' => (int) ( $row->stale ?? 0 ),
-            'missing' => max( 0, $pages - (int) ( $row->total ?? 0 ) ),
-            'ai' => (int) ( $row->ai ?? 0 ),
-        ];
+        return array_map( function( string $lang ) use ( $rows, $pages ) {
+            $row = $rows->get( $lang );
+
+            return [
+                'lang' => $lang,
+                'stale' => (int) ( $row->stale ?? 0 ),
+                'missing' => max( 0, $pages - (int) ( $row->total ?? 0 ) ),
+                'ai' => (int) ( $row->ai ?? 0 ),
+            ];
+        }, $langs );
     }
 
 
@@ -164,6 +198,19 @@ final class Query
      * @return LengthAwarePaginator<int, Page>
      */
     public function pages( $rootValue, array $args ) : LengthAwarePaginator
+    {
+        $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
+        return $this->paginate( $this->search( $args ), $args, $allowed, NestedSet::LFT, 'asc' );
+    }
+
+
+    /**
+     * Returns the search builder for the pages matching the arguments of the page list query.
+     *
+     * @param  array<string, mixed>  $args Arguments of the page list query ("filter", "lang", "publish", "trashed")
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Unsorted search builder
+     */
+    public function search( array $args ) : \Laravel\Scout\Builder
     {
         $filter = $args['filter'] ?? [];
         $route = array_key_exists( 'path', $filter )
@@ -200,8 +247,7 @@ final class Query
             } );
         }
 
-        $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
-        return $this->paginate( $search, $args, $allowed, NestedSet::LFT, 'asc' );
+        return $search;
     }
 
 

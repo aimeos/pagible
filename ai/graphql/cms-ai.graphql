@@ -37,8 +37,18 @@ extend type Mutation {
 }
 
 extend type Mutation {
-  "Queue translations of the pages into the languages, which create missing variants and merge source changes into existing ones; returns the batch for polling the progress"
-  translatePage(id: [ID!]! @rulesForArray(apply: ["min:1", "max:1000"]), lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+  "Queue translations of the pages passed by ID or matching the filter into the languages, which create missing variants and merge source changes into stale ones; source languages and up to date variants are skipped; returns the batch for polling the progress"
+  translatePage(
+    "IDs of the pages to translate"
+    id: [ID!] @rulesForArray(apply: ["min:1", "max:1000"]),
+    "Translate all pages matching the filter of the page list instead of the pages passed by ID"
+    filter: PageFilter,
+    "Publish state of the pages matching the filter"
+    publish: Publish,
+    "Language the filter is applied in, required for the translation state filter"
+    filter_lang: String @rules(apply: ["nullable", "string", "max:10"]),
+    "Languages to translate the pages into"
+    lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Translate the descriptions of the files into the languages they are missing in and save them as new file drafts"
   translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")

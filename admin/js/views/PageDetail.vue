@@ -11,12 +11,12 @@ const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { awaitTranslation, ignoreChanges, translatePages } from '../variants'
+import { ignoreChanges, translatePages } from '../variants'
 import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'
 import { focusInvalid, frozenParse, hasTrue, safeParse } from '../utils'
-import { useAppStore, useDrawerStore, useLanguageStore, useSchemaStore } from '../stores'
+import { useAppStore, useDrawerStore, useLanguageStore, useSchemaStore, useTranslationStore } from '../stores'
 import {
   mdiCreation,
   mdiCheck,
@@ -149,6 +149,7 @@ export default {
       drawer: useDrawerStore(),
       languages: useLanguageStore(),
       schemas: useSchemaStore(),
+      translations: useTranslationStore(),
       mdiCreation,
       mdiCheck,
       mdiCheckAll,
@@ -195,6 +196,11 @@ export default {
     // the variant isn't the source variant and can be updated from it
     isTranslation() {
       return !!this.item.source && !!this.item.lang && this.item.lang !== this.item.source
+    },
+
+    // the variant is queued for translation or the translation is requested right now
+    isTranslating() {
+      return this.translating || this.translations.has(this.item.id, this.item.lang)
     },
 
     hasChanged() {
@@ -244,7 +250,12 @@ export default {
     this.schemas.load()
   },
 
+  mounted() {
+    this.unlisten = this.translations.listen((batch, progress) => this.translated(batch, progress))
+  },
+
   beforeUnmount() {
+    this.unlisten?.()
     this.assets = markRaw({})
     this.elements = markRaw({})
     this.editorActions = false
@@ -636,40 +647,43 @@ export default {
       }
 
       const { id, lang } = this.item
+      let polling
       this.translating = true
 
       try {
         const batch = await translatePages(this.$apollo, [id], [lang])
 
-        // translations of the same page and language which are already queued are skipped
+        // up to date translations and those which are already queued are skipped
         if (!batch.total) {
-          this.messages.add(this.$gettext('Translation is already running in the background'), 'info')
+          this.messages.add(this.$gettext('Nothing to translate, the page is up to date or already being translated'), 'info')
           return
         }
 
-        const progress = await awaitTranslation(this.$apollo, batch.id, { cancelled: () => this.destroyed })
-
-        if (this.destroyed) return
-        if (!progress || progress.failed) {
-          throw new Error(this.$gettext('Translation failed'))
-        }
-
-        this.invalidate()
-
-        if (progress.running) {
-          this.messages.add(this.$gettext('Translation is still running in the background'), 'info')
-          return
-        }
-
-        this.messages.add(this.$gettext('Translation saved as draft, review the changes'), 'success')
-
-        if (id === this.item.id && lang === this.item.lang) {
-          await this.refresh()
-        }
+        // the store keeps polling if the editor is closed and reports the result
+        polling = this.translations.add(
+          batch,
+          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') },
+          this.$apollo
+        )
       } catch (error) {
         this.messages.error(this.$gettext('Error translating page'), error)
       } finally {
         this.translating = false
+      }
+
+      return polling
+    },
+
+    // loads the translated draft if the variant is still shown without unsaved changes
+    translated(batch, progress) {
+      if (!this.item?.id || !batch.ids.includes(this.item.id) || !batch.langs.includes(this.item.lang)) {
+        return
+      }
+
+      this.invalidate()
+
+      if (!progress.running && !progress.failed && !this.hasChanged) {
+        return this.refresh()
       }
     },
 
@@ -759,7 +773,7 @@ export default {
       <v-btn
         v-if="isTranslation && user.can('page:save') && user.can('text:translate')"
         @click="translate()"
-        :loading="translating"
+        :loading="isTranslating"
         :title="$gettext('Translate changes of the source language')"
         :icon="mdiTranslate"
         class="btn-translate-page"

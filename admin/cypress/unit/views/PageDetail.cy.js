@@ -2,7 +2,7 @@ import { h, reactive } from 'vue'
 import { apolloClient } from '../../../js/graphql'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
-import { useUserStore } from '../../../js/stores'
+import { useTranslationStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
 const stubs = {
@@ -706,6 +706,9 @@ describe('PageDetail', () => {
     })
 
     describe('translate', () => {
+      // stops polling the translation batches of the test
+      afterEach(() => useTranslationStore().clear())
+
       const content = [
         { id: 'el1', type: 'heading', group: 'main', data: { title: 'Alt' } },
         { id: 'el2', type: 'text', group: 'main', data: { text: 'Text' } },
@@ -753,7 +756,7 @@ describe('PageDetail', () => {
         })
       })
 
-      it('reports an already running translation', () => {
+      it('reports that nothing needs to be translated', () => {
         const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 0 } } })
         const query = progressQuery({ total: 0, done: 0, failed: 0 })
 
@@ -763,7 +766,7 @@ describe('PageDetail', () => {
 
           return vm.translate().then(() => {
             expect(query).not.to.have.been.calledWithMatch({ variables: { batch: 'batch-1' } })
-            expect(add).to.have.been.calledWithMatch(/already running/, 'info')
+            expect(add).to.have.been.calledWithMatch(/Nothing to translate/, 'info')
             expect(refresh).not.to.have.been.called
             expect(vm.translating).to.equal(false)
           })
@@ -775,12 +778,61 @@ describe('PageDetail', () => {
         const query = progressQuery({ total: 1, done: 0, failed: 1 })
 
         mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
+
+          return vm.translate().then(() => {
+            expect(add).to.have.been.calledWithMatch(/1 translation failed/, 'error')
+            expect(refresh).not.to.have.been.called
+            expect(vm.isTranslating).to.equal(false)
+          })
+        })
+      })
+
+      it('shows an error if the translation could not be queued', () => {
+        const mutate = cy.stub().rejects(new Error('queue failed'))
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate }).then((vm) => {
           const error = cy.stub(vm.messages, 'error')
 
           return vm.translate().then(() => {
             expect(error).to.have.been.calledWithMatch(/Error translating page/)
-            expect(vm.translating).to.equal(false)
+            expect(vm.isTranslating).to.equal(false)
           })
+        })
+      })
+
+      it('shows the variant as translating while the batch is queued', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 0, failed: 0 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          vm.translate()
+          // the store keeps the state after the mutation returned
+          cy.wrap(vm).its('translating').should('equal', false)
+          cy.wrap(vm).its('isTranslating').should('equal', true)
+          cy.get('button.btn-translate-page').should('have.class', 'v-btn--loading')
+        })
+      })
+
+      it('keeps unsaved changes when the translation finishes', () => {
+        mountVariant({ 'page:save': true }, {}).then((vm) => {
+          const refresh = cy.stub(vm, 'refresh').resolves()
+          const progress = { total: 1, done: 1, failed: 0 }
+
+          // changes made while the translation was running
+          vm.dirty = { page: true }
+          vm.translated({ ids: ['1'], langs: ['de'] }, progress)
+          expect(refresh).not.to.have.been.called
+
+          // translations of other pages or languages are ignored
+          vm.dirty = {}
+          vm.translated({ ids: ['2'], langs: ['de'] }, progress)
+          vm.translated({ ids: ['1'], langs: ['fr'] }, progress)
+          expect(refresh).not.to.have.been.called
+
+          vm.translated({ ids: ['1'], langs: ['de'] }, progress)
+          expect(refresh).to.have.been.calledOnce
         })
       })
 

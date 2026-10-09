@@ -147,10 +147,12 @@ return [
     | The list of supported locales for the content. This is used to generate
     | the locale switcher in the admin panel and to validate the locale of the
     | pages and elements. The first locale in the list is used as the default
-    | locale for the content.
+    | locale for the content. Only the application locale is used by default,
+    | so single-language sites don't show any translation features. Add more
+    | locales as comma separated list, e.g. CMS_LOCALES="en,de,fr".
     |
     */
-    'locales' => explode( ',', env( 'CMS_LOCALES', 'en,ar,zh,fr,de,es,pt,pt-BR,ru' ) ),
+    'locales' => explode( ',', env( 'CMS_LOCALES', env( 'APP_LOCALE', 'en' ) ) ),
 
     /*
     |--------------------------------------------------------------------------

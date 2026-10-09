@@ -464,6 +464,37 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageTranslationStates()
+    {
+        $locales = config( 'cms.locales' );
+        config( ['cms.locales' => ['en', 'de', 'fr']] );
+
+        try
+        {
+            $states = fn() => array_column( $this->actingAs( $this->user )->graphQL( '{
+                pageTranslationStates { lang stale missing ai }
+            }' )->assertGraphQLErrorFree()->json( 'data.pageTranslationStates' ), null, 'lang' );
+
+            $before = $states();
+            $this->assertEquals( ['en', 'de', 'fr'], array_keys( $before ) );
+
+            $page = $this->page();
+            Resource::addVariant( $page->id, 'de', $this->user );
+
+            $after = $states();
+
+            $this->assertEquals( $before['de']['stale'] + 1, $after['de']['stale'] );
+            $this->assertEquals( $before['de']['missing'], $after['de']['missing'] );
+            $this->assertEquals( $before['fr']['missing'] + 1, $after['fr']['missing'] );
+            $this->assertEquals( $before['en'], $after['en'] );
+        }
+        finally
+        {
+            config( ['cms.locales' => $locales] );
+        }
+    }
+
+
     public function testSavePageRestore()
     {
         $page = $this->page();

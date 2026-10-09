@@ -3,6 +3,8 @@
  */
 
 import gql from 'graphql-tag'
+import { toRaw } from 'vue'
+import { useTranslationStore } from './stores'
 
 const IGNORE_CHANGES = gql`
   mutation ($id: [ID!]!, $lang: String!) {
@@ -13,8 +15,8 @@ const IGNORE_CHANGES = gql`
 `
 
 const TRANSLATE_PAGE = gql`
-  mutation ($id: [ID!]!, $lang: [String!]!) {
-    translatePage(id: $id, lang: $lang) {
+  mutation ($id: [ID!], $filter: PageFilter, $publish: Publish, $filterLang: String, $lang: [String!]!) {
+    translatePage(id: $id, filter: $filter, publish: $publish, filter_lang: $filterLang, lang: $lang) {
       id
       total
     }
@@ -34,13 +36,18 @@ const TRANSLATE_PROGRESS = gql`
 /**
  * Queues the translations of the pages into the languages.
  *
+ * Only missing and outdated translations are queued, pages in their source language and
+ * up to date translations are skipped by the server.
+ *
  * @param {Object} apollo Apollo client
- * @param {Array<String>} ids Page IDs
+ * @param {Array<String>|Object} pages Page IDs or the page list filter as { filter, publish, filterLang } object
  * @param {Array<String>} langs Language codes
  * @returns {Promise<Object>} Batch with ID and number of queued translations
  */
-export function translatePages(apollo, ids, langs) {
-  return apollo.mutate({ mutation: TRANSLATE_PAGE, variables: { id: ids, lang: langs } }).then((result) => {
+export function translatePages(apollo, pages, langs) {
+  const variables = Array.isArray(pages) ? { id: pages } : { ...pages }
+
+  return apollo.mutate({ mutation: TRANSLATE_PAGE, variables: { ...variables, lang: langs } }).then((result) => {
     if (!result.data?.translatePage) {
       throw new Error('No data in translatePage mutation result')
     }
@@ -129,8 +136,11 @@ export function ignoreChanges(apollo, ids, lang) {
  * Actions on the page variants in the current language of the page tree.
  *
  * Emits "changed" when the translation states changed.
- * Requires the lang, destroyed, user, messages, confirm and languages properties, the tree ref and the
- * allowed(), selected(), missing(), mutate(), trashed(), refetch() and invalidate() methods.
+ * Requires the lang, user, messages, confirm and languages properties, the tree ref and the
+ * allowed(), selected(), missing(), mutate(), trashed(), refetch(), invalidate(), filters() and total() methods.
+ *
+ * The queued translations are tracked by the translation store, so several can run at the same
+ * time and their progress is still shown after navigating away and back or reloading the tab.
  */
 export const pageVariants = {
   // emitted when the translation states of the pages changed
@@ -138,7 +148,33 @@ export const pageVariants = {
 
   data() {
     return {
-      progress: null
+      translateDialog: false,
+      translateItems: [],
+      translateTotal: null
+    }
+  },
+
+  mounted() {
+    this.unlisten = this.translationStore.listen((batch, progress) => this.translated(batch, progress))
+  },
+
+  beforeUnmount() {
+    this.unlisten?.()
+  },
+
+  computed: {
+    // summed up progress of all queued translations of the browser tab
+    progress() {
+      return this.translationStore.progress
+    },
+
+    translationStore() {
+      return useTranslationStore()
+    },
+
+    // languages checked in the translate dialog, the current one unless it's the source of all pages
+    translateLangs() {
+      return this.translateItems.some((stat) => stat.data?.source !== this.lang) ? [this.lang] : []
     }
   },
 
@@ -251,99 +287,78 @@ export const pageVariants = {
       return !!page.stale && page.lang !== page.source && !this.missing(page)
     },
 
-    // polls the progress of the queued translations until all are finished and refreshes the
-    // translated rows shown in the tree afterwards instead of reloading the whole tree
-    poll(batch, ids = []) {
-      return awaitTranslation(this.$apollo, batch, {
-        onProgress: (progress) => (this.progress = progress),
-        cancelled: () => this.destroyed
-      })
-        .then((progress) => {
-          this.progress = null
+    // refreshes the translated rows shown in the tree instead of reloading the whole tree
+    translated(batch) {
+      // the tree may have been reloaded meanwhile, so look up the rows shown now
+      const ids = new Set(batch.ids)
+      const list = (this.$refs.tree?.statsFlat || []).filter((stat) => ids.has(stat.data?.id))
 
-          if (!progress) {
-            return
-          }
-
-          // the tree may have been reloaded meanwhile, so look up the rows shown now
-          const translated = new Set(ids)
-          const list = (this.$refs.tree?.statsFlat || []).filter((stat) => translated.has(stat.data?.id))
-
-          this.invalidate(true)
-
-          if (progress.running) {
-            this.messages.add(this.$gettext('Translation is still running in the background'), 'info')
-          } else if (progress.failed) {
-            this.messages.add(
-              this.$ngettext('%{num} translation failed', '%{num} translations failed', progress.failed, {
-                num: progress.failed
-              }),
-              'error'
-            )
-          } else {
-            this.messages.add(this.$gettext('Translation finished'), 'success')
-          }
-
-          return list.length ? this.refetch(list) : undefined
-        })
-        .catch((error) => {
-          this.progress = null
-          this.messages.error(this.$gettext('Error fetching translation progress'), error)
-        })
+      this.invalidate(true)
+      return list.length ? this.refetch(list) : undefined
     },
 
-    // pages the user can translate into the current language, missing variants require page:add
+    // pages the user can translate into other languages, the server skips the source and
+    // up to date variants as well as missing ones if the user isn't allowed to add pages
     translatable(page) {
       return (
+        this.languages.available.length > 1 &&
         this.user.can('page:save') &&
         this.user.can('text:translate') &&
         !page.deleted_at &&
-        !!page.source &&
-        page.source !== this.lang &&
-        (this.missing(page) ? this.user.can('page:add') : !page.variant_deleted_at)
+        !!page.source
       )
     },
 
-    // queues the translations of the pages into the current language and shows the progress
-    async translate(stat = null) {
+    // opens the dialog for translating the page or the selected pages into one or more languages
+    translate(stat = null) {
       const list = stat ? [stat] : this.selected((page) => this.translatable(page))
 
-      if (!list.length || this.progress) {
+      if (!list.length) {
         return
       }
 
-      if (
-        !stat &&
-        !(await this.confirm.ask(
-          this.$gettext('Translate'),
-          this.$ngettext(
-            'Translate %{num} page into "%{lang}"?',
-            'Translate %{num} pages into "%{lang}"?',
-            list.length,
-            { num: list.length, lang: this.languages.translate(this.lang) }
-          ),
-          [],
-          this.$gettext('The translations run in the background and are saved as drafts for review.')
-        ))
-      ) {
+      this.translateItems = list
+      this.translateTotal = null
+      this.translateDialog = true
+
+      // offer translating all pages matching the filter instead of the loaded ones only
+      if (!stat) {
+        this.total()
+          .then((num) => {
+            if (toRaw(this.translateItems) === list) {
+              this.translateTotal = num
+            }
+          })
+          .catch(() => {})
+      }
+    },
+
+    // queues the translations of the selected pages or all pages matching the filter into the
+    // languages, the translation store shows the progress and refreshes the rows afterwards
+    translateApply({ langs, all }) {
+      const list = this.translateItems
+      const ids = list.map((item) => item.data.id)
+      // in the list view, the rows shown are refreshed afterwards
+      const shown = all ? (this.$refs.tree?.statsFlat || []).map((stat) => stat.data?.id).filter(Boolean) : ids
+
+      if (!list.length || !langs.length) {
         return
       }
 
-      return translatePages(this.$apollo, list.map((item) => item.data.id), [this.lang])
+      return translatePages(this.$apollo, all ? this.filters() : ids, langs)
         .then((batch) => {
           list.forEach((item) => (item._checked = false))
 
-          // translations of the same pages and language which are already queued are skipped
+          // translations which are up to date or already queued are skipped
           if (!batch.total) {
-            this.messages.add(this.$gettext('Translation is already running in the background'), 'info')
+            this.messages.add(this.$gettext('Nothing to translate, the pages are up to date or already being translated'), 'info')
             return
           }
 
-          this.progress = { total: batch.total, done: 0, failed: 0 }
-          return this.poll(batch.id, list.map((item) => item.data.id))
+          return this.translationStore.add(batch, { ids: shown, langs }, this.$apollo)
         })
         .catch((error) => {
-          this.messages.error(this.$gettext('Error translating pages'), error, list.map((item) => item.data.id))
+          this.messages.error(this.$gettext('Error translating pages'), error, all ? this.filters() : ids)
         })
     }
   }

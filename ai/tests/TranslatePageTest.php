@@ -563,6 +563,59 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobQueuePending()
+    {
+        Queue::fake();
+
+        $pages = [$this->page(), $this->page(), $this->page(), $this->page()];
+        $ids = array_map( fn( $page ) => (string) $page->id, $pages );
+
+        foreach( array_slice( $ids, 1 ) as $id ) {
+            Resource::translatePage( $id, 'de', $this->user );
+        }
+
+        // up to date, stale and trashed variants in "de"
+        PageVariant::where( 'page_id', $ids[1] )->where( 'lang', 'de' )->update( ['stale' => false] );
+        PageVariant::where( 'page_id', $ids[2] )->where( 'lang', 'de' )->update( ['stale' => true] );
+        PageVariant::where( 'page_id', $ids[3] )->where( 'lang', 'de' )->update( ['stale' => true, 'deleted_at' => now()] );
+
+        $batch = TranslatePage::dispatchPending( $ids, ['de', 'en'], $this->user->id );
+
+        $this->assertSame( 2, $batch['total'] );
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->id === $ids[0] && $job->lang === 'de' );
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->id === $ids[2] && $job->lang === 'de' );
+        Queue::assertNotPushed( TranslatePage::class, fn( $job ) => $job->lang === 'en' );
+    }
+
+
+    public function testJobQueuePendingNoAdd()
+    {
+        Queue::fake();
+
+        $missing = $this->page();
+        $stale = $this->page();
+
+        Resource::translatePage( $stale->id, 'de', $this->user );
+        PageVariant::where( 'page_id', $stale->id )->where( 'lang', 'de' )->update( ['stale' => true] );
+
+        $batch = TranslatePage::dispatchPending( [$missing->id, $stale->id], ['de'], $this->user->id, false );
+
+        $this->assertSame( 1, $batch['total'] );
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->id === $stale->id );
+    }
+
+
+    public function testJobQueuePendingTrashedPage()
+    {
+        Queue::fake();
+
+        $page = $this->page();
+        Resource::drop( Page::class, [$page->id], $this->user );
+
+        $this->assertSame( 0, TranslatePage::dispatchPending( [$page->id], ['de'], $this->user->id )['total'] );
+    }
+
+
     public function testJobFailedLogs()
     {
         $page = $this->page();
@@ -618,6 +671,56 @@ class TranslatePageTest extends AiTestAbstract
         ', ['batch' => $batch] )->assertJson( ['data' => ['translateProgress' => ['total' => 1, 'done' => 1, 'failed' => 0]]] );
 
         $this->assertEquals( '[de] Title', Page::language( 'de' )->findOrFail( $page->id )->latest->data->title );
+    }
+
+
+    public function testGraphqlTranslatePageFilter()
+    {
+        Queue::fake();
+
+        $pages = [$this->page( ['tag' => 'trx'] ), $this->page( ['tag' => 'trx'] ), $this->page()];
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($filter: PageFilter, $lang: [String!]!) {
+                translatePage(filter: $filter, lang: $lang) { id total }
+            }
+        ', ['filter' => ['tag' => 'trx'], 'lang' => ['de', 'en']] )
+            ->assertGraphQLErrorFree()
+            ->assertJsonPath( 'data.translatePage.total', 2 );
+
+        Queue::assertPushed( TranslatePage::class, 2 );
+        Queue::assertNotPushed( TranslatePage::class, fn( $job ) => $job->id === $pages[2]->id );
+    }
+
+
+    public function testGraphqlTranslatePageFilterState()
+    {
+        Queue::fake();
+
+        $missing = $this->page();
+        $stale = $this->page();
+
+        Resource::translatePage( $stale->id, 'de', $this->user );
+        PageVariant::where( 'page_id', $stale->id )->where( 'lang', 'de' )->update( ['stale' => true] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($filter: PageFilter, $lang: [String!]!) {
+                translatePage(filter: $filter, filter_lang: "de", lang: $lang) { id total }
+            }
+        ', ['filter' => ['translation' => 'stale'], 'lang' => ['de']] )
+            ->assertGraphQLErrorFree()
+            ->assertJsonPath( 'data.translatePage.total', 1 );
+
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->id === $stale->id );
+        Queue::assertNotPushed( TranslatePage::class, fn( $job ) => $job->id === $missing->id );
+    }
+
+
+    public function testGraphqlTranslatePageNoPages()
+    {
+        $this->actingAs( $this->user )->graphQL( '
+            mutation { translatePage(lang: ["de"]) { id } }
+        ' )->assertGraphQLErrorMessage( 'Pass the IDs of the pages or a filter' );
     }
 
 
@@ -772,9 +875,9 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
-    protected function page() : Page
+    protected function page( array $data = [] ) : Page
     {
-        return Resource::addPage( [
+        return Resource::addPage( $data + [
             'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'tr-' . substr( md5( uniqid() ), 0, 8 ),
             'content' => [
                 ['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']],

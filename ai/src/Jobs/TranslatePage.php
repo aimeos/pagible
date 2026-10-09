@@ -85,11 +85,58 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     public static function dispatchBatch( iterable $ids, array $langs, int|string|null $userId ) : array
     {
         $ids = iterator_to_array( $ids, false );
+        $langs = self::languages( $langs );
+
+        Page::checkBulk( count( $ids ) * count( $langs ) );
+
+        $pairs = [];
+
+        foreach( $ids as $id )
+        {
+            foreach( $langs as $lang ) {
+                $pairs[] = [(string) $id, $lang];
+            }
+        }
+
+        return self::enqueue( $pairs, $userId );
+    }
+
+
+    /**
+     * Queues the translations of the pages which are needed as new batch.
+     *
+     * Only missing and stale variants are translated. Source variants, trashed pages and
+     * trashed variants are skipped, as well as already queued translations. There's no limit
+     * for the number of translations because they run in the background.
+     *
+     * @param iterable<string> $ids Page UUIDs in the order to translate
+     * @param array<int, string> $langs Language codes of the variants, duplicates are ignored
+     * @param int|string|null $userId ID of the user who starts the translation
+     * @param bool $add TRUE to create missing variants, FALSE to update existing ones only
+     * @return array{id: string, total: int} Batch ID and number of queued translations
+     * @throws Exception If a language isn't configured
+     */
+    public static function dispatchPending( iterable $ids, array $langs, int|string|null $userId, bool $add = true ) : array
+    {
+        return self::enqueue( self::pending( iterator_to_array( $ids, false ), self::languages( $langs ), $add ), $userId );
+    }
+
+
+    /**
+     * Returns the unique and valid language codes.
+     *
+     * Languages of existing variants can be used even if they aren't configured (anymore)
+     * and any valid language can be used if no languages are configured.
+     *
+     * @param array<int, string> $langs Language codes
+     * @return array<int, string> Unique language codes
+     * @throws Exception If a language isn't configured
+     */
+    protected static function languages( array $langs ) : array
+    {
         $langs = array_values( array_unique( $langs ) );
         $locales = array_map( 'strval', (array) config( 'cms.locales', [] ) );
 
-        // languages of existing variants can be updated even if they aren't configured (anymore)
-        // and any valid language can be used if no languages are configured
         if( ( $invalid = array_diff( $langs, $locales ) )
             && ( $invalid = array_diff( $invalid, PageVariant::whereIn( 'lang', $invalid )->distinct()->pluck( 'lang' )->all() ) )
             && ( $locales || array_filter( $invalid, fn( $lang ) => !Utils::isValidLang( $lang ) ) )
@@ -97,21 +144,83 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
             throw new Exception( sprintf( 'Invalid language code "%1$s"', implode( '", "', $invalid ) ) );
         }
 
-        Page::checkBulk( count( $ids ) * count( $langs ) );
+        return $langs;
+    }
 
+
+    /**
+     * Returns the pages and languages whose variants are missing or stale.
+     *
+     * @param array<int, string> $ids Page UUIDs in the order to translate
+     * @param array<int, string> $langs Language codes of the variants
+     * @param bool $add TRUE to include missing variants
+     * @return array<int, array{0: string, 1: string}> List of page ID and language pairs in the order of the IDs
+     */
+    protected static function pending( array $ids, array $langs, bool $add ) : array
+    {
+        $db = PageVariant::query()->getConnection();
+        $tenant = Tenancy::value();
+        $pairs = [];
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 500 ) as $chunk )
+        {
+            $sources = $db->table( 'cms_pages' )
+                ->where( 'tenant_id', $tenant )
+                ->whereNull( 'deleted_at' )
+                ->whereIn( 'id', $chunk )
+                ->pluck( 'source', 'id' );
+
+            $variants = [];
+            $rows = $db->table( 'cms_page_variants' )
+                ->where( 'tenant_id', $tenant )
+                ->whereIn( 'page_id', $chunk )
+                ->whereIn( 'lang', $langs )
+                ->get( ['page_id', 'lang', 'stale', 'deleted_at'] );
+
+            foreach( $rows as $row ) {
+                $variants[$row->page_id][$row->lang] = $row;
+            }
+
+            foreach( $chunk as $id )
+            {
+                if( !isset( $sources[$id] ) ) {
+                    continue;
+                }
+
+                foreach( $langs as $lang )
+                {
+                    $variant = $variants[$id][$lang] ?? null;
+
+                    if( $lang !== $sources[$id] && ( $variant ? !$variant->deleted_at && $variant->stale : $add ) ) {
+                        $pairs[] = [(string) $id, $lang];
+                    }
+                }
+            }
+        }
+
+        return $pairs;
+    }
+
+
+    /**
+     * Queues the translations as new batch.
+     *
+     * @param array<int, array{0: string, 1: string}> $pairs List of page ID and language pairs
+     * @param int|string|null $userId ID of the user who starts the translation
+     * @return array{id: string, total: int} Batch ID and number of queued translations
+     */
+    protected static function enqueue( array $pairs, int|string|null $userId ) : array
+    {
         $lock = new UniqueLock( app( \Illuminate\Contracts\Cache\Repository::class ) );
         $jobs = [];
 
-        foreach( $ids as $id )
+        foreach( $pairs as [$id, $lang] )
         {
-            foreach( $langs as $lang )
-            {
-                $job = new self( (string) $id, $lang, Tenancy::value(), $userId );
+            $job = new self( $id, $lang, Tenancy::value(), $userId );
 
-                // spread the jobs over the minutes the rate limit allows them to run
-                if( $lock->acquire( $job ) ) {
-                    $jobs[] = $job->delay( intdiv( count( $jobs ), self::max() ) * 60 );
-                }
+            // spread the jobs over the minutes the rate limit allows them to run
+            if( $lock->acquire( $job ) ) {
+                $jobs[] = $job->delay( intdiv( count( $jobs ), self::max() ) * 60 );
             }
         }
 

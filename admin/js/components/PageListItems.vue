@@ -40,6 +40,7 @@ import ListStatus from './ListStatus.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
+import TranslateDialog from './TranslateDialog.vue'
 import ListSort from './ListSort.vue'
 import {
   useAppStore,
@@ -193,6 +194,27 @@ const FETCH_PAGES = gql`
   }
 `
 
+const COUNT_PAGES = gql`
+  query($filter: PageFilter, $publish: Publish, $lang: String) {
+    pages(filter: $filter, first: 1, trashed: WITHOUT, publish: $publish, lang: $lang) {
+      paginatorInfo {
+        total
+      }
+    }
+  }
+`
+
+const FETCH_STATES = gql`
+  query {
+    pageTranslationStates {
+      lang
+      stale
+      missing
+      ai
+    }
+  }
+`
+
 const SORT_OPTIONS = Object.freeze([
   { column: 'LFT', order: 'ASC', label: 'Tree' },
   { column: 'ID', order: 'DESC', label: 'Latest' },
@@ -216,7 +238,8 @@ export default {
     ListStatus,
     LoadingSpinner,
     PageAccess,
-    PageBulkDialog
+    PageBulkDialog,
+    TranslateDialog
   },
 
   mixins: [pageVariants],
@@ -249,6 +272,8 @@ export default {
       checked: null,
       clip: null,
       counts: tally([]),
+      // translation state counts per language shown in the language selector
+      langStates: {},
       sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
@@ -350,7 +375,11 @@ export default {
     filtered: listBase.computed.filtered,
 
     langs() {
-      return this.languages.available.map((code) => ({ value: code, title: this.languages.translate(code) }))
+      return this.languages.available.map((code) => ({
+        value: code,
+        title: this.languages.translate(code),
+        props: { subtitle: this.langState(this.langStates[code]) }
+      }))
     },
 
     isChecked() {
@@ -388,6 +417,44 @@ export default {
   },
 
   methods: {
+    // loads the translation state counts of all languages when the language selector opens
+    fetchStates() {
+      if (!this.user.can('page:view')) return
+
+      return this.$apollo
+        .query({ query: FETCH_STATES, fetchPolicy: 'no-cache' })
+        .then((result) => {
+          if (result.errors) throw result
+          if (this.destroyed) return
+
+          this.langStates = Object.fromEntries(
+            (result.data?.pageTranslationStates || []).map((state) => [state.lang, state])
+          )
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error fetching translation states'), error)
+        })
+    },
+
+    // describes the running translations of the page, e.g. "Translating into DE, FR"
+    translatingLabel(node) {
+      const langs = this.translationStore.langsOf(node.id).map((code) => code.toUpperCase())
+      return this.$gettext('Translating into %{langs}', { langs: langs.join(', ') })
+    },
+
+    // summary of the translation state of a language, e.g. "Needs update: 3 · Missing: 1"
+    langState(state) {
+      if (!state) return undefined
+
+      const parts = [
+        [this.$gettext('Needs update'), state.stale],
+        [this.$gettext('Missing'), state.missing],
+        [this.$gettext('AI draft'), state.ai]
+      ].filter(([, num]) => num > 0)
+
+      return parts.length ? parts.map(([label, num]) => `${label}: ${num}`).join(' · ') : this.$gettext('Up to date')
+    },
+
     accessApplied(access, descendants = false) {
       const stats = this.$refs.tree?.statsFlat || []
       const ids = new Set(this.accessIds)
@@ -911,12 +978,8 @@ export default {
         })
     },
 
-    // queries the pages matching the list filters and the given filter values
-    pages(values, page, limit, sort, msg, trashed = null) {
-      if (!this.allowed('view')) {
-        return Promise.resolve([])
-      }
-
+    // list filters with the given filter values for the pages query
+    listFilter(values = {}) {
       const filter = {}
 
       for (const key in this.filter) {
@@ -925,12 +988,45 @@ export default {
         }
       }
 
+      return Object.assign(filter, values)
+    },
+
+    // filter of all pages matching the list filters independent of their position in the tree
+    filters() {
+      return {
+        filter: this.listFilter(this.filter.view === 'list' && this.term ? { any: this.term } : {}),
+        publish: this.filter.publish || null,
+        filterLang: this.lang
+      }
+    },
+
+    // number of pages matching the list filters which aren't in the trash
+    total() {
+      const { filter, publish } = this.filters()
+
+      return this.$apollo
+        .query({
+          query: COUNT_PAGES,
+          fetchPolicy: 'no-cache',
+          variables: { filter, publish, lang: this.lang }
+        })
+        .then((result) => result.data?.pages?.paginatorInfo?.total ?? null)
+    },
+
+    // queries the pages matching the list filters and the given filter values
+    pages(values, page, limit, sort, msg, trashed = null) {
+      if (!this.allowed('view')) {
+        return Promise.resolve([])
+      }
+
+      const filter = this.listFilter(values)
+
       return this.$apollo
         .query({
           query: FETCH_PAGES,
           fetchPolicy: listFetchPolicy(),
           variables: {
-            filter: Object.assign(filter, values),
+            filter,
             sort,
             page,
             limit,
@@ -1319,6 +1415,10 @@ export default {
     title(item) {
       const list = []
 
+      if (this.translationStore.has(item.id)) {
+        list.push(this.translatingLabel(item))
+      }
+
       if (item.publish_at) {
         list.push(this.$gettext('Scheduled for %{date}', { date: new Date(item.publish_at).toLocaleDateString() }))
       }
@@ -1501,7 +1601,6 @@ export default {
             <ActionItem
               v-if="counts.translate"
               :prepend-icon="mdiTranslate"
-              :disabled="!!progress"
               class="action-translate"
               @click="translate()"
             >
@@ -1562,6 +1661,7 @@ export default {
         v-model="lang"
         :items="langs"
         :label="$gettext('Language')"
+        @update:menu="(open) => open && fetchStates()"
         class="lang-select"
         variant="underlined"
         hide-details
@@ -1740,7 +1840,7 @@ export default {
             <template v-if="translatable(node)">
               <v-divider></v-divider>
 
-              <ActionItem :prepend-icon="mdiTranslate" :disabled="!!progress" class="action-translate" @click="translate(stat)">
+              <ActionItem :prepend-icon="mdiTranslate" class="action-translate" @click="translate(stat)">
                 {{ $gettext('Translate') }}
               </ActionItem>
             </template>
@@ -1806,6 +1906,12 @@ export default {
               :icon="mdiSync"
               :aria-label="$gettext('Needs update')"
             />
+            <v-icon
+              v-if="translationStore.has(node.id)"
+              class="item-translating"
+              :icon="mdiTranslate"
+              :aria-label="translatingLabel(node)"
+            />
             <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
             <v-icon
               v-if="node.restricted"
@@ -1866,6 +1972,15 @@ export default {
     />
   </div>
 
+  <TranslateDialog
+    v-model="translateDialog"
+    :count="translateItems.length"
+    :langs="translateLangs"
+    :total="translateTotal"
+    :filtered="filtered"
+    @apply="translateApply"
+  />
+
   <PageBulkDialog
     v-model="propsDialog"
     :count="propsCount"
@@ -1894,6 +2009,23 @@ export default {
 </template>
 
 <style>
+.item-translating {
+  animation: item-translating 1.6s ease-in-out infinite;
+  color: rgb(var(--v-theme-primary));
+}
+
+@keyframes item-translating {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-translating {
+    animation: none;
+  }
+}
+
 .translate-progress {
   display: flex;
   align-items: center;
