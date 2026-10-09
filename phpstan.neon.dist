@@ -34,6 +34,8 @@ parameters:
 		- webhooks/src
 		- themes/bold/src
 		- themes/bold/database/seeders
+		- themes/brew/src
+		- themes/brew/database/seeders
 		- themes/counsel/src
 		- themes/counsel/database/seeders
 		- themes/estate/src

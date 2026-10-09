@@ -28,7 +28,7 @@ abstract class AbstractDemo
     /** @var array<string, string> Meta descriptions keyed by page path */
     protected const DESCRIPTIONS = [];
 
-    /** @var array<string, array{string, string, array<string, string>|string}> Unsplash photo path, name and description(s) keyed by image key */
+    /** @var array<string, array{0: string, 1: string, 2: array<string, string>|string, 3?: string}> Unsplash photo path, name, description(s) and optional crop position (e.g. "left") keyed by image key */
     protected const PHOTOS = [];
 
     /** @var array<string, string> File IDs of fixed-ratio images keyed by image key and size */
@@ -122,7 +122,8 @@ abstract class AbstractDemo
         {
             [$photo, $name, $desc] = static::PHOTOS[$key];
             $base = 'https://images.unsplash.com/' . $photo;
-            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop';
+            $crop = isset( static::PHOTOS[$key][3] ) ? '&crop=' . static::PHOTOS[$key][3] : '';
+            $url = fn( int $w, int $h ) => $base . '?w=' . $w . '&h=' . $h . '&q=80&fm=jpg&fit=crop' . $crop;
             $previews = [];
 
             foreach( $widths as $width ) {

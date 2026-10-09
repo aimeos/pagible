@@ -1,6 +1,7 @@
 providers:
   - Aimeos\Cms\BenchmarkServiceProvider
   - Aimeos\Cms\BoldServiceProvider
+  - Aimeos\Cms\BrewServiceProvider
   - Aimeos\Cms\CounselServiceProvider
   - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\FlowServiceProvider
