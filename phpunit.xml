@@ -59,6 +59,9 @@
     <testsuite name="Medical">
       <directory>./themes/medical/tests/</directory>
     </testsuite>
+    <testsuite name="Paws">
+      <directory>./themes/paws/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>

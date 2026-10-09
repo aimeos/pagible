@@ -50,6 +50,8 @@ parameters:
 		- themes/news/database/seeders
 		- themes/pagible/src
 		- themes/pagible/database/seeders
+		- themes/paws/src
+		- themes/paws/database/seeders
 		- themes/paper/src
 		- themes/paper/database/seeders
 		- themes/premium/src
