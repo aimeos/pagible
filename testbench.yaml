@@ -10,6 +10,7 @@ providers:
   - Aimeos\Cms\NewsServiceProvider
   - Aimeos\Cms\PagibleServiceProvider
   - Aimeos\Cms\PaperServiceProvider
+  - Aimeos\Cms\PawsServiceProvider
   - Aimeos\Cms\PremiumServiceProvider
   - Aimeos\Cms\PulseServiceProvider
   - Aimeos\Cms\SolarServiceProvider

@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-themes-paws",
+    "description": "Pagible CMS - Paws theme for veterinary clinics and animal hospitals",
+    "keywords": ["laravel", "cms", "theme", "veterinary", "vet", "animal hospital", "pets", "clinic"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\PawsServiceProvider"
+            ]
+        }
+    }
+}
