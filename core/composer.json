@@ -14,7 +14,7 @@
         "laravel/framework": "^11.0||^12.0||^13.0",
         "laravel/scout": "^10.20||^11.1",
         "symfony/uid": "^7.0||^8.0",
-        "enshrined/svg-sanitize": "^0.22.0"
+        "enshrined/svg-sanitize": "^1.0"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0||^11.0"
