@@ -584,7 +584,9 @@ class TranslatePageTest extends AiTestAbstract
             $batch = TranslatePage::dispatchBatch( [$page->id], ['de', 'en'], $this->user->id );
             $this->assertSame( ['total' => 2, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
 
-            Artisan::call( 'queue:work', ['connection' => 'database', '--queue' => config( 'cms.queue.name' ) ?: 'default', '--stop-when-empty' => true] );
+            Artisan::call( 'queue:work', ['connection' => 'database', '--queue' => config( 'cms.queue.name' ) ?: 'default', '--stop-when-empty' => true,
+                // the worker stops after each job if the test process already uses more memory
+                '--memory' => (int) ceil( memory_get_usage( true ) / 1048576 ) + 256] );
         }
         finally
         {

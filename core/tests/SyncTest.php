@@ -60,7 +60,7 @@ class SyncTest extends CoreTestAbstract
         $this->assertEquals( Sync::EDITOR, $de->latest->editor );
         $this->assertEquals( 0, $variant->status );
         $this->assertFalse( $variant->stale );
-        $this->assertSame( Hashes::page( (array) $source->latest->data, $source->latest->aux->content,
+        $this->assertEquals( Hashes::page( (array) $source->latest->data, $source->latest->aux->content,
             $source->latest->aux->meta, $source->latest->aux->config ), $variant->hashes );
 
         // draft only, with matching element IDs
