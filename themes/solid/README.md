@@ -13,10 +13,10 @@ php artisan vendor:publish --tag=cms-theme
 
 ## Design
 
-- **Style**: Sturdy and direct with a faint blueprint grid and hazard stripes in header and footer
+- **Style**: Sturdy and direct with photo-led sections, a yellow header line and a floating figures strip below the hero
 - **Colors**: Warm concrete (#F4F3EF), charcoal (#1F2328) and safety yellow (#F2B705)
-- **Typography**: System sans-serif, condensed uppercase headings with weight 800
-- **Borders**: Square edges, 2px charcoal borders and offset shadows
+- **Typography**: System sans-serif, condensed sentence case headings with weight 800
+- **Borders**: Square edges, thin borders and soft shadows
 - **CSS framework**: Pico CSS with `--pico-*` custom property overrides
 
 ## Page Types

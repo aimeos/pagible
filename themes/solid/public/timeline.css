@@ -42,7 +42,6 @@
     width: var(--marker);
     height: var(--marker);
     background-color: var(--pico-primary);
-    border: 2px solid var(--solid-dark);
     border-radius: 0;
     color: var(--pico-primary-inverse);
     font-family: var(--pico-font-family-display);

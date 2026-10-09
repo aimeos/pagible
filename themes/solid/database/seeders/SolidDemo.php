@@ -14,23 +14,24 @@ use Illuminate\Support\Str;
 
 
 /**
- * Solid theme demo for the fictional Brickline Build & Renovation company.
+ * Solid theme demo for the fictional Courseline Build & Renovation company.
  */
 class SolidDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
     protected const DESCRIPTIONS = [
-        'about' => 'Meet the Brickline team: a Leeds builder with its own carpenters, bricklayers and site managers, fixed quotes and a ten-year workmanship guarantee.',
-        'contact' => 'Ask Brickline for a free site visit and a fixed quote for your extension, loft conversion, kitchen or bathroom in Leeds and West Yorkshire.',
-        'extensions' => 'Single and double storey house extensions in Leeds and West Yorkshire, from drawings and building control to the finished room.',
-        'imprint' => 'Legal notice of Brickline Build & Renovation Ltd, Leeds.',
-        'kitchens-bathrooms' => 'Kitchen and bathroom renovations by one team: stripping out, plumbing, electrics, tiling and fitting, with a fixed quote and schedule.',
+        'about' => 'Meet the Courseline team: a Leeds builder with its own carpenters, bricklayers and site managers, fixed quotes and a ten-year workmanship guarantee.',
+        'contact' => 'Ask Courseline for a free site visit and a fixed quote for your extension, loft conversion, kitchen or bathroom in Leeds, West Yorkshire, Harrogate and York.',
+        'extensions' => 'Single and double storey house extensions in Leeds, West Yorkshire, Harrogate and York, from drawings and building control to the finished room.',
+        'legal' => 'Company information of Courseline Build & Renovation Ltd, registered in England and Wales, Leeds.',
+        'kitchens-bathrooms' => 'Kitchen and bathroom renovations coordinated by one site manager: stripping out, plumbing, electrics, tiling and fitting, with a fixed quote and schedule.',
         'loft-conversions' => 'Dormer and Velux loft conversions in Leeds that add a bedroom and bathroom without giving up your garden.',
-        'projects' => 'Extensions, loft conversions, kitchens and bathrooms Brickline has built across Leeds and West Yorkshire, with before and after photos.',
-        'roundhay-extension' => 'A single storey rear extension in Roundhay with a new open-plan kitchen, roof lanterns and bi-fold doors, built in fourteen weeks.',
+        'privacy' => 'Privacy policy of Courseline Build & Renovation Ltd, Leeds.',
+        'projects' => 'Extensions, loft conversions, kitchens and bathrooms Courseline has built across Leeds, West Yorkshire, Harrogate and York, with before and after photos.',
+        'roundhay-extension' => 'A 5 metre single storey rear extension in Roundhay with a new open-plan kitchen, roof lanterns and bi-fold doors, built in fourteen weeks.',
         'headingley-loft' => 'A dormer loft conversion in Headingley that added a main bedroom with en suite bathroom to a Victorian terrace.',
         'chapel-allerton-bathroom' => 'A dated family bathroom in Chapel Allerton turned into a walk-in shower room with underfloor heating in three weeks.',
-        'services' => 'House extensions, loft conversions and kitchen and bathroom renovations from one Leeds building team with fixed quotes.',
+        'services' => 'House extensions, loft conversions, garage conversions, knock-throughs and kitchen and bathroom renovations from one Leeds building team with fixed quotes.',
     ];
 
     /**
@@ -74,14 +75,14 @@ class SolidDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'About',
-            'title' => 'About Brickline | Leeds Builders Since 1998',
+            'title' => 'About Courseline | Leeds Builders Since 1998',
             'path' => 'about',
             'type' => 'page',
             'status' => 1,
         ], [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'Builders who answer the phone',
-                'subtitle' => 'About Brickline',
+                'subtitle' => 'About Courseline',
                 'text' => 'Family run since 1998, with our own carpenters, bricklayers and site managers. The person who quotes your job is the person who runs it.',
                 'buttons' => [
                     ['label' => 'Book a site visit', 'url' => '/contact'],
@@ -93,16 +94,17 @@ class SolidDemo extends AbstractDemo
                 'file' => ['id' => $this->img( 'plans' ), 'type' => 'file'],
                 'position' => 'grid-start',
                 'ratio' => '1-1',
-                'text' => "## One team from first sketch to handover\n\nTom Hartley started Brickline with a van and a cement mixer. Twenty-five years later, the company employs 28 tradespeople, but the rules are the same: turn up when we say we will, keep the site tidy, and put the price in writing before the first brick is laid.\n\nWe don't sell your job on to subcontractors. Our own crews handle groundworks, brickwork, carpentry, plastering and finishing, while trusted, long-standing partners cover electrics, gas and glazing.",
+                'text' => "## One team from first sketch to handover\n\nTom Hartley started Courseline with a van and a cement mixer. More than twenty-five years later, the company employs 28 tradespeople, but the rules are the same: turn up when we say we will, keep the site tidy, and put the price in writing before the first brick is laid.\n\nWe don't sell your job on to subcontractors. Our own crews handle groundworks, brickwork, carpentry, plastering and finishing, while trusted, long-standing partners cover electrics, gas and glazing.\n\nOur architect and structural engineer partners draw the plans and calculate the steels, so you never have to find them yourself.",
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Checked and certified',
                 'layout' => 'badges',
                 'cards' => [
-                    ['title' => 'FMB member', 'text' => 'Federation of Master Builders, vetted and inspected'],
-                    ['title' => 'TrustMark', 'text' => 'Government endorsed quality scheme'],
-                    ['title' => 'NICEIC', 'text' => 'Approved electrical contractor partner'],
-                    ['title' => 'Gas Safe', 'text' => 'Registered engineers for all gas work'],
+                    ['title' => 'FMB member', 'text' => 'Federation of Master Builders, vetted and inspected, membership no. 00000 (fictional)'],
+                    ['title' => 'TrustMark', 'text' => 'Government endorsed quality scheme, licence no. 0000000 (fictional)'],
+                    ['title' => 'Certified electrics', 'text' => 'All electrical work by NICEIC registered partners, with Part P certificates'],
+                    ['title' => 'Safe gas work', 'text' => 'All gas work by Gas Safe registered engineers'],
+                    ['title' => 'Building control', 'text' => 'Completion certificate for every notifiable job'],
                     ['title' => '£10m insurance', 'text' => 'Public liability cover on every site'],
                 ],
             ]],
@@ -110,7 +112,7 @@ class SolidDemo extends AbstractDemo
                 'title' => 'What our clients say',
                 'items' => [
                     ['name' => 'Sarah and James P.', 'role' => 'Rear extension, Roundhay', 'text' => 'The quote was the bill. No surprises, no extras sneaking in, and the site was swept every evening while we were still living in the house.'],
-                    ['name' => 'Priya N.', 'role' => 'Loft conversion, Headingley', 'text' => 'Tom talked us out of a dormer we did not need and saved us £6,000. The finished room feels like it was always part of the house.'],
+                    ['name' => 'Priya N.', 'role' => 'Loft conversion, Headingley', 'text' => 'Tom suggested moving the stairs instead of a second dormer and saved us £6,000. The finished room feels like it was always part of the house.'],
                     ['name' => 'Mark D.', 'role' => 'Bathroom, Chapel Allerton', 'text' => 'Three weeks, exactly as planned. The tiler was a perfectionist, and we got a WhatsApp photo update at the end of every day.'],
                 ],
             ]],
@@ -131,7 +133,7 @@ class SolidDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'Contact',
-            'title' => 'Contact Brickline | Free Site Visit and Fixed Quote',
+            'title' => 'Contact Courseline | Free Site Visit and Fixed Quote',
             'path' => 'contact',
             'type' => 'page',
             'status' => 1,
@@ -150,10 +152,10 @@ class SolidDemo extends AbstractDemo
             ]],
             ['id' => Utils::uid(), 'type' => 'map', 'group' => 'main', 'data' => [
                 'title' => 'Our yard',
-                'text' => "**Brickline Build & Renovation**\nUnit 4, Cross Green Industrial Estate · Leeds LS9 0SG\n\n**Call**\n0113 496 0123 · Monday to Friday 07:30–17:00, Saturday 08:00–12:00\n\n**Email**\ninfo@brickline.example\n\nWe work across Leeds, Bradford, Harrogate, Wakefield and York.",
+                'text' => "**Courseline Build & Renovation**\nUnit 4, Cross Green Industrial Estate · Leeds LS9 0SG\n\n**Call**\n0113 496 0123 · Monday to Friday 07:30–17:00, Saturday 08:00–12:00\n\n**Email**\ninfo@courseline.example\n\nWe work across Leeds and West Yorkshire as well as Harrogate and York in North Yorkshire.",
                 'location' => [
-                    'latitude' => 53.7887,
-                    'longitude' => -1.5101,
+                    'latitude' => 53.7856,
+                    'longitude' => -1.5120,
                     'zoom' => 15,
                 ],
                 'button' => 'Open in OpenStreetMap',
@@ -165,23 +167,48 @@ class SolidDemo extends AbstractDemo
 
 
     /**
-     * Creates the imprint page below the home page.
+     * Creates the legal information page below the home page.
      *
      * @param Page $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addLegal( Page $home ) : static
     {
         $this->page( [
             'lang' => 'en',
-            'name' => 'Imprint',
-            'title' => 'Imprint | Brickline Build & Renovation',
-            'path' => 'imprint',
+            'name' => 'Legal information',
+            'title' => 'Legal Information | Courseline Build & Renovation',
+            'path' => 'legal',
             'type' => 'page',
             'status' => 2,
         ], [
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
-                'text' => "# Imprint\n\n**Brickline Build & Renovation Ltd**\nUnit 4, Cross Green Industrial Estate\nLeeds LS9 0SG\nUnited Kingdom\n\nTelephone: 0113 496 0123\nEmail: info@brickline.example\n\nRegistered in England and Wales, company number 01234567\nVAT number GB 123 4567 89\nDirector: Tom Hartley\n\nThis is a demo website for the Solid theme. Brickline is a fictional company.",
+                'text' => "# Legal information\n\n**Courseline Build & Renovation Ltd**\nPrivate limited company registered in England and Wales\nCompany number: 00000000 (fictional)\n\n**Registered office**\nUnit 4, Cross Green Industrial Estate\nLeeds LS9 0SG\nUnited Kingdom\n\nTelephone: 0113 496 0123\nEmail: info@courseline.example\n\nVAT number: GB 000 0000 00 (fictional)\nDirector: Tom Hartley\n\nMember of the Federation of Master Builders (membership no. 00000 (fictional)) and TrustMark registered (licence no. 0000000 (fictional)).\n\nThis is a demo website for the Solid theme. Courseline is a fictional company.",
+            ]],
+        ], $home );
+
+        return $this;
+    }
+
+
+    /**
+     * Creates the privacy policy page below the home page.
+     *
+     * @param Page $home Home page
+     * @return static Same object for fluent calls
+     */
+    protected function addPrivacy( Page $home ) : static
+    {
+        $this->page( [
+            'lang' => 'en',
+            'name' => 'Privacy',
+            'title' => 'Privacy Policy | Courseline Build & Renovation',
+            'path' => 'privacy',
+            'type' => 'page',
+            'status' => 2,
+        ], [
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
+                'text' => "# Privacy policy\n\n## Who is responsible\n\nCourseline Build & Renovation Ltd, Unit 4, Cross Green Industrial Estate, Leeds LS9 0SG, info@courseline.example, is the controller for your personal data under the UK GDPR and the Data Protection Act 2018.\n\n## Quote requests\n\nWhen you send the quote form, we use your name, phone number, email address, postcode, project type and any photos or drawings you attach only to answer your request, arrange the site visit and prepare your quote (Art. 6 (1) (b) UK GDPR). Requests that don't lead to a contract are deleted after twelve months.\n\n## Customers\n\nFor building work we keep contracts, invoices, plans and certificates for six years after the end of the tax year, as required by tax law, and longer where needed for guarantee claims. We share data with our architect, engineer and trade partners, building control and the guarantee insurer only as far as necessary for your project.\n\n## This website\n\nThe website doesn't use tracking or advertising cookies. Our server stores technical access data such as the IP address for seven days to protect against attacks. The map is loaded from OpenStreetMap only after you open it.\n\n## Your rights\n\nYou have the right to access, rectification, erasure, restriction of processing, data portability and to object to processing. If you are unhappy with how we handle your data, please contact us first. You can also complain to the Information Commissioner's Office (ICO), Wycliffe House, Water Lane, Wilmslow SK9 5AF, ico.org.uk.\n\nThis is a demo website for the Solid theme. Courseline is a fictional company.",
             ]],
         ], $home );
 
@@ -204,12 +231,12 @@ class SolidDemo extends AbstractDemo
             'title' => 'Rear Extension in Roundhay',
             'path' => 'roundhay-extension',
         ], 'A kitchen that finally fits the family',
-            "Sarah and James had a narrow galley kitchen and a dining room nobody used. We knocked through, added a 5 metre single storey extension and gave the house one big room that opens onto the garden.\n\nThe steel went in over a weekend so the family could stay at home throughout. Two roof lanterns bring daylight into the middle of the plan and the bi-fold doors run the full width of the back wall.",
+            "Sarah and James had a narrow galley kitchen and a dining room nobody used. We knocked through, added a 5 metre single storey extension, approved under the larger home extension scheme, and gave the house one big room that opens onto the garden.\n\nThe steel went in over a weekend so the family could stay at home throughout. Two roof lanterns bring daylight into the middle of the plan and the bi-fold doors run the full width of the back wall.",
             'house', ['kitchen-old', 'living'],
             [
                 ['title' => '14', 'text' => 'Weeks from groundworks to handover'],
                 ['title' => '32 m²', 'text' => 'Additional floor space'],
-                ['title' => '£68k', 'text' => 'Fixed price, no extras'],
+                ['title' => '£96k', 'text' => 'Fixed price incl. VAT, no extras'],
             ],
             [
                 ['label' => 'Weeks 1–2', 'title' => 'Groundworks', 'text' => 'Excavation, drainage diversion and concrete foundations, signed off by building control.'],
@@ -225,18 +252,18 @@ class SolidDemo extends AbstractDemo
             'title' => 'Dormer Loft Conversion in Headingley',
             'path' => 'headingley-loft',
         ], 'A main bedroom under the roof',
-            "The Victorian terrace had three bedrooms and a growing family. A rear dormer turned the dusty loft into a main bedroom with an en suite shower room and built-in storage under the eaves.\n\nWe worked from scaffolding at the back of the house, so the stairs were only opened up in the final two weeks. Planning permission wasn't needed; we handled the building regulations and the party wall notices.",
+            "The Victorian terrace had three bedrooms and a growing family. A rear dormer turned the dusty loft into a main bedroom with an en suite shower room and built-in storage under the eaves.\n\nWe worked from scaffolding at the back of the house, so the stairs were only opened up in the final two weeks. As the street lies outside the conservation area, planning permission wasn't needed; we handled the building regulations, the party wall notices and the completion certificate.",
             'attic', ['loft-old', 'attic'],
             [
                 ['title' => '9', 'text' => 'Weeks from scaffold up to scaffold down'],
                 ['title' => '+1', 'text' => 'Bedroom with en suite'],
-                ['title' => '£54k', 'text' => 'Fixed price, no extras'],
+                ['title' => '£54k', 'text' => 'Fixed price incl. VAT, no extras'],
             ],
             [
                 ['label' => 'Week 1', 'title' => 'Scaffolding and steels', 'text' => 'Scaffold and roof access at the rear, new floor joists and steel beams.'],
                 ['label' => 'Weeks 2–4', 'title' => 'Dormer', 'text' => 'Dormer framing, roof covering and windows, the loft is weathertight.'],
                 ['label' => 'Weeks 5–7', 'title' => 'Insulation and services', 'text' => 'Insulation to current regulations, electrics, plumbing for the en suite.'],
-                ['label' => 'Weeks 8–9', 'title' => 'Staircase and finishing', 'text' => 'New staircase, fire doors, tiling, decoration and building control sign-off.'],
+                ['label' => 'Weeks 8–9', 'title' => 'Staircase and finishing', 'text' => 'New staircase, fire doors, tiling, decoration and the building control completion certificate.'],
             ],
             ['roof', 'insulation', 'attic', 'electrician'],
         );
@@ -251,7 +278,7 @@ class SolidDemo extends AbstractDemo
             [
                 ['title' => '3', 'text' => 'Weeks from strip-out to handover'],
                 ['title' => '6 m²', 'text' => 'Fully retiled room'],
-                ['title' => '£14k', 'text' => 'Fixed price, no extras'],
+                ['title' => '£14k', 'text' => 'Fixed price incl. VAT, no extras'],
             ],
             [
                 ['label' => 'Days 1–3', 'title' => 'Strip-out', 'text' => 'Old suite, tiles and flooring removed, joists checked and repaired.'],
@@ -277,7 +304,7 @@ class SolidDemo extends AbstractDemo
         $services = $this->page( [
             'lang' => 'en',
             'name' => 'Services',
-            'title' => 'Building Services | Brickline Build & Renovation',
+            'title' => 'Building Services | Courseline Build & Renovation',
             'path' => 'services',
             'type' => 'page',
             'status' => 1,
@@ -285,7 +312,7 @@ class SolidDemo extends AbstractDemo
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'What we build',
                 'subtitle' => 'Our services',
-                'text' => 'Extensions, loft conversions, kitchens and bathrooms. One team, one contract and one fixed price for the whole job.',
+                'text' => 'Extensions, loft conversions, kitchens and bathrooms, plus garage conversions and knock-throughs. One team, one contract and one fixed price for the whole job.',
                 'buttons' => [
                     ['label' => 'Get a free quote', 'url' => '/contact'],
                 ],
@@ -294,20 +321,25 @@ class SolidDemo extends AbstractDemo
             ['id' => Utils::uid(), 'type' => 'questions', 'group' => 'main', 'data' => [
                 'title' => 'Common questions',
                 'items' => [
-                    ['title' => 'Do you handle planning permission?', 'text' => 'Yes. Our architect partners prepare the drawings and we submit the planning or permitted development application and the building regulations plans for you.'],
-                    ['title' => 'Is the quote really fixed?', 'text' => 'Yes. After the site visit you get an itemised quote. The price only changes if you ask for changes, and every change is agreed in writing before the work is done.'],
+                    ['title' => 'Do you handle planning permission?', 'text' => 'Yes. Our architect partners prepare the drawings and we submit the planning application, prior approval or lawful development certificate, plus the building regulations plans, for you.'],
+                    ['title' => 'Do I need an architect or structural engineer?', 'text' => 'For extensions, loft conversions and knock-throughs, yes. You don\'t have to find them yourself: our architect and structural engineer partners are part of the quote, and the engineer\'s calculations go to building control with the plans.'],
+                    ['title' => 'Is the quote really fixed?', 'text' => 'Yes. After the site visit you get an itemised quote including VAT at 20%. The price only changes if you ask for changes, and every change is agreed in writing before the work is done.'],
+                    ['title' => 'How do payments work?', 'text' => 'We don\'t ask for a large deposit. You pay in stages as each phase is finished and checked with you, for example after the foundations, the watertight shell and the first fix, with the last payment after snagging.'],
+                    ['title' => 'How long does a project take?', 'text' => 'A single storey extension usually takes 10 to 14 weeks on site, a dormer loft conversion 8 to 10 weeks and a bathroom about three weeks. If planning permission is needed, allow 8 to 13 weeks for the council decision before we start.'],
+                    ['title' => 'Do I need a party wall agreement?', 'text' => 'If we build on or near the boundary, cut into a shared wall or dig foundations within three metres of your neighbour\'s, the Party Wall Act applies. We serve the notices at least two months before work starts, and most neighbours simply agree in writing.'],
                     ['title' => 'Can we stay at home during the work?', 'text' => 'Almost always. We plan noisy and dusty work in blocks, seal off the work area and keep a working kitchen or bathroom available wherever possible.'],
-                    ['title' => 'What guarantee do I get?', 'text' => 'Ten years on our workmanship, backed by an insurance-backed warranty, plus the manufacturer guarantees for all fitted products.'],
+                    ['title' => 'Can I pay in instalments?', 'text' => 'Yes. Besides the stage payments, you can spread the cost of projects over £5,000 across 2 to 10 years through our finance partner, subject to status. We are a credit broker, not a lender.'],
+                    ['title' => 'What guarantee do I get?', 'text' => 'Ten years on our workmanship, plus an insurance-backed guarantee that covers structural defects for ten years, even if we stop trading, and the manufacturer guarantees for all fitted products. You also get the building control completion certificate at handover.'],
                 ],
             ]],
         ], $home );
 
         $this->service( $services, [
             'name' => 'Extensions',
-            'title' => 'House Extensions in Leeds | Brickline Build & Renovation',
+            'title' => 'House Extensions in Leeds | Courseline Build & Renovation',
             'path' => 'extensions',
         ], 'More room without moving house', 'house', 'site',
-            "## Single storey, double storey, wrap-around\n\nAn extension is usually the quickest way to the kitchen-diner or extra bedroom you need. We take care of the whole process: measured survey, drawings, planning or permitted development, building control, party wall notices and the build itself.\n\nOur own crews dig the foundations, lay the bricks, fit the steels and finish the room, so there is no waiting for the next trade to turn up.",
+            "## Single storey, double storey, wrap-around\n\nAn extension is usually the quickest way to the kitchen-diner or extra bedroom you need. We take care of the whole process: measured survey, drawings, planning or permitted development, building control, party wall notices and the build itself.\n\nOur own crews dig the foundations, lay the bricks, fit the steels and finish the room, so there is no waiting for the next trade to turn up.\n\nA finished single storey extension costs £2,000 to £3,000 per m² including VAT, depending on the roof, glazing and kitchen. Most of our extensions of 20 to 40 m² come to £55,000 to £110,000.\n\nThe same crews also convert garages into living space and take out load-bearing walls for open-plan rooms, with the steel calculated by our structural engineer.",
             [
                 ['title' => 'Drawings and approvals', 'text' => 'Planning, permitted development, building regulations and party wall notices.'],
                 ['title' => 'Groundworks and shell', 'text' => 'Foundations, drainage, brickwork, steels and a watertight roof.'],
@@ -317,10 +349,10 @@ class SolidDemo extends AbstractDemo
 
         $this->service( $services, [
             'name' => 'Loft conversions',
-            'title' => 'Loft Conversions in Leeds | Brickline Build & Renovation',
+            'title' => 'Loft Conversions in Leeds | Courseline Build & Renovation',
             'path' => 'loft-conversions',
         ], 'Your next bedroom is already upstairs', 'attic', 'roof',
-            "## Dormer, hip-to-gable and Velux conversions\n\nMost loft conversions don't need planning permission and leave your garden untouched. We check the head height, design the stairs and plan the conversion around the room you want: a main bedroom with en suite, a children's room or a quiet office.\n\nThe work is done from scaffolding outside, so the house stays liveable until the new staircase goes in.",
+            "## Dormer, hip-to-gable and Velux conversions\n\nMost loft conversions don't need planning permission and leave your garden untouched. We check the head height, design the stairs and plan the conversion around the room you want: a main bedroom with en suite, a children's room or a quiet office.\n\nA Velux conversion starts at about £30,000, a dormer with en suite usually costs £45,000 to £65,000 and a hip-to-gable conversion £55,000 to £75,000, all including VAT.\n\nThe work is done from scaffolding outside, so the house stays liveable until the new staircase goes in.",
             [
                 ['title' => 'Survey and design', 'text' => 'Head height check, structural calculations and stair layout.'],
                 ['title' => 'Structure and roof', 'text' => 'Floor joists, steels, dormer or roof windows and insulation.'],
@@ -330,13 +362,13 @@ class SolidDemo extends AbstractDemo
 
         $this->service( $services, [
             'name' => 'Kitchens & bathrooms',
-            'title' => 'Kitchen and Bathroom Renovation in Leeds | Brickline',
+            'title' => 'Kitchen and Bathroom Renovation in Leeds | Courseline',
             'path' => 'kitchens-bathrooms',
         ], 'Rooms that work as hard as you do', 'kitchen', 'bath-new',
-            "## Strip-out to final clean\n\nKitchens and bathrooms involve more trades than any other room. We coordinate all of them: removal, plumbing, electrics, plastering, tiling and fitting, in a schedule you get before we start.\n\nBring your own design or work with our partner showrooms in Leeds. We fit what you choose and stand behind the work for ten years.",
+            "## Strip-out to final clean\n\nKitchens and bathrooms involve more trades than any other room. We coordinate all of them: removal, plumbing, electrics, plastering, tiling and fitting, in a schedule you get before we start.\n\nA complete bathroom renovation usually costs £10,000 to £18,000 and a kitchen £20,000 to £45,000 including VAT and fitting, plus the units and appliances you choose.\n\nBring your own design or work with our partner showrooms in Leeds. We fit what you choose and stand behind the work for ten years.",
             [
                 ['title' => 'Plan and schedule', 'text' => 'Layout, measurements and a day-by-day schedule before work starts.'],
-                ['title' => 'All trades included', 'text' => 'Plumbing, electrics, plastering and tiling by one team.'],
+                ['title' => 'All trades included', 'text' => 'Plumbing, electrics, plastering and tiling, coordinated by one site manager.'],
                 ['title' => 'Clean handover', 'text' => 'Fitted, tested, cleaned and checked together with you.'],
             ],
         );
@@ -346,16 +378,16 @@ class SolidDemo extends AbstractDemo
 
 
     /**
-     * Creates the shared Brickline footer and returns its ID.
+     * Creates the shared Courseline footer and returns its ID.
      *
      * @return string Element ID
      */
     protected function element() : string
     {
-        return $this->element ??= $this->saveElement( 'cards', 'Brickline footer', ['columns' => '4', 'cards' => [
-            ['title' => 'Brickline', 'text' => "Builders for extensions, loft conversions and renovations in Leeds and West Yorkshire since 1998."],
+        return $this->element ??= $this->saveElement( 'cards', 'Courseline footer', ['columns' => '4', 'cards' => [
+            ['title' => 'Courseline', 'text' => "Builders for extensions, loft conversions and renovations in Leeds, West Yorkshire, Harrogate and York since 1998."],
             ['title' => 'Services', 'text' => "- [House extensions](/extensions)\n- [Loft conversions](/loft-conversions)\n- [Kitchens and bathrooms](/kitchens-bathrooms)"],
-            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About Brickline](/about)\n- [Imprint](/imprint)"],
+            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About Courseline](/about)\n- [Legal information](/legal)\n- [Privacy](/privacy)"],
             ['title' => 'Contact', 'text' => "Unit 4, Cross Green Industrial Estate\nLeeds LS9 0SG\n\n0113 496 0123\n[Get a free quote](/contact)"],
         ]] );
     }
@@ -373,7 +405,7 @@ class SolidDemo extends AbstractDemo
 
 
     /**
-     * Creates the Brickline home page and returns it.
+     * Creates the Courseline home page and returns it.
      *
      * @return Page Home page
      */
@@ -383,20 +415,20 @@ class SolidDemo extends AbstractDemo
         $fileId = $this->file();
 
         $config = [
-            'website' => Validation::entry( 'website', ['title' => 'Brickline Build & Renovation'], 'config' ),
+            'website' => Validation::entry( 'website', ['title' => 'Courseline Build & Renovation'], 'config' ),
         ] + $this->logos( $this->logoFile() ) + [
             'solid::business' => [
                 'type' => 'solid::business',
                 'files' => [],
                 'data' => [
-                    'name' => 'Brickline Build & Renovation Ltd',
+                    'name' => 'Courseline Build & Renovation Ltd',
                     'business-type' => 'GeneralContractor',
                     'street-address' => 'Unit 4, Cross Green Industrial Estate',
                     'postal-code' => 'LS9 0SG',
                     'locality' => 'Leeds',
                     'country' => 'GB',
                     'telephone' => '+44 113 496 0123',
-                    'email' => 'info@brickline.example',
+                    'email' => 'info@courseline.example',
                     'area' => 'Leeds, Bradford, Harrogate, Wakefield, York',
                     'price-range' => '£££',
                     'call-button' => true,
@@ -414,9 +446,9 @@ class SolidDemo extends AbstractDemo
 
         $content = [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
-                'title' => 'Built right. Built on time.',
+                'title' => 'Extensions, lofts and renovations in Leeds',
                 'subtitle' => 'Leeds builders since 1998',
-                'text' => 'Extensions, loft conversions and renovations by our own crews, with a fixed quote, a clear schedule and a ten-year workmanship guarantee.',
+                'text' => 'Built by our own crews on a fixed quote and a clear schedule, with a ten-year workmanship guarantee and staged payments as the work is finished.',
                 'buttons' => [
                     ['label' => 'Get a free quote', 'url' => '/contact'],
                     ['label' => 'See our projects', 'url' => '/projects'],
@@ -429,18 +461,28 @@ class SolidDemo extends AbstractDemo
                     ['title' => '25+', 'text' => 'Years building in Leeds'],
                     ['title' => '640', 'text' => 'Finished projects'],
                     ['title' => '10', 'text' => 'Years workmanship guarantee'],
-                    ['title' => '4.9/5', 'text' => 'From 212 client reviews'],
+                    ['title' => '4.9/5', 'text' => 'From 212 Google reviews'],
                 ],
             ]],
             $this->services(),
+            ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
+                'title' => 'Checked and certified',
+                'layout' => 'badges',
+                'cards' => [
+                    ['title' => 'FMB member', 'text' => 'Vetted and inspected by the Federation of Master Builders'],
+                    ['title' => 'TrustMark', 'text' => 'Government endorsed quality scheme'],
+                    ['title' => 'Building control', 'text' => 'Completion certificate for every notifiable job'],
+                    ['title' => 'Insurance-backed', 'text' => 'Ten-year structural guarantee, even if we stop trading'],
+                ],
+            ]],
             ['id' => Utils::uid(), 'type' => 'timeline', 'group' => 'main', 'data' => [
                 'title' => 'How we work',
                 'layout' => 'horizontal',
                 'items' => [
-                    ['label' => 'Step 1', 'title' => 'Free site visit', 'text' => 'We look at the house, listen to your plans and check what is possible.'],
-                    ['label' => 'Step 2', 'title' => 'Fixed quote', 'text' => 'An itemised price and schedule within ten working days.'],
-                    ['label' => 'Step 3', 'title' => 'Build', 'text' => 'One site manager, our own crews and a photo update every evening.'],
-                    ['label' => 'Step 4', 'title' => 'Handover', 'text' => 'Snagging walk-through, certificates and your ten-year guarantee.'],
+                    ['label' => 'Within a week', 'title' => 'Free site visit', 'text' => 'We look at the house, listen to your plans and check what is possible.'],
+                    ['label' => '10 working days', 'title' => 'Fixed quote', 'text' => 'An itemised price including VAT and a week-by-week schedule.'],
+                    ['label' => '8–13 weeks', 'title' => 'Drawings and approvals', 'text' => 'Plans, planning or permitted development, building control and party wall notices.'],
+                    ['label' => '3–14 weeks', 'title' => 'Build and handover', 'text' => 'One site manager, our own crews, a photo update every evening and a snagging walk-through at the end.'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'blog', 'group' => 'main', 'data' => [
@@ -450,17 +492,18 @@ class SolidDemo extends AbstractDemo
                 'order' => '_lft',
                 'limit' => 3,
             ]],
+            $this->prices(),
             ['id' => Utils::uid(), 'type' => 'testimonial', 'group' => 'main', 'data' => [
                 'title' => 'Trusted by homeowners',
                 'items' => [
                     ['name' => 'Sarah and James P.', 'role' => 'Rear extension, Roundhay', 'text' => 'The quote was the bill. No surprises, and the site was swept every evening while we were still living in the house.'],
-                    ['name' => 'Priya N.', 'role' => 'Loft conversion, Headingley', 'text' => 'They talked us out of a dormer we did not need and saved us £6,000. The new room feels like it was always there.'],
+                    ['name' => 'Priya N.', 'role' => 'Loft conversion, Headingley', 'text' => 'Moving the stairs instead of adding a second dormer saved us £6,000. The new room feels like it was always there.'],
                     ['name' => 'Mark D.', 'role' => 'Bathroom, Chapel Allerton', 'text' => 'Three weeks, exactly as planned, with a photo update at the end of every day.'],
                 ],
             ]],
             ['id' => Utils::uid(), 'type' => 'cta', 'group' => 'main', 'data' => [
                 'title' => 'Planning a project?',
-                'text' => 'Book a free site visit. You get honest advice and a fixed quote, with no obligation.',
+                'text' => 'Book a free site visit in Leeds, Harrogate, Wetherby, York or anywhere in West Yorkshire. You get honest advice and a fixed quote, with no obligation.',
                 'buttons' => [
                     ['label' => 'Get a free quote', 'url' => '/contact'],
                     ['label' => 'Call 0113 496 0123', 'url' => 'tel:+441134960123'],
@@ -471,22 +514,22 @@ class SolidDemo extends AbstractDemo
 
         $meta = [
             'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => 'Brickline builds house extensions, loft conversions, kitchens and bathrooms in Leeds and West Yorkshire with fixed quotes and a ten-year guarantee.',
+                'description' => 'Courseline builds house extensions, loft conversions, kitchens and bathrooms in Leeds, West Yorkshire, Harrogate and York with fixed quotes and a ten-year guarantee.',
                 'keywords' => 'builder Leeds, house extension, loft conversion, kitchen renovation, bathroom renovation, general contractor, West Yorkshire',
             ], 'meta' ),
             'social-media' => Validation::entry( 'social-media', [
-                'title' => 'Brickline Build & Renovation | Leeds Builders',
+                'title' => 'Courseline Build & Renovation | Leeds Builders',
                 'description' => 'Extensions, loft conversions and renovations by our own crews, with a fixed quote and a ten-year guarantee.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ], 'meta' ),
         ];
 
-        return $this->saveRoot( 'Brickline Build & Renovation | Builders in Leeds', $config, $meta, $content, $elementId, $fileId );
+        return $this->saveRoot( 'Courseline Build & Renovation | Builders in Leeds', $config, $meta, $content, $elementId, $fileId );
     }
 
 
     /**
-     * Creates the Brickline SVG logo and returns its file ID.
+     * Creates the Courseline SVG logo and returns its file ID.
      *
      * @return string File ID
      */
@@ -495,21 +538,21 @@ class SolidDemo extends AbstractDemo
         if( !isset( $this->logoFile ) )
         {
             $svg = <<<'SVG'
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 80" role="img" aria-labelledby="title desc">
-  <title id="title">Brickline logo</title>
-  <desc id="desc">Yellow square with a roof outline beside the Brickline wordmark</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" role="img" aria-labelledby="title desc">
+  <title id="title">Courseline logo</title>
+  <desc id="desc">Yellow square with a roof outline beside the Courseline wordmark</desc>
   <rect x="4" y="8" width="64" height="64" fill="#F2B705"/>
   <path d="M16 46 36 26l20 20" fill="none" stroke="#1F2328" stroke-width="7" stroke-linecap="square"/>
   <path d="M24 52h24v10H24z" fill="#1F2328"/>
-  <text x="84" y="58" fill="#FFFFFF" font-family="Arial Narrow, Roboto Condensed, Arial, sans-serif" font-size="46" font-weight="800" letter-spacing="2">BRICKLINE</text>
+  <text x="84" y="58" fill="#FFFFFF" font-family="Arial Narrow, Roboto Condensed, Arial, sans-serif" font-size="46" font-weight="800" letter-spacing="2">COURSELINE</text>
 </svg>
 SVG;
 
             $this->logoFile = $this->svgFile(
                 $svg,
-                'brickline-logo.svg',
-                'Brickline logo',
-                'Yellow square with a roof outline beside the Brickline wordmark',
+                'courseline-logo.svg',
+                'Courseline logo',
+                'Yellow square with a roof outline beside the Courseline wordmark',
                 true,
             );
         }
@@ -535,7 +578,7 @@ SVG;
             ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Brickline, builder Leeds, extension, loft conversion, renovation, general contractor' );
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Courseline, builder Leeds, extension, loft conversion, renovation, general contractor' );
     }
 
 
@@ -551,7 +594,50 @@ SVG;
             ->addProjects( $home )
             ->addAbout( $home )
             ->addContact( $home )
-            ->addImprint( $home );
+            ->addLegal( $home )
+            ->addPrivacy( $home );
+    }
+
+
+    /**
+     * Returns the price guide element.
+     *
+     * @return array<string, mixed> Pricing element
+     */
+    protected function prices() : array
+    {
+        return ['id' => Utils::uid(), 'type' => 'pricing', 'group' => 'main', 'data' => [
+            'title' => 'What projects cost',
+            'text' => 'Typical prices in Leeds including VAT, drawings and approvals. Your site visit ends with a fixed, itemised quote.',
+            'items' => [
+                [
+                    'name' => 'Single storey extension',
+                    'prices' => [['id' => 'extension', 'amount' => 55000, 'label' => '£55k–110k']],
+                    'text' => '20 to 40 m², about £2,000 to £3,000 per m².',
+                    'features' => "- Foundations to decoration\n- Steels and roof lanterns\n- 10 to 14 weeks on site",
+                    'url' => '/extensions',
+                    'button' => 'House extensions',
+                ],
+                [
+                    'name' => 'Dormer loft conversion',
+                    'prices' => [['id' => 'loft', 'amount' => 45000, 'label' => '£45k–65k']],
+                    'text' => 'Bedroom with en suite and a new staircase.',
+                    'features' => "- No planning in most cases\n- Built from scaffolding\n- 8 to 10 weeks on site",
+                    'url' => '/loft-conversions',
+                    'button' => 'Loft conversions',
+                    'highlight' => true,
+                    'badge' => 'Most requested',
+                ],
+                [
+                    'name' => 'Bathroom renovation',
+                    'prices' => [['id' => 'bathroom', 'amount' => 10000, 'label' => '£10k–18k']],
+                    'text' => 'Strip-out, all trades and fitting, plus your suite.',
+                    'features' => "- Tanking and tiling\n- Underfloor heating\n- About 3 weeks",
+                    'url' => '/kitchens-bathrooms',
+                    'button' => 'Kitchens and bathrooms',
+                ],
+            ],
+        ]];
     }
 
 
@@ -620,7 +706,7 @@ SVG;
             'id' => $this->projectsId,
             'lang' => 'en',
             'name' => 'Projects',
-            'title' => 'Our Projects | Brickline Build & Renovation',
+            'title' => 'Our Projects | Courseline Build & Renovation',
             'path' => 'projects',
             'type' => 'page',
             'status' => 1,
@@ -628,7 +714,7 @@ SVG;
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'Work we are proud of',
                 'subtitle' => 'Our projects',
-                'text' => 'Extensions, lofts, kitchens and bathrooms across Leeds and West Yorkshire, with the numbers behind each job.',
+                'text' => 'Extensions, lofts, kitchens and bathrooms across Leeds, West Yorkshire, Harrogate and York, with the numbers behind each job. All prices include VAT.',
             ]],
             ['id' => 'project-list', 'type' => 'blog', 'group' => 'main', 'data' => [
                 'layout' => 'cards',
@@ -681,7 +767,7 @@ SVG;
             ]],
             ['id' => Utils::uid(), 'type' => 'cta', 'group' => 'main', 'data' => [
                 'title' => 'Get a fixed price',
-                'text' => 'Book a free site visit and receive an itemised quote within ten working days.',
+                'text' => 'Book a free site visit and receive an itemised quote including VAT within ten working days.',
                 'buttons' => [
                     ['label' => 'Get a free quote', 'url' => '/contact'],
                     ['label' => 'Call 0113 496 0123', 'url' => 'tel:+441134960123'],

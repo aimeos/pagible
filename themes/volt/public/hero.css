@@ -45,7 +45,7 @@
 
 .cms-content > .hero:not(:has(.background)) {
     color-scheme: dark;
-    background: var(--volt-circuit), var(--volt-dark);
+    background-color: var(--volt-dark);
 }
 
 .hero:not(:has(.background)) :is(h1, p, .cms-text) {
@@ -71,7 +71,13 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: var(--volt-circuit), linear-gradient(90deg, #0B1530F2 0%, #0B1530D9 45%, #0B153059 100%);
+    background: linear-gradient(180deg, #0B1530B3 0%, #0B1530E6 100%);
+}
+
+@media screen and (min-width: 768px) {
+    .hero:has(.background)::after {
+        background: linear-gradient(90deg, #0B1530F2 0%, #0B1530D9 38%, #0B15304D 72%, #0B15301A 100%);
+    }
 }
 
 .hero:has(.background) :is(h1, p, .cms-text) {
@@ -211,5 +217,55 @@
 
     .hero .first + .second:not(.multiple) picture {
         margin: 0;
+    }
+}
+
+.hero:has(+ .cards .layout-figures) .container {
+    padding-bottom: 8rem;
+}
+
+.cms-content > .hero + .cards:has(.layout-figures) {
+    position: relative;
+    z-index: 1;
+    margin-top: -5rem;
+    background: none;
+    border: 0;
+}
+
+.cms-content > .hero + .cards:has(.layout-figures) > .container {
+    padding-block: 0 1rem;
+}
+
+.cms-content > .hero + .cards .card-list.layout-figures {
+    padding: 2rem;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: 0 1.5rem 3rem -1rem #0B153033;
+}
+
+@media screen and (max-width: 767px) {
+    .cms-content > .hero + .cards .card-list.layout-figures.cols-auto {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 1rem;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures .card-item {
+        padding-inline-start: 0.875rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures .title {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .hero:has(+ .cards .layout-figures) .container {
+        padding-bottom: 10rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures {
+        padding: 2.5rem 3rem;
     }
 }

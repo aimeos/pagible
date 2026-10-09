@@ -1,6 +1,6 @@
 # Volt Theme
 
-Bright, trustworthy design for electricians and electrical contractors with deep navy, electric blue and amber accents, bold headings, rounded corners and circuit-line backgrounds for [Pagible CMS](https://pagible.com).
+Bright, trustworthy design for electricians and electrical contractors with deep navy, electric blue and amber accents, bold headings, rounded corners and photo-led sections for [Pagible CMS](https://pagible.com).
 
 This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible).
 
@@ -13,7 +13,7 @@ php artisan vendor:publish --tag=cms-theme
 
 ## Design
 
-- **Style**: Clean and technical with navy header and footer, circuit-line backgrounds and amber lightning bolt markers
+- **Style**: Clean and technical with navy header and footer, photo-led hero and amber quote and call buttons
 - **Colors**: Light grey (#F4F6FA), deep navy (#0B1530), electric blue (#1F6FEB) and amber (#FFB020)
 - **Typography**: System sans-serif, bold headings with tight letter spacing
 - **Borders**: Rounded corners, thin borders and soft shadows

@@ -4,8 +4,7 @@
 
 .swiffy-slider {
 	background-color: var(--solid-dark);
-	border: 2px solid var(--solid-dark);
-	box-shadow: 0.5rem 0.5rem 0 var(--pico-primary);
+	box-shadow: 0 1.5rem 3rem -1rem #1F232859;
 	overflow: hidden;
 }
 

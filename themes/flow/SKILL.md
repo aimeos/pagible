@@ -1,6 +1,6 @@
 ---
 name: flow
-description: Clean, trustworthy design for plumbers, heating engineers and gas fitters with deep petrol, water blue and copper accents, rounded headings, water drop markers and wave backgrounds.
+description: Clean, trustworthy design for plumbers, heating engineers and gas fitters with deep petrol, water blue and copper accents, rounded headings and photo-led sections.
 license: MIT
 metadata:
   author: Aimeos
@@ -18,14 +18,15 @@ Use a clean, calm layout that makes homeowners and landlords trust the company w
 - Use system fonts (rounded system fonts for headings) and the existing `--pico-*` variables.
 - Keep page content within a `1280px` maximum width.
 - Use deep petrol (`#0A2B3B`) for header, footer and dark sections, water blue (`#0B7A9E`) for links, buttons and markers, and copper (`#E07B39`) only for fills, badges and the emergency bar, never for text on light backgrounds.
-- Use rounded corners, thin borders and soft shadows; dark sections show the wavy water-line pattern and headings use water drop markers.
+- Use rounded corners, thin borders and soft shadows; keep dark sections plain and headings without decorative markers.
 
 ## Components
 
 - Emergency bar: the emergency number from the `business` config at the top of every page.
-- Hero: a plumber, heat pump or finished bathroom photo as background with a short headline, a copper tag line, a wave edge at the bottom and a "Get a fixed price" action.
-- Services: cards with a photo, a short text and a link to the service page.
-- Figures and badges: cards in the `figures` layout for years, jobs, response time and reviews, and in the `badges` layout for certifications.
+- Header: the office phone from the `business` config next to the last menu item, which is shown as a copper quote button (link it to the contact page).
+- Hero: a plumber, heat pump or finished bathroom photo as background, kept visible on the right, with a short headline, a copper tag line and a "Get a fixed price" action.
+- Services: cards with a photo, a short text and a linked title; the whole card is clickable.
+- Figures and badges: cards in the `figures` layout for years, jobs, response time and reviews, placed directly after the hero as a floating strip, and in the `badges` layout for certifications, shown as tiles with a shield icon when they have no logo.
 - Prices: a `pricing` element with one-time fixed prices for typical jobs.
 - Process: a horizontal timeline from the first contact to the handover.
 - Projects: `blog` pages below the projects page, each with an article, key figures, a before/after comparison of same-sized photos, a vertical step timeline and a slideshow.

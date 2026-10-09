@@ -1,6 +1,6 @@
 ---
 name: volt
-description: Bright, trustworthy design for electricians and electrical contractors with deep navy, electric blue and amber accents, bold headings, rounded corners and circuit-line backgrounds.
+description: Bright, trustworthy design for electricians and electrical contractors with deep navy, electric blue and amber accents, bold headings, rounded corners and photo-led sections.
 license: MIT
 metadata:
   author: Aimeos
@@ -18,14 +18,16 @@ Use a clean, technical layout that makes homeowners feel safe. Put services, fix
 - Use system fonts and the existing `--pico-*` variables.
 - Keep page content within a `1280px` maximum width.
 - Use deep navy (`#0B1530`) for header, footer and dark sections, electric blue (`#1F6FEB`) for links, buttons and markers, and amber (`#FFB020`) only for fills, badges and the emergency bar, never for text on light backgrounds.
-- Use rounded corners, thin borders and soft shadows; dark sections show the circuit-line pattern.
+- Use rounded corners, thin borders and soft shadows; keep dark sections plain and headings without decorative markers.
 
 ## Components
 
 - Emergency bar: the emergency number from the `business` config at the top of every page.
-- Hero: an electrician or finished installation photo as background with a short headline, an amber tag line and a "Get a fixed price" action.
-- Services: cards with a photo, a short text and a link to the service page.
-- Figures and badges: cards in the `figures` layout for years, jobs, response time and reviews, and in the `badges` layout for certifications.
+- Header: the office phone from the `business` config next to the last menu item, which is shown as an amber quote button (link it to the contact page).
+- Hero: an electrician or finished installation photo as background, kept visible on the right, with a short headline, an amber tag line and a "Get a fixed price" action.
+- Services: cards with a photo, a short text and a linked title; the whole card is clickable.
+- Figures and badges: cards in the `figures` layout for years, jobs, response time and reviews, placed directly after the hero as a floating strip, and in the `badges` layout for certifications, shown as tiles with a shield icon when they have no logo.
+- Avoid lightning bolts, circuit-board patterns, neon glows and hazard stripes; they look like IT or warning signs rather than a trusted trade.
 - Prices: a `pricing` element with one-time fixed prices for typical jobs.
 - Process: a horizontal timeline from the first contact to the certificate.
 - Jobs: `blog` pages below the jobs page, each with an article, key figures, a before/after comparison of same-sized photos, a vertical step timeline and a slideshow.

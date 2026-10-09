@@ -6,7 +6,7 @@
     max-width: 64rem;
     margin: 4rem auto;
     padding: 4rem;
-    background: var(--flow-waves), var(--flow-dark);
+    background-color: var(--flow-dark);
     border-radius: calc(var(--pico-border-radius) * 3);
     text-align: center;
 }
@@ -19,10 +19,6 @@
     margin-top: 0;
     margin-bottom: 1.25rem;
     color: #FFFFFF;
-}
-
-.cta .title::before {
-    margin-inline: auto;
 }
 
 .cta .cms-text {

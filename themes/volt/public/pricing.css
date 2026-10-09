@@ -74,7 +74,7 @@
 }
 
 .pricing .pricing-item.highlight {
-    background: var(--volt-circuit), var(--pico-contrast);
+    background-color: var(--pico-contrast);
     color: var(--pico-contrast-inverse);
     border-color: var(--pico-contrast);
     margin: -1rem 0;
