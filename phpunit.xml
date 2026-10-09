@@ -56,6 +56,9 @@
     <testsuite name="Solar">
       <directory>./themes/solar/tests/</directory>
     </testsuite>
+    <testsuite name="Brew">
+      <directory>./themes/brew/tests/</directory>
+    </testsuite>
     <testsuite name="Counsel">
       <directory>./themes/counsel/tests/</directory>
     </testsuite>

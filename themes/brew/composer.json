@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-themes-brew",
+    "description": "Pagible CMS - Brew theme for cafés, coffee roasters and bakeries",
+    "keywords": ["laravel", "cms", "theme", "cafe", "coffee", "roastery", "bakery", "coffee shop"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\BrewServiceProvider"
+            ]
+        }
+    }
+}
