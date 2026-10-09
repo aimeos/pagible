@@ -19,4 +19,5 @@ providers:
   - Aimeos\Cms\SolidServiceProvider
   - Aimeos\Cms\StyleServiceProvider
   - Aimeos\Cms\TasteServiceProvider
+  - Aimeos\Cms\TonicServiceProvider
   - Aimeos\Cms\VoltServiceProvider

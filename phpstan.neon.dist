@@ -70,4 +70,6 @@ parameters:
 		- themes/style/database/seeders
 		- themes/taste/src
 		- themes/taste/database/seeders
+		- themes/tonic/src
+		- themes/tonic/database/seeders
 		- tests/User.php

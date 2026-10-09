@@ -37,7 +37,7 @@ class Blog
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
 
-        $builder = Page::where( 'status', 1 )->with( $with )->orderBy( $order, $dir );
+        $builder = Page::whereIn( 'status', [1, 2] )->with( $with )->orderBy( $order, $dir );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
