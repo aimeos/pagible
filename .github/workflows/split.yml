@@ -52,6 +52,7 @@ jobs:
           - { package: themes/volt, repo: pagible-themes-volt }
           - { package: themes/style, repo: pagible-themes-style }
           - { package: themes/taste, repo: pagible-themes-taste }
+          - { package: themes/tonic, repo: pagible-themes-tonic }
     steps:
       - uses: actions/checkout@v5
 
