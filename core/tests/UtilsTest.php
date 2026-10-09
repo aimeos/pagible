@@ -249,6 +249,49 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testHttpStreamAppliesPin()
+    {
+        $port = $this->server();
+        $client = new \GuzzleHttp\Client( ['handler' => new \Aimeos\Cms\HttpStream] );
+
+        // The host doesn't resolve, the response can only come from the pinned IP
+        $response = $client->get( 'http://pin.invalid:' . $port . '/', [
+            'curl' => [CURLOPT_RESOLVE => ['pin.invalid:' . $port . ':127.0.0.1'], CURLOPT_PROXY => ''],
+            'stream' => true,
+        ] );
+
+        $this->assertEquals( 'pin.invalid:' . $port, (string) $response->getBody() );
+    }
+
+
+    public function testHttpStreamConnectError()
+    {
+        $port = $this->server();
+        $client = new \GuzzleHttp\Client( ['handler' => new \Aimeos\Cms\HttpStream] );
+
+        $this->expectException( \GuzzleHttp\Exception\ConnectException::class );
+        $client->get( 'http://pin.invalid:' . $port . '/', ['stream' => true, 'connect_timeout' => 1] );
+    }
+
+
+    public function testHttpStreamsBody()
+    {
+        config( ['cms.allow-internal' => true] );
+        $port = $this->server();
+
+        $response = Utils::http( 'http://127.0.0.1:' . $port . '/large', ['stream' => true] );
+        $body = $response->toPsrResponse()->getBody();
+
+        $this->assertInstanceOf( \GuzzleHttp\Psr7\PumpStream::class, $body );
+        $this->assertEquals( 200, $response->status() );
+        $this->assertEquals( 'image/png', $response->header( 'Content-Type' ) );
+        $this->assertEquals( 1024, strlen( $body->read( 1024 ) ) );
+        $this->assertFalse( $body->eof() );
+        $this->assertEquals( 3 * 1048576 - 1024, strlen( $body->getContents() ) );
+        $this->assertTrue( $body->eof() );
+    }
+
+
     public function testHttpBlocksRedirectToPrivateAddress()
     {
         Http::fake( [
@@ -505,6 +548,42 @@ class UtilsTest extends CoreTestAbstract
             'cms/' . $id . '/image.jpg',
             Utils::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
         );
+    }
+
+
+    /**
+     * Starts a local HTTP server which returns the Host header or 3MB of data for "/large".
+     *
+     * @return int Port of the server, stopped after the test
+     */
+    protected function server() : int
+    {
+        $socket = stream_socket_server( 'tcp://127.0.0.1:0' );
+        $port = (int) substr( (string) stream_socket_get_name( $socket, false ), 10 );
+        fclose( $socket );
+
+        $file = ( $base = (string) tempnam( sys_get_temp_dir(), 'cms' ) ) . '.php';
+        unlink( $base );
+
+        file_put_contents( $file, '<?php header( "Content-Type: image/png" );'
+            . 'echo $_SERVER["REQUEST_URI"] === "/large" ? str_repeat( "x", 3 * 1048576 ) : $_SERVER["HTTP_HOST"];' );
+
+        $proc = proc_open( [PHP_BINARY, '-S', '127.0.0.1:' . $port, $file], [['pipe', 'r'], ['file', '/dev/null', 'w'], ['file', '/dev/null', 'w']], $pipes );
+
+        $this->beforeApplicationDestroyed( function() use ( $proc, $file ) {
+            proc_terminate( $proc );
+            proc_close( $proc );
+            unlink( $file );
+        } );
+
+        for( $i = 0; $i < 50 && !( $conn = @fsockopen( '127.0.0.1', $port ) ); $i++ ) {
+            usleep( 100000 );
+        }
+
+        $this->assertNotFalse( $conn, 'Local HTTP server did not start' );
+        fclose( $conn );
+
+        return $port;
     }
 }
 
