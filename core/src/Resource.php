@@ -15,6 +15,8 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -24,6 +26,10 @@ use Aimeos\Nestedset\NestedSet;
 
 class Resource
 {
+    use Concerns\Copies;
+    use Concerns\Pages;
+    use Concerns\Variants;
+
     public const MAX_RELOCATE = 100;
 
 
@@ -125,7 +131,7 @@ class Resource
      *
      * Files and elements attached to the page are derived from the content, meta and config data.
      *
-     * @param array<string, mixed> $input Page fields (content/meta/config go into version aux)
+     * @param array<string, mixed> $input Page fields (content/meta/config go into version aux), "lang" defaults to the app locale
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to
@@ -134,6 +140,7 @@ class Resource
      */
     public static function addPage( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : Page
     {
+        $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
@@ -151,15 +158,15 @@ class Resource
             $page->fill( $input );
             $page->editor = $editor;
 
-            $page->position( $ref, $parent );
-
-            // Saves the page with its draft version so the draft (latest=true) row is indexed
-            $page->draft( [
+            // Inserts the page with its draft version so the draft (latest=true) row is indexed
+            $page->newDraft( [
                 'data' => array_diff_key( $input, $aux ),
                 'lang' => $input['lang'] ?? null,
                 'editor' => $editor,
                 'aux' => $aux,
             ], $refs );
+
+            self::insertPage( $page, $ref, $parent );
 
             $page->files()->attach( $refs['files'] );
             $page->elements()->attach( $refs['elements'] );
@@ -187,18 +194,18 @@ class Resource
 
 
     /**
-     * Invalidates the routes of the given Page models, grouped by domain.
+     * Invalidates the routes of the given Page or PageVariant models, grouped by domain.
      *
-     * Non-Page values are ignored so lifecycle collections can be passed without additional filtering.
+     * Other values are ignored so lifecycle collections can be passed without additional filtering.
      *
-     * @param iterable<array-key, mixed> $pages Candidate Page models
+     * @param iterable<array-key, mixed> $pages Candidate Page or PageVariant models
      */
     public static function invalidatePages( iterable $pages ) : void
     {
         $paths = [];
 
         foreach( $pages as $page ) {
-            if( $page instanceof Page ) {
+            if( $page instanceof Page || $page instanceof PageVariant ) {
                 $paths[(string) $page->domain][] = (string) $page->path;
             }
         }
@@ -213,7 +220,7 @@ class Resource
      * Invalidates the published pages using the Elements, the Files directly or the Files through an Element.
      *
      * The pages are invalidated by queued jobs, so publishing content shared by many pages doesn't slow down
-     * the request. The jobs get the page IDs because the references of purged items don't exist any more when they run.
+     * the request. The jobs get the page variant IDs because the references of purged items don't exist any more when they run.
      *
      * @param array<string> $elements Element UUIDs
      * @param array<string> $files File UUIDs
@@ -226,15 +233,15 @@ class Resource
         $queries = [];
 
         if( $elements ) {
-            $queries[] = $db->table( 'cms_page_element' )->select( 'page_id' )->whereIn( 'element_id', $elements );
+            $queries[] = $db->table( 'cms_page_element' )->select( 'variant_id' )->whereIn( 'element_id', $elements );
         }
 
         if( $files )
         {
-            $queries[] = $db->table( 'cms_page_file' )->select( 'page_id' )->whereIn( 'file_id', $files );
+            $queries[] = $db->table( 'cms_page_file' )->select( 'variant_id' )->whereIn( 'file_id', $files );
             $queries[] = $db->table( 'cms_element_file as ef' )
                 ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-                ->select( 'pe.page_id' )->whereIn( 'ef.file_id', $files );
+                ->select( 'pe.variant_id' )->whereIn( 'ef.file_id', $files );
         }
 
         if( !$query = array_shift( $queries ) ) {
@@ -246,7 +253,7 @@ class Resource
         }
 
         // Jobs dispatched after commit are kept in memory until then, so reading the IDs in chunks wouldn't save memory
-        foreach( $query->pluck( 'page_id' )->unique()->chunk( 1000 ) as $chunk ) {
+        foreach( $query->pluck( 'variant_id' )->unique()->chunk( 1000 ) as $chunk ) {
             InvalidatePages::dispatch( Tenancy::value(), $chunk->map( strval( ... ) )->values()->all() )->afterCommit();
         }
     }
@@ -270,11 +277,7 @@ class Resource
 
             /** @var Page $page */
             $page = Page::withTrashed()->findOrFail( $id );
-            $page->editor = $editor;
-
-            $page->position( $ref, $parent );
-
-            Page::withoutSyncingToSearch( fn() => $page->save() );
+            Page::withoutSyncingToSearch( fn() => self::updatePage( self::placePage( $page, $ref, $parent ), ['editor' => $editor] ) );
 
             return $page;
         } );
@@ -460,6 +463,32 @@ class Resource
 
 
     /**
+     * Adds a new version to the page variant and saves the page.
+     *
+     * @param Page $page Page with the variant the version belongs to
+     * @param array<string, mixed> $data Version data
+     * @param array<string, mixed> $aux Content, meta and config
+     * @param string $editor Name of the editing user
+     * @param array<string, array<string>>|null $refs File and element references or NULL to copy the ones of the previous version
+     * @param array<string, mixed>|null $diffs Merge differences for the change info
+     * @param string|null $lang Language of the version, the one of the data or the page by default
+     * @return Page Page with the new version as "latest"
+     */
+    protected static function addVersion( Page $page, array $data, array $aux, string $editor,
+        ?array $refs, ?array $diffs = null, ?string $lang = null ) : Page
+    {
+        $page->newDraft( [
+            'data' => $data,
+            'lang' => $lang ?? $data['lang'] ?? $page->lang,
+            'editor' => $editor,
+            'aux' => $aux,
+        ], $refs, $diffs );
+
+        return self::updatePage( $page );
+    }
+
+
+    /**
      * Applies and announces a lifecycle action while preserving Page tree semantics and route invalidation.
      *
      * @param class-string<Base> $model
@@ -478,12 +507,13 @@ class Resource
         $isPage = $model === Page::class;
         $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
         $pages = collect();
+        $variants = collect();
 
         if( !$isPage ) {
             sort( $ids, SORT_STRING );
         }
 
-        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages ) {
+        $apply = function( array $ids ) use ( $action, $announce, $editor, $fields, $isPage, $model, &$pages, &$variants ) {
             $query = $model::withTrashed()->whereIn( 'id', $ids );
 
             if( $isPage ) {
@@ -531,10 +561,18 @@ class Resource
             }
 
             if( $isPage && ( $action !== 'restored' || Scout::usesExternalSearch() ) ) {
-                $pages = self::pageSubtree( $items )->select( 'id', 'tenant_id', 'domain', 'path', NestedSet::LFT )
+                $pages = self::pageSubtree( $items )->select( 'id', 'tenant_id', NestedSet::LFT )
                     ->orderBy( NestedSet::LFT )->lockForUpdate()->get();
             } elseif( $isPage ) {
                 $pages = $items;
+            }
+
+            // the URLs of all language variants are invalidated and pages are indexed per variant,
+            // so collect the variants before they are removed
+            if( $isPage && $action !== 'restored' ) {
+                foreach( $pages->pluck( 'id' )->chunk( 500 ) as $chunk ) {
+                    $variants->push( ...PageVariant::withTrashed()->whereIn( 'page_id', $chunk->all() )->get( ['id', 'domain', 'path'] ) );
+                }
             }
 
             // Purged files are announced with their publication state, which is removed with their versions
@@ -542,7 +580,12 @@ class Resource
                 $items->load( ['latest' => fn( $query ) => $query->select( 'id', 'published', 'publish_at', 'created_at' )] );
             }
 
-            $model::lifecycle( $items, $action, $editor );
+            // The versions are removed together with the page variants, the route is in data but not the content in aux
+            if( $action === 'purged' && $isPage && $announce && Base::announces( Purged::class ) ) {
+                $items->load( ['latest' => fn( $query ) => $query->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )] );
+            }
+
+            $isPage ? self::pageLifecycle( $items, $action, $editor ) : $model::lifecycle( $items, $action, $editor );
             return $items;
         };
 
@@ -582,7 +625,7 @@ class Resource
 
         if( $isPage && $action !== 'restored' )
         {
-            self::invalidatePages( $pages );
+            self::invalidatePages( $variants );
         }
 
         if( $action === 'dropped' ) {
@@ -601,14 +644,40 @@ class Resource
         if( $isPage && $action === 'dropped' && !Scout::usesExternalSearch() ) {
             return $items;
         } elseif( $action === 'restored' ) {
-            Scout::index( $model, $changed, $isPage && $fields ? null : $items );
+            // all variants of restored pages change
+            Scout::index( $model, $changed, $isPage ? null : $items );
         } elseif( $action === 'dropped' && config( 'scout.soft_delete' ) ) {
             Scout::index( $model, $changed );
         } else {
-            Scout::unindex( $model, $changed );
+            // pages are indexed per variant
+            $keys = $isPage ? ( Scout::usesSearchIndex() ? $variants->pluck( 'id' )->map( strval( ... ) )->all() : [] ) : $changed;
+            Scout::unindex( $model, $keys );
         }
 
         return $items;
+    }
+
+
+    /**
+     * Applies a lifecycle action to each locked page to keep the nested set consistent.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Pages
+     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
+     * @param string $editor Name of the editing user
+     */
+    protected static function pageLifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
+    {
+        foreach( $items as $item )
+        {
+            /** @var Page $item */
+            if( $action === 'purged' ) {
+                self::removePage( $item );
+                continue;
+            }
+
+            $item->editor = $editor;
+            $action === 'dropped' ? self::trashPage( $item ) : self::untrashPage( $item );
+        }
     }
 
 
@@ -804,10 +873,12 @@ class Resource
      * @param array<string, mixed> $input Shared fields applied to every item
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param \Closure(string, array<string, array<string, array<string>>>, string): (Page|File|Element|null) $save Loads one locked row and applies the change using the prefetched references
-     * @param bool $copy TRUE to prefetch the references of the latest versions which are copied to the new ones
+     * @param (\Closure(array<string>): array<string, array<string, array<string>>>)|null $refs Prefetches the references of the latest versions copied to the new ones, NULL uses the references of the model
+     * @param array<string, mixed> $extra Additional values reported in the result and event data, e.g. the language
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    protected static function bulk( string $model, array $ids, array $input, ?Authenticatable $user, \Closure $save, bool $copy = true ) : array
+    protected static function bulk( string $model, array $ids, array $input, ?Authenticatable $user, \Closure $save, ?\Closure $refs = null,
+        array $extra = [] ) : array
     {
         if( empty( $ids ) || empty( $input ) ) {
             return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
@@ -817,23 +888,31 @@ class Resource
         $ids = array_values( array_unique( $ids ) );
         $model::checkBulk( count( $ids ) );
 
+        $keys = $langs = [];
+        $refs ??= fn( array $chunk ) => $model::refs( $chunk );
+
         // suppress Scout's per-save reindex; the whole batch is reindexed once below
-        $latest = Scout::mute( [$model], function() use ( $ids, $model, $save, $copy, $editor ) {
+        $latest = Scout::mute( [$model], function() use ( $ids, $model, $save, $refs, $editor, &$keys, &$langs ) {
             $result = [];
 
             foreach( array_chunk( $ids, 50 ) as $chunk )
             {
-                $refs = $copy ? $model::refs( $chunk ) : [];
+                $prefetched = $refs( $chunk );
 
                 foreach( $chunk as $id )
                 {
                     try
                     {
                         /** @var Page|File|Element|null $item */
-                        $item = $model::locked( fn() => Utils::transaction( fn() => $save( $id, $refs, $editor ) ) );
+                        $item = $model::locked( fn() => Utils::transaction( fn() => $save( $id, $prefetched, $editor ) ) );
 
                         if( $item ) {
                             $result[(string) $item->id] = (string) $item->latest_id;
+                            $keys[] = (string) ( $item->getVersionKey() ?? $item->id );
+                        }
+
+                        if( $item instanceof Page ) {
+                            $langs[(string) $item->id] = (string) $item->lang;
                         }
                     }
                     catch( \Exception $e )
@@ -849,21 +928,23 @@ class Resource
         $saved = array_keys( $latest );
 
         // reindex the saved items once, chunked like cms:index; drop the soft-delete scope so
-        // trashed items (recursive saves include them) are reindexed regardless of scout.soft_delete
+        // trashed items (recursive saves include them) are reindexed regardless of scout.soft_delete,
+        // only the saved variants of pages change
         if( $saved ) {
-            Scout::index( $model, $saved );
+            Scout::index( $model, $keys, keys: true );
         }
 
         $result = [
             'ids' => $saved,
             'latest' => $latest,
-            'data' => $input + ['published' => false, 'updated_at' => (string) now()],
+            'data' => $input + $extra + ['published' => false, 'updated_at' => (string) now()],
             'failed' => count( $ids ) - count( $saved ),
         ];
 
-        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor );
+        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor, langs: $langs );
 
-        $model::locked( fn() => self::pruneVersions( $model, $saved ) );
+        // versions belong to the version key, e.g. the page variant
+        $model::locked( fn() => self::pruneVersions( $model, $keys ) );
 
         return $result;
     }
@@ -954,23 +1035,46 @@ class Resource
      * @param array<string, mixed> $input Changed fields (merged with latest version)
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @param string|null $lang Language of the page variant or null for the source variant
+     * @param bool $restore TRUE if the input restores an old version, which marks translations as outdated
      * @return Page
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
+     * @throws Exception If the new source language in $input['source'] has no variant
      */
-    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Page
+    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null,
+        ?string $lang = null, bool $restore = false ) : Page
     {
+        $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
-        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId ) {
+        return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source, $restore ) {
 
             /** @var Page $page */
-            $page = Page::withTrashed()->with( 'latest' )->findOrFail( $id );
+            $page = Page::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
 
-            self::applyPage( $page, $input, $editor, $latestId, $user );
-            $page->announce( 'saved', $editor );
-            self::pruneVersions( Page::class, [$page->id] );
+            if( !empty( $input ) || $source === null )
+            {
+                self::applyPage( $page, $input, $editor, $latestId, $user );
+                $page->announce( 'saved', $editor );
+                self::pruneVersions( Page::class, [$page->getVersionKey()] );
+            }
+
+            // a restored old translation may not match the current source anymore
+            if( $restore && !$page->isSourceVariant() )
+            {
+                PageVariant::whereKey( $page->variant_id )->toBase()->update( ['stale' => true] );
+                $page->forceFill( ['stale' => true] )->syncOriginal();
+            }
+
+            if( $source !== null && $source !== $page->source )
+            {
+                self::setSource( (string) $page->id, $source, $user );
+
+                $variant = PageVariant::withTrashed()->findOrFail( $page->variant_id, ['id', 'hashes', 'stale'] );
+                $page->forceFill( ['source' => $source, 'hashes' => $variant->hashes, 'stale' => $variant->stale] )->syncOriginal();
+            }
 
             return $page;
         } );
@@ -984,9 +1088,11 @@ class Resource
      * @param array<string, mixed> $input Partial page input applied to every page
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $descendants TRUE to also update all sub-pages of the given pages
+     * @param string|null $lang Language of the page variants to update or NULL for the source variants
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
      */
-    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false ) : array
+    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false,
+        ?string $lang = null ) : array
     {
         $input = Validation::page( $input, $user );
 
@@ -1011,11 +1117,15 @@ class Resource
             }
         }
 
-        $copy = !array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
+        // the references of the latest versions are only copied if no content, meta or config is saved
+        $refs = !array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) )
+            ? fn( array $chunk ) => Page::refs( $chunk, $lang )
+            : fn( array $chunk ) => [];
 
-        return self::bulk( Page::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?Page {
+        return self::bulk( Page::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user, $lang ) : ?Page {
 
-            if( !( $page = Page::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
+            // pages without a variant in the language are skipped
+            if( !( $page = Page::withTrashed()->language( $lang, true )->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
                 return null;
             }
 
@@ -1023,7 +1133,7 @@ class Resource
             self::applyPage( $page, $input, $editor, null, $user, $refs[$page->latest_id ?? ''] ?? null );
 
             return $page;
-        }, $copy );
+        }, $refs, $lang !== null ? ['lang' => $lang] : [] );
     }
 
 
@@ -1047,17 +1157,23 @@ class Resource
         $data = array_diff_key( $input, $aux );
         $accepts = (bool) $aux;
 
+        // new languages must be configured so they don't become allowed for AI translation
+        if( isset( $input['lang'] ) && $input['lang'] !== $page->lang && !Utils::isLocale( (string) $input['lang'] ) ) {
+            throw new Exception( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
+        }
+
+        if( isset( $input['lang'] ) && $input['lang'] !== $page->lang && PageVariant::withTrashed()
+            ->where( 'page_id', $page->id )->where( 'lang', $input['lang'] )->exists()
+        ) {
+            throw new Exception( sprintf( 'The page already has a variant in "%1$s"', $input['lang'] ) );
+        }
+
         [$data, $aux, $diffs] = Merge::page( $page, $data, $aux, $latestId, $user );
 
         $data['domain'] ??= $page->domain;
 
         // without new content, meta or config, the references of the previous version are copied
-        $page->draft( [
-            'data' => $data,
-            'editor' => $editor,
-            'lang' => $input['lang'] ?? $page->latest?->lang,
-            'aux' => $aux,
-        ], $accepts ? self::refs( $aux, $user ) : $refs, $diffs );
+        self::addVersion( $page, $data, $aux, $editor, $accepts ? self::refs( $aux, $user ) : $refs, $diffs, $input['lang'] ?? $page->latest?->lang );
     }
 
 

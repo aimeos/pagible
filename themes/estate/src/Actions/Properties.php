@@ -79,6 +79,13 @@ class Properties
         $columns = ['id', 'tenant_id', 'type', 'path', 'name', 'title', 'content', 'created_at', 'updated_at', 'latest_id', '_lft', 'status'];
         $builder = $this->query( $item, $editor, $sortBy, $sortDir );
 
+        // list the properties in the language of the current page, see "cms.translate.fallback"
+        $page->localize( $builder );
+
+        if( !( $item->data->{'parent-page'}->value ?? null ) ) {
+            $builder->where( 'domain', (string) $page->domain );
+        }
+
         if( !$filtersActive )
         {
             $result = $builder->paginate( $perPage, $columns, 'p', $pageNo );

@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Utils;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
@@ -104,7 +105,7 @@ class Presenter
     {
         if( $link && $item instanceof Page ) {
             return ['id' => $item->id, 'latest_id' => $item->latest_id, 'parent_id' => $item->parent_id]
-                + $item->toArray() + ['url' => self::url( $item->path, $item->domain )];
+                + $item->toArray() + ['url' => Utils::pageUrl( $item->path, $item->domain )];
         }
 
         return ['id' => $item->id, 'latest_id' => $item->latest_id] + $item->toArray();
@@ -151,7 +152,17 @@ class Presenter
             ] );
         }
 
-        return $result + self::meta( $item ) + ['url' => self::url( $data['path'] ?? '', $data['domain'] ?? null )];
+        // language variant state, only if the columns are selected
+        $attr = $item->getAttributes();
+
+        foreach( ['source', 'stale'] as $name )
+        {
+            if( array_key_exists( $name, $attr ) ) {
+                $result[$name] = $item->getAttribute( $name );
+            }
+        }
+
+        return $result + self::meta( $item ) + ['url' => Utils::pageUrl( $data['path'] ?? '', $data['domain'] ?? null )];
     }
 
 
@@ -228,24 +239,9 @@ class Presenter
         return [
             'lang' => $version->lang ?? '',
             'editor' => $version->editor ?? '',
-            'deleted' => $item->trashed(),
+            'deleted' => $item->trashed() || ( $item->getAttributes()['variant_deleted_at'] ?? null ) !== null,
             'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
             'updated_at' => ( $version->created_at ?? $item->updated_at )?->format( 'Y-m-d H:i:s' ),
         ];
-    }
-
-
-    /**
-     * Returns the frontend URL of a page.
-     *
-     * @param string|null $path Page URL path
-     * @param string|null $domain Page domain, the current host is used if empty
-     * @return string Absolute page URL
-     */
-    protected static function url( ?string $path, ?string $domain = null ) : string
-    {
-        return route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-            'domain' => $domain ?: request()->getHost(),
-        ] : [] ) + ['path' => (string) $path] );
     }
 }

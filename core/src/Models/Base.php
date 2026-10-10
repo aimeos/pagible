@@ -165,6 +165,40 @@ abstract class Base extends Model
 
 
     /**
+     * Returns the value of the key the versions are referencing.
+     *
+     * @return string|null Key value
+     */
+    public function getVersionKey() : ?string
+    {
+        $value = $this->getAttribute( $this->getVersionKeyName() );
+        return $value !== null ? (string) $value : null;
+    }
+
+
+    /**
+     * Returns the type stored in the versions referencing the model.
+     *
+     * @return string Versionable type
+     */
+    public static function versionType() : string
+    {
+        return static::class;
+    }
+
+
+    /**
+     * Returns the attribute name of the key the versions are referencing.
+     *
+     * @return string Attribute name
+     */
+    public function getVersionKeyName() : string
+    {
+        return $this->getKeyName();
+    }
+
+
+    /**
      * Get the model's latest version.
      *
      * @return BelongsTo<Version, $this> Eloquent relationship to the latest version
@@ -176,30 +210,90 @@ abstract class Base extends Model
 
 
     /**
-     * Scope that joins cms_versions and filters by version-level fields.
+     * Scope that filters by version-level fields of the latest versions.
+     *
+     * By default, the latest version of each record is checked, which is fast if the other
+     * conditions already select few records. Lookups by indexed version fields like domain
+     * and path should select the matching versions first instead, which executes the version
+     * queries immediately and must only be used if few versions match.
      *
      * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @param array<string, mixed> $wheres Field => value pairs to filter on version data
+     * @param array<string, mixed> $wheres Field => value pairs to filter on version data, lists match any of their values
+     * @param bool $lookup TRUE to select the matching versions first using the version indexes
      * @return void
      */
-    public function scopeWhereLatest( $query, array $wheres ) : void
+    public function scopeWhereLatest( $query, array $wheres, bool $lookup = false ) : void
     {
         $table = $this->getTable();
         $driver = $this->getConnection()->getDriverName();
 
-        $query->where( "{$table}.latest_id", '=', function( $sub ) use ( $table, $driver, $wheres ) {
+        $versions = fn( array $wheres ) => function( $sub ) use ( $table, $driver, $wheres, $lookup ) {
             $sub->select( 'cms_versions.id' )
                 ->from( 'cms_versions' )
-                ->whereColumn( 'cms_versions.id', $table . '.latest_id' )
-                ->where( 'cms_versions.versionable_type', static::class )
+                ->where( 'cms_versions.versionable_type', static::versionType() )
                 ->where( 'cms_versions.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
-            foreach( $wheres as $field => $value ) {
-                $sub->where( DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}", $value );
+            foreach( $wheres as $field => $list )
+            {
+                $column = DB::qualify( $field, $table, true, $driver ) ?? "{$table}.{$field}";
+
+                $list === [null]
+                    ? $sub->whereNull( $column )
+                    : $sub->where( fn( $q ) => $q->whereIn( $column, array_filter( $list, fn( $v ) => $v !== null ) )
+                        ->when( in_array( null, $list, true ), fn( $q ) => $q->orWhereNull( $column ) ) );
             }
 
-            $sub->limit( 1 );
-        } );
+            if( !$lookup ) {
+                $sub->whereColumn( 'cms_versions.id', $table . '.latest_id' )->limit( 1 );
+            }
+        };
+
+        $arms = [[]];
+
+        foreach( $wheres as $field => $value )
+        {
+            $list = is_array( $value ) ? array_values( $value ) : [$value];
+            $empty = in_array( '', $list, true );
+            $next = [];
+
+            // empty values may be stored as NULL or not at all
+            if( $empty && !$lookup ) {
+                $list[] = null;
+            }
+
+            foreach( $arms as $arm )
+            {
+                // lookups use one subquery for NULL values so each one can use the version index
+                if( $empty && $lookup ) {
+                    $next[] = $arm + [$field => [null]];
+                }
+
+                $next[] = $arm + [$field => $list];
+            }
+
+            $arms = $next;
+        }
+
+        if( !$lookup ) {
+            $query->where( "{$table}.latest_id", '=', $versions( $arms[0] ) );
+            return;
+        }
+
+        // OR-ed IN subqueries can't be rewritten to semi-joins by most databases,
+        // so the version IDs are fetched first by one index lookup for each arm
+        $ids = [];
+
+        foreach( $arms as $arm )
+        {
+            $sub = $this->getConnection()->query();
+            $versions( $arm )( $sub );
+
+            foreach( $sub->pluck( 'cms_versions.id' ) as $id ) {
+                $ids[] = $id;
+            }
+        }
+
+        $query->whereIn( "{$table}.latest_id", array_values( array_unique( $ids ) ) );
     }
 
 
@@ -215,6 +309,27 @@ abstract class Base extends Model
      * @return Version New latest version
      */
     public function draft( array $values, ?array $refs = null, ?array $diffs = null ) : Version
+    {
+        $version = $this->newDraft( $values, $refs, $diffs );
+        $this->save();
+
+        return $version;
+    }
+
+
+    /**
+     * Creates a new latest version of the model with its references without saving the model.
+     *
+     * The model must have its unique IDs. If no references are passed, the ones of the
+     * previous latest version are copied. The change info is only set if conflicting
+     * changes have been merged.
+     *
+     * @param array<string, mixed> $values Version attributes like data, aux, lang and editor
+     * @param array<string, array<string>>|null $refs Referenced IDs by version relation or NULL to keep the previous ones
+     * @param array<string, mixed>|null $diffs Merge differences for the change info
+     * @return Version New latest version
+     */
+    public function newDraft( array $values, ?array $refs = null, ?array $diffs = null ) : Version
     {
         $editor = $this->latest->editor ?? '';
         $previous = $this->latest_id;
@@ -246,7 +361,7 @@ abstract class Base extends Model
         }
 
         $this->setRelation( 'latest', $version );
-        $this->forceFill( ['latest_id' => $version->id] )->save();
+        $this->forceFill( ['latest_id' => $version->id] );
 
         if( $diffs ) {
             $this->setChanged( ['editor' => $editor, 'latest' => ['id' => $version->id]
@@ -312,7 +427,7 @@ abstract class Base extends Model
      * Removes old versions for several models using one ranked version stream.
      *
      * @param string $tenant Tenant ID
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Version owner IDs (variant IDs for pages)
      */
     public static function pruneVersions( string $tenant, array $ids ) : void
     {
@@ -390,7 +505,18 @@ abstract class Base extends Model
             return [];
         }
 
-        $versions = static::withTrashed()->whereIn( 'id', $ids )->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all();
+        return static::versionRefs( static::withTrashed()->whereIn( 'id', $ids )->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all() );
+    }
+
+
+    /**
+     * Returns the references of the given versions in a few queries.
+     *
+     * @param array<string> $versions Version IDs
+     * @return array<string, array<string, array<string>>> Referenced IDs by relation, keyed by version ID
+     */
+    protected static function versionRefs( array $versions ) : array
+    {
         $map = array_fill_keys( $versions, array_fill_keys( static::REFS, [] ) );
         $version = new Version();
 
@@ -415,7 +541,7 @@ abstract class Base extends Model
      */
     public function removeVersions() : void
     {
-        if( ( $id = $this->id ) !== null ) {
+        if( ( $id = $this->getVersionKey() ) !== null ) {
             static::pruneVersions( $this->tenant_id, [$id] );
         }
     }
@@ -453,7 +579,8 @@ abstract class Base extends Model
      */
     public function versions() : MorphMany
     {
-        return $this->morphMany( Version::class, 'versionable' )->orderByDesc( 'created_at' )->orderByDesc( 'id' );
+        return $this->morphMany( Version::class, 'versionable', null, null, $this->getVersionKeyName() )
+            ->orderByDesc( 'created_at' )->orderByDesc( 'id' );
     }
 
 
@@ -491,8 +618,8 @@ abstract class Base extends Model
     {
         // pruning runs outside the tenant context of the item
         Version::withoutTenancy()->where( 'tenant_id', (string) $this->tenant_id )
-            ->where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', static::class )
+            ->where( 'versionable_id', $this->getVersionKey() )
+            ->where( 'versionable_type', $this->getMorphClass() )
             ->delete();
     }
 
@@ -538,7 +665,7 @@ abstract class Base extends Model
 
         foreach( Version::withoutTenancy()->select( 'id', 'versionable_id' )
             ->where( 'tenant_id', $tenant )
-            ->where( 'versionable_type', static::class )
+            ->where( 'versionable_type', static::versionType() )
             ->whereIn( 'versionable_id', $ids )
             ->orderBy( 'versionable_id' )->orderByDesc( 'created_at' )->orderByDesc( 'id' )
             ->cursor() as $version

@@ -32,7 +32,7 @@ class AddElement extends Tool
         $v = $request->validate([
             'type' => 'required|string|max:50',
             'name' => 'required|string|max:100',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'data' => 'required|array',
         ], [
             'type.required' => 'You must specify the element type, e.g., "heading", "text", "image", "contact". Use get-schemas to see available types.',

@@ -22,6 +22,11 @@ import { fieldBase } from '../field'
 export default {
   extends: fieldBase,
 
+  // language of the page being edited, provided by the page editor
+  inject: {
+    pageLang: { default: null }
+  },
+
   props: {
     rel: { type: String, default: '' }
   },
@@ -104,8 +109,8 @@ export default {
       this.$apollo
         .query({
           query: gql`
-            query pages($filter: PageFilter) {
-              pages(first: 10, filter: $filter) {
+            query pages($filter: PageFilter, $lang: String) {
+              pages(first: 10, filter: $filter, lang: $lang) {
                 data {
                   path
                 }
@@ -113,7 +118,8 @@ export default {
             }
           `,
           variables: {
-            filter: { any: value.replace(/^\/+/, '') }
+            filter: { any: value.replace(/^\/+/, '') },
+            lang: this.pageLang?.() || null
           }
         })
         .then((result) => {

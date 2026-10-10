@@ -21,7 +21,7 @@ use Laravel\Mcp\Request;
 
 #[Name('add-page')]
 #[Title('Create a new page within the page tree')]
-#[Description('Creates a new page in the page tree. Requires lang (ISO code like "en"), name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and canonical meta entries with meta-tags.data.description for SEO. Meta and config entries must contain type, data, and files. Files and shared elements are attached automatically. Optional: config, to, tag, theme, type, domain, path, cache (minutes), related_id, parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
+#[Description('Creates a new page in the page tree. Requires name (max 50 chars), title (max 100 chars), content (array of {type, data} objects — use get-schemas for types), and canonical meta entries with meta-tags.data.description for SEO. Meta and config entries must contain type, data, and files. Files and shared elements are attached automatically. Optional: lang (ISO code like "en", the source language, defaults to the application locale), config, to, tag, theme, type, domain, path, cache (minutes), parent_id, ref. Returns the created page as JSON, including the latest_id to pass to save-page when editing it.')]
 class AddPage extends Tool
 {
     protected const PERMISSIONS = ['page:add'];
@@ -34,7 +34,7 @@ class AddPage extends Tool
     {
         $v = $request->validate( [
             ...SavePage::RULES,
-            'lang' => 'required|string|max:5',
+            'lang' => 'string|max:10',
             'name' => 'required|string|max:50',
             'title' => 'required|string|max:100',
             'content' => 'required|array',
@@ -45,7 +45,6 @@ class AddPage extends Tool
             'parent_id' => 'string|max:36',
             'ref' => 'string|max:36',
         ], [
-            'lang.required' => 'You must specify a language code from the list of available locales. For example, "en" or "en-US".',
             'name.required' => 'You must specify a name for the page and it must not be longer than 50 characters.',
             'title.required' => 'You must specify a page title and it must not be longer than 100 characters.',
             'content.required' => 'You must provide content elements for the page. Use get-schemas for available types.',
@@ -75,7 +74,6 @@ class AddPage extends Tool
         // the author's order. The raw input preserves it; Validation::content()
         // still whitelists each element's keys.
         $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
-        $v['related_id'] = $v['related_id'] ?? null;
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';
         $v['to'] = $v['to'] ?? '';
@@ -103,8 +101,7 @@ class AddPage extends Tool
     {
         return [
             'lang' => $schema->string()
-                ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US".')
-                ->required(),
+                ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US". It becomes the source language other languages are translated from. Defaults to the application locale.'),
             'name' => $schema->string()
                 ->description('Short name of the page for menus in the language of the page. Should not be longer than 30 characters.')
                 ->required(),
@@ -146,8 +143,6 @@ class AddPage extends Tool
                 ->description( 'Unique URL segment. Auto-generated from title if omitted.' ),
             'cache' => $schema->integer()
                 ->description( 'Cache lifetime in minutes. Default: 5.' ),
-            'related_id' => $schema->string()
-                ->description( 'Translation ID linking pages with the same content in different languages.' ),
             'parent_id' => $schema->string()
                 ->description( 'ID of the parent page where the new page will be added below.' ),
             'ref' => $schema->string()

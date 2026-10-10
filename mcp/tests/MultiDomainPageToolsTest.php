@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\Page;
@@ -88,8 +89,8 @@ class MultiDomainPageToolsTest extends McpTestAbstract
     public function testRestorePageReturnsMultiDomainUrl() : void
     {
         $page = Page::where( 'name', 'Dev' )->firstOrFail();
-        $page->forceFill( ['domain' => 'otherdomain.tld'] )->saveQuietly();
-        $page->delete();
+        Resource::updatePage( $page, ['domain' => 'otherdomain.tld'] );
+        Resource::trashPage( $page );
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RestorePage::class, [
             'id' => $page->id,
@@ -104,7 +105,7 @@ class MultiDomainPageToolsTest extends McpTestAbstract
     {
         $page = Page::where( 'name', 'Dev' )->firstOrFail();
         $parent = Page::where( 'name', 'Blog' )->firstOrFail();
-        $page->forceFill( ['domain' => 'otherdomain.tld'] )->saveQuietly();
+        Resource::updatePage( $page, ['domain' => 'otherdomain.tld'] );
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\MovePage::class, [
             'id' => $page->id,

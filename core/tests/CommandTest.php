@@ -33,6 +33,15 @@ class CoreCommandTest extends CoreTestAbstract
 
     protected $seeder = TestSeeder::class;
 
+    protected function tearDown(): void
+    {
+        // the collection driver doesn't index, so queue tests use the cms driver
+        config( ['scout.driver' => 'collection', 'scout.queue' => false, 'scout.soft_delete' => false] );
+
+        parent::tearDown();
+    }
+
+
     public function testPublish(): void
     {
         $this->artisan('cms:publish')->assertExitCode( 0 );
@@ -240,7 +249,7 @@ class CoreCommandTest extends CoreTestAbstract
         $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
-        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $pageVersion->id] );
         $element->forceFill( ['latest_id' => $elementVersion->id] )->saveQuietly();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
@@ -254,7 +263,7 @@ class CoreCommandTest extends CoreTestAbstract
     public function testPublishQueuesOneSearchBatch(): void
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
         $ids = [];
 
@@ -299,7 +308,7 @@ class CoreCommandTest extends CoreTestAbstract
         ] );
         $version->elements()->attach( $element->id );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );

@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class StructuredMigrationTest extends CoreTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $page = Page::where( 'tag', 'root' )->firstOrFail();
 
-        $db->table( 'cms_pages' )->where( 'id', $page->id )->update( [
+        $db->table( 'cms_page_variants' )->where( 'id', $page->variant_id )->update( [
             'meta' => json_encode( [
                 'meta-tags' => [
                     'id' => 'legacy',
@@ -45,13 +46,13 @@ class StructuredMigrationTest extends CoreTestAbstract
             ['type' => 'meta-tags', 'data' => ['description' => 'Post-release demo']],
         ];
 
-        $db->table( 'cms_pages' )->where( 'id', $postRelease->id )->update( [
+        $db->table( 'cms_page_variants' )->where( 'id', $postRelease->variant_id )->update( [
             'meta' => json_encode( $postReleaseMeta ),
             'config' => json_encode( ['styles' => ['text' => 'main {}']] ),
         ] );
 
         $legacy = Page::whereNotIn( 'id', [$page->id, $postRelease->id] )->firstOrFail();
-        $db->table( 'cms_pages' )->where( 'id', $legacy->id )->update( [
+        $db->table( 'cms_page_variants' )->where( 'id', $legacy->variant_id )->update( [
             'meta' => json_encode( ['meta-tags' => ['description' => 'Second page']] ),
         ] );
 
@@ -63,7 +64,7 @@ class StructuredMigrationTest extends CoreTestAbstract
             ] ),
         ] );
 
-        $other = $db->table( 'cms_versions' )->where( 'versionable_type', '!=', Page::class )->first();
+        $other = $db->table( 'cms_versions' )->where( 'versionable_type', '!=', PageVariant::class )->first();
         $this->assertNotNull( $other );
         $otherAux = ['meta' => ['meta-tags' => ['description' => 'Non-page version']]];
         $db->table( 'cms_versions' )->where( 'id', $other->id )->update( ['aux' => json_encode( $otherAux )] );
@@ -71,7 +72,7 @@ class StructuredMigrationTest extends CoreTestAbstract
         $migration = require dirname( __DIR__ ) . '/database/migrations/2026_07_10_000000_normalize_page_meta_config.php';
         $migration->up();
 
-        $stored = $db->table( 'cms_pages' )->where( 'id', $page->id )->first();
+        $stored = $db->table( 'cms_page_variants' )->where( 'id', $page->variant_id )->first();
         $meta = json_decode( $stored->meta ?? '', true );
         $config = json_decode( $stored->config ?? '', true );
 
@@ -88,20 +89,20 @@ class StructuredMigrationTest extends CoreTestAbstract
         $this->assertSame( 'body {}', $aux['config']['styles']['data']['text'] );
         $this->assertSame( [], $aux['content'] );
 
-        $postReleaseStored = $db->table( 'cms_pages' )->where( 'id', $postRelease->id )->first();
+        $postReleaseStored = $db->table( 'cms_page_variants' )->where( 'id', $postRelease->variant_id )->first();
 
         $this->assertEquals( $postReleaseMeta, json_decode( $postReleaseStored->meta ?? '', true ) );
         $postReleaseConfig = json_decode( $postReleaseStored->config ?? '', true );
         $this->assertSame( 'main {}', $postReleaseConfig['styles']['data']['text'] );
 
-        $legacyStored = $db->table( 'cms_pages' )->where( 'id', $legacy->id )->first();
+        $legacyStored = $db->table( 'cms_page_variants' )->where( 'id', $legacy->variant_id )->first();
         $legacyMeta = json_decode( $legacyStored->meta ?? '', true );
         $this->assertSame( 'Second page', $legacyMeta['meta-tags']['data']['description'] );
 
         $otherStored = $db->table( 'cms_versions' )->where( 'id', $other->id )->first();
         $this->assertEquals( $otherAux, json_decode( $otherStored->aux ?? '', true ) );
 
-        $this->expectsDatabaseQueryCount( 2 );
+        $this->expectsDatabaseQueryCount( 3 ); // schema check, pages, versions
 
         $migration->up();
     }

@@ -119,17 +119,22 @@ return new class extends Migration
      */
     private function invalidate( Connection $db, string $tenant ): void
     {
-        Tenancy::run( $tenant, function() use ( $db, $tenant ) {
+        // the page pivots reference the page variants after the variants migration ran
+        $variants = $db->getSchemaBuilder()->hasTable( 'cms_page_variants' );
+        $key = $variants ? 'variant_id' : 'page_id';
+        $table = $variants ? 'cms_page_variants' : 'cms_pages';
+
+        Tenancy::run( $tenant, function() use ( $db, $key, $table, $tenant ) {
             $direct = $db->table( 'cms_page_file as pf' )
                 ->join( 'cms_files as f', 'f.id', '=', 'pf.file_id' )
-                ->where( 'f.tenant_id', $tenant )->select( 'pf.page_id' );
+                ->where( 'f.tenant_id', $tenant )->select( 'pf.' . $key );
             $shared = $db->table( 'cms_element_file as ef' )
                 ->join( 'cms_files as f', 'f.id', '=', 'ef.file_id' )
                 ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-                ->where( 'f.tenant_id', $tenant )->select( 'pe.page_id' );
+                ->where( 'f.tenant_id', $tenant )->select( 'pe.' . $key );
             $pages = $direct->unionAll( $shared );
 
-            foreach( $db->table( 'cms_pages' )->where( 'tenant_id', $tenant )
+            foreach( $db->table( $table )->where( 'tenant_id', $tenant )
                 ->whereNull( 'deleted_at' )->whereIn( 'id', $pages )
                 ->select( 'id', 'domain', 'path' )->lazyById( 250 )->chunk( 250 ) as $items )
             {

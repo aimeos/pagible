@@ -13,7 +13,9 @@ use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Nestedset\NestedSet;
+use Database\Seeders\BenchmarkSeeder;
 use Closure;
 
 
@@ -176,7 +178,9 @@ trait Benchmarks
             'published' => false,
             'editor' => 'benchmark',
         ] );
-        $item->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $item instanceof Page
+            ? Page::withoutSyncingToSearch( fn() => \Aimeos\Cms\Resource::updatePage( $item, ['latest_id' => $version->id] ) )
+            : $item->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $item->setRelation( 'latest', $version );
     }
 
@@ -249,9 +253,12 @@ trait Benchmarks
     {
         $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
 
-        $count = Page::where( 'tag', '!=', 'root' )->count();
-        $page = Page::where( 'tag', '!=', 'root' )
-            ->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
+        // pages with translations, so the page operations include their language variants
+        $pages = Page::where( 'tag', '!=', 'root' )->whereIn( 'id', PageVariant::where( 'lang', BenchmarkSeeder::TRANSLATION )->select( 'page_id' ) );
+        $pages = $pages->exists() ? $pages : Page::where( 'tag', '!=', 'root' );
+
+        $count = $pages->count();
+        $page = $pages->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
 
         $parent = Page::where( NestedSet::DEPTH, 1 )
             ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();

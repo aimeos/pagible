@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Page;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -106,8 +107,8 @@ class SecurityControllerTest extends ThemeTestAbstract
      */
     protected function security( array $data ) : void
     {
-        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+        Resource::updatePage( Page::where( 'tag', 'root' )->firstOrFail(), ['config' => [
             'security' => ['type' => 'security', 'data' => $data, 'files' => []],
-        ]] )->saveQuietly();
+        ]] );
     }
 }

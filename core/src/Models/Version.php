@@ -45,6 +45,9 @@ class Version extends Model
     /** @var list<class-string<Base>> Supported versionable models */
     public const TYPES = [Page::class, Element::class, File::class];
 
+    /** @var array<string, class-string<Base>> Version owner types and the CMS models they belong to */
+    public const OWNERS = [PageVariant::class => Page::class, Element::class => Element::class, File::class => File::class];
+
     /** @var list<string> Most frequently used version projection */
     public const SELECT_COLUMNS = [
         'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
@@ -309,7 +312,51 @@ class Version extends Model
 
 
     /**
-     * Get the parent versionable model (page, file or element).
+     * Returns the CMS model the version belongs to.
+     *
+     * Page versions are owned by a page variant, so the page joined with that
+     * variant is returned instead of the variant itself.
+     *
+     * @return Base|null Page, element or file model or NULL if not found
+     */
+    public function owner() : ?Base
+    {
+        if( $this->relationLoaded( 'owner' ) ) {
+            $model = $this->getRelation( 'owner' );
+            return $model instanceof Base ? $model : null;
+        }
+
+        if( $this->versionable_type === PageVariant::class ) {
+            return Page::variant( $this->versionable_id )->first();
+        }
+
+        $model = $this->versionable;
+        return $model instanceof Base ? $model : null;
+    }
+
+
+    /**
+     * Loads the CMS models the versions belong to with one query per model type.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection<int, Version> $versions Versions to load the owners for
+     * @return \Illuminate\Database\Eloquent\Collection<int, Version> Same versions for fluent interface
+     */
+    public static function loadOwners( \Illuminate\Database\Eloquent\Collection $versions ) : \Illuminate\Database\Eloquent\Collection
+    {
+        $variants = $versions->where( 'versionable_type', PageVariant::class );
+        $pages = Page::allVariants( true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
+
+        foreach( $variants as $version ) {
+            $version->setRelation( 'owner', $pages->get( $version->versionable_id ) );
+        }
+
+        $versions->where( 'versionable_type', '!=', PageVariant::class )->load( 'versionable' );
+        return $versions;
+    }
+
+
+    /**
+     * Get the parent versionable model (page variant, file or element).
      *
      * @return MorphTo<Model, $this>
      */

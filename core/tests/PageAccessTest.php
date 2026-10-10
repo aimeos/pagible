@@ -11,6 +11,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
@@ -237,14 +238,14 @@ class PageAccessTest extends CoreTestAbstract
     {
         \Aimeos\Cms\Tenancy::$callback = null;
         \Aimeos\Cms\Tenancy::set( '' );
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'No tenancy',
             'title' => 'No tenancy',
             'path' => 'no-tenancy',
             'status' => 1,
             'editor' => 'test',
-        ] );
+        ] ) );
         $search = $this->searchEngine();
 
         ( new IndexModels( Page::class, [$page->id], '' ) )->handle();
@@ -367,8 +368,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionRetryReplacesMoreThanOneChunk(): void
     {
-        $template = (array) DB::connection( config( 'cms.db', 'sqlite' ) )
-            ->table( 'cms_pages' )->where( 'path', 'hidden' )->first();
+        $template = (array) Page::where( 'path', 'hidden' )->toBase()->first();
         $ids = $rows = [];
 
         for( $i = 0; $i <= PageAccess::CHUNK_SIZE; $i++ )
@@ -376,6 +376,7 @@ class PageAccessTest extends CoreTestAbstract
             $id = Str::uuid7()->toString();
             $row = $template;
             $row['id'] = $id;
+            $row['variant_id'] = $id;
             $row['path'] = 'access-bulk-' . $i;
             $row['_lft'] = 10000 + $i * 2;
             $row['_rgt'] = 10001 + $i * 2;
@@ -383,10 +384,8 @@ class PageAccessTest extends CoreTestAbstract
             $rows[] = $row;
         }
 
-        $table = DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_pages' );
-
         foreach( array_chunk( $rows, 50 ) as $chunk ) {
-            $table->insert( $chunk );
+            Resource::insertPages( $chunk );
         }
 
         $this->assertCount( PageAccess::CHUNK_SIZE + 1, $ids );

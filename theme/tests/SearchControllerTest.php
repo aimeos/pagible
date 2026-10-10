@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
@@ -102,6 +103,16 @@ class SearchControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testIndexRejectsInvalidLocale()
+    {
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $request = Request::create('/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => "en\0", 'size' => 10]);
+
+        ( new \Aimeos\Cms\Controllers\SearchController() )->index($request, 'mydomain.tld');
+    }
+
+
     public function testIndexHonorsConfiguredMinimum()
     {
         config(['cms.theme.min-search' => 4]);
@@ -146,7 +157,7 @@ class SearchControllerTest extends ThemeTestAbstract
         $manager->extend( 'stale-domain-test', fn() => $engine );
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-domain-test'] );
-        $page->update( ['domain' => 'other.example'] );
+        Resource::updatePage( $page, ['domain' => 'other.example'] );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',
@@ -169,7 +180,7 @@ class SearchControllerTest extends ThemeTestAbstract
         $manager->extend( 'stale-language-test', fn() => $engine );
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-language-test'] );
-        $page->update( ['lang' => 'de'] );
+        Resource::updatePage( $page, ['lang' => 'de'] );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',

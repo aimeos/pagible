@@ -11,6 +11,7 @@ import {
   useMessageStore,
   useSchemaStore,
   useSideStore,
+  useTranslationStore,
   useViewStack,
 } from '../../../js/stores'
 import { apolloClient } from '../../../js/graphql'
@@ -669,6 +670,93 @@ describe('useSideStore', () => {
       expect(side.show.type.text).to.be.false
       side.toggle('type', 'text')
       expect(side.show.type.text).to.be.true
+    })
+  })
+})
+
+describe('useTranslationStore', () => {
+  const progressApollo = (progress) => ({
+    query: cy.stub().callsFake(({ variables }) => Promise.resolve({ data: { translateProgress: progress[variables.batch] } }))
+  })
+
+  beforeEach(() => {
+    sessionStorage.removeItem('cms-translations')
+    setActivePinia(createPinia())
+  })
+
+  afterEach(() => {
+    useTranslationStore().clear()
+  })
+
+  it('restores the batches of the session and resumes polling them', () => {
+    sessionStorage.setItem('cms-translations', JSON.stringify([
+      { id: 'b1', total: 2, done: 0, failed: 0, ids: ['p1'], langs: ['de'], success: 'Done' },
+      { id: 'b2', total: 1, done: 0, failed: 0, ids: ['p2'], langs: ['fr'] }
+    ]))
+
+    const store = useTranslationStore()
+    const apollo = progressApollo({ b1: { total: 2, done: 2, failed: 0 }, b2: { total: 1, done: 0, failed: 1 } })
+    const add = cy.spy(useMessageStore(), 'add')
+    const listener = cy.stub()
+    store.listen(listener)
+
+    expect(store.progress).to.deep.equal({ total: 3, done: 0, failed: 0 })
+    expect(store.has('p1', 'de')).to.be.true
+    expect(store.has('p1')).to.be.true
+    expect(store.has('p1', 'fr')).to.be.false
+
+    store.resume(apollo)
+
+    cy.wrap(store).its('batches').should('have.length', 0)
+    cy.then(() => {
+      expect(store.progress).to.equal(null)
+      expect(listener).to.have.been.calledTwice
+      expect(listener).to.have.been.calledWithMatch({ id: 'b1', ids: ['p1'] }, { done: 2 })
+      expect(add).to.have.been.calledWith('Done', 'success')
+      expect(add).to.have.been.calledWithMatch(/1 translation failed/, 'error')
+      expect(JSON.parse(sessionStorage.getItem('cms-translations'))).to.deep.equal([])
+    })
+  })
+
+  it('polls each batch only once', () => {
+    const store = useTranslationStore()
+    const apollo = progressApollo({ b1: { total: 1, done: 1, failed: 0 } })
+
+    const first = store.add({ id: 'b1', total: 1 }, { ids: ['p1'], langs: ['de'] }, apollo)
+    const second = store.add({ id: 'b1', total: 1 }, { ids: ['p1'], langs: ['de'] }, apollo)
+
+    expect(store.batches).to.have.length(1)
+
+    return Promise.all([first, second]).then(([progress, same]) => {
+      expect(progress).to.deep.include({ total: 1, done: 1 })
+      expect(same).to.equal(progress)
+      expect(apollo.query).to.have.been.calledOnce
+    })
+  })
+
+  it('ignores invalid stored batches', () => {
+    sessionStorage.setItem('cms-translations', JSON.stringify([{ total: 1 }, { id: 'b1', ids: 'p1' }, null]))
+
+    const store = useTranslationStore()
+
+    expect(store.batches).to.have.length(1)
+    expect(store.batches[0]).to.deep.include({ id: 'b1', ids: [], langs: [] })
+    expect(store.has('p1')).to.be.false
+  })
+
+  it('stops polling the batches when cleared', () => {
+    const store = useTranslationStore()
+    const apollo = progressApollo({ b1: { total: 2, done: 0, failed: 0 } })
+    const listener = cy.stub()
+    store.listen(listener)
+
+    const polling = store.add({ id: 'b1', total: 2 }, { ids: ['p1'], langs: ['de'] }, apollo)
+    store.clear()
+
+    return polling.then((progress) => {
+      expect(progress).to.equal(null)
+      expect(store.batches).to.have.length(0)
+      expect(listener).not.to.have.been.called
     })
   })
 })

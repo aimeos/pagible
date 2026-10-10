@@ -25,7 +25,11 @@ import {
   mdiCached,
   mdiLock,
   mdiKeyVariant,
-  mdiPencil
+  mdiPencil,
+  mdiCheckAll,
+  mdiSync,
+  mdiTranslate,
+  mdiTranslateOff
 } from '@mdi/js'
 import { Draggable } from '@he-tree/vue'
 import { dragContext } from '@he-tree/vue'
@@ -36,6 +40,7 @@ import ListStatus from './ListStatus.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import PageAccess from './PageAccess.vue'
 import PageBulkDialog from './PageBulkDialog.vue'
+import TranslateDialog from './TranslateDialog.vue'
 import ListSort from './ListSort.vue'
 import {
   useAppStore,
@@ -46,6 +51,7 @@ import {
   useChangeStore
 } from '../stores'
 import { listBase, mutation, tally, useListShortcuts } from '../lists'
+import { pageVariants } from '../variants'
 import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, listEcho } from '../echo'
@@ -68,13 +74,16 @@ const PAGE_TREE_FIELDS = new Set([
   'publish_at',
   'published',
   'restricted',
+  'source',
+  'stale',
   'status',
   'tag',
   'theme',
   'title',
   'to',
   'type',
-  'updated_at'
+  'updated_at',
+  'variant_deleted_at'
 ])
 function patchData(data, item) {
   for (const key in item) {
@@ -87,19 +96,6 @@ function patchData(data, item) {
 const CLEAR_CACHE = gql`
   mutation ($ids: [ID!]!) {
     clearCache(ids: $ids)
-  }
-`
-
-const FETCH_PAGE_FOR_PASTE = gql`
-  query ($id: ID!) {
-    page(id: $id) {
-      id
-      latest {
-        id
-        data
-        aux
-      }
-    }
   }
 `
 
@@ -120,8 +116,8 @@ const MOVE_PAGE = gql`
 `
 
 const SAVE_PAGES = gql`
-  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean) {
-    bulkPage(id: $id, input: $input, descendants: $descendants) {
+  mutation ($id: [ID!]!, $input: PageInput!, $descendants: Boolean, $lang: String) {
+    bulkPage(id: $id, input: $input, descendants: $descendants, lang: $lang) {
       ids
       latest
       data
@@ -133,8 +129,12 @@ const SAVE_PAGES = gql`
 const PAGE_FIELDS = `id
           access @include(if: $access)
           parent_id
+          lang
+          source
+          stale
           created_at
           deleted_at
+          variant_deleted_at
           editor
           has
           restricted
@@ -147,10 +147,18 @@ const PAGE_FIELDS = `id
             created_at
           }`
 
-const PASTE_PAGE = gql`
-  mutation ($input: PageInput!, $parent: ID, $ref: ID, $access: Boolean!) {
-    addPage(input: $input, parent: $parent, ref: $ref) {
+const ADD_VARIANT = gql`
+  mutation ($id: ID!, $lang: String!, $access: Boolean!) {
+    addVariant(id: $id, lang: $lang) {
       ${PAGE_FIELDS}
+    }
+  }
+`
+
+const COPY_PAGE = gql`
+  mutation ($id: ID!, $parent: ID, $ref: ID) {
+    copyPage(id: $id, parent: $parent, ref: $ref) {
+      id
     }
   }
 `
@@ -163,6 +171,7 @@ const FETCH_PAGES = gql`
     $page: Int!,
     $trashed: Trashed,
     $publish: Publish,
+    $lang: String,
     $access: Boolean!
   ) {
     pages(
@@ -171,7 +180,8 @@ const FETCH_PAGES = gql`
       first: $limit,
       page: $page,
       trashed: $trashed,
-      publish: $publish
+      publish: $publish,
+      lang: $lang
     ) {
       data {
         ${PAGE_FIELDS}
@@ -180,6 +190,27 @@ const FETCH_PAGES = gql`
         currentPage
         lastPage
       }
+    }
+  }
+`
+
+const COUNT_PAGES = gql`
+  query($filter: PageFilter, $publish: Publish, $lang: String) {
+    pages(filter: $filter, first: 1, trashed: WITHOUT, publish: $publish, lang: $lang) {
+      paginatorInfo {
+        total
+      }
+    }
+  }
+`
+
+const FETCH_STATES = gql`
+  query {
+    pageTranslationStates(cached: true) {
+      lang
+      stale
+      missing
+      ai
     }
   }
 `
@@ -194,6 +225,9 @@ const SORT_OPTIONS = Object.freeze([
   { column: 'EDITOR', order: 'ASC', label: 'Editor' }
 ])
 
+// editor name of AI translated drafts, same as Aimeos\Cms\Sync::EDITOR
+const AI_EDITOR = 'AI draft'
+
 export default {
   components: {
     ActionItem,
@@ -204,16 +238,27 @@ export default {
     ListStatus,
     LoadingSpinner,
     PageAccess,
-    PageBulkDialog
+    PageBulkDialog,
+    TranslateDialog
   },
+
+  mixins: [pageVariants],
 
   props: listBase.props,
 
   emits: listBase.emits,
 
   data() {
+    // the list always shows the pages in a current language, the last one chosen or the default
+    const lang = this.user.setting('page', 'lang', this.languages.default())
+
+    if (!this.languages.available.includes(lang.value)) {
+      lang.value = this.languages.default()
+    }
+
     return {
       items: [],
+      lang,
       accessDialog: false,
       accessDescendants: 0,
       accessIds: [],
@@ -227,6 +272,8 @@ export default {
       checked: null,
       clip: null,
       counts: tally([]),
+      // translation state counts per language shown in the language selector
+      langStates: {},
       sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
@@ -274,6 +321,10 @@ export default {
       mdiLock,
       mdiKeyVariant,
       mdiPencil,
+      mdiCheckAll,
+      mdiSync,
+      mdiTranslate,
+      mdiTranslateOff,
       sortOptions: SORT_OPTIONS
     }
   },
@@ -323,6 +374,14 @@ export default {
   computed: {
     filtered: listBase.computed.filtered,
 
+    langs() {
+      return this.languages.available.map((code) => ({
+        value: code,
+        title: this.languages.translate(code),
+        props: { subtitle: this.langState(this.langStates[code]) }
+      }))
+    },
+
     isChecked() {
       return this.checked || this.$refs.tree?.statsFlat.some((stat) => stat._checked)
     },
@@ -358,6 +417,44 @@ export default {
   },
 
   methods: {
+    // loads the translation state counts of all languages when the language selector opens, up to a minute old
+    fetchStates() {
+      if (!this.user.can('page:view')) return
+
+      return this.$apollo
+        .query({ query: FETCH_STATES, fetchPolicy: 'no-cache' })
+        .then((result) => {
+          if (result.errors) throw result
+          if (this.destroyed) return
+
+          this.langStates = Object.fromEntries(
+            (result.data?.pageTranslationStates || []).map((state) => [state.lang, state])
+          )
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error fetching translation states'), error)
+        })
+    },
+
+    // describes the running translations of the page, e.g. "Translating into DE, FR"
+    translatingLabel(node) {
+      const langs = this.translationStore.langsOf(node.id).map((code) => code.toUpperCase())
+      return this.$gettext('Translating into %{langs}', { langs: langs.join(', ') })
+    },
+
+    // summary of the translation state of a language, e.g. "Needs update: 3 · Missing: 1"
+    langState(state) {
+      if (!state) return undefined
+
+      const parts = [
+        [this.$gettext('Needs update'), state.stale],
+        [this.$gettext('Missing'), state.missing],
+        [this.$gettext('AI draft'), state.ai]
+      ].filter(([, num]) => num > 0)
+
+      return parts.length ? parts.map(([label, num]) => `${label}: ${num}`).join(' · ') : this.$gettext('Up to date')
+    },
+
     accessApplied(access, descendants = false) {
       const stats = this.$refs.tree?.statsFlat || []
       const ids = new Set(this.accessIds)
@@ -407,10 +504,10 @@ export default {
             throw new Error('No data in addPage mutation result')
           }
 
-          const page = { ...result.data.addPage }
+          const page = { ...result.data.addPage, lang: this.lang, source: this.lang }
 
           this.$refs.tree.add(page)
-          this.invalidate()
+          this.invalidate(true)
           this.$emit('select', page)
         })
         .catch((error) => {
@@ -525,12 +622,10 @@ export default {
     },
 
     create(attr = {}) {
-      const current = this.$vuetify.locale.current
-
       return Object.assign(
         {
           path: '_' + Math.floor(Math.random() * 10000),
-          lang: this.languages.available.includes(current) ? current : this.languages.default(),
+          lang: this.lang,
           status: 0,
           cache: 5
         },
@@ -539,7 +634,43 @@ export default {
     },
 
     count() {
-      this.counts = tally(this.selected().map((stat) => stat.data))
+      const items = this.selected().map((stat) => stat.data)
+      const own = items.filter((item) => !this.missing(item))
+
+      // variant actions only count the pages which have a variant in the current language
+      this.counts = Object.assign(tally(items), {
+        draft: own.filter((item) => !item.published).length,
+        own: own.length,
+        langLive: own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length,
+        langVariant: own.filter((item) => item.lang !== item.source).length,
+        langTrashed: own.filter((item) => item.variant_deleted_at).length,
+        stale: own.filter((item) => this.isStale(item)).length,
+        translate: items.filter((item) => this.translatable(item)).length
+      })
+    },
+
+    // adds an untranslated copy of the source variant in the current language
+    createLang(stat) {
+      if (!this.allowed('add') || !this.missing(stat.data)) {
+        return
+      }
+
+      return this.$apollo
+        .mutate({
+          mutation: ADD_VARIANT,
+          variables: { id: stat.data.id, lang: this.lang, access: this.user.can('page:access') }
+        })
+        .then((result) => {
+          if (!result.data.addVariant) {
+            throw new Error('No data in addVariant mutation result')
+          }
+
+          Object.assign(stat.data, this.hydrate(result.data.addVariant))
+          this.invalidate(true)
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error adding language'), error, stat.data.id)
+        })
     },
 
     cut(stat, node) {
@@ -581,12 +712,14 @@ export default {
       })
     },
 
-    trashed(ids) {
+    // shows the undo message for the trashed pages (or their variants in the language)
+    trashed(ids, lang = null) {
       const action = this.user.can('page:keep')
         ? {
             label: this.$gettext('Undo'),
             handler: () => {
-              this.mutate('keep', ids, this.$gettext('Error restoring page')).then((ok) => {
+              const msg = lang ? this.$gettext('Error restoring language') : this.$gettext('Error restoring page')
+              this.mutate('keep', ids, msg, lang).then((ok) => {
                 ok && this.reload(false)
               })
             }
@@ -622,7 +755,7 @@ export default {
     },
 
     editProps(stat = null) {
-      const list = stat ? [stat] : this.selected()
+      const list = stat ? [stat] : this.selected((page) => !this.missing(page))
       const set = new Set(list)
 
       this.propsCount = list.length
@@ -664,7 +797,11 @@ export default {
         updated_at: entry.latest?.created_at || entry.updated_at,
         editor: entry.latest?.editor || entry.editor,
         published: entry.latest?.published ?? true,
-        publish_at: entry.latest?.publish_at || null
+        publish_at: entry.latest?.publish_at || null,
+        lang: entry.lang ?? item.lang ?? null,
+        source: entry.source ?? null,
+        stale: !!entry.stale,
+        variant_deleted_at: entry.variant_deleted_at || null
       })
     },
 
@@ -687,6 +824,7 @@ export default {
         })
         .then((result) => {
           node.id = result.data.addPage.id
+          node.source = node.lang
 
           if (idx !== null || stat.open) {
             this.$refs.tree.add(node, parent, idx !== null ? pos + idx : 0)
@@ -694,15 +832,17 @@ export default {
 
           this.updateHas(parent, 1)
 
-          this.invalidate()
+          this.invalidate(true)
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error inserting page'), error)
         })
     },
 
-    invalidate() {
+    // clears the cached page lists, only actions altering translation states refresh their counts
+    invalidate(changed = false) {
       invalidateList('pages')
+      changed && this.$emit('changed')
     },
 
     newPage() {
@@ -809,12 +949,27 @@ export default {
         })
     },
 
-    // runs the mutation for the page IDs and resolves true on success
-    mutate(action, ids, msg) {
+    // returns if the page has no variant in the current language and the source variant is shown
+    missing(node) {
+      return !!node?.lang && node.lang !== this.lang
+    },
+
+    // returns if an event patch belongs to the shown variant: patches without a language are
+    // bulk edits of the source variants, rows without a known language accept all patches
+    matches(data, item) {
+      if (!data.lang) return true
+      return item.lang ? data.lang === item.lang : !data.source || data.lang === data.source
+    },
+
+    // runs the mutation for the page IDs (of the variants in the language) and resolves true on success
+    mutate(action, ids, msg, lang = null) {
       return this.$apollo
-        .mutate({ mutation: mutation(action, 'page'), variables: { id: ids } })
+        .mutate({
+          mutation: mutation(action, 'page', !!lang),
+          variables: lang ? { id: ids, lang } : { id: ids }
+        })
         .then(() => {
-          this.invalidate()
+          this.invalidate(action !== 'pub')
           return true
         })
         .catch((error) => {
@@ -823,31 +978,61 @@ export default {
         })
     },
 
+    // list filters with the given filter values for the pages query
+    listFilter(values = {}) {
+      const filter = {}
+
+      for (const key in this.filter) {
+        if (!['lang', 'publish', 'trashed', 'view'].includes(key) && this.filter[key] !== null) {
+          filter[key] = this.filter[key]
+        }
+      }
+
+      return Object.assign(filter, values)
+    },
+
+    // filter of all pages matching the list filters independent of their position in the tree
+    filters() {
+      return {
+        filter: this.listFilter(this.filter.view === 'list' && this.term ? { any: this.term } : {}),
+        publish: this.filter.publish || null,
+        filterLang: this.lang
+      }
+    },
+
+    // number of pages matching the list filters which aren't in the trash
+    total() {
+      const { filter, publish } = this.filters()
+
+      return this.$apollo
+        .query({
+          query: COUNT_PAGES,
+          fetchPolicy: 'no-cache',
+          variables: { filter, publish, lang: this.lang }
+        })
+        .then((result) => result.data?.pages?.paginatorInfo?.total ?? null)
+    },
+
     // queries the pages matching the list filters and the given filter values
-    pages(values, page, limit, sort, msg) {
+    pages(values, page, limit, sort, msg, trashed = null) {
       if (!this.allowed('view')) {
         return Promise.resolve([])
       }
 
-      const filter = {}
-
-      for (const key in this.filter) {
-        if (!['publish', 'trashed', 'view'].includes(key) && this.filter[key] !== null) {
-          filter[key] = this.filter[key]
-        }
-      }
+      const filter = this.listFilter(values)
 
       return this.$apollo
         .query({
           query: FETCH_PAGES,
           fetchPolicy: listFetchPolicy(),
           variables: {
-            filter: Object.assign(filter, values),
+            filter,
             sort,
             page,
             limit,
-            trashed: this.filter.trashed || 'WITHOUT',
+            trashed: trashed || this.filter.trashed || 'WITHOUT',
             publish: this.filter.publish || null,
+            lang: this.lang,
             access: this.user.can('page:access')
           }
         })
@@ -862,65 +1047,39 @@ export default {
         return
       }
 
-      const { parent, ref } = this.target(stat, idx)
-      const node = { ...this.clip.node }
+      const { parent, pos, ref } = this.target(stat, idx)
+      // collapsed nodes load their children incl. the copy when pasting into them
+      const append = idx !== null || stat.open
 
+      // the server copies the page, its sub-pages and all language variants
       return this.$apollo
-        .query({
-          query: FETCH_PAGE_FOR_PASTE,
-          fetchPolicy: 'no-cache',
-          variables: {
-            id: node.id
-          }
+        .mutate({
+          mutation: COPY_PAGE,
+          variables: { id: this.clip.node.id, parent: parent?.data.id ?? null, ref }
         })
         .then((result) => {
-          const latest = result?.data?.page?.latest
-          const data = Object.assign({}, node, safeParse(latest?.data))
-          const aux = safeParse(latest?.aux)
+          const id = result.data.copyPage?.id
 
-          return this.$apollo
-            .mutate({
-              mutation: PASTE_PAGE,
-              variables: {
-                input: {
-                  status: 0,
-                  to: data.to,
-                  tag: data.tag,
-                  type: data.type,
-                  theme: data.theme,
-                  lang: data.lang,
-                  name: data.name,
-                  title: data.title,
-                  cache: data.cache,
-                  domain: data.domain,
-                  related_id: node.id,
-                  meta: JSON.stringify(aux?.meta || {}),
-                  config: JSON.stringify(aux?.config || {}),
-                  content: JSON.stringify(aux?.content || []),
-                  path: data.path + '_' + Math.floor(Math.random() * 10000)
-                },
-                parent: parent?.data.id ?? null,
-                ref,
-                access: this.user.can('page:access')
-              }
-            })
-            .then((result) => {
-              if (!result.data.addPage) {
-                throw new Error('No page data returned')
-              }
+          if (!id) {
+            throw new Error('No page data returned')
+          }
 
-              const index = idx !== null ? this.$refs.tree.getSiblings(stat).indexOf(stat) + idx : 0
-              const item = this.hydrate(result.data.addPage)
+          this.invalidate(true)
+          return this.pages({ id: [id] }, 1, 1, undefined, this.$gettext('Error fetching page'), 'WITH')
+        })
+        .then((result) => {
+          const item = result?.data?.[0]
 
-              this.$refs.tree.add(item, parent, index)
-              this.invalidate()
-            })
-            .catch((error) => {
-              this.messages.error(this.$gettext('Error copying page'), error, stat, idx)
-            })
+          if (item && append) {
+            this.$refs.tree.add(item, parent, idx !== null ? pos + idx : 0)
+          } else if (!append) {
+            this.load(stat, stat.data)
+          }
+
+          this.updateHas(parent, (item?.has || 0) + 1)
         })
         .catch((error) => {
-          this.messages.error(this.$gettext('Error fetching page'), error, node.id)
+          this.messages.error(this.$gettext('Error copying page'), error, stat, idx)
         })
     },
 
@@ -935,7 +1094,7 @@ export default {
     patch(item) {
       const stat = this.$refs.tree?.statsFlat.find((stat) => stat.data?.id === item.id)
 
-      if (!stat) {
+      if (!stat || !this.matches(stat.data, item)) {
         return false
       }
 
@@ -951,20 +1110,22 @@ export default {
       this.$refs.tree?.statsFlat.forEach((stat) => {
         const item = byId.get(stat.data?.id)
 
-        if (item) {
+        if (item && this.matches(stat.data, item)) {
           patchData(stat.data, item)
         }
       })
     },
 
     publish(stat) {
-      const list = this.allowed('publish') ? (stat ? [stat] : this.selected((page) => !page.published)) : []
+      const list = this.allowed('publish')
+        ? stat ? [stat] : this.selected((page) => !page.published && !this.missing(page))
+        : []
 
       if (!list.length) {
         return
       }
 
-      this.mutate('pub', list.map((item) => item.data.id), this.$gettext('Error publishing page')).then((ok) => {
+      return this.mutate('pub', list.map((item) => item.data.id), this.$gettext('Error publishing page'), this.lang).then((ok) => {
         for (const item of ok ? list : []) {
           item.data.published = true
           item._checked = false
@@ -1000,6 +1161,44 @@ export default {
           this.$refs.tree.remove(item)
           this.updateHas(parent, -removed)
         }
+      })
+    },
+
+    // reloads the rows after their variant changed, e.g. the source variant is shown after
+    // trashing the variant in the current language; rows not matching the filter anymore are removed.
+    // The rows are fetched in parallel chunks of 100 to stay below the GraphQL complexity limit
+    refetch(list, size = 100) {
+      const chunks = []
+
+      for (let i = 0; i < list.length; i += size) {
+        chunks.push(list.slice(i, i + size))
+      }
+
+      return Promise.all(
+        chunks.map((chunk) => {
+          const ids = chunk.map((stat) => stat.data.id)
+          return this.pages({ id: ids }, 1, ids.length, undefined, this.$gettext('Error fetching pages'))
+        })
+      ).then((results) => {
+        results.forEach((result, idx) => {
+          // rows of failed requests are left unchanged
+          if (!result?.data) {
+            return
+          }
+
+          const byId = new Map(result.data.map((item) => [item.id, item]))
+
+          for (const stat of chunks[idx]) {
+            const item = byId.get(stat.data.id)
+
+            if (item) {
+              Object.assign(stat.data, item, { has: stat.data.has })
+              stat._checked = false
+            } else if (this.$refs.tree?.statsFlat.includes(stat)) {
+              this.$refs.tree.remove(stat)
+            }
+          }
+        })
       })
     },
 
@@ -1086,7 +1285,8 @@ export default {
           variables: {
             id: ids,
             input: input,
-            descendants: descendants
+            descendants: descendants,
+            lang: this.lang
           }
         })
         .then((result) => {
@@ -1099,7 +1299,7 @@ export default {
           this.$refs.tree?.statsFlat.forEach((stat) => {
             const id = stat.data?.id
 
-            if (ids.has(id)) {
+            if (ids.has(id) && !this.missing(stat.data)) {
               for (const key in data) {
                 if (key in stat.data) {
                   stat.data[key] = data[key]
@@ -1116,12 +1316,17 @@ export default {
             }
           })
 
+          // new drafts replace AI drafts, which changes the translation counts too
+          const aiDraft = (this.$refs.tree?.statsFlat || []).some(
+            (stat) => ids.has(stat.data?.id) && stat.data.editor === AI_EDITOR
+          )
+
           this.propsIds = []
           if (this.propsSelected) {
             this.checked = false
           }
           this.propsSelected = false
-          this.invalidate()
+          this.invalidate('lang' in input || aiDraft)
 
           // best effort: the server reports how many attempted pages could not be saved
           if (res.failed > 0) {
@@ -1162,7 +1367,7 @@ export default {
         return
       }
 
-      const list = stat ? [stat] : this.selected()
+      const list = stat ? [stat] : this.selected((page) => !this.missing(page))
 
       if (!list.length) {
         return
@@ -1175,7 +1380,8 @@ export default {
             id: list.map((stat) => stat.data.id),
             input: {
               status: val
-            }
+            },
+            lang: this.lang
           }
         })
         .then((result) => {
@@ -1187,7 +1393,8 @@ export default {
             }
           })
 
-          this.invalidate()
+          // new drafts replace AI drafts, which changes the translation counts too
+          this.invalidate(list.some((stat) => ids.has(stat.data.id) && stat.data.editor === AI_EDITOR))
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error saving page'), error, list, val)
@@ -1207,6 +1414,10 @@ export default {
 
     title(item) {
       const list = []
+
+      if (this.translationStore.has(item.id)) {
+        list.push(this.translatingLabel(item))
+      }
 
       if (item.publish_at) {
         list.push(this.$gettext('Scheduled for %{date}', { date: new Date(item.publish_at).toLocaleDateString() }))
@@ -1316,6 +1527,10 @@ export default {
       }
     },
 
+    lang() {
+      this.reload(false)
+    },
+
     sort() {
       this.reload(false)
     },
@@ -1351,15 +1566,15 @@ export default {
           <ActionItem v-if="counts.draft && user.can('page:publish')" :prepend-icon="mdiPublish" @click="publish()">
             {{ $gettext('Publish') }} ({{ counts.draft }})
           </ActionItem>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEye" @click="status(null, 1)">
-            {{ $pgettext('page status', 'Enable') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEye" @click="status(null, 1)">
+            {{ $pgettext('page status', 'Enable') }} ({{ counts.own }})
           </ActionItem>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="status(null, 0)">
-            {{ $pgettext('page status', 'Disable') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="status(null, 0)">
+            {{ $pgettext('page status', 'Disable') }} ({{ counts.own }})
           </ActionItem>
           <v-divider></v-divider>
-          <ActionItem v-if="isChecked && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
+          <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps()">
+            {{ $gettext('Edit properties') }} ({{ counts.own }})
           </ActionItem>
           <ActionItem v-if="isChecked && user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess()">
             {{ $gettext('Access') }} ({{ counts.all }})
@@ -1379,6 +1594,52 @@ export default {
           <ActionItem v-if="isChecked && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
             {{ $gettext('Purge') }} ({{ counts.all }})
           </ActionItem>
+
+          <template v-if="counts.langVariant || counts.translate || counts.stale">
+            <v-divider></v-divider>
+
+            <ActionItem
+              v-if="counts.translate"
+              :prepend-icon="mdiTranslate"
+              class="action-translate"
+              @click="translate()"
+            >
+              {{ $gettext('Translate') }} ({{ counts.translate }})
+            </ActionItem>
+            <ActionItem
+              v-if="counts.stale && user.can('page:save')"
+              :prepend-icon="mdiCheckAll"
+              class="action-ignore-changes"
+              @click="ignore()"
+            >
+              {{ $gettext('Ignore changes') }} ({{ counts.stale }})
+            </ActionItem>
+
+            <ActionItem
+              v-if="counts.langLive && user.can('page:drop')"
+              :prepend-icon="mdiTranslateOff"
+              class="action-drop-lang"
+              @click="dropLang()"
+            >
+              {{ $gettext('Delete this language') }} ({{ counts.langLive }})
+            </ActionItem>
+            <ActionItem
+              v-if="counts.langTrashed && user.can('page:keep')"
+              :prepend-icon="mdiDeleteRestore"
+              class="action-keep-lang"
+              @click="keepLang()"
+            >
+              {{ $gettext('Restore this language') }} ({{ counts.langTrashed }})
+            </ActionItem>
+            <ActionItem
+              v-if="counts.langVariant && user.can('page:purge')"
+              :prepend-icon="mdiDeleteForever"
+              class="action-purge-lang"
+              @click="purgeLang()"
+            >
+              {{ $gettext('Purge this language') }} ({{ counts.langVariant }})
+            </ActionItem>
+          </template>
         </ActionMenu>
       </span>
 
@@ -1395,6 +1656,16 @@ export default {
     </div>
 
     <div class="search">
+      <v-select
+        v-if="langs.length > 1"
+        v-model="lang"
+        :items="langs"
+        :label="$gettext('Language')"
+        @update:menu="(open) => open && fetchStates()"
+        class="lang-select"
+        variant="underlined"
+        hide-details
+      />
       <v-text-field
         ref="search"
         v-model="term"
@@ -1421,6 +1692,18 @@ export default {
     </v-btn>
 
     <ListSort v-if="filter.view === 'list'" v-model="sort" :options="sortOptions" />
+  </div>
+
+  <div v-if="progress" class="translate-progress" role="status">
+    <v-progress-linear
+      :model-value="progress.total ? ((progress.done + progress.failed) * 100) / progress.total : 0"
+      :indeterminate="!progress.done && !progress.failed"
+      color="primary"
+      rounded
+    />
+    <span class="text">
+      {{ $gettext('Translating %{done} of %{total}', { done: progress.done + progress.failed, total: progress.total }) }}
+    </span>
   </div>
 
   <Draggable
@@ -1476,30 +1759,38 @@ export default {
               <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
             </template>
             <ActionItem
-              v-if="!node.deleted_at && !node.published && user.can('page:publish')"
+              v-if="missing(node) && !node.deleted_at && user.can('page:add')"
+              :prepend-icon="mdiPlus"
+              class="action-create-lang"
+              @click="createLang(stat)"
+              >{{ $gettext('Create in %{lang}', { lang: languages.translate(lang) }) }}</ActionItem
+            >
+
+            <ActionItem
+              v-if="!missing(node) && !node.deleted_at && !node.published && user.can('page:publish')"
               :prepend-icon="mdiPublish"
               @click="publish(stat)"
               >{{ $gettext('Publish') }}</ActionItem
             >
 
             <ActionItem
-              v-if="!node.deleted_at && user.can('page:save') && !node.status"
+              v-if="!missing(node) && !node.deleted_at && user.can('page:save') && !node.status"
               :prepend-icon="mdiEye"
               @click="status(stat, 1)"
               >{{ $pgettext('page status', 'Enable') }}</ActionItem
             >
             <ActionItem
-              v-if="!node.deleted_at && user.can('page:save') && node.status"
+              v-if="!missing(node) && !node.deleted_at && user.can('page:save') && node.status"
               :prepend-icon="mdiEyeOff"
               @click="status(stat, 0)"
               >{{ $pgettext('page status', 'Disable') }}</ActionItem
             >
 
             <v-divider
-              v-if="!node.deleted_at && !node.published && user.can('page:publish')"
+              v-if="!node.deleted_at && (missing(node) ? user.can('page:add') : !node.published && user.can('page:publish'))"
             ></v-divider>
 
-            <ActionItem v-if="user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
+            <ActionItem v-if="!missing(node) && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
               {{ $gettext('Edit properties') }}
             </ActionItem>
             <ActionItem v-if="user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="editAccess(stat)">
@@ -1545,6 +1836,52 @@ export default {
             <ActionItem v-if="user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
               {{ $gettext('Purge') }}
             </ActionItem>
+
+            <template v-if="translatable(node)">
+              <v-divider></v-divider>
+
+              <ActionItem :prepend-icon="mdiTranslate" class="action-translate" @click="translate(stat)">
+                {{ $gettext('Translate') }}
+              </ActionItem>
+            </template>
+
+            <template v-if="!missing(node) && node.lang !== node.source">
+              <v-divider></v-divider>
+
+              <ActionItem
+                v-if="isStale(node) && user.can('page:save')"
+                :prepend-icon="mdiCheckAll"
+                class="action-ignore-changes"
+                @click="ignore(stat)"
+              >
+                {{ $gettext('Ignore changes') }}
+              </ActionItem>
+
+              <ActionItem
+                v-if="!node.variant_deleted_at && user.can('page:drop')"
+                :prepend-icon="mdiTranslateOff"
+                class="action-drop-lang"
+                @click="dropLang(stat)"
+              >
+                {{ $gettext('Delete this language') }}
+              </ActionItem>
+              <ActionItem
+                v-if="node.variant_deleted_at && user.can('page:keep')"
+                :prepend-icon="mdiDeleteRestore"
+                class="action-keep-lang"
+                @click="keepLang(stat)"
+              >
+                {{ $gettext('Restore this language') }}
+              </ActionItem>
+              <ActionItem
+                v-if="user.can('page:purge')"
+                :prepend-icon="mdiDeleteForever"
+                class="action-purge-lang"
+                @click="purgeLang(stat)"
+              >
+                {{ $gettext('Purge this language') }}
+              </ActionItem>
+            </template>
           </ActionMenu>
         </span>
       </div>
@@ -1554,7 +1891,8 @@ export default {
           'status-hidden': node.status == 2,
           'status-enabled': node.status == 1,
           'status-disabled': !node.status,
-          trashed: node.deleted_at,
+          trashed: node.deleted_at || node.variant_deleted_at,
+          missing: missing(node),
           cut: stat.cut
         }"
         :title="title(node)"
@@ -1562,6 +1900,18 @@ export default {
         <a href="#" class="item-text" @click.prevent="$emit('select', node)">
           <div class="item-head">
             <span class="item-lang" v-if="node.lang">{{ node.lang }}</span>
+            <v-icon
+              v-if="isStale(node)"
+              class="item-stale"
+              :icon="mdiSync"
+              :aria-label="$gettext('Needs update')"
+            />
+            <v-icon
+              v-if="translationStore.has(node.id)"
+              class="item-translating"
+              :icon="mdiTranslate"
+              :aria-label="translatingLabel(node)"
+            />
             <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
             <v-icon
               v-if="node.restricted"
@@ -1574,6 +1924,17 @@ export default {
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
         </a>
+        <div v-if="missing(node) && !node.deleted_at && !embed && user.can('page:add')" class="item-create">
+          <v-btn
+            @click="createLang(stat)"
+            :prepend-icon="mdiPlus"
+            class="btn-create-lang"
+            variant="tonal"
+            size="small"
+          >
+            {{ $gettext('Create') }}
+          </v-btn>
+        </div>
         <a
           class="item-aux"
           :href="url(node)"
@@ -1611,6 +1972,15 @@ export default {
     />
   </div>
 
+  <TranslateDialog
+    v-model="translateDialog"
+    :count="translateItems.length"
+    :langs="translateLangs"
+    :total="translateTotal"
+    :filtered="filtered"
+    @apply="translateApply"
+  />
+
   <PageBulkDialog
     v-model="propsDialog"
     :count="propsCount"
@@ -1639,6 +2009,36 @@ export default {
 </template>
 
 <style>
+.item-translating {
+  animation: item-translating 1.6s ease-in-out infinite;
+  color: rgb(var(--v-theme-primary));
+}
+
+@keyframes item-translating {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-translating {
+    animation: none;
+  }
+}
+
+.translate-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.translate-progress .text {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
 .drag-placeholder {
   height: 48px;
 }
@@ -1713,6 +2113,16 @@ export default {
 
 .tree-node-inner .item-content.cut {
   opacity: 0.7;
+}
+
+.tree-node-inner .item-content.missing .item-text,
+.tree-node-inner .item-content.missing .item-aux {
+  opacity: 0.5;
+}
+
+.tree-node-inner .item-create {
+  align-self: center;
+  padding: 0 8px;
 }
 
 .tree-node-inner .item-text {

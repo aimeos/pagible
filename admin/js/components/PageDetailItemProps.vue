@@ -66,6 +66,12 @@ export default {
 
     requiredRules() {
       return [(v) => !!v || this.$gettext('Field is required')]
+    },
+
+    // the only configured language, there's nothing to choose from then
+    singleLang() {
+      const list = this.locales()
+      return list.length === 1 ? list[0].value : null
     }
   },
 
@@ -165,7 +171,12 @@ export default {
     },
     'item.lang': {
       immediate: true,
-      handler() { this.validated?.() }
+      handler(lang) {
+        if (!lang && this.singleLang && !this.readonly) {
+          this.update('lang', this.singleLang)
+        }
+        this.validated?.()
+      }
     },
     'item.theme': {
       immediate: true,
@@ -212,12 +223,12 @@ export default {
             item-value="key"
           ></v-select>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col v-if="!singleLang || item.lang !== singleLang" cols="12" md="6">
           <v-select
             ref="lang"
             :items="locales()"
             :rules="requiredRules"
-            :readonly="readonly"
+            :readonly="readonly || item.variants?.some((v) => v.id && v.lang !== item.lang)"
             :modelValue="item.lang"
             :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the page content')"
             @update:modelValue="update('lang', $event)"

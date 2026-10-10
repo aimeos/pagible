@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -76,11 +77,11 @@ class WpImportTest extends ImportTestAbstract
             'data' => ['text' => 'Shared footer'],
             'editor' => 'test',
         ] );
-        $blog->forceFill( ['content' => [[
+        Resource::updatePage( $blog, ['content' => [[
             'type' => 'reference',
             'refid' => $footer->id,
             'group' => 'footer',
-        ]]] )->saveQuietly();
+        ]]] );
         $blog->elements()->attach( $footer->id );
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
@@ -114,7 +115,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( 0, Page::where( 'parent_id', $oldBlog->id )->count() );
         $this->assertSame( 1, $article->versions()->count() );
 
-        $article->appendToNode( Page::whereKey( $root->id )->firstOrFail() )->save();
+        Resource::placePage( $article, parent: $root->id );
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->where( 'ID', 1 )->update( [
             'post_date' => '2026-02-03 04:05:06',
@@ -323,7 +324,7 @@ class WpImportTest extends ImportTestAbstract
 
     protected function page( string $name, string $path, string $domain, string $tag, ?Page $parent = null ): Page
     {
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'name' => $name,
             'title' => $name,
             'path' => $path,
@@ -332,11 +333,7 @@ class WpImportTest extends ImportTestAbstract
             'tag' => $tag,
             'status' => 1,
             'editor' => 'test',
-        ] );
-
-        if( $parent ) {
-            $page->appendToNode( $parent )->save();
-        }
+        ] ), parent: $parent?->id );
 
         return $page;
     }

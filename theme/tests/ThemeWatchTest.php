@@ -191,12 +191,13 @@ class ThemeWatchTest extends ThemeTestAbstract
         Event::fake( [Observed::class] );
 
         $request = Request::create( '/blog', 'GET' );
-        ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
+        ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200, ['Content-Language' => 'de'] ) );
 
         Event::assertDispatched( Observed::class, fn( Observed $e ) =>
             $e->source === 'request'
             && $e->action === 'theme:view'
             && $e->dimensions['path'] === '/blog'
+            && $e->dimensions['lang'] === 'de'
             && $e->dimensions['status'] === 200
             && $e->sample
         );
@@ -212,17 +213,22 @@ class ThemeWatchTest extends ThemeTestAbstract
 
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
+            ->header( 'Content-Language', 'en' )
             ->setExpires( now()->addMinutes( 5 ) ),
             $page,
         );
 
         $request = Request::create( '/blog', 'GET' );
-        ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
+        $response = ( new ServeCachedPage() )->handle( $request, fn() => new Response( 'body', 200 ) );
+
+        $this->assertEquals( 'cached-html', $response->getContent() );
+        $this->assertEquals( 'en', $response->headers->get( 'Content-Language' ) );
 
         Event::assertDispatched( Observed::class, fn( Observed $e ) =>
             $e->source === 'request'
             && $e->action === 'theme:view'
             && $e->dimensions['path'] === '/blog'
+            && $e->dimensions['lang'] === 'en'
             && $e->dimensions['status'] === 200
         );
     }

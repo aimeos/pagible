@@ -3,6 +3,8 @@
 namespace Aimeos\Cms\Scout;
 
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -227,7 +229,12 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                     }
 
                     $array = $model->toSearchableArray();
-                    $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
+                    $common = [
+                        'indexable_id' => $model->getScoutKey(),
+                        'indexable_type' => $type,
+                        'tenant_id' => $tenant,
+                        'indexable_lang' => $model instanceof Page ? $model->lang : null,
+                    ];
 
                     if( !empty( $array['draft'] ) ) {
                         $rows[] = ['latest' => true, 'content' => $array['draft']] + $common;
@@ -257,6 +264,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         $modelTable = $builder->model->getTable();
         $isDraft = false;
         $query = $builder->model->newQuery();
+        $scope = \Illuminate\Database\Eloquent\SoftDeletingScope::class;
+        $softDeleted = false;
 
         // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
@@ -269,7 +278,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             }
 
             if( $field === '__soft_deleted' ) {
-                $scope = \Illuminate\Database\Eloquent\SoftDeletingScope::class;
+                $softDeleted = true;
 
                 if( $value === null ) {
                     $query->withoutGlobalScope( $scope );
@@ -279,6 +288,14 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                 }
             }
         }
+
+        // withTrashed() removes the soft delete filter, like the collection engine, trashed items are included then
+        if( !$softDeleted && config( 'scout.soft_delete', false ) ) {
+            $query->withoutGlobalScope( $scope );
+        }
+
+        // Pages are indexed per variant, a language filter selects the variants of that language
+        ScoutHelper::variants( $query, $builder );
 
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
@@ -337,7 +354,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     protected function indexQuery( $group, string $type )
     {
         return $group->firstOrFail()->getConnection()->table( 'cms_index' )
-            ->whereIn( 'indexable_id', $group->pluck( 'id' )->all() )
+            ->whereIn( 'indexable_id', $group->map( fn( $model ) => $model instanceof Base ? $model->getScoutKey() : $model->getKey() )->all() )
             ->where( 'indexable_type', $type )
             ->where( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
     }
@@ -359,7 +376,9 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $query->select( "{$modelTable}.*" );
         }
 
-        $query->join( 'cms_index', 'cms_index.indexable_id', '=', "{$modelTable}.id" )
+        $key = $builder->model instanceof Base ? $builder->model->getScoutKeyName() : $builder->model->getKeyName();
+
+        $query->join( 'cms_index', 'cms_index.indexable_id', '=', $modelTable . '.' . $key )
             ->where( 'cms_index.indexable_type', get_class( $builder->model ) )
             ->where( 'cms_index.tenant_id', \Aimeos\Cms\Tenancy::value() );
 
@@ -368,6 +387,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             if( ( $where['field'] ?? $key ) == 'latest' ) {
                 $query->where( 'cms_index.latest', $where['operator'] ?? '=', $where['value'] ?? $where );
             }
+        }
+
+        // variants of other languages are skipped before joining the pages, not for language fallbacks
+        if( $builder->model instanceof Page && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
+            $query->where( 'cms_index.indexable_lang', $lang );
         }
 
         // Scripts without word boundaries (CJK, Thai) tokenize as one FTS token, making interior

@@ -4,7 +4,7 @@
 import CmsDialog from './Dialog.vue'
 import { useAppStore, useSchemaStore } from '../stores'
 import { domain } from '../rules'
-import { cacheItems, locales, PAGE_BULK_LIMIT, statusItems } from '../utils'
+import { cacheItems, PAGE_BULK_LIMIT, statusItems } from '../utils'
 
 
 export default {
@@ -29,10 +29,9 @@ export default {
         theme: false,
         type: false,
         tag: false,
-        lang: false,
         domain: false
       },
-      values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
+      values: { status: 1, cache: 5, theme: '', type: '', tag: '', domain: '' }
     }
   },
 
@@ -40,7 +39,7 @@ export default {
     const schemas = useSchemaStore()
     const app = useAppStore()
 
-    return { app, schemas, locales, cacheItems: cacheItems(), statusItems: statusItems() }
+    return { app, schemas, cacheItems: cacheItems(), statusItems: statusItems() }
   },
 
   created() {
@@ -100,10 +99,9 @@ export default {
         theme: false,
         type: false,
         tag: false,
-        lang: false,
         domain: false
       }
-      this.values = { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
+      this.values = { status: 1, cache: 5, theme: '', type: '', tag: '', domain: '' }
     },
 
     set(key, value) {
@@ -172,18 +170,6 @@ export default {
           variant="underlined"
           item-title="val"
           item-value="key"
-          hide-details="auto"
-        />
-      </div>
-
-      <div class="prop" :class="{ on: enabled.lang }">
-        <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change language')" />
-        <v-select
-          :items="locales()"
-          :modelValue="values.lang"
-          @update:modelValue="set('lang', $event)"
-          :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the page content')"
-          variant="underlined"
           hide-details="auto"
         />
       </div>

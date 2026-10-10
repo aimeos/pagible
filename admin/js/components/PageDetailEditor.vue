@@ -280,7 +280,7 @@ export default {
       -->
       <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
 
-      <SchemaDialog v-model="vschemas" :attach="$refs.preview" @add="add($event)" />
+      <SchemaDialog v-model="vschemas" :attach="$refs.preview" :lang="item.lang" @add="add($event)" />
     </div>
   </div>
 </template>

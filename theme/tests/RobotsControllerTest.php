@@ -188,8 +188,8 @@ class RobotsControllerTest extends ThemeTestAbstract
      */
     protected function robots( string $text ) : void
     {
-        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+        Resource::updatePage( Page::where( 'tag', 'root' )->firstOrFail(), ['config' => [
             'robots-txt' => ['type' => 'robots-txt', 'data' => ['text' => $text], 'files' => []],
-        ]] )->saveQuietly();
+        ]] );
     }
 }

@@ -116,17 +116,20 @@ return new class extends Migration
 
     private function pages( Connection $db ) : void
     {
-        $db->table( 'cms_pages' )
+        // page data is stored in the page variants after the variants migration ran
+        $table = $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ? 'cms_page_variants' : 'cms_pages';
+
+        $db->table( $table )
             ->select( 'id', 'content' )
             ->whereJsonLength( 'content', '>', 0 )
             ->orderBy( 'id' )
-            ->chunkById( 500, function( $rows ) use ( $db ) {
+            ->chunkById( 500, function( $rows ) use ( $db, $table ) {
                 foreach( $rows as $row )
                 {
                     $content = $this->decode( $row->content );
 
                     if( is_array( $content ) && $this->content( $content ) ) {
-                        $db->table( 'cms_pages' )->where( 'id', $row->id )->update( ['content' => $this->encode( $content )] );
+                        $db->table( $table )->where( 'id', $row->id )->update( ['content' => $this->encode( $content )] );
                     }
                 }
             } );

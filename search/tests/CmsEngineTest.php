@@ -199,7 +199,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         // trashed only
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        $page->delete();
+        Resource::trashPage( $page );
 
         $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['trashed' => 'only'] );
@@ -489,7 +489,7 @@ class CmsEngineTest extends SearchTestAbstract
         $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )->count();
         $page = Page::where( 'tag', 'root' )->firstOrFail();
         $page->name = 'Updated home';
-        $page->save();
+        Resource::updatePage( $page );
 
         if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
@@ -499,13 +499,13 @@ class CmsEngineTest extends SearchTestAbstract
 
         // delete removes from index
         $indexBefore = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_id', $page->id )->count();
+            ->where( 'indexable_id', $page->variant_id )->count();
         $this->assertGreaterThan( 0, $indexBefore );
 
         $page->unsearchable();
 
         $indexAfter = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_id', $page->id )->count();
+            ->where( 'indexable_id', $page->variant_id )->count();
         $this->assertEquals( 0, $indexAfter );
 
         // flush
@@ -530,7 +530,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         // the draft (latest=true) index row was refreshed with the new content
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+            ->where( 'indexable_id', $page->variant_id )->where( 'latest', true )->value( 'content' );
 
         $this->waitIndex();
 
@@ -544,6 +544,67 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testIndexesAllPageVariants(): void
+    {
+        $user = new \App\Models\User( [
+            'name' => 'editor', 'email' => 'editor@testbench',
+            'password' => 'secret', 'cmsperms' => Permission::all(),
+        ] );
+
+        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = Resource::addPage( [
+            'lang' => 'en', 'name' => 'zqvsourceterm', 'title' => 'Source', 'path' => 'zqv-source', 'status' => 1,
+        ], $user, parent: $root->id );
+
+        $variant = Resource::addVariant( $page->id, 'de', $user );
+        Resource::savePage( $page->id, ['name' => 'zqvvariantterm', 'path' => 'zqv-variante'], $user, lang: 'de' );
+        Publication::publish( Page::class, [$page->id], $user, lang: 'de' );
+
+        $this->waitIndex();
+
+        $db = DB::connection( config( 'cms.db' ) );
+        $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $page->variant_id )->exists() );
+        $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
+
+        // without a language, only the source variant matches
+        $this->assertCount( 1, Page::search( 'zqvsourceterm' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertCount( 0, Page::search( 'zqvvariantterm' )->searchFields( 'draft' )->take( 25 )->get() );
+
+        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'draft' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( $page->id, $found->first()->id );
+        $this->assertEquals( 'de', $found->first()->lang );
+
+        // index rows store the language of the variants to filter them before joining the pages
+        $this->assertEquals( 'en', $db->table( 'cms_index' )->where( 'indexable_id', $page->variant_id )->value( 'indexable_lang' ) );
+        $this->assertEquals( 'de', $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->value( 'indexable_lang' ) );
+        $this->assertCount( 0, Page::search( 'zqvvariantterm' )->where( 'lang', 'en' )->searchFields( 'draft' )->take( 25 )->get() );
+
+        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'content' )->take( 25 )->get();
+        $this->assertCount( 1, $found );
+        $this->assertEquals( 'zqv-variante', $found->first()->path );
+
+        // preferring a language matches its variant, otherwise the source variant
+        $search = fn( string $term, string $lang ) => \Aimeos\Cms\Scout::prefer(
+            Page::search( $term )->searchFields( 'draft' )->take( 25 ), $lang
+        )->get();
+
+        $this->assertEquals( ['de'], $search( 'zqvvariantterm', 'de' )->pluck( 'lang' )->all() );
+        $this->assertCount( 0, $search( 'zqvsourceterm', 'de' ) );
+        $this->assertEquals( ['en'], $search( 'zqvsourceterm', 'fr' )->pluck( 'lang' )->all() );
+
+        Resource::variants( 'purge', [$page->id], 'de', $user );
+        $this->assertFalse( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
+
+        Resource::addVariant( $page->id, 'de', $user );
+        $keys = \Aimeos\Cms\Models\PageVariant::where( 'page_id', $page->id )->pluck( 'id' )->all();
+        $this->assertCount( 2, $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->distinct()->pluck( 'indexable_id' ) );
+
+        Resource::purge( Page::class, [$page->id], $user );
+        $this->assertFalse( $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->exists() );
+    }
+
+
     public function testBulkReindexesTrashedPages(): void
     {
         $user = new \App\Models\User( [
@@ -552,13 +613,13 @@ class CmsEngineTest extends SearchTestAbstract
         ] );
 
         $page = Page::where( 'tag', 'root' )->firstOrFail();
-        $page->delete();
+        Resource::trashPage( $page );
 
         // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
         Resource::bulkPage( [$page->id], ['name' => 'zttrashterm'], $user );
 
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_id', $page->id )->where( 'latest', true )->value( 'content' );
+            ->where( 'indexable_id', $page->variant_id )->where( 'latest', true )->value( 'content' );
 
         $this->assertNotNull( $draft );
         $this->assertStringContainsString( 'zttrashterm', $draft );
@@ -582,11 +643,12 @@ class CmsEngineTest extends SearchTestAbstract
         ], $user, parent: (string) $parent->id );
         $ids = [(string) $parent->id, (string) $child->id];
         Publication::publish( Page::class, $ids, $user );
+        $keys = [(string) $parent->variant_id => (string) $parent->id, (string) $child->variant_id => (string) $child->id];
         $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', Page::class )
-            ->whereIn( 'indexable_id', $ids );
+            ->whereIn( 'indexable_id', array_keys( $keys ) );
         $indexed = fn( bool $latest ) => ( clone $query )
-            ->where( 'latest', $latest )->pluck( 'indexable_id' )->map( strval(...) )->all();
+            ->where( 'latest', $latest )->pluck( 'indexable_id' )->map( fn( $key ) => $keys[(string) $key] )->all();
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
@@ -610,5 +672,61 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->assertSame( [], $indexed( true ) );
         $this->assertSame( [], $indexed( false ) );
+    }
+
+
+    public function testWithTrashedLikeCollectionEngine()
+    {
+        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        Resource::trashPage( $page );
+
+        $softDelete = config( 'scout.soft_delete' );
+        $results = [];
+
+        try
+        {
+            foreach( [true, false] as $flag )
+            {
+                config( ['scout.soft_delete' => $flag] );
+
+                foreach( ['cms', 'collection'] as $driver )
+                {
+                    config( ['scout.driver' => $driver] );
+                    $ids = Page::search( '' )->searchFields( 'draft' )->withTrashed()->take( 50 )->get()->pluck( 'id' )->all();
+                    $results[$driver][(int) $flag] = in_array( $page->id, $ids );
+                }
+            }
+        }
+        finally
+        {
+            config( ['scout.driver' => 'cms', 'scout.soft_delete' => $softDelete] );
+        }
+
+        $this->assertEquals( [1 => true, 0 => false], $results['collection'] );
+        $this->assertEquals( $results['collection'], $results['cms'] );
+    }
+
+
+    public function testLangMigrationKeepsSqliteIndexRows(): void
+    {
+        $db = DB::connection( config( 'cms.db' ) );
+
+        if( $db->getDriverName() !== 'sqlite' ) {
+            $this->markTestSkipped( 'FTS5 table upgrade' );
+        }
+
+        $page = Page::firstOrFail();
+        $db->statement( 'DROP TABLE cms_index' );
+        $db->statement( 'CREATE VIRTUAL TABLE cms_index USING fts5(indexable_id UNINDEXED, indexable_type UNINDEXED, tenant_id UNINDEXED, latest UNINDEXED, content)' );
+        $db->table( 'cms_index' )->insert( [
+            ['indexable_id' => $page->variant_id, 'indexable_type' => Page::class, 'tenant_id' => 'test', 'latest' => 0, 'content' => 'zqlupgradeterm'],
+            ['indexable_id' => 'other', 'indexable_type' => File::class, 'tenant_id' => 'test', 'latest' => 0, 'content' => 'zqlfileterm'],
+        ] );
+
+        ( require dirname( __DIR__ ) . '/database/migrations/2026_10_09_200000_add_index_lang.php' )->up();
+
+        $this->assertEquals( $page->lang, $db->table( 'cms_index' )->where( 'indexable_id', $page->variant_id )->value( 'indexable_lang' ) );
+        $this->assertNull( $db->table( 'cms_index' )->where( 'indexable_id', 'other' )->value( 'indexable_lang' ) );
+        $this->assertEquals( 1, $db->table( 'cms_index' )->whereRaw( 'cms_index MATCH ?', ['zqlupgradeterm'] )->count() );
     }
 }

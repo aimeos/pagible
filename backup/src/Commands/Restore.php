@@ -347,7 +347,8 @@ class Restore extends Command
             {
                 $name = substr( $stat['name'], 0, -7 );
 
-                if( isset( $tables[$name] ) ) {
+                // search index tables aren't backed up and are rebuilt after restoring
+                if( isset( $tables[$name] ) && !str_starts_with( $name, 'cms_index' ) ) {
                     $list[] = $name;
                 }
             }
@@ -406,8 +407,22 @@ class Restore extends Command
     }
 
 
+    /** @var array<string, string> Columns referencing tenant scoped rows and their tables */
+    protected const REFERENCES = [
+        'page_id' => 'cms_pages',
+        'variant_id' => 'cms_page_variants',
+        'element_id' => 'cms_elements',
+        'file_id' => 'cms_files',
+        'version_id' => 'cms_versions',
+        'parent_id' => 'cms_pages',
+        'latest_id' => 'cms_versions',
+    ];
+
+
     /**
-     * Rejects cross-tenant restores whose globally unique IDs belong to another tenant.
+     * Rejects restores whose globally unique IDs belong to another tenant.
+     *
+     * Also applies to restores into the source tenant because archives may be crafted.
      *
      * @param \ZipArchive $zip ZIP archive
      * @param Connection $db Database connection
@@ -417,10 +432,6 @@ class Restore extends Command
      */
     protected function guardIds( \ZipArchive $zip, Connection $db, array $columns, string $tenant, string $sourceTenant ): void
     {
-        if( $tenant === $sourceTenant ) {
-            return;
-        }
-
         foreach( $columns as $table => $cols )
         {
             if( !in_array( 'id', $cols, true ) || !in_array( 'tenant_id', $cols, true ) ) {
@@ -440,6 +451,31 @@ class Restore extends Command
                         ) );
                     }
                 } );
+        }
+    }
+
+
+    /**
+     * Rejects rows referencing rows of another tenant, e.g. pivot rows linking elements to pages of other tenants.
+     *
+     * The referenced tables are imported before, so only the references to existing rows are checked.
+     *
+     * @param Connection $db Database connection
+     * @param string $table Database table name
+     * @param list<array<string, mixed>> $rows Rows to import
+     * @param string $tenant Target tenant ID
+     */
+    protected function guardRefs( Connection $db, string $table, array $rows, string $tenant ): void
+    {
+        foreach( self::REFERENCES as $col => $ref )
+        {
+            if( !( $ids = array_filter( array_column( $rows, $col ), fn( $id ) => is_string( $id ) && $id !== '' ) ) ) {
+                continue;
+            }
+
+            if( $db->table( $ref )->whereIn( 'id', array_values( array_unique( $ids ) ) )->where( 'tenant_id', '<>', $tenant )->exists() ) {
+                throw new \RuntimeException( sprintf( 'Rows in table "%1$s" reference rows of another tenant in table "%2$s"', $table, $ref ) );
+            }
         }
     }
 
@@ -470,8 +506,9 @@ class Restore extends Command
                 array_intersect_key( $row, $allowed ), $table, $tenant, $sourceTenant, $hasTenant, $files
             ) )
             ->chunk( 50 )
-            ->each( function( LazyCollection $rows ) use ( $db, $table, $merge, $hasTenant, &$count ) {
+            ->each( function( LazyCollection $rows ) use ( $db, $table, $tenant, $merge, $hasTenant, &$count ) {
                 $rows = array_values( $rows->all() );
+                $this->guardRefs( $db, $table, $rows, $tenant );
 
                 if( $merge )
                 {
@@ -917,12 +954,14 @@ class Restore extends Command
     {
         $this->info( 'Restoring database...' );
 
-        // Sort entity tables (with id) before pivot tables, shorter names first (parents before children)
+        // Sort referenced tables first, then entity tables (with id) before pivot tables
         uksort( $columns, function( string $a, string $b ) use ( $columns ) {
+            $aParent = $a === 'cms_pages';
+            $bParent = $b === 'cms_pages';
             $aHasId = in_array( 'id', $columns[$a] );
             $bHasId = in_array( 'id', $columns[$b] );
 
-            return $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId );
+            return ( $bParent <=> $aParent ) ?: ( $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId ) );
         } );
 
         $db->transaction( function() use ( $zip, $db, $tenant, $sourceTenant, $merge, $columns, $files, $after ) {

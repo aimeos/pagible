@@ -39,6 +39,7 @@ php artisan cms:t3-import \
 | `--theme` | | Pagible theme assigned to imported pages |
 | `--file-base` | Domain `/fileadmin` URL | Base URL or local path for TYPO3 files |
 | `--page` | | Import or update only this TYPO3 page UID; repeatable |
+| `--language` | From `sys_language` | TYPO3 language UID imported as translation, e.g. `1:de` or `2:fr:https://example.fr/`; repeatable |
 | `--dry-run` | | Show selected pages without making changes |
 
 Use `--page` to re-import individual pages for page tree with root UID "1":
@@ -75,6 +76,36 @@ shared content references and referenced files. It converts:
 
 Unknown content types are imported only when they contain a regular heading or
 body text. Extension-specific plugin behavior is not migrated.
+
+### Translations
+
+Translated TYPO3 pages and their content become language variants of the
+imported page, with the default language as source. The languages are read
+from the `sys_language` table and can be added or overridden with `--language`:
+
+```bash
+php artisan cms:t3-import \
+    --domain=example.org \
+    --language=1:de \
+    --language=2:fr:https://example.fr/
+```
+
+The value consists of the TYPO3 language UID, the language code and an optional
+URL if the translations are on a separate domain. Otherwise, they are stored on
+the domain of the source pages. The URLs of the translations are imported as
+they are, without adding a language prefix. Translations whose URL is already
+used by another page, like a translated root page with the slug `/` on the same
+domain, are skipped with a warning, as are translations in languages without a
+code.
+
+If the elements of a translation match the source elements (same count, types
+and order), they share the source element IDs and the variant starts up to
+date. Otherwise, the translation is imported as it is and marked as
+"Needs update", so it can be translated again from the source.
+
+Links to other pages in translated content point to their translations. If a
+linked page isn't translated, the link points to the page in the default
+language, using an absolute URL when the translation is on another domain.
 
 ## cms:wp-import
 

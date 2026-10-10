@@ -21,6 +21,6 @@ final class PubPage
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return Publication::publish( Page::class, $args['id'], Auth::user(), $args['at'] ?? null )->all();
+        return Publication::publish( Page::class, $args['id'], Auth::user(), $args['at'] ?? null, $args['lang'] ?? null )->all();
     }
 }

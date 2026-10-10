@@ -31,6 +31,7 @@ class Bulk implements Loggable, ShouldBroadcastNow
      * @param string $source Originating interface: 'graphql', 'mcp' or 'cli'; not in the payload
      * @param string $action Audit action name; not in the broadcast payload
      * @param array<string, string> $projected Actually projected version ids; not in the broadcast payload
+     * @param array<string, string> $langs Saved page id => language of its page variant
      */
     public function __construct(
         public readonly string $contentType,
@@ -42,6 +43,7 @@ class Bulk implements Loggable, ShouldBroadcastNow
         public readonly string $source = '',
         public readonly string $action = 'bulk',
         public readonly array $projected = [],
+        public readonly array $langs = [],
     ) {}
 
 
@@ -62,7 +64,7 @@ class Bulk implements Loggable, ShouldBroadcastNow
             'latest' => $this->latest,
             'data' => $this->data,
             'editor' => $this->editor,
-        ];
+        ] + ( $this->langs ? ['langs' => $this->langs] : [] );
     }
 
 
@@ -78,6 +80,6 @@ class Bulk implements Loggable, ShouldBroadcastNow
             'ids' => array_values( $this->ids ),
             'editor' => $this->editor,
             'tenant_id' => $this->tenant,
-        ]];
+        ] + ( $this->langs ? ['langs' => array_values( array_unique( $this->langs ) )] : [] )];
     }
 }

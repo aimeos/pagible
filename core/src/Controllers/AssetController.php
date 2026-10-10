@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Controllers;
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -38,11 +37,11 @@ class AssetController extends Controller
         {
             $user = $request->user();
             $editor = Permission::can( 'page:view', $user ) && Permission::can( 'file:view', $user );
-            $query = Page::select( 'id', 'tenant_id', 'latest_id' );
+            $query = Page::select( 'id', 'tenant_id' );
 
+            // the status of the variants referencing the file is checked in attached()
             if( !$editor ) {
-                $query->withAccess( $user )
-                    ->withGlobalScope( 'status', new Status() );
+                $query->withAccess( $user );
             }
 
             /** @var Page $owner */
@@ -68,31 +67,40 @@ class AssetController extends Controller
 
 
     /**
-     * Checks the published page references and the current draft for editors.
+     * Checks the published references of the page variants and their current drafts for editors.
+     *
+     * Visitors only get files of variants which are enabled and not in the trash.
      */
     protected function attached( Page $page, string $file, bool $editor ) : bool
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
 
+        $variants = $db->table( 'cms_page_variants' )->select( 'id' )
+            ->where( 'page_id', $page->id )->where( 'tenant_id', $page->tenant_id )
+            ->when( !$editor, fn( $q ) => $q->whereNull( 'deleted_at' )->whereIn( 'status', [1, 2] ) );
+
         $refs = $db->table( 'cms_page_file' )->selectRaw( '1 as attached' )
-            ->where( 'page_id', $page->id )->where( 'file_id', $file );
+            ->whereIn( 'variant_id', $variants )->where( 'file_id', $file );
         $elements = $db->table( 'cms_element_file as ef' )->selectRaw( '1 as attached' )
             ->join( 'cms_page_element as pe', 'pe.element_id', '=', 'ef.element_id' )
-            ->where( 'pe.page_id', $page->id )->where( 'ef.file_id', $file );
+            ->whereIn( 'pe.variant_id', $variants )->where( 'ef.file_id', $file );
 
         $refs->unionAll( $elements );
 
-        if( $editor && $page->latest_id )
+        if( $editor )
         {
+            $latest = $db->table( 'cms_page_variants' )->select( 'latest_id' )
+                ->where( 'page_id', $page->id )->where( 'tenant_id', $page->tenant_id )->whereNotNull( 'latest_id' );
+
             $direct = $db->table( 'cms_version_file' )->selectRaw( '1 as attached' )
-                ->where( 'version_id', $page->latest_id )->where( 'file_id', $file );
+                ->whereIn( 'version_id', $latest )->where( 'file_id', $file );
             $elements = $db->table( 'cms_version_element as ve' )->selectRaw( '1 as attached' )
                 ->join( 'cms_element_file as ef', 'ef.element_id', '=', 've.element_id' )
-                ->where( 've.version_id', $page->latest_id )->where( 'ef.file_id', $file );
+                ->whereIn( 've.version_id', $latest )->where( 'ef.file_id', $file );
             $versions = $db->table( 'cms_version_element as ve' )->selectRaw( '1 as attached' )
                 ->join( 'cms_elements as e', 'e.id', '=', 've.element_id' )
                 ->join( 'cms_version_file as vf', 'vf.version_id', '=', 'e.latest_id' )
-                ->where( 've.version_id', $page->latest_id )
+                ->whereIn( 've.version_id', $latest )
                 ->where( 'e.tenant_id', $page->tenant_id )
                 ->where( 'vf.file_id', $file );
 

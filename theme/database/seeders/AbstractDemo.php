@@ -11,6 +11,7 @@ use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -64,7 +65,7 @@ abstract class AbstractDemo
         File::where( 'tenant_id', $this->tenant )->forceDelete();
         Version::where( 'tenant_id', $this->tenant )->forceDelete();
         Element::where( 'tenant_id', $this->tenant )->forceDelete();
-        Page::where( 'tenant_id', $this->tenant )->forceDelete();
+        Resource::removePages( Page::withTrashed()->where( 'tenant_id', $this->tenant )->pluck( 'id' )->all() );
 
         Page::withoutSyncingToSearch( function() {
             Element::withoutSyncingToSearch( function() {
@@ -339,13 +340,12 @@ abstract class AbstractDemo
 
         $content = array_merge( $content, $footer );
 
-        $page = Page::forceCreate( $data + [
+        $page = Resource::insertPage( ( new Page() )->forceFill( $data + [
             'theme' => $this->theme,
             'editor' => 'demo',
             'meta' => $meta,
             'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
+        ] ), parent: $parent->id );
 
         $version = $page->versions()->forceCreate( [
             'lang' => $data['lang'] ?? 'en',
@@ -359,7 +359,7 @@ abstract class AbstractDemo
 
         $version->elements()->attach( $elementId );
         $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $version->id] );
         $page->publish( $version );
 
         return $page;
@@ -380,7 +380,7 @@ abstract class AbstractDemo
     protected function saveRoot( string $title, array $config, array $meta, array $content, string $elementId,
         string $fileId ) : Page
     {
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Home',
             'title' => $title,
@@ -393,7 +393,7 @@ abstract class AbstractDemo
             'config' => $config,
             'meta' => $meta,
             'content' => $content,
-        ] );
+        ] ) );
 
         $version = $page->versions()->forceCreate( [
             'lang' => 'en',
@@ -417,7 +417,7 @@ abstract class AbstractDemo
 
         $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
         $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $version->id] );
         $page->publish( $version );
 
         return $page;

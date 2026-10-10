@@ -11,8 +11,15 @@ use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Scout;
+use Aimeos\Cms\Sync;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -85,6 +92,128 @@ final class Query
 
 
     /**
+     * Resolver for a single page in the source language or the requested language.
+     *
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     */
+    public function page( $rootValue, array $args ) : ?Page
+    {
+        $trashed = $args['trashed'] ?? null;
+
+        $query = match( $trashed ) {
+            'with' => Page::withTrashed(),
+            'only' => Page::onlyTrashed(),
+            default => Page::query(),
+        };
+
+        if( isset( $args['lang'] ) ) {
+            $query->language( (string) $args['lang'], in_array( $trashed, ['with', 'only'], true ) );
+        }
+
+        return $query->whereKey( $args['id'] )->first();
+    }
+
+
+    /**
+     * Resolver for the number of pages in each translation state of the languages.
+     *
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, array{lang: string, stale: int, missing: int, ai: int}>
+     */
+    public function translationStates( $rootValue, array $args ) : array
+    {
+        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) ( $args['langs'] ?? config( 'cms.locales', [] ) ) );
+        $langs = array_values( array_unique( array_filter( $langs ) ) );
+
+        return $langs ? $this->states( $langs, !empty( $args['cached'] ) ) : [];
+    }
+
+
+    /**
+     * Counts the pages in each translation state of the languages.
+     *
+     * The counts scan all variants of the languages, so frequent refreshes can use
+     * counts up to a minute old. Fresh counts replace the cached ones but are computed
+     * at most ten times a minute per tenant and user, otherwise the cached counts are used.
+     *
+     * @param  array<int, string>  $langs Language codes
+     * @param  bool  $cached TRUE to use counts up to a minute old if available
+     * @return array<int, array{lang: string, stale: int, missing: int, ai: int}>
+     */
+    protected function states( array $langs, bool $cached = false ) : array
+    {
+        $sorted = $langs;
+        sort( $sorted );
+
+        // hashed because tenant IDs and language lists may exceed the key length of cache stores like memcached
+        $key = 'cms-translation-states:' . sha1( Tenancy::value() . ':' . implode( ',', $sorted ) );
+        $counts = Cache::get( $key );
+
+        if( !is_array( $counts ) || !$cached && RateLimiter::attempt( 'cms-translation-states:' . sha1( Tenancy::value() . ':' . Auth::id() ), 10, fn() => true ) ) {
+            Cache::put( $key, $counts = $this->counts( $langs ), 60 );
+        }
+
+        return array_map( function( string $lang ) use ( $counts ) {
+            $row = $counts['rows'][$lang] ?? [];
+
+            return [
+                'lang' => $lang,
+                'stale' => (int) ( $row['stale'] ?? 0 ),
+                'missing' => max( 0, (int) ( $counts['pages'] ?? 0 ) - (int) ( $row['total'] ?? 0 ) ),
+                'ai' => (int) ( $row['ai'] ?? 0 ),
+            ];
+        }, $langs );
+    }
+
+
+    /**
+     * Counts the variants in each translation state of the languages and all pages.
+     *
+     * @param  array<int, string>  $langs Language codes
+     * @return array{rows: array<string, array{total: int, stale: int, ai: int}>, pages: int}
+     */
+    protected function counts( array $langs ) : array
+    {
+        // same conditions as Filter::translation() but counted on the variants of the languages
+        // using their indexes instead of the fallback join over all pages
+        $rows = PageVariant::query()
+            ->join( 'cms_pages as p', fn( $join ) => $join
+                ->on( 'p.id', '=', 'cms_page_variants.page_id' )
+                ->on( 'p.tenant_id', '=', 'cms_page_variants.tenant_id' )
+            )
+            ->whereNull( 'p.deleted_at' )
+            ->whereIn( 'cms_page_variants.lang', $langs )
+            ->toBase()
+            ->select( 'cms_page_variants.lang' )
+            ->selectRaw( '
+                COUNT(*) AS total,
+                SUM(CASE WHEN cms_page_variants.stale = ? THEN 1 ELSE 0 END) AS stale,
+                SUM(CASE WHEN EXISTS (
+                    SELECT 1 FROM cms_versions WHERE cms_versions.id = cms_page_variants.latest_id AND cms_versions.editor = ?
+                ) THEN 1 ELSE 0 END) AS ai
+            ', [true, Sync::EDITOR] )
+            ->groupBy( 'cms_page_variants.lang' )
+            ->get()
+            ->mapWithKeys( fn( $row ) => [(string) $row->lang => [
+                'total' => (int) $row->total,
+                'stale' => (int) $row->stale,
+                'ai' => (int) $row->ai,
+            ]] )
+            ->all();
+
+        // pages without a variant in the language
+        $pages = Page::query()->getConnection()->table( 'cms_pages' )
+            ->where( 'tenant_id', Tenancy::value() )
+            ->whereNull( 'deleted_at' )
+            ->count();
+
+        return ['rows' => $rows, 'pages' => $pages];
+    }
+
+
+    /**
      * Resolver for paginated page list query.
      *
      * @param  null  $rootValue
@@ -93,25 +222,55 @@ final class Query
      */
     public function pages( $rootValue, array $args ) : LengthAwarePaginator
     {
+        $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
+        return $this->paginate( $this->search( $args ), $args, $allowed, NestedSet::LFT, 'asc' );
+    }
+
+
+    /**
+     * Returns the search builder for the pages matching the arguments of the page list query.
+     *
+     * @param  array<string, mixed>  $args Arguments of the page list query ("filter", "lang", "publish", "trashed")
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Unsorted search builder
+     */
+    public function search( array $args ) : \Laravel\Scout\Builder
+    {
         $filter = $args['filter'] ?? [];
         $route = array_key_exists( 'path', $filter )
             ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
             : [];
 
         $search = Filter::search( Page::class, $filter['any'] ?? '' );
+        $lang = (string) ( $args['lang'] ?? '' );
+        $trashed = $args['trashed'] ?? null;
+        $state = null;
+
+        if( isset( $args['lang'] ) )
+        {
+            // trashed variants of the language are selected by the fallback
+            $state = $filter['translation'] ?? null;
+            Scout::prefer( $search, $lang, $trashed );
+            $args['trashed'] = $trashed === 'only' ? 'with' : $trashed;
+            unset( $filter['lang'], $args['lang'] );
+        }
+
+        unset( $filter['translation'] );
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 
-        if( $route ) {
-            $search->query( function( $query ) use ( $route ) {
+        if( $route || $state ) {
+            $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang ) {
                 foreach( $route as $field => $value ) {
                     $query->where( 'cms_pages.' . $field, (string) ( $value ?? '' ) );
+                }
+
+                if( $state ) {
+                    Filter::translation( $query, $lang, $state );
                 }
             } );
         }
 
-        $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
-        return $this->paginate( $search, $args, $allowed, NestedSet::LFT, 'asc' );
+        return $search;
     }
 
 

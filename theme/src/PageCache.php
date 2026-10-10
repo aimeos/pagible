@@ -125,6 +125,10 @@ class PageCache
             ->header( 'Expires', $expires )
             ->header( 'Vary', 'Accept-Encoding' );
 
+        if( is_string( $entry['lang'] ?? null ) && $entry['lang'] !== '' ) {
+            $response->header( 'Content-Language', $entry['lang'] );
+        }
+
         return $gzip ? $response->header( 'Content-Encoding', 'gzip' ) : $response;
     }
 
@@ -224,10 +228,11 @@ class PageCache
         }
 
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
+        $lang = (string) $response->headers->get( 'Content-Language' );
 
         self::store()->put(
             $key,
-            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil],
+            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil, 'lang' => $lang],
             max( 1, $freshUntil + $grace - time() ),
         );
     }

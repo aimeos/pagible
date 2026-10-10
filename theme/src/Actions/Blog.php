@@ -39,8 +39,13 @@ class Blog
 
         $builder = Page::whereIn( 'status', [1, 2] )->with( $with )->orderBy( $order, $dir );
 
+        // list the articles in the language of the current page, see "cms.translate.fallback"
+        $page->localize( $builder );
+
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );
+        } else {
+            $builder->where( 'domain', (string) $page->domain );
         }
 
         if( $editor ) {

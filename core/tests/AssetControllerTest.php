@@ -12,6 +12,8 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -345,12 +347,37 @@ class AssetControllerTest extends CoreTestAbstract
     }
 
 
+    public function testPrivateFileOfTranslationCanBeDelivered()
+    {
+        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $variant = Resource::addVariant( $page->id, 'de' );
+        PageVariant::whereKey( $variant->variant_id )->update( ['status' => 1] );
+
+        [$page, $file] = $this->asset( true, $variant );
+        $url = route( 'cms.asset', ['page' => $page->id, 'file' => $file->id], false );
+
+        $response = $this->get( $url )->assertOk();
+        $this->assertSame( 'private document', $response->baseResponse->getFile()->getContent() );
+
+        // the hidden source variant doesn't hide the files of published translations
+        PageVariant::whereKey( $page->id )->update( ['status' => 0] );
+        $this->get( $url )->assertOk();
+
+        PageVariant::whereKey( $variant->variant_id )->update( ['status' => 3] );
+        $this->get( $url )->assertNotFound();
+
+        PageVariant::whereKey( $variant->variant_id )->update( ['status' => 1] );
+        PageVariant::whereKey( $variant->variant_id )->delete();
+        $this->get( $url )->assertNotFound();
+    }
+
+
     /**
      * @return array{Page, File}
      */
-    private function asset( bool $direct = true ) : array
+    private function asset( bool $direct = true, ?Page $variant = null ) : array
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = $variant ?? Page::where( 'path', 'blog' )->firstOrFail();
         $file = new File();
         $file->setUniqueIds();
         $path = $file->dir() . '/private.txt';
@@ -370,13 +397,13 @@ class AssetControllerTest extends CoreTestAbstract
 
         if( $direct ) {
             $db->table( 'cms_page_file' )->insert( [
-                'page_id' => $page->id,
+                'variant_id' => $page->variant_id,
                 'file_id' => $file->id,
             ] );
         } else {
             $element = Element::firstOrFail();
             $db->table( 'cms_page_element' )->updateOrInsert( [
-                'page_id' => $page->id,
+                'variant_id' => $page->variant_id,
                 'element_id' => $element->id,
             ] );
             $db->table( 'cms_element_file' )->updateOrInsert( [

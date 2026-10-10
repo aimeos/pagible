@@ -8,8 +8,11 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Jobs\BaseDelivery;
 use Aimeos\Cms\Jobs\DeliverEndpoint;
 use Aimeos\Cms\Jobs\DeliverWebhook;
@@ -128,7 +131,7 @@ class WebhookListener
             return array_map( fn( string $id ) => [
                 'id' => $id,
                 'version_id' => $event->projected[$id] ?? $event->latest[$id] ?? '',
-            ], $event->ids );
+            ] + ( isset( $event->langs[$id] ) ? ['lang' => $event->langs[$id]] : [] ), $event->ids );
         }
 
         $projection = $event instanceof Published ? $event->projection : [];
@@ -136,7 +139,11 @@ class WebhookListener
         $data = ['id' => $event->id, 'version_id' => $versionId];
 
         if( $event->contentType === 'page' ) {
-            foreach( ['path', 'domain'] as $field ) {
+            // lifecycle events of whole pages have no language, only those of single page variants (bulk events)
+            $fields = $event instanceof Dropped || $event instanceof Restored || $event instanceof Purged
+                ? ['path', 'domain'] : ['path', 'domain', 'lang'];
+
+            foreach( $fields as $field ) {
                 if( is_string( $value = ( $projection ?: $event->data )[$field] ?? null ) ) {
                     $data[$field] = $value;
                 }

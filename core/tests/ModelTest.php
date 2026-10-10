@@ -157,15 +157,6 @@ class ModelTest extends CoreTestAbstract
     }
 
 
-    public function testPageKeepsRelatedIdAsIs(): void
-    {
-        $page = new Page();
-        $page->related_id = ' ID-with-original-case ';
-
-        $this->assertSame( ' ID-with-original-case ', $page->related_id );
-    }
-
-
     public function testSqlServerUppercasesUuids(): void
     {
         $model = new class extends Page {

@@ -18,10 +18,10 @@ class Validation
 {
     /** @var array<class-string, array<string, int>> Maximum string lengths or integer values of scalar fields */
     private const LIMITS = [
-        Element::class => ['lang' => 5, 'name' => 255, 'type' => 50],
-        File::class => ['lang' => 5, 'mime' => 100, 'name' => 255, 'path' => 255],
+        Element::class => ['lang' => 10, 'name' => 255, 'type' => 50],
+        File::class => ['lang' => 10, 'mime' => 100, 'name' => 255, 'path' => 255],
         Page::class => [
-            'cache' => 32767, 'domain' => 255, 'lang' => 5, 'name' => 255, 'path' => 255, 'related_id' => 36,
+            'cache' => 32767, 'domain' => 255, 'lang' => 10, 'name' => 255, 'path' => 255,
             'status' => 32767, 'tag' => 30, 'theme' => 30, 'title' => 255, 'to' => 255, 'type' => 30,
         ],
     ];
@@ -59,6 +59,28 @@ class Validation
 
 
     /**
+     * Shortens the strings of the scalar fields to the storage limits of the model.
+     *
+     * Used for generated values like translations which shouldn't fail because of their length.
+     *
+     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param array<string, mixed> $input Input data
+     * @return array<string, mixed> Input data with shortened strings
+     */
+    public static function truncate( string $model, array $input ) : array
+    {
+        foreach( self::LIMITS[$model] as $key => $max )
+        {
+            if( !isset( self::NUMBERS[$key] ) && is_string( $input[$key] ?? null ) ) {
+                $input[$key] = mb_substr( $input[$key], 0, $max );
+            }
+        }
+
+        return $input;
+    }
+
+
+    /**
      * Sanitizes page input: validates URL, strips config without permission,
      * sanitizes HTML content, populates per-element file lists, validates
      * content/meta/config schemas.
@@ -76,8 +98,20 @@ class Validation
             throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
         }
 
+        if( isset( $input['lang'] ) && !Utils::isValidLang( (string) $input['lang'] ) ) {
+            throw new Exception( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
+        }
+
         if( !Permission::can( 'page:config', $user ) ) {
             unset( $input['config'] );
+        }
+
+        // the source language is changed by Resource::setSource() only
+        unset( $input['source'] );
+
+        // host names are case insensitive and requests use lower case hosts
+        if( is_string( $input['domain'] ?? null ) ) {
+            $input['domain'] = mb_strtolower( $input['domain'] );
         }
 
         if( isset( $input['content'] ) )

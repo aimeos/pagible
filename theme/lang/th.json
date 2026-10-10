@@ -49,6 +49,7 @@
     "Load more": "โหลดเพิ่มเติม",
     "No results found": "ไม่พบผลลัพธ์",
     "Search failed": "การค้นหาล้มเหลว",
+    "Language": "ภาษา",
     "Attachments": "ไฟล์แนบ",
     "Images or PDF files, max. :size MB each": "รูปภาพหรือไฟล์ PDF สูงสุดไฟล์ละ :size MB",
     ":attribute: The file type is not allowed.": ":attribute: ไม่อนุญาตให้ใช้ไฟล์ประเภทนี้",

@@ -9,7 +9,7 @@ import UnsavedDialog from './components/UnsavedDialog.vue'
 import { setupEcho } from './echo'
 import { invalidateList } from './graphql'
 import { keydown, setNavigate } from './shortcuts'
-import { useDirtyStore, useMessageStore, useUserStore, useViewStack } from './stores'
+import { useDirtyStore, useMessageStore, useTranslationStore, useUserStore, useViewStack } from './stores'
 
 const CONTENT_TYPES = ['page', 'element', 'file']
 
@@ -48,6 +48,9 @@ export default {
         this.unsubscribe = types.length ? setupEcho(types, (_event, _name, type) => {
           invalidateList(`${type}s`)
         }) : null
+
+        // shows the progress of translations queued before the tab was reloaded
+        user && useTranslationStore().resume()
       },
       immediate: true
     }

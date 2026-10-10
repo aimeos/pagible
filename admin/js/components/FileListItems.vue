@@ -7,6 +7,7 @@ import {
   mdiLock,
   mdiMusic,
   mdiPlusLock,
+  mdiTranslate,
   mdiViewGridOutline,
   mdiYoutube
 } from '@mdi/js'
@@ -17,7 +18,19 @@ import ListStatus from './ListStatus.vue'
 import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
 import { listBase, useList } from '../lists'
+import { useLanguageStore } from '../stores'
 import { fileurl, filesrcset } from '../utils'
+
+const FILE_LIST_FIELDS = `...CmsFileFields
+        latest {
+          id
+          published
+          publish_at
+          data
+          editor
+          created_at
+        }
+        byversions_count`
 
 const FETCH_FILES = gql`
   ${FILE_FIELDS}
@@ -38,20 +51,20 @@ const FETCH_FILES = gql`
       publish: $publish
     ) {
       data {
-        ...CmsFileFields
-        latest {
-          id
-          published
-          publish_at
-          data
-          editor
-          created_at
-        }
-        byversions_count
+        ${FILE_LIST_FIELDS}
       }
       paginatorInfo {
         lastPage
       }
+    }
+  }
+`
+
+const TRANSLATE_FILES = gql`
+  ${FILE_FIELDS}
+  mutation ($id: [ID!]!, $lang: [String!]!) {
+    translateFiles(id: $id, lang: $lang) {
+      ${FILE_LIST_FIELDS}
     }
   }
 `
@@ -85,18 +98,22 @@ export default {
 
   data() {
     return {
-      vgrid: this.user.getData('file', 'grid') ?? this.grid
+      vgrid: this.user.getData('file', 'grid') ?? this.grid,
+      // progress of the running translation as { done, total } or null
+      translating: null
     }
   },
 
   setup() {
     return {
       ...useList('file', FETCH_FILES, (vm) => vm.$refs.upload?.click()),
+      languages: useLanguageStore(),
       mdiViewGridOutline,
       mdiFormatListBulletedSquare,
       mdiLock,
       mdiMusic,
       mdiPlusLock,
+      mdiTranslate,
       mdiYoutube,
       sortOptions: SORT_OPTIONS,
       fileurl,
@@ -154,6 +171,11 @@ export default {
       }[action]
     },
 
+    // the descriptions can be translated if there are several languages
+    canTranslate() {
+      return this.languages.available.length > 1 && this.user.can('file:save') && this.user.can('text:translate')
+    },
+
     hydrate(entry) {
       const latest = entry.latest
 
@@ -169,6 +191,67 @@ export default {
         latest_id: latest?.id || null,
         usage: entry.byversions_count
       })
+    },
+
+    // fills in the missing descriptions in all languages as file drafts; the server translates each
+    // language sequentially, so small chunks keep the requests short and the action label shows the progress.
+    // The server accepts at most 100 files times languages per request ("cms.ai.maxtranslate")
+    async translate(item = null) {
+      const list = this.canTranslate() ? (item ? [item] : this.selected()).filter((item) => !item.deleted_at) : []
+
+      if (!list.length || this.translating) {
+        return
+      }
+
+      const ids = list.map((item) => item.id)
+      const total = ids.length
+      const langs = this.languages.available
+      const size = Math.max(1, Math.min(10, Math.floor(100 / langs.length)))
+      const files = []
+      let failure = null
+
+      this.translating = { done: 0, total }
+
+      try {
+        for (let i = 0; i < total; i += size) {
+          const result = await this.$apollo.mutate({
+            mutation: TRANSLATE_FILES,
+            variables: { id: ids.slice(i, i + size), lang: langs }
+          })
+
+          files.push(...(result.data?.translateFiles || []))
+          this.translating.done = Math.min(i + size, total)
+        }
+      } catch (error) {
+        failure = error
+      }
+
+      const done = this.translating.done
+      this.translating = null
+
+      // results of the chunks processed before a failure are kept
+      if (files.length) {
+        this.patchItems(files.map((entry) => this.hydrate(entry)))
+        this.invalidate()
+        this.messages.add(
+          this.$ngettext('Descriptions of %{num} file translated', 'Descriptions of %{num} files translated', files.length, {
+            num: files.length
+          }),
+          'success'
+        )
+      }
+
+      if (failure) {
+        this.messages.error(
+          done
+            ? this.$gettext('Error translating descriptions after %{done} of %{total} files', { done, total })
+            : this.$gettext('Error translating descriptions'),
+          failure,
+          ids.slice(done)
+        )
+      } else if (!files.length) {
+        this.messages.add(this.$gettext('No missing descriptions to translate'), 'info')
+      }
     }
   },
 
@@ -205,6 +288,16 @@ export default {
           </ActionItem>
           <ActionItem v-if="isChecked && user.can('file:save')" :prepend-icon="mdiPencil" @click="edit()">
             {{ $gettext('Edit properties') }} ({{ counts.all }})
+          </ActionItem>
+          <ActionItem
+            v-if="counts.live && canTranslate()"
+            :prepend-icon="mdiTranslate"
+            :disabled="translating"
+            class="action-translate"
+            @click="translate()"
+          >
+            {{ $gettext('Translate descriptions') }}
+            ({{ translating ? translating.done + '/' + translating.total : counts.live }})
           </ActionItem>
           <ActionItem v-if="counts.live && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop()">
             {{ $gettext('Delete') }} ({{ counts.live }})
@@ -337,6 +430,16 @@ export default {
 
         <ActionItem v-if="user.can('file:save')" :prepend-icon="mdiPencil" @click="edit(item)">
           {{ $gettext('Edit properties') }}
+        </ActionItem>
+        <ActionItem
+          v-if="!item.deleted_at && canTranslate()"
+          :prepend-icon="mdiTranslate"
+          :disabled="translating"
+          class="action-translate"
+          @click="translate(item)"
+        >
+          {{ $gettext('Translate descriptions') }}
+          <template v-if="translating">({{ translating.done }}/{{ translating.total }})</template>
         </ActionItem>
 
         <v-divider v-if="user.can('file:save')"></v-divider>

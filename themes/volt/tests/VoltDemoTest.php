@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\VoltDemo;
@@ -79,7 +80,7 @@ class VoltDemoTest extends ThemeTestAbstract
         $config = $home->config;
         $config->{'volt::business'}->data->{'call-button'} = false;
         $home->config = $config;
-        $home->saveQuietly();
+        Resource::updatePage( $home );
 
         $this->get( '/' )->assertDontSee( 'class="call-button"', false );
     }

@@ -31,6 +31,6 @@ return new class extends Migration
             $table->nestedSetDepth(); // update table schema
         });
 
-        \Aimeos\Cms\Models\Page::fixTree(); // update existing data
+        \Aimeos\Cms\Models\PageNode::fixTree(); // update existing data
     }
 };

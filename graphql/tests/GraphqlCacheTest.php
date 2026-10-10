@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
@@ -42,12 +43,11 @@ class GraphqlCacheTest extends GraphqlTestAbstract
     {
         $root = Page::where( 'tag', 'disabled' )->firstOrFail();
         $root2 = Page::where( 'tag', 'hidden' )->firstOrFail();
-        Page::query()
+        Resource::updatePage( Page::query()
             ->where( NestedSet::LFT, '>', $root->getLft() )
             ->where( NestedSet::RGT, '<', $root->getRgt() )
-            ->firstOrFail()
-            ->update( ['domain' => 'other.example'] );
-        $root2->update( ['domain' => 'another.example'] );
+            ->firstOrFail(), ['domain' => 'other.example'] );
+        Resource::updatePage( $root2, ['domain' => 'another.example'] );
         $ids = [$root->id, $root2->id];
         $roots = Page::query()
             ->withTrashed()

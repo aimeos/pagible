@@ -35,6 +35,7 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 
 
@@ -44,6 +45,15 @@ class ResourceTest extends CoreTestAbstract
     use RefreshDatabase;
 
     protected $seeder = TestSeeder::class;
+
+
+    protected function tearDown(): void
+    {
+        // the collection driver doesn't index, so queue tests use the cms driver
+        config( ['scout.driver' => 'collection', 'scout.queue' => false, 'scout.soft_delete' => false] );
+
+        parent::tearDown();
+    }
 
 
     protected function setUp(): void
@@ -674,13 +684,13 @@ class ResourceTest extends CoreTestAbstract
         $element = Element::firstOrFail();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $pages[0]->id, 'file_id' => $file->id,
+            'variant_id' => $pages[0]->variant_id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_element_file' )->updateOrInsert( [
             'element_id' => $element->id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_page_element' )->updateOrInsert( [
-            'page_id' => $pages[1]->id, 'element_id' => $element->id,
+            'variant_id' => $pages[1]->variant_id, 'element_id' => $element->id,
         ] );
 
         Event::fake( [PageInvalidated::class, FilesRemoved::class] );
@@ -981,7 +991,7 @@ class ResourceTest extends CoreTestAbstract
         Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
         $page = Page::firstOrFail();
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $page->id, 'file_id' => $files[0]->id,
+            'variant_id' => $page->variant_id, 'file_id' => $files[0]->id,
         ] );
         Event::fake( [Bulk::class, PageInvalidated::class, Saved::class] );
 
@@ -1216,7 +1226,7 @@ class ResourceTest extends CoreTestAbstract
         }
 
         // per 50 roots: subtree query; per 50 pages: prefetch latest refs; per page: load page and latest version, create version, update page
-        $this->expectsDatabaseQueryCount( 223 );
+        $this->expectsDatabaseQueryCount( 215 );
 
         $saved = Resource::bulkPage( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
 
@@ -1256,10 +1266,10 @@ class ResourceTest extends CoreTestAbstract
         $calls = [
             fn() => Resource::addElement( ['lang' => 'en', 'type' => 'heading', 'name' => $long, 'data' => []], $this->user ),
             fn() => Resource::saveElement( $element->id, ['name' => $long], $this->user ),
-            fn() => Resource::bulkElement( [$element->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::bulkElement( [$element->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
             fn() => Resource::addFile( $upload, $this->user ),
             fn() => Resource::saveFile( $file->id, ['name' => ['a']], $this->user ),
-            fn() => Resource::bulkFile( [$file->id], ['lang' => 'en-GB-x'], $this->user ),
+            fn() => Resource::bulkFile( [$file->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
             fn() => Resource::addPage( ['lang' => 'en', 'name' => 'A', 'title' => $long, 'path' => 'res-' . Utils::uid()], $this->user ),
             fn() => Resource::savePage( $page->id, ['status' => 32768], $this->user ),
             fn() => Resource::bulkPage( [$page->id], ['tag' => str_repeat( 'a', 31 )], $this->user ),
@@ -1320,13 +1330,14 @@ class ResourceTest extends CoreTestAbstract
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         Resource::bulkPage( [$page->id], ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class
+            && $job->ids === [$page->variant_id] && $job->keys );
     }
 
 
@@ -1340,7 +1351,7 @@ class ResourceTest extends CoreTestAbstract
 
         Queue::assertPushed( PruneVersions::class, 1 );
         Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === Page::class
-            && $job->ids === collect( $pages )->pluck( 'id' )->sort()->values()->all() );
+            && $job->ids === collect( $pages )->pluck( 'variant_id' )->sort()->values()->all() );
     }
 
 
@@ -1361,7 +1372,7 @@ class ResourceTest extends CoreTestAbstract
     public function testScoutQueueDefersModelLoading()
     {
         $page = Page::firstOrFail();
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->expectsDatabaseQueryCount( 0 );
@@ -1381,6 +1392,7 @@ class ResourceTest extends CoreTestAbstract
             $loaded[] = $page->tenant_id;
         } );
         $this->app->instance( Tenancy::class, new Tenancy( 'other' ) );
+        config( ['scout.driver' => 'cms'] );
 
         ( new IndexModels( Page::class, [$page->id], $tenant ) )->handle();
 
@@ -1404,7 +1416,7 @@ class ResourceTest extends CoreTestAbstract
             }
         } );
 
-        config( ['scout.queue' => true, 'scout.soft_delete' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true, 'scout.soft_delete' => true] );
 
         Queue::fake();
         Publication::publish( Element::class, $ids, $this->user );
@@ -1439,7 +1451,7 @@ class ResourceTest extends CoreTestAbstract
             $this->assertCount( 2, $ids[$model] );
         }
 
-        $this->expectsDatabaseQueryCount( 22 );
+        $this->expectsDatabaseQueryCount( 20 );
 
         foreach( $ids as $model => $modelIds ) {
             Resource::drop( $model, $modelIds, $this->user );
@@ -1536,7 +1548,7 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -1561,7 +1573,7 @@ class ResourceTest extends CoreTestAbstract
         Element::withoutSyncingToSearch( fn() => Element::whereKey( $published->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         Publication::publish( Element::class, [$published->id, $draft->id], $this->user );
@@ -1766,10 +1778,9 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
-        Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
-            ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        PageVariant::whereKey( $pages[0]->variant_id )->toBase()->update( ['updated_at' => '2000-01-01 00:00:00'] );
         Event::fake( [PageInvalidated::class] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
@@ -1793,9 +1804,9 @@ class ResourceTest extends CoreTestAbstract
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $target->id, 'type' => 'file']]]];
         $page = $this->page( $content );
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->table( 'cms_page_file' )->where( 'page_id', $page->id )->delete();
-        $db->table( 'cms_page_file' )->insert( ['page_id' => $page->id, 'file_id' => $other->id] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $db->table( 'cms_page_file' )->where( 'variant_id', $page->variant_id )->delete();
+        $db->table( 'cms_page_file' )->insert( ['variant_id' => $page->variant_id, 'file_id' => $other->id] );
+        $this->expectsDatabaseQueryCount( 14 );
 
         Publication::publish( Page::class, [$page->id], $this->user );
 
@@ -2026,7 +2037,7 @@ class ResourceTest extends CoreTestAbstract
             'drop' => fn( Page $page ) => Resource::drop( Page::class, [$page->id], $this->user, ['id'] ),
             'purge' => fn( Page $page ) => Resource::purge( Page::class, [$page->id], $this->user, ['id'] ),
             'restore' => function( Page $page ) {
-                $page->delete();
+                Resource::trashPage( $page );
                 return Resource::restore( Page::class, [$page->id], $this->user, ['id'] );
             },
         ];
@@ -2488,18 +2499,19 @@ class ResourceTest extends CoreTestAbstract
     protected function sharedPages( Element $element ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $row = (array) $db->table( 'cms_pages' )->where( 'id', $element->bypages()->value( 'id' ) )->first();
+        $row = (array) Page::where( 'id', $element->bypages()->value( 'id' ) )->toBase()->first();
         $rows = [];
 
         for( $i = 0; $i < 251; $i++ ) {
-            $rows[] = ['id' => (string) Str::uuid7(), 'path' => 'shared-' . $i] + $row;
+            $id = (string) Str::uuid7();
+            $rows[] = ['id' => $id, 'variant_id' => $id, 'path' => 'shared-' . $i] + $row;
         }
 
         // SQL Server allows max. 2100 bound parameters per statement
         foreach( array_chunk( $rows, 50 ) as $chunk )
         {
-            $db->table( 'cms_pages' )->insert( $chunk );
-            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $chunk ) );
+            Resource::insertPages( $chunk );
+            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['variant_id' => $row['variant_id'], 'element_id' => $element->id], $chunk ) );
         }
     }
 }

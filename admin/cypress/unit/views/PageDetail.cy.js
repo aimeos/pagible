@@ -1,8 +1,8 @@
-import { h } from 'vue'
+import { h, reactive } from 'vue'
 import { apolloClient } from '../../../js/graphql'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
-import { useUserStore } from '../../../js/stores'
+import { useTranslationStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
 const stubs = {
@@ -27,7 +27,7 @@ const stubs = {
   PageDetailEditor: {
     props: { asideVisible: Boolean, previewSize: String },
     emits: ['change', 'edit'],
-    methods: { addAfter() {}, addBefore() {}, remove() {} },
+    methods: { addAfter() {}, addBefore() {}, reload() {}, remove() {} },
     render() {
       return h('button', {
         class: 'page-detail-editor-stub',
@@ -65,7 +65,7 @@ const baseItem = {
 
 function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(PageDetail, {
-    props: { item: { ...baseItem, ...item } },
+    props: { item: reactive({ ...baseItem, ...item }) },
     global: {
       stubs,
       mocks: {
@@ -94,7 +94,7 @@ describe('PageDetail', () => {
     mountDetail().then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
       const { id, published, ...data } = baseItem
-      expect(sections({ ...data, related_id: null, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent().data)).to.deep.equal({})
+      expect(sections({ ...data, scheduled: 0, editor: 'Another editor' }, vm.historyCurrent().data)).to.deep.equal({})
 
       const file = { id: 'old-file', path: 'old.jpg', previews: {} }
       const element = { id: 'old-element', type: 'text', name: 'Shared campaign', data: '{"text":"Saved element"}', files: [] }
@@ -266,14 +266,19 @@ describe('PageDetail', () => {
     cy.get('.menu-publish').first().should('be.disabled')
   })
 
-  it('shows translate button with text:translate permission', () => {
-    mountDetail({ 'text:translate': true })
-    cy.get('.btn-translate-page button').should('exist')
+  it('shows the translate button for variants with text:translate permission', () => {
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en' })
+    cy.get('button.btn-translate-page').should('exist')
   })
 
-  it('hides translate button without text:translate permission', () => {
-    mountDetail({})
-    cy.get('.btn-translate-page button').should('not.exist')
+  it('hides the translate button without text:translate permission', () => {
+    mountDetail({ 'page:save': true }, { lang: 'de', source: 'en' })
+    cy.get('button.btn-translate-page').should('not.exist')
+  })
+
+  it('hides the translate button for source variants', () => {
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'en', source: 'en' })
+    cy.get('button.btn-translate-page').should('not.exist')
   })
 
   it('renders the history button', () => {
@@ -567,6 +572,312 @@ describe('PageDetail', () => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
         vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c' } } }
         expect(vm.hasConflict).to.be.true
+      })
+    })
+  })
+
+  describe('language variants', () => {
+    function pageData(lang, variants) {
+      return {
+        data: {
+          page: {
+            id: '1',
+            lang,
+            source: 'en',
+            stale: false,
+            has: 0,
+            restricted: false,
+            variants,
+            latest: {
+              id: 'v-' + lang,
+              published: false,
+              publish_at: null,
+              data: JSON.stringify({ ...baseItem, lang }),
+              aux: JSON.stringify({ content: [], meta: {}, config: {} }),
+              editor: 'test@test.com',
+              created_at: '2026-01-01 00:00:00',
+              files: [],
+              elements: [],
+            },
+          },
+        },
+      }
+    }
+
+    const variants = [
+      { id: '1', lang: 'en', source: true, state: 'current', published: true },
+      { id: '1', lang: 'de', source: false, state: 'stale', published: false },
+    ]
+
+    it('lists all site languages with the state of their variants', () => {
+      const query = cy.stub().resolves(pageData('en', variants))
+
+      mountDetail({ 'page:view': true }, {}, { query }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+        vm.languages.available = ['en', 'de', 'fr']
+
+        cy.wrap(null).should(() => {
+          expect(vm.langs.map(({ code, state, source }) => ({ code, state, source }))).to.deep.equal([
+            { code: 'en', state: 'current', source: true },
+            { code: 'de', state: 'stale', source: false },
+            { code: 'fr', state: 'missing', source: false },
+          ])
+        })
+      })
+    })
+
+    it('loads the variant in the language and saves it in that language', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      query.resolves(pageData('de', variants))
+      const mutate = cy.stub().resolves({ data: { savePage: { id: '1', latest: { id: 'v2', published: false, data: '{}', created_at: '2026-01-01 00:00:00' } } } })
+
+      mountDetail({ 'page:view': true, 'page:save': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+        vm.languages.available = ['en', 'de']
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'de', state: 'stale' }))
+        cy.then(() => {
+          expect(query.lastCall.args[0].variables).to.deep.include({ id: '1', lang: 'de' })
+          expect(vm.variantLang).to.equal('de')
+          expect(mutate).not.to.have.been.called
+
+          vm.dirty = { page: true }
+          return vm.save(true)
+        })
+        cy.then(() => {
+          const call = mutate.getCalls().find((c) => c.args[0].variables.input)
+          expect(call.args[0].variables.lang).to.equal('de')
+        })
+      })
+    })
+
+    it('creates a missing variant before switching to it', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      query.resolves(pageData('fr', [...variants, { id: '1', lang: 'fr', source: false, state: 'current', published: false }]))
+      const mutate = cy.stub().resolves({ data: { addVariant: { id: '1', lang: 'fr' } } })
+
+      mountDetail({ 'page:view': true, 'page:add': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
+        cy.then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
+          expect(query.lastCall.args[0].variables.lang).to.equal('fr')
+          expect(vm.variantLang).to.equal('fr')
+        })
+      })
+    })
+
+    it('does not create a missing variant without page:add permission', () => {
+      const query = cy.stub().resolves(pageData('en', variants))
+      const mutate = cy.stub()
+
+      mountDetail({ 'page:view': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
+        cy.then(() => {
+          expect(mutate).not.to.have.been.called
+          expect(vm.variantLang).to.equal('en')
+        })
+      })
+    })
+
+    it('loads the history of the edited variant', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('de', variants))
+      query.resolves({ data: { page: { id: '1', versions: [] } } })
+
+      mountDetail({ 'page:view': true }, {}, { query }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.variantLang).to.equal('de'))
+        cy.then(() => vm.versions('1'))
+        cy.then(() => {
+          expect(query.lastCall.args[0].variables).to.deep.equal({ id: '1', lang: 'de' })
+        })
+      })
+    })
+
+    describe('translate', () => {
+      // stops polling the translation batches of the test
+      afterEach(() => useTranslationStore().clear())
+
+      const content = [
+        { id: 'el1', type: 'heading', group: 'main', data: { title: 'Alt' } },
+        { id: 'el2', type: 'text', group: 'main', data: { text: 'Text' } },
+      ]
+
+      function variant() {
+        const page = pageData('de', variants).data.page
+        page.stale = true
+        page.latest.data = JSON.stringify({ ...baseItem, lang: 'de', source: 'en', title: 'Alt' })
+        page.latest.aux = JSON.stringify({ content, meta: {}, config: {} })
+        return page
+      }
+
+      function mountVariant(perms, apollo) {
+        const query = apollo.query || cy.stub().resolves({ data: { page: variant() } })
+        return mountDetail({ 'page:view': true, ...perms }, {}, { ...apollo, query }).then(({ wrapper }) => {
+          const vm = wrapper.findComponent(PageDetail).vm
+          cy.wrap(null).should(() => expect(vm.item.lang).to.equal('de'))
+          return cy.wrap(vm)
+        })
+      }
+
+      function progressQuery(progress) {
+        return cy.stub().callsFake(({ variables }) => Promise.resolve(variables.batch
+          ? { data: { translateProgress: progress } }
+          : { data: { page: variant() } }
+        ))
+      }
+
+      it('translates the variant into a new draft and reloads it', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 1, failed: 0 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
+
+          return vm.translate().then(() => {
+            expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['1'], lang: ['de'] })
+            expect(query).to.have.been.calledWithMatch({ variables: { batch: 'batch-1' }, fetchPolicy: 'no-cache' })
+            expect(add).to.have.been.calledWithMatch(/Translation saved as draft/, 'success')
+            expect(refresh).to.have.been.calledOnce
+            expect(vm.translating).to.equal(false)
+          })
+        })
+      })
+
+      it('reports that nothing needs to be translated', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 0 } } })
+        const query = progressQuery({ total: 0, done: 0, failed: 0 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
+
+          return vm.translate().then(() => {
+            expect(query).not.to.have.been.calledWithMatch({ variables: { batch: 'batch-1' } })
+            expect(add).to.have.been.calledWithMatch(/Nothing to translate/, 'info')
+            expect(refresh).not.to.have.been.called
+            expect(vm.translating).to.equal(false)
+          })
+        })
+      })
+
+      it('shows an error if the translation failed', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 0, failed: 1 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          const add = cy.spy(vm.messages, 'add')
+          const refresh = cy.spy(vm, 'refresh')
+
+          return vm.translate().then(() => {
+            expect(add).to.have.been.calledWithMatch(/1 translation failed/, 'error')
+            expect(refresh).not.to.have.been.called
+            expect(vm.isTranslating).to.equal(false)
+          })
+        })
+      })
+
+      it('shows an error if the translation could not be queued', () => {
+        const mutate = cy.stub().rejects(new Error('queue failed'))
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate }).then((vm) => {
+          const error = cy.stub(vm.messages, 'error')
+
+          return vm.translate().then(() => {
+            expect(error).to.have.been.calledWithMatch(/Error translating page/)
+            expect(vm.isTranslating).to.equal(false)
+          })
+        })
+      })
+
+      it('shows the variant as translating while the batch is queued', () => {
+        const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 1 } } })
+        const query = progressQuery({ total: 1, done: 0, failed: 0 })
+
+        mountVariant({ 'page:save': true, 'text:translate': true }, { mutate, query }).then((vm) => {
+          vm.translate()
+          // the store keeps the state after the mutation returned
+          cy.wrap(vm).its('translating').should('equal', false)
+          cy.wrap(vm).its('isTranslating').should('equal', true)
+          cy.get('button.btn-translate-page').should('have.class', 'v-btn--loading')
+        })
+      })
+
+      it('keeps unsaved changes when the translation finishes', () => {
+        mountVariant({ 'page:save': true }, {}).then((vm) => {
+          const refresh = cy.stub(vm, 'refresh').resolves()
+          const progress = { total: 1, done: 1, failed: 0 }
+
+          // changes made while the translation was running
+          vm.dirty = { page: true }
+          vm.translated({ ids: ['1'], langs: ['de'] }, progress)
+          expect(refresh).not.to.have.been.called
+
+          // translations of other pages or languages are ignored
+          vm.dirty = {}
+          vm.translated({ ids: ['2'], langs: ['de'] }, progress)
+          vm.translated({ ids: ['1'], langs: ['fr'] }, progress)
+          expect(refresh).not.to.have.been.called
+
+          vm.translated({ ids: ['1'], langs: ['de'] }, progress)
+          expect(refresh).to.have.been.calledOnce
+        })
+      })
+
+      it('marks the variant as up to date without changing it', () => {
+        const mutate = cy.stub().resolves({ data: { ignoreChanges: [{ id: '1', stale: false }] } })
+
+        mountVariant({ 'page:save': true }, { mutate }).then((vm) => {
+          cy.get('button.btn-ignore-changes').should('exist')
+
+          return cy.then(() => vm.ignoreChanges()).then(() => {
+            expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['1'], lang: 'de' })
+            expect(vm.item.stale).to.equal(false)
+            expect(vm.item.variants.find((v) => v.lang === 'de').state).to.equal('current')
+          })
+        })
+        cy.get('button.btn-ignore-changes').should('not.exist')
+      })
+
+      it('marks the variant as outdated when saving a restored version', () => {
+        const latest = { id: 'v3', published: false, created_at: '2026-01-01 00:00:00' }
+        const mutate = cy.stub().resolves({ data: { savePage: { id: '1', stale: true, latest } } })
+
+        mountVariant({ 'page:save': true }, { mutate }).then((vm) => {
+          vm.item.stale = false
+          vm.item.variants = vm.item.variants.map((v) => (v.lang === 'de' ? { ...v, state: 'current' } : v))
+          vm.use({ data: { title: 'Older' }, elements: [], files: {} })
+          expect(vm.restored).to.equal(true)
+
+          return vm.save().then(() => {
+            const call = mutate.getCalls().find((c) => c.args[0].variables.input)
+            expect(call.args[0].variables).to.deep.include({ lang: 'de', restore: true })
+            expect(vm.restored).to.equal(false)
+            expect(vm.item.stale).to.equal(true)
+            expect(vm.item.variants.find((v) => v.lang === 'de').state).to.equal('stale')
+          })
+        })
+      })
+
+      it('does not restore when discarding unsaved changes', () => {
+        mountVariant({ 'page:save': true }, {}).then((vm) => {
+          vm.use({ data: { title: 'Alt' }, elements: [], files: {} }, true)
+          expect(vm.restored).to.equal(false)
+          vm.apply({ title: 'Older' })
+          expect(vm.restored).to.equal(true)
+        })
       })
     })
   })

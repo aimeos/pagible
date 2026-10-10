@@ -37,7 +37,7 @@ trait Broadcasts
      *
      * @param string $action Past-tense action: added, saved, published, restored, dropped, moved, purged
      * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
+     * @param array{}|array{version_id: string, path?: string, domain?: string, lang?: string} $projection Published projection
      * @throws \InvalidArgumentException If $action has no matching event class
      */
     public function announce( string $action, Authenticatable|string|null $editor = null,
@@ -86,9 +86,10 @@ trait Broadcasts
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Audit action name
      * @param array<string, string> $projected Item id => actually projected version id
+     * @param array<string, string> $langs Item id => language of the page variant
      */
     public static function announceBulk( string $type, array $ids, array $latest, array $data,
-        Authenticatable|string|null $editor = null, string $action = 'bulk', array $projected = [] ) : void
+        Authenticatable|string|null $editor = null, string $action = 'bulk', array $projected = [], array $langs = [] ) : void
     {
         if( empty( $ids ) || !static::announces( Bulk::class ) ) {
             return;
@@ -104,6 +105,7 @@ trait Broadcasts
             source: Utils::source(),
             action: $action,
             projected: $projected,
+            langs: $langs,
         ) );
     }
 
@@ -117,7 +119,7 @@ trait Broadcasts
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields
      * @param bool $bulk TRUE to use the bulk event for a single item too
-     * @param array<string, array{version_id: string, path?: string, domain?: string}> $projected Published projections by item id
+     * @param array<string, array{version_id: string, path?: string, domain?: string, lang?: string}> $projected Published projections by version key
      */
     public static function announceMany( Collection $items, string $action, string $editor,
         array $data = [], bool $bulk = false, array $projected = [] ) : void
@@ -128,29 +130,39 @@ trait Broadcasts
 
         if( $items->count() === 1 && !$bulk ) {
             $id = $first->id;
-            $first->announce( $action, $editor, is_string( $id ) ? ( $projected[$id] ?? [] ) : [] );
+            $first->announce( $action, $editor, is_string( $id ) ? ( $projected[$first->getVersionKey() ?? $id] ?? [] ) : [] );
             return;
         }
 
-        foreach( $items->chunk( 50 ) as $chunk ) {
-            /** @var list<string> $ids */
-            $ids = array_values( $chunk->pluck( 'id' )->all() );
-            /** @var array<string, string> $latest */
-            $latest = $chunk->pluck( 'latest_id', 'id' )->all();
-            $versions = array_map(
-                fn( array $projection ) => $projection['version_id'],
-                array_intersect_key( $projected, array_flip( $ids ) ),
-            );
+        // page variants share the page ID, so each event contains the variants of one language only
+        $groups = $first instanceof Page
+            ? $items->groupBy( fn( $item ) => (string) $item->getAttribute( 'lang' ) )
+            : collect( [$items] );
 
-            static::announceBulk(
-                strtolower( class_basename( $first ) ),
-                $ids,
-                $latest,
-                $data,
-                $editor,
-                $action,
-                $versions,
-            );
+        foreach( $groups as $group )
+        {
+            foreach( $group->chunk( 50 ) as $chunk )
+            {
+                $ids = $latest = $versions = $langs = [];
+
+                foreach( $chunk as $item )
+                {
+                    $id = (string) $item->id;
+                    $ids[] = $id;
+                    $latest[$id] = (string) $item->latest_id;
+
+                    if( isset( $projected[$key = $item->getVersionKey() ?? $id] ) ) {
+                        $versions[$id] = $projected[$key]['version_id'];
+                    }
+
+                    // lifecycle events of whole pages have no language, only those of single page variants
+                    if( $item instanceof Page && !in_array( $action, ['dropped', 'restored', 'purged'], true ) ) {
+                        $langs[$id] = (string) $item->lang;
+                    }
+                }
+
+                static::announceBulk( strtolower( class_basename( $first ) ), $ids, $latest, $data, $editor, $action, $versions, $langs );
+            }
         }
     }
 
@@ -173,8 +185,8 @@ trait Broadcasts
      * @param Version $version Latest version of the model
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param string $action Past-tense action
-     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection
-     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string}}
+     * @param array{}|array{version_id: string, path?: string, domain?: string, lang?: string} $projection Published projection
+     * @return array{contentType: string, id: string, latest_id: string, editor: string, data: array<string, mixed>, published: bool, deleted_at: string|null, publish_at: string|null, updated_at: string|null, tenant: string, source: string, projection: array{}|array{version_id: string, path?: string, domain?: string, lang?: string}}
      */
     protected function eventFields( Version $version, Authenticatable|string|null $editor,
         string $action, array $projection = [] ) : array

@@ -31,6 +31,8 @@ class GraphqlServiceProvider extends Provider
         $this->publishes( [$basedir . '/schema/cms.graphql' => base_path( 'graphql/cms.graphql' )], 'cms-graphql' );
         $this->publishes( [$basedir . '/config/cms/graphql.php' => config_path( 'cms/graphql.php' )], 'cms-config' );
         Utils::limit( 'cms-graphql', 120 );
+        // copies of whole subtrees are expensive
+        Utils::limit( 'cms-copy', 10 );
         Utils::limit( 'cms-login', 10, false );
 
         \Aimeos\Cms\Permission::register( [

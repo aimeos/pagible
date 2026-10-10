@@ -23,7 +23,7 @@ use Laravel\Mcp\Request;
 #[IsReadOnly]
 #[Name('search-pages')]
 #[Title('Search for pages by keywords')]
-#[Description('Lists and searches pages. Parameters: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Use term parameter if possible. Returns up to 25 matches.')]
+#[Description('Lists and searches pages. Parameters: term (full-text search), lang, domain, type, tag, theme, path, status, cache, to, trashed (without/with/only), publish (PUBLISHED/DRAFT/SCHEDULED), editor. Pages are returned in the language passed by lang, otherwise in their source language. Use term parameter if possible. Returns up to 25 matches.')]
 class SearchPages extends Tool
 {
     protected const PERMISSIONS = ['page:view'];
@@ -36,7 +36,7 @@ class SearchPages extends Tool
     {
         $v = $request->validate([
             'term' => 'string|max:255',
-            'lang' => 'string|max:5',
+            'lang' => 'string|max:10',
             'status' => 'integer|in:0,1,2',
             'parent_id' => 'string|max:36',
             'type' => 'string|max:50',
@@ -52,7 +52,7 @@ class SearchPages extends Tool
         ] );
 
         $search = Filter::search( Page::class, $v['term'] ?? '' )
-            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
+            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.variant_id', 'cms_pages.tenant_id', 'cms_pages.lang', 'cms_pages.source', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
             ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
             ->take( 25 );
 

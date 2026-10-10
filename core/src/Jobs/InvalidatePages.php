@@ -28,7 +28,7 @@ class InvalidatePages implements ShouldQueue
 
     /**
      * @param string $tenant Tenant ID
-     * @param array<string> $ids Page UUIDs
+     * @param array<string> $ids Page variant UUIDs
      */
     public function __construct( public string $tenant, public array $ids )
     {
@@ -42,7 +42,7 @@ class InvalidatePages implements ShouldQueue
     public function handle(): void
     {
         Tenancy::run( $this->tenant, fn() => Resource::invalidatePages(
-            Page::whereIn( 'id', $this->ids )->select( 'id', 'domain', 'path' )->get()
+            Page::allVariants()->whereIn( 'variant_id', $this->ids )->select( 'id', 'domain', 'path' )->get()
         ) );
     }
 }

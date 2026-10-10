@@ -182,6 +182,16 @@ describe('Url', () => {
     cy.get('@update').should('have.been.called')
   })
 
+  it('does not search pages for absolute URLs', () => {
+    const query = cy.stub().resolves({ data: {} }).as('query')
+    cy.mount(Url, {
+      props: { config: { absolute: true } },
+      global: { mocks: { $apollo: { query } } }
+    })
+    cy.get('input[role="combobox"]').type('abo')
+    cy.get('@query').should('not.have.been.called')
+  })
+
   it('is readonly when readonly prop is true', () => {
     cy.mount(Url, { props: { config: {}, readonly: true } })
     cy.get('input[role="combobox"]').should('have.attr', 'readonly')

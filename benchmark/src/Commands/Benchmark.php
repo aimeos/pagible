@@ -121,7 +121,7 @@ class Benchmark extends Command
         $this->info( "Seeding {$pages} benchmark pages" );
 
         $fileCount = max( 2, intdiv( $pages, 10 ) );
-        $totalRows = $pages + $fileCount + 1 + ( $pages + $fileCount ) + ( $pages * 4 );
+        $totalRows = $pages + $fileCount + 1 + ( $pages + $fileCount ) + ( $pages * 4 ) + intdiv( $pages + 1, 2 ) * 6; // incl. translations of every second page
         $bar = $this->output->createProgressBar( $totalRows );
         $bar->setFormat( ' [%bar%] %percent:3s%% %elapsed%' );
 

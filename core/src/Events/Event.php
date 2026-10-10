@@ -40,7 +40,7 @@ abstract class Event implements Loggable, ShouldBroadcastNow
      * @param string|null $updated_at Latest version timestamp (list modified date)
      * @param string $tenant Tenant ID the change belongs to; scopes the channel, not in the payload
      * @param string $source Originating interface: 'graphql', 'mcp' or 'cli'; not in the payload
-     * @param array{}|array{version_id: string, path?: string, domain?: string} $projection Published projection; not in the broadcast payload
+     * @param array{}|array{version_id: string, path?: string, domain?: string, lang?: string} $projection Published projection; not in the broadcast payload
      */
     public function __construct(
         public readonly string $contentType,

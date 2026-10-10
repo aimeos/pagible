@@ -39,7 +39,7 @@ class GetPageTree extends Tool
     {
         $v = $request->validate([
             'node_id' => 'string|max:36',
-            'lang' => 'string|max:5',
+            'lang' => 'string|max:10',
         ]);
 
         $builder = Page::tree( $v['node_id'] ?? null )

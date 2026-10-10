@@ -292,7 +292,9 @@ class JsonSchema
                 break;
 
             case 'url':
-                $schema = ['type' => 'string', 'description' => 'URL, either an absolute URL or a site-relative path'];
+                $schema = ['type' => 'string', 'description' => empty( $field['absolute'] )
+                    ? 'URL, either an absolute URL or a site-relative path'
+                    : 'Absolute URL'];
 
                 if( $strict )
                 {

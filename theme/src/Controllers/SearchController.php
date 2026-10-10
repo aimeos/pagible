@@ -33,7 +33,7 @@ class SearchController extends Controller
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.theme.min-search' ) . '|max:200',
             'size' => 'integer|between:5,100',
-            'locale' => 'nullable|string|max:16',
+            'locale' => ['nullable', 'string', 'max:16', 'regex:/^[a-z]{2,3}([_-][A-Za-z0-9]{2,8})*$/'],
         ] );
 
         $lang = (string) ( $vals['locale'] ?? app()->getLocale() );
@@ -41,7 +41,7 @@ class SearchController extends Controller
         $external = Scout::usesExternalSearch();
         $builder = Page::search( $vals['q'] )
             ->query( function( $q ) use ( $domain, $lang ) {
-                $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
+                $q->select( 'cms_pages.id', 'cms_pages.variant_id', 'cms_pages.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
                     ->withGlobalScope( 'status', new Status )
                     ->where( 'domain', $domain )
                     ->where( 'lang', $lang )

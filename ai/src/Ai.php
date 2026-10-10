@@ -19,6 +19,7 @@ use Aimeos\Prisma\Schema\Schema;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Values\Observation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 
@@ -31,6 +32,10 @@ use Illuminate\Support\Facades\Log;
  */
 class Ai
 {
+    /** @var array{tenant: string|null, keys: array<int, string>}|null Translations within retryable() */
+    private static ?array $retry = null;
+
+
     /**
      * Ensures that the JSON encoded input doesn't exceed the "cms.ai.maxinput" size and "cms.ai.maxdepth" nesting depth.
      *
@@ -306,6 +311,10 @@ class Ai
     /**
      * Translates texts into another language.
      *
+     * Translated chunks are cached for "cms.ai.translatettl" seconds per tenant, so retrying
+     * after a provider error doesn't translate the chunks which already succeeded again.
+     * Within retryable(), the cached chunks are removed once the translation succeeded.
+     *
      * @param array<int, string> $texts Texts to translate
      * @param string $to Target language code
      * @param string|null $from Source language code, auto-detected if NULL
@@ -321,9 +330,137 @@ class Ai
             'model_type' => 'prefer_quality_optimized',
         ];
 
-        return self::provider( 'text', 'translate', null, $config )
-            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-            ->texts();
+        $ttl = max( 0, (int) config( 'cms.ai.translatettl', 3600 ) );
+        $options = array_diff_key( $config, ['api_key' => true] );
+        $provider = null;
+        $lists = [];
+        $keys = [];
+
+        $chunks = self::chunks( $texts );
+
+        foreach( $chunks as $idx => $chunk )
+        {
+            $keys[$idx] = 'cms-translation:' . Tenancy::value() . ':' . hash( 'sha256', serialize( [$chunk, $to, $from, $context, $options] ) );
+
+            if( $ttl > 0 && ( $list = self::cached( $keys[$idx], count( $chunk ) ) ) !== null ) {
+                $lists[$idx] = $list;
+            }
+        }
+
+        if( self::$retry !== null )
+        {
+            array_push( self::$retry['keys'], ...$keys );
+
+            // reserve the requests for all uncached chunks at once before sending the first one
+            if( self::$retry['tenant'] !== null && ( $count = count( $chunks ) - count( $lists ) ) > 0 ) {
+                Jobs\TranslatePage::reserve( self::$retry['tenant'], $count );
+            }
+        }
+
+        $result = [];
+
+        foreach( $chunks as $idx => $chunk )
+        {
+            if( !isset( $lists[$idx] ) )
+            {
+                $provider ??= self::provider( 'text', 'translate', null, $config );
+
+                $lists[$idx] = array_values( $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+                    ->texts() );
+
+                $ttl && Cache::put( $keys[$idx], $lists[$idx], $ttl );
+            }
+
+            array_push( $result, ...$lists[$idx] );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Executes translations which are retried after provider errors.
+     *
+     * The chunks translated by translate() stay cached until the callback succeeds, so
+     * retries don't translate them again. If a tenant is passed, the provider requests
+     * of the uncached chunks are reserved from the rate limit of the tenant first.
+     *
+     * @template T
+     * @param \Closure(): T $callback Callback translating the texts
+     * @param string|null $tenant Tenant ID whose rate limit is used or NULL for no limit
+     * @return T Callback return value
+     * @throws Jobs\Throttled If the rate limit of the tenant would be exceeded
+     */
+    public static function retryable( \Closure $callback, ?string $tenant = null ) : mixed
+    {
+        $outer = self::$retry;
+        self::$retry = ['tenant' => $tenant, 'keys' => []];
+
+        try
+        {
+            $result = $callback();
+
+            foreach( array_unique( self::$retry['keys'] ?? [] ) as $key ) {
+                Cache::forget( $key );
+            }
+
+            return $result;
+        }
+        finally
+        {
+            self::$retry = $outer;
+        }
+    }
+
+
+    /**
+     * Splits texts into chunks which can be sent to the translation provider in one request.
+     *
+     * @param array<int, string> $texts Texts to translate
+     * @param int $max Maximum number of texts per chunk
+     * @param int $size Maximum number of bytes per chunk, larger texts get a chunk of their own
+     * @return array<int, array<int, string>> List of chunks with their texts
+     */
+    public static function chunks( array $texts, int $max = 50, int $size = 50000 ) : array
+    {
+        $chunks = [];
+        $chunk = [];
+        $bytes = 0;
+
+        foreach( array_values( $texts ) as $text )
+        {
+            if( $chunk && ( count( $chunk ) >= $max || $bytes + strlen( $text ) > $size ) )
+            {
+                $chunks[] = $chunk;
+                $chunk = [];
+                $bytes = 0;
+            }
+
+            $chunk[] = $text;
+            $bytes += strlen( $text );
+        }
+
+        if( $chunk ) {
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
+    }
+
+
+    /**
+     * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
+     *
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
+     * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
+     */
+    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user ) : ?\Closure
+    {
+        if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
+            return null;
+        }
+
+        return fn( array $texts, string $to, ?string $from, string $context ) : array => self::translate( $texts, $to, $from, $context ?: null );
     }
 
 
@@ -379,6 +516,36 @@ class Ai
             ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
             ->write( $prompt, $files, config( 'cms.ai.write', [] ) ) // @phpstan-ignore-line method.notFound
             ->text() );
+    }
+
+
+    /**
+     * Returns the cached translations of a chunk.
+     *
+     * @param string $key Cache key of the chunk
+     * @param int $count Number of texts in the chunk
+     * @return array<int, string>|null Translated texts or NULL if not cached or invalid
+     */
+    protected static function cached( string $key, int $count ) : ?array
+    {
+        $list = Cache::get( $key );
+
+        if( !is_array( $list ) || count( $list ) !== $count ) {
+            return null;
+        }
+
+        $result = [];
+
+        foreach( $list as $text )
+        {
+            if( !is_string( $text ) ) {
+                return null;
+            }
+
+            $result[] = $text;
+        }
+
+        return $result;
     }
 
 

@@ -18,7 +18,7 @@ extend type Mutation {
   repaint(file: Upload!, prompt: String! @rules(apply: ["max:2000"])): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
 
   "Refine existing page content"
-  refine(prompt: String! @rules(apply: ["required", "max:2000"]), content: JSON!, type: String @rules(apply: ["max:255"]), context: String @rules(apply: ["max:30000"]), lang: String @rules(apply: ["max:10"]), pagetype: String @rules(apply: ["max:255"])): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
+  refine(prompt: String! @rules(apply: ["required", "max:2000"]), content: JSON!, type: String @rules(apply: ["max:255"]), context: String @rules(apply: ["max:30000"]), lang: String @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]), pagetype: String @rules(apply: ["max:255"])): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
 
   "Transcribe uploaded audio file"
   transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
@@ -34,4 +34,49 @@ extend type Mutation {
 
   "Generate texts from prompts and passed file IDs"
   write(prompt: String! @rules(apply: ["required", "max:2000"]), context: String @rules(apply: ["max:30000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
+}
+
+extend type Mutation {
+  "Queue translations of the pages passed by ID or matching the filter into the languages, which create missing variants and merge source changes into stale ones; source languages and up to date variants are skipped; returns the batch for polling the progress"
+  translatePage(
+    "IDs of the pages to translate"
+    id: [ID!] @rulesForArray(apply: ["min:1", "max:1000"]),
+    "Translate all pages matching the filter of the page list instead of the pages passed by ID"
+    filter: PageFilter,
+    "Publish state of the pages matching the filter"
+    publish: Publish,
+    "Language the filter is applied in, required for the translation state filter"
+    filter_lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]),
+    "Languages to translate the pages into"
+    lang: [String!]! @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-ai")
+
+  "Translate the descriptions of the files into the languages they are missing in and save them as new file drafts"
+  translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]) @rulesForArray(apply: ["min:1", "max:100"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
+}
+
+extend type Query {
+  "Get the progress of queued page translations"
+  translateProgress(batch: ID! @rules(apply: ["max:36"])): TranslateProgress @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Queries\\TranslateProgress")
+}
+
+"Queued page translations"
+type TranslateBatch {
+  "ID of the batch for polling the progress"
+  id: ID!
+
+  "Number of queued translations"
+  total: Int!
+}
+
+"Progress of queued page translations"
+type TranslateProgress {
+  "Number of queued translations"
+  total: Int!
+
+  "Number of finished translations"
+  done: Int!
+
+  "Number of failed translations"
+  failed: Int!
 }

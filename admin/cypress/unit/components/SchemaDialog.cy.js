@@ -8,7 +8,8 @@ const stubs = {
     render() { return h('div', { class: 'schema-items-stub', 'data-type': this.type }) }
   },
   ElementListItems: {
-    render() { return h('div', { class: 'element-list-stub' }, 'shared') }
+    props: ['filter'],
+    render() { return h('div', { class: 'element-list-stub', 'data-filter': JSON.stringify(this.filter || {}) }, 'shared') }
   },
 }
 
@@ -91,5 +92,25 @@ describe('SchemaDialog', () => {
     mountDialog({ elements: false })
     cy.get('.v-dialog .v-tab').should('not.exist')
     cy.get('.element-list-stub').should('not.exist')
+  })
+
+  it('lists the shared elements in the German variant language by default', () => {
+    mountDialog({ lang: 'de' })
+    cy.contains('.v-tab', 'Shared elements').click()
+    cy.get('.element-list-stub').should('have.attr', 'data-filter', JSON.stringify({ lang: 'de' }))
+  })
+
+  it('lists the shared elements of all languages when the language filter is switched off', () => {
+    mountDialog({ lang: 'de' })
+    cy.contains('.v-tab', 'Shared elements').click()
+    cy.get('.filter-lang input').click()
+    cy.get('.element-list-stub').should('have.attr', 'data-filter', '{}')
+  })
+
+  it('shows no language filter without a page language', () => {
+    mountDialog()
+    cy.contains('.v-tab', 'Shared elements').click()
+    cy.get('.filter-lang').should('not.exist')
+    cy.get('.element-list-stub').should('have.attr', 'data-filter', '{}')
   })
 })

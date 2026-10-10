@@ -104,7 +104,7 @@ class Publish extends Command
      */
     protected function publishVersion( Version $version, \DateTimeInterface $at, array &$failed ) : ?Publication
     {
-        $model = $version->versionable;
+        $model = $version->owner();
         $id = $version->versionable_id;
         $type = (string) $version->versionable_type;
         $key = self::key( $version );
@@ -157,7 +157,7 @@ class Publish extends Command
         {
             $type = (string) $candidate->versionable_type;
 
-            if( !in_array( $type, Version::TYPES, true ) ) {
+            if( !isset( Version::OWNERS[$type] ) ) {
                 throw new \InvalidArgumentException( 'Invalid scheduled CMS model: ' . $type );
             }
 
@@ -168,9 +168,6 @@ class Publish extends Command
             }
         }
 
-        $versions = Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get();
-        $versions->load( 'versionable' );
-
-        return $versions;
+        return Version::loadOwners( Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get() );
     }
 }

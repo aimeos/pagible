@@ -90,14 +90,15 @@ class Utils
      *
      * @template T
      * @param \Closure(): T $callback The callback to execute within the locked transaction
+     * @param int $lifetime Minimum lock lifetime in seconds for long running callbacks
      * @return T The return value of the callback
      */
-    public static function lockedTransaction( \Closure $callback ) : mixed
+    public static function lockedTransaction( \Closure $callback, int $lifetime = 0 ) : mixed
     {
-        $lifetime = max( 1, (int) config( 'cms.lock', 30 ) );
+        $wait = max( 1, (int) config( 'cms.lock', 30 ) );
 
-        return Cache::lock( 'cms_pages_' . Tenancy::value(), $lifetime )
-            ->block( $lifetime, fn() => self::transaction( $callback ) );
+        return Cache::lock( 'cms_pages_' . Tenancy::value(), max( $wait, $lifetime ) )
+            ->block( $wait, fn() => self::transaction( $callback ) );
     }
 
 
@@ -544,6 +545,24 @@ class Utils
 
 
     /**
+     * Returns the frontend URL of a page if the page route of the theme package is available.
+     *
+     * @param string $path Page URL path
+     * @param string|null $domain Page domain, the current host is used if empty
+     * @return string|null Absolute page URL or NULL if pages aren't rendered by the CMS
+     */
+    public static function pageUrl( string $path, ?string $domain = null ) : ?string
+    {
+        if( !\Illuminate\Support\Facades\Route::has( 'cms.page' ) ) {
+            return null;
+        }
+
+        $params = config( 'cms.multidomain' ) ? ['domain' => $domain ?: request()->getHost()] : [];
+        return route( 'cms.page', $params + ['path' => $path] );
+    }
+
+
+    /**
      * Returns the storage path prefix of managed files for the tenant.
      *
      * @param string $tenant Tenant ID
@@ -656,6 +675,31 @@ class Utils
             // Disable proxies from the environment, they would connect instead of the pinned IP
         'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip], CURLOPT_PROXY => ''],
         ];
+    }
+
+
+    /**
+     * Tests if the value is a valid language code like "de" or "zh-Hant".
+     *
+     * @param string $code Language code
+     * @return bool TRUE if the code is valid
+     */
+    public static function isValidLang( string $code ) : bool
+    {
+        return strlen( $code ) <= 10 && preg_match( '/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/', $code ) === 1;
+    }
+
+
+    /**
+     * Tests if the value is a valid language code from "cms.locales" (if configured).
+     *
+     * @param string $code Language code
+     * @return bool TRUE if the code is valid and configured
+     */
+    public static function isLocale( string $code ) : bool
+    {
+        $locales = array_map( 'strval', (array) config( 'cms.locales', [] ) );
+        return self::isValidLang( $code ) && ( !$locales || in_array( $code, $locales, true ) );
     }
 
 
