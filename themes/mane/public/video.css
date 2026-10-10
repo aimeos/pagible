@@ -1,0 +1,15 @@
+/**
+ * Mane Theme - Light, editorial design for hair salons, colour studios and barbers
+
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.video video {
+    background-color: #FFFFFF;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    filter: drop-shadow(0 1.5rem 3rem #00000014);
+    max-width: 100%;
+    display: block;
+    padding: 2rem;
+}

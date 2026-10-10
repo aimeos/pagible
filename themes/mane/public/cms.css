@@ -1,0 +1,738 @@
+/**
+ * Mane Theme - Light, editorial design for hair salons, colour studios and barbers
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root[data-theme=light] {
+    --pico-font-family-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --pico-font-family-display: 'Cormorant Garamond', Cormorant, 'Hoefler Text', 'Baskerville', 'Libre Baskerville', 'Iowan Old Style', 'Palatino Linotype', Georgia, ui-serif, serif;
+    --pico-font-family-monospace: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+    --pico-nav-breadcrumb-divider: '·';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.625rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #1F1A17;
+    --pico-background-color: #F7F2EC;
+    --pico-text-selection-color: #B5735A40;
+    --pico-muted-color: #6E625A;
+    --pico-muted-border-color: #1F1A171F;
+    --pico-muted-background-color: #EFE6DD;
+    --pico-contrast: #1F1A17;
+    --pico-contrast-border: #1F1A17;
+    --pico-contrast-background: #1F1A17;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #3A302A;
+    --pico-contrast-hover-border: #3A302A;
+    --pico-contrast-hover-background: #3A302A;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #F7F2EC;
+    --pico-primary: #9A5A43;
+    --pico-primary-background: #9A5A43;
+    --pico-primary-border: var(--pico-primary);
+    --pico-primary-underline: var(--pico-primary);
+    --pico-primary-hover: #7E4733;
+    --pico-primary-hover-background: #7E4733;
+    --pico-primary-hover-border: var(--pico-primary-hover);
+    --pico-primary-hover-underline: var(--pico-primary-hover);
+    --pico-primary-focus: var(--pico-text-selection-color);
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #E9D5CB;
+    --pico-secondary-background: #E9D5CB;
+    --pico-secondary-border: var(--pico-secondary);
+    --pico-secondary-underline: var(--pico-secondary);
+    --pico-secondary-hover: #DFC3B5;
+    --pico-secondary-hover-background: #DFC3B5;
+    --pico-secondary-hover-border: var(--pico-secondary-hover);
+    --pico-secondary-hover-underline: var(--pico-secondary-hover);
+    --pico-secondary-focus: var(--pico-text-selection-color);
+    --pico-secondary-inverse: #1F1A17;
+    --pico-h1-color: #1F1A17;
+    --pico-h2-color: #1F1A17;
+    --pico-h3-color: #1F1A17;
+    --pico-h4-color: #1F1A17;
+    --pico-h5-color: #1F1A17;
+    --pico-h6-color: #6E625A;
+    --pico-box-shadow: 0 1.5rem 3rem #1F1A1714;
+    --pico-dropdown-color: var(--pico-contrast);
+    --pico-dropdown-border-color: var(--pico-muted-border-color);
+    --pico-dropdown-background-color: #FBF8F4;
+    --pico-dropdown-hover-background-color: #F2E8E0;
+    --pico-dropdown-box-shadow: 0 1rem 2.5rem #1F1A171F;
+    --pico-modal-overlay-background-color: #1F1A1799;
+    --pico-code-background-color: #E9D5CB;
+    --pico-code-color: #1F1A17;
+    --pico-form-element-background-color: #FBF8F4;
+    --pico-form-element-border-color: #1F1A1733;
+    --pico-form-element-focus-color: var(--pico-primary);
+    --pico-border-radius: 1rem;
+}
+
+@media (min-width: 1024px) {
+    :host, :root {
+        --pico-font-size: 1.125rem !important;
+    }
+}
+
+* {
+  scrollbar-color: var(--pico-primary) var(--pico-background-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+}
+
+:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: 3px;
+}
+
+:where(a:not([role=button]):not([role=menuitem])),
+:where(a:not([role=button]):not([role=menuitem]):visited) {
+    color: var(--pico-primary);
+    text-decoration: underline;
+    text-decoration-color: #9A5A4366;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+}
+
+:where(a:not([role=button]):not([role=menuitem]):hover) {
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-contrast);
+    text-decoration: none;
+    margin: 0;
+}
+
+.topbar {
+    color: var(--pico-secondary-inverse);
+    background-color: var(--pico-secondary-background);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    letter-spacing: 0.08em;
+}
+
+.topbar .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 2rem;
+    padding: 0.5rem min(5%, 2rem);
+    text-align: center;
+}
+
+.topbar span {
+    font-family: var(--pico-font-family-display);
+    font-size: 1.15em;
+    font-style: italic;
+}
+
+body > header {
+    background-color: #F7F2ECF2;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    z-index: 100;
+    top: 0;
+}
+
+body > header > nav {
+    max-width: 1280px;
+    margin: auto;
+}
+
+header nav ol,
+header nav ul,
+header nav li {
+    margin: 0 var(--pico-nav-element-spacing-horizontal);
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
+}
+
+header nav > ul:not(.menu) > li {
+    padding: 0;
+}
+
+header nav a,
+header nav details.dropdown > summary:not([role]) {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.7rem 0.5rem;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition: color 0.15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    margin: 0;
+    height: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav details.dropdown ul a {
+    color: var(--pico-contrast);
+}
+
+@media (min-width: 992px) {
+    header nav ul.menu,
+    header nav ul.menu > li {
+        margin: 0;
+        padding: 0;
+    }
+
+    header nav ul.menu {
+        margin-inline-end: 0.75rem;
+    }
+
+    header nav ul.menu {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        min-width: 0;
+    }
+
+    body > header nav ul.menu > li.book > a {
+        margin-inline-start: 0.75rem;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1279px) {
+    header nav a,
+    header nav details.dropdown > summary:not([role]) {
+        padding-inline: 0.375rem;
+        letter-spacing: 0.08em;
+    }
+
+    header nav ul.menu > li.book > a {
+        padding-inline: 0.875rem;
+    }
+
+    header nav .brand a {
+        letter-spacing: 0.16em;
+    }
+}
+
+header nav ul.menu > li.book {
+    order: 1;
+}
+
+header nav ul.menu > li.login {
+    order: 2;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(.book, .login) > a:hover,
+header nav ul.menu > li:not(.book, .login) > a:focus,
+header nav ul.menu > li:not(.book, .login) > a.active,
+header nav details.dropdown > summary.active:not([role]),
+header nav details.dropdown > summary:not([role]):hover,
+header nav details.dropdown > summary:not([role]):focus,
+header nav details.dropdown > summary:not([role]):focus-visible,
+header nav details.dropdown > summary:not([role]):active,
+header nav details.dropdown[open] > summary:not([role]) {
+    color: var(--pico-primary);
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+}
+
+header nav ul.menu > li:not(.book, .login) > a.active,
+header nav details.dropdown > summary.active:not([role]) {
+    text-decoration: underline;
+    text-decoration-color: var(--pico-primary);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.7em;
+}
+
+header nav ul.menu > li.book > a {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: 999px;
+    padding: 0.625rem 1.5rem;
+    font-weight: 600;
+    text-wrap: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+header nav ul.menu > li.book > a:hover,
+header nav ul.menu > li.book > a:focus,
+header nav ul.menu > li.book > a:active {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-background);
+    border-color: var(--pico-primary-border);
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav details[open] summary::after {
+    transform: rotate(0.5turn) translateX(-0.2rem);
+}
+
+header nav details > summary + ul.align {
+    width: auto;
+    left: auto;
+    right: auto;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    overflow: hidden;
+}
+
+header nav details.dropdown ul a:hover,
+header nav details.dropdown ul a.active {
+    background-color: var(--pico-dropdown-hover-background-color);
+    color: var(--pico-primary);
+}
+
+header nav > ul:first-child {
+    flex-shrink: 0;
+}
+
+header nav .brand {
+    flex-grow: 1;
+}
+
+header nav .brand a,
+header nav .brand img {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+}
+
+header nav .brand a {
+    font-family: var(--pico-font-family-display);
+    font-size: calc(var(--pico-font-size) * 1.45);
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--pico-contrast);
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-contrast);
+    padding: 0.75rem;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 0.5rem 1.5rem;
+        background-color: var(--pico-background-color);
+        min-height: 100vh;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0 2rem;
+        width: 100%;
+    }
+
+    header nav.small .menu a,
+    header nav.small .menu details > summary:not([role]) {
+        font-family: var(--pico-font-family-display);
+        font-size: calc(var(--pico-font-size) * 1.6);
+        letter-spacing: 0.02em;
+        text-transform: none;
+    }
+
+    header nav.small .menu > li.book > a {
+        justify-content: center;
+        margin-top: 1.5rem;
+        font-family: var(--pico-font-family-sans-serif);
+        font-size: calc(var(--pico-font-size) * 0.85);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    header nav.small .menu details.dropdown ul a {
+        color: var(--pico-contrast);
+    }
+
+    header nav.small .menu details > summary + ul.align {
+        position: relative;
+        backdrop-filter: none;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        display: block;
+        float: inline-end;
+        margin-inline-start: .25rem;
+        height: calc(1rem * var(--pico-line-height, 1.5));
+        transform: rotate(0) translateX(.2rem);
+        background-image: var(--pico-icon-chevron);
+        background-position: right center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        width: 1rem;
+    }
+}
+
+nav.breadcrumb {
+    background-color: var(--pico-background-color);
+}
+
+nav.breadcrumb > ul {
+    max-width: 1280px;
+    margin: auto;
+    width: 100%;
+    padding: 0 min(5%, 2rem);
+}
+
+nav.breadcrumb ul li {
+    display: flex;
+    align-items: center;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
+nav.breadcrumb ul li:not(:last-child)::after {
+    color: var(--pico-primary);
+    font-size: 1.4em;
+}
+
+nav.breadcrumb ul li a {
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li a:hover {
+    color: var(--pico-primary);
+    opacity: 1;
+}
+
+
+.container {
+    max-width: 1200px !important;
+}
+
+.cms-text {
+    white-space: pre-line;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--pico-font-family-display);
+    letter-spacing: -0.005em;
+    white-space: pre-line;
+}
+
+h1, h2, h3 {
+    font-weight: 400;
+}
+
+h4, h5, h6 {
+    font-weight: 500;
+}
+
+h1 {
+    margin-bottom: 2rem;
+    font-size: calc(var(--pico-font-size) * 2.8);
+    line-height: 1.02;
+}
+
+h2 {
+    margin-bottom: 2rem;
+    font-size: calc(var(--pico-font-size) * 1.9);
+    line-height: 1.1;
+}
+
+h2::before {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    margin-bottom: 1.5rem;
+    background-color: var(--pico-primary);
+}
+
+h3 {
+    margin-bottom: 1rem;
+    font-size: calc(var(--pico-font-size) * 1.35);
+    line-height: 1.2;
+}
+
+h4 {
+    margin-bottom: 1rem;
+    font-size: calc(var(--pico-font-size) * 1.1);
+    line-height: 1.3;
+}
+
+:is(h1, h2, h3) em {
+    color: var(--pico-primary);
+    font-style: italic;
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 4);
+    }
+
+    h2 {
+        font-size: calc(var(--pico-font-size) * 2.75);
+    }
+}
+
+img {
+    border-radius: var(--pico-border-radius);
+}
+
+.btn {
+    display: inline-block;
+    text-decoration: none;
+    vertical-align: sub;
+    padding: 0.875rem 1.75rem;
+    margin: 0.5rem 0;
+    line-height: inherit;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--pico-contrast-border);
+    border-radius: 999px;
+    color: var(--pico-contrast);
+    background-color: transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn:hover {
+    background-color: var(--pico-contrast-hover-background);
+    color: var(--pico-contrast-inverse);
+    border-color: var(--pico-contrast-hover-border);
+    opacity: 1;
+}
+
+.btn-primary,
+.btn:first-child {
+    background-color: var(--pico-contrast-background);
+    color: var(--pico-contrast-inverse);
+    border-color: var(--pico-contrast-border);
+}
+
+.btn-primary:hover,
+.btn:first-child:hover {
+    background-color: var(--pico-primary-hover-background);
+    border-color: var(--pico-primary-hover-border);
+    color: var(--pico-primary-inverse);
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+
+body > footer.bottom {
+    --pico-color: #F7F2ECB3;
+    background-color: #1F1A17;
+    color: #F7F2ECB3;
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+body > footer.bottom .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem 3rem;
+    padding: 2.5rem min(5%, 2rem) 2rem;
+}
+
+body > footer.bottom :is(.visit, .hours) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    font-style: normal;
+}
+
+body > footer.bottom .label {
+    margin-bottom: 0.5rem;
+    color: #E9D5CB;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+body > footer.bottom .hours dl {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.125rem 1.5rem;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+body > footer.bottom .hours :is(dt, dd) {
+    margin: 0;
+    font-weight: 400;
+}
+
+body > footer.bottom .hours dt {
+    text-transform: capitalize;
+}
+
+body > footer.bottom .notice {
+    flex-basis: 100%;
+    margin: 0;
+    color: #F7F2EC99;
+    font-family: var(--pico-font-family-display);
+    font-size: 1.15em;
+    font-style: italic;
+}
+
+body > footer.bottom .copyright {
+    flex-basis: 100%;
+    order: 1;
+    padding-top: 1rem;
+    border-top: 1px solid #F7F2EC1F;
+    color: #F7F2EC80;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    letter-spacing: 0.08em;
+}
+
+body > footer.bottom a {
+    color: #F7F2EC;
+    text-decoration-color: #E9D5CB80;
+}
+
+.action-bar {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    body:has(.action-bar) {
+        padding-bottom: 4.75rem;
+    }
+
+    .action-bar {
+        position: fixed;
+        z-index: 90;
+        inset-inline: 0;
+        bottom: 0;
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background-color: #F7F2ECF2;
+        border-top: 1px solid var(--pico-muted-border-color);
+        box-shadow: 0 -0.5rem 1.5rem #1F1A1714;
+        backdrop-filter: blur(8px);
+    }
+
+    .action-bar a {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 2.75rem;
+        padding: 0.625rem 1rem;
+        border: 1px solid var(--pico-contrast-border);
+        border-radius: 999px;
+        font-size: calc(var(--pico-font-size) * 0.75);
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+    .action-bar .call,
+    .action-bar .call:hover {
+        color: var(--pico-contrast);
+        background-color: transparent;
+    }
+
+    .action-bar .book,
+    .action-bar .book:hover {
+        color: var(--pico-contrast-inverse);
+        background-color: var(--pico-contrast-background);
+    }
+}

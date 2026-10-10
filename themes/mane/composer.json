@@ -1,0 +1,25 @@
+{
+    "name": "aimeos/pagible-themes-mane",
+    "description": "Pagible CMS - Mane theme for hair salons, colour studios and barbers",
+    "keywords": ["laravel", "cms", "theme", "hair salon", "hairdresser", "barber", "beauty salon"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\ManeServiceProvider"
+            ]
+        }
+    }
+}
