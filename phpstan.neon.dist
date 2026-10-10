@@ -48,6 +48,8 @@ parameters:
 		- themes/journal/database/seeders
 		- themes/luxury/src
 		- themes/luxury/database/seeders
+		- themes/mane/src
+		- themes/mane/database/seeders
 		- themes/medical/src
 		- themes/medical/database/seeders
 		- themes/news/src

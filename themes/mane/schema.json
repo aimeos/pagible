@@ -1,0 +1,280 @@
+{
+    "label": "Mane",
+    "description": "Light, editorial design for hair salons, colour studios and barbers with ivory, espresso and clay rose tones, serif display headings, arched image frames and pill buttons",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "salon": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Name of the salon, studio or barbershop",
+                    "required": true
+                },
+                "business-type": {
+                    "type": "select",
+                    "label": "Business type",
+                    "hint": "Kind of business shown to search engines",
+                    "default": "HairSalon",
+                    "options": [
+                        {
+                            "value": "HairSalon",
+                            "label": "Hair salon"
+                        },
+                        {
+                            "value": "BarberShop",
+                            "label": "Barbershop"
+                        },
+                        {
+                            "value": "BeautySalon",
+                            "label": "Beauty salon"
+                        },
+                        {
+                            "value": "DaySpa",
+                            "label": "Day spa"
+                        },
+                        {
+                            "value": "LocalBusiness",
+                            "label": "Other business"
+                        }
+                    ],
+                    "required": true
+                },
+                "street-address": {
+                    "type": "string",
+                    "label": "Street address",
+                    "hint": "Street and house number",
+                    "required": true
+                },
+                "postal-code": {
+                    "type": "string",
+                    "label": "Postal code",
+                    "hint": "Postal code of the salon",
+                    "required": true
+                },
+                "locality": {
+                    "type": "string",
+                    "label": "City",
+                    "hint": "City the salon is located in",
+                    "required": true
+                },
+                "country": {
+                    "type": "string",
+                    "label": "Country code",
+                    "hint": "Two letter ISO country code, e.g. DE or US",
+                    "default": "DE",
+                    "min": 2,
+                    "max": 2,
+                    "uppercase": true,
+                    "required": true
+                },
+                "telephone": {
+                    "type": "string",
+                    "hint": "Phone number in international format, also used by the call button",
+                    "required": true
+                },
+                "email": {
+                    "type": "string",
+                    "hint": "Email address for appointments, gift cards and press"
+                },
+                "announcement": {
+                    "type": "string",
+                    "label": "Announcement",
+                    "hint": "Short note shown at the top of every page, e.g. New clients get a free consultation"
+                },
+                "booking": {
+                    "type": "string",
+                    "label": "Booking link",
+                    "hint": "Link to the appointment booking page, shown as a button in the header"
+                },
+                "prices": {
+                    "type": "string",
+                    "label": "Price list link",
+                    "hint": "Link to the page with services and prices"
+                },
+                "price-range": {
+                    "type": "string",
+                    "label": "Price range",
+                    "hint": "Price level of the salon, e.g. $$ or €€"
+                },
+                "notice": {
+                    "type": "string",
+                    "label": "Notice",
+                    "hint": "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
+                },
+                "action-bar": {
+                    "type": "switch",
+                    "label": "Action bar",
+                    "hint": "Show call and booking buttons at the bottom of the screen on phones",
+                    "default": true
+                },
+                "hours": {
+                    "type": "items",
+                    "label": "Opening hours",
+                    "hint": "Opening hours for each day of the week, shown in the footer",
+                    "identity": "id",
+                    "item": {
+                        "day": {
+                            "type": "select",
+                            "hint": "Day of the week",
+                            "options": [
+                                {
+                                    "value": "Monday",
+                                    "label": "Monday"
+                                },
+                                {
+                                    "value": "Tuesday",
+                                    "label": "Tuesday"
+                                },
+                                {
+                                    "value": "Wednesday",
+                                    "label": "Wednesday"
+                                },
+                                {
+                                    "value": "Thursday",
+                                    "label": "Thursday"
+                                },
+                                {
+                                    "value": "Friday",
+                                    "label": "Friday"
+                                },
+                                {
+                                    "value": "Saturday",
+                                    "label": "Saturday"
+                                },
+                                {
+                                    "value": "Sunday",
+                                    "label": "Sunday"
+                                }
+                            ]
+                        },
+                        "opens": {
+                            "type": "string",
+                            "hint": "Opening time in 24 hour format, e.g. 09:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        },
+                        "closes": {
+                            "type": "string",
+                            "hint": "Closing time in 24 hour format, e.g. 19:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        }
+                    }
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#1F1A17"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#F7F2EC"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#B5735A40"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#1F1A17"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#3A302A"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#F7F2EC"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#9A5A43"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#9A5A43"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#7E4733"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#7E4733"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#E9D5CB"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#E9D5CB"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#DFC3B5"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#DFC3B5"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners",
+                    "default": "1rem"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "·"
+                }
+            }
+        }
+    }
+}
