@@ -9,6 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\SearchBuilder;
@@ -265,7 +266,7 @@ class TenancyTest extends CoreTestAbstract
 
     public function testTenancyAutoSetsOnCreate()
     {
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'name' => 'Tenant Test Page',
             'title' => 'Tenant Test',
             'path' => 'tenant-test',
@@ -281,7 +282,7 @@ class TenancyTest extends CoreTestAbstract
             'meta' => [],
             'config' => [],
             'content' => [],
-        ] );
+        ] ) );
 
         $this->assertEquals( 'test', $page->tenant_id );
     }
@@ -403,7 +404,7 @@ class TenancyTest extends CoreTestAbstract
 
     protected function createPage( string $name, string $path, int $status ): Page
     {
-        return Page::forceCreate( [
+        return Resource::insertPage( ( new Page() )->forceFill( [
             'name' => $name,
             'title' => $name,
             'path' => $path,
@@ -419,7 +420,7 @@ class TenancyTest extends CoreTestAbstract
             'meta' => [],
             'config' => [],
             'content' => [],
-        ] );
+        ] ) );
     }
 
 

@@ -54,6 +54,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
         ] );
         $app['config']->set( 'auth.providers.users.model', 'App\\Models\\User' );
         $app['config']->set( 'cache.default', 'array' );
+        $app['config']->set( 'cms.locales', ['en', 'de'] );
         $app['config']->set( 'queue.default', 'database' );
         $app['config']->set( 'cms.db', 'testing' );
         $app['config']->set( 'cms.webhooks.enabled', true );

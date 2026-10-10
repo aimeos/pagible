@@ -310,6 +310,27 @@ abstract class Base extends Model
      */
     public function draft( array $values, ?array $refs = null, ?array $diffs = null ) : Version
     {
+        $version = $this->newDraft( $values, $refs, $diffs );
+        $this->save();
+
+        return $version;
+    }
+
+
+    /**
+     * Creates a new latest version of the model with its references without saving the model.
+     *
+     * The model must have its unique IDs. If no references are passed, the ones of the
+     * previous latest version are copied. The change info is only set if conflicting
+     * changes have been merged.
+     *
+     * @param array<string, mixed> $values Version attributes like data, aux, lang and editor
+     * @param array<string, array<string>>|null $refs Referenced IDs by version relation or NULL to keep the previous ones
+     * @param array<string, mixed>|null $diffs Merge differences for the change info
+     * @return Version New latest version
+     */
+    public function newDraft( array $values, ?array $refs = null, ?array $diffs = null ) : Version
+    {
         $editor = $this->latest->editor ?? '';
         $previous = $this->latest_id;
 
@@ -340,7 +361,7 @@ abstract class Base extends Model
         }
 
         $this->setRelation( 'latest', $version );
-        $this->forceFill( ['latest_id' => $version->id] )->save();
+        $this->forceFill( ['latest_id' => $version->id] );
 
         if( $diffs ) {
             $this->setChanged( ['editor' => $editor, 'latest' => ['id' => $version->id]

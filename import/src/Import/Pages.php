@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 
 
 /**
@@ -25,13 +26,7 @@ class Pages
      */
     public static function create( array $data, array $content, ?Page $parent = null ) : Page
     {
-        $page = Page::forceCreate( $data + ['content' => $content] );
-
-        if( $parent ) {
-            $page->appendToNode( $parent )->save();
-        }
-
-        return $page;
+        return Resource::insertPage( ( new Page() )->forceFill( $data + ['content' => $content] ), parent: $parent?->id );
     }
 
 
@@ -46,7 +41,7 @@ class Pages
         $page = Page::withTrashed()->where( $where )->first();
 
         if( $page?->trashed() ) {
-            $page->restore();
+            Resource::untrashPage( $page );
         }
 
         return $page;
@@ -82,7 +77,7 @@ class Pages
             $version->elements()->attach( $elementIds );
         }
 
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $version->id] );
         $page->publish( $version );
     }
 }

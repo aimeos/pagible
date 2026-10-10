@@ -19,9 +19,12 @@ import { listViewBase, useListView } from '../listview'
 import { useChangeStore, useLanguageStore } from '../stores'
 import { debounce } from '../utils'
 
+// minimum time between counts refreshed due to frequent changes, e.g. finished translations
+const THROTTLE = 15000
+
 const FETCH_TRANSLATIONS = gql`
-  query ($lang: String!) {
-    pageTranslations(lang: $lang) {
+  query ($langs: [String!], $cached: Boolean) {
+    pageTranslationStates(langs: $langs, cached: $cached) {
       stale
       missing
       ai
@@ -74,6 +77,7 @@ export default {
 
   beforeUnmount() {
     this.fetchTranslations.cancel()
+    clearTimeout(this.throttled)
   },
 
   // counts are only fetched again if pages were changed while the cached list view was inactive
@@ -85,6 +89,8 @@ export default {
   deactivated() {
     this.inactive = true
     this.fetchTranslations.cancel()
+    clearTimeout(this.throttled)
+    this.throttled = null
   },
 
   computed: {
@@ -175,29 +181,30 @@ export default {
 
     // saving or publishing pages elsewhere can change the translation states of their variants
     pendingChanges(list) {
-      list.length && this.changed()
+      list.length && this.changed(true)
     }
   },
 
   methods: {
     // counts the pages in each translation state of the current language for the filter
-    queryTranslations() {
+    queryTranslations(cached = false) {
       if (this.languages.available.length < 2 || !this.user.can('page:view')) {
         return
       }
 
       const lang = this.lang
       this.outdated = false
+      this.fetchedAt = Date.now()
 
       return this.$apollo
         .query({
           query: FETCH_TRANSLATIONS,
-          variables: { lang },
+          variables: { langs: [lang], cached },
           fetchPolicy: 'no-cache'
         })
         .then((result) => {
           if (lang === this.lang) {
-            this.translations = result.data?.pageTranslations || null
+            this.translations = result.data?.pageTranslationStates?.[0] || null
           }
         })
         .catch((error) => {
@@ -207,12 +214,30 @@ export default {
     },
 
     // translation states changed, the counts are only fetched when they are visible; they stay
-    // outdated until the query runs, so a fetch cancelled by deactivating is repeated afterwards
-    changed() {
+    // outdated until the query runs, so a fetch cancelled by deactivating is repeated afterwards.
+    // Frequent changes, e.g. by other editors or finished translations, refresh the counts at
+    // most every few seconds and may use counts cached by the server
+    changed(frequent = false) {
       this.outdated = true
 
-      if (this.drawer.aside && !this.inactive) {
+      if (!this.drawer.aside || this.inactive) {
+        return
+      }
+
+      if (!frequent) {
+        clearTimeout(this.throttled)
+        this.throttled = null
         this.fetchTranslations()
+        return
+      }
+
+      if (!this.throttled) {
+        const wait = Math.max(400, (this.fetchedAt || 0) + THROTTLE - Date.now())
+
+        this.throttled = setTimeout(() => {
+          this.throttled = null
+          this.outdated && this.queryTranslations(true)
+        }, wait)
       }
     },
 
@@ -322,7 +347,7 @@ export default {
         <PageListItems
           ref="pagelist"
           @select="open($event)"
-          @changed="changed()"
+          @changed="changed($event)"
           :filter="filter"
           :defaults="defaults"
         />

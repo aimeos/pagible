@@ -6,6 +6,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
@@ -1941,7 +1942,7 @@ class T3Import extends Command
         Pages::publish($page, $pageData, ['content' => $content['elements']], $content['fileIds'], $content['elementIds'], $this->lang, $this->editor);
 
         if ($new && $parent && (int) ($t3Page->crdate ?? 0) > 0) {
-            $page->update(['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))]);
+            Resource::updatePage( $page, ['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))] );
         }
 
         $this->saveTranslations($t3Page, $page, $pageData, $contentElements);

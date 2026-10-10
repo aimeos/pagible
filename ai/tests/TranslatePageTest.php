@@ -26,9 +26,11 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
@@ -77,7 +79,7 @@ class TranslatePageTest extends AiTestAbstract
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ] );
 
-        RateLimiter::clear( 'cms-translate:' . Tenancy::value() );
+        RateLimiter::clear( 'cms-translate:' . sha1( (string) Tenancy::value() ) );
     }
 
 
@@ -116,54 +118,58 @@ class TranslatePageTest extends AiTestAbstract
         $texts = array_map( fn( $i ) => 'retry ' . $i, range( 1, 120 ) );
         $chunks = Ai::chunks( $texts );
         $responses = array_map( fn( $chunk ) => TextResponse::fromTexts( array_map( 'strtoupper', $chunk ) ), $chunks );
-        $calls = [];
-
-        $translator = Ai::translator( $this->user, function( int $num ) use ( &$calls ) {
-            $calls[] = $num;
-        } );
-        $this->assertInstanceOf( \Closure::class, $translator );
+        $key = 'cms-translate:' . sha1( (string) Tenancy::value() );
 
         $fake = Prisma::fake( [$responses[0], new RateLimitException( 'Too many requests' )] );
 
         try {
-            $translator( $texts, 'de', 'en', '' );
+            Ai::retryable( fn() => Ai::translate( $texts, 'de', 'en' ), Tenancy::value() );
             $this->fail( 'Rate limit error not thrown' );
         } catch( RateLimitException $e ) {
             $this->assertCount( 2, $fake->calls() );
-            $this->assertSame( [3], $calls );
+            $this->assertSame( 3, RateLimiter::attempts( $key ) );
         }
 
         // the retry only sends the chunks which haven't been translated yet
         $fake = Prisma::fake( [$responses[1], $responses[2]] );
-        $result = $translator( $texts, 'de', 'en', '' );
+        $result = Ai::retryable( fn() => Ai::translate( $texts, 'de', 'en' ), Tenancy::value() );
 
         $this->assertSame( array_map( 'strtoupper', $texts ), $result );
         $this->assertSame( [$chunks[1], $chunks[2]], array_map( fn( $call ) => $call['arguments'][0], $fake->calls() ) );
-        $this->assertSame( [3, 2], $calls );
+        $this->assertSame( 5, RateLimiter::attempts( $key ) );
 
-        // all chunks are cached now
-        $fake = Prisma::fake( [] );
-        $this->assertSame( array_map( 'strtoupper', $texts ), $translator( $texts, 'de', 'en', '' ) );
-        $this->assertCount( 0, $fake->calls() );
-        $this->assertSame( [3, 2], $calls );
+        // the cached chunks are removed after the translation succeeded
+        $fake = Prisma::fake( $responses );
+        $this->assertSame( array_map( 'strtoupper', $texts ), Ai::translate( $texts, 'de', 'en' ) );
+        $this->assertCount( 3, $fake->calls() );
     }
 
 
-    public function testTranslateForget()
+    public function testTranslateRetryable()
     {
         $texts = array_map( fn( $i ) => 'forget ' . $i, range( 1, 60 ) );
-        $fake = Prisma::fake( array_map( fn( $chunk ) => TextResponse::fromTexts( $chunk ), Ai::chunks( $texts ) ) );
+        $responses = array_map( fn( $chunk ) => TextResponse::fromTexts( $chunk ), Ai::chunks( $texts ) );
 
-        Ai::translate( $texts, 'de', 'en', null, null, $keys );
+        // the chunks stay cached if the callback fails
+        $fake = Prisma::fake( $responses );
 
-        $this->assertCount( 2, $keys );
-        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
-        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[1] ) );
+        try {
+            Ai::retryable( function() use ( $texts ) {
+                Ai::translate( $texts, 'de', 'en' );
+                throw new \RuntimeException( 'failed' );
+            } );
+            $this->fail( 'Exception not thrown' );
+        } catch( \RuntimeException $e ) {
+            $this->assertCount( 2, $fake->calls() );
+        }
 
-        Ai::forget( $keys );
+        // cached chunks are used and removed after the callback succeeded
+        $fake = Prisma::fake( $responses );
+        $this->assertSame( $texts, Ai::retryable( fn() => Ai::translate( $texts, 'de', 'en' ) ) );
+        $this->assertCount( 0, $fake->calls() );
 
-        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
-        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[1] ) );
+        Ai::translate( $texts, 'de', 'en' );
+        $this->assertCount( 2, $fake->calls() );
     }
 
 
@@ -230,50 +236,68 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobRestoresUser()
+    {
+        $page = $this->page();
+        $other = $this->page();
+        $this->fake( $page );
+
+        // long running queue workers mustn't keep the user for later jobs
+        \Illuminate\Support\Facades\Auth::forgetUser();
+        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
+
+        $this->assertFalse( \Illuminate\Support\Facades\Auth::hasUser() );
+
+        // jobs running synchronously in a request keep the user of the request
+        $current = new \App\Models\User( ['name' => 'Current', 'email' => 'current@testbench'] );
+        \Illuminate\Support\Facades\Auth::setUser( $current );
+
+        $this->fake( $other );
+        TranslatePage::dispatch( $other->id, 'de', Tenancy::value(), $this->user->id );
+
+        $this->assertSame( $current, \Illuminate\Support\Facades\Auth::user() );
+        $this->assertTrue( Page::language( 'de' )->whereKey( [$page->id, $other->id] )->count() === 2 );
+
+        \Illuminate\Support\Facades\Auth::forgetUser();
+    }
+
+
     public function testJobForgetsCache()
     {
         $page = $this->page();
         $fake = $this->fake( $page );
-        $keys = [];
 
-        $translator = Ai::translator( $this->user, null, function( array $list ) use ( &$keys ) {
-            $keys = $list;
-        } );
-        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', $translator );
-
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', Ai::translator( $this->user ) );
         $this->assertCount( 1, $fake->calls() );
-        $this->assertNotEmpty( $keys );
-        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
 
         // the job uses the cached chunks and removes them after it succeeded
-        $fake = Prisma::fake( [] );
+        $fake = $this->fake( $page );
         TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
 
         $this->assertCount( 0, $fake->calls() );
         $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
-        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', Ai::translator( $this->user ) );
+        $this->assertCount( 1, $fake->calls() );
     }
 
 
     public function testJobFailedKeepsCache()
     {
         $page = $this->page();
-        $texts = $this->texts( $page );
-        $keys = [];
+        $fake = $this->fake( $page );
 
-        $translator = Ai::translator( $this->user, null, function( array $list ) use ( &$keys ) {
-            $keys = $list;
-        } );
-
-        $fake = Prisma::fake( [TextResponse::fromTexts( $texts )] );
-        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', $translator );
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', Ai::translator( $this->user ) );
+        $this->assertCount( 1, $fake->calls() );
 
         // job fails before translating, cached chunks stay for retries
         $job = $this->job( $page->id, 'de', $this->user( ['page:save', 'text:translate'] ) );
         $job->handle();
-
         $job->assertFailed();
-        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( $keys[0] ) );
+
+        $fake = Prisma::fake( [] );
+        Sync::translate( Page::with( 'latest' )->findOrFail( $page->id ), null, 'de', Ai::translator( $this->user ) );
+        $this->assertCount( 0, $fake->calls() );
     }
 
 
@@ -312,6 +336,23 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobTrashedPage()
+    {
+        $page = $this->page();
+        $fake = Prisma::fake( [] );
+
+        \Aimeos\Cms\Resource::drop( Page::class, [$page->id], $this->user );
+
+        // pages moved to the trash after queuing are skipped without failing
+        $job = $this->job( $page->id, 'de', $this->user );
+        $job->handle();
+
+        $job->assertNotFailed();
+        $this->assertCount( 0, $fake->calls() );
+        $this->assertFalse( PageVariant::withTrashed()->where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
+    }
+
+
     public function testJobPermissions()
     {
         $page = $this->page();
@@ -333,6 +374,63 @@ class TranslatePageTest extends AiTestAbstract
         $job->withFakeQueueInteractions()->handle();
 
         $job->assertFailed();
+    }
+
+
+    public function testJobGuard()
+    {
+        $page = $this->page();
+        $this->fake( $page );
+
+        $user = $this->user;
+        \Illuminate\Support\Facades\Auth::provider( 'cmstest', fn() => new class( $user ) implements \Illuminate\Contracts\Auth\UserProvider {
+            public function __construct( private $user ) {}
+            public function retrieveById( $id ) { return $id === 'cms-1' ? $this->user : null; }
+            public function retrieveByToken( $id, $token ) { return null; }
+            public function updateRememberToken( $user, $token ) {}
+            public function retrieveByCredentials( array $credentials ) { return null; }
+            public function validateCredentials( $user, array $credentials ) { return false; }
+            public function rehashPasswordIfRequired( $user, array $credentials, bool $force = false ) {}
+        } );
+
+        $default = config( 'auth.defaults.guard' );
+        config( ['auth.providers.cmstest' => ['driver' => 'cmstest'], 'auth.guards.cms' => ['driver' => 'session', 'provider' => 'cmstest']] );
+
+        // the user is loaded by the provider of the guard active when the translation started
+        \Illuminate\Support\Facades\Auth::shouldUse( 'cms' );
+        $job = ( new TranslatePage( $page->id, 'de', Tenancy::value(), 'cms-1' ) )->withFakeQueueInteractions();
+        \Illuminate\Support\Facades\Auth::shouldUse( $default );
+
+        $job->handle();
+
+        $this->assertSame( 'cms', $job->guard );
+        $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
+    }
+
+
+    public function testJobUserModel()
+    {
+        $page = $this->page();
+        $this->fake( $page );
+
+        $this->actingAs( $this->user );
+        $job = ( new TranslatePage( $page->id, 'de', Tenancy::value(), $this->user->id ) )->withFakeQueueInteractions();
+        $this->assertSame( get_class( $this->user ), $job->model );
+
+        // users of another model with the same ID must not be used
+        $job->model = \Illuminate\Auth\GenericUser::class;
+
+        try {
+            $job->handle();
+        } catch( \Throwable $e ) {
+        }
+
+        $this->assertFalse( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
+
+        $job->model = get_class( $this->user );
+        $job->handle();
+
+        $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
     }
 
 
@@ -426,8 +524,8 @@ class TranslatePageTest extends AiTestAbstract
         $page = $this->page();
         $fake = $this->fake( $page );
 
-        RateLimiter::hit( 'cms-translate:' . Tenancy::value(), 60 );
-        RateLimiter::hit( 'cms-translate:' . Tenancy::value(), 60 );
+        RateLimiter::hit( 'cms-translate:' . sha1( (string) Tenancy::value() ), 60 );
+        RateLimiter::hit( 'cms-translate:' . sha1( (string) Tenancy::value() ), 60 );
 
         $job = $this->job( $page->id, 'de' );
         $job->handle();
@@ -435,16 +533,16 @@ class TranslatePageTest extends AiTestAbstract
         $job->assertReleased();
         $job->assertNotFailed();
         $this->assertCount( 0, $fake->calls() );
-        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
+        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . sha1( (string) Tenancy::value() ) ) );
 
-        RateLimiter::clear( 'cms-translate:' . Tenancy::value() );
+        RateLimiter::clear( 'cms-translate:' . sha1( (string) Tenancy::value() ) );
 
         $job = $this->job( $page->id, 'de' );
         $job->handle();
 
         $job->assertNotReleased();
         $this->assertCount( 1, $fake->calls() );
-        $this->assertSame( 1, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
+        $this->assertSame( 1, RateLimiter::attempts( 'cms-translate:' . sha1( (string) Tenancy::value() ) ) );
     }
 
 
@@ -452,40 +550,60 @@ class TranslatePageTest extends AiTestAbstract
     {
         config( ['cms.ai.ratelimit' => 2] );
 
-        $key = 'cms-translate:' . Tenancy::value();
-        $method = new \ReflectionMethod( TranslatePage::class, 'throttle' );
-        $job = $this->job( 'page-id', 'de' );
+        $key = 'cms-translate:' . sha1( (string) Tenancy::value() );
 
         RateLimiter::hit( $key, 60 );
 
         // the reservation of all calls exceeds the limit and is given back
         try {
-            $method->invoke( $job, 2 );
+            TranslatePage::reserve( Tenancy::value(), 2 );
             $this->fail( 'Throttled not thrown' );
         } catch( \Aimeos\Cms\Jobs\Throttled $e ) {
             $this->assertSame( 1, RateLimiter::attempts( $key ) );
         }
 
-        $method->invoke( $job, 1 );
+        TranslatePage::reserve( Tenancy::value(), 1 );
         $this->assertSame( 2, RateLimiter::attempts( $key ) );
 
         // more calls than the limit are reserved if no other calls were made
         RateLimiter::clear( $key );
-        $method->invoke( $job, 5 );
+        TranslatePage::reserve( Tenancy::value(), 5 );
         $this->assertSame( 5, RateLimiter::attempts( $key ) );
+
+        // and the exceeding calls are taken from the following minutes
+        $this->travel( 61 )->seconds();
+        $this->assertFalse( RateLimiter::tooManyAttempts( $key, 2 ) );
+
+        try {
+            TranslatePage::reserve( Tenancy::value(), 1 );
+            $this->fail( 'Throttled not thrown' );
+        } catch( \Aimeos\Cms\Jobs\Throttled $e ) {
+            $this->assertGreaterThan( 60, $e->delay );
+        }
+
+        $this->travel( 120 )->seconds();
+        TranslatePage::reserve( Tenancy::value(), 1 );
+        $this->assertSame( 1, RateLimiter::attempts( $key ) );
     }
 
 
-    public function testJobUnique()
+    public function testJobThrottledAfterBurst()
     {
-        Queue::fake();
+        config( ['cms.ai.ratelimit' => 2] );
+
         $page = $this->page();
+        $fake = $this->fake( $page );
 
-        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
-        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
-        TranslatePage::dispatch( $page->id, 'fr', Tenancy::value(), $this->user->id );
+        TranslatePage::reserve( Tenancy::value(), 6 );
+        $this->travel( 61 )->seconds();
 
-        Queue::assertPushed( TranslatePage::class, 2 );
+        $job = $this->job( $page->id, 'de' );
+        $job->handle();
+
+        $job->assertReleased();
+        $this->assertCount( 0, $fake->calls() );
+
+        \Illuminate\Support\Facades\Cache::forget( 'cms-translate:' . sha1( (string) Tenancy::value() ) . ':until' );
     }
 
 
@@ -494,12 +612,60 @@ class TranslatePageTest extends AiTestAbstract
         Queue::fake();
         $page = $this->page();
 
-        TranslatePage::dispatch( $page->id, 'de', Tenancy::value(), $this->user->id );
-        $batch = TranslatePage::dispatchBatch( [$page->id], ['de', 'en'], $this->user->id );
+        $this->assertSame( 1, TranslatePage::dispatchPending( [$page->id], ['de'], $this->user->id )['total'] );
+        $batch = TranslatePage::dispatchPending( [$page->id], ['de', 'en'], $this->user->id );
 
-        $this->assertSame( 1, $batch['total'] );
-        $this->assertSame( ['total' => 1, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
-        Queue::assertPushed( TranslatePage::class, 2 );
+        // "de" is already queued and "en" is the source language
+        $this->assertSame( 0, $batch['total'] );
+        Queue::assertPushed( TranslatePage::class, 1 );
+    }
+
+
+    public function testJobQueueUniqueFor()
+    {
+        Queue::fake();
+
+        $page = $this->page();
+        $limit = config( 'cms.ai.ratelimit' );
+        config( ['cms.locales' => ['en', 'de', 'fr'], 'cms.ai.ratelimit' => 1] );
+
+        try {
+            TranslatePage::dispatchPending( [$page->id], ['de', 'fr'], $this->user->id );
+        } finally {
+            config( ['cms.locales' => ['en', 'de'], 'cms.ai.ratelimit' => $limit] );
+        }
+
+        // locks of lost jobs expire after the jobs would have been retried
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->uniqueFor === $job->delay + 3600 * TranslatePage::HOURS + 600 );
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->lang === 'fr' && $job->delay === 60 );
+    }
+
+
+    public function testJobQueueTooMany()
+    {
+        Queue::fake();
+
+        $page = $this->page();
+        $limit = config( 'cms.ai.ratelimit' );
+        $langs = array_map( fn( $idx ) => sprintf( 'de-%03d', $idx ), range( 1, 60 * TranslatePage::HOURS + 1 ) );
+        config( ['cms.locales' => $langs, 'cms.ai.ratelimit' => 1] );
+
+        try {
+            $this->expectException( \Aimeos\Cms\Exception::class );
+            TranslatePage::dispatchPending( [$page->id], $langs, $this->user->id );
+        } finally {
+            config( ['cms.locales' => ['en', 'de'], 'cms.ai.ratelimit' => $limit] );
+            Queue::assertNothingPushed();
+        }
+    }
+
+
+    public function testJobRetryUntilDelay()
+    {
+        $job = ( new TranslatePage( 'page-1', 'de', Tenancy::value(), $this->user->id ) )->delay( 3600 );
+        $hours = TranslatePage::HOURS;
+
+        $this->assertEqualsWithDelta( now()->addHours( $hours + 1 )->getTimestamp(), $job->retryUntil()->getTimestamp(), 5 );
     }
 
 
@@ -507,8 +673,15 @@ class TranslatePageTest extends AiTestAbstract
     {
         Queue::fake();
 
-        $ids = array_map( fn( $idx ) => 'page-' . $idx, range( 1, 300 ) );
-        $batch = TranslatePage::dispatchBatch( $ids, ['de', 'en', 'de'], $this->user->id );
+        $page = $this->page();
+        $langs = array_map( fn( $idx ) => sprintf( 'de-%03d', $idx ), range( 1, 600 ) );
+        config( ['cms.locales' => $langs] );
+
+        try {
+            $batch = TranslatePage::dispatchPending( [$page->id], [...$langs, 'de-001'], $this->user->id );
+        } finally {
+            config( ['cms.locales' => ['en', 'de']] );
+        }
 
         $this->assertSame( 600, $batch['total'] );
         $this->assertSame( ['total' => 600, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
@@ -521,7 +694,7 @@ class TranslatePageTest extends AiTestAbstract
         $this->expectException( \Aimeos\Cms\Exception::class );
         $this->expectExceptionMessage( 'Invalid language code "xx"' );
 
-        TranslatePage::dispatchBatch( ['page-1'], ['de', 'xx'], $this->user->id );
+        TranslatePage::dispatchPending( ['page-1'], ['de', 'xx'], $this->user->id );
     }
 
 
@@ -529,11 +702,30 @@ class TranslatePageTest extends AiTestAbstract
     {
         Queue::fake();
 
-        $page = \Aimeos\Cms\Models\Page::firstOrFail();
-        \Aimeos\Cms\Models\PageVariant::whereKey( $page->variant_id )->update( ['lang' => 'fr'] );
+        $page = $this->page();
+        Resource::translatePage( $page->id, 'de', $this->user );
+        PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->update( ['lang' => 'fr', 'stale' => true] );
 
-        $batch = TranslatePage::dispatchBatch( ['page-1'], ['fr'], $this->user->id );
+        $batch = TranslatePage::dispatchPending( [$page->id], ['fr'], $this->user->id );
         $this->assertSame( 1, $batch['total'] );
+    }
+
+
+    public function testJobQueueVariantLangNotConfiguredNoAdd()
+    {
+        Queue::fake();
+
+        $page = $this->page();
+        $other = Page::where( 'id', '!=', $page->id )->whereNull( 'deleted_at' )->firstOrFail();
+        Resource::translatePage( $page->id, 'de', $this->user );
+        PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->update( ['lang' => 'fr', 'stale' => true] );
+
+        // unconfigured languages of other pages mustn't become available for all pages
+        $batch = TranslatePage::dispatchPending( [$page->id, $other->id], ['fr'], $this->user->id );
+
+        $this->assertSame( 1, $batch['total'] );
+        Queue::assertPushed( TranslatePage::class, fn( $job ) => $job->id === $page->id );
+        Queue::assertNotPushed( TranslatePage::class, fn( $job ) => $job->id === $other->id );
     }
 
 
@@ -543,23 +735,14 @@ class TranslatePageTest extends AiTestAbstract
         config( ['cms.locales' => []] );
 
         try {
-            $batch = TranslatePage::dispatchBatch( ['page-1'], ['es'], $this->user->id );
+            $batch = TranslatePage::dispatchPending( [$this->page()->id], ['es'], $this->user->id );
             $this->assertSame( 1, $batch['total'] );
 
             $this->expectException( \Aimeos\Cms\Exception::class );
-            TranslatePage::dispatchBatch( ['page-1'], ['no language'], $this->user->id );
+            TranslatePage::dispatchPending( ['page-1'], ['no language'], $this->user->id );
         } finally {
             config( ['cms.locales' => ['en', 'de']] );
         }
-    }
-
-
-    public function testJobQueueTooMany()
-    {
-        $this->expectException( \Aimeos\Cms\Exception::class );
-        $this->expectExceptionMessage( 'No more than 1000 items' );
-
-        TranslatePage::dispatchBatch( array_map( fn( $idx ) => 'page-' . $idx, range( 1, 501 ) ), ['de', 'en'], $this->user->id );
     }
 
 
@@ -625,6 +808,22 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobReleasesLock()
+    {
+        $page = $this->page();
+        $this->fake( $page );
+
+        TranslatePage::dispatchPending( [$page->id], ['de'], $this->user->id );
+
+        // finished translations can be queued again
+        $lock = new \Illuminate\Bus\UniqueLock( app( \Illuminate\Contracts\Cache\Repository::class ) );
+        $job = new TranslatePage( $page->id, 'de', Tenancy::value(), $this->user->id );
+
+        $this->assertTrue( $lock->acquire( $job ) );
+        $lock->release( $job );
+    }
+
+
     public function testJobProgress()
     {
         $page = $this->page();
@@ -634,8 +833,8 @@ class TranslatePageTest extends AiTestAbstract
 
         try
         {
-            $batch = TranslatePage::dispatchBatch( [$page->id], ['de', 'en'], $this->user->id );
-            $this->assertSame( ['total' => 2, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
+            $batch = TranslatePage::dispatchPending( [$page->id], ['de'], $this->user->id );
+            $this->assertSame( ['total' => 1, 'done' => 0, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
 
             Artisan::call( 'queue:work', ['connection' => 'database', '--queue' => config( 'cms.queue.name' ) ?: 'default', '--stop-when-empty' => true,
                 // the worker stops after each job if the test process already uses more memory
@@ -646,9 +845,13 @@ class TranslatePageTest extends AiTestAbstract
             config( ['cms.queue.connection' => null] );
         }
 
-        $this->assertSame( ['total' => 2, 'done' => 1, 'failed' => 1], TranslatePage::progress( $batch['id'] ) );
+        $this->assertSame( ['total' => 1, 'done' => 1, 'failed' => 0], TranslatePage::progress( $batch['id'] ) );
         $this->assertEquals( '[de] Title', Page::language( 'de' )->findOrFail( $page->id )->latest->data->title );
         $this->assertNull( TranslatePage::progress( 'unknown' ) );
+
+        // batches of other tenants and of the application aren't reported
+        $this->assertNull( Tenancy::run( 'other', fn() => TranslatePage::progress( $batch['id'] ) ) );
+        $this->assertNull( TranslatePage::progress( \Illuminate\Support\Facades\Bus::batch( [] )->name( 'app' )->dispatch()->id ) );
     }
 
 
@@ -690,6 +893,42 @@ class TranslatePageTest extends AiTestAbstract
 
         Queue::assertPushed( TranslatePage::class, 2 );
         Queue::assertNotPushed( TranslatePage::class, fn( $job ) => $job->id === $pages[2]->id );
+    }
+
+
+    public function testGraphqlTranslatePageFilterTooMany()
+    {
+        Queue::fake();
+
+        $page = $this->page( ['tag' => 'many'] );
+        $node = (array) DB::table( 'cms_pages' )->where( 'id', $page->id )->first();
+        $variant = (array) DB::table( 'cms_page_variants' )->where( 'page_id', $page->id )->first();
+        $nodes = $variants = [];
+
+        // the copies are outside of the tree, only the number of matching pages counts
+        for( $i = 1; $i <= Page::MAX_BULK; $i++ )
+        {
+            $id = (string) Str::uuid();
+            $nodes[] = ['id' => $id, '_lft' => 100000 + 2 * $i, '_rgt' => 100001 + 2 * $i] + $node;
+            $variants[] = ['id' => (string) Str::uuid(), 'page_id' => $id, 'path' => 'many-' . $i] + $variant;
+        }
+
+        foreach( array_chunk( $nodes, 100 ) as $chunk ) {
+            DB::table( 'cms_pages' )->insert( $chunk );
+        }
+
+        foreach( array_chunk( $variants, 50 ) as $chunk ) {
+            DB::table( 'cms_page_variants' )->insert( $chunk );
+        }
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($filter: PageFilter, $lang: [String!]!) {
+                translatePage(filter: $filter, lang: $lang) { id total }
+            }
+        ', ['filter' => ['tag' => 'many'], 'lang' => ['de']] )
+            ->assertGraphQLErrorMessage( 'The filter matches 1001 pages, no more than 1000 pages can be translated at once' );
+
+        Queue::assertNothingPushed();
     }
 
 
@@ -770,7 +1009,7 @@ class TranslatePageTest extends AiTestAbstract
 
         // one call per language, identical descriptions are sent once
         $this->assertCount( 2, $fake->calls() );
-        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . Tenancy::value() ) );
+        $this->assertSame( 2, RateLimiter::attempts( 'cms-translate:' . sha1( (string) Tenancy::value() ) ) );
 
         foreach( $files as $file )
         {
@@ -801,7 +1040,7 @@ class TranslatePageTest extends AiTestAbstract
     {
         config( ['cms.ai.ratelimit' => 2] );
 
-        $key = 'cms-translate:' . Tenancy::value();
+        $key = 'cms-translate:' . sha1( (string) Tenancy::value() );
         $file = File::firstOrFail();
         $file->forceFill( ['lang' => 'en', 'description' => ['en' => 'A test image']] )->saveQuietly();
         $file->latest?->forceFill( ['aux' => ['description' => ['en' => 'A test image']]] )->saveQuietly();
@@ -845,6 +1084,25 @@ class TranslatePageTest extends AiTestAbstract
 
         $response->assertOk()->assertSee( ['"done":1'] );
         $this->assertEquals( '[de] Title', Page::language( 'de' )->findOrFail( $page->id )->latest->data->title );
+    }
+
+
+    public function testMcpTranslatePageSkipped()
+    {
+        $page = $this->page();
+        $trashed = $this->page();
+        Resource::drop( Page::class, [$trashed->id], $this->user );
+
+        // source language and trashed pages aren't translated
+        CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\TranslatePage::class, [
+            'id' => $page->id,
+            'lang' => ['en'],
+        ] )->assertOk()->assertSee( ['"total":0'] );
+
+        CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\TranslatePage::class, [
+            'id' => $trashed->id,
+            'lang' => ['de'],
+        ] )->assertSee( ['Page not found'] );
     }
 
 

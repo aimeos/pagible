@@ -7,6 +7,8 @@
 
 namespace Database\Seeders;
 
+use Aimeos\Cms\Hashes;
+use Aimeos\Cms\Resource;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -18,12 +20,17 @@ use Aimeos\Cms\Utils;
 
 class BenchmarkSeeder
 {
+    /** @var string Language of the translated page variants */
+    public const TRANSLATION = 'de';
+
     private string $tenantId;
     private string $editor;
     private string $domain;
     /** @var int<1, max> */
     private int $chunk;
     private ?\Closure $onProgress = null;
+    private int $translated = 0;
+    private int $pageCount = 0;
 
 
     /**
@@ -54,6 +61,38 @@ class BenchmarkSeeder
                 } );
             } );
         } );
+
+        // outside of the transaction because MySQL commits implicitly
+        $this->analyze();
+    }
+
+
+    /**
+     * Updates the table statistics like in databases which are in use for some time.
+     *
+     * Without statistics, bulk inserted data can lead to execution plans no live database
+     * uses, e.g. SQLite then sorts all page variants instead of reading the pages in tree order.
+     */
+    protected function analyze(): void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $grammar = $db->getQueryGrammar();
+
+        $tables = [
+            'cms_pages', 'cms_page_variants', 'cms_versions', 'cms_elements', 'cms_files',
+            'cms_page_file', 'cms_page_element', 'cms_version_file', 'cms_version_element',
+        ];
+
+        foreach( $tables as $table )
+        {
+            $name = $grammar->wrapTable( $table );
+
+            match( $db->getDriverName() ) {
+                'mysql', 'mariadb' => $db->select( 'ANALYZE TABLE ' . $name ),
+                'sqlsrv' => $db->statement( 'UPDATE STATISTICS ' . $name ),
+                default => $db->statement( 'ANALYZE ' . $name ),
+            };
+        }
     }
 
 
@@ -259,12 +298,14 @@ class BenchmarkSeeder
         // pages are split into the page structure and the source language variant
         if( !empty( $rows['pages'] ) )
         {
-            Page::withoutGlobalScopes()->toBase()->insert( $rows['pages'] );
+            Resource::insertPages( $rows['pages'] );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $rows['pages'] ) );
             }
         }
+
+        $rows = $this->translations( $rows );
 
         $tables = [
             'cms_versions' => $rows['versions'],
@@ -285,6 +326,88 @@ class BenchmarkSeeder
                 }
             }
         }
+    }
+
+
+    /**
+     * Adds translated variants, their versions and references for every second page.
+     *
+     * One of four translations is disabled, so visitors see the source variant of these
+     * pages and of all pages without translation while editors see all translations.
+     *
+     * @param array<string, array<int, array<string, mixed>>> $rows Rows of the source variants
+     * @return array<string, array<int, array<string, mixed>>> Rows including the translations
+     */
+    protected function translations( array $rows ): array
+    {
+        $lang = self::TRANSLATION;
+        $variants = [];
+        $versions = array_column( $rows['versions'], null, 'versionable_id' );
+
+        foreach( $rows['pages'] as $page )
+        {
+            if( $this->pageCount++ % 2 ) {
+                continue;
+            }
+
+            [, $variant] = Resource::splitPage( $page );
+
+            $sourceId = $page['variant_id'];
+            $variantId = ( new PageVariant )->newUniqueId();
+            $versionId = ( new Version )->newUniqueId();
+            $path = trim( $lang . '/' . $page['path'], '/' );
+            $version = $versions[$sourceId];
+
+            $data = array_replace( (array) json_decode( $version['data'], true ), ['lang' => $lang, 'path' => $path] );
+            $aux = (array) json_decode( $version['aux'], true );
+
+            $variants[] = array_replace( $variant, [
+                'id' => $variantId,
+                'page_id' => $page['id'],
+                'tenant_id' => $this->tenantId,
+                'lang' => $lang,
+                'path' => $path,
+                'status' => $this->translated++ % 4 === 3 ? 0 : 1,
+                'latest_id' => $versionId,
+                // up to date translations, so publishing the source checks if they are stale
+                'hashes' => json_encode( Hashes::page( $data, $aux['content'] ?? [], $aux['meta'] ?? [], $aux['config'] ?? [] ) ),
+            ] );
+
+            $rows['versions'][] = array_replace( $version, [
+                'id' => $versionId, 'versionable_id' => $variantId, 'lang' => $lang, 'data' => json_encode( $data ),
+            ] );
+
+            foreach( ['pivotPageFile', 'pivotPageElement'] as $key )
+            {
+                foreach( $rows[$key] as $pivot )
+                {
+                    if( $pivot['variant_id'] === $sourceId ) {
+                        $rows[$key][] = array_replace( $pivot, ['variant_id' => $variantId] );
+                    }
+                }
+            }
+
+            foreach( ['pivotVersionFile', 'pivotVersionElement'] as $key )
+            {
+                foreach( $rows[$key] as $pivot )
+                {
+                    if( $pivot['version_id'] === $version['id'] ) {
+                        $rows[$key][] = array_replace( $pivot, ['version_id' => $versionId] );
+                    }
+                }
+            }
+        }
+
+        foreach( array_chunk( $variants, $this->chunk ) as $chunk )
+        {
+            PageVariant::withoutGlobalScopes()->toBase()->insert( $chunk );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $chunk ) );
+            }
+        }
+
+        return $rows;
     }
 
 
@@ -460,6 +583,7 @@ class BenchmarkSeeder
     {
         return [
             'id' => $id,
+            'variant_id' => $id, // versions and pivots reference the variant by the page ID
             'tenant_id' => $this->tenantId,
             'tag' => $data['tag'] ?? '',
             'lang' => 'en',

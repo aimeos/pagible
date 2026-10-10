@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Database\Events\QueryExecuted;
@@ -50,14 +51,14 @@ class FileStorageMigrationTest extends CoreTestAbstract
             'mime' => 'application/pdf', 'name' => 'foreign.pdf',
             'path' => 'cms/foreign/foreign.pdf', 'editor' => 'test',
         ] ) );
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en', 'name' => 'Isolated', 'title' => 'Isolated',
             'path' => 'isolated', 'status' => 1, 'editor' => 'test',
-        ] );
-        $owned = Page::forceCreate( [
+        ] ) );
+        $owned = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en', 'name' => 'Owned', 'title' => 'Owned',
             'path' => 'owned', 'status' => 1, 'editor' => 'test',
-        ] );
+        ] ) );
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->insert( [
             ['variant_id' => $page->variant_id, 'file_id' => $foreign->id],

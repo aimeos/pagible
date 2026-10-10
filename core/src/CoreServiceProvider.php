@@ -11,9 +11,7 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\PermissionChanged;
-use Aimeos\Cms\Events\Translation;
 use Aimeos\Cms\Listeners\LogListener;
-use Aimeos\Cms\Listeners\TranslationListener;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Console\Scheduling\Schedule;
@@ -29,10 +27,6 @@ class CoreServiceProvider extends Provider
         $basedir = dirname( __DIR__ );
 
         $this->loadMigrationsFrom( $basedir . '/database/migrations' );
-        \Illuminate\Support\Facades\Event::listen(
-            \Illuminate\Database\Events\MigrationStarted::class,
-            fn() => \Aimeos\Cms\Models\Page::resetSchema()
-        );
         $this->loadRoutesFrom( $basedir . '/routes/core.php' );
         $this->publishes( [
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
@@ -126,7 +120,6 @@ class CoreServiceProvider extends Provider
             Purged::class,
             Moved::class,
             Bulk::class,
-            Translation::class => TranslationListener::class,
         ] );
 
         // Permission grants are security-relevant and must always be audited, so this

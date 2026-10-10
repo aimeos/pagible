@@ -396,6 +396,33 @@ class WebhookListenerTest extends WebhookTestAbstract
     }
 
 
+    public function testLanguageOnlyForVariantLifecycleEvents() : void
+    {
+        $this->webhook( ['events' => ['page.purged']] );
+        Queue::fake();
+
+        // a whole page was purged
+        event( new \Aimeos\Cms\Events\Purged( 'page', 'page-1', 'version-1', 'editor', [
+            'path' => 'purged', 'domain' => 'example.com', 'lang' => 'en',
+        ], tenant: 'test' ) );
+
+        // only the "de" variant was purged
+        event( new Bulk( 'page', ['page-2'], ['page-2' => 'version-2'], [], tenant: 'test', action: 'purged',
+            langs: ['page-2' => 'de'] ) );
+
+        $data = [];
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) use ( &$data ) {
+            $data[] = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR )['data'];
+            return true;
+        } );
+
+        $this->assertEquals( [
+            ['id' => 'page-1', 'version_id' => 'version-1', 'path' => 'purged', 'domain' => 'example.com'],
+            [['id' => 'page-2', 'version_id' => 'version-2', 'lang' => 'de']],
+        ], $data );
+    }
+
+
     public function testMaximumBulkEventIsQueued() : void
     {
         $this->webhook();

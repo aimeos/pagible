@@ -206,7 +206,7 @@ const COUNT_PAGES = gql`
 
 const FETCH_STATES = gql`
   query {
-    pageTranslationStates {
+    pageTranslationStates(cached: true) {
       lang
       stale
       missing
@@ -417,7 +417,7 @@ export default {
   },
 
   methods: {
-    // loads the translation state counts of all languages when the language selector opens
+    // loads the translation state counts of all languages when the language selector opens, up to a minute old
     fetchStates() {
       if (!this.user.can('page:view')) return
 

@@ -99,28 +99,18 @@ class Hashes
     /**
      * Tests if the hashes of a variant differ from the hashes of the source.
      *
+     * Added, changed and removed elements, meta and config entries all make the variant stale.
+     *
      * @param array<string, string> $source Hashes of the source variant
      * @param array<string, string> $variant Hashes of the other variant
      * @return bool TRUE if the variant isn't up to date
      */
     public static function stale( array $source, array $variant ) : bool
     {
-        foreach( $source as $key => $hash )
-        {
-            if( ( $variant[$key] ?? null ) !== $hash ) {
-                return true;
-            }
-        }
+        ksort( $source );
+        ksort( $variant );
 
-        // elements removed in the source
-        foreach( array_keys( $variant ) as $key )
-        {
-            if( str_starts_with( (string) $key, 'el:' ) && !isset( $source[$key] ) ) {
-                return true;
-            }
-        }
-
-        return false;
+        return $source !== $variant;
     }
 
 

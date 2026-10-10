@@ -11,6 +11,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
@@ -237,14 +238,14 @@ class PageAccessTest extends CoreTestAbstract
     {
         \Aimeos\Cms\Tenancy::$callback = null;
         \Aimeos\Cms\Tenancy::set( '' );
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'No tenancy',
             'title' => 'No tenancy',
             'path' => 'no-tenancy',
             'status' => 1,
             'editor' => 'test',
-        ] );
+        ] ) );
         $search = $this->searchEngine();
 
         ( new IndexModels( Page::class, [$page->id], '' ) )->handle();
@@ -384,7 +385,7 @@ class PageAccessTest extends CoreTestAbstract
         }
 
         foreach( array_chunk( $rows, 50 ) as $chunk ) {
-            Page::query()->toBase()->insert( $chunk );
+            Resource::insertPages( $chunk );
         }
 
         $this->assertCount( PageAccess::CHUNK_SIZE + 1, $ids );

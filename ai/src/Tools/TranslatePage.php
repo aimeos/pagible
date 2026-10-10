@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Jobs\TranslatePage as Job;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Permission;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -20,7 +21,7 @@ use Laravel\Mcp\Request;
 #[Name('translate-page')]
 #[Title('Translate a page into other languages')]
 #[Description('Translates the source language variant of a page into one or more languages, like the Translate action of the editor.
-Missing language variants are created, existing ones get the changes of the source merged into a new draft. Nothing is published.
+Missing language variants are created, outdated ones get the changes of the source merged into a new draft. Up-to-date variants and the source language are skipped. Nothing is published.
 Translations run in the background if a queue is configured. Returns the number of queued, finished and failed translations.
 Use this instead of copying content with save-page, which breaks the synchronization of the content elements.')]
 class TranslatePage extends Tool
@@ -44,7 +45,8 @@ class TranslatePage extends Tool
 
         $page = Page::findOrFail( (string) $v['id'] );
         $langs = array_values( array_unique( $v['lang'] ) );
-        $batch = Job::dispatchBatch( [(string) $page->id], $langs, $request->user()?->getAuthIdentifier() );
+        $user = $request->user();
+        $batch = Job::dispatchPending( [(string) $page->id], $langs, $user?->getAuthIdentifier(), Permission::can( 'page:add', $user ) );
 
         return Response::structured( ['id' => $page->id, 'lang' => $langs] + ( Job::progress( $batch['id'] ) ?? [] ) );
     }

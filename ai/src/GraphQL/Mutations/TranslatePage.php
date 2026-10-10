@@ -18,10 +18,6 @@ use Aimeos\Nestedset\NestedSet;
 
 final class TranslatePage
 {
-    /** @var int Number of pages fetched at once when resolving the filter */
-    private const SIZE = 500;
-
-
     /**
      * Queues one translation job per page and language in tree order.
      *
@@ -51,6 +47,8 @@ final class TranslatePage
     /**
      * Returns the IDs of the pages matching the filter in tree order.
      *
+     * The filter must not match more pages than allowed for bulk operations.
+     *
      * @param  array<string, mixed>  $args
      * @return array<int, string> Page UUIDs
      */
@@ -63,19 +61,25 @@ final class TranslatePage
             'lang' => $args['filter_lang'] ?? null,
         ], fn( $value ) => $value !== null );
 
-        $ids = [];
-        $page = 1;
+        $search = $query->search( $params )->orderBy( NestedSet::LFT, 'asc' );
+        $callback = $search->queryCallback;
 
-        do
-        {
-            $result = $query->search( $params )->orderBy( NestedSet::LFT, 'asc' )->paginate( self::SIZE, 'page', $page );
-
-            foreach( $result->items() as $item ) {
-                $ids[] = (string) $item->id;
+        // only the IDs are needed (and the search keys to map the results)
+        $search->query( function( $builder ) use ( $callback ) {
+            if( $callback ) {
+                $callback( $builder );
             }
-        }
-        while( $page++ < $result->lastPage() );
 
-        return $ids;
+            $builder->select( [$builder->qualifyColumn( 'id' ), $builder->qualifyColumn( $builder->getModel()->getScoutKeyName() )] );
+        } );
+
+        // the total is also reported by search engines limiting the number of returned hits
+        $result = $search->paginate( Page::MAX_BULK, 'page', 1 );
+
+        if( $result->total() > Page::MAX_BULK ) {
+            throw new Exception( sprintf( 'The filter matches %1$d pages, no more than %2$d pages can be translated at once', $result->total(), Page::MAX_BULK ) );
+        }
+
+        return array_map( fn( $item ) => (string) $item->id, $result->items() );
     }
 }

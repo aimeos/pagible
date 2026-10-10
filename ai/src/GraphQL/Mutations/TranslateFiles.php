@@ -10,7 +10,6 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Jobs\Throttled;
-use Aimeos\Cms\Jobs\TranslatePage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
@@ -67,50 +66,46 @@ final class TranslateFiles
             $descs[$id] = $desc;
         }
 
-        $tenant = Tenancy::value();
-        $changed = $keys = [];
-
         try
         {
-            foreach( $todo as $to => $sources )
-            {
-                foreach( $sources as $from => $texts )
+            // cached chunks are only kept for retrying failed translations
+            return Ai::retryable( function() use ( $todo, $files, $descs ) {
+
+                $changed = [];
+
+                foreach( $todo as $to => $sources )
                 {
-                    // identical descriptions are translated only once
-                    $unique = array_values( array_unique( $texts ) );
-                    $result = $this->ai( function() use ( $unique, $to, $from, $tenant, &$keys ) {
-                        $list = Ai::translate( $unique, $to, $from, null, fn( int $calls ) => TranslatePage::reserve( $tenant, $calls ), $used );
-                        array_push( $keys, ...$used );
-                        return $list;
-                    } );
-
-                    foreach( $texts as $id => $text )
+                    foreach( $sources as $from => $texts )
                     {
-                        $idx = array_search( $text, $unique, true );
+                        // identical descriptions are translated only once
+                        $unique = array_values( array_unique( $texts ) );
+                        $result = $this->ai( fn() => Ai::translate( $unique, $to, $from ) );
 
-                        if( $idx !== false && isset( $result[$idx] ) ) {
-                            $descs[$id][$to] = $result[$idx];
-                            $changed[$id] = $files->get( $id )?->latest_id;
+                        foreach( $texts as $id => $text )
+                        {
+                            $idx = array_search( $text, $unique, true );
+
+                            if( $idx !== false && isset( $result[$idx] ) ) {
+                                $descs[$id][$to] = $result[$idx];
+                                $changed[$id] = $files->get( $id )?->latest_id;
+                            }
                         }
                     }
                 }
-            }
+
+                $saved = [];
+
+                foreach( $changed as $id => $latestId ) {
+                    $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
+                }
+
+                return $saved;
+            }, Tenancy::value() );
         }
         catch( Throttled $e )
         {
             // already translated chunks stay cached, so retrying doesn't count them again
             throw new Exception( 'Too many translations, please try again later' );
         }
-
-        $saved = [];
-
-        foreach( $changed as $id => $latestId ) {
-            $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
-        }
-
-        // cached chunks are only kept for retrying failed translations
-        Ai::forget( $keys );
-
-        return $saved;
     }
 }

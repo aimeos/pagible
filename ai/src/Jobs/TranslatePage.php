@@ -29,6 +29,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -51,11 +52,24 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     public const CHUNK = 500;
 
 
+    /** @var int Hours a translation is retried before it fails */
+    public const HOURS = 6;
+
+
     /** @var array<int, int> Delays in seconds before retrying after a provider error */
     public array $backoff = [10, 60, 300];
 
     /** @var int Number of provider errors after which the job fails */
     public int $maxExceptions = 4;
+
+    /** @var string|null Authentication guard of the user who started the translation */
+    public ?string $guard = null;
+
+    /** @var string|null Class of the user who started the translation */
+    public ?string $model = null;
+
+    /** @var int Seconds until the translation of the page and language can be queued again if the job got lost */
+    public int $uniqueFor = 3600 * self::HOURS;
 
 
     /**
@@ -67,38 +81,11 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     public function __construct( public string $id, public string $lang, public string $tenant, public int|string|null $userId )
     {
         $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
-    }
+        $this->guard = Auth::getDefaultDriver();
 
-
-    /**
-     * Queues one translation per page and language as new batch.
-     *
-     * Translations of a page and language which are already queued are skipped and
-     * not counted, so the progress of the batch can complete.
-     *
-     * @param iterable<string> $ids Page UUIDs in the order to translate
-     * @param array<int, string> $langs Language codes of the variants, duplicates are ignored
-     * @param int|string|null $userId ID of the user who starts the translation
-     * @return array{id: string, total: int} Batch ID and number of queued translations
-     * @throws Exception If a language isn't configured or there are too many translations
-     */
-    public static function dispatchBatch( iterable $ids, array $langs, int|string|null $userId ) : array
-    {
-        $ids = iterator_to_array( $ids, false );
-        $langs = self::languages( $langs );
-
-        Page::checkBulk( count( $ids ) * count( $langs ) );
-
-        $pairs = [];
-
-        foreach( $ids as $id )
-        {
-            foreach( $langs as $lang ) {
-                $pairs[] = [(string) $id, $lang];
-            }
+        if( ( $user = Auth::user() ) && $userId !== null && (string) $user->getAuthIdentifier() === (string) $userId ) {
+            $this->model = get_class( $user );
         }
-
-        return self::enqueue( $pairs, $userId );
     }
 
 
@@ -106,15 +93,15 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      * Queues the translations of the pages which are needed as new batch.
      *
      * Only missing and stale variants are translated. Source variants, trashed pages and
-     * trashed variants are skipped, as well as already queued translations. There's no limit
-     * for the number of translations because they run in the background.
+     * trashed variants are skipped, as well as translations which are already queued. At most as
+     * many translations are queued as the rate limit allows to run within the retry hours.
      *
      * @param iterable<string> $ids Page UUIDs in the order to translate
      * @param array<int, string> $langs Language codes of the variants, duplicates are ignored
      * @param int|string|null $userId ID of the user who starts the translation
      * @param bool $add TRUE to create missing variants, FALSE to update existing ones only
      * @return array{id: string, total: int} Batch ID and number of queued translations
-     * @throws Exception If a language isn't configured
+     * @throws Exception If a language isn't configured or too many translations are needed
      */
     public static function dispatchPending( iterable $ids, array $langs, int|string|null $userId, bool $add = true ) : array
     {
@@ -126,7 +113,8 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      * Returns the unique and valid language codes.
      *
      * Languages of existing variants can be used even if they aren't configured (anymore)
-     * and any valid language can be used if no languages are configured.
+     * but only to update these variants. Any valid language can be used if no languages
+     * are configured.
      *
      * @param array<int, string> $langs Language codes
      * @return array<int, string> Unique language codes
@@ -181,6 +169,9 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                 $variants[$row->page_id][$row->lang] = $row;
             }
 
+            // missing variants are only created for configured languages, others are only updated
+            $adds = array_fill_keys( array_filter( $langs, fn( $lang ) => $add && Utils::isLocale( $lang ) ), true );
+
             foreach( $chunk as $id )
             {
                 if( !isset( $sources[$id] ) ) {
@@ -191,11 +182,16 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                 {
                     $variant = $variants[$id][$lang] ?? null;
 
-                    if( $lang !== $sources[$id] && ( $variant ? !$variant->deleted_at && $variant->stale : $add ) ) {
+                    if( $lang !== $sources[$id] && ( $variant ? !$variant->deleted_at && $variant->stale : isset( $adds[$lang] ) ) ) {
                         $pairs[] = [(string) $id, $lang];
                     }
                 }
             }
+        }
+
+        // later jobs would wait longer than they are retried
+        if( count( $pairs ) > ( $max = self::max() * 60 * self::HOURS ) ) {
+            throw new Exception( sprintf( 'No more than %d translations may be queued at once.', $max ) );
         }
 
         return $pairs;
@@ -204,6 +200,10 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
     /**
      * Queues the translations as new batch.
+     *
+     * Translations of a page and language which are already queued are skipped and not
+     * counted, so the progress of the batch can complete. Batches don't acquire the unique
+     * locks of the jobs themselves but they are released when the jobs are finished.
      *
      * @param array<int, array{0: string, 1: string}> $pairs List of page ID and language pairs
      * @param int|string|null $userId ID of the user who starts the translation
@@ -217,10 +217,13 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
         foreach( $pairs as [$id, $lang] )
         {
             $job = new self( $id, $lang, Tenancy::value(), $userId );
-
             // spread the jobs over the minutes the rate limit allows them to run
+            $delay = intdiv( count( $jobs ), self::max() ) * 60;
+            // locks of lost jobs expire after the job would have been retried
+            $job->uniqueFor = $delay + 3600 * self::HOURS + 600;
+
             if( $lock->acquire( $job ) ) {
-                $jobs[] = $job->delay( intdiv( count( $jobs ), self::max() ) * 60 );
+                $jobs[] = $job->delay( $delay );
             }
         }
 
@@ -231,7 +234,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
         try
         {
-            $batch = Bus::batch( $chunks[0] ?? [] )->name( 'cms-translate' )->allowFailures()
+            $batch = Bus::batch( $chunks[0] ?? [] )->name( self::batchName() )->allowFailures()
                 ->when( $connection, fn( $batch ) => $batch->onConnection( $connection ) )
                 ->when( $queue, fn( $batch ) => $batch->onQueue( $queue ) )
                 ->dispatch();
@@ -255,6 +258,19 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
 
     /**
+     * Returns the name of the translation batches of the current tenant.
+     *
+     * The tenant is hashed because its ID can be longer than the column of the batch name.
+     *
+     * @return string Batch name
+     */
+    protected static function batchName() : string
+    {
+        return 'cms-translate:' . sha1( (string) Tenancy::value() );
+    }
+
+
+    /**
      * Returns the progress of a batch of translations.
      *
      * @param string $batch Batch ID
@@ -262,7 +278,8 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      */
     public static function progress( string $batch ) : ?array
     {
-        if( !( $batch = Bus::findBatch( $batch ) ) ) {
+        // batches are shared by all tenants and the application
+        if( !( $batch = Bus::findBatch( $batch ) ) || $batch->name !== self::batchName() ) {
             return null;
         }
 
@@ -285,11 +302,16 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
         try
         {
             // cheap check before loading the page, doesn't count as attempt
-            if( RateLimiter::remaining( $this->key(), self::max() ) < 1 ) {
-                throw new Throttled( max( 1, RateLimiter::availableIn( $this->key() ) ) );
+            if( ( $wait = self::wait( $this->tenant ) ) > 0 ) {
+                throw new Throttled( $wait );
             }
 
             Tenancy::run( $this->tenant, function() {
+
+                // pages moved to the trash or deleted after queuing aren't translated anymore
+                if( !Page::whereKey( $this->id )->exists() ) {
+                    return;
+                }
 
                 if( !( $user = $this->user() ) || !Permission::can( 'page:save', $user ) || ( !Permission::can( 'page:add', $user )
                     && !PageVariant::withTrashed()->where( 'page_id', $this->id )->where( 'lang', $this->lang )->exists() )
@@ -297,16 +319,15 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                     throw new Exception( 'Insufficient permissions' );
                 }
 
-                $keys = [];
-                $used = function( array $list ) use ( &$keys ) {
-                    array_push( $keys, ...$list );
-                };
-
+                // queue workers are long running, so later jobs mustn't run as this user
+                $previous = Auth::hasUser() ? Auth::user() : null;
                 Auth::setUser( $user );
-                Resource::translatePage( $this->id, $this->lang, $user, Ai::translator( $user, fn( int $calls ) => $this->throttle( $calls ), $used ) );
 
-                // cached chunks are only kept for retrying failed translations
-                Ai::forget( $keys );
+                try {
+                    Ai::retryable( fn() => Resource::translatePage( $this->id, $this->lang, $user, Ai::translator( $user ) ), $this->tenant );
+                } finally {
+                    $previous ? Auth::setUser( $previous ) : Auth::forgetUser();
+                }
             } );
         }
         catch( Throttled $e )
@@ -352,19 +373,12 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
     /**
      * Allows retrying until the job is released too often because of the rate limit.
+     *
+     * The hours start when the job is due, so delayed jobs have the same time for retries.
      */
     public function retryUntil() : \DateTimeInterface
     {
-        return now()->addHours( 6 );
-    }
-
-
-    /**
-     * Returns the key of the rate limiter for the tenant.
-     */
-    protected function key() : string
-    {
-        return self::limiter( $this->tenant );
+        return now()->addSeconds( is_int( $this->delay ) ? $this->delay : 0 )->addHours( self::HOURS );
     }
 
 
@@ -375,7 +389,8 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      */
     protected static function limiter( string $tenant ) : string
     {
-        return 'cms-translate:' . $tenant;
+        // hashed so tenant IDs containing ":" can't collide with the ":until" keys of other tenants
+        return 'cms-translate:' . sha1( $tenant );
     }
 
 
@@ -409,23 +424,12 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
 
     /**
-     * Reserves the provider calls of the tenant and stops the job if there are too many.
-     *
-     * @param int $calls Number of provider calls to make
-     * @throws Throttled If the rate limit would be exceeded
-     */
-    protected function throttle( int $calls ) : void
-    {
-        self::reserve( $this->tenant, $calls );
-    }
-
-
-    /**
      * Reserves AI translation provider calls of the tenant.
      *
      * The calls are counted atomically first and given back if the limit is exceeded, so
      * concurrent translations can't exceed the limit together. If more calls are needed than allowed
-     * per minute, they are only reserved if no other calls have been made in the current minute.
+     * per minute, they are only reserved if no other calls have been made in the current minute and
+     * the calls exceeding the limit are taken from the following minutes.
      *
      * @param string $tenant Tenant ID
      * @param int $calls Number of provider calls to make
@@ -434,6 +438,11 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     public static function reserve( string $tenant, int $calls ) : void
     {
         $key = self::limiter( $tenant );
+
+        if( ( $wait = (int) Cache::get( $key . ':until', 0 ) - now()->getTimestamp() ) > 0 ) {
+            throw new Throttled( $wait );
+        }
+
         $hits = RateLimiter::increment( $key, 60, $calls );
 
         if( $hits > self::max() && $hits > $calls )
@@ -441,6 +450,31 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
             RateLimiter::decrement( $key, 60, $calls );
             throw new Throttled( max( 1, RateLimiter::availableIn( $key ) ) );
         }
+
+        // no calls are made in the following minutes until the calls exceeding the limit are used up
+        if( $hits > self::max() )
+        {
+            $wait = RateLimiter::availableIn( $key ) + ( (int) ceil( $hits / self::max() ) - 1 ) * 60;
+            Cache::put( $key . ':until', now()->getTimestamp() + $wait, $wait );
+        }
+    }
+
+
+    /**
+     * Returns the seconds to wait until provider calls of the tenant are allowed again.
+     *
+     * @param string $tenant Tenant ID
+     * @return int Seconds to wait or 0 if calls are allowed
+     */
+    protected static function wait( string $tenant ) : int
+    {
+        $key = self::limiter( $tenant );
+
+        if( ( $wait = (int) Cache::get( $key . ':until', 0 ) - now()->getTimestamp() ) > 0 ) {
+            return $wait;
+        }
+
+        return RateLimiter::remaining( $key, self::max() ) < 1 ? max( 1, RateLimiter::availableIn( $key ) ) : 0;
     }
 
 
@@ -455,10 +489,14 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
             return null;
         }
 
-        $guard = config( 'auth.defaults.guard' );
+        // the user is loaded by the provider of the guard the user was authenticated with
+        $guard = $this->guard ?? config( 'auth.defaults.guard' );
         $provider = Auth::createUserProvider( config( "auth.guards.$guard.provider" ) );
 
-        return $provider?->retrieveById( $this->userId );
+        $user = $provider?->retrieveById( $this->userId );
+
+        // guards without own provider (e.g. Sanctum) may load another model with the same ID
+        return $user && ( $this->model === null || get_class( $user ) === $this->model ) ? $user : null;
     }
 }
 

@@ -6,6 +6,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\Page;
@@ -68,7 +69,7 @@ class NavigationTest extends ThemeTestAbstract
         $hidden = Page::where( 'path', 'hidden' )->firstOrFail();
         $blog = Page::where( 'path', 'blog' )->firstOrFail();
         $dev = Page::where( 'path', 'dev' )->firstOrFail();
-        $blog->appendToNode( $hidden )->save();
+        Resource::placePage( $blog, parent: $hidden->id );
 
         $ids = ( new Navigation( $hidden, null ) )->items()->pluck( 'id' );
 
@@ -113,7 +114,7 @@ class NavigationTest extends ThemeTestAbstract
         $disabled = Page::where( 'path', 'disabled' )->firstOrFail();
         $child = Page::where( 'path', 'disabled-child' )->firstOrFail();
         $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
-        $disabled->beforeNode( $article )->save();
+        Resource::placePage( $disabled, $article->id );
 
         $items = ( new Navigation( $article, null ) )->items( 1 );
 

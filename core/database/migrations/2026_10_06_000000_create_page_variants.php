@@ -27,10 +27,14 @@ return new class extends Migration
      */
     public $withinTransaction = false;
 
-    /** @var list<string> Page columns moved to the variants */
+    /**
+     * @var list<string> Page columns moved to the variants
+     *
+     * SQLite rewrites the table for each dropped column, so the large ones are dropped first
+     */
     private const MOVED = [
-        'name', 'path', 'to', 'title', 'domain', 'lang', 'tag', 'type', 'theme', 'cache', 'status',
-        'latest_id', 'meta', 'config', 'content', 'editor',
+        'content', 'config', 'meta', 'editor', 'name', 'path', 'to', 'title', 'domain', 'lang',
+        'tag', 'type', 'theme', 'cache', 'status', 'latest_id',
     ];
 
 
@@ -49,6 +53,11 @@ return new class extends Migration
         // all steps skip the work already done to continue an interrupted migration
         if( !$schema->hasTable( 'cms_page_variants' ) ) {
             $this->variants( $schema, $db );
+        }
+
+        // prefix searches for paths can't use the other indexes if the collation isn't "C"
+        if( $db->getDriverName() === 'pgsql' ) {
+            $db->statement( 'CREATE INDEX IF NOT EXISTS cms_page_variants_path_pattern_index ON cms_page_variants (domain, tenant_id, path varchar_pattern_ops)' );
         }
 
         if( $schema->hasColumn( 'cms_pages', 'lang' ) ) {
@@ -281,5 +290,6 @@ return new class extends Migration
                 $table->index( ['page_id', 'lang', 'tenant_id', 'deleted_at', 'name', 'title', 'tag', 'path', 'domain', 'to', 'status', 'config', 'latest_id'], 'cms_page_variants_covering_index' );
             }
         } );
+
     }
 };

@@ -59,6 +59,28 @@ class Validation
 
 
     /**
+     * Shortens the strings of the scalar fields to the storage limits of the model.
+     *
+     * Used for generated values like translations which shouldn't fail because of their length.
+     *
+     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param array<string, mixed> $input Input data
+     * @return array<string, mixed> Input data with shortened strings
+     */
+    public static function truncate( string $model, array $input ) : array
+    {
+        foreach( self::LIMITS[$model] as $key => $max )
+        {
+            if( !isset( self::NUMBERS[$key] ) && is_string( $input[$key] ?? null ) ) {
+                $input[$key] = mb_substr( $input[$key], 0, $max );
+            }
+        }
+
+        return $input;
+    }
+
+
+    /**
      * Sanitizes page input: validates URL, strips config without permission,
      * sanitizes HTML content, populates per-element file lists, validates
      * content/meta/config schemas.
@@ -74,6 +96,10 @@ class Validation
 
         if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
             throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
+        }
+
+        if( isset( $input['lang'] ) && !Utils::isValidLang( (string) $input['lang'] ) ) {
+            throw new Exception( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
         }
 
         if( !Permission::can( 'page:config', $user ) ) {

@@ -249,7 +249,7 @@ class CoreCommandTest extends CoreTestAbstract
         $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
-        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $pageVersion->id] );
         $element->forceFill( ['latest_id' => $elementVersion->id] )->saveQuietly();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );

@@ -4,6 +4,7 @@ namespace Aimeos\Cms\Scout;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -228,7 +229,12 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                     }
 
                     $array = $model->toSearchableArray();
-                    $common = ['indexable_id' => $model->getScoutKey(), 'indexable_type' => $type, 'tenant_id' => $tenant];
+                    $common = [
+                        'indexable_id' => $model->getScoutKey(),
+                        'indexable_type' => $type,
+                        'tenant_id' => $tenant,
+                        'indexable_lang' => $model instanceof Page ? $model->lang : null,
+                    ];
 
                     if( !empty( $array['draft'] ) ) {
                         $rows[] = ['latest' => true, 'content' => $array['draft']] + $common;
@@ -381,6 +387,11 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             if( ( $where['field'] ?? $key ) == 'latest' ) {
                 $query->where( 'cms_index.latest', $where['operator'] ?? '=', $where['value'] ?? $where );
             }
+        }
+
+        // variants of other languages are skipped before joining the pages, not for language fallbacks
+        if( $builder->model instanceof Page && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
+            $query->where( 'cms_index.indexable_lang', $lang );
         }
 
         // Scripts without word boundaries (CJK, Thai) tokenize as one FTS token, making interior

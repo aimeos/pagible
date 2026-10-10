@@ -21,8 +21,8 @@ use Illuminate\Support\Facades\Date;
 /**
  * Language variant of a page
  *
- * Owns the language specific page data and the page versions. Use the Page model
- * to read and write pages, it joins the variants transparently.
+ * Owns the language specific page data and the page versions. The read-only Page
+ * model reads the variants through the page view, Resource writes them.
  *
  * @property string $id
  * @property string $page_id
@@ -66,11 +66,9 @@ class PageVariant extends Model
 
 
     /**
-     * The model's default values for attributes.
-     *
-     * @var array<string, mixed>
+     * Default values of the variant attributes, also used by the page facade.
      */
-    protected $attributes = [
+    public const DEFAULTS = [
         'tenant_id' => '',
         'lang' => '',
         'domain' => '',
@@ -92,19 +90,32 @@ class PageVariant extends Model
     ];
 
     /**
-     * The automatic casts for the attributes.
-     *
-     * @var array<string, string>
+     * Casts of the variant attributes, also used by the page facade.
      */
-    protected $casts = [
+    public const CASTS = [
         'cache' => 'integer',
         'status' => 'integer',
         'meta' => 'object',
         'config' => 'object',
-        'content' => 'object',
+        'content' => 'object', // for object access in templates
         'hashes' => 'array',
         'stale' => 'boolean',
     ];
+
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = self::DEFAULTS;
+
+    /**
+     * The automatic casts for the attributes.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = self::CASTS;
 
     /**
      * The table associated with the model.

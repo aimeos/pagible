@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
+use Aimeos\Cms\Sync;
 use Aimeos\Cms\Utils;
 
 
@@ -148,13 +149,8 @@ class Variants
 
         if( $variant )
         {
-            PageVariant::withTrashed()->whereKey( $variant->variant_id )->update( [
-                'deleted_at' => null,
-                'hashes' => json_encode( (object) $hashes ),
-                'stale' => $linked === null,
-            ] );
-
-            $variant->forceFill( ['variant_deleted_at' => null, 'hashes' => $hashes, 'stale' => $linked === null] )->syncOriginal();
+            PageVariant::withTrashed()->whereKey( $variant->variant_id )->update( ['deleted_at' => null] );
+            $variant = Sync::state( $variant->forceFill( ['variant_deleted_at' => null] ), $hashes, $linked === null );
         }
         else
         {

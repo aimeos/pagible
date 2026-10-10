@@ -80,6 +80,6 @@ class Bulk implements Loggable, ShouldBroadcastNow
             'ids' => array_values( $this->ids ),
             'editor' => $this->editor,
             'tenant_id' => $this->tenant,
-        ]];
+        ] + ( $this->langs ? ['langs' => array_values( array_unique( $this->langs ) )] : [] )];
     }
 }

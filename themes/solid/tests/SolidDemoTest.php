@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\SolidDemo;
@@ -74,7 +75,7 @@ class SolidDemoTest extends ThemeTestAbstract
         $config = $home->config;
         $config->{'solid::business'}->data->{'call-button'} = false;
         $home->config = $config;
-        $home->saveQuietly();
+        Resource::updatePage( $home );
 
         $this->get( '/' )->assertDontSee( 'class="call-button"', false );
     }

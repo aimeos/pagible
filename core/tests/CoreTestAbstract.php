@@ -14,7 +14,7 @@ abstract class CoreTestAbstract extends CmsTestAbstract
 	{
 		parent::defineEnvironment( $app );
 
-		$app['config']->set('cms.locales', ['en', 'de'] );
+		$app['config']->set('cms.locales', ['en', 'de', 'fr'] );
 
 		\Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/theme', 'cms' );
 	}

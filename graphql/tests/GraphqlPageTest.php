@@ -9,6 +9,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Nestedset\NestedSet;
 
@@ -1101,7 +1102,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testKeepPage()
     {
         $root = Page::where('tag', 'root')->firstOrFail();
-        $root->delete();
+        Resource::trashPage( $root );
 
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -1136,7 +1137,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $page = Page::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
-        $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
+        Resource::updatePage( $page, ['updated_at' => '2000-01-01 00:00:00'] );
 
         $this->expectsDatabaseQueryCount( 10 );
 
@@ -1217,7 +1218,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = Page::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 16 );
+        $this->expectsDatabaseQueryCount( 13 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgePage(id: ["' . $root->id . '"]) {

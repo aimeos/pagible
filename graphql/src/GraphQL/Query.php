@@ -17,6 +17,9 @@ use Aimeos\Cms\Sync;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -113,20 +116,7 @@ final class Query
 
 
     /**
-     * Resolver for the number of pages in each translation state of a language.
-     *
-     * @param  null  $rootValue
-     * @param  array<string, mixed>  $args
-     * @return array{lang: string, stale: int, missing: int, ai: int}
-     */
-    public function translations( $rootValue, array $args ) : array
-    {
-        return $this->states( [(string) $args['lang']] )[0];
-    }
-
-
-    /**
-     * Resolver for the number of pages in each translation state of all configured languages.
+     * Resolver for the number of pages in each translation state of the languages.
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -134,20 +124,57 @@ final class Query
      */
     public function translationStates( $rootValue, array $args ) : array
     {
-        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) config( 'cms.locales', [] ) );
+        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) ( $args['langs'] ?? config( 'cms.locales', [] ) ) );
         $langs = array_values( array_unique( array_filter( $langs ) ) );
 
-        return $langs ? $this->states( $langs ) : [];
+        return $langs ? $this->states( $langs, !empty( $args['cached'] ) ) : [];
     }
 
 
     /**
      * Counts the pages in each translation state of the languages.
      *
+     * The counts scan all variants of the languages, so frequent refreshes can use
+     * counts up to a minute old. Fresh counts replace the cached ones but are computed
+     * at most ten times a minute per tenant and user, otherwise the cached counts are used.
+     *
      * @param  array<int, string>  $langs Language codes
+     * @param  bool  $cached TRUE to use counts up to a minute old if available
      * @return array<int, array{lang: string, stale: int, missing: int, ai: int}>
      */
-    protected function states( array $langs ) : array
+    protected function states( array $langs, bool $cached = false ) : array
+    {
+        $sorted = $langs;
+        sort( $sorted );
+
+        // hashed because tenant IDs and language lists may exceed the key length of cache stores like memcached
+        $key = 'cms-translation-states:' . sha1( Tenancy::value() . ':' . implode( ',', $sorted ) );
+        $counts = Cache::get( $key );
+
+        if( !is_array( $counts ) || !$cached && RateLimiter::attempt( 'cms-translation-states:' . sha1( Tenancy::value() . ':' . Auth::id() ), 10, fn() => true ) ) {
+            Cache::put( $key, $counts = $this->counts( $langs ), 60 );
+        }
+
+        return array_map( function( string $lang ) use ( $counts ) {
+            $row = $counts['rows'][$lang] ?? [];
+
+            return [
+                'lang' => $lang,
+                'stale' => (int) ( $row['stale'] ?? 0 ),
+                'missing' => max( 0, (int) ( $counts['pages'] ?? 0 ) - (int) ( $row['total'] ?? 0 ) ),
+                'ai' => (int) ( $row['ai'] ?? 0 ),
+            ];
+        }, $langs );
+    }
+
+
+    /**
+     * Counts the variants in each translation state of the languages and all pages.
+     *
+     * @param  array<int, string>  $langs Language codes
+     * @return array{rows: array<string, array{total: int, stale: int, ai: int}>, pages: int}
+     */
+    protected function counts( array $langs ) : array
     {
         // same conditions as Filter::translation() but counted on the variants of the languages
         // using their indexes instead of the fallback join over all pages
@@ -169,7 +196,12 @@ final class Query
             ', [true, Sync::EDITOR] )
             ->groupBy( 'cms_page_variants.lang' )
             ->get()
-            ->keyBy( 'lang' );
+            ->mapWithKeys( fn( $row ) => [(string) $row->lang => [
+                'total' => (int) $row->total,
+                'stale' => (int) $row->stale,
+                'ai' => (int) $row->ai,
+            ]] )
+            ->all();
 
         // pages without a variant in the language
         $pages = Page::query()->getConnection()->table( 'cms_pages' )
@@ -177,16 +209,7 @@ final class Query
             ->whereNull( 'deleted_at' )
             ->count();
 
-        return array_map( function( string $lang ) use ( $rows, $pages ) {
-            $row = $rows->get( $lang );
-
-            return [
-                'lang' => $lang,
-                'stale' => (int) ( $row->stale ?? 0 ),
-                'missing' => max( 0, $pages - (int) ( $row->total ?? 0 ) ),
-                'ai' => (int) ( $row->ai ?? 0 ),
-            ];
-        }, $langs );
+        return ['rows' => $rows, 'pages' => $pages];
     }
 
 

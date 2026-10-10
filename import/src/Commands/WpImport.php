@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
@@ -597,7 +598,7 @@ class WpImport extends Command
         if( !$page ) {
             $page = Pages::create( $pageData, $contentElements, $blogPage );
         } elseif( $page->parent_id !== $blogPage->id ) {
-            $page->appendToNode( $blogPage )->save();
+            Resource::placePage( $page, parent: $blogPage->id );
         }
 
         Pages::publish( $page, $pageData, ['content' => $contentElements], $fileIds, $footer['elementIds'],
@@ -610,7 +611,7 @@ class WpImport extends Command
         }
 
         if( $date && $date !== '0000-00-00 00:00:00' ) {
-            $page->forceFill( ['created_at' => $date] )->saveQuietly();
+            Resource::updatePage( $page, ['created_at' => $date] );
         }
 
         return $updated;

@@ -139,7 +139,7 @@ class VariantRenderTest extends ThemeTestAbstract
     {
         $blog = $this->blog();
         $article = Page::where( 'tag', 'article' )->firstOrFail();
-        $article->forceFill( ['type' => 'blog'] )->saveQuietly();
+        Resource::updatePage( $article, ['type' => 'blog'] );
 
         $deBlog = $this->variant( $blog, 'de', 'blog-de' );
         $item = (object) ['data' => (object) ['order' => '-id', 'limit' => 10]];
@@ -180,6 +180,37 @@ class VariantRenderTest extends ThemeTestAbstract
         config( ['cms.translate.fallback' => 'hide'] );
         $this->variant( $this->blog(), 'de', 'blog-de', ['name' => 'Blog DE'] );
         $this->assertContains( 'Blog DE', $names() );
+
+        // disabled translations are hidden like missing ones, including their sub-pages
+        $this->variant( Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail(), 'de', 'artikel', ['name' => 'Artikel DE'] );
+        $this->assertContains( 'Artikel DE', ( new Navigation( $deRoot, null ) )->items()->first( fn( $p ) => $p->name === 'Blog DE' )?->children->pluck( 'name' )->all() ?? [] );
+
+        Resource::savePage( $this->blog()->id, ['status' => 0], $this->user, lang: 'de' );
+        Publication::publish( Page::class, [$this->blog()->id], $this->user, lang: 'de' );
+        $this->assertNotContains( 'Blog DE', $names() );
+        $this->assertNotContains( 'Blog', $names() );
+        $this->assertNotContains( 'Artikel DE', $names() );
+    }
+
+
+    public function testChildrenHideDisabled()
+    {
+        $blog = $this->blog();
+        $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+
+        $deBlog = $this->variant( $blog, 'de', 'blog-de' );
+        $this->variant( $article, 'de', 'artikel', ['name' => 'Artikel DE'] );
+
+        Resource::savePage( $article->id, ['status' => 0], $this->user, lang: 'de' );
+        Publication::publish( Page::class, [$article->id], $this->user, lang: 'de' );
+
+        $names = fn() => Page::language( 'de' )->findOrFail( $blog->id )->children->pluck( 'name' )->all();
+
+        // disabled variants are hidden for visitors but shown to editors
+        $this->assertNotContains( 'Artikel DE', $names() );
+
+        $this->actingAs( $this->user );
+        $this->assertContains( 'Artikel DE', $names() );
     }
 
 

@@ -10,6 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Actions\Properties;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Tenancy;
 use Carbon\CarbonImmutable;
@@ -452,10 +453,8 @@ class PropertiesActionTest extends ThemeTestAbstract
             'title' => 'Newer Update',
         ] );
 
-        $older->timestamps = false;
-        $older->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-01-01' )] )->saveQuietly();
-        $newer->timestamps = false;
-        $newer->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-02-01' )] )->saveQuietly();
+        Resource::updatePage( $older, ['updated_at' => CarbonImmutable::parse( '2026-01-01' )] );
+        Resource::updatePage( $newer, ['updated_at' => CarbonImmutable::parse( '2026-02-01' )] );
 
         $request = Request::create( '/properties', 'GET', ['sort' => 'updated_desc'] );
         $request->setUserResolver( fn() => null );
@@ -528,7 +527,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     protected function addCategory( Page $parent ) : Page
     {
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Residential',
             'title' => 'Residential',
@@ -537,8 +536,7 @@ class PropertiesActionTest extends ThemeTestAbstract
             'type' => 'page',
             'status' => 1,
             'editor' => 'seeder',
-        ] );
-        $page->appendToNode( $parent )->save();
+        ] ), parent: $parent->id );
 
         return $page;
     }
@@ -546,7 +544,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     protected function addListPage( Page $root ) : Page
     {
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Properties',
             'title' => 'Properties',
@@ -555,8 +553,7 @@ class PropertiesActionTest extends ThemeTestAbstract
             'type' => 'properties',
             'status' => 1,
             'editor' => 'seeder',
-        ] );
-        $page->appendToNode( $root )->save();
+        ] ), parent: $root->id );
 
         return $page;
     }
@@ -584,8 +581,7 @@ class PropertiesActionTest extends ThemeTestAbstract
             'path' => $data['path'],
         ] );
 
-        $property = Page::forceCreate( $property );
-        $property->appendToNode( $parent )->save();
+        $property = Resource::insertPage( ( new Page() )->forceFill( $property ), parent: $parent->id );
 
         return $property;
     }

@@ -29,6 +29,11 @@ class WhereLang extends Where
     {
         $lang = (string) $this->deserialize( $value );
 
+        // invalid codes match no variant and can't be quoted if they contain NUL bytes
+        if( !\Aimeos\Cms\Utils::isValidLang( $lang ) ) {
+            return $query->whereRaw( '1 = 0' );
+        }
+
         $query->getModel()->setAttribute( 'lang', $lang );
         $query->language( $lang );
 

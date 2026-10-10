@@ -18,7 +18,7 @@ extend type Mutation {
   repaint(file: Upload!, prompt: String! @rules(apply: ["max:2000"])): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
 
   "Refine existing page content"
-  refine(prompt: String! @rules(apply: ["required", "max:2000"]), content: JSON!, type: String @rules(apply: ["max:255"]), context: String @rules(apply: ["max:30000"]), lang: String @rules(apply: ["max:10"]), pagetype: String @rules(apply: ["max:255"])): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
+  refine(prompt: String! @rules(apply: ["required", "max:2000"]), content: JSON!, type: String @rules(apply: ["max:255"]), context: String @rules(apply: ["max:30000"]), lang: String @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]), pagetype: String @rules(apply: ["max:255"])): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
 
   "Transcribe uploaded audio file"
   transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
@@ -46,12 +46,12 @@ extend type Mutation {
     "Publish state of the pages matching the filter"
     publish: Publish,
     "Language the filter is applied in, required for the translation state filter"
-    filter_lang: String @rules(apply: ["nullable", "string", "max:10"]),
+    filter_lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]),
     "Languages to translate the pages into"
-    lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
+    lang: [String!]! @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: "page:save") @throttle(name: "cms-ai")
 
   "Translate the descriptions of the files into the languages they are missing in and save them as new file drafts"
-  translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10"]) @rulesForArray(apply: ["min:1", "max:100"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
+  translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]) @rulesForArray(apply: ["min:1", "max:100"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
 }
 
 extend type Query {

@@ -118,13 +118,13 @@ describe('PageList', () => {
     }
 
     it('shows the translation states with their counts of the current language', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 2, missing: 3, ai: 1 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 2, missing: 3, ai: 1 }] } })
 
       mountLangs(query).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
 
         cy.wrap(null).should(() => {
-          expect(query).to.have.been.calledWithMatch({ variables: { lang: 'de' }, fetchPolicy: 'no-cache' })
+          expect(query).to.have.been.calledWithMatch({ variables: { langs: ['de'] }, fetchPolicy: 'no-cache' })
           const group = vm.asideContent.find((group) => group.key === 'translation')
           expect(group.items.map((item) => item.value.translation)).to.deep.equal([null, 'stale', 'missing', 'ai'])
           expect(group.items.map((item) => item.count)).to.deep.equal([undefined, 2, 3, 1])
@@ -133,18 +133,18 @@ describe('PageList', () => {
     })
 
     it('refetches the counts when the language changes', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
         useUserStore().saveData('page', 'lang', 'en')
         cy.wrap(null).should(() => {
-          expect(query).to.have.been.calledWithMatch({ variables: { lang: 'en' } })
+          expect(query).to.have.been.calledWithMatch({ variables: { langs: ['en'] } })
         })
       })
     })
 
     it('fetches the counts only when the aside is opened', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query, false).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
@@ -157,13 +157,13 @@ describe('PageList', () => {
         })
         cy.wrap(null).should(() => {
           expect(query).to.have.been.calledOnce
-          expect(query).to.have.been.calledWithMatch({ variables: { lang: 'en' } })
+          expect(query).to.have.been.calledWithMatch({ variables: { langs: ['en'] } })
         })
       })
     })
 
     it('collapses bursts of changes into one query', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
@@ -177,8 +177,55 @@ describe('PageList', () => {
       })
     })
 
+    it('throttles the counts refreshed due to frequent changes', () => {
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        cy.wrap(null).should(() => expect(query).to.have.been.calledOnce)
+        cy.then(() => {
+          // the counts have just been fetched, so frequent changes wait
+          vm.changed(true)
+          vm.changed(true)
+        })
+        cy.wait(600).then(() => {
+          expect(query).to.have.been.calledOnce
+          // fetched long enough ago, the pending refresh runs soon using cached counts
+          clearTimeout(vm.throttled)
+          vm.throttled = null
+          vm.fetchedAt = Date.now() - 20000
+          vm.changed(true)
+          vm.changed(true)
+        })
+        cy.wrap(null).should(() => {
+          expect(query).to.have.been.calledTwice
+          expect(query.secondCall).to.have.been.calledWithMatch({ variables: { langs: ['de'], cached: true } })
+        })
+      })
+    })
+
+    it('refreshes the counts at once after other changes while throttled', () => {
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
+
+      mountLangs(query).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageList).vm
+
+        cy.wrap(null).should(() => expect(query).to.have.been.calledOnce)
+        cy.then(() => {
+          vm.changed(true)
+          vm.changed()
+          expect(vm.throttled).to.equal(null)
+        })
+        cy.wrap(null).should(() => {
+          expect(query).to.have.been.calledTwice
+          expect(query.secondCall).to.have.been.calledWithMatch({ variables: { cached: false } })
+        })
+      })
+    })
+
     it('does not refetch the counts after returning without changed pages', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
@@ -196,7 +243,7 @@ describe('PageList', () => {
     })
 
     it('refetches the counts after returning when pages changed while inactive', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
@@ -216,7 +263,7 @@ describe('PageList', () => {
     })
 
     it('cancels a pending query when deactivated and repeats it after returning', () => {
-      const query = cy.stub().resolves({ data: { pageTranslations: { stale: 0, missing: 0, ai: 0 } } })
+      const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm

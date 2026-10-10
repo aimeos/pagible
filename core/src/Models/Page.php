@@ -30,7 +30,10 @@ use Illuminate\Support\Collection;
  * Page model
  *
  * Facade over the page structure (cms_pages) and one of its language variants
- * (cms_page_variants). By default, the variant of the source language is used.
+ * (cms_page_variants), read from the cms_page_view view joining both tables.
+ * By default, the variant of the source language is used.
+ * The model is read-only, Resource writes the tree columns through PageNode and
+ * the language specific columns through PageVariant.
  *
  * @property string $id
  * @property string $variant_id
@@ -76,6 +79,7 @@ class Page extends Base
     use NodeTrait;
 
     public const PERM = 'page';
+    public const READONLY = 'Pages are read-only, write pages using Resource';
     protected const REFS = ['files', 'elements'];
 
     /** @var list<string> Columns required for Page lifecycle operations */
@@ -87,7 +91,7 @@ class Page extends Base
     /** @var list<string> Optional columns available for selective Page responses */
     public const RESPONSE_COLUMNS = [
         'name', 'title', 'tag', 'to', 'type', 'theme', 'meta', 'config',
-        'content', 'status', 'cache', 'created_at', 'updated_at',
+        'content', 'status', 'cache', 'stale', 'created_at', 'updated_at',
     ];
 
     /** @var list<string> Columns needed for memory-efficient Page queries */
@@ -103,26 +107,7 @@ class Page extends Base
      *
      * @var array<string, mixed>
      */
-    protected $attributes = [
-        'tenant_id' => '',
-        'tag' => '',
-        'lang' => '',
-        'path' => '',
-        'domain' => '',
-        'to' => '',
-        'name' => '',
-        'title' => '',
-        'type' => '',
-        'theme' => '',
-        'meta' => '{}',
-        'config' => '{}',
-        'content' => '[]',
-        'status' => 0,
-        'cache' => 5,
-        'editor' => '',
-        'hashes' => '{}',
-        'stale' => false,
-    ];
+    protected $attributes = PageVariant::DEFAULTS;
 
     /**
      * The automatic casts for the attributes.
@@ -139,13 +124,7 @@ class Page extends Base
         'title' => 'string',
         'type' => 'string',
         'theme' => 'string',
-        'status' => 'integer',
-        'cache' => 'integer',
-        'meta' => 'object',
-        'config' => 'object',
-        'content' => 'object', // for object access in templates
-        'hashes' => 'array',
-        'stale' => 'boolean',
+        ...PageVariant::CASTS,
     ];
 
     /**
@@ -200,22 +179,13 @@ class Page extends Base
      */
     protected ?Collection $cachedAncestorsAndSelf = null;
 
-    /**
-     * Connections whose schema contains the page variants table.
-     *
-     * @var array<string, true|null>
-     */
-    private static array $schema = [];
-
 
     /**
-     * Boot the model.
+     * Selects the variants of the pages read from the page view.
      */
     protected static function booted() : void
     {
-        static::creating( function( Page $page ) {
-            $page->setAttribute( 'source', $page->getAttribute( 'source' ) ?: (string) $page->lang );
-        } );
+        static::addGlobalScope( new \Aimeos\Cms\Scopes\Variant() );
     }
 
 
@@ -303,15 +273,13 @@ class Page extends Base
 
 
     /**
-     * Generates the unique IDs including the ID of the source variant, which is the same as the page ID.
+     * Returns the columns which receive a unique ID, the page and its variant have their own IDs.
+     *
+     * @return array<int, string> Column names
      */
-    public function setUniqueIds() : void
+    public function uniqueIds() : array
     {
-        parent::setUniqueIds();
-
-        if( !$this->getAttribute( 'variant_id' ) ) {
-            $this->setAttribute( 'variant_id', $this->getKey() );
-        }
+        return ['id', 'variant_id'];
     }
 
 
@@ -323,11 +291,6 @@ class Page extends Base
      */
     public function newEloquentBuilder( $query ) : PageQuery
     {
-        // migrations running before the page variants exist use the plain page table
-        if( $query instanceof PageBuilder && ( self::$schema[$this->getConnectionName()] ??= $this->getConnection()->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ?: null ) ) {
-            $query->variants();
-        }
-
         return new PageQuery( $query );
     }
 
@@ -359,15 +322,6 @@ class Page extends Base
 
         return static::versionRefs( static::withTrashed()->language( $lang, true )->whereIn( 'id', $ids )
             ->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all() );
-    }
-
-
-    /**
-     * Resets the cached schema state, e.g. while migrations are running.
-     */
-    public static function resetSchema() : void
-    {
-        self::$schema = [];
     }
 
 
@@ -706,45 +660,6 @@ class Page extends Base
 
 
     /**
-     * Applies a lifecycle action to each locked page to keep the nested set consistent.
-     *
-     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Pages
-     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
-     * @param string $editor Name of the editing user
-     */
-    public static function lifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
-    {
-        foreach( $items as $item )
-        {
-            if( $action === 'purged' ) {
-                $item->forceDelete();
-                continue;
-            }
-
-            $item->editor = $editor;
-            $action === 'dropped' ? $item->delete() : $item->restore();
-        }
-    }
-
-
-    /**
-     * Positions the page relative to a sibling or parent.
-     */
-    public function position( ?string $beforeId = null, ?string $parentId = null ) : void
-    {
-        $columns = ['id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH];
-
-        if( $beforeId !== null ) {
-            $this->beforeNode( static::withTrashed()->select( $columns )->findOrFail( $beforeId ) );
-        } elseif( $parentId !== null ) {
-            $this->appendToNode( static::withTrashed()->select( $columns )->findOrFail( $parentId ) );
-        } elseif( $this->exists ) {
-            $this->makeRoot();
-        }
-    }
-
-
-    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder for pruning models
@@ -856,9 +771,12 @@ class Page extends Base
             return false;
         }
 
+        $editor = \Aimeos\Cms\Permission::can( 'page:view', Auth::user() );
+
+        // disabled variants are left out for visitors like in the "source" mode
         $hide && !self::fallbackToSource()
-            ? $builder->language( $lang )
-            : $builder->localized( $lang, \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) );
+            ? $builder->language( $lang )->when( !$editor, fn( $q ) => $q->where( $q->qualifyColumn( 'status' ), '<>', 0 ) )
+            : $builder->localized( $lang, $editor );
 
         return true;
     }
@@ -995,15 +913,95 @@ class Page extends Base
 
 
     /**
-     * Restricts queries saving the model to the variant of the model.
+     * Returns the query for the structure of the page tree.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * The nested set writes the page tree directly instead of the page facade.
+     *
+     * @param string|null $table Table name
+     * @return \Aimeos\Nestedset\QueryBuilder<PageNode> Query builder including trashed nodes
      */
-    protected function setKeysForSaveQuery( $query )
+    public function newNestedSetQuery( ?string $table = null ) : \Aimeos\Nestedset\QueryBuilder
     {
-        parent::setKeysForSaveQuery( $query );
-        return $this->useVariant( $query );
+        return ( new PageNode() )->newNestedSetQuery( $table );
+    }
+
+
+    /**
+     * The page tree node deletes the descendants.
+     */
+    protected function deleteDescendants() : void
+    {
+    }
+
+
+    /**
+     * The page tree node restores the descendants.
+     *
+     * @param \Carbon\Carbon|null $deletedAt Time the page has been moved into the trash
+     */
+    protected function restoreDescendants( ?\Carbon\Carbon $deletedAt ) : void
+    {
+    }
+
+
+    /**
+     * The page facade is read-only, use Resource::removePage() instead.
+     *
+     * @throws \LogicException Always
+     */
+    public function delete() : never
+    {
+        throw new \LogicException( self::READONLY );
+    }
+
+
+    /**
+     * The page facade is read-only, use Resource::removePage() instead.
+     *
+     * @throws \LogicException Always
+     */
+    public function forceDelete() : never
+    {
+        throw new \LogicException( self::READONLY );
+    }
+
+
+    /**
+     * Prunes the trashed page including its descendants and variants.
+     *
+     * @return bool TRUE on success
+     */
+    public function prune()
+    {
+        $this->pruning();
+
+        // the nested set queries are tenant scoped, so they must run in the tenant of the page
+        \Aimeos\Cms\Tenancy::run( (string) $this->tenant_id, fn() => \Aimeos\Cms\Resource::removePage( $this ) );
+
+        return true;
+    }
+
+
+    /**
+     * The page facade is read-only, use Resource::untrashPage() instead.
+     *
+     * @throws \LogicException Always
+     */
+    public function restore() : never
+    {
+        throw new \LogicException( self::READONLY );
+    }
+
+
+    /**
+     * The page facade is read-only, use Resource::insertPage() or Resource::updatePage() instead.
+     *
+     * @param array<string, mixed> $options Unused
+     * @throws \LogicException Always
+     */
+    public function save( array $options = [] ) : never
+    {
+        throw new \LogicException( self::READONLY );
     }
 
 
@@ -1017,17 +1015,6 @@ class Page extends Base
     {
         parent::setKeysForSelectQuery( $query );
         return $this->useVariant( $query );
-    }
-
-
-    /**
-     * Don't fire model events for each descendant for performance reasons.
-     *
-     * @return bool FALSE to disable firing events for descendants
-     */
-    protected function shouldFireDescendantEvents(): bool
-    {
-        return false;
     }
 
 

@@ -23,7 +23,7 @@ final class DropPage
     public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
     {
         if( isset( $args['lang'] ) ) {
-            return Resource::variants( 'drop', $args['id'], $args['lang'], Auth::user() )->all();
+            return Resource::variants( 'drop', $args['id'], $args['lang'], Auth::user(), array_keys( $info?->getFieldSelection( 1 ) ?? [] ) )->all();
         }
 
         return Resource::drop(

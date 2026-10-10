@@ -66,7 +66,7 @@ class PageControllerTest extends ThemeTestAbstract
         config( ['app.name' => 'Application name'] );
 
         $root = Page::where( 'tag', 'root' )->firstOrFail();
-        $root->forceFill( ['config' => $this->websiteConfig( 'Tree website' )] )->saveQuietly();
+        Resource::updatePage( $root, ['config' => $this->websiteConfig( 'Tree website' )] );
 
         $response = $this->get( '/blog?website=inherited' );
 
@@ -81,7 +81,7 @@ class PageControllerTest extends ThemeTestAbstract
         );
 
         $page = Page::where( 'tag', 'blog' )->firstOrFail();
-        $page->forceFill( ['config' => $this->websiteConfig( 'Section website' )] )->saveQuietly();
+        Resource::updatePage( $page, ['config' => $this->websiteConfig( 'Section website' )] );
 
         $response = $this->get( '/blog?website=nearest' );
 
@@ -120,7 +120,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRegionalRtlLanguageUsesRtlDirection()
     {
-        \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail()->forceFill( ['lang' => 'ar-EG'] )->saveQuietly();
+        Resource::updatePage( \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail(), ['lang' => 'ar-EG'] );
 
         $response = $this->get( '/blog' );
 
@@ -142,14 +142,13 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testManualCanonicalUsesCurrentPaginatorPage()
     {
-        $page = $this->blogList();
-        $page->forceFill( ['meta' => [
+        Resource::updatePage( $this->blogList(), ['meta' => [
             'canonical' => [
                 'type' => 'canonical',
                 'data' => ['url' => 'https://example.com/journal?lang=en'],
                 'files' => [],
             ],
-        ]] )->saveQuietly();
+        ]] );
 
         $response = $this->get( '/blog?p=2' );
 
@@ -302,7 +301,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testNewsPageUsesBlogLayout()
     {
         $page = Page::where( 'tag', 'article' )->firstOrFail();
-        $page->forceFill( ['tag' => '', 'type' => 'news'] )->saveQuietly();
+        Resource::updatePage( $page, ['tag' => '', 'type' => 'news'] );
 
         $response = $this->get( '/welcome-to-laravelcms' );
 
@@ -314,14 +313,14 @@ class PageControllerTest extends ThemeTestAbstract
     public function testLatestFindsExistingVersionWithoutDomain()
     {
         // Create a page with a version that has no domain in data (legacy/importer case)
-        $page = Page::forceCreate([
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Test',
             'title' => 'Test Page',
             'path' => 'test-page',
             'status' => 1,
             'editor' => 'test',
-        ]);
+        ] ) );
 
         $version = $page->versions()->forceCreate([
             'data' => ['name' => 'Test', 'path' => 'test-page', 'status' => 1],
@@ -329,7 +328,7 @@ class PageControllerTest extends ThemeTestAbstract
             'published' => true,
             'editor' => 'test',
         ]);
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $version->id] );
 
         // Now save with a new path (no domain in input)
         Resource::savePage(
@@ -368,14 +367,14 @@ class PageControllerTest extends ThemeTestAbstract
         $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         // Deactivated, never-published page referencing the unpublished element.
-        $page = Page::forceCreate([
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Draft preview',
             'title' => 'Draft preview',
             'path' => 'draft-preview',
             'status' => 0,
             'editor' => 'test',
-        ]);
+        ] ) );
         $pageVersion = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => ['name' => 'Draft preview', 'path' => 'draft-preview', 'status' => 0],
@@ -385,7 +384,7 @@ class PageControllerTest extends ThemeTestAbstract
             'published' => false,
             'editor' => 'test',
         ]);
-        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $pageVersion->id] );
         $pageVersion->elements()->attach( $element->id );
 
         // Editor preview must render the element's draft content
@@ -501,7 +500,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testAnonymousCacheablePageHasNoCookies()
     {
-        Page::forceCreate([
+        Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Cacheable',
             'title' => 'Cacheable Page',
@@ -512,7 +511,7 @@ class PageControllerTest extends ThemeTestAbstract
             'content' => [
                 ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
             ],
-        ]);
+        ] ) );
 
         // A cacheable page is served (or rendered then stored) without per-visitor
         // cookies, so a CDN can cache it.
@@ -528,7 +527,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRenderInProgressServesStaleCompletePage(): void
     {
         config( ['cms.theme.cache' => 'array'] );
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Stale',
             'title' => 'Stale',
@@ -536,7 +535,7 @@ class PageControllerTest extends ThemeTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'test',
-        ] );
+        ] ) );
         $html = 'stale-complete-page';
         $key = $this->cacheKey( $page );
 
@@ -833,7 +832,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRedirectUsesOneQuery(): void
     {
-        Page::forceCreate( [
+        Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Redirect',
             'title' => 'Redirect',
@@ -841,7 +840,7 @@ class PageControllerTest extends ThemeTestAbstract
             'to' => '/target',
             'status' => 1,
             'editor' => 'test',
-        ] );
+        ] ) );
 
         DB::flushQueryLog();
         DB::enableQueryLog();
@@ -882,7 +881,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testUncachedPageUsesFullWebSession()
     {
-        Page::forceCreate([
+        Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Dynamic',
             'title' => 'Dynamic Page',
@@ -893,7 +892,7 @@ class PageControllerTest extends ThemeTestAbstract
             'content' => [
                 ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
             ],
-        ]);
+        ] ) );
 
         // Uncacheable pages render through the full "web" stack, so a session is
         // started and its cookie is kept.
@@ -923,7 +922,7 @@ class PageControllerTest extends ThemeTestAbstract
             ->map( fn( $item ) => (object) ( (array) $item + ['group' => 'main'] ) )
             ->all();
 
-        $page->forceFill( ['content' => $content, 'type' => 'blog'] )->saveQuietly();
+        Resource::updatePage( $page, ['content' => $content, 'type' => 'blog'] );
 
         return $page;
     }

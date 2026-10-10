@@ -8,7 +8,10 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Nav;
+use Aimeos\Cms\Tenancy;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -20,6 +23,9 @@ class SitemapController extends Controller
      */
     protected const URLS_PER_SITEMAP = 50000;
 
+    /** @var int Seconds a request waits for the statistics built by another request */
+    protected const LOCK_WAIT = 5;
+
     /**
      * Maximum number of articles per Google News sitemap.
      */
@@ -29,6 +35,11 @@ class SitemapController extends Controller
      * Response headers of all sitemap documents.
      */
     protected const HEADERS = ['Content-Type' => 'application/xml', 'Cache-Control' => 'public, max-age=300'];
+
+    /**
+     * Seconds the URL count and the chunk boundaries are cached.
+     */
+    protected const CACHE_TTL = 300;
 
 
     /**
@@ -42,14 +53,13 @@ class SitemapController extends Controller
      */
     public function index() : Response
     {
-        /** @var object{cnt: int, max_updated: string|null} $agg */
-        $agg = $this->query()->selectRaw( 'COUNT(*) as cnt, MAX(updated_at) as max_updated' )->first();
+        $stats = $this->stats();
 
-        if( $agg->cnt <= static::URLS_PER_SITEMAP ) {
+        if( $stats['count'] <= static::URLS_PER_SITEMAP ) {
             return $this->urlset();
         }
 
-        return $this->sitemapIndex( (int) $agg->cnt, $agg->max_updated );
+        return $this->sitemapIndex( $stats['count'], $stats['updated'] );
     }
 
 
@@ -127,13 +137,13 @@ class SitemapController extends Controller
             abort( 404 );
         }
 
-        $offset = ( $page - 1 ) * static::URLS_PER_SITEMAP;
+        $from = $this->stats()['bounds'][$page] ?? null;
 
-        if( $offset > 0 && $this->query()->count() <= $offset ) {
+        if( $page > 1 && $from === null ) {
             abort( 404 );
         }
 
-        return $this->urlset( $offset, static::URLS_PER_SITEMAP );
+        return $this->urlset( $from, static::URLS_PER_SITEMAP );
     }
 
 
@@ -226,6 +236,89 @@ class SitemapController extends Controller
 
 
     /**
+     * Returns the cached URL count, last modification and chunk boundaries of the sitemap.
+     *
+     * The boundaries are the first variant IDs of the second and following chunks, keyed
+     * by the one-based chunk number, so chunks don't have to skip all previous rows.
+     *
+     * @return array{count: int, updated: string|null, bounds: array<int, string>}
+     */
+    protected function stats() : array
+    {
+        $domain = config( 'cms.multidomain' ) ? (string) request()->route( 'domain', '' ) : '';
+        $key = 'cms-sitemap:' . Tenancy::value() . ':' . $domain . ':' . static::URLS_PER_SITEMAP;
+
+        if( ( $stats = Cache::get( $key ) ) !== null ) {
+            return $stats;
+        }
+
+        // only one request builds the stats, concurrent requests wait shortly and use the cached result
+        try {
+            return $this->rebuild( $key );
+        } catch( LockTimeoutException $e ) {
+            // workers aren't blocked for long, crawlers retry later
+            abort( 503, '', ['Retry-After' => 60] );
+        }
+    }
+
+
+    /**
+     * Builds and caches the sitemap statistics while holding the lock.
+     *
+     * @param string $key Cache key of the statistics
+     * @return array{count: int, updated: string|null, bounds: array<int, string>}
+     * @throws LockTimeoutException If the lock isn't released within a few seconds
+     */
+    protected function rebuild( string $key ) : array
+    {
+        return Cache::lock( $key . ':lock', 120 )->block( static::LOCK_WAIT, function() use ( $key ) {
+
+            if( ( $stats = Cache::get( $key ) ) !== null ) {
+                return $stats;
+            }
+
+            // empty sitemaps aren't cached so requests for arbitrary domains can't fill the cache
+            if( ( $stats = $this->build() )['count'] > 0 ) {
+                Cache::put( $key, $stats, static::CACHE_TTL );
+            }
+
+            return $stats;
+        } );
+    }
+
+
+    /**
+     * Builds the URL count, last modification and chunk boundaries of the sitemap.
+     *
+     * All IDs are read once in order instead of skipping the previous rows for each chunk.
+     *
+     * @return array{count: int, updated: string|null, bounds: array<int, string>}
+     */
+    protected function build() : array
+    {
+        $col = ( new Nav() )->qualifyColumn( 'variant_id' );
+        $count = 0;
+        $updated = null;
+        $bounds = [];
+
+        foreach( $this->query()->select( [$col, 'updated_at'] )->lazyById( 10000, $col, 'variant_id' ) as $row )
+        {
+            if( $count > 0 && $count % static::URLS_PER_SITEMAP === 0 ) {
+                $bounds[intdiv( $count, static::URLS_PER_SITEMAP ) + 1] = (string) $row->variant_id;
+            }
+
+            if( $updated === null || (string) $row->updated_at > $updated ) {
+                $updated = (string) $row->updated_at;
+            }
+
+            $count++;
+        }
+
+        return ['count' => $count, 'updated' => $updated, 'bounds' => $bounds];
+    }
+
+
+    /**
      * Returns the absolute CMS page route with row placeholders.
      */
     protected function template() : string
@@ -249,15 +342,16 @@ class SitemapController extends Controller
      * Streams a `<urlset>` XML document.
      *
      * When `$limit` is null all rows are streamed (single-file mode); otherwise
-     * the result is sliced via `ORDER BY variant_id LIMIT/OFFSET` for chunked output.
+     * the result is sliced via `ORDER BY variant_id LIMIT` starting at the first
+     * variant ID of the chunk (keyset pagination) for chunked output.
      * The route URL is resolved once with placeholders and substituted per row
      * to avoid the per-iteration cost of Laravel's URL generator.
      *
-     * @param int|null $offset Row offset for chunked output, ignored when `$limit` is null
+     * @param string|null $from First variant ID of the chunk, ignored when `$limit` is null
      * @param int|null $limit  Maximum rows to stream, or null for all rows
      * @return StreamedResponse `<urlset>` XML response
      */
-    protected function urlset( ?int $offset = null, ?int $limit = null ) : StreamedResponse
+    protected function urlset( ?string $from = null, ?int $limit = null ) : StreamedResponse
     {
         $tz = $this->timezone();
         $template = $this->template();
@@ -265,7 +359,8 @@ class SitemapController extends Controller
         $query = $this->query()->select( 'path', 'domain', 'updated_at', 'meta' );
 
         if( $limit !== null ) {
-            $query->orderBy( 'variant_id' )->offset( (int) $offset )->limit( $limit );
+            $col = ( new Nav() )->qualifyColumn( 'variant_id' );
+            $query->when( $from !== null, fn( $q ) => $q->where( $col, '>=', $from ) )->orderBy( $col )->limit( $limit );
         }
 
         return response()->stream( function() use ( $tz, $template, $query ) {

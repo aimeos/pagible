@@ -126,8 +126,9 @@ class Texts
             throw new Exception( sprintf( 'Expected %1$d translated texts, got %2$d', count( $this->refs ), count( $result ) ) );
         }
 
+        // translations are hardly longer than their source, so excessive AI output is cut off
         foreach( $result as $idx => $text ) {
-            $this->refs[$idx] = (string) $text;
+            $this->refs[$idx] = mb_substr( (string) $text, 0, 100 + 4 * mb_strlen( (string) $this->refs[$idx] ) );
         }
 
         return true;

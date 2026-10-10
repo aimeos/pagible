@@ -13,6 +13,7 @@ abstract class CashierTestAbstract extends CmsTestAbstract
 	protected function defineEnvironment( $app )
 	{
 		parent::defineEnvironment( $app );
+		$app['config']->set('cms.locales', ['en', 'de'] );
 
 		\Illuminate\Support\Facades\Route::get( 'login', fn() => '' )->name( 'login' );
 	}

@@ -12,7 +12,7 @@ use Aimeos\Cms\Models\PageVariant;
 
 
 /**
- * Builds translations of page variants from their source variant.
+ * Builds translations of page variants from their source variant and keeps their sync state.
  *
  * New variants and variants without hashes ("not linked") get a translated copy of the
  * source, existing ones get the changed items of the source merged into their content.
@@ -374,5 +374,131 @@ class Sync
             $page->only( PageVariant::FIELDS ),
             self::copy( (object) ['content' => $page->content, 'meta' => $page->meta, 'config' => $page->config] )
         ];
+    }
+
+
+    /**
+     * Rebases the hashes of the other variants onto the variant which becomes the new source.
+     *
+     * Variants linked to the former source keep the hashes of the page fields and of the
+     * shared elements, so only items which differ from the new source count as changed.
+     *
+     * @param Page $page Page with the variant becoming the new source
+     */
+    public static function rebase( Page $page ) : void
+    {
+        $hashes = Hashes::published( $page );
+
+        $variants = PageVariant::withTrashed()->where( 'page_id', $page->id )
+            ->where( 'id', '!=', $page->variant_id )
+            ->get( ['id', 'lang', 'content', 'hashes', 'stale'] );
+
+        foreach( $variants as $variant )
+        {
+            // the former source is the origin of all linked variants
+            $linked = !empty( $variant->hashes ) || $variant->lang === $page->source;
+            $new = [];
+
+            foreach( (array) $variant->content as $item )
+            {
+                $elid = ( (array) $item )['id'] ?? null;
+
+                if( is_scalar( $elid ) && isset( $hashes['el:' . $elid] ) ) {
+                    $new['el:' . $elid] = $hashes['el:' . $elid];
+                }
+            }
+
+            if( $linked ) {
+                $new += array_filter( $hashes, fn( $key ) => !str_starts_with( $key, 'el:' ), ARRAY_FILTER_USE_KEY );
+            }
+
+            PageVariant::withTrashed()->whereKey( $variant->id )->update( [
+                'hashes' => json_encode( (object) $new ),
+                'stale' => !$linked || Hashes::stale( $hashes, $new ),
+            ] );
+        }
+    }
+
+
+    /**
+     * Returns the hashes of the published source variants of the pages.
+     *
+     * @param array<string> $ids Page UUIDs
+     * @return array<string, array<string, string>> Hashes by page ID
+     */
+    public static function sources( array $ids ) : array
+    {
+        $hashes = [];
+
+        // small chunks because the content of the pages is loaded
+        foreach( array_chunk( $ids, 50 ) as $chunk )
+        {
+            // only the columns used for the hashes of the published source variants
+            $sources = Page::withTrashed()->whereKey( $chunk )->get( ['id', ...Hashes::PAGE_FIELDS, 'content', 'meta', 'config'] );
+
+            foreach( $sources as $source ) {
+                /** @var Page $source */
+                $hashes[(string) $source->id] = Hashes::published( $source );
+            }
+        }
+
+        return $hashes;
+    }
+
+
+    /**
+     * Stores the hashes and the stale flag of the page variant.
+     *
+     * @param Page $page Page with the variant
+     * @param array<string, string> $hashes Hashes by key
+     * @param bool $stale If the variant needs an update
+     * @return Page Same page with the new hashes and stale flag
+     */
+    public static function state( Page $page, array $hashes, bool $stale ) : Page
+    {
+        PageVariant::withTrashed()->whereKey( $page->variant_id )->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => $stale] );
+        return $page->forceFill( ['hashes' => $hashes, 'stale' => $stale] )->syncOriginal();
+    }
+
+
+    /**
+     * Marks the translations of the published source variants as stale if the source changed.
+     *
+     * Trashed variants are skipped because restoring them recomputes the flag.
+     *
+     * @param iterable<Page> $pages Published pages with their source variant
+     */
+    public static function markStale( iterable $pages ) : void
+    {
+        $sources = $hashes = [];
+
+        foreach( $pages as $page )
+        {
+            if( $page->isSourceVariant() && $page->source ) {
+                $sources[(string) $page->id] = $page;
+            }
+        }
+
+        foreach( array_chunk( array_keys( $sources ), 100 ) as $chunk )
+        {
+            $ids = [];
+            $variants = PageVariant::whereIn( 'page_id', $chunk )->where( 'stale', false )
+                ->get( ['id', 'page_id', 'lang', 'hashes'] );
+
+            foreach( $variants as $variant )
+            {
+                $source = $sources[$variant->page_id];
+
+                if( $variant->lang !== $source->source
+                    && Hashes::stale( $hashes[$variant->page_id] ??= Hashes::published( $source ), (array) $variant->hashes )
+                ) {
+                    $ids[] = $variant->id;
+                }
+            }
+
+            if( !empty( $ids ) ) {
+                PageVariant::whereIn( 'id', $ids )->toBase()->update( ['stale' => true] );
+            }
+        }
     }
 }

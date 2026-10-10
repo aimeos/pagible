@@ -33,6 +33,7 @@ return new class extends Migration
                 indexable_type UNINDEXED,
                 tenant_id UNINDEXED,
                 latest UNINDEXED,
+                indexable_lang UNINDEXED,
                 content
             )");
         }
@@ -48,9 +49,11 @@ return new class extends Migration
                 $table->string('indexable_type', 50);
                 $table->string('tenant_id');
                 $table->boolean('latest')->default(false);
+                $table->string('indexable_lang', 10)->nullable();
                 $table->text('content');
 
                 $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_id']);
+                $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_lang']);
 
                 if( in_array($driver, ['mariadb', 'mysql']) ) {
                     $table->fullText('content');

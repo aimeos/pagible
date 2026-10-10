@@ -32,6 +32,10 @@ use Illuminate\Support\Facades\Log;
  */
 class Ai
 {
+    /** @var array{tenant: string|null, keys: array<int, string>}|null Translations within retryable() */
+    private static ?array $retry = null;
+
+
     /**
      * Ensures that the JSON encoded input doesn't exceed the "cms.ai.maxinput" size and "cms.ai.maxdepth" nesting depth.
      *
@@ -309,19 +313,15 @@ class Ai
      *
      * Translated chunks are cached for "cms.ai.translatettl" seconds per tenant, so retrying
      * after a provider error doesn't translate the chunks which already succeeded again.
-     * Pass the cache keys from $keys to forget() to remove the entries once they aren't needed.
+     * Within retryable(), the cached chunks are removed once the translation succeeded.
      *
      * @param array<int, string> $texts Texts to translate
      * @param string $to Target language code
      * @param string|null $from Source language code, auto-detected if NULL
      * @param string|null $context Additional context like the topic of the texts
-     * @param (\Closure(int): void)|null $before Called once with the number of provider requests before the first one is sent
-     * @param array<int, string>|null $keys Receives the cache keys of the translated chunks
-     * @param-out array<int, string> $keys
      * @return array<int, string> Translated texts in the same order
      */
-    public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null,
-        ?\Closure $before = null, ?array &$keys = null ) : array
+    public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null ) : array
     {
         $config = config( 'cms.ai.translate', [] ) + [
             'ignore_tags' => ['x'],
@@ -347,9 +347,14 @@ class Ai
             }
         }
 
-        // reserve the requests for all uncached chunks at once before sending the first one
-        if( $before && ( $count = count( $chunks ) - count( $lists ) ) > 0 ) {
-            $before( $count );
+        if( self::$retry !== null )
+        {
+            array_push( self::$retry['keys'], ...$keys );
+
+            // reserve the requests for all uncached chunks at once before sending the first one
+            if( self::$retry['tenant'] !== null && ( $count = count( $chunks ) - count( $lists ) ) > 0 ) {
+                Jobs\TranslatePage::reserve( self::$retry['tenant'], $count );
+            }
         }
 
         $result = [];
@@ -374,14 +379,36 @@ class Ai
 
 
     /**
-     * Removes cached translations which aren't needed anymore.
+     * Executes translations which are retried after provider errors.
      *
-     * @param array<int, string> $keys Cache keys passed back by translate()
+     * The chunks translated by translate() stay cached until the callback succeeds, so
+     * retries don't translate them again. If a tenant is passed, the provider requests
+     * of the uncached chunks are reserved from the rate limit of the tenant first.
+     *
+     * @template T
+     * @param \Closure(): T $callback Callback translating the texts
+     * @param string|null $tenant Tenant ID whose rate limit is used or NULL for no limit
+     * @return T Callback return value
+     * @throws Jobs\Throttled If the rate limit of the tenant would be exceeded
      */
-    public static function forget( array $keys ) : void
+    public static function retryable( \Closure $callback, ?string $tenant = null ) : mixed
     {
-        foreach( array_unique( $keys ) as $key ) {
-            Cache::forget( $key );
+        $outer = self::$retry;
+        self::$retry = ['tenant' => $tenant, 'keys' => []];
+
+        try
+        {
+            $result = $callback();
+
+            foreach( array_unique( self::$retry['keys'] ?? [] ) as $key ) {
+                Cache::forget( $key );
+            }
+
+            return $result;
+        }
+        finally
+        {
+            self::$retry = $outer;
         }
     }
 
@@ -425,22 +452,15 @@ class Ai
      * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
      *
      * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
-     * @param (\Closure(int): void)|null $calls Called once with the number of provider calls before the first call to the provider
-     * @param (\Closure(array<int, string>): void)|null $used Called with the cache keys of the translated chunks
      * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
      */
-    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user, ?\Closure $calls = null,
-        ?\Closure $used = null ) : ?\Closure
+    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user ) : ?\Closure
     {
         if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
             return null;
         }
 
-        return function( array $texts, string $to, ?string $from, string $context ) use ( $calls, $used ) : array {
-            $result = self::translate( $texts, $to, $from, $context ?: null, $calls, $keys );
-            $used && $used( $keys );
-            return $result;
-        };
+        return fn( array $texts, string $to, ?string $from, string $context ) : array => self::translate( $texts, $to, $from, $context ?: null );
     }
 
 

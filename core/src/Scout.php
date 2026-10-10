@@ -192,9 +192,15 @@ class Scout
      * @param string $lang Language code
      * @param string|null $trashed NULL or "without" for available pages and variants only, "with" to include trashed ones, "only" for trashed ones
      * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Page search with the language fallback
+     * @throws \InvalidArgumentException If the language code is invalid
      */
     public static function prefer( Builder $builder, string $lang, ?string $trashed = null ) : Builder
     {
+        // search engines like Meilisearch don't escape filter values
+        if( !Utils::isValidLang( $lang ) ) {
+            throw new \InvalidArgumentException( sprintf( 'Invalid language code "%1$s"', $lang ) );
+        }
+
         $with = in_array( $trashed, ['with', 'only'], true );
 
         self::$fallbacks ??= new \WeakMap();
@@ -267,13 +273,16 @@ class Scout
     /**
      * Reindexes models by ID in bounded native Scout batches.
      *
-     * All variants of the pages are reindexed unless their changed variants are passed as loaded models.
+     * All variants of the pages are reindexed unless their changed variants are passed as loaded models
+     * or the search keys of the changed variants are passed instead of the page IDs.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs (page IDs for pages)
+     * @param array<string> $ids Model IDs (page IDs for pages) or search keys (variant IDs for pages)
      * @param Collection<int, covariant Models\Base>|null $loaded Already loaded current models
+     * @param bool $sources TRUE to reindex only the source variants of the pages
+     * @param bool $keys TRUE if the IDs are search keys
      */
-    public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
+    public static function index( string $model, array $ids, ?Collection $loaded = null, bool $sources = false, bool $keys = false ) : void
     {
         if( !$ids || !self::usesSearchIndex() ) {
             return;
@@ -285,17 +294,17 @@ class Scout
         // pages are indexed per variant, loaded variants are the changed ones of their page
         foreach( $loaded ?? [] as $item ) {
             if( $item instanceof $model && $item->id !== null && $item->shouldBeSearchable() ) {
-                $models[$item->id][$item->getScoutKey()] = $item;
+                $models[$keys ? (string) $item->getScoutKey() : $item->id][$item->getScoutKey()] = $item;
             }
         }
 
         foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
         {
             if( config( 'scout.queue' ) ) {
-                dispatch( ( new IndexModels( $model, $chunk, Tenancy::value() ) )
+                dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $sources, $keys ) )
                     ->onQueue( $instance->syncWithSearchUsingQueue() )
                     ->onConnection( $instance->syncWithSearchUsing() ) );
-            } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
+            } elseif( !$sources && count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
                 $loaded = $instance->newCollection( array_merge( ...array_map( array_values( ... ), array_values( $items ) ) ) );
                 $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
 
@@ -306,7 +315,7 @@ class Scout
 
                 $instance->syncMakeSearchable( $loaded );
             } else {
-                self::sync( $model, $chunk );
+                self::sync( $model, $chunk, $sources, $keys );
             }
         }
     }
@@ -371,53 +380,9 @@ class Scout
             self::$sources = [];
 
             foreach( $list as $tenant => $ids ) {
-                Tenancy::run( (string) $tenant, fn() => self::dispatchSources( array_map( strval( ... ), array_keys( $ids ) ) ) );
+                Tenancy::run( (string) $tenant, fn() => self::index( Models\Page::class, array_map( strval( ... ), array_keys( $ids ) ), sources: true ) );
             }
         } );
-    }
-
-
-    /**
-     * Reindexes the source variants of the pages now.
-     *
-     * @param array<string> $ids Page IDs
-     */
-    public static function syncSources( array $ids ) : void
-    {
-        $instance = new Models\Page();
-
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
-        {
-            $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
-
-            if( $query instanceof PageQuery ) {
-                $query->language( null );
-            }
-
-            $instance->syncMakeSearchable( $query->whereKey( $chunk )->get() );
-        }
-    }
-
-
-    /**
-     * Reindexes the source variants of the pages in queued jobs or now.
-     *
-     * @param array<string> $ids Page IDs
-     */
-    private static function dispatchSources( array $ids ) : void
-    {
-        if( !config( 'scout.queue' ) ) {
-            self::syncSources( $ids );
-            return;
-        }
-
-        $instance = new Models\Page();
-
-        foreach( array_chunk( $ids, 50 ) as $chunk ) {
-            dispatch( ( new IndexModels( Models\Page::class, $chunk, Tenancy::value(), true ) )
-                ->onQueue( $instance->syncWithSearchUsingQueue() )
-                ->onConnection( $instance->syncWithSearchUsing() ) );
-        }
     }
 
 
@@ -448,9 +413,11 @@ class Scout
      * Reindexes models immediately after loading their searchable relations.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Model IDs or search keys
+     * @param bool $sources TRUE to reindex only the source variants of the pages
+     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public static function sync( string $model, array $ids ) : void
+    public static function sync( string $model, array $ids, bool $sources = false, bool $keys = false ) : void
     {
         if( !$ids || !self::usesSearchIndex() ) {
             return;
@@ -462,11 +429,15 @@ class Scout
 
         // batches by search key to limit the number of page variants for many languages,
         // larger than the ID batches to load pages with only one language in one query
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
-            $instance::makeAllSearchableQuery()
-                ->withoutGlobalScope( SoftDeletingScope::class )
-                ->whereKey( $chunk )
-                ->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
+        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        {
+            $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
+
+            if( $sources && $query instanceof PageQuery ) {
+                $query->language( null );
+            }
+
+            ( $keys ? $query->whereIn( $column, $chunk ) : $query->whereKey( $chunk ) )->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
         }
     }
 

@@ -155,7 +155,8 @@ trait Broadcasts
                         $versions[$id] = $projected[$key]['version_id'];
                     }
 
-                    if( $item instanceof Page ) {
+                    // lifecycle events of whole pages have no language, only those of single page variants
+                    if( $item instanceof Page && !in_array( $action, ['dropped', 'restored', 'purged'], true ) ) {
                         $langs[$id] = (string) $item->lang;
                     }
                 }

@@ -116,7 +116,18 @@ final class Navigation
         $editor = Permission::can( 'page:view', $this->user );
 
         $editor && $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
-        $lang !== '' && $query->localized( $lang, $editor );
+
+        if( $lang !== '' && !Page::fallbackToSource() )
+        {
+            // translations without visible variant are pruned in "hide" mode, so only the variants of the language are fetched (indexable)
+            $query->language( $lang );
+            $editor || $query->where( fn( $q ) => $q->where( $q->qualifyColumn( 'status' ), '<>', 0 )
+                ->orWhereColumn( $q->qualifyColumn( 'lang' ), $q->qualifyColumn( 'source' ) ) );
+        }
+        elseif( $lang !== '' )
+        {
+            $query->localized( $lang, $editor );
+        }
 
         return $query;
     }

@@ -65,7 +65,7 @@ final class Publication
             : null;
 
         $model->stage( $version );
-        $model->save();
+        $model instanceof Page ? Resource::updatePage( $model ) : $model->save();
 
         $version->published = true;
         $version->save();
@@ -90,10 +90,11 @@ final class Publication
         );
 
         // translations whose source changed need an update
-        Resource::staleVariants( array_filter( $this->models[Page::class] ?? [], fn( $item ) => $item instanceof Page ) );
+        Sync::markStale( array_filter( $this->models[Page::class] ?? [], fn( $item ) => $item instanceof Page ) );
 
         foreach( $this->models as $model => $items ) {
-            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->id, array_values( $items ) ), collect( array_values( $items ) ) );
+            // only the published variants of pages change
+            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), array_values( $items ) ), collect( array_values( $items ) ), keys: true );
         }
 
         foreach( $this->models as $model => $items ) {
@@ -891,7 +892,7 @@ final class Publication
      */
     private static function variantRow( Page $page, array $row, array $columns ) : array
     {
-        [$pageRow, $variantRow] = PageBuilder::split( array_intersect_key( $row, array_flip( $columns ) ) );
+        [$pageRow, $variantRow] = Resource::splitPage( array_intersect_key( $row, array_flip( $columns ) ) );
 
         if( $column = array_key_first( array_diff_key( $pageRow, array_flip( PageBuilder::SHARED_COLUMNS ) ) ) ) {
             throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );

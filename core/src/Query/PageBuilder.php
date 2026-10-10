@@ -7,23 +7,30 @@
 
 namespace Aimeos\Cms\Query;
 
-use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Models\Page;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
-use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 
 
 /**
  * Base query builder for the page facade
  *
  * Pages are stored in two tables: cms_pages contains the tree structure and
- * cms_page_variants one row per page and language. The builder reads from a
- * derived table aliased "cms_pages" which joins both tables, so existing
+ * cms_page_variants one row per page and language. The builder reads from the
+ * cms_page_view view joining both tables, aliased "cms_pages", so existing
  * queries using unqualified or "cms_pages." qualified columns continue to
- * work. Writes are split up and applied to the underlying tables.
+ * work. A condition added by the Variant scope selects the variant of each
+ * page. The view is read-only, the Resource class writes the tree columns to
+ * cms_pages and the language specific ones to cms_page_variants.
  */
 class PageBuilder extends Builder
 {
+    /** @var string Alias of the page view, the table name of the page model */
+    public const ALIAS = 'cms_pages';
+
+    /** @var string Name of the view joining the pages and their variants */
+    public const VIEW = 'cms_page_view';
+
     /** @var list<string> Columns stored in the cms_pages table */
     public const PAGE_COLUMNS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
 
@@ -39,20 +46,38 @@ class PageBuilder extends Builder
     /** @var list<string> Columns stored in both tables */
     public const SHARED_COLUMNS = ['created_at', 'updated_at'];
 
-    private const SIMPLE = ['Basic', 'In', 'NotIn', 'InRaw', 'NotInRaw', 'Null', 'NotNull', 'between', 'Bitwise'];
-
-    /** @var string|null SQL of the derived page table */
-    protected ?string $derivedSql = null;
-
-    /** @var string|null Variant ID if the derived table joins a single variant */
-    protected ?string $variantId = null;
-
-    /** @var Builder|null Query of the derived page table */
-    protected ?Builder $derivedQuery = null;
+    /** @var array{0: string, 1: string|null, 2: bool}|null Mode, value and trashed flag of the variant condition */
+    public ?array $variant = null;
 
 
     /**
-     * Uses the variant joined by the given condition.
+     * Set the table which the query is targeting.
+     *
+     * The variant condition only applies to the page view, so it's removed if another table
+     * is used. The nested set builds subqueries on the cms_pages table, e.g. for has('ancestors')
+     * or whereAncestorOf(), and the condition would refer to the page view row of the outer query.
+     *
+     * @param \Closure|Builder|\Illuminate\Contracts\Database\Query\Expression|string $table
+     * @param string|null $as
+     * @return $this
+     */
+    public function from( $table, $as = null )
+    {
+        if( $this->variant !== null )
+        {
+            $this->wheres = self::withoutVariant( $this->wheres );
+            $this->variant = null;
+        }
+
+        return parent::from( $table, $as );
+    }
+
+
+    /**
+     * Uses the page view and selects the variant by the given mode.
+     *
+     * The condition selecting the variants is added by the Variant scope when the query is executed,
+     * so the where clauses of the query are grouped and can't bypass the condition.
      *
      * @param string $mode "source" for the source language, "lang" for one language, "fallback" for one language
      *  or the source language if a page has no variant in that language, "visible" for one language or the source
@@ -63,207 +88,115 @@ class PageBuilder extends Builder
      */
     public function variants( string $mode = 'source', ?string $value = null, bool $trashed = false ) : static
     {
-        $cols = [];
-        foreach( self::PAGE_COLUMNS as $col ) {
-            $cols[] = 'p.' . $col;
+        if( !in_array( $mode, ['source', 'lang', 'fallback', 'visible', 'variant', 'all'], true ) ) {
+            throw new \InvalidArgumentException( sprintf( 'Invalid page variant mode "%1$s"', $mode ) );
         }
 
-        foreach( self::VARIANT_COLUMNS as $alias => $col ) {
-            $cols[] = $alias === $col ? 'v.' . $col : 'v.' . $col . ' as ' . $alias;
-        }
-
-        foreach( self::SHARED_COLUMNS as $col ) {
-            $cols[] = 'v.' . $col;
-        }
-
-        $sub = $this->newQuery()->from( 'cms_pages as p' )->select( $cols )
-            ->join( 'cms_page_variants as v', function( $join ) use ( $mode, $value, $trashed ) {
-                // tenant condition lets the tenant scope use the variant indexes
-                $join->on( 'v.page_id', '=', 'p.id' )->on( 'v.tenant_id', '=', 'p.tenant_id' );
-
-                switch( $mode )
-                {
-                    case 'source':
-                        $join->on( 'v.lang', '=', 'p.source' );
-                        break;
-                    case 'lang':
-                        $join->where( 'v.lang', '=', (string) $value );
-                        break;
-                    case 'fallback':
-                    case 'visible':
-                        // "visible" only uses published and enabled variants of the language
-                        $visible = $mode === 'visible';
-                        $trashed = $trashed && !$visible;
-
-                        $join->where( function( $q ) use ( $value, $trashed, $visible ) {
-                            $q->where( function( $q ) use ( $value, $visible ) {
-                                $q->where( 'v.lang', '=', (string) $value )->when( $visible, fn( $q ) => $q->where( 'v.status', '<>', 0 ) );
-                            } )->orWhere( function( $q ) use ( $value, $trashed, $visible ) {
-                                $q->whereColumn( 'v.lang', '=', 'p.source' )->whereNotExists( function( $q ) use ( $value, $trashed, $visible ) {
-                                    $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
-                                        ->whereColumn( 'w.page_id', '=', 'p.id' )
-                                        ->where( 'w.lang', '=', (string) $value )
-                                        ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', 0 ) )
-                                        ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
-                                } );
-                            } );
-                        } );
-                        break;
-                    case 'variant':
-                        $join->where( 'v.id', '=', (string) $value );
-                        $trashed = true;
-                        break;
-                    case 'all':
-                        break;
-                    default:
-                        throw new \InvalidArgumentException( sprintf( 'Invalid page variant mode "%1$s"', $mode ) );
-                }
-
-                if( !$trashed && $mode !== 'source' ) {
-                    $join->whereNull( 'v.deleted_at' );
-                }
-            } );
-
-        $this->derive( $sub );
-        $this->variantId = $mode === 'variant' ? (string) $value : null;
+        $this->from( self::VIEW, self::ALIAS );
+        $this->variant = [$mode, $value, $trashed];
 
         return $this;
     }
 
 
     /**
-     * Set the lock for the selected rows.
+     * Adds the condition selecting the variants of the pages in the page view.
      *
-     * SQL Server doesn't allow table hints for derived tables, so the rows of the
-     * pages are locked within the derived table instead, which serializes all
-     * operations locking the same pages.
-     *
-     * @param string|bool $value TRUE for update locks, FALSE for shared locks or the lock clause
-     * @return $this
+     * @return static Same builder for fluent interface
      */
-    public function lock( $value = true )
+    public function whereVariant() : static
     {
-        if( $this->derived() && $this->derivedQuery && $this->getGrammar() instanceof SqlServerGrammar )
-        {
-            $this->derive( ( clone $this->derivedQuery )->lock( $value ) );
+        if( $this->variant === null ) {
             return $this;
         }
 
-        return parent::lock( $value );
+        // an already applied condition is replaced
+        $this->wheres = self::withoutVariant( $this->wheres );
+
+        [$mode, $value, $trashed] = $this->variant;
+        $col = fn( string $name ) => self::ALIAS . '.' . $name;
+        $cond = $this->forNestedWhere();
+        $literal = $this->literal( $value );
+
+        switch( $mode )
+        {
+            case 'source':
+                $cond->whereColumn( $col( 'lang' ), '=', $col( 'source' ) );
+                $trashed = true;
+                break;
+            case 'lang':
+                $cond->where( $col( 'lang' ), '=', $literal );
+                break;
+            case 'fallback':
+            case 'visible':
+                // "visible" only uses published and enabled variants of the language
+                $visible = $mode === 'visible';
+                $trashed = $trashed && !$visible;
+
+                $cond->where( function( $q ) use ( $col, $literal, $visible, $trashed ) {
+                    $q->where( function( $q ) use ( $col, $literal, $visible ) {
+                        $q->where( $col( 'lang' ), '=', $literal )
+                            ->when( $visible, fn( $q ) => $q->where( $col( 'status' ), '<>', new Expression( '0' ) ) );
+                    } )->orWhere( function( $q ) use ( $col, $literal, $visible, $trashed ) {
+                        $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( function( $q ) use ( $col, $literal, $visible, $trashed ) {
+                            $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
+                                ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
+                                ->where( 'w.lang', '=', $literal )
+                                ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
+                                ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
+                        } );
+                    } );
+                } );
+                break;
+            case 'variant':
+                $cond->where( $col( 'variant_id' ), '=', $literal );
+                $trashed = true;
+                break;
+        }
+
+        if( !$trashed ) {
+            $cond->whereNull( $col( 'variant_deleted_at' ) );
+        }
+
+        // without bindings, the condition can be removed without updating the bindings of the query
+        if( !empty( $cond->getBindings() ) ) {
+            throw new \LogicException( 'The page variant condition must not use bindings' );
+        }
+
+        if( !empty( $cond->wheres ) ) {
+            $this->wheres[] = ['type' => 'Nested', 'query' => $cond, 'boolean' => 'and', 'variant' => true];
+        }
+
+        return $this;
     }
 
 
     /**
-     * Deletes the selected pages including all their variants and versions.
+     * The page view is read-only, pages are written by the Resource class.
      *
-     * @param mixed $id Page ID or NULL to delete the matched records
-     * @return int Number of deleted pages
+     * @param mixed $id
+     * @return int
      */
     public function delete( $id = null )
     {
-        if( !$this->derived() ) {
-            return parent::delete( $id );
-        }
-
-        if( $id !== null ) {
-            $this->where( 'cms_pages.id', '=', $id );
-        }
-
-        // page IDs only, the variants of the same page would multiply the IDs
-        $query = clone $this;
-        $query->columns = ['cms_pages.id'];
-        $query->bindings['select'] = [];
-        $query->aggregate = null;
-
-        // fetch the IDs without joining the variants if only page columns are filtered
-        if( $page = empty( $this->joins ) && $this->pageOnly( $this->wheres ) )
-        {
-            $query->from = 'cms_pages';
-            $query->bindings['from'] = [];
-        }
-
-        // DISTINCT requires the ORDER BY columns to be selected, which only matter for limits
-        if( $query->limit === null && $query->offset === null )
-        {
-            $query->distinct = !$page;
-            $query->orders = null;
-            $query->bindings['order'] = [];
-        }
-
-        $ids = array_values( array_unique( $query->pluck( 'id' )->all() ) );
-
-        foreach( array_chunk( $ids, 500 ) as $chunk )
-        {
-            $this->deleteVariants( $this->table( 'cms_page_variants' )->whereIn( 'page_id', $chunk )->pluck( 'id' )->all() );
-            $this->table( 'cms_pages' )->whereIn( 'id', $chunk )->delete();
-        }
-
-        return count( $ids );
+        return $this->viewed() ? $this->readOnly() : parent::delete( $id );
     }
 
 
     /**
-     * Deletes the page variants and their versions.
+     * The page view is read-only, pages are written by the Resource class.
      *
-     * Uses ID lists instead of subqueries because older MySQL/MariaDB versions
-     * evaluate IN subqueries of single table deletes for each row.
-     *
-     * @param array<int, mixed> $ids Page variant IDs
-     */
-    protected function deleteVariants( array $ids ) : void
-    {
-        foreach( array_chunk( $ids, 500 ) as $chunk )
-        {
-            $this->table( 'cms_versions' )->where( 'versionable_type', PageVariant::class )->whereIn( 'versionable_id', $chunk )->delete();
-            $this->table( 'cms_page_variants' )->whereIn( 'id', $chunk )->delete();
-        }
-    }
-
-
-    /**
-     * Inserts new pages together with their variants.
-     *
-     * @param array<int|string, mixed> $values Single record or list of records
-     * @return bool TRUE on success
+     * @param array<int|string, mixed> $values
+     * @return bool
      */
     public function insert( array $values )
     {
-        if( !$this->derived() ) {
-            return parent::insert( $values );
-        }
-
-        if( empty( $values ) ) {
-            return true;
-        }
-
-        if( !is_array( reset( $values ) ) ) {
-            $values = [$values];
-        }
-
-        $pages = $variants = [];
-
-        foreach( $values as $row )
-        {
-            $row = $this->unqualify( $row );
-            [$page, $variant] = self::split( $row );
-
-            $page['source'] ??= $variant['lang'] ?? '';
-            $variant['id'] ??= $page['id'];
-            $variant['page_id'] = $page['id'];
-            $variant['tenant_id'] = $page['tenant_id'] ?? '';
-            $variant['hashes'] ??= '{}';
-
-            $pages[] = $page;
-            $variants[] = $variant;
-        }
-
-        return $this->table( 'cms_pages' )->insert( $pages )
-            && $this->table( 'cms_page_variants' )->insert( $variants );
+        return $this->viewed() ? $this->readOnly() : parent::insert( $values );
     }
 
 
     /**
-     * Inserting with auto-increment IDs isn't supported for pages.
+     * The page view is read-only, pages are written by the Resource class.
      *
      * @param array<string, mixed> $values
      * @param string|null $sequence
@@ -271,256 +204,93 @@ class PageBuilder extends Builder
      */
     public function insertGetId( array $values, $sequence = null )
     {
-        if( !$this->derived() ) {
-            return parent::insertGetId( $values, $sequence );
-        }
-
-        throw new \LogicException( 'Pages use UUIDs, use insert() instead' );
+        return $this->viewed() ? $this->readOnly() : parent::insertGetId( $values, $sequence );
     }
 
 
     /**
-     * Updates the selected pages and their variants.
+     * The page view is read-only, pages are written by the Resource class.
      *
-     * @param array<string, mixed> $values Column/value pairs
-     * @return int Number of affected records
+     * @param array<string, mixed> $values
+     * @return int
      */
     public function update( array $values )
     {
-        if( !$this->derived() ) {
-            return parent::update( $values );
-        }
-
-        $values = $this->unqualify( $values );
-        [$page, $variant] = self::split( $values );
-
-        // the timestamps of the pages only change if the page structure changes
-        if( !empty( $variant ) && empty( array_diff_key( $page, array_flip( self::SHARED_COLUMNS ) ) ) ) {
-            $page = [];
-        }
-
-        // and the timestamps of the variants only if their content changes
-        if( !empty( $page ) && empty( array_diff_key( $variant, array_flip( self::SHARED_COLUMNS ) ) ) ) {
-            $variant = [];
-        }
-
-        if( !isset( $variant['lang'] ) && ( $id = $this->pageKey() ) !== null && $this->variantId !== null )
-        {
-            // saving a single page variant doesn't require to look up the IDs
-            $count = 0;
-
-            if( !empty( $page ) ) {
-                $count = $this->table( 'cms_pages' )->where( 'id', $id )->update( $page );
-            }
-
-            if( !empty( $variant ) ) {
-                $count = $this->table( 'cms_page_variants' )->where( 'id', $this->variantId )->where( 'page_id', $id )->update( $variant );
-            }
-
-            return $count;
-        }
-
-        if( empty( $variant ) && empty( $this->joins ) && $this->pageOnly( $this->wheres ) )
-        {
-            $query = clone $this;
-            $query->from = 'cms_pages';
-            $query->bindings['from'] = [];
-
-            return $query->update( $page );
-        }
-
-        $rows = $this->rows();
-
-        foreach( $rows->chunk( 500 ) as $chunk )
-        {
-            if( !empty( $page ) ) {
-                $this->table( 'cms_pages' )->whereIn( 'id', $chunk->pluck( 'id' )->unique()->values()->all() )->update( $page );
-            }
-
-            if( !empty( $variant ) ) {
-                $this->table( 'cms_page_variants' )->whereIn( 'id', $chunk->pluck( 'variant_id' )->all() )->update( $variant );
-            }
-
-            if( isset( $variant['lang'] ) && !( $variant['lang'] instanceof Expression ) )
-            {
-                $ids = $chunk->filter( fn( $row ) => $row->lang === $row->source )->pluck( 'id' )->all();
-
-                if( !empty( $ids ) ) {
-                    $this->table( 'cms_pages' )->whereIn( 'id', $ids )->update( ['source' => $variant['lang']] );
-                }
-            }
-        }
-
-        return $rows->count();
+        return $this->viewed() ? $this->readOnly() : parent::update( $values );
     }
 
 
     /**
-     * Uses the given query as derived page table.
+     * Returns the quoted value as SQL expression.
      *
-     * @param Builder $sub Query joining the pages and their variants
+     * @param string|null $value Language code or variant ID
+     * @return Expression<float|int|literal-string> Quoted value
      */
-    protected function derive( Builder $sub ) : void
+    protected function literal( ?string $value ) : Expression
     {
-        $this->bindings['from'] = [];
-        $this->fromSub( $sub, 'cms_pages' );
+        $conn = $this->getConnection();
 
-        $this->derivedQuery = $sub;
-        $this->derivedSql = $this->from instanceof Expression ? (string) $this->from->getValue( $this->getGrammar() ) : null;
+        if( !$conn instanceof \Illuminate\Database\Connection ) {
+            throw new \LogicException( 'The page view requires a database connection' );
+        }
+
+        // @phpstan-ignore argument.type (the value is quoted and escaped by the connection)
+        return new Expression( $conn->escape( (string) $value ) );
     }
 
 
     /**
-     * Tests if the builder reads from the derived page table.
-     */
-    protected function derived() : bool
-    {
-        return $this->derivedSql !== null && $this->from instanceof Expression
-            && $this->from->getValue( $this->getGrammar() ) === $this->derivedSql;
-    }
-
-
-    /**
-     * Returns the page ID if the query matches a single page by its ID only.
+     * Rejects writes to the page view.
      *
-     * @return mixed Page ID or NULL if the query isn't restricted to one page ID
+     * @throws \LogicException Always
      */
-    protected function pageKey() : mixed
+    protected function readOnly() : never
     {
-        if( !empty( $this->joins ) || count( $this->wheres ) !== 1 ) {
-            return null;
-        }
-
-        $where = $this->wheres[0];
-
-        if( ( $where['type'] ?? '' ) !== 'Basic' || ( $where['operator'] ?? '' ) !== '='
-            || !in_array( $where['column'] ?? null, ['id', 'cms_pages.id'], true )
-            || $where['value'] instanceof Expression
-        ) {
-            return null;
-        }
-
-        return $where['value'];
+        throw new \LogicException( Page::READONLY );
     }
 
 
     /**
-     * Tests if the where conditions only reference columns of the cms_pages table.
+     * Tests if the builder reads from the page view.
+     */
+    protected function viewed() : bool
+    {
+        return is_string( $this->from ) && ( $this->from === self::VIEW || str_starts_with( $this->from, self::VIEW . ' ' ) );
+    }
+
+
+    /**
+     * Removes the variant condition from the where clauses.
      *
-     * @param array<int, array<string, mixed>> $wheres List of where conditions
-     */
-    protected function pageOnly( array $wheres ) : bool
-    {
-        foreach( $wheres as $where )
-        {
-            $type = $where['type'] ?? '';
-
-            if( $type === 'Nested' )
-            {
-                if( !$this->pageOnly( $where['query']->wheres ) ) {
-                    return false;
-                }
-                continue;
-            }
-
-            if( $type === 'Column' )
-            {
-                if( !$this->pageColumn( $where['first'] ) || !$this->pageColumn( $where['second'] ) ) {
-                    return false;
-                }
-                continue;
-            }
-
-            if( !in_array( $type, self::SIMPLE, true ) || !$this->pageColumn( $where['column'] ?? null ) ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Tests if the column is a column of the cms_pages table.
-     */
-    protected function pageColumn( mixed $column ) : bool
-    {
-        if( !is_string( $column ) ) {
-            return false;
-        }
-
-        if( str_starts_with( $column, 'cms_pages.' ) ) {
-            $column = substr( $column, 10 );
-        }
-
-        return in_array( $column, self::PAGE_COLUMNS, true );
-    }
-
-
-    /**
-     * Returns the page and variant IDs of the selected records.
+     * Eloquent scopes may group the existing where clauses, so nested clauses are checked too.
      *
-     * @return \Illuminate\Support\Collection<int, \stdClass>
+     * @param array<int, array<string, mixed>> $wheres Where clauses
+     * @return array<int, array<string, mixed>> Where clauses without the variant condition
      */
-    protected function rows() : \Illuminate\Support\Collection
-    {
-        $query = clone $this;
-        $query->columns = ['cms_pages.id', 'cms_pages.variant_id', 'cms_pages.lang', 'cms_pages.source'];
-        $query->bindings['select'] = [];
-        $query->aggregate = null;
-
-        return $query->get();
-    }
-
-
-    /**
-     * Splits the facade values into the values of the cms_pages and cms_page_variants tables.
-     *
-     * @param array<string, mixed> $values Column/value pairs
-     * @return array{0: array<string, mixed>, 1: array<string, mixed>} Page and variant values
-     */
-    public static function split( array $values ) : array
-    {
-        $page = $variant = [];
-
-        foreach( $values as $key => $value )
-        {
-            if( in_array( $key, self::PAGE_COLUMNS, true ) ) {
-                $page[$key] = $value;
-            } elseif( in_array( $key, self::SHARED_COLUMNS, true ) ) {
-                $page[$key] = $variant[$key] = $value;
-            } elseif( isset( self::VARIANT_COLUMNS[$key] ) ) {
-                $variant[self::VARIANT_COLUMNS[$key]] = $value;
-            } else {
-                throw new \InvalidArgumentException( sprintf( 'Unknown page column "%1$s"', $key ) );
-            }
-        }
-
-        return [$page, $variant];
-    }
-
-
-    /**
-     * Returns a plain query builder for the given table.
-     */
-    protected function table( string $table ) : Builder
-    {
-        return $this->connection->table( $table );
-    }
-
-
-    /**
-     * Removes the "cms_pages." prefix from the keys.
-     *
-     * @param array<string, mixed> $values Column/value pairs
-     * @return array<string, mixed> Unqualified column/value pairs
-     */
-    protected function unqualify( array $values ) : array
+    protected static function withoutVariant( array $wheres ) : array
     {
         $result = [];
 
-        foreach( $values as $key => $value ) {
-            $result[str_starts_with( $key, 'cms_pages.' ) ? substr( $key, 10 ) : $key] = $value;
+        foreach( $wheres as $where )
+        {
+            if( !empty( $where['variant'] ) ) {
+                continue;
+            }
+
+            if( ( $where['type'] ?? null ) === 'Nested' && ( $where['query'] ?? null ) instanceof Builder )
+            {
+                // nested queries are shared by cloned builders
+                $query = clone $where['query'];
+                $query->wheres = self::withoutVariant( $query->wheres );
+
+                if( empty( $query->wheres ) ) {
+                    continue;
+                }
+
+                $where['query'] = $query;
+            }
+
+            $result[] = $where;
         }
 
         return $result;

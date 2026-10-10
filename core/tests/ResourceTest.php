@@ -35,6 +35,7 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 
 
@@ -1335,7 +1336,8 @@ class ResourceTest extends CoreTestAbstract
         Resource::bulkPage( [$page->id], ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class
+            && $job->ids === [$page->variant_id] && $job->keys );
     }
 
 
@@ -1349,7 +1351,7 @@ class ResourceTest extends CoreTestAbstract
 
         Queue::assertPushed( PruneVersions::class, 1 );
         Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === Page::class
-            && $job->ids === collect( $pages )->pluck( 'id' )->sort()->values()->all() );
+            && $job->ids === collect( $pages )->pluck( 'variant_id' )->sort()->values()->all() );
     }
 
 
@@ -1776,8 +1778,7 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
-        Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
-            ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        PageVariant::whereKey( $pages[0]->variant_id )->toBase()->update( ['updated_at' => '2000-01-01 00:00:00'] );
         Event::fake( [PageInvalidated::class] );
         $this->expectsDatabaseQueryCount( 14 );
 
@@ -2036,7 +2037,7 @@ class ResourceTest extends CoreTestAbstract
             'drop' => fn( Page $page ) => Resource::drop( Page::class, [$page->id], $this->user, ['id'] ),
             'purge' => fn( Page $page ) => Resource::purge( Page::class, [$page->id], $this->user, ['id'] ),
             'restore' => function( Page $page ) {
-                $page->delete();
+                Resource::trashPage( $page );
                 return Resource::restore( Page::class, [$page->id], $this->user, ['id'] );
             },
         ];
@@ -2509,7 +2510,7 @@ class ResourceTest extends CoreTestAbstract
         // SQL Server allows max. 2100 bound parameters per statement
         foreach( array_chunk( $rows, 50 ) as $chunk )
         {
-            Page::query()->toBase()->insert( $chunk );
+            Resource::insertPages( $chunk );
             $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['variant_id' => $row['variant_id'], 'element_id' => $element->id], $chunk ) );
         }
     }

@@ -614,7 +614,7 @@ class PageToolsTest extends McpTestAbstract
     public function testRestorePage()
     {
         $page = Page::where( 'name', 'Dev' )->first();
-        $page->delete();
+        Resource::trashPage( $page );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
             'id' => $page->id,
@@ -754,6 +754,22 @@ class PageToolsTest extends McpTestAbstract
             PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'hashes' ),
             PageVariant::where( 'page_id', $copy->id )->where( 'lang', 'de' )->value( 'hashes' )
         );
+    }
+
+
+    public function testCopyPageThrottled()
+    {
+        $page = Page::where( 'name', 'Dev' )->first();
+        \Illuminate\Support\Facades\RateLimiter::increment( 'cms-copy:' . $this->user->id, 60, 10 );
+
+        try {
+            CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\CopyPage::class, ['id' => $page->id] )
+                ->assertHasErrors();
+        } finally {
+            \Illuminate\Support\Facades\RateLimiter::clear( 'cms-copy:' . $this->user->id );
+        }
+
+        $this->assertSame( 1, Page::where( 'name', 'Dev' )->count() );
     }
 
 

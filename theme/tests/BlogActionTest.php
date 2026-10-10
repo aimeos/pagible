@@ -46,7 +46,7 @@ class BlogActionTest extends ThemeTestAbstract
 
         // The article is an already-published blog page (page columns reflect the published
         // state; a draft save only writes a new version, not the page row).
-        $article->forceFill( ['type' => 'blog'] )->saveQuietly();
+        Resource::updatePage( $article, ['type' => 'blog'] );
 
         // Re-save the article as an unpublished draft. Validation::page populates the
         // per-element "files" list, which lands in the new latest version's aux.content.
@@ -78,7 +78,7 @@ class BlogActionTest extends ThemeTestAbstract
     {
         $blog = Page::where( 'tag', 'blog' )->firstOrFail();
         $article = Page::where( 'tag', 'article' )->firstOrFail();
-        $article->forceFill( ['tag' => '', 'type' => 'blog'] )->saveQuietly();
+        Resource::updatePage( $article, ['tag' => '', 'type' => 'blog'] );
 
         Resource::savePage( $article->id, ['type' => 'news'], $this->user );
 

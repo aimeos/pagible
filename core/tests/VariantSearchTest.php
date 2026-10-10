@@ -82,10 +82,21 @@ class VariantSearchTest extends CoreTestAbstract
         $this->assertSame( [], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs_trashed'] ?? null );
 
-        Resource::purgeVariant( $page->id, 'de' );
+        Resource::variants( 'purge', [$page->id], 'de' );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'de', 'fr'], $doc['langs_trashed'] ?? null );
+    }
+
+
+    public function testIndexJobQueuedByOlderVersion(): void
+    {
+        // jobs serialized before the "sources" and "keys" properties existed don't contain them
+        $job = ( new \ReflectionClass( \Aimeos\Cms\Jobs\IndexModels::class ) )->newInstanceWithoutConstructor();
+        $job->__unserialize( ['model' => Page::class, 'ids' => [], 'tenant' => 'test'] );
+
+        $this->assertFalse( $job->sources );
+        $this->assertFalse( $job->keys );
     }
 
 
@@ -98,6 +109,30 @@ class VariantSearchTest extends CoreTestAbstract
         Scout::sync( Page::class, [(string) $page->id] );
 
         $this->assertEqualsCanonicalizing( [$page->variant_id, $variant->variant_id], array_keys( $this->engine->documents ) );
+    }
+
+
+    public function testBulkAndPublishIndexOnlyTheChangedVariants(): void
+    {
+        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $variant = Resource::addVariant( $page->id, 'de' );
+        $this->engine->updates = [];
+
+        Resource::bulkPage( [$page->id], ['title' => 'Blog DE'], null, lang: 'de' );
+        $this->assertSame( [$variant->variant_id], $this->engine->updates );
+
+        $this->engine->updates = [];
+        config( ['scout.queue' => true] );
+        \Illuminate\Support\Facades\Queue::fake();
+
+        try {
+            \Aimeos\Cms\Publication::publish( Page::class, [$page->id], null, lang: 'de' );
+        } finally {
+            config( ['scout.queue' => false] );
+        }
+
+        \Illuminate\Support\Facades\Queue::assertPushed( \Aimeos\Cms\Jobs\IndexModels::class,
+            fn( $job ) => $job->ids === [$variant->variant_id] && $job->keys );
     }
 
 
@@ -134,6 +169,13 @@ class VariantSearchTest extends CoreTestAbstract
         $search = Page::search( 'blog' );
         Scout::prefer( $search, 'de' );
         $this->assertNull( $this->where( $search, 'langs' ) );
+    }
+
+
+    public function testPreferInvalidLanguage(): void
+    {
+        $this->expectException( \InvalidArgumentException::class );
+        Scout::prefer( Page::search( 'blog' ), 'de" OR langs = "en' );
     }
 
 

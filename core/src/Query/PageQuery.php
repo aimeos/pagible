@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Query;
 
 use Aimeos\Nestedset\QueryBuilder;
-use Illuminate\Database\Query\Expression;
 
 
 /**
@@ -22,21 +21,6 @@ use Illuminate\Database\Query\Expression;
  */
 class PageQuery extends QueryBuilder
 {
-    /**
-     * Force a delete on a set of soft deleted models.
-     *
-     * Eloquent skips the global scopes when force deleting, so the descendants
-     * of a purged page would be deleted in all tenants. Applies all scopes
-     * except the soft delete scope to purge trashed descendants too.
-     *
-     * @return int Number of deleted pages
-     */
-    public function forceDelete()
-    {
-        return $this->withoutGlobalScope( \Illuminate\Database\Eloquent\SoftDeletingScope::class )->toBase()->delete();
-    }
-
-
     /**
      * Uses the variants of all languages, so pages are returned once per language.
      *
@@ -126,21 +110,20 @@ class PageQuery extends QueryBuilder
     /**
      * Set a model instance for the model being queried.
      *
-     * Keeps the derived page table if the new model uses the same table, e.g. Nav.
+     * Models of the page table, e.g. Page and Nav, read from the page view
+     * and keep the selected variants.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
      * @return $this
      */
     public function setModel( \Illuminate\Database\Eloquent\Model $model )
     {
-        $from = $this->query->from;
-        $bindings = $this->query->bindings['from'];
+        $variant = $this->query instanceof PageBuilder ? $this->query->variant : null;
 
         parent::setModel( $model );
 
-        if( $from instanceof Expression && $model->getTable() === $this->query->from ) {
-            $this->query->from = $from;
-            $this->query->bindings['from'] = $bindings;
+        if( $this->query instanceof PageBuilder && $model->getTable() === PageBuilder::ALIAS ) {
+            $this->query->variants( ...( $variant ?? ['source'] ) );
         }
 
         return $this;
@@ -150,7 +133,7 @@ class PageQuery extends QueryBuilder
     /**
      * Add subselect queries to include an aggregate value for a relationship.
      *
-     * The derived page table can't be qualified by its FROM expression.
+     * The page view can't be qualified by its aliased FROM clause.
      *
      * @param mixed $relations
      * @param \Illuminate\Contracts\Database\Query\Expression|string $column
@@ -159,34 +142,11 @@ class PageQuery extends QueryBuilder
      */
     public function withAggregate( $relations, $column, $function = null )
     {
-        if( !empty( $relations ) && $this->query->columns === null && $this->query->from instanceof Expression ) {
+        if( !empty( $relations ) && $this->query->columns === null && $this->query->from !== $this->getModel()->getTable() ) {
             $this->query->select( [$this->getModel()->getTable() . '.*'] );
         }
 
         return parent::withAggregate( $relations, $column, $function );
-    }
-
-
-    /**
-     * Add the "updated at" column to an array of values.
-     *
-     * @param array<string, mixed> $values
-     * @return array<string, mixed>
-     */
-    protected function addUpdatedAtColumn( array $values )
-    {
-        $from = $this->query->from;
-
-        if( !$from instanceof Expression ) {
-            return parent::addUpdatedAtColumn( $values );
-        }
-
-        try {
-            $this->query->from = $this->getModel()->getTable();
-            return parent::addUpdatedAtColumn( $values );
-        } finally {
-            $this->query->from = $from;
-        }
     }
 
 
@@ -208,7 +168,7 @@ class PageQuery extends QueryBuilder
     /**
      * Get a wrapped table name.
      *
-     * The structure queries of the nested set use the real page table.
+     * The structure queries of the nested set use the alias of the page view.
      */
     protected function wrappedTable() : string
     {

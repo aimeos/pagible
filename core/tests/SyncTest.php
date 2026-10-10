@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Events\Translation;
+use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Hashes;
 use Aimeos\Cms\Publication;
@@ -77,20 +77,36 @@ class SyncTest extends CoreTestAbstract
     }
 
 
+    public function testHashesStale()
+    {
+        $source = ['el:a' => '11111111', 'meta:seo' => '22222222'];
+
+        $this->assertFalse( Hashes::stale( $source, ['meta:seo' => '22222222', 'el:a' => '11111111'] ) );
+        $this->assertTrue( Hashes::stale( $source, ['el:a' => '11111111', 'meta:seo' => ''] ) );
+        $this->assertTrue( Hashes::stale( $source, ['el:a' => '11111111'] ) );
+        $this->assertTrue( Hashes::stale( $source, $source + ['el:b' => '33333333'] ) );
+        $this->assertTrue( Hashes::stale( $source, $source + ['meta:old' => '44444444'] ) );
+        $this->assertTrue( Hashes::stale( $source, $source + ['config:old' => '55555555'] ) );
+        $this->assertTrue( Hashes::stale( ['el:a' => '0e1'], ['el:a' => '0e2'] ) );
+    }
+
+
     public function testTranslateWatchEvent()
     {
         $page = $this->page();
         $events = [];
 
-        Event::listen( Translation::class, function( $event ) use ( &$events ) { $events[] = $event; } );
+        Event::listen( Bulk::class, function( Bulk $event ) use ( &$events ) { $events[] = $event; } );
 
         Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
         Resource::translatePage( $page->id, 'fr', $this->user );
-        Resource::ignoreChanges( $page->id, 'fr', $this->user );
+        Resource::ignoreVariants( [$page->id], 'fr', $this->user );
 
         $this->assertEquals( ['added', 'added', 'ignored'], array_map( fn( $e ) => $e->action, $events ) );
-        $this->assertEquals( [true, false, false], array_map( fn( $e ) => $e->ai, $events ) );
-        $this->assertEquals( ['de'], $events[0]->langs );
+        $this->assertEquals( [$page->id => 'de'], $events[0]->langs );
+        $this->assertEquals( [$page->id], $events[0]->ids );
+        $this->assertEquals( ['de'], $events[0]->log()['fields']['langs'] );
+        $this->assertEquals( 'page.bulk', $events[2]->broadcastAs() );
     }
 
 
@@ -303,7 +319,7 @@ class SyncTest extends CoreTestAbstract
 
         $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'stale' ) );
 
-        $de = Resource::ignoreChanges( $page->id, 'de', $this->user );
+        $de = Resource::ignoreVariants( [$page->id], 'de', $this->user )->firstOrFail();
         $variant = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
 
         $this->assertFalse( $variant->stale );
@@ -349,6 +365,43 @@ class SyncTest extends CoreTestAbstract
         Resource::translatePage( $child->id, 'de', $this->user, $this->translator() );
 
         $this->assertEquals( 'eltern/de-child-de', PageVariant::where( 'page_id', $child->id )->where( 'lang', 'de' )->value( 'path' ) );
+    }
+
+
+    public function testTranslateLongTexts()
+    {
+        $parent = $this->page();
+        $child = Resource::addPage( ['lang' => 'en', 'name' => str_repeat( 'Child ', 20 ), 'title' => str_repeat( 'Child ', 20 ), 'path' => 'child'],
+            $this->user, parent: $parent->id );
+
+        Resource::translatePage( $parent->id, 'de', $this->user, $this->translator() );
+        $this->savePage( $parent->id, ['path' => str_repeat( 'p', 200 )], 'de' );
+        Publication::publish( Page::class, [$parent->id], $this->user, lang: 'de' );
+
+        // generated texts longer than the columns are shortened instead of failing
+        $de = Resource::translatePage( $child->id, 'de', $this->user, fn( array $texts ) => array_map( fn() => str_repeat( 'x', 300 ), $texts ) );
+        $path = (string) PageVariant::where( 'page_id', $child->id )->where( 'lang', 'de' )->value( 'path' );
+
+        $this->assertEquals( 255, mb_strlen( (string) $de->latest?->data->title ) );
+        $this->assertEquals( 255, mb_strlen( (string) $de->latest?->data->name ) );
+        $this->assertStringStartsWith( str_repeat( 'p', 200 ) . '/xxx', $path );
+        $this->assertLessThanOrEqual( 255 - mb_strlen( '-de-99' ), mb_strlen( $path ) );
+    }
+
+
+    public function testTranslateExcessiveTexts()
+    {
+        $page = $this->page();
+
+        // AI output much longer than the source is cut off
+        $de = Resource::translatePage( $page->id, 'de', $this->user, fn( array $texts ) => array_map( fn() => str_repeat( 'x', 100000 ), $texts ) );
+        $texts = array_column( array_map( fn( $el ) => (array) $el->data, (array) $de->latest?->aux->content ), 'text' );
+
+        $this->assertNotEmpty( $texts );
+
+        foreach( $texts as $text ) {
+            $this->assertLessThan( 1000, mb_strlen( $text ) );
+        }
     }
 
 
@@ -412,7 +465,7 @@ class SyncTest extends CoreTestAbstract
     {
         $page = $this->page();
         Resource::translatePage( $page->id, 'de', $this->user );
-        Resource::ignoreChanges( $page->id, 'de', $this->user );
+        Resource::ignoreVariants( [$page->id], 'de', $this->user )->firstOrFail();
 
         $de = Resource::savePage( $page->id, ['title' => 'Alt'], $this->user, lang: 'de' );
         $this->assertFalse( (bool) $de->stale );
@@ -430,7 +483,7 @@ class SyncTest extends CoreTestAbstract
     {
         $page = $this->page();
         Resource::translatePage( $page->id, 'de', $this->user );
-        Resource::ignoreChanges( $page->id, 'de', $this->user );
+        Resource::ignoreVariants( [$page->id], 'de', $this->user )->firstOrFail();
 
         $en = Resource::savePage( $page->id, ['title' => 'Restored'], $this->user, restore: true );
 
@@ -442,7 +495,7 @@ class SyncTest extends CoreTestAbstract
     public function testIgnoreChangesSource()
     {
         $this->expectException( Exception::class );
-        Resource::ignoreChanges( $this->page()->id, 'en', $this->user );
+        Resource::ignoreVariants( [$this->page()->id], 'en', $this->user )->firstOrFail();
     }
 
 

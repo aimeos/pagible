@@ -293,7 +293,7 @@ msgid "Configuration"
 msgstr "配置"
 
 #: js/components/ChangesDialog.vue:61 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:803
+#: js/views/PageDetail.vue:823
 msgid "Content"
 msgstr "内容"
 
@@ -361,7 +361,7 @@ msgstr "思考中 ..."
 
 #: js/components/ChatDialog.vue:353 js/components/PageDetailContentList.vue:745
 #: js/components/PageDetailContentList.vue:831
-#: js/components/PageListItems.vue:1809 js/fields/Items.vue:303
+#: js/components/PageListItems.vue:1813 js/fields/Items.vue:303
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "复制"
@@ -393,7 +393,7 @@ msgid "Go to"
 msgstr "转到"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1923
+#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1927
 msgid "New"
 msgstr "新条目"
 
@@ -425,8 +425,8 @@ msgstr "无结果"
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ElementListItems.vue:229
 #: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:309
-#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1595
-#: js/components/PageListItems.vue:1837 js/views/AccessList.vue:279
+#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1599
+#: js/components/PageListItems.vue:1841 js/views/AccessList.vue:279
 msgid "Purge"
 msgstr "永久删除"
 
@@ -460,8 +460,8 @@ msgstr "查看合并更改"
 #: js/components/DetailAppBar.vue:210 js/components/DetailAppBar.vue:226
 #: js/components/DetailAppBar.vue:230 js/components/ElementListItems.vue:214
 #: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:287
-#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1567
-#: js/components/PageListItems.vue:1773
+#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1571
+#: js/components/PageListItems.vue:1777
 msgid "Publish"
 msgstr "发布"
 
@@ -502,7 +502,7 @@ msgid "Name"
 msgstr "名称"
 
 #: js/components/DetailRefs.vue:147 js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:485
+#: js/components/PageListItems.vue:489
 msgid "Restricted"
 msgstr "受限"
 
@@ -526,7 +526,7 @@ msgstr "已发布"
 #: js/components/EditBulkDialog.vue:53 js/components/ElementListItems.vue:217
 #: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:290
 #: js/components/FileListItems.vue:432 js/components/PageBulkDialog.vue:133
-#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1794
+#: js/components/PageListItems.vue:1581 js/components/PageListItems.vue:1798
 msgid "Edit properties"
 msgstr "编辑属性"
 
@@ -538,7 +538,7 @@ msgstr[0] "将所选属性应用到 %{num} 个条目。"
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:79
 #: js/components/FileDetailItem.vue:338 js/components/ListSort.vue:28
 #: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1663 js/views/PageDetail.vue:735
+#: js/components/PageListItems.vue:1667 js/views/PageDetail.vue:755
 msgid "Language"
 msgstr "语言"
 
@@ -585,22 +585,22 @@ msgstr "获取共享元素时出错"
 
 #: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:272
 #: js/components/PageDetailContentList.vue:732
-#: js/components/PageListItems.vue:1551 js/views/AccessList.vue:274
+#: js/components/PageListItems.vue:1555 js/views/AccessList.vue:274
 #: js/views/AccessList.vue:318
 msgid "Toggle selection"
 msgstr "切换选中状态"
 
 #: js/components/ElementListItems.vue:220
 #: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:303
-#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1589
-#: js/components/PageListItems.vue:1828
+#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1593
+#: js/components/PageListItems.vue:1832
 msgid "Delete"
 msgstr "删除"
 
 #: js/components/ElementListItems.vue:226
 #: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:306
-#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1592
-#: js/components/PageListItems.vue:1834
+#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1596
+#: js/components/PageListItems.vue:1838
 msgid "Restore"
 msgstr "恢复"
 
@@ -613,7 +613,7 @@ msgstr "添加元素"
 
 #: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:343
 #: js/components/PageDetailContentList.vue:765
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:140
+#: js/components/PageListItems.vue:1676 js/components/SchemaItems.vue:140
 #: js/views/AccessList.vue:303
 msgid "Search for"
 msgstr "搜索"
@@ -623,7 +623,7 @@ msgid "Updated by another user"
 msgstr "由其他用户更新"
 
 #: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:362
-#: js/components/PageListItems.vue:1690
+#: js/components/PageListItems.vue:1694
 msgid "Refresh"
 msgstr "刷新"
 
@@ -632,7 +632,7 @@ msgid "Reload elements"
 msgstr "重新加载元素"
 
 #: js/components/Fields.vue:242 js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1844
+#: js/components/PageListItems.vue:1611 js/components/PageListItems.vue:1848
 #: js/components/TranslateDialog.vue:77 js/components/TranslateDialog.vue:128
 #: js/fields/Items.vue:337 js/fields/Items.vue:343
 msgid "Translate"
@@ -941,7 +941,7 @@ msgstr "下载"
 
 #: js/components/FileDetailItemImage.vue:783
 #: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:535 js/components/PageListItems.vue:719
+#: js/components/PageListItems.vue:539 js/components/PageListItems.vue:723
 #: js/lists.js:247
 msgid "Undo"
 msgstr "撤销"
@@ -1185,7 +1185,7 @@ msgstr "重试"
 msgid "Current changes"
 msgstr "当前更改"
 
-#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1423
+#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1427
 #: js/lists.js:476
 msgid "Scheduled for %{date}"
 msgstr "计划于 %{date}"
@@ -1342,13 +1342,13 @@ msgstr "公开页面对所有人可见，其他页面仅对已登录用户或具
 msgid "Public"
 msgstr "公开"
 
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:489
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:493
 msgid "Authenticated users"
 msgstr "已登录用户"
 
 #: js/components/PageAccess.vue:183 js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:488 js/components/PageListItems.vue:1580
-#: js/components/PageListItems.vue:1797 js/components/PageListItems.vue:1991
+#: js/components/PageListItems.vue:492 js/components/PageListItems.vue:1584
+#: js/components/PageListItems.vue:1801 js/components/PageListItems.vue:1995
 #: js/views/AccessList.vue:240 js/views/AccessList.vue:249
 msgid "Access"
 msgstr "访问权限"
@@ -1392,7 +1392,7 @@ msgstr "更改缓存时间"
 
 #: js/components/PageBulkDialog.vue:169
 #: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1439
+#: js/components/PageListItems.vue:1443
 msgid "Cache time"
 msgstr "缓存时间"
 
@@ -1407,7 +1407,7 @@ msgstr "更改主题"
 
 #: js/components/PageBulkDialog.vue:183
 #: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1427
+#: js/components/PageListItems.vue:1431
 msgid "Theme"
 msgstr "主题"
 
@@ -1422,7 +1422,7 @@ msgstr "更改页面类型"
 
 #: js/components/PageBulkDialog.vue:195
 #: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1431
+#: js/components/PageListItems.vue:1435
 msgid "Page type"
 msgstr "页面类型"
 
@@ -1437,7 +1437,7 @@ msgstr "更改标签"
 
 #: js/components/PageBulkDialog.vue:206
 #: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1435
+#: js/components/PageListItems.vue:1439
 msgid "Page tag"
 msgstr "页面标签"
 
@@ -1527,13 +1527,13 @@ msgstr "根据任务和内容大小，可能需要较长时间"
 
 #: js/components/PageDetailContentList.vue:748
 #: js/components/PageDetailContentList.vue:834
-#: js/components/PageListItems.vue:1806 js/fields/Items.vue:304
+#: js/components/PageListItems.vue:1810 js/fields/Items.vue:304
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "剪切"
 
 #: js/components/PageDetailContentList.vue:751
-#: js/components/PageListItems.vue:398 js/components/PageListItems.vue:400
+#: js/components/PageListItems.vue:401 js/components/PageListItems.vue:403
 msgid "Paste"
 msgstr "粘贴"
 
@@ -1794,211 +1794,215 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "排名"
 
-#: js/components/PageListItems.vue:404
+#: js/components/PageListItems.vue:407
 msgid "Insert"
 msgstr "插入"
 
-#: js/components/PageListItems.vue:412
+#: js/components/PageListItems.vue:415
 msgid "Before"
 msgstr "之前"
 
-#: js/components/PageListItems.vue:413
+#: js/components/PageListItems.vue:416
 msgid "Into"
 msgstr "之内"
 
-#: js/components/PageListItems.vue:414
+#: js/components/PageListItems.vue:417
 msgid "After"
 msgstr "之后"
 
-#: js/components/PageListItems.vue:435 js/views/PageList.vue:205
+#: js/components/PageListItems.vue:438 js/views/PageList.vue:205
 msgid "Error fetching translation states"
 msgstr "获取翻译状态时出错"
 
-#: js/components/PageListItems.vue:442
+#: js/components/PageListItems.vue:445
 msgid "Translating into %{langs}"
 msgstr "正在翻译为 %{langs}"
 
-#: js/components/PageListItems.vue:450 js/components/PageListItems.vue:1907
-#: js/views/PageDetail.vue:757 js/views/PageList.vue:137
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:1911
+#: js/views/PageDetail.vue:777 js/views/PageList.vue:137
 msgid "Needs update"
 msgstr "需要更新"
 
-#: js/components/PageListItems.vue:451 js/views/PageList.vue:143
+#: js/components/PageListItems.vue:454 js/views/PageList.vue:143
 msgid "Missing"
 msgstr "缺失"
 
-#: js/components/PageListItems.vue:452 js/views/PageList.vue:149
+#: js/components/PageListItems.vue:455 js/views/PageList.vue:149
 msgid "AI draft"
 msgstr "AI 草稿"
 
-#: js/components/PageListItems.vue:455 js/views/PageDetail.vue:756
+#: js/components/PageListItems.vue:456
+msgid "Translating"
+msgstr "翻译中"
+
+#: js/components/PageListItems.vue:459 js/views/PageDetail.vue:776
 msgid "Up to date"
 msgstr "已是最新"
 
-#: js/components/PageListItems.vue:514
+#: js/components/PageListItems.vue:518
 msgid "Error adding root page"
 msgstr "添加根页面时出错"
 
-#: js/components/PageListItems.vue:534
+#: js/components/PageListItems.vue:538
 msgid "Page moved"
 msgstr "页面已移动"
 
-#: js/components/PageListItems.vue:605
+#: js/components/PageListItems.vue:609
 msgid "Cache cleared"
 msgstr "缓存已清除"
 
-#: js/components/PageListItems.vue:606
+#: js/components/PageListItems.vue:610
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "已清除 %{num} 个页面的缓存。"
 
-#: js/components/PageListItems.vue:616
+#: js/components/PageListItems.vue:620
 msgid "Error clearing cache"
 msgstr "清除缓存时出错"
 
-#: js/components/PageListItems.vue:672 js/views/PageDetail.vue:611
+#: js/components/PageListItems.vue:676 js/views/PageDetail.vue:622
 msgid "Error adding language"
 msgstr "添加语言时出错"
 
-#: js/components/PageListItems.vue:693
+#: js/components/PageListItems.vue:697
 msgid "Error trashing page"
 msgstr "将页面移至回收站时出错"
 
-#: js/components/PageListItems.vue:721 js/variants.js:237
+#: js/components/PageListItems.vue:725 js/variants.js:162
 msgid "Error restoring language"
 msgstr "恢复语言时出错"
 
-#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:866
+#: js/components/PageListItems.vue:725 js/components/PageListItems.vue:870
 msgid "Error restoring page"
 msgstr "恢复页面时出错"
 
-#: js/components/PageListItems.vue:730 js/lists.js:241
+#: js/components/PageListItems.vue:734 js/lists.js:241
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "已将 %{num} 个条目移至回收站"
 
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:1180
+#: js/components/PageListItems.vue:786 js/components/PageListItems.vue:1184
 msgid "Error fetching pages"
 msgstr "获取页面时出错"
 
-#: js/components/PageListItems.vue:838
+#: js/components/PageListItems.vue:842
 msgid "Error inserting page"
 msgstr "插入页面出错"
 
-#: js/components/PageListItems.vue:945
+#: js/components/PageListItems.vue:949
 msgid "Error moving page"
 msgstr "页面移动错误"
 
-#: js/components/PageListItems.vue:1068 js/views/PageDetail.vue:272
+#: js/components/PageListItems.vue:1072 js/views/PageDetail.vue:282
 msgid "Error fetching page"
 msgstr "获取页面出错"
 
-#: js/components/PageListItems.vue:1082
+#: js/components/PageListItems.vue:1086
 msgid "Error copying page"
 msgstr "复制页面出错"
 
-#: js/components/PageListItems.vue:1128 js/detail.js:61
+#: js/components/PageListItems.vue:1132 js/detail.js:61
 msgid "Error publishing page"
 msgstr "发布页面出错"
 
-#: js/components/PageListItems.vue:1147
+#: js/components/PageListItems.vue:1151
 msgid "All subpages of these pages will be purged as well."
 msgstr "这些页面的所有子页面也将被永久删除。"
 
-#: js/components/PageListItems.vue:1156
+#: js/components/PageListItems.vue:1160
 msgid "Error purging page"
 msgstr "永久删除页面时出错"
 
-#: js/components/PageListItems.vue:1334
+#: js/components/PageListItems.vue:1338
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} 个页面无法更新"
 
-#: js/components/PageListItems.vue:1345 js/components/PageListItems.vue:1400
-#: js/views/PageDetail.vue:573
+#: js/components/PageListItems.vue:1349 js/components/PageListItems.vue:1404
+#: js/views/PageDetail.vue:584
 msgid "Error saving page"
 msgstr "保存页面出错"
 
-#: js/components/PageListItems.vue:1355
+#: js/components/PageListItems.vue:1359
 msgid "Error searching pages"
 msgstr "搜索页面出错"
 
-#: js/components/PageListItems.vue:1439 js/utils.js:37
+#: js/components/PageListItems.vue:1443 js/utils.js:37
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} 分钟"
 
-#: js/components/PageListItems.vue:1570 js/components/PageListItems.vue:1780
+#: js/components/PageListItems.vue:1574 js/components/PageListItems.vue:1784
 msgctxt "page status"
 msgid "Enable"
 msgstr "启用"
 
-#: js/components/PageListItems.vue:1573 js/components/PageListItems.vue:1786
+#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1790
 msgctxt "page status"
 msgid "Disable"
 msgstr "禁用"
 
-#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1800
+#: js/components/PageListItems.vue:1587 js/components/PageListItems.vue:1804
 msgid "Clear cache"
 msgstr "清除缓存"
 
-#: js/components/PageListItems.vue:1615 js/components/PageListItems.vue:1857
+#: js/components/PageListItems.vue:1619 js/components/PageListItems.vue:1861
 msgid "Ignore changes"
 msgstr "忽略更改"
 
-#: js/components/PageListItems.vue:1624 js/components/PageListItems.vue:1866
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1870
 msgid "Delete this language"
 msgstr "删除此语言"
 
-#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1874
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1878
 msgid "Restore this language"
 msgstr "恢复此语言"
 
-#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1882
+#: js/components/PageListItems.vue:1644 js/components/PageListItems.vue:1886
 msgid "Purge this language"
 msgstr "永久删除此语言"
 
-#: js/components/PageListItems.vue:1650 js/components/PageListItems.vue:1967
+#: js/components/PageListItems.vue:1654 js/components/PageListItems.vue:1971
 msgid "Add page"
 msgstr "添加页面"
 
-#: js/components/PageListItems.vue:1684
+#: js/components/PageListItems.vue:1688
 msgid "Reload page tree"
 msgstr "重新加载页面树"
 
-#: js/components/PageListItems.vue:1705
+#: js/components/PageListItems.vue:1709
 msgid "Translating %{done} of %{total}"
 msgstr "正在翻译 %{done}/%{total}"
 
-#: js/components/PageListItems.vue:1720
+#: js/components/PageListItems.vue:1724
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr "使用方向键进行导航。按住 Alt 键并配合方向键可重新排序。"
 
-#: js/components/PageListItems.vue:1722
+#: js/components/PageListItems.vue:1726
 msgid "Moved to position %{position} of %{total}"
 msgstr "已移至第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1724
+#: js/components/PageListItems.vue:1728
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "已减少缩进至第 %{level} 级，位于第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1730
+#: js/components/PageListItems.vue:1734
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "已增加缩进至第 %{level} 级，位于第 %{position} 个位置，共 %{total} 个"
 
-#: js/components/PageListItems.vue:1750
+#: js/components/PageListItems.vue:1754
 msgid "Toggle child nodes"
 msgstr "切换子节点"
 
-#: js/components/PageListItems.vue:1766
+#: js/components/PageListItems.vue:1770
 msgid "Create in %{lang}"
 msgstr "以 %{lang} 创建"
 
-#: js/components/PageListItems.vue:1935 js/views/PageDetail.vue:759
+#: js/components/PageListItems.vue:1939 js/views/PageDetail.vue:779
 msgid "Create"
 msgstr "创建"
 
-#: js/components/PageListItems.vue:1994
+#: js/components/PageListItems.vue:1998
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "将访问设置应用到 %{num} 个页面。"
@@ -2008,7 +2012,7 @@ msgid "You are not signed in yet"
 msgstr "您尚未登录"
 
 #: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
-#: js/stores.js:338 js/views/Login.vue:146
+#: js/stores.js:337 js/views/Login.vue:146
 msgid "Login failed"
 msgstr "登录失败"
 
@@ -2430,34 +2434,26 @@ msgid "At most %{num} column is allowed"
 msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "最多允许 %{num} 列"
 
-#: js/stores.js:497
+#: js/stores.js:496
 msgid "Failed to save user settings"
 msgstr "保存用户设置失败"
 
-#: js/stores.js:553
+#: js/stores.js:552
 msgid "Failed to load plugin"
 msgstr "加载插件失败"
 
-#: js/stores.js:660
+#: js/stores.js:659
 msgid "Permission denied"
 msgstr "权限被拒绝"
 
-#: js/stores.js:1062
+#: js/stores.js:1042
 msgid "Error fetching translation progress"
 msgstr "获取翻译进度时出错"
 
-#: js/stores.js:1080
-msgid "Translation is still running in the background"
-msgstr "翻译仍在后台运行"
-
-#: js/stores.js:1083
+#: js/stores.js:1076
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} 个翻译失败"
-
-#: js/stores.js:1089
-msgid "Translation finished"
-msgstr "翻译完成"
 
 #: js/strings.js:32
 msgctxt "cs"
@@ -4280,42 +4276,46 @@ msgstr "已启用"
 msgid "Hidden in navigation"
 msgstr "在导航中隐藏"
 
-#: js/variants.js:190
+#: js/variants.js:115
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "源语言的页面只能整页删除"
 
-#: js/variants.js:198
+#: js/variants.js:123
 msgid "Delete language"
 msgstr "删除语言"
 
-#: js/variants.js:199
+#: js/variants.js:124
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "将“%{lang}”中的 %{num} 个页面移至回收站？"
 
-#: js/variants.js:207
+#: js/variants.js:132
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "已跳过 %{num} 个源语言页面。"
 
-#: js/variants.js:221
+#: js/variants.js:146
 msgid "Error trashing language"
 msgstr "将语言移至回收站时出错"
 
-#: js/variants.js:259
+#: js/variants.js:184
 msgid "Error purging language"
 msgstr "永久删除语言时出错"
 
-#: js/variants.js:281
+#: js/variants.js:206
 msgid "Error ignoring changes"
 msgstr "忽略更改时出错"
 
-#: js/variants.js:354
+#: js/variants.js:275
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr "没有需要翻译的内容，页面已是最新或正在翻译中"
 
-#: js/variants.js:361
+#: js/variants.js:281
+msgid "Translation finished"
+msgstr "翻译完成"
+
+#: js/variants.js:284
 msgid "Error translating pages"
 msgstr "翻译页面时出错"
 
@@ -4433,7 +4433,7 @@ msgstr "拒绝访问"
 msgid "Error"
 msgstr "错误"
 
-#: js/views/PageDetail.vue:190
+#: js/views/PageDetail.vue:200
 msgid ""
 "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
 "page\", use get-page with that ID."
@@ -4441,62 +4441,62 @@ msgstr ""
 "用户正在查看 ID 为“%{id}”的页面。当用户提到“此页面”时，请使用该 ID 调用 get-"
 "page。"
 
-#: js/views/PageDetail.vue:502 js/views/PageDetail.vue:769
+#: js/views/PageDetail.vue:513 js/views/PageDetail.vue:789
 msgid "Rate this page and suggest improvements"
 msgstr "评估此页面并提出改进建议"
 
-#: js/views/PageDetail.vue:558
+#: js/views/PageDetail.vue:569
 msgid "Page saved successfully"
 msgstr "页面保存成功"
 
-#: js/views/PageDetail.vue:634
+#: js/views/PageDetail.vue:645
 msgid "Marked as up to date"
 msgstr "已标记为最新"
 
-#: js/views/PageDetail.vue:637
+#: js/views/PageDetail.vue:648
 msgid "Error marking as up to date"
 msgstr "标记为最新时出错"
 
-#: js/views/PageDetail.vue:658
+#: js/views/PageDetail.vue:669
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "没有需要翻译的内容，页面已是最新或正在翻译中"
 
-#: js/views/PageDetail.vue:665
+#: js/views/PageDetail.vue:675
 msgid "Translation saved as draft, review the changes"
 msgstr "翻译已保存为草稿，请检查更改"
 
-#: js/views/PageDetail.vue:669
+#: js/views/PageDetail.vue:677
 msgid "Error translating page"
 msgstr "翻译此页面时出错"
 
-#: js/views/PageDetail.vue:732 js/views/PageDetail.vue:791
-#: js/views/PageDetail.vue:810
+#: js/views/PageDetail.vue:752 js/views/PageDetail.vue:811
+#: js/views/PageDetail.vue:830
 msgid "Page"
 msgstr "页面"
 
-#: js/views/PageDetail.vue:754
+#: js/views/PageDetail.vue:774
 msgid "Source"
 msgstr "来源"
 
-#: js/views/PageDetail.vue:758
+#: js/views/PageDetail.vue:778
 msgid "Trashed"
 msgstr "已移至回收站"
 
-#: js/views/PageDetail.vue:777
+#: js/views/PageDetail.vue:797
 msgid "Translate changes of the source language"
 msgstr "翻译源语言的更改"
 
-#: js/views/PageDetail.vue:784
+#: js/views/PageDetail.vue:804
 msgid "Ignore changes of the source language"
 msgstr "忽略源语言的更改"
 
-#: js/views/PageDetail.vue:796
+#: js/views/PageDetail.vue:816
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "编辑器"
 
-#: js/views/PageDetail.vue:813
+#: js/views/PageDetail.vue:833
 msgid "Metrics"
 msgstr "指标"
 
@@ -4533,6 +4533,9 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI 可根据您的输入创建页面和内容，并将其添加到页面树中"
+
+#~ msgid "Translation is still running in the background"
+#~ msgstr "翻译仍在后台运行"
 
 #~ msgid "Change language"
 #~ msgstr "更改语言"

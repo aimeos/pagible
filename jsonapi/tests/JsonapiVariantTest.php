@@ -76,6 +76,16 @@ class JsonapiVariantTest extends JsonapiTestAbstract
     }
 
 
+    public function testLangFilterInvalid()
+    {
+        foreach( ["de\0", '<x>', 'EN'] as $lang )
+        {
+            $response = $this->jsonApi()->expects( 'pages' )->filter( ['lang' => $lang] )->get( 'cms/pages' );
+            $response->assertFetchedNone();
+        }
+    }
+
+
     public function testVariantsList()
     {
         $blog = $this->blog();

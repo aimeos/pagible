@@ -294,7 +294,7 @@ msgid "Configuration"
 msgstr "الإعدادات"
 
 #: js/components/ChangesDialog.vue:61 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:803
+#: js/views/PageDetail.vue:823
 msgid "Content"
 msgstr "المحتوى"
 
@@ -362,7 +362,7 @@ msgstr "جارٍ التفكير ..."
 
 #: js/components/ChatDialog.vue:353 js/components/PageDetailContentList.vue:745
 #: js/components/PageDetailContentList.vue:831
-#: js/components/PageListItems.vue:1809 js/fields/Items.vue:303
+#: js/components/PageListItems.vue:1813 js/fields/Items.vue:303
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "نسخ"
@@ -394,7 +394,7 @@ msgid "Go to"
 msgstr "الانتقال إلى"
 
 #: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1923
+#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1927
 msgid "New"
 msgstr "جديد"
 
@@ -426,8 +426,8 @@ msgstr "لا توجد نتائج"
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ElementListItems.vue:229
 #: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:309
-#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1595
-#: js/components/PageListItems.vue:1837 js/views/AccessList.vue:279
+#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1599
+#: js/components/PageListItems.vue:1841 js/views/AccessList.vue:279
 msgid "Purge"
 msgstr "حذف نهائيًا"
 
@@ -466,8 +466,8 @@ msgstr "عرض تغييرات الدمج"
 #: js/components/DetailAppBar.vue:210 js/components/DetailAppBar.vue:226
 #: js/components/DetailAppBar.vue:230 js/components/ElementListItems.vue:214
 #: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:287
-#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1567
-#: js/components/PageListItems.vue:1773
+#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1571
+#: js/components/PageListItems.vue:1777
 msgid "Publish"
 msgstr "نشر"
 
@@ -508,7 +508,7 @@ msgid "Name"
 msgstr "الاسم"
 
 #: js/components/DetailRefs.vue:147 js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:485
+#: js/components/PageListItems.vue:489
 msgid "Restricted"
 msgstr "مقيد"
 
@@ -532,7 +532,7 @@ msgstr "منشور"
 #: js/components/EditBulkDialog.vue:53 js/components/ElementListItems.vue:217
 #: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:290
 #: js/components/FileListItems.vue:432 js/components/PageBulkDialog.vue:133
-#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1794
+#: js/components/PageListItems.vue:1581 js/components/PageListItems.vue:1798
 msgid "Edit properties"
 msgstr "تعديل الخصائص"
 
@@ -549,7 +549,7 @@ msgstr[5] "قم بتطبيق الخصائص المحددة على %{num} من ا
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:79
 #: js/components/FileDetailItem.vue:338 js/components/ListSort.vue:28
 #: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1663 js/views/PageDetail.vue:735
+#: js/components/PageListItems.vue:1667 js/views/PageDetail.vue:755
 msgid "Language"
 msgstr "اللغة"
 
@@ -596,22 +596,22 @@ msgstr "خطأ في جلب العناصر المشتركة"
 
 #: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:272
 #: js/components/PageDetailContentList.vue:732
-#: js/components/PageListItems.vue:1551 js/views/AccessList.vue:274
+#: js/components/PageListItems.vue:1555 js/views/AccessList.vue:274
 #: js/views/AccessList.vue:318
 msgid "Toggle selection"
 msgstr "تبديل التحديد"
 
 #: js/components/ElementListItems.vue:220
 #: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:303
-#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1589
-#: js/components/PageListItems.vue:1828
+#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1593
+#: js/components/PageListItems.vue:1832
 msgid "Delete"
 msgstr "حذف"
 
 #: js/components/ElementListItems.vue:226
 #: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:306
-#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1592
-#: js/components/PageListItems.vue:1834
+#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1596
+#: js/components/PageListItems.vue:1838
 msgid "Restore"
 msgstr "استعادة"
 
@@ -624,7 +624,7 @@ msgstr "إضافة عنصر"
 
 #: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:343
 #: js/components/PageDetailContentList.vue:765
-#: js/components/PageListItems.vue:1672 js/components/SchemaItems.vue:140
+#: js/components/PageListItems.vue:1676 js/components/SchemaItems.vue:140
 #: js/views/AccessList.vue:303
 msgid "Search for"
 msgstr "البحث عن"
@@ -634,7 +634,7 @@ msgid "Updated by another user"
 msgstr "تم التحديث بواسطة مستخدم آخر"
 
 #: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:362
-#: js/components/PageListItems.vue:1690
+#: js/components/PageListItems.vue:1694
 msgid "Refresh"
 msgstr "تحديث"
 
@@ -643,7 +643,7 @@ msgid "Reload elements"
 msgstr "إعادة تحميل العناصر"
 
 #: js/components/Fields.vue:242 js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1607 js/components/PageListItems.vue:1844
+#: js/components/PageListItems.vue:1611 js/components/PageListItems.vue:1848
 #: js/components/TranslateDialog.vue:77 js/components/TranslateDialog.vue:128
 #: js/fields/Items.vue:337 js/fields/Items.vue:343
 msgid "Translate"
@@ -952,7 +952,7 @@ msgstr "تنزيل"
 
 #: js/components/FileDetailItemImage.vue:783
 #: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:535 js/components/PageListItems.vue:719
+#: js/components/PageListItems.vue:539 js/components/PageListItems.vue:723
 #: js/lists.js:247
 msgid "Undo"
 msgstr "تراجع"
@@ -1231,7 +1231,7 @@ msgstr "إعادة المحاولة"
 msgid "Current changes"
 msgstr "التغييرات الحالية"
 
-#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1423
+#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1427
 #: js/lists.js:476
 msgid "Scheduled for %{date}"
 msgstr "مجدول في %{date}"
@@ -1395,13 +1395,13 @@ msgstr ""
 msgid "Public"
 msgstr "عام"
 
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:489
+#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:493
 msgid "Authenticated users"
 msgstr "المستخدمون المسجَّلون"
 
 #: js/components/PageAccess.vue:183 js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:488 js/components/PageListItems.vue:1580
-#: js/components/PageListItems.vue:1797 js/components/PageListItems.vue:1991
+#: js/components/PageListItems.vue:492 js/components/PageListItems.vue:1584
+#: js/components/PageListItems.vue:1801 js/components/PageListItems.vue:1995
 #: js/views/AccessList.vue:240 js/views/AccessList.vue:249
 msgid "Access"
 msgstr "الوصول"
@@ -1452,7 +1452,7 @@ msgstr "تغيير وقت ذاكرة التخزين المؤقت"
 
 #: js/components/PageBulkDialog.vue:169
 #: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1439
+#: js/components/PageListItems.vue:1443
 msgid "Cache time"
 msgstr "وقت التخزين المؤقت"
 
@@ -1467,7 +1467,7 @@ msgstr "تغيير القالب"
 
 #: js/components/PageBulkDialog.vue:183
 #: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1427
+#: js/components/PageListItems.vue:1431
 msgid "Theme"
 msgstr "القالب"
 
@@ -1482,7 +1482,7 @@ msgstr "تغيير نوع الصفحة"
 
 #: js/components/PageBulkDialog.vue:195
 #: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1431
+#: js/components/PageListItems.vue:1435
 msgid "Page type"
 msgstr "نوع الصفحة"
 
@@ -1497,7 +1497,7 @@ msgstr "تغيير العلامة"
 
 #: js/components/PageBulkDialog.vue:206
 #: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1435
+#: js/components/PageListItems.vue:1439
 msgid "Page tag"
 msgstr "علامة الصفحة"
 
@@ -1587,13 +1587,13 @@ msgstr "يمكن أن يستغرق الأمر وقتًا طويلاً حسب ا�
 
 #: js/components/PageDetailContentList.vue:748
 #: js/components/PageDetailContentList.vue:834
-#: js/components/PageListItems.vue:1806 js/fields/Items.vue:304
+#: js/components/PageListItems.vue:1810 js/fields/Items.vue:304
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "قص"
 
 #: js/components/PageDetailContentList.vue:751
-#: js/components/PageListItems.vue:398 js/components/PageListItems.vue:400
+#: js/components/PageListItems.vue:401 js/components/PageListItems.vue:403
 msgid "Paste"
 msgstr "لصق"
 
@@ -1854,60 +1854,64 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "الترتيب"
 
-#: js/components/PageListItems.vue:404
+#: js/components/PageListItems.vue:407
 msgid "Insert"
 msgstr "إدراج"
 
-#: js/components/PageListItems.vue:412
+#: js/components/PageListItems.vue:415
 msgid "Before"
 msgstr "قبل"
 
-#: js/components/PageListItems.vue:413
+#: js/components/PageListItems.vue:416
 msgid "Into"
 msgstr "داخل"
 
-#: js/components/PageListItems.vue:414
+#: js/components/PageListItems.vue:417
 msgid "After"
 msgstr "بعد"
 
-#: js/components/PageListItems.vue:435 js/views/PageList.vue:205
+#: js/components/PageListItems.vue:438 js/views/PageList.vue:205
 msgid "Error fetching translation states"
 msgstr "خطأ في جلب حالات الترجمة"
 
-#: js/components/PageListItems.vue:442
+#: js/components/PageListItems.vue:445
 msgid "Translating into %{langs}"
 msgstr "جارٍ الترجمة إلى %{langs}"
 
-#: js/components/PageListItems.vue:450 js/components/PageListItems.vue:1907
-#: js/views/PageDetail.vue:757 js/views/PageList.vue:137
+#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:1911
+#: js/views/PageDetail.vue:777 js/views/PageList.vue:137
 msgid "Needs update"
 msgstr "بحاجة إلى تحديث"
 
-#: js/components/PageListItems.vue:451 js/views/PageList.vue:143
+#: js/components/PageListItems.vue:454 js/views/PageList.vue:143
 msgid "Missing"
 msgstr "مفقود"
 
-#: js/components/PageListItems.vue:452 js/views/PageList.vue:149
+#: js/components/PageListItems.vue:455 js/views/PageList.vue:149
 msgid "AI draft"
 msgstr "مسودة ذكاء اصطناعي"
 
-#: js/components/PageListItems.vue:455 js/views/PageDetail.vue:756
+#: js/components/PageListItems.vue:456
+msgid "Translating"
+msgstr "قيد الترجمة"
+
+#: js/components/PageListItems.vue:459 js/views/PageDetail.vue:776
 msgid "Up to date"
 msgstr "محدَّث"
 
-#: js/components/PageListItems.vue:514
+#: js/components/PageListItems.vue:518
 msgid "Error adding root page"
 msgstr "خطأ في إضافة صفحة الجذر"
 
-#: js/components/PageListItems.vue:534
+#: js/components/PageListItems.vue:538
 msgid "Page moved"
 msgstr "تم نقل الصفحة"
 
-#: js/components/PageListItems.vue:605
+#: js/components/PageListItems.vue:609
 msgid "Cache cleared"
 msgstr "تم مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:606
+#: js/components/PageListItems.vue:610
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحة."
@@ -1917,27 +1921,27 @@ msgstr[3] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفح
 msgstr[4] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحةً."
 msgstr[5] "تم مسح ذاكرة التخزين المؤقت لـ %{num} صفحة."
 
-#: js/components/PageListItems.vue:616
+#: js/components/PageListItems.vue:620
 msgid "Error clearing cache"
 msgstr "خطأ في مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:672 js/views/PageDetail.vue:611
+#: js/components/PageListItems.vue:676 js/views/PageDetail.vue:622
 msgid "Error adding language"
 msgstr "خطأ في إضافة اللغة"
 
-#: js/components/PageListItems.vue:693
+#: js/components/PageListItems.vue:697
 msgid "Error trashing page"
 msgstr "خطأ في نقل الصفحة إلى سلة المهملات"
 
-#: js/components/PageListItems.vue:721 js/variants.js:237
+#: js/components/PageListItems.vue:725 js/variants.js:162
 msgid "Error restoring language"
 msgstr "خطأ في استعادة اللغة"
 
-#: js/components/PageListItems.vue:721 js/components/PageListItems.vue:866
+#: js/components/PageListItems.vue:725 js/components/PageListItems.vue:870
 msgid "Error restoring page"
 msgstr "خطأ في استعادة الصفحة"
 
-#: js/components/PageListItems.vue:730 js/lists.js:241
+#: js/components/PageListItems.vue:734 js/lists.js:241
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "تم نقل %{num} إدخال إلى سلة المهملات"
@@ -1947,39 +1951,39 @@ msgstr[3] "تم نقل %{num} إدخالات إلى سلة المهملات"
 msgstr[4] "تم نقل %{num} إدخالًا إلى سلة المهملات"
 msgstr[5] "تم نقل %{num} إدخال إلى سلة المهملات"
 
-#: js/components/PageListItems.vue:782 js/components/PageListItems.vue:1180
+#: js/components/PageListItems.vue:786 js/components/PageListItems.vue:1184
 msgid "Error fetching pages"
 msgstr "خطأ في جلب الصفحات"
 
-#: js/components/PageListItems.vue:838
+#: js/components/PageListItems.vue:842
 msgid "Error inserting page"
 msgstr "خطأ في إدراج الصفحة"
 
-#: js/components/PageListItems.vue:945
+#: js/components/PageListItems.vue:949
 msgid "Error moving page"
 msgstr "خطأ في نقل الصفحة"
 
-#: js/components/PageListItems.vue:1068 js/views/PageDetail.vue:272
+#: js/components/PageListItems.vue:1072 js/views/PageDetail.vue:282
 msgid "Error fetching page"
 msgstr "خطأ في جلب الصفحة"
 
-#: js/components/PageListItems.vue:1082
+#: js/components/PageListItems.vue:1086
 msgid "Error copying page"
 msgstr "خطأ في نسخ الصفحة"
 
-#: js/components/PageListItems.vue:1128 js/detail.js:61
+#: js/components/PageListItems.vue:1132 js/detail.js:61
 msgid "Error publishing page"
 msgstr "خطأ في نشر الصفحة"
 
-#: js/components/PageListItems.vue:1147
+#: js/components/PageListItems.vue:1151
 msgid "All subpages of these pages will be purged as well."
 msgstr "سيتم أيضًا حذف جميع الصفحات الفرعية لهذه الصفحات نهائيًا."
 
-#: js/components/PageListItems.vue:1156
+#: js/components/PageListItems.vue:1160
 msgid "Error purging page"
 msgstr "خطأ في حذف الصفحة نهائيًا"
 
-#: js/components/PageListItems.vue:1334
+#: js/components/PageListItems.vue:1338
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "تعذر تحديث %{num} من الصفحات"
@@ -1989,16 +1993,16 @@ msgstr[3] "تعذر تحديث %{num} من الصفحات"
 msgstr[4] "تعذر تحديث %{num} من الصفحات"
 msgstr[5] "تعذر تحديث %{num} من الصفحات"
 
-#: js/components/PageListItems.vue:1345 js/components/PageListItems.vue:1400
-#: js/views/PageDetail.vue:573
+#: js/components/PageListItems.vue:1349 js/components/PageListItems.vue:1404
+#: js/views/PageDetail.vue:584
 msgid "Error saving page"
 msgstr "خطأ في حفظ الصفحة"
 
-#: js/components/PageListItems.vue:1355
+#: js/components/PageListItems.vue:1359
 msgid "Error searching pages"
 msgstr "خطأ في البحث عن الصفحات"
 
-#: js/components/PageListItems.vue:1439 js/utils.js:37
+#: js/components/PageListItems.vue:1443 js/utils.js:37
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} دقيقة"
@@ -2008,83 +2012,83 @@ msgstr[3] "%{num} دقائق"
 msgstr[4] "%{num} دقيقة"
 msgstr[5] "%{num} دقيقة"
 
-#: js/components/PageListItems.vue:1570 js/components/PageListItems.vue:1780
+#: js/components/PageListItems.vue:1574 js/components/PageListItems.vue:1784
 msgctxt "page status"
 msgid "Enable"
 msgstr "تمكين"
 
-#: js/components/PageListItems.vue:1573 js/components/PageListItems.vue:1786
+#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1790
 msgctxt "page status"
 msgid "Disable"
 msgstr "تعطيل"
 
-#: js/components/PageListItems.vue:1583 js/components/PageListItems.vue:1800
+#: js/components/PageListItems.vue:1587 js/components/PageListItems.vue:1804
 msgid "Clear cache"
 msgstr "مسح ذاكرة التخزين المؤقت"
 
-#: js/components/PageListItems.vue:1615 js/components/PageListItems.vue:1857
+#: js/components/PageListItems.vue:1619 js/components/PageListItems.vue:1861
 msgid "Ignore changes"
 msgstr "تجاهل التغييرات"
 
-#: js/components/PageListItems.vue:1624 js/components/PageListItems.vue:1866
+#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1870
 msgid "Delete this language"
 msgstr "حذف هذه اللغة"
 
-#: js/components/PageListItems.vue:1632 js/components/PageListItems.vue:1874
+#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1878
 msgid "Restore this language"
 msgstr "استعادة هذه اللغة"
 
-#: js/components/PageListItems.vue:1640 js/components/PageListItems.vue:1882
+#: js/components/PageListItems.vue:1644 js/components/PageListItems.vue:1886
 msgid "Purge this language"
 msgstr "حذف هذه اللغة نهائيًا"
 
-#: js/components/PageListItems.vue:1650 js/components/PageListItems.vue:1967
+#: js/components/PageListItems.vue:1654 js/components/PageListItems.vue:1971
 msgid "Add page"
 msgstr "إضافة صفحة"
 
-#: js/components/PageListItems.vue:1684
+#: js/components/PageListItems.vue:1688
 msgid "Reload page tree"
 msgstr "إعادة تحميل شجرة الصفحات"
 
-#: js/components/PageListItems.vue:1705
+#: js/components/PageListItems.vue:1709
 msgid "Translating %{done} of %{total}"
 msgstr "جارٍ ترجمة %{done} من %{total}"
 
-#: js/components/PageListItems.vue:1720
+#: js/components/PageListItems.vue:1724
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "استخدم مفاتيح الأسهم للتنقل. اضغط على مفتاح Alt مع مفاتيح الأسهم لإعادة "
 "الترتيب."
 
-#: js/components/PageListItems.vue:1722
+#: js/components/PageListItems.vue:1726
 msgid "Moved to position %{position} of %{total}"
 msgstr "تم النقل إلى الموضع %{position} من أصل %{total}"
 
-#: js/components/PageListItems.vue:1724
+#: js/components/PageListItems.vue:1728
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "تم تقليل المسافة البادئة إلى المستوى %{level}، الموضع %{position} من أصل "
 "%{total}"
 
-#: js/components/PageListItems.vue:1730
+#: js/components/PageListItems.vue:1734
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr ""
 "تمت زيادة المسافة البادئة إلى المستوى %{level}، الموضع %{position} من أصل "
 "%{total}"
 
-#: js/components/PageListItems.vue:1750
+#: js/components/PageListItems.vue:1754
 msgid "Toggle child nodes"
 msgstr "تبديل العقد الفرعية"
 
-#: js/components/PageListItems.vue:1766
+#: js/components/PageListItems.vue:1770
 msgid "Create in %{lang}"
 msgstr "إنشاء بلغة %{lang}"
 
-#: js/components/PageListItems.vue:1935 js/views/PageDetail.vue:759
+#: js/components/PageListItems.vue:1939 js/views/PageDetail.vue:779
 msgid "Create"
 msgstr "إنشاء"
 
-#: js/components/PageListItems.vue:1994
+#: js/components/PageListItems.vue:1998
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "تطبيق إعدادات الوصول على %{num} صفحة."
@@ -2099,7 +2103,7 @@ msgid "You are not signed in yet"
 msgstr "لم تقم بتسجيل الدخول بعد"
 
 #: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
-#: js/stores.js:338 js/views/Login.vue:146
+#: js/stores.js:337 js/views/Login.vue:146
 msgid "Login failed"
 msgstr "فشل تسجيل الدخول"
 
@@ -2564,27 +2568,23 @@ msgstr[3] "يُسمح بـ %{num} أعمدة كحد أقصى"
 msgstr[4] "يُسمح بـ %{num} عمودًا كحد أقصى"
 msgstr[5] "يُسمح بـ %{num} عمود كحد أقصى"
 
-#: js/stores.js:497
+#: js/stores.js:496
 msgid "Failed to save user settings"
 msgstr "فشل حفظ إعدادات المستخدم"
 
-#: js/stores.js:553
+#: js/stores.js:552
 msgid "Failed to load plugin"
 msgstr "فشل تحميل البرنامج المساعد"
 
-#: js/stores.js:660
+#: js/stores.js:659
 msgid "Permission denied"
 msgstr "تم رفض الإذن"
 
-#: js/stores.js:1062
+#: js/stores.js:1042
 msgid "Error fetching translation progress"
 msgstr "خطأ في جلب تقدم الترجمة"
 
-#: js/stores.js:1080
-msgid "Translation is still running in the background"
-msgstr "لا تزال الترجمة قيد التشغيل في الخلفية"
-
-#: js/stores.js:1083
+#: js/stores.js:1076
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "فشلت %{num} ترجمة"
@@ -2593,10 +2593,6 @@ msgstr[2] "فشلت ترجمتان (%{num})"
 msgstr[3] "فشلت %{num} ترجمات"
 msgstr[4] "فشلت %{num} ترجمة"
 msgstr[5] "فشلت %{num} ترجمة"
-
-#: js/stores.js:1089
-msgid "Translation finished"
-msgstr "اكتملت الترجمة"
 
 #: js/strings.js:32
 msgctxt "cs"
@@ -4430,15 +4426,15 @@ msgstr "ممكّن"
 msgid "Hidden in navigation"
 msgstr "مخفي في التنقل"
 
-#: js/variants.js:190
+#: js/variants.js:115
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "تُحذف الصفحات بلغتها المصدر كصفحات كاملة فقط"
 
-#: js/variants.js:198
+#: js/variants.js:123
 msgid "Delete language"
 msgstr "حذف اللغة"
 
-#: js/variants.js:199
+#: js/variants.js:124
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "نقل %{num} صفحة بلغة \"%{lang}\" إلى سلة المهملات؟"
@@ -4448,7 +4444,7 @@ msgstr[3] "نقل %{num} صفحات بلغة \"%{lang}\" إلى سلة المه�
 msgstr[4] "نقل %{num} صفحة بلغة \"%{lang}\" إلى سلة المهملات؟"
 msgstr[5] "نقل %{num} صفحة بلغة \"%{lang}\" إلى سلة المهملات؟"
 
-#: js/variants.js:207
+#: js/variants.js:132
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "سيتم تخطي %{num} صفحة بلغتها المصدر."
@@ -4458,24 +4454,28 @@ msgstr[3] "سيتم تخطي %{num} صفحات بلغتها المصدر."
 msgstr[4] "سيتم تخطي %{num} صفحة بلغتها المصدر."
 msgstr[5] "سيتم تخطي %{num} صفحة بلغتها المصدر."
 
-#: js/variants.js:221
+#: js/variants.js:146
 msgid "Error trashing language"
 msgstr "خطأ في نقل اللغة إلى سلة المهملات"
 
-#: js/variants.js:259
+#: js/variants.js:184
 msgid "Error purging language"
 msgstr "خطأ في حذف اللغة نهائيًا"
 
-#: js/variants.js:281
+#: js/variants.js:206
 msgid "Error ignoring changes"
 msgstr "خطأ في تجاهل التغييرات"
 
-#: js/variants.js:354
+#: js/variants.js:275
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr "لا يوجد ما يُترجم، الصفحات محدثة أو قيد الترجمة بالفعل"
 
-#: js/variants.js:361
+#: js/variants.js:281
+msgid "Translation finished"
+msgstr "اكتملت الترجمة"
+
+#: js/variants.js:284
 msgid "Error translating pages"
 msgstr "خطأ في ترجمة الصفحات"
 
@@ -4598,7 +4598,7 @@ msgstr "تم رفض الوصول"
 msgid "Error"
 msgstr "خطأ"
 
-#: js/views/PageDetail.vue:190
+#: js/views/PageDetail.vue:200
 msgid ""
 "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
 "page\", use get-page with that ID."
@@ -4606,62 +4606,62 @@ msgstr ""
 "يعرض المستخدم الصفحة ذات المعرّف \"%{id}\". عندما يشير إلى \"هذه الصفحة\"، "
 "استخدم get-page مع هذا المعرّف."
 
-#: js/views/PageDetail.vue:502 js/views/PageDetail.vue:769
+#: js/views/PageDetail.vue:513 js/views/PageDetail.vue:789
 msgid "Rate this page and suggest improvements"
 msgstr "قيّم هذه الصفحة واقترح تحسينات"
 
-#: js/views/PageDetail.vue:558
+#: js/views/PageDetail.vue:569
 msgid "Page saved successfully"
 msgstr "تم حفظ الصفحة بنجاح"
 
-#: js/views/PageDetail.vue:634
+#: js/views/PageDetail.vue:645
 msgid "Marked as up to date"
 msgstr "تم التعليم كمحدَّث"
 
-#: js/views/PageDetail.vue:637
+#: js/views/PageDetail.vue:648
 msgid "Error marking as up to date"
 msgstr "خطأ في التعليم كمحدَّث"
 
-#: js/views/PageDetail.vue:658
+#: js/views/PageDetail.vue:669
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "لا يوجد ما يُترجم، الصفحة محدثة أو قيد الترجمة بالفعل"
 
-#: js/views/PageDetail.vue:665
+#: js/views/PageDetail.vue:675
 msgid "Translation saved as draft, review the changes"
 msgstr "تم حفظ الترجمة كمسودة، راجع التغييرات"
 
-#: js/views/PageDetail.vue:669
+#: js/views/PageDetail.vue:677
 msgid "Error translating page"
 msgstr "خطأ في ترجمة الصفحة"
 
-#: js/views/PageDetail.vue:732 js/views/PageDetail.vue:791
-#: js/views/PageDetail.vue:810
+#: js/views/PageDetail.vue:752 js/views/PageDetail.vue:811
+#: js/views/PageDetail.vue:830
 msgid "Page"
 msgstr "الصفحة"
 
-#: js/views/PageDetail.vue:754
+#: js/views/PageDetail.vue:774
 msgid "Source"
 msgstr "المصدر"
 
-#: js/views/PageDetail.vue:758
+#: js/views/PageDetail.vue:778
 msgid "Trashed"
 msgstr "في سلة المهملات"
 
-#: js/views/PageDetail.vue:777
+#: js/views/PageDetail.vue:797
 msgid "Translate changes of the source language"
 msgstr "ترجمة تغييرات اللغة المصدر"
 
-#: js/views/PageDetail.vue:784
+#: js/views/PageDetail.vue:804
 msgid "Ignore changes of the source language"
 msgstr "تجاهل تغييرات اللغة المصدر"
 
-#: js/views/PageDetail.vue:796
+#: js/views/PageDetail.vue:816
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "محرر المحتوى"
 
-#: js/views/PageDetail.vue:813
+#: js/views/PageDetail.vue:833
 msgid "Metrics"
 msgstr "المقاييس"
 
@@ -4700,6 +4700,9 @@ msgid ""
 msgstr ""
 "يمكن للذكاء الاصطناعي إنشاء صفحة ومحتوى بناءً على مدخلاتك وإضافتها إلى شجرة "
 "الصفحات"
+
+#~ msgid "Translation is still running in the background"
+#~ msgstr "لا تزال الترجمة قيد التشغيل في الخلفية"
 
 #~ msgid "Change language"
 #~ msgstr "تغيير اللغة"

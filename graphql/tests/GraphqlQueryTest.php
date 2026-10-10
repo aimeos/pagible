@@ -9,6 +9,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -65,15 +66,15 @@ class GraphqlQueryTest extends GraphqlTestAbstract
         $live = Page::where( 'path', 'blog' )->firstOrFail();
         $dev = Page::where( 'path', 'hidden' )->firstOrFail();
 
-        $live->forceFill( ['path' => 'features', 'domain' => 'live.example'] )->saveQuietly();
-        $dev->forceFill( ['path' => 'features', 'domain' => 'dev.example'] )->saveQuietly();
+        Resource::updatePage( $live, ['path' => 'features', 'domain' => 'live.example'] );
+        Resource::updatePage( $dev, ['path' => 'features', 'domain' => 'dev.example'] );
 
         $draft = $live->versions()->forceCreate( [
             'lang' => 'en',
             'data' => ['path' => 'features', 'domain' => 'dev.example'],
             'editor' => 'test',
         ] );
-        $live->forceFill( ['latest_id' => $draft->id] )->saveQuietly();
+        Resource::updatePage( $live, ['latest_id' => $draft->id] );
 
         $response = $this->actingAs( $this->user )->graphQL( <<<'GRAPHQL'
             query($filter: PageFilter) {

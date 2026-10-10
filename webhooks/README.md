@@ -192,6 +192,10 @@ the content and version IDs. Page events also contain the route if available:
 Bulk events contain an ordered array of `{id, version_id}` references in `data`, page references also
 contain the `lang` of the page variant. Fetch the details through the CMS API if needed.
 
+The `page.deleted`, `page.restored` and `page.purged` events tell by `lang` what has been affected: If
+`lang` is set, only the page variant in that language has been deleted, restored or purged. If `lang` is
+missing, the whole page including all its language variants has been affected.
+
 With a `Tenancy` callback registered, events without a tenant are dropped, so don't use the default
 (empty) tenant ID for a site in multi-tenant installations.
 

@@ -28,8 +28,6 @@
             @include('cms::canonical', ['data' => (object) ['url' => cmsroute($page)]])
         @endunless
 
-        @include('cms::hreflang')
-
         @foreach(cms($page, 'meta', []) as $item)
             @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
         @endforeach

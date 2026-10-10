@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Ai;
 use Illuminate\Console\Command;
 use Aimeos\Cms\Models\File;
@@ -82,7 +83,7 @@ class Description extends Command
                         $data['description'] = $text;
                         $meta['meta-tags'] = Validation::entry( 'meta-tags', $data, 'meta' );
                         $page->meta = Validation::structured( $meta, 'meta' );
-                        $page->save();
+                        Resource::updatePage( $page );
                     }
                     catch( PrismaException $e )
                     {

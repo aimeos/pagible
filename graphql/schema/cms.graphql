@@ -92,22 +92,21 @@ extend type Query {
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\UserResolver@catalog")
 
   "Get page by ID in the given language or in its source language if no language is passed"
-  page(id: ID!, lang: String @rules(apply: ["max:10"]), trashed: Trashed): Page
+  page(id: ID!, lang: String @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]), trashed: Trashed): Page
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@page")
 
-  "Get the number of pages in each translation state of the language"
-  pageTranslations(lang: String! @rules(apply: ["required", "max:10"])): PageTranslations!
-    @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
-    @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@translations")
-
-  "Get the number of pages in each translation state of all configured languages"
-  pageTranslationStates: [PageTranslations!]!
+  "Get the number of pages in each translation state of the languages, all configured languages if omitted"
+  pageTranslationStates(
+    langs: [String!] @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]) @rulesForArray(apply: ["max:100"])
+    "Counts up to a minute old are acceptable, e.g. for frequent refreshes"
+    cached: Boolean = false
+  ): [PageTranslations!]!
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
     @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@translationStates")
 
   "Get the available pages, with 'lang' each page in that language or in its source language if it has no variant in that language"
-  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed, lang: String @rules(apply: ["nullable", "string", "max:10"])): [Page!]
+  pages(filter: PageFilter, sort: _ @orderBy(columns: ["id", "latest_id", "name", "title", "editor", "_lft"]), publish: Publish, trashed: Trashed, lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page!]
     @paginate(resolver: "\\Aimeos\\Cms\\GraphQL\\Query@pages", defaultCount: 100)
     @guard @cmsPermission(action: "page:view") @throttle(name: "cms-graphql")
 
@@ -181,23 +180,23 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Add a language variant to the page as untranslated copy of the latest source draft"
-  addVariant(id: ID!, lang: String! @rules(apply: ["required", "max:10"])): Page
+  addVariant(id: ID!, lang: String! @rules(apply: ["required", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Mark the page variants in the language as up to date with their source without changing their content"
-  ignoreChanges(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String! @rules(apply: ["required", "max:10"])): [Page!]!
+  ignoreChanges(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String! @rules(apply: ["required", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page!]!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Copy the page and its sub-pages with all language variants below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   copyPage(id: ID!, parent: ID, ref: ID): Page
-    @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
+    @guard @cmsPermission(action: "page:add") @throttle(name: "cms-copy")
 
   "Move the page below the page referenced by 'parent' and before the page referenced by 'ref' (or append if NULL)"
   movePage(id: ID!, parent: ID, ref: ID): Page
     @guard @cmsPermission(action: "page:move") @throttle(name: "cms-graphql")
 
   "Update the values of an existing page in the given language or in its source language if no language is passed"
-  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String @rules(apply: ["max:10"]), restore: Boolean): Page
+  savePage(id: ID!, input: PageInput!, latestId: ID, lang: String @rules(apply: ["max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"]), restore: Boolean): Page
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Immediately replace the frontend access rules for pages; NULL makes them public and an empty list requires authentication"
@@ -205,23 +204,23 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:access") @throttle(name: "cms-graphql")
 
   "Apply the same values to several existing pages at once, optionally including all sub-pages; with 'lang' to their variants in that language, otherwise to their source variants; returns the ids saved"
-  bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false, lang: String @rules(apply: ["nullable", "string", "max:10"])): BulkResult!
+  bulkPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), input: PageInput!, descendants: Boolean = false, lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): BulkResult!
     @guard @cmsPermission(action: "page:save") @throttle(name: "cms-graphql")
 
   "Delete existing pages or only their variants in the given language"
-  dropPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
+  dropPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page]!
     @guard @cmsPermission(action: "page:drop") @throttle(name: "cms-graphql")
 
   "Restore existing pages or only their variants in the given language"
-  keepPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
+  keepPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page]!
     @guard @cmsPermission(action: "page:keep") @throttle(name: "cms-graphql")
 
   "Purge existing pages or only their variants in the given language"
-  purgePage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String): [Page]!
+  purgePage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page]!
     @guard @cmsPermission(action: "page:purge") @throttle(name: "cms-graphql")
 
   "Publish page data in the given language or in the source language if no language is passed"
-  pubPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime, lang: String): [Page]!
+  pubPage(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime, lang: String @rules(apply: ["nullable", "string", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): [Page]!
     @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
 
 

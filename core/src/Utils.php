@@ -684,6 +684,19 @@ class Utils
 
 
     /**
+     * Tests if the value is a valid language code from "cms.locales" (if configured).
+     *
+     * @param string $code Language code
+     * @return bool TRUE if the code is valid and configured
+     */
+    public static function isLocale( string $code ) : bool
+    {
+        $locales = array_map( 'strval', (array) config( 'cms.locales', [] ) );
+        return self::isValidLang( $code ) && ( !$locales || in_array( $code, $locales, true ) );
+    }
+
+
+    /**
      * Generates a slug from the given title.
      *
      * @param string $title The title to generate a slug from

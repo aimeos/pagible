@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Resource;
 use Illuminate\Console\Command;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Controllers\PageController;
@@ -21,6 +23,7 @@ use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
 use Aimeos\Nestedset\NestedSet;
+use Database\Seeders\BenchmarkSeeder;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 
@@ -83,14 +86,14 @@ class BenchmarkTheme extends Command
         $uncachedPage = Page::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        $uncachedPage->forceFill( ['cache' => 0] )->saveQuietly();
+        Page::withoutSyncingToSearch( fn() => Resource::updatePage( $uncachedPage, ['cache' => 0] ) );
 
         // Get a page with cache=5 for cached rendering
         $cachedPage = Page::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->where( 'id', '!=', $uncachedPage->id )
             ->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        $cachedPage->forceFill( ['cache' => 5] )->saveQuietly();
+        Page::withoutSyncingToSearch( fn() => Resource::updatePage( $cachedPage, ['cache' => 5] ) );
 
         $this->header();
         $middleware = new ServeCachedPage();
@@ -103,6 +106,24 @@ class BenchmarkTheme extends Command
             );
             $this->expectStatus( $response, Response::HTTP_OK );
         }, readOnly: true, tries: $tries );
+
+        // Translated page whose navigation falls back to the source language of untranslated pages
+        $variantPage = Page::visible( BenchmarkSeeder::TRANSLATION )->where( 'lang', BenchmarkSeeder::TRANSLATION )
+            ->where( 'tag', '!=', 'root' )->wherePublic()->where( 'domain', $domain )
+            ->orderByDesc( NestedSet::DEPTH )->first();
+
+        if( $variantPage )
+        {
+            Page::withoutSyncingToSearch( fn() => Resource::updatePage( $variantPage, ['cache' => 0] ) );
+
+            $this->benchmark( 'Variant render', function() use ( $variantPage, $domain, $baseurl, $middleware ) {
+                $request = Request::create( $baseurl . '/' . $variantPage->path, 'GET' );
+                $response = $middleware->handle( $request, fn( $request ) =>
+                    ( new PageController )->index( $request, $variantPage->path, $domain )
+                );
+                $this->expectStatus( $response, Response::HTTP_OK );
+            }, readOnly: true, tries: $tries );
+        }
 
         // Complete-page caching belongs to the pre-session middleware. Warm it by
         // running the controller through that boundary once.
@@ -172,12 +193,23 @@ class BenchmarkTheme extends Command
             ( new SearchController )->index( $request, $domain );
         }, readOnly: true, tries: $tries );
 
-        // Sitemap
-        $this->benchmark( 'Sitemap', function() {
-            ob_start();
-            ( new SitemapController )->index()->sendContent();
-            ob_end_clean();
-        }, readOnly: true, tries: (int) ceil( $tries / 10 ) );
+        // Sitemap, the controller reads the domain from the route of the current request
+        $sitemapRequest = Request::create( $baseurl . '/sitemap.xml', 'GET' );
+        $sitemapRoute = ( new Route( 'GET', 'sitemap.xml', [] ) )->bind( $sitemapRequest );
+        $sitemapRoute->setParameter( 'domain', $domain );
+        $sitemapRequest->setRouteResolver( fn() => $sitemapRoute );
+        $request = app( 'request' );
+        app()->instance( 'request', $sitemapRequest );
+
+        try {
+            $this->benchmark( 'Sitemap', function() {
+                ob_start();
+                ( new SitemapController )->index()->sendContent();
+                ob_end_clean();
+            }, readOnly: true, tries: (int) ceil( $tries / 10 ) );
+        } finally {
+            app()->instance( 'request', $request );
+        }
 
         $this->line( '' );
 

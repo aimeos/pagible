@@ -360,6 +360,26 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageLanguageTooLong()
+    {
+        $page = $this->page();
+
+        foreach( [str_repeat( 'x', 11 ), '<x>', 'EN'] as $lang )
+        {
+            foreach( ['dropPage', 'keepPage', 'purgePage', 'pubPage'] as $name )
+            {
+                $this->actingAs( $this->user )->graphQL( '
+                    mutation {
+                        ' . $name . '(id: ["' . $page->id . '"], lang: "' . $lang . '") { id }
+                    }
+                ' )->assertGraphQLErrorMessage( 'Validation failed for the field [' . $name . '].' );
+            }
+        }
+
+        $this->assertNotNull( Page::find( $page->id ) );
+    }
+
+
     public function testPurgePageLanguage()
     {
         $page = $this->page();
@@ -430,8 +450,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testPagesFilterTranslation()
     {
         $counts = fn() => $this->actingAs( $this->user )->graphQL( '{
-            pageTranslations(lang: "de") { stale missing ai }
-        }' )->assertGraphQLErrorFree()->json( 'data.pageTranslations' );
+            pageTranslationStates(langs: ["de"]) { stale missing ai }
+        }' )->assertGraphQLErrorFree()->json( 'data.pageTranslationStates.0' );
 
         $before = $counts();
 
@@ -487,6 +507,10 @@ class GraphqlVariantTest extends GraphqlTestAbstract
             $this->assertEquals( $before['de']['missing'], $after['de']['missing'] );
             $this->assertEquals( $before['fr']['missing'] + 1, $after['fr']['missing'] );
             $this->assertEquals( $before['en'], $after['en'] );
+
+            $this->assertEquals( ['fr', 'de'], array_column( $this->actingAs( $this->user )->graphQL( '{
+                pageTranslationStates(langs: ["fr", "de", "fr"]) { lang }
+            }' )->assertGraphQLErrorFree()->json( 'data.pageTranslationStates' ), 'lang' ) );
         }
         finally
         {
@@ -495,11 +519,48 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageTranslationStatesCached()
+    {
+        $states = fn( string $args ) => $this->actingAs( $this->user )->graphQL( '{
+            pageTranslationStates(langs: ["de"]' . $args . ') { stale }
+        }' )->assertGraphQLErrorFree()->json( 'data.pageTranslationStates.0' );
+
+        $before = $states( '' );
+        $page = $this->page();
+
+        Resource::addVariant( $page->id, 'de', $this->user );
+
+        // cached counts are used until fresh ones are requested
+        $this->assertEquals( ['stale' => $before['stale']], $states( ', cached: true' ) );
+        $this->assertEquals( ['stale' => $before['stale'] + 1], $states( '' ) );
+        $this->assertEquals( ['stale' => $before['stale'] + 1], $states( ', cached: true' ) );
+    }
+
+
+    public function testPageTranslationStatesFreshLimited()
+    {
+        $states = fn() => $this->actingAs( $this->user )->graphQL( '{
+            pageTranslationStates(langs: ["de"]) { stale }
+        }' )->assertGraphQLErrorFree()->json( 'data.pageTranslationStates.0' );
+
+        $before = $states();
+        \Illuminate\Support\Facades\RateLimiter::increment( 'cms-translation-states:' . sha1( \Aimeos\Cms\Tenancy::value() . ':' . $this->user->id ), 60, 10 );
+
+        Resource::addVariant( $this->page()->id, 'de', $this->user );
+
+        // fresh counts scan all variants, so they are computed at most ten times a minute
+        $this->assertEquals( $before, $states() );
+
+        $this->travel( 61 )->seconds();
+        $this->assertEquals( ['stale' => $before['stale'] + 1], $states() );
+    }
+
+
     public function testSavePageRestore()
     {
         $page = $this->page();
         Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::ignoreChanges( $page->id, 'de', $this->user );
+        Resource::ignoreVariants( [$page->id], 'de', $this->user );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation { savePage(id: "' . $page->id . '", input: {title: "Alt"}, lang: "de") { stale } }

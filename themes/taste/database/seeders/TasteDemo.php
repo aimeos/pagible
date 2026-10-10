@@ -8,6 +8,7 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 
@@ -427,7 +428,7 @@ class TasteDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
+        $page = Resource::insertPage( ( new Page() )->forceFill( [
             'lang' => 'en',
             'name' => 'Home',
             'title' => 'Sumi Noodle Bar | Prenzlauer Berg, Berlin',
@@ -440,7 +441,7 @@ class TasteDemo extends AbstractDemo
             'config' => $config,
             'meta' => $meta,
             'content' => $content,
-        ] );
+        ] ) );
 
         $version = $page->versions()->forceCreate( [
             'lang' => 'en',
@@ -461,7 +462,7 @@ class TasteDemo extends AbstractDemo
 
         $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
         $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        Resource::updatePage( $page, ['latest_id' => $version->id] );
         $page->publish( $version );
 
         return $page;

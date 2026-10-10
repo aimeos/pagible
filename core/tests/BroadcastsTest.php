@@ -190,7 +190,7 @@ class BroadcastsTest extends CoreTestAbstract
                 'editor' => 'editor@testbench',
                 'published' => true,
             ] );
-            $published[$page->id] = ['version_id' => (string) $version->id];
+            $published[$page->variant_id] = ['version_id' => (string) $version->id];
         }
 
         config( ['cms.broadcast' => true] );
@@ -205,7 +205,7 @@ class BroadcastsTest extends CoreTestAbstract
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
             $event->projected === $pages->mapWithKeys( fn( Page $page ) => [
-                $page->id => $published[$page->id]['version_id'],
+                $page->id => $published[$page->variant_id]['version_id'],
             ] )->all()
             && !array_key_exists( 'projected', $event->broadcastWith() )
         );
@@ -237,7 +237,7 @@ class BroadcastsTest extends CoreTestAbstract
         Event::assertNotDispatched( Purged::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'purged'
-            && count( $e->ids ) === 2 && $e->broadcastAs() === 'page.purged' );
+            && count( $e->ids ) === 2 && $e->broadcastAs() === 'page.purged' && $e->langs === [] );
     }
 
 

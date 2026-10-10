@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -37,6 +38,12 @@ class CopyPage extends Tool
             'id.required' => 'You must specify the ID of the page to copy.',
         ] );
 
+        // copies of whole subtrees are expensive
+        if( RateLimiter::tooManyAttempts( $key = 'cms-copy:' . $request->user()?->getAuthIdentifier(), 10 ) ) {
+            throw new \Exception( sprintf( 'Too many copies, try again in %1$d seconds.', RateLimiter::availableIn( $key ) ) );
+        }
+
+        RateLimiter::hit( $key );
         $page = Resource::copyPage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
 
         return Response::structured( Presenter::item( $page, true ) );
