@@ -53,6 +53,7 @@ jobs:
           - { package: themes/style, repo: pagible-themes-style }
           - { package: themes/taste, repo: pagible-themes-taste }
           - { package: themes/tonic, repo: pagible-themes-tonic }
+          - { package: themes/mane, repo: pagible-themes-mane }
     steps:
       - uses: actions/checkout@v5
 

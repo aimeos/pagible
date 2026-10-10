@@ -8,6 +8,7 @@ providers:
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\JournalServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
+  - Aimeos\Cms\ManeServiceProvider
   - Aimeos\Cms\MedicalServiceProvider
   - Aimeos\Cms\NewsServiceProvider
   - Aimeos\Cms\PagibleServiceProvider

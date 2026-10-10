@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <h1 class="title">{{ $data->title ?? '' }}</h1>
+    <h1 class="title">@text($data->title ?? '')</h1>
 
     @if($data->text ?? null)
         <div class="cms-text">@markdown($data->text)</div>

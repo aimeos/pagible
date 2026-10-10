@@ -2,7 +2,7 @@
 <link href="{{ cmstheme($page, 'cta.css') }}" rel="preload" as="style">
 @endPushOnce
 
-<h2 class="title">{{ $data->title ?? '' }}</h2>
+<h2 class="title">@text($data->title ?? '')</h2>
 
 @if($data->text ?? null)
     <div class="cms-text">@markdown($data->text)</div>
