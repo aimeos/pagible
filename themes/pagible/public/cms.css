@@ -179,7 +179,7 @@ nav details {
 }
 
 header nav a,
-header nav details.dropdown > summary:not([role]) {
+header nav details.is-menu > summary:not([role]) {
     display: flex;
     align-items: center;
     list-style: none;
@@ -201,11 +201,11 @@ header nav a:not([role]):active {
 
 header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
 header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
-header nav details.dropdown > summary:not([role]):hover,
-header nav details.dropdown > summary:not([role]):focus,
-header nav details.dropdown > summary:not([role]):focus-visible,
-header nav details.dropdown > summary:not([role]):active,
-header nav details.dropdown[open] > summary:not([role]) {
+header nav details.is-menu > summary:not([role]):hover,
+header nav details.is-menu > summary:not([role]):focus,
+header nav details.is-menu > summary:not([role]):focus-visible,
+header nav details.is-menu > summary:not([role]):active,
+header nav details.is-menu[open] > summary:not([role]) {
     color: var(--pico-primary-hover);
     background: transparent;
     box-shadow: none;
@@ -324,18 +324,28 @@ header nav .sidebar-close button {
         padding: 0;
     }
 
+    header nav.small .menu details > summary {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        cursor: pointer;
+    }
+
     header nav.small .menu details > summary::after {
         content: "";
-        display: block;
-        float: inline-end;
-        margin-inline-start: .25rem;
-        height: calc(1rem * var(--pico-line-height, 1.5));
-        transform: rotate(0) translateX(.2rem);
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-inline-start: 0.375rem;
         background-image: var(--pico-icon-chevron);
-        background-position: right center;
+        background-position: center;
         background-size: 1rem auto;
         background-repeat: no-repeat;
-        width: 1rem;
+        transition: transform 0.15s ease;
+    }
+
+    header nav.small .menu details[open] > summary::after {
+        transform: rotate(0.5turn);
     }
 }
 

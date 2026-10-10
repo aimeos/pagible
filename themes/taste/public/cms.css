@@ -174,7 +174,7 @@ header nav .brand a {
 }
 
 header nav a,
-header nav details.dropdown > summary:not([role]) {
+header nav details.is-menu > summary:not([role]) {
     display: flex;
     align-items: center;
     min-height: 2.75rem;
@@ -194,9 +194,9 @@ header nav details.dropdown > summary:not([role]) {
 header nav a:hover,
 header nav a:focus,
 header nav a.active,
-header nav details.dropdown > summary:not([role]):hover,
-header nav details.dropdown > summary:not([role]):focus,
-header nav details.dropdown[open] > summary:not([role]) {
+header nav details.is-menu > summary:not([role]):hover,
+header nav details.is-menu > summary:not([role]):focus,
+header nav details.is-menu[open] > summary:not([role]) {
     border: 0;
     box-shadow: none;
     color: var(--pico-primary);
@@ -299,6 +299,30 @@ header nav .sidebar-close button {
     header nav ul.menu > li:last-child:not(.login) > a {
         display: inline-flex;
         margin-block: 0.5rem;
+    }
+
+    header nav.small .menu details > summary {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        cursor: pointer;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-inline-start: 0.375rem;
+        background-image: var(--pico-icon-chevron);
+        background-position: center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        transition: transform 0.15s ease;
+    }
+
+    header nav.small .menu details[open] > summary::after {
+        transform: rotate(0.5turn);
     }
 }
 
