@@ -1,0 +1,285 @@
+{
+    "label": "Tonic",
+    "description": "Dark, moody design for cocktail bars, wine bars and pubs with brass and oxblood accents, Didone headings, Art Deco ornaments and sharp corners",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "bar": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M21 5V3H3v2l8 9v5H6v2h12v-2h-5v-5zM7.43 7L5.66 5h12.69l-1.78 2z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Name of the bar, pub or club",
+                    "required": true
+                },
+                "business-type": {
+                    "type": "select",
+                    "label": "Business type",
+                    "hint": "Kind of business shown to search engines",
+                    "default": "BarOrPub",
+                    "options": [
+                        {
+                            "value": "BarOrPub",
+                            "label": "Bar or pub"
+                        },
+                        {
+                            "value": "NightClub",
+                            "label": "Night club"
+                        },
+                        {
+                            "value": "Brewery",
+                            "label": "Brewery or taproom"
+                        },
+                        {
+                            "value": "Restaurant",
+                            "label": "Restaurant"
+                        },
+                        {
+                            "value": "LocalBusiness",
+                            "label": "Other business"
+                        }
+                    ],
+                    "required": true
+                },
+                "street-address": {
+                    "type": "string",
+                    "label": "Street address",
+                    "hint": "Street and house number",
+                    "required": true
+                },
+                "postal-code": {
+                    "type": "string",
+                    "label": "Postal code",
+                    "hint": "Postal code of the bar",
+                    "required": true
+                },
+                "locality": {
+                    "type": "string",
+                    "label": "City",
+                    "hint": "City the bar is located in",
+                    "required": true
+                },
+                "country": {
+                    "type": "string",
+                    "label": "Country code",
+                    "hint": "Two letter ISO country code, e.g. DE or US",
+                    "default": "DE",
+                    "min": 2,
+                    "max": 2,
+                    "uppercase": true,
+                    "required": true
+                },
+                "telephone": {
+                    "type": "string",
+                    "hint": "Phone number in international format, also used by the call button",
+                    "required": true
+                },
+                "email": {
+                    "type": "string",
+                    "hint": "Email address for reservations, private events and press"
+                },
+                "announcement": {
+                    "type": "string",
+                    "label": "Announcement",
+                    "hint": "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+                },
+                "booking": {
+                    "type": "string",
+                    "label": "Booking link",
+                    "hint": "Link to the table reservation page, shown as a button in the header"
+                },
+                "menu": {
+                    "type": "string",
+                    "label": "Menu link",
+                    "hint": "Link to the page with the drinks menu"
+                },
+                "cuisine": {
+                    "type": "string",
+                    "label": "Cuisine",
+                    "hint": "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+                },
+                "price-range": {
+                    "type": "string",
+                    "label": "Price range",
+                    "hint": "Price level of the bar, e.g. $$ or €€"
+                },
+                "notice": {
+                    "type": "string",
+                    "label": "Notice",
+                    "hint": "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+                },
+                "action-bar": {
+                    "type": "switch",
+                    "label": "Action bar",
+                    "hint": "Show call and booking buttons at the bottom of the screen on phones",
+                    "default": true
+                },
+                "hours": {
+                    "type": "items",
+                    "label": "Opening hours",
+                    "hint": "Opening hours for each day of the week, shown in the footer",
+                    "identity": "id",
+                    "item": {
+                        "day": {
+                            "type": "select",
+                            "hint": "Day of the week",
+                            "options": [
+                                {
+                                    "value": "Monday",
+                                    "label": "Monday"
+                                },
+                                {
+                                    "value": "Tuesday",
+                                    "label": "Tuesday"
+                                },
+                                {
+                                    "value": "Wednesday",
+                                    "label": "Wednesday"
+                                },
+                                {
+                                    "value": "Thursday",
+                                    "label": "Thursday"
+                                },
+                                {
+                                    "value": "Friday",
+                                    "label": "Friday"
+                                },
+                                {
+                                    "value": "Saturday",
+                                    "label": "Saturday"
+                                },
+                                {
+                                    "value": "Sunday",
+                                    "label": "Sunday"
+                                }
+                            ]
+                        },
+                        "opens": {
+                            "type": "string",
+                            "hint": "Opening time in 24 hour format, e.g. 18:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        },
+                        "closes": {
+                            "type": "string",
+                            "hint": "Closing time in 24 hour format, also after midnight, e.g. 02:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        }
+                    }
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M21 5V3H3v2l8 9v5H6v2h12v-2h-5v-5zM7.43 7L5.66 5h12.69l-1.78 2z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#EDE4D3"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#14110F"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#C9A45C66"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#EDE4D3"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#FFF8EA"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#14110F"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#C9A45C"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#C9A45C"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#DDBB76"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#DDBB76"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#8E2B3A"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#8E2B3A"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#A63647"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#A63647"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners",
+                    "default": "0"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "◆"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,104 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.before-after .compare {
+    --pos: 50%;
+    position: relative;
+    direction: ltr;
+    overflow: hidden;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: 0 1.5rem 3rem -1rem #0F2D3A59;
+    user-select: none;
+}
+
+.before-after .compare picture,
+.before-after .compare img {
+    display: block;
+    width: 100%;
+}
+
+.before-after .compare img {
+    height: auto;
+}
+
+.before-after .compare .before {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.before-after .compare .before img {
+    height: 100%;
+    object-fit: cover;
+}
+
+.before-after .compare .label {
+    position: absolute;
+    top: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background-color: var(--medical-dark);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.before-after .compare .label-before {
+    left: 1rem;
+}
+
+.before-after .compare .label-after {
+    right: 1rem;
+    background-color: var(--pico-primary);
+    color: var(--pico-primary-inverse);
+}
+
+.before-after .compare .handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 0.375rem;
+    transform: translateX(-50%);
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0.75rem #0F2D3A80;
+    pointer-events: none;
+}
+
+.before-after .compare .handle::after {
+    content: "\2194";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    transform: translate(-50%, -50%);
+    border: 3px solid #FFFFFF;
+    border-radius: 999px;
+    background-color: var(--pico-primary);
+    color: #FFFFFF;
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 0.25rem 1rem #0F2D3A80;
+}
+
+.before-after .compare:has(input:focus-visible) .handle::after {
+    outline: 0.2rem solid #FFFFFF;
+    outline-offset: 0.2rem;
+}
+
+.before-after .compare input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+}

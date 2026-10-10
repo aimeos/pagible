@@ -34,13 +34,17 @@ jobs:
           - { package: theme, repo: pagible-theme }
           - { package: webhooks, repo: pagible-webhooks }
           - { package: themes/bold, repo: pagible-themes-bold }
+          - { package: themes/brew, repo: pagible-themes-brew }
+          - { package: themes/counsel, repo: pagible-themes-counsel }
           - { package: themes/estate, repo: pagible-themes-estate }
           - { package: themes/flow, repo: pagible-themes-flow }
           - { package: themes/glass, repo: pagible-themes-glass }
           - { package: themes/journal, repo: pagible-themes-journal }
           - { package: themes/luxury, repo: pagible-themes-luxury }
+          - { package: themes/medical, repo: pagible-themes-medical }
           - { package: themes/news, repo: pagible-themes-news }
           - { package: themes/pagible, repo: pagible-themes-pagible }
+          - { package: themes/paws, repo: pagible-themes-paws }
           - { package: themes/paper, repo: pagible-themes-paper }
           - { package: themes/premium, repo: pagible-themes-premium }
           - { package: themes/solar, repo: pagible-themes-solar }
@@ -48,6 +52,8 @@ jobs:
           - { package: themes/volt, repo: pagible-themes-volt }
           - { package: themes/style, repo: pagible-themes-style }
           - { package: themes/taste, repo: pagible-themes-taste }
+          - { package: themes/tonic, repo: pagible-themes-tonic }
+          - { package: themes/mane, repo: pagible-themes-mane }
     steps:
       - uses: actions/checkout@v5
 

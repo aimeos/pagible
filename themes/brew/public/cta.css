@@ -1,0 +1,89 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cta {
+    display: flow-root;
+}
+
+.cta .container {
+    max-width: 64rem;
+    margin: 4rem auto;
+    padding: 4rem 2rem;
+    background-color: #2A211C;
+    border-radius: 2rem;
+    text-align: center;
+}
+
+.cms-content > .cta .container {
+    padding: 4rem 2rem;
+}
+
+.cta .title {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    color: #FFFDF9;
+}
+
+.cta .title::before {
+    margin-inline: auto;
+    transform: translateX(-0.875rem);
+}
+
+.cta .title em {
+    color: var(--pico-secondary);
+}
+
+.cta .cms-text {
+    --pico-color: #FFFDF9CC;
+    max-width: 44rem;
+    margin-inline: auto;
+    color: #FFFDF9CC;
+    line-height: 1.65;
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.cta .btn {
+    margin: 0;
+}
+
+.cta .btn:not(:first-child) {
+    color: #FFFDF9;
+    border-color: #FFFDF999;
+}
+
+.cta .btn:not(:first-child):hover {
+    color: var(--pico-contrast);
+    background-color: #FFFDF9;
+    border-color: #FFFDF9;
+}
+
+.cta .btn:first-child {
+    color: var(--pico-secondary-inverse);
+    background-color: var(--pico-secondary);
+    border-color: var(--pico-secondary);
+}
+
+.cta .btn:first-child:hover {
+    color: var(--pico-contrast);
+    background-color: #FFFDF9;
+    border-color: #FFFDF9;
+}
+
+@media screen and (min-width: 768px) {
+    .cta .container,
+    .cms-content > .cta .container {
+        padding: 5rem 4rem;
+    }
+}

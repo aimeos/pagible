@@ -1,0 +1,27 @@
+/**
+ * Paws Theme - Warm, friendly design for veterinary clinics and animal hospitals
+
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image > img,
+.image > source {
+    max-width: 100%;
+    display: block;
+    margin: auto;
+}
+
+.image picture,
+picture.image {
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    display: block;
+}
+
+.cms-content > .image picture {
+    padding: 2rem;
+}
+
+.image picture img {
+    border-radius: calc(var(--pico-border-radius) * 2);
+}

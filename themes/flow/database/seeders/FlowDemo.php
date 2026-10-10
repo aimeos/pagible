@@ -28,12 +28,13 @@ class FlowDemo extends AbstractDemo
         'gas-installations' => 'Gas pipe checks, gas boiler service and safe gas installations in Freiburg by a company registered with the local network operator.',
         'heat-pumps' => 'Heat pumps for existing homes in Freiburg: heat load calculation, subsidy application and installation by certified heating engineers.',
         'heating-service' => 'Annual heating service and boiler repairs in Freiburg for gas, oil and heat pump systems, with a fixed price and a service report.',
-        'herdern-heat-pump' => 'A 1970s house in Freiburg-Herdern switched from an old gas boiler to an air source heat pump in five days, with radiators kept.',
+        'herdern-heat-pump' => 'A 1970s house in Freiburg-Herdern switched from an old gas boiler to an air source heat pump in five days, keeping most of the original radiators.',
         'imprint' => 'Legal notice of Brenner & Quell Haustechnik GmbH, Freiburg im Breisgau.',
+        'privacy' => 'Privacy policy of Brenner & Quell Haustechnik GmbH, Freiburg im Breisgau.',
         'emmendingen-water-pipes' => 'New drinking water pipes for an apartment building with 18 flats in Emmendingen, installed floor by floor while the tenants stayed.',
         'projects' => 'Heat pumps, bathrooms and drinking water installations Brenner & Quell has completed in Freiburg and the surrounding area.',
         'services' => 'Heat pumps, heating service, bathrooms, drinking water, gas installations and a 24/7 emergency service from one Freiburg company.',
-        'wiehre-bathroom' => 'A dated bathroom in Freiburg-Wiehre turned into a level-access bathroom with a walk-in shower in twelve working days.',
+        'wiehre-bathroom' => 'A dated bathroom in Freiburg-Wiehre turned into a level-access bathroom with a walk-in shower in fourteen working days.',
     ];
 
     /**
@@ -98,7 +99,7 @@ class FlowDemo extends AbstractDemo
                 'file' => ['id' => $this->img( 'heating-room' ), 'type' => 'file'],
                 'position' => 'grid-start',
                 'ratio' => '1-1',
-                'text' => "## From the boiler room to the heat pump\n\nWerner Brenner and Josef Quell opened their workshop in Freiburg in 1987 and installed gas boilers all over the Breisgau. Today Katrin Brenner, master plumber and heating engineer, runs the company with a team of twelve installers, three apprentices and our own customer service.\n\nWe are a master craftsman business, a member of the SHK guild and registered with the local network operator for gas and drinking water work. Every installation is documented, and you get the service report by email on the same day.",
+                'text' => "## From the boiler room to the heat pump\n\nWerner Brenner and Josef Quell opened their workshop in Freiburg in 1987 and installed gas boilers all over the Breisgau. Today Katrin Brenner, master plumber and heating engineer, runs the company with a team of twelve installers, three apprentices and our own customer service.\n\nWe are a master craftsman business, a member of the SHK guild and a registered installer with bnNETZE, the local network operator, for gas and drinking water work. Every installation is documented, and you get the service report by email on the same day.",
             ]],
             $this->badges(),
             ['id' => Utils::uid(), 'type' => 'testimonial', 'group' => 'main', 'data' => [
@@ -172,7 +173,32 @@ class FlowDemo extends AbstractDemo
             'status' => 2,
         ], [
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
-                'text' => "# Imprint\n\n**Brenner & Quell Haustechnik GmbH**\nQuellenweg 8\n79108 Freiburg im Breisgau\nGermany\n\nTelephone: 0761 4587 210\nEmail: info@brenner-quell.example\n\nManaging director: Katrin Brenner\nRegister court: Amtsgericht Freiburg, HRB 712345\nVAT ID: DE 123 456 789\n\nMaster craftsman business in the plumbing, heating and air conditioning trade, registered in the trades register of the Chamber of Crafts Freiburg.\n\nThis is a demo website for the Flow theme. Brenner & Quell is a fictional company.",
+                'text' => "# Imprint\n\n**Brenner & Quell Haustechnik GmbH**\nQuellenweg 8\n79108 Freiburg im Breisgau\nGermany\n\nTelephone: 0761 4587 210\nEmail: info@brenner-quell.example\n\nManaging director: Katrin Brenner\nRegister court: Amtsgericht Freiburg, HRB 712345\nVAT ID: DE 123 456 789\n\nMaster craftsman business in the plumbing, heating and air conditioning trade, registered in the trades register of the Chamber of Crafts Freiburg.\n\nProfessional title: Installateur- und Heizungsbauermeister (awarded in Germany)\nChamber: Handwerkskammer Freiburg, Bismarckallee 6, 79098 Freiburg im Breisgau\nProfessional rules: Handwerksordnung (www.gesetze-im-internet.de/hwo)\n\nConsumer dispute resolution: We are not willing or obliged to take part in dispute resolution proceedings before a consumer arbitration board.\n\nThis is a demo website for the Flow theme. Brenner & Quell is a fictional company.",
+            ]],
+        ], $home );
+
+        return $this;
+    }
+
+
+    /**
+     * Creates the privacy policy page below the home page.
+     *
+     * @param Page $home Home page
+     * @return static Same object for fluent calls
+     */
+    protected function addPrivacy( Page $home ) : static
+    {
+        $this->page( [
+            'lang' => 'en',
+            'name' => 'Privacy',
+            'title' => 'Privacy Policy | Brenner & Quell Haustechnik',
+            'path' => 'privacy',
+            'type' => 'page',
+            'status' => 2,
+        ], [
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
+                'text' => "# Privacy policy\n\n## Who is responsible\n\nBrenner & Quell Haustechnik GmbH, managing director Katrin Brenner, Quellenweg 8, 79108 Freiburg im Breisgau, info@brenner-quell.example.\n\n## Quote requests\n\nWhen you send the quote form, we use your name, phone number, email address, postcode, job type, message and the photos you attach only to prepare your offer and plan the job (Art. 6 (1) (b) GDPR). Please don't upload photos that show people or documents we don't need. Requests that don't lead to an order are deleted together with the photos after six months.\n\n## Orders\n\nFor orders, we keep offers, invoices and service reports for the periods required by commercial and tax law (up to ten years). We share your data with manufacturers, the network operator, the chimney sweep or the KfW only as far as necessary for your job, warranty claims or your grant.\n\n## This website\n\nThe website doesn't use tracking or advertising cookies. Our server stores technical access data such as the IP address for seven days to protect against attacks. The map is loaded from OpenStreetMap only after you open it.\n\n## Your rights\n\nYou have the right to access, rectification, erasure, restriction of processing, objection and data portability, and you can lodge a complaint with the data protection authority of Baden-Württemberg (Landesbeauftragter für den Datenschutz und die Informationsfreiheit Baden-Württemberg).\n\nThis is a demo website for the Flow theme. Brenner & Quell is a fictional company.",
             ]],
         ], $home );
 
@@ -195,12 +221,12 @@ class FlowDemo extends AbstractDemo
             'title' => 'From Gas Boiler to Heat Pump in Freiburg-Herdern',
             'path' => 'herdern-heat-pump',
         ], 'Warm radiators without gas',
-            "The 1970s house still had its original radiators and a gas boiler that was 24 years old. Many installers wanted to replace every radiator first. Our room-by-room heat load calculation showed that only three of them were too small, so the family kept the others and saved almost €9,000.\n\nThe new air source heat pump runs at a flow temperature of 48 °C on the coldest days. Together with the hydraulic balancing, the heating costs fell by 41% in the first winter.",
+            "The 1970s house still had its original radiators and a gas boiler that was 24 years old. Many installers wanted to replace every radiator first. Our room-by-room heat load calculation showed that only three of them were too small, so the family kept the others and saved almost €9,000.\n\nThe new air source heat pump runs at a flow temperature of 48 °C on the coldest days. Together with the hydraulic balancing and a heat pump electricity tariff, the heating costs fell by around a third in the first winter. The KfW grant was approved in 2025; under the rules in force since July 2026 it would be lower.",
             'heat-pump-house', ['boiler', 'heat-pump'],
             [
                 ['title' => '5', 'text' => 'Days from the old boiler to warm radiators'],
-                ['title' => '€16.4k', 'text' => 'Federal subsidy granted for the system'],
-                ['title' => '−41%', 'text' => 'Heating costs in the first winter'],
+                ['title' => '€16.4k', 'text' => 'Federal KfW grant, approved in 2025'],
+                ['title' => '−33%', 'text' => 'Heating costs in the first winter'],
             ],
             [
                 ['label' => 'Day 1', 'title' => 'Removal', 'text' => 'Gas boiler and chimney connection removed, gas pipe sealed by our gas fitters.'],
@@ -216,18 +242,18 @@ class FlowDemo extends AbstractDemo
             'title' => 'Level-Access Bathroom in Freiburg-Wiehre',
             'path' => 'wiehre-bathroom',
         ], 'A bathroom for the next thirty years',
-            "The owners wanted to stay in their flat as long as possible, but the high bathtub was becoming a daily obstacle. We replaced it with a walk-in shower without a step, a wall-hung toilet at a comfortable height and a basin you can use while sitting.\n\nPlumbers, tilers and an electrician worked to one schedule, coordinated by a single site manager. The owners had one contact, one fixed price and a finished bathroom after twelve working days.",
+            "The owners wanted to stay in their flat as long as possible, but the high bathtub was becoming a daily obstacle. We replaced it with a walk-in shower without a step, a wall-hung toilet at a comfortable height and a basin you can use while sitting. As the old building has timber beam floors, we fitted a shallow floor drain and raised the bathroom floor slightly, so there is still no step at the door.\n\nPlumbers, tilers and an electrician worked to one schedule, coordinated by a single site manager. The owners had one contact, one fixed price and a finished bathroom after fourteen working days.",
             'shower', ['bath-old', 'bath-new'],
             [
-                ['title' => '12', 'text' => 'Working days from removal to the last silicone joint'],
+                ['title' => '14', 'text' => 'Working days from removal to the last silicone joint'],
                 ['title' => '0 cm', 'text' => 'Step into the new shower'],
                 ['title' => '1', 'text' => 'Contact for all trades'],
             ],
             [
                 ['label' => 'Days 1–2', 'title' => 'Strip out', 'text' => 'Old tiles, bathtub and pipes removed, rooms next door protected from dust.'],
                 ['label' => 'Days 3–5', 'title' => 'Pipes and drains', 'text' => 'New water pipes, a floor drain for the shower and the frame for the toilet.'],
-                ['label' => 'Days 6–10', 'title' => 'Sealing and tiles', 'text' => 'Waterproofing, large format tiles and the glass shower screen.'],
-                ['label' => 'Days 11–12', 'title' => 'Fittings', 'text' => 'Basin, toilet, thermostatic shower, lighting and a final pressure test.'],
+                ['label' => 'Days 6–12', 'title' => 'Sealing and tiles', 'text' => 'Waterproofing with drying time, large format tiles and the glass shower screen.'],
+                ['label' => 'Days 13–14', 'title' => 'Fittings', 'text' => 'Basin, toilet, thermostatic shower, lighting and a final pressure test.'],
             ],
             ['toilet', 'siphon', 'basin', 'shower'],
         );
@@ -237,7 +263,7 @@ class FlowDemo extends AbstractDemo
             'title' => 'New Drinking Water Pipes for 18 Flats in Emmendingen',
             'path' => 'emmendingen-water-pipes',
         ], 'Clean water on every floor',
-            "The legionella test in the apartment building came back above the limit, and the galvanised steel pipes from 1968 were clogged with rust. We replaced the risers and the pipes in every flat with stainless steel, insulated them and installed a new hot water cylinder with a circulation pump.\n\nThe work ran floor by floor, so every tenant was without water for a single day only. The follow-up test after four weeks showed no legionella in any sample.",
+            "The legionella test in the apartment building came back above the technical action value of 100 CFU per 100 ml, so the health office required a risk analysis. On top of that, the galvanised steel pipes from 1968 were clogged with rust. We replaced the risers and the pipes in every flat with stainless steel, insulated them and installed a new hot water cylinder with a circulation pump.\n\nThe work ran floor by floor, so every tenant was without water for a single day only. The follow-up test after four weeks showed no legionella in any sample.",
             'tap', ['pipes', 'heating-room'],
             [
                 ['title' => '18', 'text' => 'Flats with new pipes'],
@@ -247,8 +273,8 @@ class FlowDemo extends AbstractDemo
             [
                 ['label' => 'Week 1', 'title' => 'Survey and plan', 'text' => 'Pipe routes, hot water demand and a schedule agreed with the property manager.'],
                 ['label' => 'Weeks 2–4', 'title' => 'Risers', 'text' => 'New stainless steel risers in the shafts with a temporary supply for the tenants.'],
-                ['label' => 'Weeks 5–7', 'title' => 'Flats', 'text' => 'Kitchens and bathrooms connected floor by floor, one day per flat.'],
-                ['label' => 'Week 8', 'title' => 'Flushing and testing', 'text' => 'Pipes flushed, hot water cylinder commissioned and samples taken by the lab.'],
+                ['label' => 'Weeks 5–8', 'title' => 'Flats', 'text' => 'Kitchens and bathrooms connected floor by floor, one day per flat.'],
+                ['label' => 'Week 9', 'title' => 'Flushing and testing', 'text' => 'Pipes flushed, hot water cylinder commissioned and samples taken by the lab.'],
             ],
             ['water-heater', 'meter', 'tap', 'manifold'],
         );
@@ -287,9 +313,11 @@ class FlowDemo extends AbstractDemo
                 'title' => 'Common questions',
                 'items' => [
                     ['title' => 'Does a heat pump work with my radiators?', 'text' => 'In most houses, yes. We calculate the heat load of every room and check each radiator. Usually only a few need to be replaced, and underfloor heating is not required.'],
-                    ['title' => 'Do you help with the subsidy application?', 'text' => 'Yes. We prepare the confirmation you need for the federal subsidy and sign the contract with a condition, so you only order once the grant is approved.'],
-                    ['title' => 'How often should my heating be serviced?', 'text' => 'Gas and oil heating once a year, heat pumps every one to two years. Regular service keeps the warranty valid and the system efficient.'],
-                    ['title' => 'What should I do if I smell gas?', 'text' => 'Don\'t use light switches or phones in the building, open the windows, close the gas valve and leave the house. Call the gas emergency number of your network operator from outside, then call us.'],
+                    ['title' => 'Do you help with the subsidy application?', 'text' => 'Yes. We prepare the confirmation you need for the KfW grant and sign the contract with a condition, so you only order once the grant is approved. Since July 2026 the grant is 30% plus a climate speed bonus of 16% and an income bonus of up to 40%, on up to €28,000 of costs. The City of Freiburg adds its own "Klimafreundlich Wohnen" programme on top.'],
+                    ['title' => 'Can I still install a new gas boiler?', 'text' => 'Yes. The Building Modernisation Act passed in July 2026 dropped the rule that new heating must use 65% renewable energy. A gas boiler gets no KfW grant, though, and rising CO₂ prices make gas more expensive every year. We calculate both options for your house.'],
+                    ['title' => 'Will district heating come to my street?', 'text' => 'Freiburg plans to cover about half of its heat demand with district heating. Check the city\'s heat network map before you decide. If your street isn\'t planned for the next years, a heat pump is usually the better choice.'],
+                    ['title' => 'How often should my heating be serviced?', 'text' => 'Gas and oil heating once a year, heat pumps every one to two years. Regular service keeps the manufacturer warranty valid and the system efficient. With our maintenance contract, we book the date for you and you get priority in our emergency service.'],
+                    ['title' => 'What should I do if I smell gas?', 'text' => 'Don\'t use light switches or phones in the building, open the windows, close the gas valve and leave the house. Call the bnNETZE gas emergency number 0800 2 767 767 from outside, then call us.'],
                 ],
             ]],
         ], $home );
@@ -315,9 +343,9 @@ class FlowDemo extends AbstractDemo
             'cards' => [
                 ['title' => 'Meisterbetrieb', 'text' => 'Master craftsman business in plumbing and heating'],
                 ['title' => 'SHK guild', 'text' => 'Member of the local plumbing and heating guild'],
-                ['title' => 'Gas & water', 'text' => 'Registered with the local network operator'],
-                ['title' => 'Heat pump expert', 'text' => 'Certified installers for air and ground source systems'],
-                ['title' => '5-year warranty', 'text' => 'On all our installation work'],
+                ['title' => 'Gas & water', 'text' => 'Registered installer with bnNETZE for gas and drinking water'],
+                ['title' => 'Heat pump expert', 'text' => 'F-gas certified (category I) for split heat pumps'],
+                ['title' => 'Maintenance contract', 'text' => 'Yearly service at a fixed date and priority in our emergency service'],
             ],
         ]];
     }
@@ -333,7 +361,7 @@ class FlowDemo extends AbstractDemo
         return $this->element ??= $this->saveElement( 'cards', 'Brenner & Quell footer', ['columns' => '4', 'cards' => [
             ['title' => 'Brenner & Quell', 'text' => "Master plumbers and heating engineers for homes and landlords in Freiburg and the Breisgau since 1987."],
             ['title' => 'Services', 'text' => "- [Heat pumps](/heat-pumps)\n- [Heating service](/heating-service)\n- [Bathrooms](/bathrooms)\n- [Drinking water](/drinking-water)"],
-            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About us](/about)\n- [Imprint](/imprint)"],
+            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About us](/about)\n- [Imprint](/imprint)\n- [Privacy](/privacy)"],
             ['title' => 'Contact', 'text' => "Quellenweg 8\n79108 Freiburg im Breisgau\n\n0761 4587 210\nEmergencies 0761 4587 299\n[Get a fixed price](/contact)"],
         ]] );
     }
@@ -406,7 +434,7 @@ class FlowDemo extends AbstractDemo
                 'layout' => 'figures',
                 'cards' => [
                     ['title' => '1987', 'text' => 'Family business in Freiburg'],
-                    ['title' => '640', 'text' => 'Heat pumps installed'],
+                    ['title' => '280', 'text' => 'Heat pumps installed'],
                     ['title' => '2 h', 'text' => 'Emergency response time'],
                     ['title' => '4.9/5', 'text' => 'From 412 customer reviews'],
                 ],
@@ -437,7 +465,7 @@ class FlowDemo extends AbstractDemo
             ]],
             ['id' => Utils::uid(), 'type' => 'cta', 'group' => 'main', 'data' => [
                 'title' => 'Burst pipe or no heating?',
-                'text' => 'Close the main water valve and call our emergency service. A plumber is with you within two hours, day or night. If you smell gas, leave the house first and call the gas emergency number of your network operator.',
+                'text' => 'Close the main water valve and call our emergency service. A plumber is with you within two hours, day or night. If you smell gas, leave the house first and call the bnNETZE gas emergency number 0800 2 767 767 from outside.',
                 'buttons' => [
                     ['label' => 'Call 0761 4587 299', 'url' => 'tel:+497614587299'],
                     ['label' => 'Emergency service', 'url' => '/emergency-service'],
@@ -505,7 +533,7 @@ SVG;
         return [
             [['name' => 'Heat pumps', 'title' => 'Heat Pump Installation in Freiburg | Brenner & Quell', 'path' => 'heat-pumps'],
                 'Heat with the air around your house', 'heat-pump-house', 'heat-pump',
-                "## Planned for existing homes\n\nA heat pump doesn't need a new building. We calculate the heat load of every room, check your radiators and choose a unit that runs quietly and efficiently at low flow temperatures.\n\nWe prepare the documents for the federal subsidy, remove the old boiler and hand over a system with hydraulic balancing, a hot water cylinder and an app you understand.",
+                "## Planned for existing homes\n\nA heat pump doesn't need a new building. We calculate the heat load of every room, check your radiators and choose a unit that runs quietly and efficiently at low flow temperatures.\n\nWe prepare the documents for the KfW grant and the City of Freiburg's \"Klimafreundlich Wohnen\" programme, remove the old boiler and hand over a system with hydraulic balancing, a hot water cylinder and an app you understand.",
                 [
                     ['title' => 'Heat load calculation', 'text' => 'Room by room, so only the radiators that are really too small get replaced.'],
                     ['title' => 'Subsidy support', 'text' => 'All confirmations for your grant application, prepared by us.'],
@@ -513,15 +541,15 @@ SVG;
                 ]],
             [['name' => 'Heating service', 'title' => 'Heating Service and Boiler Repair in Freiburg | Brenner & Quell', 'path' => 'heating-service'],
                 'Keep your heating running for years', 'heating-room', 'manifold',
-                "## Service for gas, oil and heat pumps\n\nA serviced heating system uses less energy, breaks down less often and keeps its warranty. We clean the burner or heat exchanger, check safety devices and pressure, read the fault memory and optimise the settings.\n\nYou get a service report by email and a reminder before the next service is due.",
+                "## Service for gas, oil and heat pumps\n\nA serviced heating system uses less energy, breaks down less often and keeps its warranty. We clean the burner or heat exchanger, check safety devices and pressure, read the fault memory and optimise the settings.\n\nYou get a service report by email and a reminder before the next service is due. With our maintenance contract, we book the date for you and you get priority in our emergency service.",
                 [
                     ['title' => 'All brands', 'text' => 'Gas and oil boilers, heat pumps and hot water cylinders of all common makers.'],
-                    ['title' => 'Fixed price', 'text' => 'Service at a fixed price, repairs quoted before we start.'],
+                    ['title' => 'Maintenance contract', 'text' => 'Yearly service at a fixed date and priority when your heating fails.'],
                     ['title' => 'Service report', 'text' => 'Every value measured and documented for you and the chimney sweep.'],
                 ]],
             [['name' => 'Bathrooms', 'title' => 'Bathroom Renovation in Freiburg | Brenner & Quell', 'path' => 'bathrooms'],
                 'Your new bathroom from one hand', 'shower', 'toilet',
-                "## Planning, plumbing, tiles and light\n\nWe plan your bathroom with you on site, show you the fittings in our showroom and coordinate all trades. One site manager, one schedule and one fixed price, from the first tile removed to the last silicone joint.\n\nLevel-access showers, wall-hung toilets and wide doors make the bathroom ready for every stage of life.",
+                "## Planning, plumbing, tiles and light\n\nWe plan your bathroom with you on site, show you the fittings in our showroom and coordinate all trades. One site manager, one schedule and one fixed price, from the first tile removed to the last silicone joint.\n\nLevel-access showers, wall-hung toilets and wide doors make the bathroom ready for every stage of life. With a care level, the care insurance pays up to €4,180 for the conversion, and the KfW grant 455-B adds up to €6,250 while its budget lasts. Apply before you sign the order.",
                 [
                     ['title' => 'One contact', 'text' => 'A site manager coordinates plumbers, tilers and electricians.'],
                     ['title' => 'Barrier-free', 'text' => 'Level-access showers and fittings planned for every age.'],
@@ -529,7 +557,7 @@ SVG;
                 ]],
             [['name' => 'Drinking water', 'title' => 'Drinking Water Installations in Freiburg | Brenner & Quell', 'path' => 'drinking-water'],
                 'Clean water from every tap', 'tap', 'water-heater',
-                "## Pipes, tests and treatment\n\nOld galvanised or lead pipes, low pressure and brown water are signs that your installation needs attention. We renew pipes in houses and apartment buildings, flush and disinfect them and fit filters and water softeners where they make sense.\n\nLandlords with central hot water get the legionella test arranged and documented as required by law.",
+                "## Pipes, tests and treatment\n\nOld galvanised or lead pipes, low pressure and brown water are signs that your installation needs attention. We renew pipes in houses and apartment buildings, flush and disinfect them and fit filters and water softeners where they make sense.\n\nLead pipes had to be removed by 12 January 2026. If your house still has them, we replace them and confirm it for the health office.\n\nLandlords whose central hot water system has a cylinder over 400 litres or more than 3 litres in the pipes must have it tested for legionella every three years. We arrange the sampling and the report.",
                 [
                     ['title' => 'Pipe renewal', 'text' => 'Stainless steel or multilayer pipes, floor by floor and flat by flat.'],
                     ['title' => 'Legionella tests', 'text' => 'Sampling points, lab tests and the report for your tenants.'],
@@ -545,11 +573,11 @@ SVG;
                 ]],
             [['name' => 'Emergency service', 'title' => '24/7 Plumbing and Heating Emergency Service in Freiburg | Brenner & Quell', 'path' => 'emergency-service'],
                 'Water everywhere? We are on our way', 'portrait', 'siphon',
-                "## Day and night, every day of the year\n\nBurst pipes, a heating failure in January, a blocked drain or a leaking hot water cylinder can't wait until Monday. Call our emergency service and a plumber is with you within two hours in Freiburg and the surrounding area.\n\nWe stop the damage first and tell you the price of the repair before we start.",
+                "## Day and night, every day of the year\n\nBurst pipes, a heating failure in January, a blocked drain or a leaking hot water cylinder can't wait until Monday. Call our emergency service and a plumber is with you within two hours in Freiburg and the surrounding area. Customers with a maintenance contract are served first.\n\nWe stop the damage first and tell you the price of the repair before we start.\n\nIf you smell gas, leave the building first and call the bnNETZE gas emergency number 0800 2 767 767 from outside, then call us.",
                 [
                     ['title' => 'Two-hour response', 'text' => 'A plumber on the way within minutes of your call.'],
                     ['title' => 'Damage stopped', 'text' => 'Leaks closed and the heating running again where possible.'],
-                    ['title' => 'Clear call-out fee', 'text' => 'The fee is quoted on the phone, repairs are priced before we start.'],
+                    ['title' => 'Clear call-out fee', 'text' => '€89 call-out fee, +50% at night, on Sundays and public holidays. Repairs are priced before we start.'],
                 ]],
         ];
     }
@@ -588,7 +616,8 @@ SVG;
             ->addProjects( $home )
             ->addAbout( $home )
             ->addContact( $home )
-            ->addImprint( $home );
+            ->addImprint( $home )
+            ->addPrivacy( $home );
     }
 
 
@@ -607,14 +636,14 @@ SVG;
                     'name' => 'Gas pipe check',
                     'prices' => [['id' => 'gas', 'amount' => 159, 'label' => '€159']],
                     'text' => 'Leak and usability test of all gas pipes in a house or flat.',
-                    'features' => "- Pressure test of every pipe\n- Protocol for your insurance\n- Fixed price for any repairs",
+                    'features' => "- Leakage measurement of all pipes\n- Protocol for your insurance\n- Repairs quoted before we start",
                     'url' => '/gas-installations',
                     'button' => 'Gas installations',
                 ],
                 [
                     'name' => 'Heating service',
-                    'prices' => [['id' => 'service', 'amount' => 189, 'label' => '€189']],
-                    'text' => 'Annual service for gas and oil boilers of all common brands.',
+                    'prices' => [['id' => 'service', 'amount' => 189, 'label' => 'from €189']],
+                    'text' => 'Annual service for gas boilers of all common brands, oil boilers from €229.',
                     'features' => "- Cleaning and safety check\n- Settings optimised\n- Service report by email",
                     'url' => '/heating-service',
                     'button' => 'Heating service',
@@ -728,7 +757,7 @@ SVG;
     {
         return [
             ['name' => 'Sabine and Thomas K.', 'role' => 'Heat pump, Freiburg-Herdern', 'text' => 'Three other companies wanted to replace all our radiators. Brenner & Quell calculated every room and we kept most of them. The house has never been this evenly warm.'],
-            ['name' => 'Gisela M.', 'role' => 'Level-access bathroom, Freiburg-Wiehre', 'text' => 'One site manager, one schedule and exactly the price in the offer. After twelve days I had a bathroom I can use for many years.'],
+            ['name' => 'Gisela M.', 'role' => 'Level-access bathroom, Freiburg-Wiehre', 'text' => 'One site manager, one schedule and exactly the price in the offer. After fourteen working days I had a bathroom I can use for many years.'],
             ['name' => 'Markus H.', 'role' => 'Emergency service, Emmendingen', 'text' => 'A pipe burst in the cellar on a Sunday evening. The plumber was there in fifty minutes and the water was off in five.'],
         ];
     }

@@ -14,22 +14,23 @@ use Illuminate\Support\Str;
 
 
 /**
- * Solar theme demo for the fictional Sonnwerk solar, battery and heat pump company.
+ * Solar theme demo for the fictional Sonnreich solar, battery and heat pump company.
  */
 class SolarDemo extends AbstractDemo
 {
     /** @var array<string, string> Meta descriptions keyed by page path */
     protected const DESCRIPTIONS = [
-        'about' => 'Meet Sonnwerk Energie: engineers and installers in Regensburg who have planned and built more than 1,400 solar, battery and heat pump systems since 2011.',
+        'about' => 'Meet Sonnreich Energie: engineers and installers in Regensburg who have planned and built more than 1,400 solar, battery and heat pump systems since 2011.',
         'battery-storage' => 'Home battery storage in Regensburg: sized to your consumption, retrofitted to existing solar systems and ready for backup power.',
-        'contact' => 'Book a free energy consultation with Sonnwerk Energie for solar systems, battery storage, heat pumps and wallboxes in Regensburg.',
-        'donaustauf-solar-battery' => 'A family home in Donaustauf with a 12.4 kWp solar system and a 10 kWh battery now covers 78% of its electricity from its own roof.',
+        'contact' => 'Book a free energy consultation with Sonnreich Energie for solar systems, battery storage, heat pumps and wallboxes in Regensburg.',
+        'donaustauf-solar-battery' => 'A family home in Donaustauf with a 12.4 kWp solar system and a 10 kWh battery now covers 71% of its electricity from its own roof.',
         'energy-consulting' => 'Independent energy consulting in Regensburg: consumption analysis, yield forecast, subsidy check and a clear plan for your home.',
         'heat-pumps' => 'Heat pumps for existing homes in Regensburg, combined with solar power, planned room by room and installed with subsidy support.',
-        'imprint' => 'Legal notice of Sonnwerk Energie GmbH, Regensburg.',
-        'kelheim-heat-pump' => 'A 1980s house in Kelheim replaced its oil boiler with an air source heat pump that runs on solar power for a third of the year.',
+        'imprint' => 'Legal notice of Sonnreich Energie GmbH, Regensburg.',
+        'privacy' => 'Privacy policy of Sonnreich Energie GmbH, Regensburg.',
+        'kelheim-heat-pump' => 'A 1980s house in Kelheim replaced its oil boiler with an air source heat pump that runs largely on solar power from April to September.',
         'neutraubling-bakery' => 'A bakery in Neutraubling covers its ovens and cold rooms with a 99 kWp rooftop solar system and pays for it in under seven years.',
-        'projects' => 'Solar systems, battery storage and heat pumps Sonnwerk Energie has installed in Regensburg and Eastern Bavaria.',
+        'projects' => 'Solar systems, battery storage and heat pumps Sonnreich Energie has installed in Regensburg and Eastern Bavaria.',
         'service-maintenance' => 'Maintenance, monitoring and repairs for solar systems, batteries and heat pumps in Regensburg, including systems we did not install.',
         'services' => 'Solar systems, battery storage, heat pumps, wallboxes, energy consulting and maintenance from one Regensburg company.',
         'solar-systems' => 'Rooftop solar systems for homes and businesses in Regensburg, planned with a yield forecast and installed by our own teams.',
@@ -85,14 +86,14 @@ class SolarDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'About',
-            'title' => 'About Sonnwerk Energie | Solar and Heat Pumps in Regensburg Since 2011',
+            'title' => 'About Sonnreich Energie | Solar and Heat Pumps in Regensburg Since 2011',
             'path' => 'about',
             'type' => 'page',
             'status' => 1,
         ], [
             ['id' => Utils::uid(), 'type' => 'hero', 'group' => 'main', 'data' => [
                 'title' => 'Engineers who climb roofs',
-                'subtitle' => 'About Sonnwerk Energie',
+                'subtitle' => 'About Sonnreich Energie',
                 'text' => 'Twenty-six people who plan, install and look after energy systems for homes and businesses in Eastern Bavaria.',
                 'buttons' => [
                     ['label' => 'Book a free consultation', 'url' => '/contact'],
@@ -104,7 +105,7 @@ class SolarDemo extends AbstractDemo
                 'file' => ['id' => $this->img( 'installers' ), 'type' => 'file'],
                 'position' => 'grid-start',
                 'ratio' => '1-1',
-                'text' => "## From one roof to 1,400 systems\n\nLena Hofbauer and Tobias Gruber founded Sonnwerk in 2011 after their electrical engineering degrees in Regensburg. They wanted a company that calculates first and sells second. Today our engineers plan every system, and our own electricians and roofers install it, without subcontractors.\n\nWe are a registered electrical contractor, certified heat pump installer and listed with the grid operators of the region. Every system comes with a yield forecast, and we compare it with the real yield after the first year.",
+                'text' => "## From one roof to 1,400 systems\n\nLena Hofbauer and Tobias Gruber founded Sonnreich in 2011 after their electrical engineering degrees in Regensburg. They wanted a company that calculates first and sells second. Today our engineers plan every system, and our own electricians and roofers install it, without subcontractors.\n\nWe are a master electrical business, certified heat pump installer and listed with the grid operators of the region. Every system comes with a yield forecast, and we compare it with the real yield after the first year.",
             ]],
             $this->badges(),
             ['id' => Utils::uid(), 'type' => 'testimonial', 'group' => 'main', 'data' => [
@@ -128,7 +129,7 @@ class SolarDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'Contact',
-            'title' => 'Contact Sonnwerk Energie | Solar, Batteries and Heat Pumps in Regensburg',
+            'title' => 'Contact Sonnreich Energie | Solar, Batteries and Heat Pumps in Regensburg',
             'path' => 'contact',
             'type' => 'page',
             'status' => 1,
@@ -148,7 +149,7 @@ class SolarDemo extends AbstractDemo
             ]],
             ['id' => Utils::uid(), 'type' => 'map', 'group' => 'main', 'data' => [
                 'title' => 'Our office',
-                'text' => "**Sonnwerk Energie**\nSonnenstraße 12 · 93053 Regensburg\n\n**Call**\n0941 5893 410 · Monday to Thursday 08:00–17:00, Friday 08:00–13:00\n\n**Email**\ninfo@sonnwerk.example\n\nWe work in Regensburg, Neutraubling, Regenstauf, Donaustauf, Kelheim and Straubing.",
+                'text' => "**Sonnreich Energie**\nSonnenstraße 12 · 93053 Regensburg\n\n**Call**\n0941 5893 410 · Monday to Thursday 08:00–17:00, Friday 08:00–13:00\n\n**Email**\ninfo@sonnreich.example\n\nWe work in Regensburg, Neutraubling, Regenstauf, Donaustauf, Kelheim and Straubing.",
                 'location' => [
                     'latitude' => 49.0134,
                     'longitude' => 12.1016,
@@ -173,13 +174,38 @@ class SolarDemo extends AbstractDemo
         $this->page( [
             'lang' => 'en',
             'name' => 'Imprint',
-            'title' => 'Imprint | Sonnwerk Energie',
+            'title' => 'Imprint | Sonnreich Energie',
             'path' => 'imprint',
             'type' => 'page',
             'status' => 2,
         ], [
             ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
-                'text' => "# Imprint\n\n**Sonnwerk Energie GmbH**\nSonnenstraße 12\n93053 Regensburg\nGermany\n\nTelephone: 0941 5893 410\nEmail: info@sonnwerk.example\n\nManaging directors: Lena Hofbauer, Tobias Gruber\nRegister court: Amtsgericht Regensburg, HRB 765432\nVAT ID: DE 987 654 321\n\nElectrical contractor registered in the trades register of the Chamber of Crafts Lower Bavaria-Upper Palatinate.\n\nThis is a demo website for the Solar theme. Sonnwerk Energie is a fictional company.",
+                'text' => "# Imprint\n\n**Sonnreich Energie GmbH**\nSonnenstraße 12\n93053 Regensburg\nGermany\n\nTelephone: 0941 5893 410\nEmail: info@sonnreich.example\n\nManaging directors: Lena Hofbauer, Tobias Gruber\nRegister court: Amtsgericht Regensburg, HRB 765432\nVAT ID: DE 987 654 321\n\nProfessional title: Elektrotechnikermeister (awarded in the Federal Republic of Germany)\nCompetent chamber: Handwerkskammer Niederbayern-Oberpfalz, entered in the register of craftsmen\nProfessional regulations: Handwerksordnung (HwO), available at www.gesetze-im-internet.de/hwo\n\nWe are neither willing nor obliged to take part in dispute resolution proceedings before a consumer arbitration board.\n\nThis is a demo website for the Solar theme. Sonnreich Energie is a fictional company.",
+            ]],
+        ], $home );
+
+        return $this;
+    }
+
+
+    /**
+     * Creates the privacy policy page below the home page.
+     *
+     * @param Page $home Home page
+     * @return static Same object for fluent calls
+     */
+    protected function addPrivacy( Page $home ) : static
+    {
+        $this->page( [
+            'lang' => 'en',
+            'name' => 'Privacy',
+            'title' => 'Privacy Policy | Sonnreich Energie',
+            'path' => 'privacy',
+            'type' => 'page',
+            'status' => 2,
+        ], [
+            ['id' => Utils::uid(), 'type' => 'text', 'group' => 'main', 'data' => [
+                'text' => "# Privacy policy\n\n## Who is responsible\n\nSonnreich Energie GmbH, Sonnenstraße 12, 93053 Regensburg, info@sonnreich.example.\n\n## Consultation requests\n\nWhen you send the consultation form, we use your name, phone number, email address, postcode, consumption and the photos you attach only to answer your request and prepare an offer (Art. 6 (1) (b) GDPR). Requests that don't lead to an order are deleted after six months.\n\n## Customers and systems\n\nFor the systems we install, we pass the required data to the grid operator, the market master data register and, if you apply for a subsidy, the KfW. Invoices and contracts are kept for the periods required by tax and commercial law. If you book online monitoring, we receive the operating data of your system to detect faults.\n\n## This website\n\nThe website doesn't use tracking or advertising cookies. Our server stores technical access data such as the IP address for seven days to protect against attacks. The map is loaded from OpenStreetMap only after you open it.\n\n## Your rights\n\nYou have the right to access, rectification, erasure, restriction of processing and data portability, and you can lodge a complaint with the Bavarian State Office for Data Protection Supervision.\n\nThis is a demo website for the Solar theme. Sonnreich Energie is a fictional company.",
             ]],
         ], $home );
 
@@ -202,18 +228,18 @@ class SolarDemo extends AbstractDemo
             'title' => 'Solar and Battery for a Family Home in Donaustauf',
             'path' => 'donaustauf-solar-battery',
         ], 'Electricity from the own roof, day and night',
-            "The family of four used 5,800 kWh a year and paid more every year. Their east-west roof wasn't ideal for a classic south system, but our yield forecast showed that modules on both sides deliver power from early morning to evening, exactly when the family needs it.\n\nThe 12.4 kWp system and a 10 kWh battery now cover 78% of their consumption. The surplus goes into the grid or charges the electric car, and the system pays for itself in about ten years.",
+            "The family of four used 5,800 kWh a year and paid more every year. Their east-west roof wasn't ideal for a classic south system, but our yield forecast showed that modules on both sides deliver power from early morning to evening, exactly when the family needs it.\n\nThe 12.4 kWp system and a 10 kWh battery now cover 71% of their consumption. The surplus goes into the grid or charges the electric car, and the system pays for itself in about ten years.",
             'house', ['roof', 'house'],
             [
                 ['title' => '12.4 kWp', 'text' => 'Solar modules on the east and west roof'],
-                ['title' => '78%', 'text' => 'Of the electricity now comes from the own roof'],
-                ['title' => '2 days', 'text' => 'From the scaffold to the first kilowatt hour'],
+                ['title' => '71%', 'text' => 'Of the electricity now comes from the own roof'],
+                ['title' => '2 days', 'text' => 'On the roof, from the scaffold to the finished system'],
             ],
             [
                 ['label' => 'Week 1', 'title' => 'Consultation and survey', 'text' => 'Consumption analysis, roof survey and a yield forecast for both roof sides.'],
-                ['label' => 'Week 3', 'title' => 'Registration', 'text' => 'System registered with the grid operator and the market master data register.'],
+                ['label' => 'Week 3', 'title' => 'Registration', 'text' => 'System registered with the grid operator, who approved the grid connection.'],
                 ['label' => 'Week 6', 'title' => 'Installation', 'text' => 'Scaffold, mounting rails and 31 modules in one day, inverter and battery on the next.'],
-                ['label' => 'Week 7', 'title' => 'Commissioning', 'text' => 'Meter exchange by the grid operator, app setup and a walk through the system.'],
+                ['label' => 'Week 7', 'title' => 'Commissioning', 'text' => 'Meter exchange by the grid operator, entry in the market master data register and a walk through the system.'],
             ],
             ['installer', 'drill', 'battery', 'roofs'],
         );
@@ -223,12 +249,12 @@ class SolarDemo extends AbstractDemo
             'title' => 'From Oil Boiler to Solar-Powered Heat Pump in Kelheim',
             'path' => 'kelheim-heat-pump',
         ], 'No more oil deliveries',
-            "The 1980s house used 2,600 litres of heating oil a year, and the boiler was 27 years old. Because the roof already had a solar system, the owners wanted a heat pump that uses as much of their own power as possible.\n\nWe calculated the heat load room by room, replaced two radiators and set the heat pump to heat the hot water cylinder at midday. From April to September, the sun covers most of the heating and hot water, and the energy costs fell by more than half.",
+            "The 1980s house used 2,600 litres of heating oil a year, and the boiler was 27 years old. Because the roof already had a solar system, the owners wanted a heat pump that uses as much of their own power as possible.\n\nWe calculated the heat load room by room, replaced two radiators and set the heat pump to heat the hot water cylinder at midday. From April to September, the sun covers most of the heating and hot water, and the energy costs fell by about 40%.",
             'heat-pump-wood', ['boiler', 'heat-pump-wood'],
             [
-                ['title' => '−56%', 'text' => 'Energy costs compared with the oil boiler'],
-                ['title' => '€14.8k', 'text' => 'Federal subsidy granted for the heat pump'],
-                ['title' => '4.1', 'text' => 'Seasonal performance factor in the first year'],
+                ['title' => '−41%', 'text' => 'Energy costs compared with the oil boiler'],
+                ['title' => '€14.8k', 'text' => 'Federal KfW grant, approved in 2025'],
+                ['title' => '3.6', 'text' => 'Seasonal performance factor in the first year'],
             ],
             [
                 ['label' => 'Day 1', 'title' => 'Removal', 'text' => 'Oil boiler and tanks removed, cellar cleaned and space prepared.'],
@@ -275,7 +301,7 @@ class SolarDemo extends AbstractDemo
         $services = $this->page( [
             'lang' => 'en',
             'name' => 'Services',
-            'title' => 'Solar, Battery and Heat Pump Services in Regensburg | Sonnwerk Energie',
+            'title' => 'Solar, Battery and Heat Pump Services in Regensburg | Sonnreich Energie',
             'path' => 'services',
             'type' => 'page',
             'status' => 1,
@@ -296,6 +322,7 @@ class SolarDemo extends AbstractDemo
                     ['title' => 'Is my roof suitable for solar?', 'text' => 'Most roofs facing south, east or west are. We check the orientation, shading and the roof structure on site and calculate the expected yield before you decide.'],
                     ['title' => 'Does a battery pay off?', 'text' => 'It depends on when you use electricity. With high evening consumption, a heat pump or an electric car, a battery usually raises your self-sufficiency from about 35% to 70% or more.'],
                     ['title' => 'Do I pay VAT on a solar system?', 'text' => 'No. Solar systems up to 30 kWp on or near homes, including the battery and installation, are sold with 0% VAT in Germany.'],
+                    ['title' => 'Do I need a smart meter?', 'text' => 'New solar systems without a smart meter may only feed 60% of their peak power into the grid. With good self-consumption you lose very little, and we order the smart meter with your registration, so the limit is lifted as soon as it is installed.'],
                     ['title' => 'Do you help with subsidies?', 'text' => 'Yes. We prepare all documents for the federal heat pump subsidy and check regional programmes for batteries and wallboxes before you order.'],
                 ],
             ]],
@@ -320,7 +347,7 @@ class SolarDemo extends AbstractDemo
             'title' => 'Qualified and certified',
             'layout' => 'badges',
             'cards' => [
-                ['title' => 'Electrical contractor', 'text' => 'Registered with the grid operators of the region'],
+                ['title' => 'Electrical contractor', 'text' => "Master craftsman's business, registered with the regional grid operators"],
                 ['title' => 'Heat pump expert', 'text' => 'Certified installers for air and ground source systems'],
                 ['title' => 'Own teams', 'text' => 'Electricians and roofers employed by us, no subcontractors'],
                 ['title' => 'Yield guarantee', 'text' => 'We compare forecast and real yield after the first year'],
@@ -331,16 +358,16 @@ class SolarDemo extends AbstractDemo
 
 
     /**
-     * Creates the shared Sonnwerk footer and returns its ID.
+     * Creates the shared Sonnreich footer and returns its ID.
      *
      * @return string Element ID
      */
     protected function element() : string
     {
-        return $this->element ??= $this->saveElement( 'cards', 'Sonnwerk footer', ['columns' => '4', 'cards' => [
-            ['title' => 'Sonnwerk Energie', 'text' => "Solar systems, battery storage and heat pumps for homes and businesses in Regensburg and Eastern Bavaria since 2011."],
+        return $this->element ??= $this->saveElement( 'cards', 'Sonnreich footer', ['columns' => '4', 'cards' => [
+            ['title' => 'Sonnreich Energie', 'text' => "Solar systems, battery storage and heat pumps for homes and businesses in Regensburg and Eastern Bavaria since 2011."],
             ['title' => 'Services', 'text' => "- [Solar systems](/solar-systems)\n- [Battery storage](/battery-storage)\n- [Heat pumps](/heat-pumps)\n- [Wallboxes](/wallboxes)"],
-            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About us](/about)\n- [Imprint](/imprint)"],
+            ['title' => 'Company', 'text' => "- [Our projects](/projects)\n- [About us](/about)\n- [Imprint](/imprint)\n- [Privacy](/privacy)"],
             ['title' => 'Contact', 'text' => "Sonnenstraße 12\n93053 Regensburg\n\n0941 5893 410\n[Book a free consultation](/contact)"],
         ]] );
     }
@@ -358,7 +385,7 @@ class SolarDemo extends AbstractDemo
 
 
     /**
-     * Creates the Sonnwerk home page and returns it.
+     * Creates the Sonnreich home page and returns it.
      *
      * @return Page Home page
      */
@@ -368,20 +395,20 @@ class SolarDemo extends AbstractDemo
         $fileId = $this->file();
 
         $config = [
-            'website' => Validation::entry( 'website', ['title' => 'Sonnwerk Energie'], 'config' ),
+            'website' => Validation::entry( 'website', ['title' => 'Sonnreich Energie'], 'config' ),
         ] + $this->logos( $this->logoFile() ) + [
             'solar::business' => [
                 'type' => 'solar::business',
                 'files' => [],
                 'data' => [
-                    'name' => 'Sonnwerk Energie GmbH',
+                    'name' => 'Sonnreich Energie GmbH',
                     'business-type' => 'HomeAndConstructionBusiness',
                     'street-address' => 'Sonnenstraße 12',
                     'postal-code' => '93053',
                     'locality' => 'Regensburg',
                     'country' => 'DE',
                     'telephone' => '+49 941 5893 410',
-                    'email' => 'info@sonnwerk.example',
+                    'email' => 'info@sonnreich.example',
                     'area' => 'Regensburg, Neutraubling, Regenstauf, Donaustauf, Kelheim, Straubing',
                     'price-range' => '€€',
                     'call-button' => true,
@@ -413,7 +440,7 @@ class SolarDemo extends AbstractDemo
                     ['title' => '1,400+', 'text' => 'Systems installed since 2011'],
                     ['title' => '380', 'text' => 'Heat pumps running on solar power'],
                     ['title' => '72%', 'text' => 'Average self-sufficiency with a battery'],
-                    ['title' => '4.9/5', 'text' => 'From 386 customer reviews'],
+                    ['title' => '4.9/5', 'text' => 'From 386 Google reviews'],
                 ],
             ]],
             $this->services(),
@@ -453,22 +480,22 @@ class SolarDemo extends AbstractDemo
 
         $meta = [
             'meta-tags' => Validation::entry( 'meta-tags', [
-                'description' => 'Sonnwerk Energie plans and installs solar systems, battery storage, heat pumps and wallboxes in Regensburg, with independent consulting and a yield forecast.',
+                'description' => 'Sonnreich Energie plans and installs solar systems, battery storage, heat pumps and wallboxes in Regensburg, with independent consulting and a yield forecast.',
                 'keywords' => 'solar Regensburg, photovoltaics, solar installer, battery storage, heat pump installation, wallbox, energy consulting',
             ], 'meta' ),
             'social-media' => Validation::entry( 'social-media', [
-                'title' => 'Sonnwerk Energie | Solar, Batteries and Heat Pumps in Regensburg',
+                'title' => 'Sonnreich Energie | Solar, Batteries and Heat Pumps in Regensburg',
                 'description' => 'Independent consulting and installation by our own teams, from the roof to the meter cabinet.',
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ], 'meta' ),
         ];
 
-        return $this->saveRoot( 'Sonnwerk Energie | Solar, Batteries and Heat Pumps in Regensburg', $config, $meta, $content, $elementId, $fileId );
+        return $this->saveRoot( 'Sonnreich Energie | Solar, Batteries and Heat Pumps in Regensburg', $config, $meta, $content, $elementId, $fileId );
     }
 
 
     /**
-     * Creates the Sonnwerk SVG logo and returns its file ID.
+     * Creates the Sonnreich SVG logo and returns its file ID.
      *
      * @return string File ID
      */
@@ -478,22 +505,22 @@ class SolarDemo extends AbstractDemo
         {
             $svg = <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" role="img" aria-labelledby="title desc">
-  <title id="title">Sonnwerk logo</title>
-  <desc id="desc">Leaf green rounded square with a sun yellow sun rising above a white solar module beside the Sonnwerk wordmark</desc>
+  <title id="title">Sonnreich logo</title>
+  <desc id="desc">Leaf green rounded square with a sun yellow sun rising above a white solar module beside the Sonnreich wordmark</desc>
   <rect x="4" y="8" width="64" height="64" rx="12" fill="#1F7A4D"/>
   <circle cx="36" cy="34" r="9" fill="#F5B82E"/>
   <path d="M36 15v5M22 34h-5M50 34h5M26 24l-3.5-3.5M46 24l3.5-3.5" stroke="#F5B82E" stroke-width="4" stroke-linecap="round"/>
   <path d="M16 62l6-16h28l6 16z" fill="#FFFFFF"/>
   <path d="M34 46l-2 16M38 46l2 16M19 54h34" stroke="#1F7A4D" stroke-width="2.5"/>
-  <text x="84" y="54" fill="#FFFFFF" font-family="'Avenir Next', Avenir, 'Century Gothic', Futura, Montserrat, system-ui, sans-serif" font-size="36" font-weight="700" letter-spacing="0.5">Sonnwerk</text>
+  <text x="84" y="54" fill="#FFFFFF" font-family="'Avenir Next', Avenir, 'Century Gothic', Futura, Montserrat, system-ui, sans-serif" font-size="36" font-weight="700" letter-spacing="0.5">Sonnreich</text>
 </svg>
 SVG;
 
             $this->logoFile = $this->svgFile(
                 $svg,
-                'sonnwerk-logo.svg',
-                'Sonnwerk logo',
-                'Leaf green rounded square with a sun yellow sun rising above a white solar module beside the Sonnwerk wordmark',
+                'sonnreich-logo.svg',
+                'Sonnreich logo',
+                'Leaf green rounded square with a sun yellow sun rising above a white solar module beside the Sonnreich wordmark',
                 true,
             );
         }
@@ -510,15 +537,15 @@ SVG;
     protected function offers() : array
     {
         return [
-            [['name' => 'Solar systems', 'title' => 'Rooftop Solar Systems in Regensburg | Sonnwerk Energie', 'path' => 'solar-systems'],
+            [['name' => 'Solar systems', 'title' => 'Rooftop Solar Systems in Regensburg | Sonnreich Energie', 'path' => 'solar-systems'],
                 'Turn your roof into a power plant', 'roofs', 'installers',
-                "## Planned for your roof and your consumption\n\nA good solar system isn't the largest one that fits, but the one that matches your roof, your consumption and your plans. We measure the roof, check the shading over the year and calculate the yield and payback time before you decide.\n\nOur own teams mount the modules, connect the inverter and register the system with the grid operator. Most homes produce their first kilowatt hour two days after the scaffold goes up.",
+                "## Planned for your roof and your consumption\n\nA good solar system isn't the largest one that fits, but the one that matches your roof, your consumption and your plans. We measure the roof, check the shading over the year and calculate the yield and payback time before you decide.\n\nOur own teams mount the modules, connect the inverter and register the system with the grid operator. On most homes we finish in two days, and the system feeds into the grid as soon as the grid operator has exchanged the meter.",
                 [
                     ['title' => 'Yield forecast', 'text' => 'Shading analysis and a yield forecast we check after the first year.'],
                     ['title' => 'Quality modules', 'text' => 'Glass-glass modules with 30 years of performance warranty.'],
                     ['title' => 'Registration', 'text' => 'Grid operator and market master data register handled by us.'],
                 ]],
-            [['name' => 'Battery storage', 'title' => 'Home Battery Storage in Regensburg | Sonnwerk Energie', 'path' => 'battery-storage'],
+            [['name' => 'Battery storage', 'title' => 'Home Battery Storage in Regensburg | Sonnreich Energie', 'path' => 'battery-storage'],
                 'Use your solar power after sunset', 'battery', 'battery-module',
                 "## Sized to your evenings\n\nA battery stores the midday surplus for the evening and the night. We size it to your real consumption, because a battery that is too large rarely gets full and costs more than it saves.\n\nWe retrofit batteries to existing solar systems of all common makers and, if you like, add a backup power function that keeps important circuits running during a power cut.",
                 [
@@ -526,7 +553,7 @@ SVG;
                     ['title' => 'Retrofit', 'text' => 'Batteries for existing solar systems, also those we did not install.'],
                     ['title' => 'Backup power', 'text' => 'Fridge, heating and internet keep running during a power cut.'],
                 ]],
-            [['name' => 'Heat pumps', 'title' => 'Heat Pumps with Solar Power in Regensburg | Sonnwerk Energie', 'path' => 'heat-pumps'],
+            [['name' => 'Heat pumps', 'title' => 'Heat Pumps with Solar Power in Regensburg | Sonnreich Energie', 'path' => 'heat-pumps'],
                 'Heat with the sun and the air', 'heat-pump-house', 'heat-pump',
                 "## Planned for existing homes\n\nA heat pump runs on electricity, so it pairs well with a solar system. We calculate the heat load of every room, check your radiators and choose a unit that runs quietly and efficiently at low flow temperatures.\n\nAn energy manager runs the heat pump when the sun shines, for example to heat the hot water at midday. We prepare all documents for the federal subsidy and remove the old boiler.",
                 [
@@ -534,7 +561,7 @@ SVG;
                     ['title' => 'Subsidy support', 'text' => 'All confirmations for your grant application, prepared by us.'],
                     ['title' => 'Solar control', 'text' => 'The heat pump uses your solar surplus before it buys from the grid.'],
                 ]],
-            [['name' => 'Wallboxes', 'title' => 'Wallboxes and Solar Charging in Regensburg | Sonnwerk Energie', 'path' => 'wallboxes'],
+            [['name' => 'Wallboxes', 'title' => 'Wallboxes and Solar Charging in Regensburg | Sonnreich Energie', 'path' => 'wallboxes'],
                 'Drive on sunshine', 'wallbox-brick', 'ev',
                 "## Charge with your own power\n\nA wallbox charges your electric car faster and safer than a household socket. Connected to your solar system, it only uses the surplus the house doesn't need, or charges at full power when you are in a hurry.\n\nWe check your meter cabinet, install the wallbox with its own circuit and register it with the grid operator, so you can also use the reduced grid fee for controllable devices.",
                 [
@@ -542,7 +569,7 @@ SVG;
                     ['title' => 'Safe installation', 'text' => 'Own circuit, residual current protection and a test protocol.'],
                     ['title' => 'Lower grid fee', 'text' => 'Registered as a controllable device for a reduced grid fee.'],
                 ]],
-            [['name' => 'Energy consulting', 'title' => 'Independent Energy Consulting in Regensburg | Sonnwerk Energie', 'path' => 'energy-consulting'],
+            [['name' => 'Energy consulting', 'title' => 'Independent Energy Consulting in Regensburg | Sonnreich Energie', 'path' => 'energy-consulting'],
                 'A plan before a purchase', 'consulting', 'roof',
                 "## Numbers you can check\n\nSolar, battery, heat pump or all three? We start with your consumption, your house and your plans for the next years and show you which step brings the most for your money.\n\nYou get a written report with yields, costs, subsidies and payback times, based on stated assumptions. If you later order from us, the consulting fee is credited.",
                 [
@@ -550,7 +577,7 @@ SVG;
                     ['title' => 'Site visit', 'text' => 'Roof, meter cabinet and boiler room checked by an engineer.'],
                     ['title' => 'Written report', 'text' => 'Options compared with costs, subsidies and payback times.'],
                 ]],
-            [['name' => 'Service and maintenance', 'title' => 'Solar and Heat Pump Maintenance in Regensburg | Sonnwerk Energie', 'path' => 'service-maintenance'],
+            [['name' => 'Service and maintenance', 'title' => 'Solar and Heat Pump Maintenance in Regensburg | Sonnreich Energie', 'path' => 'service-maintenance'],
                 'Keep your system at full power', 'helmet', 'inverters',
                 "## Monitoring, service and repairs\n\nA solar system that loses yield unnoticed costs you money every day. We watch your system online, get an alert when the yield drops and send a technician before you notice the difference on your bill.\n\nWe also service heat pumps and batteries and repair systems of all common makers, including those installed by other companies.",
                 [
@@ -579,7 +606,7 @@ SVG;
             ['id' => Utils::uid(), 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'],
         ];
 
-        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Sonnwerk Energie, solar Regensburg, photovoltaics, battery storage, heat pump, wallbox, energy consulting' );
+        return $this->savePage( $data, $content, $parent, $elementId, $fileId, $footer, 'Sonnreich Energie, solar Regensburg, photovoltaics, battery storage, heat pump, wallbox, energy consulting' );
     }
 
 
@@ -595,7 +622,8 @@ SVG;
             ->addProjects( $home )
             ->addAbout( $home )
             ->addContact( $home )
-            ->addImprint( $home );
+            ->addImprint( $home )
+            ->addPrivacy( $home );
     }
 
 
@@ -612,7 +640,7 @@ SVG;
             'items' => [
                 [
                     'name' => 'Solar 8 kWp',
-                    'prices' => [['id' => 'solar', 'amount' => 12900, 'label' => '€12,900']],
+                    'prices' => [['id' => 'solar', 'amount' => 10900, 'label' => '€10,900']],
                     'text' => 'Rooftop system for homes with up to 4,000 kWh consumption.',
                     'features' => "- 20 glass-glass modules\n- Hybrid inverter, ready for a battery\n- Monitoring app",
                     'url' => '/solar-systems',
@@ -706,7 +734,7 @@ SVG;
             'id' => $this->projectsId,
             'lang' => 'en',
             'name' => 'Projects',
-            'title' => 'Our Projects | Sonnwerk Energie',
+            'title' => 'Our Projects | Sonnreich Energie',
             'path' => 'projects',
             'type' => 'page',
             'status' => 1,
@@ -734,8 +762,8 @@ SVG;
     protected function reviews() : array
     {
         return [
-            ['name' => 'Julia and Stefan R.', 'role' => 'Solar and battery, Donaustauf', 'text' => 'Two other companies told us our east-west roof was a problem. Sonnwerk showed us the numbers, and after the first year the real yield was 4% above the forecast.'],
-            ['name' => 'Bernhard W.', 'role' => 'Heat pump, Kelheim', 'text' => 'No more oil deliveries and a heat pump that runs on our own power half the year. They even handled the subsidy, I only had to sign.'],
+            ['name' => 'Julia and Stefan R.', 'role' => 'Solar and battery, Donaustauf', 'text' => 'Two other companies told us our east-west roof was a problem. Sonnreich showed us the numbers, and after the first year the real yield was 4% above the forecast.'],
+            ['name' => 'Bernhard W.', 'role' => 'Heat pump, Kelheim', 'text' => 'No more oil deliveries and a heat pump that runs mostly on our own power from spring to autumn. They even handled the subsidy, I only had to sign.'],
             ['name' => 'Bäckerei Maier', 'role' => '99 kWp solar roof, Neutraubling', 'text' => 'The team worked on weekends, so our production never stopped for an hour. Our electricity bill has dropped by a third since.'],
         ];
     }

@@ -48,7 +48,7 @@
     --pico-secondary-hover-border: var(--pico-secondary-hover);
     --pico-secondary-hover-underline: var(--pico-secondary-hover);
     --pico-secondary-focus: var(--pico-text-selection-color);
-    --pico-secondary-inverse: #0A2B3B;
+    --pico-secondary-inverse: #04141C;
     --pico-h1-color: #0A2B3B;
     --pico-h2-color: #0A2B3B;
     --pico-h3-color: #0A2B3B;
@@ -66,9 +66,8 @@
     --pico-code-color: var(--pico-contrast-inverse);
     --pico-border-radius: 0.75rem;
     --flow-dark: #0A2B3B;
-    --flow-drop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'%3E%3Cpath d='M12 0S0 13.5 0 20a12 12 0 0 0 24 0C24 13.5 12 0 12 0z'/%3E%3C/svg%3E");
-    --flow-wave-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 48' preserveAspectRatio='none'%3E%3Cpath d='M0 48V24C240 0 480 0 720 24s480 24 720 0v24z'/%3E%3C/svg%3E");
-    --flow-waves: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%233FB8D8' stroke-opacity='.22' stroke-width='1.5'%3E%3Cpath d='M0 20c20-10 60-10 80 0s60 10 80 0M0 60c20-10 60-10 80 0s60 10 80 0M0 100c20-10 60-10 80 0s60 10 80 0M0 140c20-10 60-10 80 0s60 10 80 0'/%3E%3C/g%3E%3Cpath d='M120 66s-5 6-5 9a5 5 0 0 0 10 0c0-3-5-9-5-9z' fill='%23E07B39' fill-opacity='.35'/%3E%3Cpath d='M40 106s-4 5-4 7.5a4 4 0 0 0 8 0c0-2.5-4-7.5-4-7.5z' fill='%233FB8D8' fill-opacity='.3'/%3E%3C/svg%3E");
+    --flow-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B7A9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z'/%3E%3Cpath d='m8.5 12 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+    --flow-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24'%3E%3Cpath fill='%230B7A9E' d='M0 24V14C0 6 4.5 1.3 12 0l1.2 3.4C9 4.8 7 7.6 6.8 11H12v13zm18 0V14c0-8 4.5-12.7 12-14l1.2 3.4C27 4.8 25 7.6 24.8 11H30v13z'/%3E%3C/svg%3E");
 }
 
 @media (min-width: 1024px) {
@@ -120,15 +119,6 @@ body {
     background-color: var(--pico-secondary);
     font-size: calc(var(--pico-font-size) * 0.8);
     font-weight: 700;
-}
-
-.emergency::before {
-    content: "";
-    width: 0.75rem;
-    height: 1rem;
-    background-color: currentColor;
-    -webkit-mask: var(--flow-drop) center / contain no-repeat;
-    mask: var(--flow-drop) center / contain no-repeat;
 }
 
 .emergency a,
@@ -185,7 +175,7 @@ header nav > ul:not(.menu) > li {
 }
 
 header nav a,
-header nav details.dropdown > summary:not([role]) {
+header nav details.is-menu > summary:not([role]) {
     display: flex;
     align-items: center;
     list-style: none;
@@ -203,7 +193,7 @@ header nav details.dropdown > summary:not([role]) {
     box-shadow: none;
 }
 
-header nav details.dropdown > summary:not([role])::after {
+header nav details.is-menu > summary:not([role])::after {
     filter: invert(1);
 }
 
@@ -217,33 +207,65 @@ header nav a:not([role]):active {
     text-decoration: none;
 }
 
-header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:hover,
-header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a:focus,
-header nav ul.menu > li:not(:has(+ li.login)):not(.login) > a.active,
-header nav details.dropdown > summary:not([role]):hover,
-header nav details.dropdown > summary:not([role]):focus,
-header nav details.dropdown > summary:not([role]):focus-visible,
-header nav details.dropdown > summary:not([role]):active,
-header nav details.dropdown[open] > summary:not([role]) {
+header nav ul.menu > li:has(~ li:not(.phone, .login)) > a:hover,
+header nav ul.menu > li:has(~ li:not(.phone, .login)) > a:focus,
+header nav ul.menu > li:has(~ li:not(.phone, .login)) > a.active,
+header nav ul.menu > li.phone > a:hover,
+header nav details.is-menu > summary:not([role]):hover,
+header nav details.is-menu > summary:not([role]):focus,
+header nav details.is-menu > summary:not([role]):focus-visible,
+header nav details.is-menu > summary:not([role]):active,
+header nav details.is-menu[open] > summary:not([role]) {
     color: var(--pico-secondary);
     background: transparent;
     box-shadow: none;
     border: 0;
 }
 
-header nav ul.menu > li:has(+ li.login) > a {
-    color: var(--pico-primary-inverse);
-    background-color: var(--pico-primary);
-    border-radius: var(--pico-border-radius);
-    padding: 0.625rem 1.25rem;
+header nav ul.menu > li:not(.phone, .login):not(:has(~ li:not(.phone, .login))) {
+    order: 2;
+}
+
+header nav ul.menu > li.phone {
+    order: 1;
+}
+
+header nav ul.menu > li.login {
+    order: 3;
+}
+
+header nav ul.menu > li.phone > a {
+    gap: 0.5rem;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
     text-wrap: nowrap;
 }
 
-header nav ul.menu > li:has(+ li.login) > a:hover,
-header nav ul.menu > li:has(+ li.login) > a:focus,
-header nav ul.menu > li:has(+ li.login) > a:active {
-    color: var(--pico-primary-inverse);
-    background-color: var(--pico-primary-hover);
+header nav ul.menu > li.phone svg {
+    flex: none;
+    color: var(--pico-secondary);
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    header nav ul.menu > li.phone span {
+        display: none;
+    }
+}
+
+header nav ul.menu > li:not(.phone, .login):not(:has(~ li:not(.phone, .login))) > a {
+    color: var(--pico-secondary-inverse);
+    background-color: var(--pico-secondary);
+    border-radius: 999px;
+    padding: 0.625rem 1.375rem;
+    text-wrap: nowrap;
+}
+
+header nav ul.menu > li:not(.phone, .login):not(:has(~ li:not(.phone, .login))) > a:hover,
+header nav ul.menu > li:not(.phone, .login):not(:has(~ li:not(.phone, .login))) > a:focus,
+header nav ul.menu > li:not(.phone, .login):not(:has(~ li:not(.phone, .login))) > a:active {
+    color: var(--pico-secondary-inverse);
+    background-color: var(--pico-secondary-hover);
 }
 
 header nav details summary::marker,
@@ -270,6 +292,7 @@ header nav details.dropdown ul a.active {
 
 header nav .brand {
     flex-grow: 1;
+    flex-shrink: 0;
 }
 
 header nav .brand a,
@@ -349,7 +372,22 @@ header nav .sidebar-close button {
         font-size: calc(var(--pico-font-size) * 1.1);
     }
 
-    header nav.small .menu details.dropdown ul a {
+    header nav.small .menu details > summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.7rem 0.5rem;
+        color: #FFFFFF;
+        font-weight: 600;
+        list-style: none;
+        cursor: pointer;
+    }
+
+    header nav.small .menu details > summary::after {
+        filter: invert(1);
+    }
+
+    header nav.small .menu details ul a {
         color: #FFFFFF;
     }
 
@@ -364,16 +402,19 @@ header nav .sidebar-close button {
 
     header nav.small .menu details > summary::after {
         content: "";
-        display: block;
-        float: inline-end;
-        margin-inline-start: .25rem;
-        height: calc(1rem * var(--pico-line-height, 1.5));
-        transform: rotate(0) translateX(.2rem);
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-inline-start: 0.375rem;
         background-image: var(--pico-icon-chevron);
-        background-position: right center;
+        background-position: center;
         background-size: 1rem auto;
         background-repeat: no-repeat;
-        width: 1rem;
+        transition: transform 0.15s ease;
+    }
+
+    header nav.small .menu details[open] > summary::after {
+        transform: rotate(0.5turn);
     }
 }
 
@@ -446,17 +487,6 @@ h2 {
     margin-bottom: 2rem;
     font-size: calc(var(--pico-font-size) * 1.85);
     line-height: 1.05;
-}
-
-h2::before {
-    content: "";
-    display: block;
-    width: 1.25rem;
-    height: 1.75rem;
-    margin-bottom: 0.875rem;
-    background-color: var(--pico-secondary);
-    -webkit-mask: var(--flow-drop) center / contain no-repeat;
-    mask: var(--flow-drop) center / contain no-repeat;
 }
 
 h3 {

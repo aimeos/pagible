@@ -48,7 +48,13 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: linear-gradient(90deg, #1F2328F2 0%, #1F2328CC 45%, #1F232840 100%);
+    background: linear-gradient(180deg, #1F2328B3 0%, #1F2328E6 100%);
+}
+
+@media screen and (min-width: 768px) {
+    .hero:has(.background)::after {
+        background: linear-gradient(90deg, #1F2328F2 0%, #1F2328D9 38%, #1F23284D 72%, #1F23281A 100%);
+    }
 }
 
 .hero:has(.background) :is(h1, p, .cms-text) {
@@ -80,9 +86,9 @@
     margin-top: 0;
     margin-bottom: 1.5rem;
     max-width: 18ch;
-    font-size: calc(var(--pico-font-size) * 2.75);
+    font-size: calc(var(--pico-font-size) * 2.5);
     font-weight: 800;
-    line-height: 0.95;
+    line-height: 1.05;
 }
 
 .hero .subtitle {
@@ -120,8 +126,7 @@
 }
 
 .hero .second picture {
-    border: 2px solid var(--solid-dark);
-    box-shadow: 0.75rem 0.75rem 0 var(--pico-primary);
+    box-shadow: 0 1.5rem 3rem -1rem #1F232859;
     width: fit-content;
     margin: 3rem 0 0;
     display: block;
@@ -172,7 +177,7 @@
     }
 
     .hero h1 {
-        font-size: calc(var(--pico-font-size) * 4.25);
+        font-size: calc(var(--pico-font-size) * 3.75);
     }
 
     .hero p {
@@ -190,5 +195,55 @@
 
     .hero .first + .second:not(.multiple) picture {
         margin: 0;
+    }
+}
+
+.hero:has(+ .cards .layout-figures) .container {
+    padding-bottom: 8rem;
+}
+
+.cms-content > .hero + .cards:has(.layout-figures) {
+    position: relative;
+    z-index: 1;
+    margin-top: -5rem;
+    background: none;
+    border: 0;
+}
+
+.cms-content > .hero + .cards:has(.layout-figures) > .container {
+    padding-block: 0 1rem;
+}
+
+.cms-content > .hero + .cards .card-list.layout-figures {
+    padding: 2rem;
+    background-color: var(--pico-contrast-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    box-shadow: 0 1.5rem 3rem -1rem #1F232833;
+}
+
+@media screen and (max-width: 767px) {
+    .cms-content > .hero + .cards .card-list.layout-figures.cols-auto {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 1rem;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures .card-item {
+        padding-inline-start: 0.875rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures .title {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .hero:has(+ .cards .layout-figures) .container {
+        padding-bottom: 10rem;
+    }
+
+    .cms-content > .hero + .cards .card-list.layout-figures {
+        padding: 2.5rem 3rem;
     }
 }

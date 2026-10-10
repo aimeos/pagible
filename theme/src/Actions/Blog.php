@@ -37,7 +37,7 @@ class Blog
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
 
-        $builder = Page::where( 'status', 1 )->with( $with )->orderBy( $order, $dir );
+        $builder = Page::whereIn( 'status', [1, 2] )->with( $with )->orderBy( $order, $dir );
 
         // list the articles in the language of the current page, see "cms.translate.fallback"
         $page->localize( $builder );

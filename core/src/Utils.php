@@ -257,8 +257,14 @@ class Utils
     {
         for( $redirects = 0; ; $redirects++ )
         {
-            $response = Http::withHeaders( $headers )
-                ->withOptions( self::safeHttp( $url ) + $options )->send( $method, $url );
+            $pending = Http::withHeaders( $headers )->withOptions( self::safeHttp( $url ) + $options );
+
+            // Guzzle's stream handler ignores the "curl" options including the IP pin
+            if( !empty( $options['stream'] ) ) {
+                $pending->setHandler( new HttpStream );
+            }
+
+            $response = $pending->send( $method, $url );
 
             if( !in_array( $response->status(), [301, 302, 303, 307, 308], true ) ) {
                 return $response;
@@ -666,7 +672,8 @@ class Utils
             'verify' => true,
             'connect_timeout' => 10,
             'allow_redirects' => false,
-            'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip]],
+            // Disable proxies from the environment, they would connect instead of the pinned IP
+        'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip], CURLOPT_PROXY => ''],
         ];
     }
 

@@ -34,6 +34,10 @@ parameters:
 		- webhooks/src
 		- themes/bold/src
 		- themes/bold/database/seeders
+		- themes/brew/src
+		- themes/brew/database/seeders
+		- themes/counsel/src
+		- themes/counsel/database/seeders
 		- themes/estate/src
 		- themes/estate/database/seeders
 		- themes/flow/src
@@ -44,10 +48,16 @@ parameters:
 		- themes/journal/database/seeders
 		- themes/luxury/src
 		- themes/luxury/database/seeders
+		- themes/mane/src
+		- themes/mane/database/seeders
+		- themes/medical/src
+		- themes/medical/database/seeders
 		- themes/news/src
 		- themes/news/database/seeders
 		- themes/pagible/src
 		- themes/pagible/database/seeders
+		- themes/paws/src
+		- themes/paws/database/seeders
 		- themes/paper/src
 		- themes/paper/database/seeders
 		- themes/premium/src
@@ -62,4 +72,6 @@ parameters:
 		- themes/style/database/seeders
 		- themes/taste/src
 		- themes/taste/database/seeders
+		- themes/tonic/src
+		- themes/tonic/database/seeders
 		- tests/User.php

@@ -7,8 +7,6 @@
     margin: 4rem auto;
     padding: 4rem;
     background-color: var(--solid-dark);
-    border-top: 0.5rem solid transparent;
-    border-image: var(--solid-stripe) 1;
     text-align: center;
 }
 
@@ -20,10 +18,6 @@
     margin-top: 0;
     margin-bottom: 1.25rem;
     color: #FFFFFF;
-}
-
-.cta .title::before {
-    margin-inline: auto;
 }
 
 .cta .cms-text {
@@ -58,8 +52,4 @@
 .cta .btn:not(:first-child):hover {
     color: var(--pico-contrast);
     background-color: #FFFFFF;
-}
-
-.cta .btn:first-child {
-    box-shadow: none;
 }

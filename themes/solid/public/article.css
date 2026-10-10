@@ -24,6 +24,5 @@
 }
 
 .article .cover {
-    border: 2px solid var(--solid-dark);
-    box-shadow: 0.75rem 0.75rem 0 var(--pico-primary);
+    box-shadow: 0 1.5rem 3rem -1rem #1F232859;
 }
