@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -96,10 +96,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the about page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAbout( Page $home ) : static
+    protected function addAbout( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -155,10 +155,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the care plans page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCarePlans( Page $home ) : static
+    protected function addCarePlans( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -209,10 +209,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the contact page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addContact( Page $home ) : static
+    protected function addContact( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -261,10 +261,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the garden design page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addDesign( Page $parent ) : static
+    protected function addDesign( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -320,10 +320,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -345,10 +345,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the journal page and its posts below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addJournal( Page $home ) : static
+    protected function addJournal( PageView $home ) : static
     {
         $journal = $this->page( [
             'id' => $this->journalId,
@@ -455,10 +455,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the landscaping page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addLandscaping( Page $parent ) : static
+    protected function addLandscaping( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -512,10 +512,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the lawns and hedges page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addLawns( Page $parent ) : static
+    protected function addLawns( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -584,10 +584,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the garden maintenance page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addMaintenance( Page $parent ) : static
+    protected function addMaintenance( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -637,10 +637,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the privacy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -662,10 +662,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the projects page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addProjects( Page $home ) : static
+    protected function addProjects( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -704,10 +704,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the hidden quote request page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addQuote( Page $home ) : static
+    protected function addQuote( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -754,10 +754,10 @@ class GroveDemo extends AbstractDemo
     /**
      * Creates the services page and its sub-pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addServices( Page $home ) : static
+    protected function addServices( PageView $home ) : static
     {
         $services = $this->page( [
             'lang' => 'en',
@@ -850,9 +850,9 @@ class GroveDemo extends AbstractDemo
     /**
      * Returns the Bramble & Oak home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -1053,10 +1053,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -1134,7 +1134,7 @@ SVG;
     /**
      * Creates a post below the journal page.
      *
-     * @param Page $parent Journal page
+     * @param PageView $parent Journal page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -1142,10 +1142,10 @@ SVG;
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $steps Steps of the checklist
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function post( Page $parent, array $data, string $title, string $text, string $cover,
-        array $facts, array $steps, array $questions ) : Page
+    protected function post( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $facts, array $steps, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',

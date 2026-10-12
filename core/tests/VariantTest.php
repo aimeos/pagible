@@ -868,7 +868,7 @@ class VariantTest extends CoreTestAbstract
             $db->disableQueryLog();
 
             // the used paths are fetched by one query, not once per tried path
-            $queries = array_filter( $db->getQueryLog(), fn( $q ) => preg_match( '/^select .*from ["`]cms_page_variants["`] where .*["`]path["`]/', $q['query'] ) );
+            $queries = array_filter( $db->getQueryLog(), fn( $q ) => preg_match( '/^select .*from ["`\[]cms_page_variants["`\]] where .*["`\[]path["`\]]/', $q['query'] ) );
             $this->assertCount( 1, $queries );
 
             $paths[] = PageVariant::where( 'page_id', $copy->id )->orderBy( 'lang' )->pluck( 'path' )->all();

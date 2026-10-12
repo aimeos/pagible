@@ -186,7 +186,14 @@ function setupIntercept({
       if (query.includes('page(') && !query.includes('pages(')) {
         const page = pages.find((item) => item.id === op.variables?.id) || pages[0]
         const result = pageDetail
-          ? { id: op.variables?.id || '1', has: page?.has ?? 0, restricted: access !== null, latest: pageDetail }
+          ? {
+              id: op.variables?.id || '1',
+              lang: page?.lang ?? null,
+              source: page?.source ?? null,
+              has: page?.has ?? 0,
+              restricted: access !== null,
+              latest: pageDetail,
+            }
           : null
 
         if (result && op.variables?.access) result.access = access
@@ -243,6 +250,12 @@ function visitPageDetail(pageOverrides = {}, detailOverrides = {}, meResponse = 
   cy.get('.item-text').first().click()
   cy.url().should('include', '/pages/')
   cy.get('.page-details').should('be.visible')
+}
+
+/** Opens the German translation of an English source page. */
+function visitTranslationDetail(meResponse = ME_ADMIN) {
+  const data = { ...JSON.parse(makePageDetail().data), lang: 'de' }
+  visitPageDetail({ lang: 'de', source: 'en' }, { data: JSON.stringify(data) }, meResponse)
 }
 
 /** Shorthand to scope selectors to the detail view. */
@@ -305,8 +318,8 @@ describe('Page Detail', () => {
   })
 
   it('shows translate button when user has text:translate permission', () => {
-    visitPageDetail()
-    detailView().find('.btn-translate-page .v-btn').should('exist')
+    visitTranslationDetail()
+    detailView().find('.v-btn.btn-translate-page').should('exist')
   })
 
   it('opens AI chat and executes the page review question', () => {
@@ -351,8 +364,9 @@ describe('Page Detail', () => {
       email: 'editor@example.com',
       name: 'Editor',
     }
-    visitPageDetail({}, {}, me)
-    detailView().find('.btn-translate-page .v-btn').should('not.exist')
+    visitTranslationDetail(me)
+    detailView().find('.v-btn.btn-history').should('exist')
+    detailView().find('.btn-translate-page').should('not.exist')
   })
 
   it('shows aside toggle button', () => {

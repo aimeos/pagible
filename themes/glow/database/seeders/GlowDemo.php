@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -90,10 +90,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the hidden booking page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addBook( Page $home ) : static
+    protected function addBook( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -139,10 +139,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the careers page below the team page.
      *
-     * @param Page $parent Team page
+     * @param PageView $parent Team page
      * @return static Same object for fluent calls
      */
-    protected function addCareers( Page $parent ) : static
+    protected function addCareers( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -193,10 +193,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the facials page below the treatments page.
      *
-     * @param Page $parent Treatments page
+     * @param PageView $parent Treatments page
      * @return static Same object for fluent calls
      */
-    protected function addFacials( Page $parent ) : static
+    protected function addFacials( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -252,10 +252,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the gift cards page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addGifts( Page $home ) : static
+    protected function addGifts( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -317,10 +317,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -342,10 +342,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the journal page and its posts below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addJournal( Page $home ) : static
+    protected function addJournal( PageView $home ) : static
     {
         $journal = $this->journal( $home );
 
@@ -431,10 +431,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the lashes and brows page below the treatments page.
      *
-     * @param Page $parent Treatments page
+     * @param PageView $parent Treatments page
      * @return static Same object for fluent calls
      */
-    protected function addLashes( Page $parent ) : static
+    protected function addLashes( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -490,10 +490,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the membership page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addMembership( Page $home ) : static
+    protected function addMembership( PageView $home ) : static
     {
         $sub = fn( string $id, int $amount ) => [
             'id' => $id, 'kind' => 'subscription', 'interval' => 30, 'currency' => 'EUR', 'amount' => $amount, 'label' => '€' . $amount, 'unit' => 'per month',
@@ -578,10 +578,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the nails page below the treatments page.
      *
-     * @param Page $parent Treatments page
+     * @param PageView $parent Treatments page
      * @return static Same object for fluent calls
      */
-    protected function addNails( Page $parent ) : static
+    protected function addNails( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -633,10 +633,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the new clients page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addNewClients( Page $home ) : static
+    protected function addNewClients( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -691,10 +691,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the privacy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -716,10 +716,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the team page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTeam( Page $home ) : static
+    protected function addTeam( PageView $home ) : static
     {
         $team = $this->page( [
             'lang' => 'en',
@@ -768,10 +768,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the treatments and prices page and its sub-pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTreatments( Page $home ) : static
+    protected function addTreatments( PageView $home ) : static
     {
         $treatments = $this->page( [
             'lang' => 'en',
@@ -857,10 +857,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the visit page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addVisit( Page $home ) : static
+    protected function addVisit( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -979,9 +979,9 @@ class GlowDemo extends AbstractDemo
     /**
      * Returns the Lumi home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -1137,10 +1137,10 @@ class GlowDemo extends AbstractDemo
     /**
      * Creates the journal overview page and returns it.
      *
-     * @param Page $home Home page
-     * @return Page Journal page
+     * @param PageView $home Home page
+     * @return PageView Journal page
      */
-    protected function journal( Page $home ) : Page
+    protected function journal( PageView $home ) : PageView
     {
         return $this->page( [
             'id' => $this->journalId,
@@ -1226,10 +1226,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -1266,7 +1266,7 @@ SVG;
     /**
      * Creates a post below the journal page.
      *
-     * @param Page $parent Journal page
+     * @param PageView $parent Journal page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -1274,10 +1274,10 @@ SVG;
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $steps Steps of the routine
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function post( Page $parent, array $data, string $title, string $text, string $cover,
-        array $facts, array $steps, array $questions ) : Page
+    protected function post( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $facts, array $steps, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',

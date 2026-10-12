@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\GroveDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,11 +33,10 @@ class GroveDemoTest extends ThemeTestAbstract
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'grove::garden'}->data->{'action-bar'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -56,12 +55,12 @@ class GroveDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $journal = Page::where( 'path', 'journal' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $journal = PageView::where( 'path', 'journal' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $journal->id ) );
-        $this->assertSame( 'grove', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'grove', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

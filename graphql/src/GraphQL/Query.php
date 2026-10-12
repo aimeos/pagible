@@ -183,6 +183,12 @@ final class Query
                 ->on( 'p.id', '=', 'cms_page_variants.page_id' )
                 ->on( 'p.tenant_id', '=', 'cms_page_variants.tenant_id' )
             )
+            // joined instead of an EXISTS subquery because SQL Server can't aggregate subqueries,
+            // the latest version is unique so the variants are still counted once
+            ->leftJoin( 'cms_versions as v', fn( $join ) => $join
+                ->on( 'v.id', '=', 'cms_page_variants.latest_id' )
+                ->where( 'v.editor', '=', Sync::EDITOR )
+            )
             ->whereNull( 'p.deleted_at' )
             ->whereIn( 'cms_page_variants.lang', $langs )
             ->toBase()
@@ -190,10 +196,8 @@ final class Query
             ->selectRaw( '
                 COUNT(*) AS total,
                 SUM(CASE WHEN cms_page_variants.stale = ? THEN 1 ELSE 0 END) AS stale,
-                SUM(CASE WHEN EXISTS (
-                    SELECT 1 FROM cms_versions WHERE cms_versions.id = cms_page_variants.latest_id AND cms_versions.editor = ?
-                ) THEN 1 ELSE 0 END) AS ai
-            ', [true, Sync::EDITOR] )
+                SUM(CASE WHEN v.id IS NOT NULL THEN 1 ELSE 0 END) AS ai
+            ', [true] )
             ->groupBy( 'cms_page_variants.lang' )
             ->get()
             ->mapWithKeys( fn( $row ) => [(string) $row->lang => [

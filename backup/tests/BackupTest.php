@@ -864,7 +864,9 @@ class BackupTest extends BackupTestAbstract
         $backupFile = $this->backup( $this->tenant );
 
         // IDs of the archive already used by another tenant
-        DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->limit( 1 )->update( ['tenant_id' => 'other'] );
+        // by ID because SQL Server ignores limits in updates
+        $id = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+        DB::connection( $conn )->table( 'cms_pages' )->where( 'id', $id )->update( ['tenant_id' => 'other'] );
 
         $status = \Illuminate\Support\Facades\Artisan::call( 'cms:restore', [
             'file' => $backupFile,
