@@ -46,8 +46,8 @@
     flex-direction: row-reverse;
 }
 
-.image-text .grid-start .text,
-.image-text .grid-end .text {
+.image-text .grid-start .cms-text,
+.image-text .grid-end .cms-text {
     flex: 1;
     min-width: 0;
     padding: 2rem;
