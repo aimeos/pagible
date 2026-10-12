@@ -44,6 +44,8 @@ parameters:
 		- themes/flow/database/seeders
 		- themes/glass/src
 		- themes/glass/database/seeders
+		- themes/glow/src
+		- themes/glow/database/seeders
 		- themes/journal/src
 		- themes/journal/database/seeders
 		- themes/luxury/src

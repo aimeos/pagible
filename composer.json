@@ -73,6 +73,7 @@
 				"themes/brew/src/",
 				"themes/tonic/src/",
 				"themes/mane/src/",
+				"themes/glow/src/",
 				"themes/bold/src/",
 				"themes/premium/src/",
 				"themes/luxury/src/",
@@ -108,6 +109,7 @@
 				"themes/brew/tests/",
 				"themes/tonic/tests/",
 				"themes/mane/tests/",
+				"themes/glow/tests/",
 				"backup/tests/",
 				"webhooks/tests/"
 			]
