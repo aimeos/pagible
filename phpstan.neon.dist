@@ -44,6 +44,8 @@ parameters:
 		- themes/flow/database/seeders
 		- themes/glass/src
 		- themes/glass/database/seeders
+		- themes/glow/src
+		- themes/glow/database/seeders
 		- themes/journal/src
 		- themes/journal/database/seeders
 		- themes/luxury/src
@@ -74,4 +76,8 @@ parameters:
 		- themes/taste/database/seeders
 		- themes/tonic/src
 		- themes/tonic/database/seeders
+		- themes/torque/src
+		- themes/torque/database/seeders
+		- themes/grove/src
+		- themes/grove/database/seeders
 		- tests/User.php

@@ -54,6 +54,9 @@ jobs:
           - { package: themes/taste, repo: pagible-themes-taste }
           - { package: themes/tonic, repo: pagible-themes-tonic }
           - { package: themes/mane, repo: pagible-themes-mane }
+          - { package: themes/glow, repo: pagible-themes-glow }
+          - { package: themes/torque, repo: pagible-themes-torque }
+          - { package: themes/grove, repo: pagible-themes-grove }
     steps:
       - uses: actions/checkout@v5
 

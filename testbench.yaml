@@ -6,6 +6,8 @@ providers:
   - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\FlowServiceProvider
   - Aimeos\Cms\GlassServiceProvider
+  - Aimeos\Cms\GlowServiceProvider
+  - Aimeos\Cms\GroveServiceProvider
   - Aimeos\Cms\JournalServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\ManeServiceProvider
@@ -21,4 +23,5 @@ providers:
   - Aimeos\Cms\StyleServiceProvider
   - Aimeos\Cms\TasteServiceProvider
   - Aimeos\Cms\TonicServiceProvider
+  - Aimeos\Cms\TorqueServiceProvider
   - Aimeos\Cms\VoltServiceProvider

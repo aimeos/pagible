@@ -1,0 +1,254 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    isolation: isolate;
+    overflow: hidden;
+    position: relative;
+}
+
+.cms-content > .hero {
+    --pico-color: #FFFFFFCC;
+    --pico-muted-color: #FFFFFFB3;
+    color: #FFFFFFCC;
+    background-color: #16191D;
+    background-image: linear-gradient(115deg, #16191D00 0 72%, #C8102E 72% 74%, #16191D00 74% 76%, #FFFFFF0D 76% 100%), linear-gradient(#FFFFFF08 1px, #16191D00 1px), linear-gradient(90deg, #FFFFFF08 1px, #16191D00 1px);
+    background-size: auto, 2.5rem 2.5rem, 2.5rem 2.5rem;
+}
+
+.cms-content > .hero::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 0.5rem;
+    z-index: 1;
+    background: repeating-linear-gradient(-45deg, #F5A400 0 14px, #16191D 14px 28px);
+}
+
+.hero .background {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: 0;
+    overflow: hidden;
+}
+
+.hero:has(.background)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: #16191DCC;
+}
+
+.hero .background img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+}
+
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .background.zoom img {
+        animation: hero-zoom 10s ease-in-out infinite alternate;
+    }
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 4rem min(5%, 2rem);
+}
+
+.hero .first {
+    text-align: start;
+    width: 100%;
+}
+
+.hero .second {
+    display: block;
+    width: 100%;
+    margin: auto;
+}
+
+.hero h1 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    max-width: 16ch;
+    color: #FFFFFF;
+    font-size: calc(var(--pico-font-size) * 3);
+    line-height: 0.95;
+}
+
+.hero h1 em {
+    color: #FF4D5A;
+}
+
+.hero .subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: fit-content;
+    margin-bottom: 1.5rem;
+    color: #FFFFFF;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.hero .subtitle::before {
+    content: "";
+    flex: none;
+    width: 1.75rem;
+    height: 0.75rem;
+    background-color: var(--pico-primary);
+    clip-path: polygon(0.375rem 0, 100% 0, calc(100% - 0.375rem) 100%, 0 100%);
+}
+
+.hero p {
+    color: #FFFFFFCC;
+    line-height: 1.65;
+    font-size: var(--pico-font-size);
+    max-width: 36rem;
+}
+
+.hero .actions {
+    padding: 1.5rem 0 0;
+}
+
+.hero .btn {
+    margin: 0.5rem 0.75rem 0.5rem 0;
+}
+
+.hero .btn:not(:first-child) {
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+.hero .btn:not(:first-child):hover {
+    color: #16191D;
+    background-color: #FFFFFF;
+}
+
+.hero picture {
+    margin-top: 3rem;
+}
+
+.hero .second:not(.multiple) picture {
+    display: block;
+    position: relative;
+    isolation: isolate;
+    width: fit-content;
+    margin: 3rem auto 0;
+    padding: 0;
+}
+
+.hero .second:not(.multiple) picture::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 1rem -1rem -1rem 1rem;
+    background-color: var(--pico-primary);
+    clip-path: polygon(2.5rem 0, 100% 0, calc(100% - 2.5rem) 100%, 0 100%);
+}
+
+.hero .second img {
+    display: block;
+}
+
+.hero .second:not(.multiple) img {
+    aspect-ratio: 4 / 3;
+    max-height: 30rem;
+    object-fit: cover;
+    border-radius: 0;
+    clip-path: polygon(2.5rem 0, 100% 0, calc(100% - 2.5rem) 100%, 0 100%);
+}
+
+.hero .second.multiple {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    gap: 1rem;
+    max-width: 54rem;
+    margin-top: 3rem;
+}
+
+.hero .second.multiple.swiffy-slider {
+    --swiffy-slider-item-ratio: 4 / 3;
+    display: block;
+}
+
+.hero .second.multiple picture,
+.hero .second.multiple video {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.hero .second.multiple picture {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--pico-border-radius);
+}
+
+.hero .second.multiple img,
+.hero .second.multiple video {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: none;
+    object-fit: cover;
+}
+
+@media screen and (min-width: 768px) {
+    .hero .container {
+        padding: 6rem min(5%, 2rem);
+    }
+
+    .hero h1 {
+        font-size: calc(var(--pico-font-size) * 4.75);
+    }
+
+    .hero p {
+        font-size: calc(var(--pico-font-size) * 1.1);
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .hero .container:has(> .first + .second:not(.multiple)) {
+        display: grid;
+        grid-template-columns: 6fr 6fr;
+        align-items: center;
+        gap: 4rem;
+    }
+
+    .hero .first + .second:not(.multiple) picture {
+        margin: 1rem 1rem 1rem auto;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .hero:has(.background)::after {
+        background: linear-gradient(90deg, #16191DF2 0%, #16191DCC 45%, #16191D33 75%);
+    }
+
+    .hero:has(.background) .container {
+        padding-block: 9rem;
+    }
+
+    .hero:has(.background) .first {
+        max-width: min(40vw, 36rem);
+    }
+}

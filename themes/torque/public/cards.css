@@ -1,0 +1,309 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-self: center;
+    gap: 1.5rem;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-list.cols-auto {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.cards .card-list.cols-1 {
+    grid-template-columns: 1fr;
+}
+
+@media screen and (min-width: 768px) {
+    .cards .card-list.cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards .card-list.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.cards .card-item {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border: 1px solid var(--pico-muted-border-color);
+    border-top: 3px solid #16191D;
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-box-shadow);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    text-align: start;
+    overflow: hidden;
+}
+
+.cards .card-item:hover {
+    border-top-color: var(--pico-primary);
+    transform: translateY(-0.25rem);
+}
+
+.cards .card-item .card-text {
+    padding: 1.5rem 1.5rem 1.75rem;
+}
+
+.cards .card-item :is(picture.image, .card-image) {
+    display: block;
+    aspect-ratio: 3 / 2;
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.cards .card-item picture.image img {
+    border-radius: 0;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.6s ease;
+}
+
+.cards .card-item:hover picture.image img {
+    transform: scale(1.05);
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-item {
+    background-color: #16191D;
+    border: 0;
+    box-shadow: none;
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-item:hover {
+    transform: none;
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-item :is(picture.image, .card-image) {
+    aspect-ratio: 4 / 5;
+    border-bottom: 4px solid var(--pico-primary);
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-item picture.image img {
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.3s ease, transform 0.6s ease;
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-item:hover picture.image img {
+    filter: none;
+}
+
+main .cards .card-list.layout-cards.cols-4 .card-text {
+    padding: 1.25rem 1.25rem 1.5rem;
+}
+
+main .cards .card-list.layout-cards.cols-4 .title {
+    color: #FFFFFF;
+}
+
+main .cards .card-list.layout-cards.cols-4 :is(.cms-text, .cms-text p) {
+    color: #FFFFFFB3;
+}
+
+main .cards .card-list.layout-cards.cols-4 .cms-text strong:first-child {
+    color: #FF4D5A;
+}
+
+.cards .title {
+    font-size: calc(var(--pico-font-size) * 1.3);
+    margin: 0 0 0.75rem;
+}
+
+.cards .title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cards .title a:hover {
+    color: var(--pico-primary);
+}
+
+.cards .cms-text,
+.cards .cms-text p {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+}
+
+.cards .cms-text p:last-child {
+    margin-bottom: 0;
+}
+
+.cards .cms-text code {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0.125rem 0;
+    padding: 0.125rem 0.5rem;
+    color: #FFFFFF;
+    background-color: #2B3036;
+    border-radius: 0.125rem;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.72);
+    text-transform: uppercase;
+}
+
+.cards .cms-text strong:first-child {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--pico-primary);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) {
+    width: 100%;
+}
+
+.cards .card-list.layout-badges.cols-auto {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+}
+
+.cards .card-list.layout-figures.cols-auto {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: 1rem;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item {
+    display: block;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    color: inherit;
+    overflow: visible;
+    text-align: start;
+    transform: none;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-text {
+    margin: 0;
+    padding: 0;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item :is(picture, .card-image) {
+    display: block;
+    aspect-ratio: auto;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    height: auto;
+    margin: 0 0 1rem;
+    overflow: visible;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .card-item img {
+    display: block;
+    aspect-ratio: auto;
+    border-radius: 0;
+    height: 4rem;
+    max-width: 100%;
+    object-fit: contain;
+    transform: none;
+    width: auto;
+}
+
+.cards .card-list.layout-badges .card-item {
+    position: relative;
+    padding: 1.5rem;
+    background-color: #FFFFFF;
+    border: 1px solid var(--pico-muted-border-color);
+    border-inline-start: 4px solid var(--pico-primary);
+    border-radius: var(--pico-border-radius);
+}
+
+.cards .card-list.layout-badges .card-item::after {
+    content: "✓";
+    position: absolute;
+    top: 1rem;
+    inset-inline-end: 1rem;
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #FFFFFF;
+    background-color: #1E8E3E;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cards .card-list.layout-badges .card-item img {
+    box-sizing: content-box;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.75rem;
+    background-color: #16191D;
+    border-radius: var(--pico-border-radius);
+}
+
+.cards .card-list.layout-badges .title {
+    font-size: calc(var(--pico-font-size) * 1.05);
+    line-height: 1.2;
+    margin: 0 0 0.375rem;
+}
+
+.cards .card-list:is(.layout-badges, .layout-figures) .cms-text,
+.cards .card-list:is(.layout-badges, .layout-figures) .cms-text p {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    margin: 0;
+}
+
+.cards .card-list.layout-figures .card-item {
+    padding: 1.5rem 1.25rem;
+    background-color: #16191D;
+    border-radius: var(--pico-border-radius);
+    border-bottom: 4px solid var(--pico-primary);
+}
+
+.cards .card-list.layout-figures .card-item img {
+    height: 2rem;
+}
+
+.cards .card-list.layout-figures .title {
+    display: inline-block;
+    margin: 0 0 0.75rem;
+    padding: 0.25rem 0.5rem;
+    color: #FFFFFF;
+    background: linear-gradient(#FFFFFF00 0 48%, #FFFFFF14 48% 52%, #FFFFFF00 52%), #0E1013;
+    border: 1px solid #FFFFFF26;
+    border-radius: 0.125rem;
+    font-family: var(--pico-font-family-monospace);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+}
+
+.cards .card-list.layout-figures .title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cards .card-list.layout-figures :is(.cms-text, .cms-text p) {
+    color: #FFFFFFB3;
+    font-family: var(--pico-font-family-monospace);
+    text-transform: uppercase;
+}

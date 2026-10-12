@@ -1,0 +1,289 @@
+{
+    "label": "Torque",
+    "description": "Workshop-grade design for car repair shops, garages, tyre centres and used car dealers with graphite, concrete and signal red tones, condensed uppercase headings, hazard stripes, vehicle spec strips and service coupons",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "garage": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Name of the garage, workshop or dealership",
+                    "required": true
+                },
+                "business-type": {
+                    "type": "select",
+                    "label": "Business type",
+                    "hint": "Kind of business shown to search engines",
+                    "default": "AutoRepair",
+                    "options": [
+                        {
+                            "value": "AutoRepair",
+                            "label": "Car repair shop"
+                        },
+                        {
+                            "value": "AutoDealer",
+                            "label": "Car dealer"
+                        },
+                        {
+                            "value": "AutoBodyShop",
+                            "label": "Body shop"
+                        },
+                        {
+                            "value": "TireShop",
+                            "label": "Tyre shop"
+                        },
+                        {
+                            "value": "MotorcycleRepair",
+                            "label": "Motorcycle repair"
+                        },
+                        {
+                            "value": "AutomotiveBusiness",
+                            "label": "Other automotive business"
+                        }
+                    ],
+                    "required": true
+                },
+                "street-address": {
+                    "type": "string",
+                    "label": "Street address",
+                    "hint": "Street and house number",
+                    "required": true
+                },
+                "postal-code": {
+                    "type": "string",
+                    "label": "Postal code",
+                    "hint": "Postal code of the garage",
+                    "required": true
+                },
+                "locality": {
+                    "type": "string",
+                    "label": "City",
+                    "hint": "City the garage is located in",
+                    "required": true
+                },
+                "country": {
+                    "type": "string",
+                    "label": "Country code",
+                    "hint": "Two letter ISO country code, e.g. DE or US",
+                    "default": "DE",
+                    "min": 2,
+                    "max": 2,
+                    "uppercase": true,
+                    "required": true
+                },
+                "telephone": {
+                    "type": "string",
+                    "hint": "Phone number in international format, also used by the call button",
+                    "required": true
+                },
+                "breakdown": {
+                    "type": "string",
+                    "label": "Breakdown service",
+                    "hint": "Phone number of the breakdown and towing service, shown in the top bar"
+                },
+                "email": {
+                    "type": "string",
+                    "hint": "Email address for appointments, quotes and vehicle enquiries"
+                },
+                "announcement": {
+                    "type": "string",
+                    "label": "Announcement",
+                    "hint": "Short note shown at the top of every page, e.g. Winter tyre season: book your tyre change now"
+                },
+                "booking": {
+                    "type": "string",
+                    "label": "Booking link",
+                    "hint": "Link to the service booking page, shown as a button in the header"
+                },
+                "prices": {
+                    "type": "string",
+                    "label": "Price list link",
+                    "hint": "Link to the page with services and prices"
+                },
+                "price-range": {
+                    "type": "string",
+                    "label": "Price range",
+                    "hint": "Price level of the garage, e.g. $$ or €€"
+                },
+                "notice": {
+                    "type": "string",
+                    "label": "Notice",
+                    "hint": "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
+                },
+                "action-bar": {
+                    "type": "switch",
+                    "label": "Action bar",
+                    "hint": "Show call and booking buttons at the bottom of the screen on phones",
+                    "default": true
+                },
+                "hours": {
+                    "type": "items",
+                    "label": "Opening hours",
+                    "hint": "Opening hours for each day of the week, shown in the footer",
+                    "identity": "id",
+                    "item": {
+                        "day": {
+                            "type": "select",
+                            "hint": "Day of the week",
+                            "options": [
+                                {
+                                    "value": "Monday",
+                                    "label": "Monday"
+                                },
+                                {
+                                    "value": "Tuesday",
+                                    "label": "Tuesday"
+                                },
+                                {
+                                    "value": "Wednesday",
+                                    "label": "Wednesday"
+                                },
+                                {
+                                    "value": "Thursday",
+                                    "label": "Thursday"
+                                },
+                                {
+                                    "value": "Friday",
+                                    "label": "Friday"
+                                },
+                                {
+                                    "value": "Saturday",
+                                    "label": "Saturday"
+                                },
+                                {
+                                    "value": "Sunday",
+                                    "label": "Sunday"
+                                }
+                            ]
+                        },
+                        "opens": {
+                            "type": "string",
+                            "hint": "Opening time in 24 hour format, e.g. 07:30",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        },
+                        "closes": {
+                            "type": "string",
+                            "hint": "Closing time in 24 hour format, e.g. 18:00",
+                            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+                        }
+                    }
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#1F2328"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#F3F4F2"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#D7141A33"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#16191D"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#2B3036"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#C8102E"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#C8102E"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#A00D25"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#A00D25"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#2B3036"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#2B3036"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#16191D"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#16191D"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners",
+                    "default": "0.25rem"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}
