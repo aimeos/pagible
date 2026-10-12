@@ -77,6 +77,9 @@
     <testsuite name="Glow">
       <directory>./themes/glow/tests/</directory>
     </testsuite>
+    <testsuite name="Torque">
+      <directory>./themes/torque/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
