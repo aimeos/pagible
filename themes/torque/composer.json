@@ -1,0 +1,34 @@
+{
+    "name": "aimeos/pagible-themes-torque",
+    "description": "Pagible CMS - Torque theme for car repair shops, garages, tyre centres and used car dealers",
+    "keywords": [
+        "laravel",
+        "cms",
+        "theme",
+        "car repair",
+        "garage",
+        "auto repair",
+        "car dealer",
+        "tyre shop"
+    ],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\TorqueServiceProvider"
+            ]
+        }
+    }
+}

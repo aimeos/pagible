@@ -76,4 +76,6 @@ parameters:
 		- themes/taste/database/seeders
 		- themes/tonic/src
 		- themes/tonic/database/seeders
+		- themes/torque/src
+		- themes/torque/database/seeders
 		- tests/User.php

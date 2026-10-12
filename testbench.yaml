@@ -22,4 +22,5 @@ providers:
   - Aimeos\Cms\StyleServiceProvider
   - Aimeos\Cms\TasteServiceProvider
   - Aimeos\Cms\TonicServiceProvider
+  - Aimeos\Cms\TorqueServiceProvider
   - Aimeos\Cms\VoltServiceProvider
