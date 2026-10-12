@@ -1,0 +1,34 @@
+{
+    "name": "aimeos/pagible-themes-grove",
+    "description": "Pagible CMS - Grove theme for gardeners, landscapers, garden designers and garden maintenance companies",
+    "keywords": [
+        "laravel",
+        "cms",
+        "theme",
+        "gardener",
+        "landscaping",
+        "garden design",
+        "garden maintenance",
+        "landscape gardener"
+    ],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\GroveServiceProvider"
+            ]
+        }
+    }
+}
