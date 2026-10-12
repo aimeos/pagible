@@ -1,0 +1,229 @@
+{
+    "label": "Launch",
+    "description": "Modern SaaS and startup landing page design with automatic light and dark mode, indigo glow accents, gradient headlines, product screenshots in browser frames, bento feature grids, pricing with monthly and yearly toggle and Cashier checkout, changelog timeline, FAQ and testimonial walls",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "docs": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "product": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M13.13 22.19L11.5 18.36C13.07 17.78 14.54 17 15.9 16.09L13.13 22.19M5.64 12.5L1.81 10.87L7.91 8.1C7 9.46 6.22 10.93 5.64 12.5M21.61 2.39C21.61 2.39 16.66 .269 11 5.93C8.81 8.12 7.5 10.53 6.65 12.64C6.37 13.39 6.56 14.21 7.11 14.77L9.24 16.89C9.79 17.45 10.61 17.63 11.36 17.35C13.5 16.53 15.88 15.19 18.07 13C23.73 7.34 21.61 2.39 21.61 2.39M14.54 9.46C13.76 8.68 13.76 7.41 14.54 6.63S16.59 5.85 17.37 6.63C18.14 7.41 18.15 8.68 17.37 9.46C16.59 10.24 15.32 10.24 14.54 9.46M8.88 16.53L7.47 15.12L8.88 16.53M6.24 22L9.88 18.36C9.54 18.27 9.21 18.12 8.91 17.91L4.83 22H6.24M2 22H3.41L8.18 17.24L6.76 15.83L2 20.59V22M2 19.17L6.09 15.09C5.88 14.79 5.73 14.47 5.64 14.12L2 17.76V19.17Z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Name of the software product or app",
+                    "required": true
+                },
+                "category": {
+                    "type": "select",
+                    "label": "Category",
+                    "hint": "Kind of software shown to search engines",
+                    "default": "BusinessApplication",
+                    "required": true,
+                    "options": [
+                        {
+                            "value": "BusinessApplication",
+                            "label": "Business software"
+                        },
+                        {
+                            "value": "DeveloperApplication",
+                            "label": "Developer tool"
+                        },
+                        {
+                            "value": "DesignApplication",
+                            "label": "Design tool"
+                        },
+                        {
+                            "value": "FinanceApplication",
+                            "label": "Finance software"
+                        },
+                        {
+                            "value": "SecurityApplication",
+                            "label": "Security software"
+                        },
+                        {
+                            "value": "EducationalApplication",
+                            "label": "Learning software"
+                        },
+                        {
+                            "value": "LifestyleApplication",
+                            "label": "Consumer app"
+                        }
+                    ]
+                },
+                "description": {
+                    "type": "string",
+                    "hint": "One sentence describing what the product does, used for search engines"
+                },
+                "announcement": {
+                    "type": "string",
+                    "label": "Announcement",
+                    "hint": "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+                },
+                "announcement-link": {
+                    "type": "string",
+                    "label": "Announcement link",
+                    "hint": "Page the announcement links to, e.g. the changelog entry"
+                },
+                "signin": {
+                    "type": "string",
+                    "label": "Sign in link",
+                    "hint": "Link to the login of your app, shown as \"Sign in\" in the header"
+                },
+                "signup": {
+                    "type": "string",
+                    "label": "Sign up link",
+                    "hint": "Link to the sign up or pricing page, shown as \"Get started\" button in the header"
+                },
+                "status": {
+                    "type": "string",
+                    "label": "Status page link",
+                    "hint": "Link to the public status page, shown in the footer"
+                },
+                "price": {
+                    "type": "string",
+                    "label": "Starting price",
+                    "hint": "Lowest price for search engines, e.g. 0 for a free plan or 19.00",
+                    "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"
+                },
+                "currency": {
+                    "type": "string",
+                    "label": "Currency",
+                    "hint": "Three letter ISO currency code, e.g. USD or EUR",
+                    "default": "USD",
+                    "min": 3,
+                    "max": 3,
+                    "uppercase": true
+                },
+                "rating": {
+                    "type": "string",
+                    "label": "Rating",
+                    "hint": "Average review rating from 1 to 5, e.g. 4.8",
+                    "pattern": "^[1-5](\\.[0-9])?$"
+                },
+                "reviews": {
+                    "type": "string",
+                    "label": "Number of reviews",
+                    "hint": "Number of reviews the rating is based on",
+                    "pattern": "^[0-9]+$"
+                },
+                "notice": {
+                    "type": "string",
+                    "label": "Notice",
+                    "hint": "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M13.13 22.19L11.5 18.36C13.07 17.78 14.54 17 15.9 16.09L13.13 22.19M5.64 12.5L1.81 10.87L7.91 8.1C7 9.46 6.22 10.93 5.64 12.5M21.61 2.39C21.61 2.39 16.66 .269 11 5.93C8.81 8.12 7.5 10.53 6.65 12.64C6.37 13.39 6.56 14.21 7.11 14.77L9.24 16.89C9.79 17.45 10.61 17.63 11.36 17.35C13.5 16.53 15.88 15.19 18.07 13C23.73 7.34 21.61 2.39 21.61 2.39M14.54 9.46C13.76 8.68 13.76 7.41 14.54 6.63S16.59 5.85 17.37 6.63C18.14 7.41 18.15 8.68 17.37 9.46C16.59 10.24 15.32 10.24 14.54 9.46M8.88 16.53L7.47 15.12L8.88 16.53M6.24 22L9.88 18.36C9.54 18.27 9.21 18.12 8.91 17.91L4.83 22H6.24M2 22H3.41L8.18 17.24L6.76 15.83L2 20.59V22M2 19.17L6.09 15.09C5.88 14.79 5.73 14.47 5.64 14.12L2 17.76V19.17Z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "'Inter', 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#3F3F46"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#FFFFFF"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#6366F140"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#09090B"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#27272A"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#FFFFFF"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#4F46E5"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#4F46E5"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#4338CA"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#4338CA"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#7C3AED"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#7C3AED"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#6D28D9"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#6D28D9"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners",
+                    "default": "0.75rem"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}

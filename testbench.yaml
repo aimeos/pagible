@@ -9,6 +9,7 @@ providers:
   - Aimeos\Cms\GlowServiceProvider
   - Aimeos\Cms\GroveServiceProvider
   - Aimeos\Cms\JournalServiceProvider
+  - Aimeos\Cms\LaunchServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\ManeServiceProvider
   - Aimeos\Cms\MedicalServiceProvider

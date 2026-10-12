@@ -83,6 +83,9 @@
     <testsuite name="Grove">
       <directory>./themes/grove/tests/</directory>
     </testsuite>
+    <testsuite name="Launch">
+      <directory>./themes/launch/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
