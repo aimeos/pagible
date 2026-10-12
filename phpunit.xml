@@ -74,6 +74,9 @@
     <testsuite name="Mane">
       <directory>./themes/mane/tests/</directory>
     </testsuite>
+    <testsuite name="Glow">
+      <directory>./themes/glow/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
