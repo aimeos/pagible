@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -123,8 +123,8 @@ class McpWatchTest extends McpTestAbstract
     }
 
 
-    protected function home() : Page
+    protected function home() : PageView
     {
-        return Page::where( 'name', 'Home' )->firstOrFail();
+        return PageView::where( 'name', 'Home' )->firstOrFail();
     }
 }

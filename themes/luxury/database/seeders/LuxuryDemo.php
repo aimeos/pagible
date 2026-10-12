@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -63,7 +63,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates the journal and its articles below the home page.
      */
-    protected function addBlog( Page $home, string $journalId ) : static
+    protected function addBlog( PageView $home, string $journalId ) : static
     {
         $journal = $this->page( [
             'id' => $journalId,
@@ -246,7 +246,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates the experiences page below the home page.
      */
-    protected function addExperiences( Page $home ) : static
+    protected function addExperiences( PageView $home ) : static
     {
         return $this->addWellnessExperiences( $home );
     }
@@ -255,7 +255,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates practical guest guide pages below the home page.
      */
-    protected function addGuide( Page $home ) : static
+    protected function addGuide( PageView $home ) : static
     {
         $guide = $this->page( [
             'lang' => 'en',
@@ -361,7 +361,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates the reservation page below the home page.
      */
-    protected function addReserve( Page $home ) : static
+    protected function addReserve( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -408,7 +408,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates the rooms and suites page below the home page.
      */
-    protected function addStay( Page $home ) : static
+    protected function addStay( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -507,7 +507,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Adds the combined wellness and island experiences content.
      */
-    protected function addWellnessExperiences( Page $home ) : static
+    protected function addWellnessExperiences( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -695,7 +695,7 @@ class LuxuryDemo extends AbstractDemo
     /**
      * Creates the Avelune home page and returns it.
      */
-    protected function home( string $journalId ) : Page
+    protected function home( string $journalId ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -817,7 +817,7 @@ SVG;
      * @param array<int, string> $fileIds
      * @param array<string, array<string, mixed>|object> $meta
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();

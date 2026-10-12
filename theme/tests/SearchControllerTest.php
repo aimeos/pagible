@@ -7,9 +7,8 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Database\Seeders\TestSeeder;
@@ -127,7 +126,7 @@ class SearchControllerTest extends ThemeTestAbstract
 
     public function testExternalSearchResultsAreRecheckedAgainstDatabaseAccess(): void
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $engine = new StaleAccessSearchEngine( [$page->id] );
         $manager = app( EngineManager::class );
         $manager->extend( 'stale-access-test', fn() => $engine );
@@ -150,14 +149,14 @@ class SearchControllerTest extends ThemeTestAbstract
 
     public function testExternalSearchResultsAreRecheckedAgainstDatabaseDomain(): void
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $domain = $page->domain;
         $engine = new StaleAccessSearchEngine( [$page->id] );
         $manager = app( EngineManager::class );
         $manager->extend( 'stale-domain-test', fn() => $engine );
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-domain-test'] );
-        Resource::updatePage( $page, ['domain' => 'other.example'] );
+        $page->variant->update( ['domain' => 'other.example'] );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',
@@ -173,14 +172,14 @@ class SearchControllerTest extends ThemeTestAbstract
 
     public function testExternalSearchResultsAreRecheckedAgainstDatabaseLanguage(): void
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $lang = $page->lang;
         $engine = new StaleAccessSearchEngine( [$page->id] );
         $manager = app( EngineManager::class );
         $manager->extend( 'stale-language-test', fn() => $engine );
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-language-test'] );
-        Resource::updatePage( $page, ['lang' => 'de'] );
+        $page->variant->update( ['lang' => 'de'] );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',

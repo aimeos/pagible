@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Resource;
 use Illuminate\Console\Command;
 
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Controllers\PageController;
 use Aimeos\Cms\Controllers\SearchController;
 use Aimeos\Cms\Controllers\SitemapController;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
@@ -83,17 +82,17 @@ class BenchmarkTheme extends Command
         config( ['scout.driver' => 'cms'] );
 
         // Get a page with cache=0 for uncached rendering
-        $uncachedPage = Page::where( 'tag', '!=', 'root' )
+        $uncachedPage = PageView::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        Page::withoutSyncingToSearch( fn() => Resource::updatePage( $uncachedPage, ['cache' => 0] ) );
+        PageView::withoutSyncingToSearch( fn() => $uncachedPage->variant->update( ['cache' => 0] ) );
 
         // Get a page with cache=5 for cached rendering
-        $cachedPage = Page::where( 'tag', '!=', 'root' )
+        $cachedPage = PageView::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->where( 'id', '!=', $uncachedPage->id )
             ->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        Page::withoutSyncingToSearch( fn() => Resource::updatePage( $cachedPage, ['cache' => 5] ) );
+        PageView::withoutSyncingToSearch( fn() => $cachedPage->variant->update( ['cache' => 5] ) );
 
         $this->header();
         $middleware = new ServeCachedPage();
@@ -108,13 +107,13 @@ class BenchmarkTheme extends Command
         }, readOnly: true, tries: $tries );
 
         // Translated page whose navigation falls back to the source language of untranslated pages
-        $variantPage = Page::visible( BenchmarkSeeder::TRANSLATION )->where( 'lang', BenchmarkSeeder::TRANSLATION )
+        $variantPage = PageView::visible( BenchmarkSeeder::TRANSLATION )->where( 'lang', BenchmarkSeeder::TRANSLATION )
             ->where( 'tag', '!=', 'root' )->wherePublic()->where( 'domain', $domain )
             ->orderByDesc( NestedSet::DEPTH )->first();
 
         if( $variantPage )
         {
-            Page::withoutSyncingToSearch( fn() => Resource::updatePage( $variantPage, ['cache' => 0] ) );
+            PageView::withoutSyncingToSearch( fn() => $variantPage->variant->update( ['cache' => 0] ) );
 
             $this->benchmark( 'Variant render', function() use ( $variantPage, $domain, $baseurl, $middleware ) {
                 $request = Request::create( $baseurl . '/' . $variantPage->path, 'GET' );
@@ -217,7 +216,7 @@ class BenchmarkTheme extends Command
     }
 
 
-    private function benchmarkAccess( Page $page, string $domain, string $baseurl,
+    private function benchmarkAccess( PageView $page, string $domain, string $baseurl,
         ServeCachedPage $middleware, int $tries ) : void
     {
         $temporaryAccess = !Permission::has( 'access:view' );
@@ -256,7 +255,7 @@ class BenchmarkTheme extends Command
             $values = isset( $available[0] ) ? [$available[0]] : null;
             // The complete benchmark tree exceeds the synchronous bulk limit.
             // Use one generated top-level branch (991 pages for the default data).
-            $branch = Page::where( NestedSet::DEPTH, 1 )
+            $branch = PageView::where( NestedSet::DEPTH, 1 )
                 ->where( 'domain', $domain )->orderBy( NestedSet::LFT )->firstOrFail();
             $branchId = $branch->getKey();
             $accessTries = max( 1, (int) ceil( $tries / 10 ) );

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
@@ -61,7 +61,7 @@ class VariantSearchTest extends CoreTestAbstract
 
     public function testSourceIsListedForLanguagesWithoutVariant(): void
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $source = (string) $page->lang;
         config( ['cms.locales' => [$source, 'de', 'fr']] );
 
@@ -71,7 +71,7 @@ class VariantSearchTest extends CoreTestAbstract
         $this->assertEqualsCanonicalizing( [$source, 'fr'], $doc['langs'] ?? null );
         $this->assertEqualsCanonicalizing( [$source, 'fr'], $doc['langs_trashed'] ?? null );
 
-        Scout::sync( Page::class, [(string) $page->id] );
+        Scout::sync( PageView::class, [(string) $page->id] );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
 
         Resource::dropVariant( $page->id, 'de' );
@@ -93,7 +93,7 @@ class VariantSearchTest extends CoreTestAbstract
     {
         // jobs serialized before the "sources" and "keys" properties existed don't contain them
         $job = ( new \ReflectionClass( \Aimeos\Cms\Jobs\IndexModels::class ) )->newInstanceWithoutConstructor();
-        $job->__unserialize( ['model' => Page::class, 'ids' => [], 'tenant' => 'test'] );
+        $job->__unserialize( ['model' => PageView::class, 'ids' => [], 'tenant' => 'test'] );
 
         $this->assertFalse( $job->sources );
         $this->assertFalse( $job->keys );
@@ -102,11 +102,11 @@ class VariantSearchTest extends CoreTestAbstract
 
     public function testSyncIndexesAllVariantsOfThePages(): void
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $variant = Resource::addVariant( $page->id, 'de' );
         $this->engine->documents = [];
 
-        Scout::sync( Page::class, [(string) $page->id] );
+        Scout::sync( PageView::class, [(string) $page->id] );
 
         $this->assertEqualsCanonicalizing( [$page->variant_id, $variant->variant_id], array_keys( $this->engine->documents ) );
     }
@@ -114,7 +114,7 @@ class VariantSearchTest extends CoreTestAbstract
 
     public function testBulkAndPublishIndexOnlyTheChangedVariants(): void
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $variant = Resource::addVariant( $page->id, 'de' );
         $this->engine->updates = [];
 
@@ -126,7 +126,7 @@ class VariantSearchTest extends CoreTestAbstract
         \Illuminate\Support\Facades\Queue::fake();
 
         try {
-            \Aimeos\Cms\Publication::publish( Page::class, [$page->id], null, lang: 'de' );
+            \Aimeos\Cms\Publication::publish( PageView::class, [$page->id], null, lang: 'de' );
         } finally {
             config( ['scout.queue' => false] );
         }
@@ -138,12 +138,12 @@ class VariantSearchTest extends CoreTestAbstract
 
     public function testSourcesAreReindexedOnceAfterCommit(): void
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $source = (string) $page->lang;
         config( ['cms.locales' => [$source, 'de', 'fr']] );
         $this->engine->updates = [];
 
-        ( new Page() )->getConnection()->transaction( function() use ( $page ) {
+        ( new PageView() )->getConnection()->transaction( function() use ( $page ) {
             Scout::sources( [(string) $page->id] );
             Scout::sources( [(string) $page->id] );
 
@@ -156,17 +156,17 @@ class VariantSearchTest extends CoreTestAbstract
 
     public function testPreferFiltersTheEngineByLanguage(): void
     {
-        $search = Page::search( 'blog' );
+        $search = PageView::search( 'blog' );
         Scout::prefer( $search, 'de' );
         $this->assertSame( 'de', $this->where( $search, 'langs' ) );
 
-        $search = Page::search( 'blog' );
+        $search = PageView::search( 'blog' );
         Scout::prefer( $search, 'de', 'with' );
         $this->assertSame( 'de', $this->where( $search, 'langs_trashed' ) );
 
         config( ['scout.driver' => 'collection'] );
 
-        $search = Page::search( 'blog' );
+        $search = PageView::search( 'blog' );
         Scout::prefer( $search, 'de' );
         $this->assertNull( $this->where( $search, 'langs' ) );
     }
@@ -175,12 +175,12 @@ class VariantSearchTest extends CoreTestAbstract
     public function testPreferInvalidLanguage(): void
     {
         $this->expectException( \InvalidArgumentException::class );
-        Scout::prefer( Page::search( 'blog' ), 'de" OR langs = "en' );
+        Scout::prefer( PageView::search( 'blog' ), 'de" OR langs = "en' );
     }
 
 
     /**
-     * @param \Laravel\Scout\Builder<Page> $search
+     * @param \Laravel\Scout\Builder<PageView> $search
      */
     private function where( \Laravel\Scout\Builder $search, string $field ) : mixed
     {
@@ -205,12 +205,12 @@ class VariantSearchEngineSpy extends NullEngine
     public array $updates = [];
 
 
-    /** @param \Illuminate\Database\Eloquent\Collection<int, Page> $models */
+    /** @param \Illuminate\Database\Eloquent\Collection<int, PageView> $models */
     public function update( $models ) : void
     {
         foreach( $models as $model )
         {
-            if( $model instanceof Page && ( $doc = $model->toSearchableArray() ) !== [] ) {
+            if( $model instanceof PageView && ( $doc = $model->toSearchableArray() ) !== [] ) {
                 $this->documents[(string) $model->getScoutKey()] = $doc;
                 $this->updates[] = (string) $model->getScoutKey();
             }

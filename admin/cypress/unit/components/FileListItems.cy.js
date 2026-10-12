@@ -482,20 +482,25 @@ describe('FileListItems', () => {
       })
     })
 
-    it('sends fewer files per request with many languages', () => {
-      const mutate = cy.stub().resolves({ data: { translateFiles: [] } })
+    it('sends at most 10 languages per request', () => {
+      const mutate = cy.stub()
+      mutate.onFirstCall().resolves({ data: { translateFiles: [translated('file-0')] } })
+      mutate.resolves({ data: { translateFiles: [translated('file-0')] } })
 
       mountList({}, perms, { mutate }).then(({ wrapper }) => {
-        useLanguageStore().available = Array.from({ length: 30 }, (_, i) => 'l' + i)
+        useLanguageStore().available = Array.from({ length: 25 }, (_, i) => 'l' + i)
         const vm = wrapper.findComponent(FileListItems).vm
+        const add = cy.spy(vm.messages, 'add')
         vm.items = Array.from({ length: 7 }, (_, i) => file('file-' + i))
         vm.checked = new Set(vm.items.map((item) => item.id))
 
         return vm.translate().then(() => {
           expect(mutate).to.have.been.calledThrice
-          expect(mutate.firstCall.args[0].variables.id).to.have.length(3)
-          expect(mutate.secondCall.args[0].variables.id).to.have.length(3)
-          expect(mutate.thirdCall.args[0].variables.id).to.have.length(1)
+          expect(mutate.firstCall.args[0].variables.id).to.have.length(7)
+          expect(mutate.firstCall.args[0].variables.lang).to.have.length(10)
+          expect(mutate.secondCall.args[0].variables.lang).to.have.length(10)
+          expect(mutate.thirdCall.args[0].variables.lang).to.have.length(5)
+          expect(add).to.have.been.calledWithMatch(/1 file translated/, 'success')
         })
       })
     })

@@ -82,7 +82,8 @@ return new class extends Migration
             'cache', 'status', 'meta', 'config', 'content', 'latest_id', 'editor', 'created_at', 'updated_at',
         ];
 
-        // in batches to limit the transaction size for sites with many pages, already copied pages are skipped
+        // in batches to limit the transaction size for sites with many pages, already copied pages are skipped,
+        // no cursor because some databases can't write while a result set of the same connection is open
         $db->table( 'cms_pages' )->select( 'id' )
             ->whereNotExists( fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants' )
                 ->whereColumn( 'cms_page_variants.page_id', 'cms_pages.id' ) )
@@ -103,7 +104,8 @@ return new class extends Migration
     private function versions( Connection $db ): void
     {
         // walks the primary key of all versions because filtering by type can make the database
-        // use the type index and sort the remaining versions for each batch
+        // use the type index and sort the remaining versions for each batch, no cursor because
+        // MySQL and PostgreSQL buffer the whole result in memory and there can be millions of versions
         // SQL Server allows 2100 parameters per statement at most
         $db->table( 'cms_versions' )->select( 'id' )
             ->chunkById( 2000, fn( $rows ) => $db->table( 'cms_versions' )->whereIn( 'id', $rows->pluck( 'id' )->all() )
@@ -283,6 +285,7 @@ return new class extends Migration
             $table->index( ['tag', 'lang', 'tenant_id', 'status'] );
             $table->index( ['lang', 'tenant_id', 'status'] );
             $table->index( ['tenant_id', 'type', 'deleted_at', 'created_at'], 'cms_page_variants_news_sitemap_index' );
+            $table->index( ['tenant_id', 'type', 'lang', 'deleted_at', 'created_at'], 'cms_page_variants_type_lang_index' );
             $table->index( ['latest_id'] );
             $table->index( ['deleted_at', 'tenant_id'] );
 

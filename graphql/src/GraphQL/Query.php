@@ -10,7 +10,7 @@ namespace Aimeos\Cms\GraphQL;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Sync;
@@ -97,14 +97,14 @@ final class Query
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      */
-    public function page( $rootValue, array $args ) : ?Page
+    public function page( $rootValue, array $args ) : ?PageView
     {
         $trashed = $args['trashed'] ?? null;
 
         $query = match( $trashed ) {
-            'with' => Page::withTrashed(),
-            'only' => Page::onlyTrashed(),
-            default => Page::query(),
+            'with' => PageView::withTrashed(),
+            'only' => PageView::onlyTrashed(),
+            default => PageView::query(),
         };
 
         if( isset( $args['lang'] ) ) {
@@ -204,7 +204,7 @@ final class Query
             ->all();
 
         // pages without a variant in the language
-        $pages = Page::query()->getConnection()->table( 'cms_pages' )
+        $pages = PageView::query()->getConnection()->table( 'cms_pages' )
             ->where( 'tenant_id', Tenancy::value() )
             ->whereNull( 'deleted_at' )
             ->count();
@@ -218,12 +218,26 @@ final class Query
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return LengthAwarePaginator<int, Page>
+     * @param GraphQLContext|null $context GraphQL request context
+     * @param ResolveInfo|null $resolveInfo Requested fields
+     * @return LengthAwarePaginator<int, PageView>
      */
-    public function pages( $rootValue, array $args ) : LengthAwarePaginator
+    public function pages( $rootValue, array $args, ?GraphQLContext $context = null,
+        ?ResolveInfo $resolveInfo = null ) : LengthAwarePaginator
     {
+        $search = $this->search( $args );
+
+        // lists don't load the content, meta and config of each page if they aren't requested
+        if( $resolveInfo )
+        {
+            $fields = array_keys( (array) ( $resolveInfo->getFieldSelection( 1 )['data'] ?? [] ) );
+            $columns = [...PageView::REQUIRED_COLUMNS, 'variant_deleted_at', ...array_intersect( PageView::RESPONSE_COLUMNS, $fields )];
+
+            Scout::select( $search, array_values( array_unique( $columns ) ) );
+        }
+
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
-        return $this->paginate( $this->search( $args ), $args, $allowed, NestedSet::LFT, 'asc' );
+        return $this->paginate( $search, $args, $allowed, NestedSet::LFT, 'asc' );
     }
 
 
@@ -240,7 +254,7 @@ final class Query
             ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
             : [];
 
-        $search = Filter::search( Page::class, $filter['any'] ?? '' );
+        $search = Filter::search( PageView::class, $filter['any'] ?? '' );
         $lang = (string) ( $args['lang'] ?? '' );
         $trashed = $args['trashed'] ?? null;
         $state = null;
@@ -256,12 +270,24 @@ final class Query
 
         unset( $filter['translation'] );
 
+        // external engines only apply query callbacks to the fetched results, so the indexed fields are used
+        if( $state && Scout::usesExternalSearch() )
+        {
+            match( $state ) {
+                'missing' => $search->whereNotIn( 'lang', [$lang] ),
+                'stale' => $search->where( 'lang', $lang )->where( 'stale', true ),
+                'ai' => $search->where( 'lang', $lang )->where( 'editor', Sync::EDITOR ),
+                default => throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) ),
+            };
+            $state = null;
+        }
+
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 
         if( $route || $state ) {
             $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang ) {
                 foreach( $route as $field => $value ) {
-                    $query->where( 'cms_pages.' . $field, (string) ( $value ?? '' ) );
+                    $query->where( $query->qualifyColumn( $field ), (string) ( $value ?? '' ) );
                 }
 
                 if( $state ) {

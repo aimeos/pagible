@@ -4,7 +4,7 @@ namespace Aimeos\Cms\Scout;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Scout as ScoutHelper;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
@@ -46,7 +46,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Remove the given model from the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\Page>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\PageView>  $models
      * @return void
      */
     public function delete( $models )
@@ -206,7 +206,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     /**
      * Update the given model in the index.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\Page>  $models
+     * @param  \Illuminate\Database\Eloquent\Collection<int, \Aimeos\Cms\Models\Element|\Aimeos\Cms\Models\File|\Aimeos\Cms\Models\PageView>  $models
      * @return void
      */
     public function update( $models )
@@ -233,7 +233,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
                         'indexable_id' => $model->getScoutKey(),
                         'indexable_type' => $type,
                         'tenant_id' => $tenant,
-                        'indexable_lang' => $model instanceof Page ? $model->lang : null,
+                        'indexable_lang' => $model instanceof PageView ? $model->lang : null,
                     ];
 
                     if( !empty( $array['draft'] ) ) {
@@ -390,7 +390,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         // variants of other languages are skipped before joining the pages, not for language fallbacks
-        if( $builder->model instanceof Page && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
+        if( $builder->model instanceof PageView && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
             $query->where( 'cms_index.indexable_lang', $lang );
         }
 

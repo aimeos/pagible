@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
@@ -103,7 +103,7 @@ class Presenter
      */
     public static function item( Base $item, bool $link = false ) : array
     {
-        if( $link && $item instanceof Page ) {
+        if( $link && $item instanceof PageView ) {
             return ['id' => $item->id, 'latest_id' => $item->latest_id, 'parent_id' => $item->parent_id]
                 + $item->toArray() + ['url' => Utils::pageUrl( $item->path, $item->domain )];
         }
@@ -115,11 +115,11 @@ class Presenter
     /**
      * Returns the draft state of a page.
      *
-     * @param Page $item Page with its "latest" version relation loaded
+     * @param PageView $item Page with its "latest" version relation loaded
      * @param bool $full TRUE to include all version data, content, meta, config and publication state, FALSE for list entries
      * @return array<string, mixed> Page data
      */
-    public static function page( Page $item, bool $full = true ) : array
+    public static function page( PageView $item, bool $full = true ) : array
     {
         $version = $item->latest;
         $data = (array) ( $version->data ?? [] );
@@ -187,7 +187,7 @@ class Presenter
             } elseif( $at ) {
                 $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' ), 'scheduled_at' => $at];
             } else {
-                $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' )] + ( $item instanceof Page ? ['path' => $item->path] : [] );
+                $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' )] + ( $item instanceof PageView ? ['path' => $item->path] : [] );
             }
         }
 
@@ -203,7 +203,7 @@ class Presenter
      * Returns the selected columns of the related records as plain arrays.
      *
      * @param Relation<*, *, *> $relation Relation of the model, e.g. $file->bypages()
-     * @param string ...$cols Columns to select, e.g. "cms_pages.id"
+     * @param string ...$cols Columns to select, e.g. "cms_page_view.id"
      * @return array<int, array<string, mixed>> List of records
      */
     public static function rows( Relation $relation, string ...$cols ) : array
@@ -229,10 +229,10 @@ class Presenter
     /**
      * Returns the version and timestamp fields shared by all draft structures.
      *
-     * @param Element|File|Page $item Model with its "latest" version relation loaded
+     * @param Element|File|PageView $item Model with its "latest" version relation loaded
      * @return array<string, mixed> Language, editor, deletion state and timestamps
      */
-    protected static function meta( Element|File|Page $item ) : array
+    protected static function meta( Element|File|PageView $item ) : array
     {
         $version = $item->latest;
 

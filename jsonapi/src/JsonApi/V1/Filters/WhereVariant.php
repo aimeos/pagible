@@ -22,9 +22,9 @@ class WhereVariant extends Where
     /**
      * Applies the filter to the page query.
      *
-     * @param \Aimeos\Cms\Query\PageQuery<\Aimeos\Cms\Models\Page> $query
+     * @param \Aimeos\Cms\Query\PageQuery<\Aimeos\Cms\Models\PageView> $query
      * @param mixed $value
-     * @return \Aimeos\Cms\Query\PageQuery<\Aimeos\Cms\Models\Page>
+     * @return \Aimeos\Cms\Query\PageQuery<\Aimeos\Cms\Models\PageView>
      */
     public function apply( $query, $value )
     {

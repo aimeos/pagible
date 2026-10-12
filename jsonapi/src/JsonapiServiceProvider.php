@@ -4,7 +4,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Scopes\Status;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -12,7 +12,7 @@ class JsonapiServiceProvider extends Provider
 {
     public function boot(): void
     {
-        foreach( [Page::class, Nav::class] as $model )
+        foreach( [PageView::class, Nav::class] as $model )
         {
             $model::addGlobalScope( 'jsonapi', static function( $query ) {
                 $request = request();

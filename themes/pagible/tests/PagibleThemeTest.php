@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\PagibleServiceProvider;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Validation;
@@ -28,7 +28,7 @@ class PagibleThemeTest extends ThemeTestAbstract
 
     public function testTextTrioView() : void
     {
-        $page = ( new Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en', 'theme' => 'pagible'] );
+        $page = ( new PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en', 'theme' => 'pagible'] );
         $content = Validation::page( ['content' => [[
             'id' => 'text-trio-id',
             'type' => 'pagible::text-trio',
@@ -55,7 +55,7 @@ class PagibleThemeTest extends ThemeTestAbstract
 
     public function testImageSizesMatchLayout() : void
     {
-        $page = ( new Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en', 'theme' => 'pagible'] );
+        $page = ( new PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en', 'theme' => 'pagible'] );
         $files = collect( ['image-id' => (object) [
             'id' => 'image-id',
             'name' => 'Image',

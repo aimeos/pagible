@@ -72,7 +72,7 @@ class ServeCachedPage
 
             // Resolve the lightweight route only on cache misses, before the "web"
             // middleware starts the session.
-            $page = Nav::page( $path, $domain );
+            $page = Nav::lookup( $path, $domain );
             $request->attributes->set( 'cms.page', $page );
 
             $response = match( true ) {

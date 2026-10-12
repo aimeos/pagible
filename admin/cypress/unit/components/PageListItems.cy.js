@@ -776,6 +776,37 @@ describe('PageListItems', () => {
     })
   })
 
+  it('changes the language of the source variants separately', () => {
+    const mutate = cy.stub().resolves({
+      data: { bulkPage: { ids: ['page-1'], latest: '{}', data: '{}', failed: 1 } },
+    })
+
+    mountList({}, { 'page:save': true, 'page:view': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const node = { _checked: false, data: { id: 'page-1', status: 1, has: 0 } }
+      const add = cy.stub(vm.messages, 'add')
+      vm.$refs.tree.statsFlat = [node]
+      vm.editProps(node)
+
+      return vm.saveProps({ input: { status: 0, lang: 'de' }, descendants: false }).then(() => {
+        expect(mutate).to.have.been.calledTwice
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({
+          id: ['page-1'],
+          input: { status: 0 },
+          descendants: false,
+          lang: 'en',
+        })
+        expect(mutate.secondCall.args[0].variables).to.deep.equal({
+          id: ['page-1'],
+          input: { lang: 'de' },
+          descendants: false,
+          lang: null,
+        })
+        expect(add).to.have.been.calledWith('2 pages could not be updated', 'info')
+      })
+    })
+  })
+
   it('marks the whole subtree as trashed when dropping a page', () => {
     const mutate = cy.stub().resolves({ data: { dropPage: [{ id: 'page-1' }] } })
 
@@ -891,7 +922,7 @@ describe('PageListItems', () => {
       })
       const mutate = cy.stub().resolves({
         data: {
-          addVariant: {
+          addPageVariant: {
             id: 'page-1', parent_id: null, lang: 'fr', source: 'en', stale: false,
             created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
             editor: 'test@test.com', has: 0, restricted: false,
@@ -912,6 +943,53 @@ describe('PageListItems', () => {
             expect(mutate.firstCall.args[0].variables).to.deep.include({ id: 'page-1', lang: 'fr' })
             expect(stat.data.lang).to.equal('fr')
             expect(vm.missing(stat.data)).to.equal(false)
+          })
+        })
+      })
+    })
+
+    it('queues the translation of a created language if the user can translate', () => {
+      const query = cy.stub().resolves({
+        data: {
+          pages: {
+            data: [
+              {
+                id: 'page-1', parent_id: null, lang: 'en', source: 'en', stale: false,
+                created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
+                editor: 'test@test.com', has: 0, restricted: false,
+                latest: { id: 'v1', published: true, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+                  data: JSON.stringify({ name: 'Home', path: 'home', lang: 'en', status: 1 }) },
+              },
+            ],
+            paginatorInfo: { currentPage: 1, lastPage: 1 },
+          },
+        },
+      })
+      const mutate = cy.stub()
+      mutate.onFirstCall().resolves({
+        data: {
+          addPageVariant: {
+            id: 'page-1', parent_id: null, lang: 'fr', source: 'en', stale: true,
+            created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
+            editor: 'test@test.com', has: 0, restricted: false,
+            latest: { id: 'v2', published: false, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+              data: JSON.stringify({ name: 'Home', path: 'home', lang: 'fr', status: 1 }) },
+          },
+        },
+      })
+      mutate.resolves({ data: { translatePage: { id: 'b1', total: 1 } } })
+
+      mountList({}, { 'page:add': true, 'page:view': true, 'page:save': true, 'text:translate': true }, { query, mutate }, 'fr').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        cy.wrap(null).should(() => expect(vm.items).to.have.length(1))
+        cy.then(() => {
+          const stat = { data: { ...vm.items[0] } }
+
+          return vm.createLang(stat).then(() => {
+            expect(mutate).to.have.been.calledTwice
+            expect(mutate.firstCall.args[0].variables).to.deep.include({ id: 'page-1', lang: 'fr' })
+            expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: ['fr'] })
+            expect(vm.translationStore.has('page-1', 'fr')).to.equal(true)
           })
         })
       })
@@ -960,11 +1038,10 @@ describe('PageListItems', () => {
       })
     })
 
-    it('opens the translate dialog with the current language and the total of the filter', () => {
-      const query = cy.stub().resolves({ data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1, total: 120 } } } })
+    it('opens the translate dialog with the current language', () => {
       const perms = { 'page:save': true, 'text:translate': true, 'page:view': true }
 
-      mountList({}, perms, { query }, 'de').then(({ wrapper }) => {
+      mountList({}, perms, {}, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
         vm.$refs.tree.statsFlat = [variant('page-1', 'de'), variant('page-2', 'de', 'de')]
         vm.translate()
@@ -972,7 +1049,6 @@ describe('PageListItems', () => {
         expect(vm.translateDialog).to.equal(true)
         expect(vm.translateItems).to.have.length(2)
         expect(vm.translateLangs).to.deep.equal(['de'])
-        cy.wrap(vm).its('translateTotal').should('equal', 120)
       })
     })
 
@@ -985,28 +1061,6 @@ describe('PageListItems', () => {
 
         expect(vm.translateDialog).to.equal(true)
         expect(vm.translateLangs).to.deep.equal([])
-        expect(vm.translateTotal).to.equal(null)
-      })
-    })
-
-    it('translates all pages matching the filter into several languages', () => {
-      const mutate = cy.stub().resolves({ data: { translatePage: { id: 'batch-1', total: 0 } } })
-      const perms = { 'page:save': true, 'text:translate': true, 'page:view': true }
-
-      mountList({}, perms, { mutate }, 'de').then(({ wrapper }) => {
-        const vm = wrapper.findComponent(PageListItems).vm
-        vm.$refs.tree.statsFlat = [variant('page-1', 'de')]
-        vm.translate()
-
-        return vm.translateApply({ langs: ['de', 'fr'], all: true }).then(() => {
-          const vars = mutate.firstCall.args[0].variables
-
-          expect(vars.id).to.equal(undefined)
-          expect(vars.lang).to.deep.equal(['de', 'fr'])
-          expect(vars.filterLang).to.equal('de')
-          expect(vars).to.have.property('filter')
-          expect(vars).to.have.property('publish')
-        })
       })
     })
 
@@ -1025,7 +1079,7 @@ describe('PageListItems', () => {
         vm.$refs.tree.statsFlat = [variant('page-1', 'de'), variant('page-2', 'de', 'de'), variant('page-3', 'en')]
         vm.translate()
 
-        return vm.translateApply({ langs: ['de'], all: false }).then(() => {
+        return vm.translateApply({ langs: ['de'] }).then(() => {
           expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1', 'page-2', 'page-3'], lang: ['de'] })
           expect(query).to.have.been.calledWithMatch({ variables: { batch: 'batch-1' }, fetchPolicy: 'no-cache' })
           expect(vm.progress).to.equal(null)
@@ -1048,7 +1102,7 @@ describe('PageListItems', () => {
         vm.$refs.tree.statsFlat = [variant('page-1', 'en')]
         vm.translate()
 
-        return vm.translateApply({ langs: ['de'], all: false }).then(() => {
+        return vm.translateApply({ langs: ['de'] }).then(() => {
           expect(query).not.to.have.been.calledWithMatch({ variables: { batch: 'batch-1' } })
           expect(vm.progress).to.equal(null)
           expect(add).to.have.been.calledWithMatch(/Nothing to translate/, 'info')
@@ -1146,7 +1200,7 @@ describe('PageListItems', () => {
 
         vm.translate(translated)
 
-        return vm.translateApply({ langs: ['de'], all: false }).then(() => {
+        return vm.translateApply({ langs: ['de'] }).then(() => {
           const fetches = query.getCalls().filter((call) => !call.args[0].variables.batch)
 
           expect(reload).not.to.have.been.called
@@ -1172,13 +1226,13 @@ describe('PageListItems', () => {
       mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
         vm.translate(variant('page-1', 'de'))
-        vm.translateApply({ langs: ['de', 'fr'], all: false })
+        vm.translateApply({ langs: ['de', 'fr'] })
         cy.wrap(vm).its('translationStore.batches').should('have.length', 1)
 
         // another batch translating the same page again is allowed and merged into the marker
         cy.then(() => {
           vm.translate(variant('page-1', 'de'))
-          vm.translateApply({ langs: ['fr', 'it'], all: false })
+          vm.translateApply({ langs: ['fr', 'it'] })
         })
         cy.wrap(vm).its('translationStore.batches').should('have.length', 2)
         cy.then(() => {
@@ -1202,7 +1256,7 @@ describe('PageListItems', () => {
         const vm = wrapper.findComponent(PageListItems).vm
         // polling continues until the batch is removed from the store, so the promise isn't awaited
         vm.translate(variant('page-1', 'de'))
-        vm.translateApply({ langs: ['de'], all: false })
+        vm.translateApply({ langs: ['de'] })
         cy.wrap(vm).its('progress').should('deep.include', { total: 3, done: 1, failed: 0 })
       })
       cy.get('.translate-progress').should('contain', 'Translating 1 of 3')
@@ -1221,9 +1275,9 @@ describe('PageListItems', () => {
       mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
         vm.translate(variant('page-1', 'de'))
-        vm.translateApply({ langs: ['de'], all: false })
+        vm.translateApply({ langs: ['de'] })
         vm.translate(variant('page-2', 'de'))
-        vm.translateApply({ langs: ['fr'], all: false })
+        vm.translateApply({ langs: ['fr'] })
 
         cy.wrap(vm).its('progress').should('deep.equal', { total: 5, done: 1, failed: 1 })
         cy.then(() => {
@@ -1245,7 +1299,7 @@ describe('PageListItems', () => {
       mountList({}, perms, { query, mutate }, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
         vm.translate(variant('page-1', 'de'))
-        vm.translateApply({ langs: ['de'], all: false })
+        vm.translateApply({ langs: ['de'] })
         cy.wrap(vm).its('progress').should('deep.include', { done: 2 })
       })
       cy.then(() => {
@@ -1313,7 +1367,7 @@ describe('PageListItems', () => {
         vm.$refs.tree.statsFlat = [variant('page-1', 'de'), variant('page-3', 'en')]
         vm.translate()
 
-        return vm.translateApply({ langs: ['de'], all: false }).then(() => {
+        return vm.translateApply({ langs: ['de'] }).then(() => {
           expect(mutate.firstCall.args[0].variables.id).to.deep.equal(['page-1', 'page-3'])
           expect(add).to.have.been.calledWithMatch(/1 translation failed/, 'error')
         })
@@ -1329,7 +1383,7 @@ describe('PageListItems', () => {
 
         vm.translate()
 
-        return Promise.resolve(vm.translateApply({ langs: ['de'], all: false })).then(() => {
+        return Promise.resolve(vm.translateApply({ langs: ['de'] })).then(() => {
           expect(vm.translateDialog).to.equal(false)
           expect(mutate).not.to.have.been.called
         })

@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\DB;
  *
  * Databases refuse to change tables used by a view (SQLite rebuilds the table, PostgreSQL
  * can't change column types), so migrations changing columns used by the view must drop
- * the view before and create it again afterwards. Until then, the Page model can't be used.
+ * the view before and create it again afterwards. Until then, the PageView model can't be used.
  */
-class PageView
+class PageViewSchema
 {
     /**
      * Creates the view or replaces an existing one.

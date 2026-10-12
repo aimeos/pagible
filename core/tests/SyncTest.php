@@ -14,7 +14,7 @@ use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Sync;
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Database\Seeders\TestSeeder;
@@ -54,7 +54,7 @@ class SyncTest extends CoreTestAbstract
         $de = Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
 
         $variant = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
-        $source = Page::with( 'latest' )->findOrFail( $page->id );
+        $source = PageView::with( 'latest' )->findOrFail( $page->id );
 
         $this->assertEquals( 'de', $de->lang );
         $this->assertEquals( Sync::EDITOR, $de->latest->editor );
@@ -73,7 +73,7 @@ class SyncTest extends CoreTestAbstract
         $this->assertEquals( 'de-' . $page->path, $de->latest->data->path );
 
         // the source is unchanged
-        $this->assertEquals( 'Hello', Page::with( 'latest' )->findOrFail( $page->id )->latest->aux->content[0]->data->text );
+        $this->assertEquals( 'Hello', PageView::with( 'latest' )->findOrFail( $page->id )->latest->aux->content[0]->data->text );
     }
 
 
@@ -315,7 +315,7 @@ class SyncTest extends CoreTestAbstract
         $this->savePage( $page->id, ['theme' => 'new', 'config' => [
             'website-title' => ['type' => 'website-title', 'data' => ['title' => 'New title'], 'files' => []],
         ]] );
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
         $this->assertTrue( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'stale' ) );
 
@@ -324,7 +324,7 @@ class SyncTest extends CoreTestAbstract
 
         $this->assertFalse( $variant->stale );
         $this->assertFalse( $de->stale );
-        $this->assertEquals( 'other', Page::language( 'de' )->with( 'latest' )->findOrFail( $page->id )->latest->data->theme );
+        $this->assertEquals( 'other', PageView::language( 'de' )->with( 'latest' )->findOrFail( $page->id )->latest->data->theme );
 
         $this->savePage( $page->id, ['name' => 'Renamed'] );
         $this->sent = [];
@@ -358,7 +358,7 @@ class SyncTest extends CoreTestAbstract
 
         Resource::translatePage( $parent->id, 'de', $this->user, $this->translator() );
         $this->savePage( $parent->id, ['path' => 'eltern'], 'de' );
-        Publication::publish( Page::class, [$parent->id], $this->user, lang: 'de' );
+        Publication::publish( PageView::class, [$parent->id], $this->user, lang: 'de' );
 
         PageVariant::forceCreate( ['page_id' => $this->root()->id, 'lang' => 'de', 'path' => 'eltern/de-child', 'domain' => '', 'tenant_id' => 'test'] );
 
@@ -376,7 +376,7 @@ class SyncTest extends CoreTestAbstract
 
         Resource::translatePage( $parent->id, 'de', $this->user, $this->translator() );
         $this->savePage( $parent->id, ['path' => str_repeat( 'p', 200 )], 'de' );
-        Publication::publish( Page::class, [$parent->id], $this->user, lang: 'de' );
+        Publication::publish( PageView::class, [$parent->id], $this->user, lang: 'de' );
 
         // generated texts longer than the columns are shortened instead of failing
         $de = Resource::translatePage( $child->id, 'de', $this->user, fn( array $texts ) => array_map( fn() => str_repeat( 'x', 300 ), $texts ) );
@@ -409,9 +409,9 @@ class SyncTest extends CoreTestAbstract
     {
         $page = $this->page();
         Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
-        Publication::publish( Page::class, [$page->id], $this->user, now()->addDay()->toDateTimeString(), lang: 'de' );
+        Publication::publish( PageView::class, [$page->id], $this->user, now()->addDay()->toDateTimeString(), lang: 'de' );
 
-        $scheduled = Page::language( 'de' )->findOrFail( $page->id )->latest_id;
+        $scheduled = PageView::language( 'de' )->findOrFail( $page->id )->latest_id;
 
         $this->savePage( $page->id, ['title' => 'Changed'] );
         $de = Resource::translatePage( $page->id, 'de', $this->user, $this->translator() );
@@ -499,7 +499,7 @@ class SyncTest extends CoreTestAbstract
     }
 
 
-    protected function page( ?array $content = null, array $input = [] ) : Page
+    protected function page( ?array $content = null, array $input = [] ) : PageView
     {
         return Resource::addPage( $input + [
             'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
@@ -511,13 +511,13 @@ class SyncTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 
-    protected function savePage( string $id, array $input, ?string $lang = null ) : Page
+    protected function savePage( string $id, array $input, ?string $lang = null ) : PageView
     {
         return Resource::savePage( $id, $input, $this->user, lang: $lang );
     }

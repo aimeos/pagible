@@ -180,7 +180,7 @@ extend type Mutation {
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Add a language variant to the page as untranslated copy of the latest source draft"
-  addVariant(id: ID!, lang: String! @rules(apply: ["required", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): Page
+  addPageVariant(id: ID!, lang: String! @rules(apply: ["required", "max:10", "regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/"])): Page
     @guard @cmsPermission(action: "page:add") @throttle(name: "cms-graphql")
 
   "Mark the page variants in the language as up to date with their source without changing their content"

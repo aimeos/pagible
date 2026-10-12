@@ -28,6 +28,9 @@ class Scout
     /** @var \WeakMap<Builder<\Illuminate\Database\Eloquent\Model>, array{0: string, 1: bool, 2: bool}>|null Language fallbacks of the page searches */
     private static ?\WeakMap $fallbacks = null;
 
+    /** @var \WeakMap<Builder<\Illuminate\Database\Eloquent\Model>, list<string>>|null Columns loaded by the searches */
+    private static ?\WeakMap $columns = null;
+
     /** @var array<string, array<string, bool>> Page IDs per tenant whose source variants are reindexed after commit */
     private static array $sources = [];
 
@@ -121,8 +124,12 @@ class Scout
             }
         }
 
-        foreach( $builder->orders as &$order ) {
-            $order['column'] = $qualify( $order['column'] ) ?? $table . '.' . $order['column'];
+        // orders are qualified in place and the callback runs again for paginated results
+        foreach( $builder->orders as &$order )
+        {
+            if( !str_contains( $order['column'], '.' ) ) {
+                $order['column'] = $qualify( $order['column'] ) ?? $table . '.' . $order['column'];
+            }
         }
     }
 
@@ -216,16 +223,49 @@ class Scout
 
 
     /**
+     * Limits the columns of the models loaded for the search results.
+     *
+     * A query callback would do the same but makes Scout fetch the keys of all results again
+     * to count them, so the columns are kept separately and applied when the models are loaded.
+     *
+     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder Search builder
+     * @param list<string> $columns Unqualified column names
+     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Same search builder
+     */
+    public static function select( Builder $builder, array $columns ) : Builder
+    {
+        self::$columns ??= new \WeakMap();
+        self::$columns[$builder] = $columns;
+
+        return $builder;
+    }
+
+
+    /**
+     * Selects the columns set for the search in the query loading the models.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $query
+     * @param \Laravel\Scout\Builder<covariant \Illuminate\Database\Eloquent\Model> $builder
+     */
+    public static function columns( \Illuminate\Database\Eloquent\Builder $query, Builder $builder ) : void
+    {
+        if( $columns = self::$columns[$builder] ?? null ) {
+            $query->select( array_map( fn( $col ) => $query->qualifyColumn( $col ), $columns ) );
+        }
+    }
+
+
+    /**
      * Returns the languages a page variant is listed for by searches with language fallback.
      *
      * Variants are listed for their own language and source variants also for the languages
      * from "cms.locales" the page has no variant for.
      *
-     * @param Models\Page $page Page variant
+     * @param Models\PageView $page Page variant
      * @param bool $trashed TRUE if trashed variants are listed too
      * @return array<int, string> Language codes
      */
-    public static function langs( Models\Page $page, bool $trashed ) : array
+    public static function langs( Models\PageView $page, bool $trashed ) : array
     {
         $lang = (string) $page->lang;
 
@@ -309,7 +349,7 @@ class Scout
                 $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
 
                 // eager loads don't contain the access count, which is required for each page otherwise
-                if( $instance instanceof Models\Page ) {
+                if( $instance instanceof Models\PageView ) {
                     $loaded->filter( fn( $item ) => !array_key_exists( 'access_count', $item->getAttributes() ) )->loadCount( 'access' );
                 }
 
@@ -375,12 +415,12 @@ class Scout
         }
 
         // pages of rolled back transactions are reindexed with the next commit, which is harmless
-        ( new Models\Page() )->getConnection()->afterCommit( function() {
+        ( new Models\PageView() )->getConnection()->afterCommit( function() {
             $list = self::$sources;
             self::$sources = [];
 
             foreach( $list as $tenant => $ids ) {
-                Tenancy::run( (string) $tenant, fn() => self::index( Models\Page::class, array_map( strval( ... ), array_keys( $ids ) ), sources: true ) );
+                Tenancy::run( (string) $tenant, fn() => self::index( Models\PageView::class, array_map( strval( ... ), array_keys( $ids ) ), sources: true ) );
             }
         } );
     }
@@ -390,9 +430,10 @@ class Scout
      * Reindexes models after the surrounding transaction commits.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Model IDs or search keys
+     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public static function reindex( string $model, array $ids ) : void
+    public static function reindex( string $model, array $ids, bool $keys = false ) : void
     {
         $ids = array_values( array_unique( $ids ) );
 
@@ -400,12 +441,23 @@ class Scout
             return;
         }
 
-        $instance = new $model();
-        $tenant = Tenancy::value();
+        self::afterCommit( $model, fn() => self::index( $model, $ids, keys: $keys ) );
+    }
 
-        $instance->getConnection()->afterCommit(
-            fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids ) ),
-        );
+
+    /**
+     * Executes the callback for the current tenant after the surrounding transaction commits.
+     *
+     * Without a transaction, the callback is executed immediately and it's discarded if the
+     * transaction is rolled back, so the search index doesn't contain uncommitted changes.
+     *
+     * @param class-string<Models\Base> $model Model class whose connection is used
+     * @param \Closure(): mixed $callback Callback to execute
+     */
+    public static function afterCommit( string $model, \Closure $callback ) : void
+    {
+        $tenant = Tenancy::value();
+        ( new $model() )->getConnection()->afterCommit( fn() => Tenancy::run( $tenant, $callback ) );
     }
 
 
@@ -496,6 +548,18 @@ class Scout
             ) );
             $instance->queueRemoveFromSearch( $items );
         }
+    }
+
+
+    /**
+     * Whether changes of the model are synced to the search index.
+     *
+     * @param class-string<\Illuminate\Database\Eloquent\Model> $model Searchable model class
+     * @return bool TRUE if the search index is updated, FALSE if syncing is disabled
+     */
+    public static function syncs( string $model ) : bool
+    {
+        return self::usesSearchIndex() && !ModelObserver::syncingDisabledFor( new $model() );
     }
 
 

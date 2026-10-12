@@ -50,7 +50,8 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
         try {
             return $this->run( $request );
         } catch( ModelNotFoundException $e ) {
-            return Response::structured( ['error' => class_basename( $e->getModel() ) . ' not found.'] );
+            $name = $e->getModel() === \Aimeos\Cms\Models\PageView::class ? 'Page' : class_basename( $e->getModel() );
+            return Response::structured( ['error' => $name . ' not found.'] );
         } catch( \Aimeos\Cms\Exception $e ) {
             return Response::structured( ['error' => $e->getMessage()] );
         }

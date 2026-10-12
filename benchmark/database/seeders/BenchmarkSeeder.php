@@ -8,13 +8,14 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Hashes;
-use Aimeos\Cms\Resource;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Utils;
 
 
@@ -52,7 +53,7 @@ class BenchmarkSeeder
 
         $conn = config( 'cms.db', 'sqlite' );
 
-        Page::withoutSyncingToSearch( function() use ( $pages, $conn ) {
+        PageView::withoutSyncingToSearch( function() use ( $pages, $conn ) {
             Element::withoutSyncingToSearch( function() use ( $pages, $conn ) {
                 File::withoutSyncingToSearch( function() use ( $pages, $conn ) {
                     DB::connection( $conn )->transaction( function() use ( $pages ) {
@@ -145,7 +146,7 @@ class BenchmarkSeeder
         };
 
         // Root page
-        $rootId = ( new Page )->newUniqueId();
+        $rootId = ( new PageView )->newUniqueId();
         $rootVersionId = ( new Version )->newUniqueId();
         $rootContent = $this->pageContent( $fileIds[$fileIndex % $fileCount], $elementIds[$pageIndex % $elementCount], 0 );
         $rootMeta = $this->metaDescription( 0 );
@@ -176,7 +177,7 @@ class BenchmarkSeeder
         // Level 1–3 pages
         for( $i = 0; $i < 10; $i++ )
         {
-            $l1Id = ( new Page )->newUniqueId();
+            $l1Id = ( new PageView )->newUniqueId();
             $l1VersionId = ( new Version )->newUniqueId();
             $l1Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -210,7 +211,7 @@ class BenchmarkSeeder
 
             for( $j = 0; $j < 10; $j++ )
             {
-                $l2Id = ( new Page )->newUniqueId();
+                $l2Id = ( new PageView )->newUniqueId();
                 $l2VersionId = ( new Version )->newUniqueId();
                 $l2Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -243,7 +244,7 @@ class BenchmarkSeeder
 
                 for( $k = 0; $k < $level3PerL2; $k++ )
                 {
-                    $l3Id = ( new Page )->newUniqueId();
+                    $l3Id = ( new PageView )->newUniqueId();
                     $l3VersionId = ( new Version )->newUniqueId();
                     $l3Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -298,7 +299,10 @@ class BenchmarkSeeder
         // pages are split into the page structure and the source language variant
         if( !empty( $rows['pages'] ) )
         {
-            Resource::insertPages( $rows['pages'] );
+            $split = array_map( fn( $page ) => $this->split( $page ), $rows['pages'] );
+
+            Page::withoutGlobalScopes()->toBase()->insert( array_column( $split, 0 ) );
+            PageVariant::withoutGlobalScopes()->toBase()->insert( array_column( $split, 1 ) );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $rows['pages'] ) );
@@ -350,7 +354,7 @@ class BenchmarkSeeder
                 continue;
             }
 
-            [, $variant] = Resource::splitPage( $page );
+            [, $variant] = $this->split( $page );
 
             $sourceId = $page['variant_id'];
             $variantId = ( new PageVariant )->newUniqueId();
@@ -611,6 +615,20 @@ class BenchmarkSeeder
         ];
     }
 
+
+    /**
+     * Splits a page row in the format of the page view into the page and the variant row.
+     *
+     * @param array<string, mixed> $row Page row including the variant columns
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>} Page and variant row
+     */
+    protected function split( array $row ): array
+    {
+        $page = ['source' => $row['lang']] + PageBuilder::pageValues( $row );
+        $variant = PageBuilder::variantValues( $row, true ) + ['page_id' => $row['id'], 'tenant_id' => $row['tenant_id']];
+
+        return [$page, $variant + PageVariant::DEFAULTS];
+    }
 
     /**
      * Build a version row for bulk insert.

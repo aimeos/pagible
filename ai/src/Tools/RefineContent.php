@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -40,14 +40,14 @@ class RefineContent extends Tool
             'prompt.required' => 'You must provide a prompt describing how to refine the content.',
         ] );
 
-        /** @var Page $page */
-        $page = Page::withTrashed()->select( 'id', 'tenant_id', 'type', 'latest_id' )
+        /** @var PageView $page */
+        $page = PageView::withTrashed()->select( 'id', 'tenant_id', 'type', 'latest_id' )
             ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux', 'data->type as type' )] )
             ->findOrFail( $validated['id'] );
 
         // the published content is only loaded if there's no draft content
         $content = (array) ( $page->latest->aux->content
-            ?? Page::withTrashed()->select( 'id', 'content' )->find( $page->id )->content ?? [] );
+            ?? PageView::withTrashed()->select( 'id', 'content' )->find( $page->id )->content ?? [] );
 
         $type = $page->latest->type ?? $page->type;
         $result = Ai::refine( $validated['prompt'], $content, 'content', $type, $validated['context'] ?? null,

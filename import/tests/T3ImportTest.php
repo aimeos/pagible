@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Hashes;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Resource;
 use Illuminate\Database\Schema\Blueprint;
@@ -141,13 +141,13 @@ class T3ImportTest extends ImportTestAbstract
     {
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
         $variants = PageVariant::where( 'page_id', $page->id )->get()->keyBy( 'lang' );
 
         $this->assertEquals( ['de', 'en', 'fr'], $variants->keys()->sort()->values()->all() );
         $this->assertSame( 'en', $page->source );
 
-        $de = Page::language( 'de' )->findOrFail( $page->id );
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
         $hashes = Hashes::page( $page->only( Hashes::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
 
         $this->assertSame( 'Über uns', $de->title );
@@ -159,7 +159,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertEquals( $hashes, $variants['de']->hashes );
         $this->assertFalse( Hashes::stale( $hashes, $variants['de']->hashes ) );
 
-        $fr = Page::language( 'fr' )->findOrFail( $page->id );
+        $fr = PageView::language( 'fr' )->findOrFail( $page->id );
 
         $this->assertSame( 'a-propos', $fr->path );
         $this->assertCount( 1, (array) $fr->content );
@@ -167,11 +167,11 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertTrue( $variants['fr']->stale );
         $this->assertEmpty( $variants['fr']->hashes );
 
-        $root = Page::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
 
         // the URL "/" of the translated root page is already used by the source page
-        $this->assertNull( Page::language( 'de' )->find( $root->id ) );
-        $this->assertNull( Page::language( 'fr' )->find( $root->id ) );
+        $this->assertNull( PageView::language( 'de' )->find( $root->id ) );
+        $this->assertNull( PageView::language( 'fr' )->find( $root->id ) );
     }
 
 
@@ -184,16 +184,16 @@ class T3ImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
 
-        $this->assertSame( 'example.de', Page::language( 'de' )->findOrFail( $page->id )->domain );
-        $this->assertSame( 'ueber-uns', Page::language( 'de' )->findOrFail( $page->id )->path );
-        $this->assertSame( 'a-propos', Page::language( 'fr-CA' )->findOrFail( $page->id )->path );
-        $this->assertSame( 'example.ca', Page::language( 'fr-CA' )->findOrFail( $page->id )->domain );
-        $this->assertNull( Page::language( 'fr' )->find( $page->id ) );
+        $this->assertSame( 'example.de', PageView::language( 'de' )->findOrFail( $page->id )->domain );
+        $this->assertSame( 'ueber-uns', PageView::language( 'de' )->findOrFail( $page->id )->path );
+        $this->assertSame( 'a-propos', PageView::language( 'fr-CA' )->findOrFail( $page->id )->path );
+        $this->assertSame( 'example.ca', PageView::language( 'fr-CA' )->findOrFail( $page->id )->domain );
+        $this->assertNull( PageView::language( 'fr' )->find( $page->id ) );
 
-        $root = Page::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
-        $this->assertSame( '', Page::language( 'de' )->findOrFail( $root->id )->path );
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
+        $this->assertSame( '', PageView::language( 'de' )->findOrFail( $root->id )->path );
     }
 
 
@@ -218,7 +218,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'unknown TYPO3 languages [2]', Artisan::output() );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
         $this->assertEquals( ['de', 'en'], PageVariant::where( 'page_id', $page->id )->pluck( 'lang' )->sort()->values()->all() );
     }
 
@@ -230,8 +230,8 @@ class T3ImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
-        $de = Page::language( 'de' )->findOrFail( $page->id );
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
 
         $this->assertStringContainsString( '<a href="/about">', $page->content[1]->data->text );
         $this->assertStringContainsString( '<a href="/ueber-uns">', $de->content[1]->data->text );
@@ -248,8 +248,8 @@ class T3ImportTest extends ImportTestAbstract
         $result = Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--language' => ['1:de:https://example.de/']] );
         $this->assertSame( 0, $result );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
-        $de = Page::language( 'de' )->findOrFail( $page->id );
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
 
         $this->assertStringContainsString( '<a href="/ueber-uns">', $de->content[1]->data->text );
         $this->assertStringContainsString( '<a href="https://example.com/contact">', $de->content[1]->data->text );
@@ -267,13 +267,13 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'Skipped translation: Kontakt (/contact) [de]', Artisan::output() );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
-        $team = Page::where( 'domain', 'example.com' )->where( 'path', 'about/team' )->firstOrFail();
-        $contact = Page::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail();
-        $text = Page::language( 'de' )->findOrFail( $page->id )->content[1]->data->text;
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $team = PageView::where( 'domain', 'example.com' )->where( 'path', 'about/team' )->firstOrFail();
+        $contact = PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail();
+        $text = PageView::language( 'de' )->findOrFail( $page->id )->content[1]->data->text;
 
-        $this->assertSame( 'ueber-uns/team', Page::language( 'de' )->findOrFail( $team->id )->path );
-        $this->assertNull( Page::language( 'de' )->find( $contact->id ) );
+        $this->assertSame( 'ueber-uns/team', PageView::language( 'de' )->findOrFail( $team->id )->path );
+        $this->assertNull( PageView::language( 'de' )->find( $contact->id ) );
         $this->assertStringContainsString( '<a href="/ueber-uns/team">', $text );
         $this->assertStringContainsString( '<a href="/contact">', $text );
     }
@@ -283,7 +283,7 @@ class T3ImportTest extends ImportTestAbstract
     {
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
         $variant = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
 
         DB::connection( 'typo3' )->table( 'tt_content' )->where( 'uid', 21 )->update( ['bodytext' => '<p>Hallo Welt</p>'] );
@@ -293,7 +293,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--page' => [2]] ) );
 
-        $de = Page::language( 'de' )->findOrFail( $page->id );
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
         $fr = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'fr' )->firstOrFail();
 
         $this->assertSame( $variant->id, $de->variant_id );
@@ -311,7 +311,7 @@ class T3ImportTest extends ImportTestAbstract
     {
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
-        $page = Page::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
         $fr = Resource::translatePage( $page->id, 'fr' );
 
         $this->assertSame( array_column( (array) $page->content, 'id' ), array_column( (array) $fr->latest->aux->content, 'id' ) );

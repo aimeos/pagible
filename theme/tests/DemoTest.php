@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Commands\Demo as DemoCommand;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Tenancy;
@@ -48,7 +48,7 @@ class DemoTest extends ThemeTestAbstract
 
         Tenancy::$callback = fn() => 'demo';
 
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
 
         $this->assertSame( '', $home->theme );
         $this->assertSame( 'demo', $home->tenant_id );
@@ -64,8 +64,8 @@ class DemoTest extends ThemeTestAbstract
         $response->assertSee( '"name": "Meridian Works"', false );
         $response->assertSee( 'class="login"', false );
         $response->assertSee( 'href="' . route( 'login' ) . '"', false );
-        $this->assertGreaterThan( 0, Page::where( 'path', 'blog' )->count() );
-        $this->assertGreaterThan( 0, Page::where( 'type', 'docs' )->count() );
+        $this->assertGreaterThan( 0, PageView::where( 'path', 'blog' )->count() );
+        $this->assertGreaterThan( 0, PageView::where( 'type', 'docs' )->count() );
         $pricing = collect( (array) $home->content )->first( fn( $item ) => ( $item->type ?? null ) === 'pricing' );
         $this->assertIsObject( $pricing );
         $this->assertSame(
@@ -80,7 +80,7 @@ class DemoTest extends ThemeTestAbstract
             }
         }
 
-        foreach( Page::get() as $page )
+        foreach( PageView::get() as $page )
         {
             $meta = (array) $page->meta;
 
@@ -102,7 +102,7 @@ class DemoTest extends ThemeTestAbstract
 
         Tenancy::$callback = fn() => 'luxury';
 
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
 
         $this->assertSame( 'luxury', $home->theme );
         $this->assertSame( 'luxury', $home->tenant_id );
@@ -130,7 +130,7 @@ class DemoTest extends ThemeTestAbstract
 
         Tenancy::$callback = fn() => 'showcase';
 
-        $this->assertSame( 'luxury', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'luxury', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 
@@ -142,7 +142,7 @@ class DemoTest extends ThemeTestAbstract
 
         Tenancy::$callback = fn() => 'luxury';
 
-        $this->assertSame( 'luxury', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'luxury', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 
@@ -164,14 +164,14 @@ class DemoTest extends ThemeTestAbstract
         Tenancy::$callback = fn() => $theme;
         app()->forgetInstance( Tenancy::class );
 
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $hero = collect( (array) $home->content )
             ->first( fn( $item ) => ( $item->type ?? null ) === 'hero' );
 
         $this->assertIsObject( $hero );
         $this->assertCount( $heroFiles, (array) ( $hero->data->files ?? [] ) );
 
-        Page::with( ['files', 'latest.files'] )->get()->each( function( Page $page ) {
+        PageView::with( ['files', 'latest.files'] )->get()->each( function( PageView $page ) {
             $this->assertEqualsCanonicalizing( $page->latest->files->keys()->all(), $page->files->keys()->all(), $page->path );
         } );
 

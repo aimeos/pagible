@@ -8,7 +8,7 @@ namespace Tests;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
@@ -623,7 +623,7 @@ class AccessTest extends CoreTestAbstract
 
     public function testPageAccessScopeUsesBoundedEffectiveGrants(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::forceCreate( [
             'page_id' => $page->id,
             'tenant_id' => 'test',
@@ -642,7 +642,7 @@ class AccessTest extends CoreTestAbstract
         $user = new \App\Models\User();
         $user->id = 42;
 
-        $this->assertNotNull( Page::query()->access( $user )->find( $page->id ) );
+        $this->assertNotNull( PageView::query()->access( $user )->find( $page->id ) );
         $this->assertSame( 1, $catalogCalls );
     }
 
@@ -861,7 +861,7 @@ class AccessTest extends CoreTestAbstract
             'laratrust.models.permission' => AccessPackageModel::class,
             'laratrust.teams.enabled' => true,
         ] );
-        $value = Page::query()->value( 'name' );
+        $value = PageView::query()->value( 'name' );
         $user = new LaratrustUserFake();
 
         Access::laratrust();
@@ -894,7 +894,7 @@ class AccessTest extends CoreTestAbstract
             Access::bouncer();
             $access = app( Access::class );
 
-            AccessWriteModel::query()->create( ['name' => 'model.edit', 'entity_type' => Page::class] );
+            AccessWriteModel::query()->create( ['name' => 'model.edit', 'entity_type' => PageView::class] );
             $this->assertSame( [], $access->delete( ['model.edit'] ) );
             $this->assertTrue( AccessWriteModel::query()->where( 'name', 'model.edit' )->exists() );
             $this->assertSame( ['bouncer.member'], $access->add( 'bouncer.member' ) );

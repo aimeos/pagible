@@ -7,9 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
@@ -25,7 +26,10 @@ class WebhookIntegrationTest extends WebhookTestAbstract
     public function testModelPublicationDispatchesDelivery() : void
     {
         $webhook = $this->webhook();
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'name' => 'Integration',
             'title' => 'Integration',
             'path' => 'integration',
@@ -41,7 +45,7 @@ class WebhookIntegrationTest extends WebhookTestAbstract
             'meta' => [],
             'config' => [],
             'content' => [],
-        ] ) );
+        ] )->view;
         $version = $page->versions()->forceCreate( [
             'data' => [
                 'name' => 'Integration', 'title' => 'Integration', 'path' => 'integration',
@@ -51,7 +55,8 @@ class WebhookIntegrationTest extends WebhookTestAbstract
             'aux' => ['content' => [], 'meta' => [], 'config' => []],
             'editor' => 'editor@testbench',
         ] );
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->variant->update( ['latest_id' => $version->id] );
+        $page->refresh();
         Queue::fake();
 
         $page->publish( $version );
@@ -84,7 +89,7 @@ class WebhookIntegrationTest extends WebhookTestAbstract
         Resource::savePage( $page->id, ['path' => 'variante', 'status' => 1], $this->user, lang: 'de' );
         Queue::fake();
 
-        Publication::publish( Page::class, [$page->id], $this->user, lang: 'de' );
+        Publication::publish( PageView::class, [$page->id], $this->user, lang: 'de' );
 
         Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) use ( $page, $webhook ) {
             $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
@@ -101,11 +106,14 @@ class WebhookIntegrationTest extends WebhookTestAbstract
 
     public function testNoSubscriptionsDispatchesNothing() : void
     {
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'name' => 'No hook', 'title' => 'No hook', 'path' => 'no-hook', 'tag' => 'no-hook',
             'to' => '', 'domain' => '', 'lang' => 'en', 'type' => '', 'theme' => '',
             'cache' => 0, 'status' => 1, 'editor' => '', 'meta' => [], 'config' => [], 'content' => [],
-        ] ) );
+        ] )->view;
         Queue::fake();
 
         event( new \Aimeos\Cms\Events\Published(
@@ -148,11 +156,14 @@ class WebhookIntegrationTest extends WebhookTestAbstract
     public function testScheduledPublicationUsesProjectedVersionRoute() : void
     {
         $webhook = $this->webhook();
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'name' => 'Before', 'title' => 'Before', 'path' => 'before', 'tag' => 'before',
             'to' => '', 'domain' => 'before.example', 'lang' => 'en', 'type' => '', 'theme' => '',
             'cache' => 0, 'status' => 1, 'editor' => '', 'meta' => [], 'config' => [], 'content' => [],
-        ] ) );
+        ] )->view;
         $published = $page->versions()->forceCreate( [
             'data' => [
                 'name' => 'Published', 'title' => 'Published', 'path' => 'published-route',
@@ -173,7 +184,7 @@ class WebhookIntegrationTest extends WebhookTestAbstract
             'publish_at' => now()->addDay(),
             'editor' => 'scheduler@testbench',
         ] );
-        Resource::updatePage( $page, ['latest_id' => $future->id] );
+        $page->variant->update( ['latest_id' => $future->id] );
         Queue::fake();
 
         $this->artisan( 'cms:publish' )->assertSuccessful();

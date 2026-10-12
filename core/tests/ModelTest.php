@@ -11,7 +11,7 @@ use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Http\UploadedFile;
@@ -23,7 +23,29 @@ class ModelTest extends CoreTestAbstract
 {
     public function testPageChangedDefaultsToNull(): void
     {
-        $this->assertNull( ( new Page() )->changed );
+        $this->assertNull( ( new PageView() )->changed );
+    }
+
+
+    public function testPageSearchIndexKeepsPagesName(): void
+    {
+        $prefix = config( 'scout.prefix' );
+        config( ['scout.prefix' => 'app_'] );
+
+        try {
+            $this->assertSame( 'app_cms_pages', ( new PageView() )->searchableAs() );
+        } finally {
+            config( ['scout.prefix' => $prefix] );
+        }
+    }
+
+
+    public function testPageSaveVariantRequiresVariantId(): void
+    {
+        $page = ( new PageView() )->newFromBuilder( ['id' => 'page-1', 'name' => 'Test'] );
+
+        $this->expectException( \LogicException::class );
+        ( new \ReflectionMethod( \Aimeos\Cms\Resource::class, 'saveVariant' ) )->invoke( null, $page, ['name' => 'Changed'] );
     }
 
 
@@ -33,7 +55,7 @@ class ModelTest extends CoreTestAbstract
             'editor' => 'test@example.com',
             'data' => ['title' => ['previous' => 'a', 'current' => 'b']],
         ];
-        $page = new Page();
+        $page = new PageView();
 
         $page->setChanged( $info );
 
@@ -43,7 +65,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testPageToString(): void
     {
-        $page = new Page( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );
+        $page = new PageView( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );
         $page->content = [(object) ['type' => 'heading', 'data' => (object) ['title' => 'Welcome to Laravel CMS']]];
         $page->setRelation( 'elements', collect( [] ) );
 
@@ -55,7 +77,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testPageToStringEmpty(): void
     {
-        $page = new Page( ['name' => 'Disabled'] );
+        $page = new PageView( ['name' => 'Disabled'] );
         $page->setRelation( 'elements', collect( [] ) );
 
         $this->assertStringContainsString( 'Disabled', (string) $page );
@@ -78,7 +100,7 @@ class ModelTest extends CoreTestAbstract
     {
         foreach( ['domain' => 'other.example', 'lang' => 'de'] as $attribute => $value )
         {
-            $page = new Page();
+            $page = new PageView();
             $page->setRawAttributes( ['domain' => 'example.com', 'lang' => 'en'], true );
             $page->setRelation( 'latest', null );
             $page->setRelation( 'elements', collect() );
@@ -93,7 +115,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testPageAcceptsCanonicalStructuredAttributes(): void
     {
-        $page = new Page();
+        $page = new PageView();
         $page->meta = ['meta-tags' => [
             'type' => 'meta-tags',
             'data' => ['description' => 'Test'], 'files' => [],
@@ -111,7 +133,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testJsonKeyOrderDoesNotMarkModelDirty(): void
     {
-        $page = new Page();
+        $page = new PageView();
         $page->setRawAttributes( [
             'meta' => '{"meta-tags":{"data":{"keywords":"cms","description":"Test"},"type":"meta-tags","files":[]}}',
             'content' => '[{"type":"heading"},{"type":"text"}]',
@@ -137,14 +159,14 @@ class ModelTest extends CoreTestAbstract
     {
         $this->expectException( \Aimeos\Cms\Exception::class );
 
-        $page = new Page();
+        $page = new PageView();
         $page->meta = [['type' => 'meta-tags', 'data' => ['description' => 'Test']]];
     }
 
 
     public function testPageHasDescendantCount(): void
     {
-        $page = new Page();
+        $page = new PageView();
 
         // leaf: rgt = lft + 1, no descendants
         $page->setAttribute( NestedSet::LFT, 2 );
@@ -159,7 +181,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testSqlServerUppercasesUuids(): void
     {
-        $model = new class extends Page {
+        $model = new class extends PageView {
             public function getConnection()
             {
                 return new class {
@@ -194,7 +216,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testUnsavedModelsHaveNullIds(): void
     {
-        $this->assertNull( ( new Page() )->id );
+        $this->assertNull( ( new PageView() )->id );
     }
 
 

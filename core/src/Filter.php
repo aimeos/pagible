@@ -125,7 +125,7 @@ class Filter
     /**
      * Creates a Scout builder searching the draft texts of the given model.
      *
-     * @param class-string<\Aimeos\Cms\Models\Base> $class Model class, e.g. Page::class
+     * @param class-string<\Aimeos\Cms\Models\Base> $class Model class, e.g. PageView::class
      * @param mixed $term Search term, trimmed and limited to 200 characters
      * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
      */
@@ -141,6 +141,10 @@ class Filter
      * "stale" are variants in the language which need an update, "missing" are pages without
      * a variant in the language and "ai" are variants whose latest draft was made by AI.
      *
+     * Each state selects variants of one language only, so the fallback is replaced by the
+     * variants of that language or the source variants of the pages without one. This avoids
+     * the fallback condition which can't use the indexes and would check all variants.
+     *
      * @template TModel of \Illuminate\Database\Eloquent\Model
      * @param \Illuminate\Database\Eloquent\Builder<TModel> $query Page query with the fallback of the language
      * @param string $lang Language code
@@ -149,17 +153,35 @@ class Filter
      */
     public static function translation( \Illuminate\Database\Eloquent\Builder $query, string $lang, string $state ) : \Illuminate\Database\Eloquent\Builder
     {
+        if( !in_array( $state, ['missing', 'stale', 'ai'], true ) ) {
+            throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) );
+        }
+
         $table = $query->getModel()->getTable();
+        $base = $query->getQuery();
+
+        // trashed variants of the language are included if the fallback includes them
+        $trashed = $base instanceof Query\PageBuilder && ( $base->variant[2] ?? false );
+
+        if( $query instanceof Query\PageQuery ) {
+            $state === 'missing' ? $query->language( null ) : $query->language( $lang, $trashed );
+        }
 
         match( $state ) {
-            'missing' => $query->where( $table . '.lang', '<>', $lang ),
+            'missing' => $query->where( $table . '.lang', '<>', $lang )
+                ->when( !$trashed, fn( $q ) => $q->whereNull( $table . '.variant_deleted_at' ) )
+                ->whereNotExists( fn( $q ) => $q->selectRaw( '1' )
+                    ->from( 'cms_page_variants as m' )
+                    ->whereColumn( 'm.page_id', $table . '.id' )
+                    ->where( 'm.lang', $lang )
+                    ->when( !$trashed, fn( $q ) => $q->whereNull( 'm.deleted_at' ) )
+                ),
             'stale' => $query->where( $table . '.lang', $lang )->where( $table . '.stale', true ),
             'ai' => $query->where( $table . '.lang', $lang )->whereExists( fn( $q ) => $q->selectRaw( '1' )
                 ->from( 'cms_versions' )
                 ->whereColumn( 'cms_versions.id', $table . '.latest_id' )
                 ->where( 'cms_versions.editor', Sync::EDITOR )
             ),
-            default => throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) ),
         };
 
         return $query;

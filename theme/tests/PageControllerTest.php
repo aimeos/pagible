@@ -7,10 +7,11 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
@@ -65,8 +66,8 @@ class PageControllerTest extends ThemeTestAbstract
     {
         config( ['app.name' => 'Application name'] );
 
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
-        Resource::updatePage( $root, ['config' => $this->websiteConfig( 'Tree website' )] );
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $root->variant->update( ['config' => $this->websiteConfig( 'Tree website' )] );
 
         $response = $this->get( '/blog?website=inherited' );
 
@@ -80,8 +81,8 @@ class PageControllerTest extends ThemeTestAbstract
             (string) $response->getContent(),
         );
 
-        $page = Page::where( 'tag', 'blog' )->firstOrFail();
-        Resource::updatePage( $page, ['config' => $this->websiteConfig( 'Section website' )] );
+        $page = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $page->variant->update( ['config' => $this->websiteConfig( 'Section website' )] );
 
         $response = $this->get( '/blog?website=nearest' );
 
@@ -105,7 +106,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testSearchUsesPageLanguage()
     {
-        $page = \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where( 'path', 'blog' )->firstOrFail();
 
         $response = $this->get( '/blog' );
 
@@ -120,7 +121,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRegionalRtlLanguageUsesRtlDirection()
     {
-        Resource::updatePage( \Aimeos\Cms\Models\Page::where( 'path', 'blog' )->firstOrFail(), ['lang' => 'ar-EG'] );
+        \Aimeos\Cms\Models\PageView::where( 'path', 'blog' )->firstOrFail()->variant->update( ['lang' => 'ar-EG'] );
 
         $response = $this->get( '/blog' );
 
@@ -142,7 +143,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testManualCanonicalUsesCurrentPaginatorPage()
     {
-        Resource::updatePage( $this->blogList(), ['meta' => [
+        $this->blogList()->variant->update( ['meta' => [
             'canonical' => [
                 'type' => 'canonical',
                 'data' => ['url' => 'https://example.com/journal?lang=en'],
@@ -160,7 +161,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testDetailPageIgnoresPaginatorParameterInCanonicalUrl()
     {
-        $page = Page::where( 'tag', 'article' )->firstOrFail();
+        $page = PageView::where( 'tag', 'article' )->firstOrFail();
         $response = $this->get( '/' . $page->path . '?p=2' );
 
         $response->assertOk();
@@ -171,10 +172,10 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testWebsiteTitleUsesPublishedAndLatestPageTreeVersions()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
         Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Published website' )], $this->user );
-        Publication::publish( Page::class, [$root->id], $this->user );
+        Publication::publish( PageView::class, [$root->id], $this->user );
         Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Draft website' )], $this->user );
 
         $response = $this->get( '/blog?website=published' );
@@ -191,7 +192,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPath()
     {
-        $page = Page::where( 'tag', 'blog' )->firstOrFail();
+        $page = PageView::where( 'tag', 'blog' )->firstOrFail();
 
         // Save with a new path (mimics admin panel which always sends domain)
         Resource::savePage(
@@ -206,10 +207,26 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testEditorPreviewPrefersDraftWithUncachedDomain(): void
+    {
+        $page = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $other = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $other->variant->forceFill( ['latest_id' => null] )->saveQuietly(); // published page without versions
+
+        // the cached domain list doesn't contain the new domain of the draft yet
+        $this->actingAs( $this->user )->get( '/blog' )->assertOk();
+        Resource::savePage( $page->id, ['path' => $other->path, 'domain' => 'new.tld', 'name' => 'Moved draft'], $this->user );
+
+        $response = $this->actingAs( $this->user )->get( '/' . $other->path );
+        $response->assertOk();
+        $response->assertSee( '<title>' . $page->name . ' |', false );
+    }
+
+
     public function testPublishingChangedRouteInvalidatesPreviousAndCurrentCompletePage(): void
     {
         config( ['cms.theme.cache' => 'array'] );
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $oldPath = $page->path;
         $newPath = 'renamed-page';
 
@@ -217,7 +234,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $newPath, 'new-route', $page->domain );
 
         Resource::savePage( $page->id, ['path' => $newPath], $this->user );
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
         $this->assertNull( PageCache::response( $oldPath, $page->domain ) );
         $this->assertNull( PageCache::response( $newPath, $page->domain ) );
@@ -227,7 +244,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testDroppingPageInvalidatesCompleteSubtreeCache(): void
     {
         config( ['cms.theme.cache' => 'array'] );
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $parent = Resource::addPage( [
             'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'cache-parent',
             'content' => [],
@@ -240,7 +257,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $parent, 'cached-parent' );
         $this->cache( $child, 'cached-child' );
 
-        Resource::drop( Page::class, [(string) $parent->id], $this->user );
+        Resource::drop( PageView::class, [(string) $parent->id], $this->user );
 
         $this->assertNull( PageCache::response( $parent ) );
         $this->assertNull( PageCache::response( $child ) );
@@ -249,7 +266,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPathNoDomain()
     {
-        $page = Page::where( 'tag', 'article' )->firstOrFail();
+        $page = PageView::where( 'tag', 'article' )->firstOrFail();
 
         // Save with a new path (no domain in input — e.g. MCP tool)
         Resource::savePage(
@@ -267,7 +284,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testLatestFindsChangedPathWithDomainPage()
     {
         // Home page has domain='mydomain.tld' in the seeder
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $this->assertEquals( 'mydomain.tld', $page->domain );
 
         // Admin panel save sends the page's domain
@@ -286,22 +303,22 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testLatestFindsChangedPathWithNewDomain()
     {
-        $page = Page::where( 'tag', 'article' )->firstOrFail();
+        $page = PageView::where( 'tag', 'article' )->firstOrFail();
 
         // populates the cached list of the domains used by the variants
         $this->actingAs( $this->user )->get( '/welcome-to-laravelcms' )->assertOk();
 
         Resource::savePage( $page->id, ['path' => 'new-domain-path', 'domain' => 'New.Example.com'], $this->user );
 
-        $this->assertSame( 'new.example.com', Page::find( $page->id )->latest?->data->domain );
+        $this->assertSame( 'new.example.com', PageView::find( $page->id )->latest?->data->domain );
         $this->actingAs( $this->user )->get( '/new-domain-path' )->assertOk();
     }
 
 
     public function testNewsPageUsesBlogLayout()
     {
-        $page = Page::where( 'tag', 'article' )->firstOrFail();
-        Resource::updatePage( $page, ['tag' => '', 'type' => 'news'] );
+        $page = PageView::where( 'tag', 'article' )->firstOrFail();
+        $page->variant->update( ['tag' => '', 'type' => 'news'] );
 
         $response = $this->get( '/welcome-to-laravelcms' );
 
@@ -313,14 +330,17 @@ class PageControllerTest extends ThemeTestAbstract
     public function testLatestFindsExistingVersionWithoutDomain()
     {
         // Create a page with a version that has no domain in data (legacy/importer case)
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Test',
             'title' => 'Test Page',
             'path' => 'test-page',
             'status' => 1,
             'editor' => 'test',
-        ] ) );
+        ] )->view;
 
         $version = $page->versions()->forceCreate([
             'data' => ['name' => 'Test', 'path' => 'test-page', 'status' => 1],
@@ -328,7 +348,7 @@ class PageControllerTest extends ThemeTestAbstract
             'published' => true,
             'editor' => 'test',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->variant->update( ['latest_id' => $version->id] );
 
         // Now save with a new path (no domain in input)
         Resource::savePage(
@@ -367,14 +387,17 @@ class PageControllerTest extends ThemeTestAbstract
         $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
 
         // Deactivated, never-published page referencing the unpublished element.
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Draft preview',
             'title' => 'Draft preview',
             'path' => 'draft-preview',
             'status' => 0,
             'editor' => 'test',
-        ] ) );
+        ] )->view;
         $pageVersion = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => ['name' => 'Draft preview', 'path' => 'draft-preview', 'status' => 0],
@@ -384,7 +407,7 @@ class PageControllerTest extends ThemeTestAbstract
             'published' => false,
             'editor' => 'test',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $pageVersion->id] );
+        $page->variant->update( ['latest_id' => $pageVersion->id] );
         $pageVersion->elements()->attach( $element->id );
 
         // Editor preview must render the element's draft content
@@ -398,7 +421,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         $jpeg = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $tiff = File::where( 'mime', 'image/tiff' )->firstOrFail();
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
         Resource::addPage( [
             'lang' => 'en',
@@ -436,7 +459,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testHeroRendersSingleImageArray()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
         Resource::addPage( [
             'lang' => 'en',
@@ -466,7 +489,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testHeroRendersButtons()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
         Resource::addPage( [
             'lang' => 'en',
@@ -500,7 +523,10 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testAnonymousCacheablePageHasNoCookies()
     {
-        Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Cacheable',
             'title' => 'Cacheable Page',
@@ -511,7 +537,7 @@ class PageControllerTest extends ThemeTestAbstract
             'content' => [
                 ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
             ],
-        ] ) );
+        ] )->view;
 
         // A cacheable page is served (or rendered then stored) without per-visitor
         // cookies, so a CDN can cache it.
@@ -527,7 +553,10 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRenderInProgressServesStaleCompletePage(): void
     {
         config( ['cms.theme.cache' => 'array'] );
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Stale',
             'title' => 'Stale',
@@ -535,7 +564,7 @@ class PageControllerTest extends ThemeTestAbstract
             'status' => 1,
             'cache' => 5,
             'editor' => 'test',
-        ] ) );
+        ] )->view;
         $html = 'stale-complete-page';
         $key = $this->cacheKey( $page );
 
@@ -564,7 +593,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testCompletePageCacheHitDoesNotQueryDatabase(): void
     {
         config( ['cms.theme.cache' => 'array'] );
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $this->cache( $page, 'cached-without-database' );
         DB::flushQueryLog();
         DB::enableQueryLog();
@@ -645,7 +674,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         config( ['cms.theme.cache' => 'array', 'cms.theme.lock' => 1] );
 
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $key = $this->cacheKey( $page );
         $this->cache( $page, 'public-html' );
         $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
@@ -673,7 +702,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         config( ['cms.theme.cache' => 'array', 'cms.theme.lock' => 1] );
 
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $key = $this->cacheKey( $page );
         $this->cache( $page, 'public-html' );
         $store = Cache::store( config( 'cms.theme.cache', 'file' ) )->getStore();
@@ -699,8 +728,8 @@ class PageControllerTest extends ThemeTestAbstract
     {
         config( ['cms.theme.cache' => 'array'] );
 
-        $changed = Page::where( 'path', 'hidden' )->firstOrFail();
-        $shared = Page::where( 'path', 'blog' )->firstOrFail();
+        $changed = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $shared = PageView::where( 'path', 'blog' )->firstOrFail();
         $this->cache( $changed, 'changed-html' );
         $this->cache( $shared, 'shared-html' );
 
@@ -713,7 +742,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageRedirectsGuestAndAllowsPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['frontend.member'] );
 
         $guest = $this->get( '/hidden' );
@@ -734,7 +763,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageUsesExtendedAccessWithoutRuleQuery(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [(string) $page->id], ['frontend.member'] );
         $user = new \App\Models\User();
         $user->id = 42;
@@ -761,7 +790,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageRenderSignsPrivateAssets(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $file = ( new File() )->forceFill( [
             'id' => 'private-file', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
         ] );
@@ -786,7 +815,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageReturnsUnauthorizedForJsonGuest(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['frontend.member'] );
 
         $this->getJson( '/hidden' )->assertUnauthorized();
@@ -795,7 +824,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageForbidsAuthenticatedUserWithoutPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['frontend.member'] );
 
         $user = new \App\Models\User();
@@ -810,7 +839,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testEditorFromAnotherTenantCannotBypassPageAccess(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
         $this->user->tenant_id = 'other';
 
@@ -820,7 +849,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedPageIsHiddenFromGuestNavigation(): void
     {
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
         PageAccess::set( [$blog->id], [] );
 
         $response = $this->get( '/hidden' );
@@ -832,7 +861,10 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRedirectUsesOneQuery(): void
     {
-        Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Redirect',
             'title' => 'Redirect',
@@ -840,7 +872,7 @@ class PageControllerTest extends ThemeTestAbstract
             'to' => '/target',
             'status' => 1,
             'editor' => 'test',
-        ] ) );
+        ] )->view;
 
         DB::flushQueryLog();
         DB::enableQueryLog();
@@ -868,7 +900,7 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testRestrictedGuestPreflightUsesOneQuery(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
         DB::flushQueryLog();
         DB::enableQueryLog();
@@ -881,7 +913,10 @@ class PageControllerTest extends ThemeTestAbstract
 
     public function testUncachedPageUsesFullWebSession()
     {
-        Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Dynamic',
             'title' => 'Dynamic Page',
@@ -892,7 +927,7 @@ class PageControllerTest extends ThemeTestAbstract
             'content' => [
                 ['id' => 'h1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Hello']],
             ],
-        ] ) );
+        ] )->view;
 
         // Uncacheable pages render through the full "web" stack, so a session is
         // started and its cookie is kept.
@@ -915,20 +950,20 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
-    private function blogList(): Page
+    private function blogList(): PageView
     {
-        $page = Page::where( 'tag', 'blog' )->firstOrFail();
+        $page = PageView::where( 'tag', 'blog' )->firstOrFail();
         $content = collect( (array) $page->content )
             ->map( fn( $item ) => (object) ( (array) $item + ['group' => 'main'] ) )
             ->all();
 
-        Resource::updatePage( $page, ['content' => $content, 'type' => 'blog'] );
+        $page->variant->update( ['content' => $content, 'type' => 'blog'] );
 
         return $page;
     }
 
 
-    private function cacheKey( Page|string $page, string $domain = '' ): string
+    private function cacheKey( PageView|string $page, string $domain = '' ): string
     {
         $key = ( new \ReflectionMethod( PageCache::class, 'key' ) )->invoke( null, $page, $domain );
 
@@ -940,7 +975,7 @@ class PageControllerTest extends ThemeTestAbstract
     }
 
 
-    private function cache( Page|string $page, string $html, string $domain = '' ): void
+    private function cache( PageView|string $page, string $html, string $domain = '' ): void
     {
         PageCache::remember( fn() => ( new Response( $html, 200 ) )
             ->header( 'Cache-Control', 'public' )

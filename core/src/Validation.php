@@ -9,7 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -20,7 +20,7 @@ class Validation
     private const LIMITS = [
         Element::class => ['lang' => 10, 'name' => 255, 'type' => 50],
         File::class => ['lang' => 10, 'mime' => 100, 'name' => 255, 'path' => 255],
-        Page::class => [
+        PageView::class => [
             'cache' => 32767, 'domain' => 255, 'lang' => 10, 'name' => 255, 'path' => 255,
             'status' => 32767, 'tag' => 30, 'theme' => 30, 'title' => 255, 'to' => 255, 'type' => 30,
         ],
@@ -33,7 +33,7 @@ class Validation
     /**
      * Validates the scalar fields of the input against the storage limits of the model.
      *
-     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param class-string<Element|File|PageView> $model Model class the input is stored in
      * @param array<string, mixed> $input Input data
      * @throws Exception If a value isn't scalar or exceeds its limit
      */
@@ -63,7 +63,7 @@ class Validation
      *
      * Used for generated values like translations which shouldn't fail because of their length.
      *
-     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param class-string<Element|File|PageView> $model Model class the input is stored in
      * @param array<string, mixed> $input Input data
      * @return array<string, mixed> Input data with shortened strings
      */
@@ -92,7 +92,7 @@ class Validation
      */
     public static function page( array $input, ?Authenticatable $user = null ) : array
     {
-        self::limits( Page::class, $input );
+        self::limits( PageView::class, $input );
 
         if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
             throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );

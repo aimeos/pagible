@@ -26,7 +26,7 @@ use Illuminate\Support\Collection;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $bypages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PageView> $bypages
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Element extends Base
@@ -113,11 +113,11 @@ class Element extends Base
     /**
      * Get the pages the element is referenced by.
      *
-     * @return BelongsToMany<Page, $this> Eloquent relationship to the pages
+     * @return BelongsToMany<PageView, $this> Eloquent relationship to the pages
      */
     public function bypages() : BelongsToMany
     {
-        return $this->belongsToMany( Page::class, 'cms_page_element', 'element_id', 'variant_id', 'id', 'variant_id' )
+        return $this->belongsToMany( PageView::class, 'cms_page_element', 'element_id', 'variant_id', 'id', 'variant_id' )
             ->allVariants()->select('id', 'path', 'name' );
     }
 

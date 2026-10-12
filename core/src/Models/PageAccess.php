@@ -32,7 +32,7 @@ use Illuminate\Database\Query\Expression;
  * @property string $tenant_id
  * @property string $value
  * @property string $editor
- * @property-read Page $page
+ * @property-read PageView $page
  */
 class PageAccess extends Model
 {
@@ -50,7 +50,7 @@ class PageAccess extends Model
     /**
      * Adds frontend access decisions to a page query without loading rule rows.
      *
-     * @param Builder<covariant Page> $query
+     * @param Builder<covariant PageView> $query
      */
     public static function flags( Builder $query, ?Authenticatable $user ) : void
     {
@@ -73,7 +73,7 @@ class PageAccess extends Model
     /**
      * Limits a query to pages visible to the frontend user.
      *
-     * @param Builder<covariant Page> $query
+     * @param Builder<covariant PageView> $query
      */
     public static function apply( Builder $query, ?Authenticatable $user ) : void
     {
@@ -101,11 +101,11 @@ class PageAccess extends Model
     /**
      * Returns the page owning this explicit frontend access rule.
      *
-     * @return BelongsTo<Page, $this>
+     * @return BelongsTo<PageView, $this>
      */
     public function page() : BelongsTo
     {
-        return $this->belongsTo( Page::class, 'page_id' );
+        return $this->belongsTo( PageView::class, 'page_id' );
     }
 
 
@@ -133,7 +133,7 @@ class PageAccess extends Model
 
         [$pages, $changed, $reindex] = Utils::transaction( function() use ( $descendants, $ids, $user, $values ) {
             $pages = $descendants ? self::subtree( $ids[0] ) : self::pages( $ids );
-            Page::checkBulk( count( $pages ) );
+            PageView::checkBulk( count( $pages ) );
 
             $pageIds = array_map( fn( Nav $page ) => (string) $page->id, $pages );
 
@@ -178,7 +178,7 @@ class PageAccess extends Model
             Resource::invalidatePages( $changed );
 
             if( Scout::usesExternalSearch() ) {
-                Scout::reindex( Page::class, $reindex );
+                Scout::reindex( PageView::class, $reindex );
             }
         }
 
@@ -230,10 +230,10 @@ class PageAccess extends Model
     {
         $count = count( $ids ) * max( 1, count( $values ?? [] ) );
 
-        if( $values !== null && $count > Page::MAX_BULK ) {
+        if( $values !== null && $count > PageView::MAX_BULK ) {
             throw new Exception( sprintf(
                 'No more than %d page access assignments may be changed at once.',
-                Page::MAX_BULK,
+                PageView::MAX_BULK,
             ) );
         }
     }
@@ -295,7 +295,7 @@ class PageAccess extends Model
         foreach( $ids as $id ) {
             if( is_string( $id ) ) {
                 $keys[$id] = true;
-                Page::checkBulk( count( $keys ) );
+                PageView::checkBulk( count( $keys ) );
             }
         }
 
@@ -431,7 +431,7 @@ class PageAccess extends Model
      */
     private static function subtree( string $id ) : array
     {
-        $root = Page::query()
+        $root = PageView::query()
             ->withoutGlobalScope( 'jsonapi' )
             ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
             ->whereKey( $id )
@@ -443,7 +443,7 @@ class PageAccess extends Model
             ->where( NestedSet::LFT, '>=', $root->getLft() )
             ->where( NestedSet::RGT, '<=', $root->getRgt() )
             ->orderBy( NestedSet::LFT )
-            ->limit( Page::MAX_BULK + 1 );
+            ->limit( PageView::MAX_BULK + 1 );
 
         /** @var list<Nav> $pages */
         $pages = $query->get()->all();

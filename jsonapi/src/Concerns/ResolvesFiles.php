@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Concerns;
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Schema;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 
 
 trait ResolvesFiles
@@ -18,12 +18,12 @@ trait ResolvesFiles
     /**
      * Resolves file references and actions for a list of items.
      *
-     * @param Page $model The page model with loaded files relation
+     * @param PageView $model The page model with loaded files relation
      * @param object|array<int|string,object>|null $items The items to resolve files for
      * @param \Illuminate\Support\Collection<int, \Aimeos\Cms\Models\File>|null $lookup Optional file lookup collection
      * @return object|array<int|string,object>|null The items with resolved file references
      */
-    protected function resolveFiles( Page $model, object|array|null $items, ?\Illuminate\Support\Collection $lookup = null ) : object|array|null
+    protected function resolveFiles( PageView $model, object|array|null $items, ?\Illuminate\Support\Collection $lookup = null ) : object|array|null
     {
         $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
         $filesById = null;

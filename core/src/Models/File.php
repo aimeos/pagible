@@ -40,7 +40,7 @@ use Intervention\Image\ImageManager;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $bypages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PageView> $bypages
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Element> $byelements
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
@@ -249,11 +249,11 @@ class File extends Base
     /**
      * Get all pages referencing the file.
      *
-     * @return BelongsToMany<Page, $this> Eloquent relationship to the pages referencing the file
+     * @return BelongsToMany<PageView, $this> Eloquent relationship to the pages referencing the file
      */
     public function bypages() : BelongsToMany
     {
-        return $this->belongsToMany( Page::class, 'cms_page_file', 'file_id', 'variant_id', 'id', 'variant_id' )
+        return $this->belongsToMany( PageView::class, 'cms_page_file', 'file_id', 'variant_id', 'id', 'variant_id' )
             ->allVariants()->select('id', 'path', 'name' );
     }
 

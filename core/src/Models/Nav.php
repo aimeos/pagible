@@ -16,11 +16,11 @@ use Illuminate\Database\Query\Expression;
  *
  * @property bool $access_exists
  */
-class Nav extends Page
+class Nav extends PageView
 {
     /** @var list<string> Columns required by navigation and ancestor projections */
     public const SELECT_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'source', 'to',
+        'id', 'variant_id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'path', 'domain', 'lang', 'source', 'to',
         'status', 'config', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
     ];
 
@@ -62,7 +62,7 @@ class Nav extends Page
      *
      * The returned model is partial and must be treated as read-only.
      */
-    public static function page( string $path, string $domain = '' ) : ?self
+    public static function lookup( string $path, string $domain = '' ) : ?self
     {
         return self::query()
             ->allVariants()

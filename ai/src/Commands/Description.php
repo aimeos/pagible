@@ -7,11 +7,10 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Ai;
 use Illuminate\Console\Command;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Validation;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
@@ -50,13 +49,13 @@ class Description extends Command
         $model = config( 'cms.ai.write.model' );
         $config = config( 'cms.ai.write', [] );
 
-        Page::select( Page::SELECT_COLUMNS )
+        PageView::select( PageView::SELECT_COLUMNS )
             ->where( 'status', '>', 0 )
             ->chunk( 50, function( $pages ) use ( $provider, $model, $config ) {
 
                 foreach( $pages as $page )
                 {
-                    /** @var Page $page */
+                    /** @var PageView $page */
                     if( !empty( $page->meta->{'meta-tags'}->data->description ?? '' ) ) {
                         continue;
                     }
@@ -82,8 +81,7 @@ class Description extends Command
                         $data = (array) ( $page->meta->{'meta-tags'}->data ?? [] );
                         $data['description'] = $text;
                         $meta['meta-tags'] = Validation::entry( 'meta-tags', $data, 'meta' );
-                        $page->meta = Validation::structured( $meta, 'meta' );
-                        Resource::updatePage( $page );
+                        $page->variant?->update( ['meta' => Validation::structured( $meta, 'meta' )] );
                     }
                     catch( PrismaException $e )
                     {

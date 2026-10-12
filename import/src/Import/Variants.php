@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Hashes;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
@@ -115,25 +115,25 @@ class Variants
      * Otherwise, the variant isn't linked to the source, so its hashes stay empty and it
      * needs an update.
      *
-     * @param Page $page Imported page with its source variant
+     * @param PageView $page Imported page with its source variant
      * @param array{lang: string, domain: string} $language Language of the variant
      * @param string $slug Path of the translation
      * @param array<string, mixed> $data Page data of the variant
      * @param array{elements: array<int, array<string, mixed>>, fileIds?: array<string>, elementIds?: array<string>} $content Translated content
      * @param string $editor Editor name
-     * @return Page|null Published page variant or NULL if the URL is used by another page
+     * @return PageView|null Published page variant or NULL if the URL is used by another page
      */
-    public static function save( Page $page, array $language, string $slug, array $data, array $content, string $editor ) : ?Page
+    public static function save( PageView $page, array $language, string $slug, array $data, array $content, string $editor ) : ?PageView
     {
-        /** @var Page $source */
-        $source = Page::withTrashed()->findOrFail( $page->id );
+        /** @var PageView $source */
+        $source = PageView::withTrashed()->findOrFail( $page->id );
         $linked = self::pair( (array) json_decode( (string) json_encode( $source->content ), true ), $content['elements'] );
 
         $lang = $language['lang'];
         $domain = $language['domain'] !== '' ? $language['domain'] : (string) $source->domain;
 
-        /** @var Page|null $variant */
-        $variant = Page::withTrashed()->language( $lang, true )->find( $page->id );
+        /** @var PageView|null $variant */
+        $variant = PageView::withTrashed()->language( $lang, true )->find( $page->id );
 
         $path = trim( $slug, '/' );
 

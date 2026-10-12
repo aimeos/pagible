@@ -195,7 +195,7 @@ export default {
 
     // fills in the missing descriptions in all languages as file drafts; the server translates each
     // language sequentially, so small chunks keep the requests short and the action label shows the progress.
-    // The server accepts at most 100 files times languages per request ("cms.ai.maxtranslate")
+    // The server accepts at most 100 files and 10 languages per request
     async translate(item = null) {
       const list = this.canTranslate() ? (item ? [item] : this.selected()).filter((item) => !item.deleted_at) : []
 
@@ -206,20 +206,25 @@ export default {
       const ids = list.map((item) => item.id)
       const total = ids.length
       const langs = this.languages.available
-      const size = Math.max(1, Math.min(10, Math.floor(100 / langs.length)))
-      const files = []
+      const size = 10
+      // the latest draft of each file, later language groups add to the drafts of the earlier ones
+      const files = new Map()
       let failure = null
 
       this.translating = { done: 0, total }
 
       try {
         for (let i = 0; i < total; i += size) {
-          const result = await this.$apollo.mutate({
-            mutation: TRANSLATE_FILES,
-            variables: { id: ids.slice(i, i + size), lang: langs }
-          })
+          for (let j = 0; j < langs.length; j += 10) {
+            const result = await this.$apollo.mutate({
+              mutation: TRANSLATE_FILES,
+              variables: { id: ids.slice(i, i + size), lang: langs.slice(j, j + 10) }
+            })
 
-          files.push(...(result.data?.translateFiles || []))
+            for (const entry of result.data?.translateFiles || []) {
+              files.set(entry.id, entry)
+            }
+          }
           this.translating.done = Math.min(i + size, total)
         }
       } catch (error) {
@@ -230,12 +235,12 @@ export default {
       this.translating = null
 
       // results of the chunks processed before a failure are kept
-      if (files.length) {
-        this.patchItems(files.map((entry) => this.hydrate(entry)))
+      if (files.size) {
+        this.patchItems([...files.values()].map((entry) => this.hydrate(entry)))
         this.invalidate()
         this.messages.add(
-          this.$ngettext('Descriptions of %{num} file translated', 'Descriptions of %{num} files translated', files.length, {
-            num: files.length
+          this.$ngettext('Descriptions of %{num} file translated', 'Descriptions of %{num} files translated', files.size, {
+            num: files.size
           }),
           'success'
         )

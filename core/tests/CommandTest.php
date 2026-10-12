@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Published;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
@@ -46,7 +46,7 @@ class CoreCommandTest extends CoreTestAbstract
     {
         $this->artisan('cms:publish')->assertExitCode( 0 );
 
-        $this->assertEquals( 1, Page::where( 'path', 'hidden' )->firstOrFail()?->status );
+        $this->assertEquals( 1, PageView::where( 'path', 'hidden' )->firstOrFail()?->status );
         $this->assertEquals( 'Powered by Laravel CMS!', Element::where( 'name', 'Shared footer' )->firstOrFail()?->data->text );
         $this->assertEquals( (object) [
             'en' => 'Test file description',
@@ -240,7 +240,7 @@ class CoreCommandTest extends CoreTestAbstract
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
 
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $element = Element::firstOrFail();
         $file = File::firstOrFail();
         $data = ['lang' => 'en', 'name' => 'Scheduled'];
@@ -249,7 +249,7 @@ class CoreCommandTest extends CoreTestAbstract
         $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
-        Resource::updatePage( $page, ['latest_id' => $pageVersion->id] );
+        $page->variant->update( ['latest_id' => $pageVersion->id] );
         $element->forceFill( ['latest_id' => $elementVersion->id] )->saveQuietly();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
@@ -298,7 +298,7 @@ class CoreCommandTest extends CoreTestAbstract
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
 
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $element = Element::firstOrFail();
         $element->latest->forceFill( ['published' => true] )->saveQuietly();
         $version = $page->versions()->forceCreate( [
@@ -314,7 +314,7 @@ class CoreCommandTest extends CoreTestAbstract
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class );
     }
 
 

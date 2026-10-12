@@ -10,7 +10,7 @@ use Aimeos\Cms\Access;
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Resource;
@@ -190,7 +190,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testPrivateFileMustBelongToAuthorizationPage()
     {
         [$page, $file] = $this->asset();
-        $other = Page::whereKeyNot( $page->id )->firstOrFail();
+        $other = PageView::whereKeyNot( $page->id )->firstOrFail();
 
         $this->get( route( 'cms.asset', ['page' => $other->id, 'file' => $file->id], false ) )
             ->assertNotFound();
@@ -312,7 +312,7 @@ class AssetControllerTest extends CoreTestAbstract
 
     public function testPrivateDraftElementFileCanBePreviewedByEditor()
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $element = Element::firstOrFail();
         $file = new File();
         $file->setUniqueIds();
@@ -349,7 +349,7 @@ class AssetControllerTest extends CoreTestAbstract
 
     public function testPrivateFileOfTranslationCanBeDelivered()
     {
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
         $variant = Resource::addVariant( $page->id, 'de' );
         PageVariant::whereKey( $variant->variant_id )->update( ['status' => 1] );
 
@@ -373,11 +373,11 @@ class AssetControllerTest extends CoreTestAbstract
 
 
     /**
-     * @return array{Page, File}
+     * @return array{PageView, File}
      */
-    private function asset( bool $direct = true, ?Page $variant = null ) : array
+    private function asset( bool $direct = true, ?PageView $variant = null ) : array
     {
-        $page = $variant ?? Page::where( 'path', 'blog' )->firstOrFail();
+        $page = $variant ?? PageView::where( 'path', 'blog' )->firstOrFail();
         $file = new File();
         $file->setUniqueIds();
         $path = $file->dir() . '/private.txt';

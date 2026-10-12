@@ -7,10 +7,9 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -49,7 +48,7 @@ class MultiDomainPageToolsTest extends McpTestAbstract
 
     public function testGetPageReturnsMultiDomainUrl() : void
     {
-        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $page = PageView::where( 'name', 'Home' )->firstOrFail();
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
@@ -62,7 +61,7 @@ class MultiDomainPageToolsTest extends McpTestAbstract
 
     public function testSavePageReturnsMultiDomainUrl() : void
     {
-        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $page = PageView::where( 'name', 'Home' )->firstOrFail();
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
@@ -88,9 +87,9 @@ class MultiDomainPageToolsTest extends McpTestAbstract
 
     public function testRestorePageReturnsMultiDomainUrl() : void
     {
-        $page = Page::where( 'name', 'Dev' )->firstOrFail();
-        Resource::updatePage( $page, ['domain' => 'otherdomain.tld'] );
-        Resource::trashPage( $page );
+        $page = PageView::where( 'name', 'Dev' )->firstOrFail();
+        $page->variant->update( ['domain' => 'otherdomain.tld'] );
+        $page->page->delete();
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\RestorePage::class, [
             'id' => $page->id,
@@ -103,9 +102,9 @@ class MultiDomainPageToolsTest extends McpTestAbstract
 
     public function testMovePageReturnsMultiDomainUrl() : void
     {
-        $page = Page::where( 'name', 'Dev' )->firstOrFail();
-        $parent = Page::where( 'name', 'Blog' )->firstOrFail();
-        Resource::updatePage( $page, ['domain' => 'otherdomain.tld'] );
+        $page = PageView::where( 'name', 'Dev' )->firstOrFail();
+        $parent = PageView::where( 'name', 'Blog' )->firstOrFail();
+        $page->variant->update( ['domain' => 'otherdomain.tld'] );
 
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\MovePage::class, [
             'id' => $page->id,

@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +25,7 @@ class HeroButtonsMigrationTest extends ThemeTestAbstract
     public function testConvertsHeroButtons(): void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $element = Element::firstOrFail();
 
         $legacy = [

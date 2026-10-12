@@ -19,6 +19,11 @@ return new class extends Migration
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
 
+        // only for the table structure before the page variants were introduced
+        if( $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ) {
+            return;
+        }
+
         $this->pages( $db );
         $this->versions( $db );
     }
@@ -87,13 +92,10 @@ return new class extends Migration
 
     private function pages( Connection $db ) : void
     {
-        // page data is stored in the page variants after the variants migration ran
-        $table = $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ? 'cms_page_variants' : 'cms_pages';
-
-        $db->table( $table )
+        $db->table( 'cms_pages' )
             ->select( 'id', 'meta', 'config' )
             ->orderBy( 'id' )
-            ->chunkById( 500, function( $rows ) use ( $db, $table ) {
+            ->chunkById( 500, function( $rows ) use ( $db ) {
                 $updates = [];
 
                 foreach( $rows as $row )
@@ -118,9 +120,9 @@ return new class extends Migration
                 }
 
                 if( $updates !== [] ) {
-                    $db->transaction( function() use ( $db, $table, $updates ) {
+                    $db->transaction( function() use ( $db, $updates ) {
                         foreach( $updates as $id => $values ) {
-                            $db->table( $table )->where( 'id', $id )->update( $values );
+                            $db->table( 'cms_pages' )->where( 'id', $id )->update( $values );
                         }
                     } );
                 }
@@ -228,7 +230,7 @@ return new class extends Migration
     {
         $db->table( 'cms_versions' )
             ->select( 'id', 'aux' )
-            ->whereIn( 'versionable_type', [Page::class, 'Aimeos\Cms\Models\PageVariant'] )
+            ->where( 'versionable_type', Page::class )
             ->orderBy( 'id' )
             ->chunkById( 500, function( $rows ) use ( $db ) {
                 $updates = [];

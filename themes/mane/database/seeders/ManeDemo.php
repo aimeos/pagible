@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -98,10 +98,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the hidden appointment booking page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addBook( Page $home ) : static
+    protected function addBook( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -147,10 +147,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the bridal page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addBridal( Page $parent ) : static
+    protected function addBridal( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -238,10 +238,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the careers page below the team page.
      *
-     * @param Page $parent Team page
+     * @param PageView $parent Team page
      * @return static Same object for fluent calls
      */
-    protected function addCareers( Page $parent ) : static
+    protected function addCareers( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -292,10 +292,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the colour page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @return static Same object for fluent calls
      */
-    protected function addColour( Page $parent ) : static
+    protected function addColour( PageView $parent ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -355,10 +355,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the gift cards page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addGifts( Page $home ) : static
+    protected function addGifts( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -420,10 +420,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -445,10 +445,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the new clients page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addNewClients( Page $home ) : static
+    protected function addNewClients( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -503,10 +503,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the privacy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -528,10 +528,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the services and prices page and its sub-pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addServices( Page $home ) : static
+    protected function addServices( PageView $home ) : static
     {
         $services = $this->page( [
             'lang' => 'en',
@@ -610,10 +610,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the team page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTeam( Page $home ) : static
+    protected function addTeam( PageView $home ) : static
     {
         $team = $this->page( [
             'lang' => 'en',
@@ -662,10 +662,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the hair tips page and its posts below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTips( Page $home ) : static
+    protected function addTips( PageView $home ) : static
     {
         $tips = $this->tips( $home );
 
@@ -751,10 +751,10 @@ class ManeDemo extends AbstractDemo
     /**
      * Creates the visit page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addVisit( Page $home ) : static
+    protected function addVisit( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -861,9 +861,9 @@ class ManeDemo extends AbstractDemo
     /**
      * Returns the Mane Atelier home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -1067,10 +1067,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -1106,7 +1106,7 @@ SVG;
     /**
      * Creates a post below the hair tips page.
      *
-     * @param Page $parent Hair tips page
+     * @param PageView $parent Hair tips page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -1114,10 +1114,10 @@ SVG;
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $steps Steps of the routine
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function post( Page $parent, array $data, string $title, string $text, string $cover,
-        array $facts, array $steps, array $questions ) : Page
+    protected function post( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $facts, array $steps, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',
@@ -1240,10 +1240,10 @@ SVG;
     /**
      * Creates the hair tips overview page and returns it.
      *
-     * @param Page $home Home page
-     * @return Page Hair tips page
+     * @param PageView $home Home page
+     * @return PageView Hair tips page
      */
-    protected function tips( Page $home ) : Page
+    protected function tips( PageView $home ) : PageView
     {
         return $this->page( [
             'id' => $this->tipsId,

@@ -9,7 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -151,7 +151,7 @@ class Merge
      * @param array<string, mixed> $aux Incoming meta, config and content
      * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>|null}
      */
-    public static function page( Page $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
+    public static function page( PageView $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
     {
         $latest = $page->latest;
         $latestData = (array) $latest?->data;

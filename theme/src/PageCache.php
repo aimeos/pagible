@@ -56,7 +56,7 @@ class PageCache
      *
      * @param Closure(): mixed $renderFn
      */
-    public static function remember( Closure $renderFn, Models\Page|string $page, string $domain = '' ) : mixed
+    public static function remember( Closure $renderFn, Models\PageView|string $page, string $domain = '' ) : mixed
     {
         $key = self::key( $page, $domain );
         $lock = self::renderLock( $key );
@@ -85,9 +85,9 @@ class PageCache
     /**
      * Returns a cached complete-page response.
      *
-     * @param Models\Page|string $page Page model or route path
+     * @param Models\PageView|string $page Page model or route path
      */
-    public static function response( Models\Page|string $page, string $domain = '', bool $fresh = false ) : ?Response
+    public static function response( Models\PageView|string $page, string $domain = '', bool $fresh = false ) : ?Response
     {
         return self::cachedResponse( self::key( $page, $domain ), $fresh );
     }
@@ -136,9 +136,9 @@ class PageCache
     /**
      * Returns the complete-page cache key for a page or route.
      */
-    private static function key( Models\Page|string $page, string $domain = '' ) : string
+    private static function key( Models\PageView|string $page, string $domain = '' ) : string
     {
-        if( $page instanceof Models\Page ) {
+        if( $page instanceof Models\PageView ) {
             $domain = $page->domain;
             $page = $page->path;
         }

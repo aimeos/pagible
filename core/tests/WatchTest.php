@@ -12,7 +12,7 @@ use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
@@ -190,7 +190,7 @@ class WatchTest extends CoreTestAbstract
 
         $id = $this->id( $page );
 
-        Resource::purge( Page::class, [$id], $this->user );
+        Resource::purge( PageView::class, [$id], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( $id, $captured[0]->id );
@@ -209,7 +209,7 @@ class WatchTest extends CoreTestAbstract
     }
 
 
-    protected function page() : Page
+    protected function page() : PageView
     {
         return Resource::addPage( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'watch-' . Utils::uid(),
@@ -218,13 +218,13 @@ class WatchTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 
-    private function id( Page $page ) : string
+    private function id( PageView $page ) : string
     {
         if( !is_string( $page->id ) ) {
             throw new \RuntimeException( 'Page ID is missing.' );

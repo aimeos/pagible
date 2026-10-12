@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -43,14 +43,14 @@ class RestorePage extends Tool
             return Response::structured( Presenter::item( $item, true ) );
         }
 
-        /** @var Page $item */
-        $item = Page::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
+        /** @var PageView $item */
+        $item = PageView::withTrashed()->select( 'id', 'tenant_id', 'deleted_at' )->findOrFail( $v['id'] );
 
         if( !$item->trashed() ) {
             return Response::structured( ['error' => 'Page is not deleted.'] );
         }
 
-        $items = Resource::restore( Page::class, [$v['id']], $request->user() );
+        $items = Resource::restore( PageView::class, [$v['id']], $request->user() );
 
         return Response::structured( Presenter::item( $items->firstOrFail(), true ) );
     }

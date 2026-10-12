@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Commands;
 use Illuminate\Console\Command;
 
 use Aimeos\Cms\Concerns\Benchmarks;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -46,41 +46,41 @@ class BenchmarkJsonapi extends Command
 
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
 
-        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
-        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
+        $page = PageView::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
 
         $this->header();
 
         $this->benchmark( 'Page list', function() use ( $domain ) {
-            Page::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
+            PageView::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page detail', function() use ( $page ) {
-            Page::with( ['files', 'elements.files'] )->find( $page->id );
+            PageView::with( ['files', 'elements.files'] )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page w/children', function() use ( $root ) {
-            Page::with( ['children', 'files', 'elements.files'] )->find( $root->id );
+            PageView::with( ['children', 'files', 'elements.files'] )->find( $root->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page w/ancestors', function() use ( $page ) {
-            Page::with( ['ancestors', 'files', 'elements.files'] )->find( $page->id );
+            PageView::with( ['ancestors', 'files', 'elements.files'] )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page path', function() use ( $page ) {
-            Page::with( ['files', 'elements.files'] )->where( 'path', $page->path )->first();
+            PageView::with( ['files', 'elements.files'] )->where( 'path', $page->path )->first();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page domain', function() use ( $domain ) {
-            Page::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
+            PageView::with( ['files', 'elements.files'] )->where( 'domain', $domain )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page tag', function() {
-            Page::with( ['files', 'elements.files'] )->where( 'tag', 'root' )->take( 100 )->get();
+            PageView::with( ['files', 'elements.files'] )->where( 'tag', 'root' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page lang', function() {
-            Page::with( ['files', 'elements.files'] )->where( 'lang', 'en' )->take( 100 )->get();
+            PageView::with( ['files', 'elements.files'] )->where( 'lang', 'en' )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->line( '' );

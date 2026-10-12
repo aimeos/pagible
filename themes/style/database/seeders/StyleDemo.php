@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -62,10 +62,10 @@ class StyleDemo extends AbstractDemo
     /**
      * Creates the atelier page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAtelier( Page $home ) : static
+    protected function addAtelier( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -141,11 +141,11 @@ class StyleDemo extends AbstractDemo
     /**
      * Creates the journal and its four stories below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @param string $journalId Journal page ID referenced by listing elements
      * @return static Same object for fluent calls
      */
-    protected function addBlog( Page $home, string $journalId ) : static
+    protected function addBlog( PageView $home, string $journalId ) : static
     {
         $journal = $this->page( [
             'id' => $journalId,
@@ -333,10 +333,10 @@ class StyleDemo extends AbstractDemo
     /**
      * Creates the collection page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCollection( Page $home ) : static
+    protected function addCollection( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -448,10 +448,10 @@ class StyleDemo extends AbstractDemo
     /**
      * Creates the campaign lookbook page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addLookbook( Page $home ) : static
+    protected function addLookbook( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -518,10 +518,10 @@ class StyleDemo extends AbstractDemo
     /**
      * Creates the boutique visit and appointment page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addVisit( Page $home ) : static
+    protected function addVisit( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -628,9 +628,9 @@ class StyleDemo extends AbstractDemo
      * Creates the Veyra home page and returns it.
      *
      * @param string $journalId Journal page ID referenced by listing elements
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home( string $journalId ) : Page
+    protected function home( string $journalId ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -765,12 +765,12 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param array<int, string> $fileIds Additional file IDs to attach
      * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();

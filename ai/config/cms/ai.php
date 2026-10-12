@@ -31,34 +31,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Maximum file translations
-    |--------------------------------------------------------------------------
-    |
-    | Maximum number of files times languages whose descriptions can be
-    | translated in one request. They are translated while the request runs,
-    | so larger selections must be split into several requests. Their provider
-    | calls count against the translation rate limit too.
-    |
-    */
-    'maxtranslate' => (int) env( 'CMS_AI_MAXTRANSLATE', 100 ),
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Translation cache
-    |--------------------------------------------------------------------------
-    |
-    | Number of seconds translated chunks of texts are cached per tenant, so
-    | translations retried after provider errors don't pay for the chunks which
-    | already succeeded again. Page translations remove their entries after
-    | they succeeded. Use 0 to disable the cache.
-    |
-    */
-    'translatettl' => (int) env( 'CMS_AI_TRANSLATETTL', 3600 ),
-
-
-    /*
-    |--------------------------------------------------------------------------
     | Maximum tool steps
     |--------------------------------------------------------------------------
     |

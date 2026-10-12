@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -88,10 +88,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the attorneys page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAttorneys( Page $home ) : static
+    protected function addAttorneys( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -139,10 +139,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the careers page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCareers( Page $home ) : static
+    protected function addCareers( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -193,10 +193,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the consultation page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addConsultation( Page $home ) : static
+    protected function addConsultation( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -231,10 +231,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -256,10 +256,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the insights page and its articles below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addInsights( Page $home ) : static
+    protected function addInsights( PageView $home ) : static
     {
         $insights = $this->insights( $home );
 
@@ -345,10 +345,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the practice areas page and the practice area pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPractice( Page $home ) : static
+    protected function addPractice( PageView $home ) : static
     {
         $practice = $this->page( [
             'lang' => 'en',
@@ -391,10 +391,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the privacy policy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -416,10 +416,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the case results page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addResults( Page $home ) : static
+    protected function addResults( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -487,7 +487,7 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates a practice area page below the practice areas page.
      *
-     * @param Page $parent Practice areas page
+     * @param PageView $parent Practice areas page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Hero headline
      * @param string $hero PHOTOS key of the hero image
@@ -495,10 +495,10 @@ class CounselDemo extends AbstractDemo
      * @param string $text Practice area description
      * @param array<int, array<string, string>> $items Typical matters
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function area( Page $parent, array $data, string $title, string $hero, string $image,
-        string $text, array $items, array $questions ) : Page
+    protected function area( PageView $parent, array $data, string $title, string $hero, string $image,
+        string $text, array $items, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',
@@ -739,9 +739,9 @@ class CounselDemo extends AbstractDemo
     /**
      * Returns the Arndt & Keller home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -889,7 +889,7 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates an insight article below the insights page.
      *
-     * @param Page $parent Insights page
+     * @param PageView $parent Insights page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -897,10 +897,10 @@ class CounselDemo extends AbstractDemo
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $steps Steps to take
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function insight( Page $parent, array $data, string $title, string $text, string $cover,
-        array $facts, array $steps, array $questions ) : Page
+    protected function insight( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $facts, array $steps, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',
@@ -937,10 +937,10 @@ class CounselDemo extends AbstractDemo
     /**
      * Creates the insights overview page and returns it.
      *
-     * @param Page $home Home page
-     * @return Page Insights page
+     * @param PageView $home Home page
+     * @return PageView Insights page
      */
-    protected function insights( Page $home ) : Page
+    protected function insights( PageView $home ) : PageView
     {
         return $this->page( [
             'id' => $this->insightsId,
@@ -1026,10 +1026,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();

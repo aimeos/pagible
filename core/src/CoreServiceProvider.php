@@ -12,8 +12,10 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\PermissionChanged;
 use Aimeos\Cms\Listeners\LogListener;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Models\Version;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -192,7 +194,7 @@ class CoreServiceProvider extends Provider
         $this->app->afterResolving( Schedule::class, function( Schedule $schedule ) {
             $schedule->command( 'cms:publish' )->everyThirtyMinutes()
                 ->withoutOverlapping()->onOneServer();
-            $schedule->command( 'model:prune', ['--model' => [...Version::TYPES, PageVariant::class]] )->daily();
+            $schedule->command( 'model:prune', ['--model' => [Page::class, PageVariant::class, Element::class, File::class]] )->daily();
         } );
     }
 }

@@ -15,6 +15,7 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -135,10 +136,10 @@ class Resource
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to
-     * @return Page
+     * @return PageView
      * @throws \InvalidArgumentException On validation failure
      */
-    public static function addPage( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : Page
+    public static function addPage( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : PageView
     {
         $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
         $input = Validation::page( $input, $user );
@@ -153,7 +154,7 @@ class Resource
             ];
             $refs = self::refs( $aux, $user );
 
-            $page = new Page();
+            $page = new PageView();
             $page->setUniqueIds();
             $page->fill( $input );
             $page->editor = $editor;
@@ -166,7 +167,7 @@ class Resource
                 'aux' => $aux,
             ], $refs );
 
-            self::insertPage( $page, $ref, $parent );
+            self::createPage( $page, $ref, $parent );
 
             $page->files()->attach( $refs['files'] );
             $page->elements()->attach( $refs['elements'] );
@@ -205,7 +206,7 @@ class Resource
         $paths = [];
 
         foreach( $pages as $page ) {
-            if( $page instanceof Page || $page instanceof PageVariant ) {
+            if( $page instanceof PageView || $page instanceof PageVariant ) {
                 $paths[(string) $page->domain][] = (string) $page->path;
             }
         }
@@ -266,18 +267,22 @@ class Resource
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @return Page
+     * @return PageView
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      */
-    public static function movePage( string $id, ?string $ref = null, ?string $parent = null, ?Authenticatable $user = null ) : Page
+    public static function movePage( string $id, ?string $ref = null, ?string $parent = null, ?Authenticatable $user = null ) : PageView
     {
         $editor = Utils::editor( $user );
 
         $page = Utils::lockedTransaction( function() use ( $id, $ref, $parent, $editor ) {
 
-            /** @var Page $page */
-            $page = Page::withTrashed()->findOrFail( $id );
-            Page::withoutSyncingToSearch( fn() => self::updatePage( self::placePage( $page, $ref, $parent ), ['editor' => $editor] ) );
+            /** @var PageView $page */
+            $page = PageView::withTrashed()->findOrFail( $id );
+
+            PageView::withoutSyncingToSearch( function() use ( $page, $ref, $parent, $editor ) {
+                self::saveNode( $page, fn( Page $node ) => self::position( $node, $ref, $parent )->save() );
+                self::saveVariant( $page, ['editor' => $editor] );
+            } );
 
             return $page;
         } );
@@ -465,17 +470,17 @@ class Resource
     /**
      * Adds a new version to the page variant and saves the page.
      *
-     * @param Page $page Page with the variant the version belongs to
+     * @param PageView $page Page with the variant the version belongs to
      * @param array<string, mixed> $data Version data
      * @param array<string, mixed> $aux Content, meta and config
      * @param string $editor Name of the editing user
      * @param array<string, array<string>>|null $refs File and element references or NULL to copy the ones of the previous version
      * @param array<string, mixed>|null $diffs Merge differences for the change info
      * @param string|null $lang Language of the version, the one of the data or the page by default
-     * @return Page Page with the new version as "latest"
+     * @return PageView Page with the new version as "latest"
      */
-    protected static function addVersion( Page $page, array $data, array $aux, string $editor,
-        ?array $refs, ?array $diffs = null, ?string $lang = null ) : Page
+    protected static function addVersion( PageView $page, array $data, array $aux, string $editor,
+        ?array $refs, ?array $diffs = null, ?string $lang = null ) : PageView
     {
         $page->newDraft( [
             'data' => $data,
@@ -484,7 +489,7 @@ class Resource
             'aux' => $aux,
         ], $refs, $diffs );
 
-        return self::updatePage( $page );
+        return self::saveVariant( $page );
     }
 
 
@@ -504,7 +509,7 @@ class Resource
         $ids = array_values( array_unique( $ids ) );
         $model::checkBulk( count( $ids ) );
         $editor = Utils::editor( $user );
-        $isPage = $model === Page::class;
+        $isPage = $model === PageView::class;
         $announce = $model !== File::class || $action !== 'purged' || count( $ids ) === 1;
         $pages = collect();
         $variants = collect();
@@ -518,9 +523,9 @@ class Resource
 
             if( $isPage ) {
                 $query->select( $fields ? [
-                    ...Page::REQUIRED_COLUMNS,
-                    ...array_intersect( Page::RESPONSE_COLUMNS, $fields ),
-                ] : Page::SELECT_COLUMNS );
+                    ...PageView::REQUIRED_COLUMNS,
+                    ...array_intersect( PageView::RESPONSE_COLUMNS, $fields ),
+                ] : PageView::SELECT_COLUMNS );
             } elseif( $fields ) {
                 $instance = new $model();
                 $required = $instance->qualifyColumns( ['id', 'tenant_id', 'latest_id', 'deleted_at'] );
@@ -669,14 +674,23 @@ class Resource
     {
         foreach( $items as $item )
         {
-            /** @var Page $item */
-            if( $action === 'purged' ) {
-                self::removePage( $item );
+            /** @var PageView $item */
+            if( $action === 'purged' )
+            {
+                // positions of loaded pages are outdated if other pages were removed before
+                // and pages removed together with an ancestor don't exist anymore
+                Page::withTrashed()->find( $item->id )?->forceDelete();
+                $item->exists = false;
                 continue;
             }
 
-            $item->editor = $editor;
-            $action === 'dropped' ? self::trashPage( $item ) : self::untrashPage( $item );
+            self::saveNode( $item, fn( Page $node ) => $action === 'dropped' ? $node->delete() : $node->restore() );
+
+            if( $action === 'restored' ) {
+                self::saveVariant( $item, ['editor' => $editor] );
+            } else {
+                $item->editor = $editor;
+            }
         }
     }
 
@@ -685,14 +699,14 @@ class Resource
      * Returns the query for the complete subtrees of the given non-empty list of pages, including trashed ones.
      *
      * @param iterable<\Illuminate\Database\Eloquent\Model> $roots Pages with their nested set bounds
-     * @return \Aimeos\Nestedset\QueryBuilder<Page>
+     * @return \Aimeos\Nestedset\QueryBuilder<PageView>
      */
     public static function pageSubtree( iterable $roots ) : \Aimeos\Nestedset\QueryBuilder
     {
         $list = self::pageRoots( $roots );
 
-        /** @var \Aimeos\Nestedset\QueryBuilder<Page> */
-        return Page::withTrashed()->where( function( $query ) use ( $list ) {
+        /** @var \Aimeos\Nestedset\QueryBuilder<PageView> */
+        return PageView::withTrashed()->where( function( $query ) use ( $list ) {
             $query->whereRaw( '1 = 0' ); // no roots must match no pages
 
             foreach( $list as $root ) {
@@ -868,11 +882,11 @@ class Resource
     /**
      * Saves the same input to several items of one type as a single best-effort batch.
      *
-     * @param class-string<Element>|class-string<File>|class-string<Page> $model Model class being saved
+     * @param class-string<Element>|class-string<File>|class-string<PageView> $model Model class being saved
      * @param array<string> $ids Item ids to save, in processing order
      * @param array<string, mixed> $input Shared fields applied to every item
      * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param \Closure(string, array<string, array<string, array<string>>>, string): (Page|File|Element|null) $save Loads one locked row and applies the change using the prefetched references
+     * @param \Closure(string, array<string, array<string, array<string>>>, string): (PageView|File|Element|null) $save Loads one locked row and applies the change using the prefetched references
      * @param (\Closure(array<string>): array<string, array<string, array<string>>>)|null $refs Prefetches the references of the latest versions copied to the new ones, NULL uses the references of the model
      * @param array<string, mixed> $extra Additional values reported in the result and event data, e.g. the language
      * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
@@ -903,7 +917,7 @@ class Resource
                 {
                     try
                     {
-                        /** @var Page|File|Element|null $item */
+                        /** @var PageView|File|Element|null $item */
                         $item = $model::locked( fn() => Utils::transaction( fn() => $save( $id, $prefetched, $editor ) ) );
 
                         if( $item ) {
@@ -911,7 +925,7 @@ class Resource
                             $keys[] = (string) ( $item->getVersionKey() ?? $item->id );
                         }
 
-                        if( $item instanceof Page ) {
+                        if( $item instanceof PageView ) {
                             $langs[(string) $item->id] = (string) $item->lang;
                         }
                     }
@@ -941,7 +955,7 @@ class Resource
             'failed' => count( $ids ) - count( $saved ),
         ];
 
-        Base::announceBulk( strtolower( class_basename( $model ) ), $result['ids'], $result['latest'], $result['data'], $editor, langs: $langs );
+        Base::announceBulk( $model::PERM, $result['ids'], $result['latest'], $result['data'], $editor, langs: $langs );
 
         // versions belong to the version key, e.g. the page variant
         $model::locked( fn() => self::pruneVersions( $model, $keys ) );
@@ -1037,13 +1051,13 @@ class Resource
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @param string|null $lang Language of the page variant or null for the source variant
      * @param bool $restore TRUE if the input restores an old version, which marks translations as outdated
-     * @return Page
+     * @return PageView
      * @throws \InvalidArgumentException On validation failure
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If page not found
      * @throws Exception If the new source language in $input['source'] has no variant
      */
     public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null,
-        ?string $lang = null, bool $restore = false ) : Page
+        ?string $lang = null, bool $restore = false ) : PageView
     {
         $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
@@ -1051,20 +1065,20 @@ class Resource
 
         return Utils::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source, $restore ) {
 
-            /** @var Page $page */
-            $page = Page::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
+            /** @var PageView $page */
+            $page = PageView::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
 
             if( !empty( $input ) || $source === null )
             {
                 self::applyPage( $page, $input, $editor, $latestId, $user );
                 $page->announce( 'saved', $editor );
-                self::pruneVersions( Page::class, [$page->getVersionKey()] );
+                self::pruneVersions( PageView::class, [$page->getVersionKey()] );
             }
 
             // a restored old translation may not match the current source anymore
             if( $restore && !$page->isSourceVariant() )
             {
-                PageVariant::whereKey( $page->variant_id )->toBase()->update( ['stale' => true] );
+                $page->variant()->toBase()->update( ['stale' => true] );
                 $page->forceFill( ['stale' => true] )->syncOriginal();
             }
 
@@ -1072,7 +1086,7 @@ class Resource
             {
                 self::setSource( (string) $page->id, $source, $user );
 
-                $variant = PageVariant::withTrashed()->findOrFail( $page->variant_id, ['id', 'hashes', 'stale'] );
+                $variant = $page->variant()->firstOrFail( ['id', 'hashes', 'stale'] );
                 $page->forceFill( ['source' => $source, 'hashes' => $variant->hashes, 'stale' => $variant->stale] )->syncOriginal();
             }
 
@@ -1100,8 +1114,8 @@ class Resource
         // nested-set pre-order traversal) so each parent is saved before its children
         if( $descendants && $ids )
         {
-            Page::checkBulk( count( array_unique( $ids ) ) );
-            $roots = self::pageRoots( Page::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] ) );
+            PageView::checkBulk( count( array_unique( $ids ) ) );
+            $roots = self::pageRoots( PageView::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] ) );
             $ids = [];
 
             // disjoint chunks in tree order keep the pre-order traversal across chunks
@@ -1109,9 +1123,9 @@ class Resource
             {
                 /** @var array<string> $ids */
                 $ids = array_merge( $ids, self::pageSubtree( $chunk )->defaultOrder()
-                    ->limit( Page::MAX_BULK + 1 - count( $ids ) )->pluck( 'id' )->all() );
+                    ->limit( PageView::MAX_BULK + 1 - count( $ids ) )->pluck( 'id' )->all() );
 
-                if( count( $ids ) > Page::MAX_BULK ) {
+                if( count( $ids ) > PageView::MAX_BULK ) {
                     break;
                 }
             }
@@ -1119,13 +1133,13 @@ class Resource
 
         // the references of the latest versions are only copied if no content, meta or config is saved
         $refs = !array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) )
-            ? fn( array $chunk ) => Page::refs( $chunk, $lang )
+            ? fn( array $chunk ) => PageView::refs( $chunk, $lang )
             : fn( array $chunk ) => [];
 
-        return self::bulk( Page::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user, $lang ) : ?Page {
+        return self::bulk( PageView::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user, $lang ) : ?PageView {
 
             // pages without a variant in the language are skipped
-            if( !( $page = Page::withTrashed()->language( $lang, true )->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
+            if( !( $page = PageView::withTrashed()->language( $lang, true )->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
                 return null;
             }
 
@@ -1143,14 +1157,14 @@ class Resource
      * Shared by savePage() (single) and bulkPage() (bulk) so the versioning, merge
      * and reference handling stays in one place. Must run inside a transaction.
      *
-     * @param Page $page Page model with the "latest" relation loaded
+     * @param PageView $page Page model with the "latest" relation loaded
      * @param array<string, mixed> $input Validated page input
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
      * @param Authenticatable|null $user Current user
      * @param array<string, array<string>>|null $refs Prefetched references of the latest version to copy
      */
-    protected static function applyPage( Page $page, array $input, string $editor,
+    protected static function applyPage( PageView $page, array $input, string $editor,
         ?string $latestId = null, ?Authenticatable $user = null, ?array $refs = null ) : void
     {
         $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -1209,7 +1223,7 @@ class Resource
     /**
      * Queues version pruning in bounded batches.
      *
-     * @param class-string<Element>|class-string<File>|class-string<Page> $model Model class
+     * @param class-string<Element>|class-string<File>|class-string<PageView> $model Model class
      * @param array<string|null> $ids Model IDs
      */
     protected static function pruneVersions( string $model, array $ids ) : void
@@ -1301,7 +1315,7 @@ class Resource
         $files = array_values( array_unique( $files ) );
         $elements = array_values( array_unique( $elements ) );
 
-        Page::checkBulk( count( $files ) + count( $elements ) );
+        PageView::checkBulk( count( $files ) + count( $elements ) );
 
         Permission::check( 'file:view', $user, (bool) $files );
         Permission::check( 'element:view', $user, (bool) $elements );

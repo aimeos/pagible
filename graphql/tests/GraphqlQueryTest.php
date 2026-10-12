@@ -9,10 +9,9 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 
 
 class GraphqlQueryTest extends GraphqlTestAbstract
@@ -39,7 +38,7 @@ class GraphqlQueryTest extends GraphqlTestAbstract
 
     public function testPages()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             pages(filter: {
@@ -63,18 +62,18 @@ class GraphqlQueryTest extends GraphqlTestAbstract
 
     public function testPagePathFilterUsesPublishedPageColumns()
     {
-        $live = Page::where( 'path', 'blog' )->firstOrFail();
-        $dev = Page::where( 'path', 'hidden' )->firstOrFail();
+        $live = PageView::where( 'path', 'blog' )->firstOrFail();
+        $dev = PageView::where( 'path', 'hidden' )->firstOrFail();
 
-        Resource::updatePage( $live, ['path' => 'features', 'domain' => 'live.example'] );
-        Resource::updatePage( $dev, ['path' => 'features', 'domain' => 'dev.example'] );
+        $live->variant->update( ['path' => 'features', 'domain' => 'live.example'] );
+        $dev->variant->update( ['path' => 'features', 'domain' => 'dev.example'] );
 
         $draft = $live->versions()->forceCreate( [
             'lang' => 'en',
             'data' => ['path' => 'features', 'domain' => 'dev.example'],
             'editor' => 'test',
         ] );
-        Resource::updatePage( $live, ['latest_id' => $draft->id] );
+        $live->variant->update( ['latest_id' => $draft->id] );
 
         $response = $this->actingAs( $this->user )->graphQL( <<<'GRAPHQL'
             query($filter: PageFilter) {

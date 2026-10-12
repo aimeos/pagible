@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Filter;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -51,8 +51,8 @@ class SearchPages extends Tool
             'to' => 'string|max:2000',
         ] );
 
-        $search = Filter::search( Page::class, $v['term'] ?? '' )
-            ->query( fn( $q ) => $q->select( 'cms_pages.id', 'cms_pages.variant_id', 'cms_pages.tenant_id', 'cms_pages.lang', 'cms_pages.source', 'cms_pages.parent_id', 'cms_pages.path', 'cms_pages.created_at', 'cms_pages.updated_at', 'cms_pages.deleted_at', 'cms_pages.latest_id', NestedSet::LFT, NestedSet::RGT )
+        $search = Filter::search( PageView::class, $v['term'] ?? '' )
+            ->query( fn( $q ) => $q->select( 'cms_page_view.id', 'cms_page_view.variant_id', 'cms_page_view.tenant_id', 'cms_page_view.lang', 'cms_page_view.source', 'cms_page_view.parent_id', 'cms_page_view.path', 'cms_page_view.created_at', 'cms_page_view.updated_at', 'cms_page_view.deleted_at', 'cms_page_view.latest_id', NestedSet::LFT, NestedSet::RGT )
             ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
             ->take( 25 );
 
@@ -60,7 +60,7 @@ class SearchPages extends Tool
 
         foreach( Filter::pages( $search, $v )->get() as $item )
         {
-            /** @var Page $item */
+            /** @var PageView $item */
             $result[] = ['has_children' => $item->has] + Presenter::page( $item, false );
         }
 

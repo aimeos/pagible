@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -52,7 +52,7 @@ class GetPage extends Tool
             $with['access'] = fn( $q ) => $q->select( 'page_id', 'tenant_id', 'value' );
         }
 
-        $query = Page::withTrashed()
+        $query = PageView::withTrashed()
             ->select( 'id', 'variant_id', 'tenant_id', 'parent_id', 'lang', 'source', 'stale', 'latest_id', 'created_at', 'deleted_at', 'variant_deleted_at' )
             ->withCount( 'access' )
             ->with( $with );
@@ -63,7 +63,7 @@ class GetPage extends Tool
             $query->allVariants(); // path of any language
         }
 
-        /** @var Page $page */
+        /** @var PageView $page */
         $page = !empty( $v['id'] )
             ? $query->findOrFail( $v['id'] )
             : $query->where( 'path', $v['path'] ?? '' )->firstOrFail();

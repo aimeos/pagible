@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
@@ -118,7 +118,7 @@ class JsonapiVariantTest extends JsonapiTestAbstract
 
     public function testLangFilterLocalizesRelations()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $blog = $this->blog();
         $this->variant( $root, 'de', 'start' );
 
@@ -138,18 +138,18 @@ class JsonapiVariantTest extends JsonapiTestAbstract
     }
 
 
-    protected function blog() : Page
+    protected function blog() : PageView
     {
-        return Page::where( 'tag', 'blog' )->firstOrFail();
+        return PageView::where( 'tag', 'blog' )->firstOrFail();
     }
 
 
-    protected function variant( Page $page, string $lang, string $path ) : Page
+    protected function variant( PageView $page, string $lang, string $path ) : PageView
     {
         Resource::addVariant( $page->id, $lang, $this->user );
         Resource::savePage( $page->id, ['path' => $path, 'status' => 1], $this->user, lang: $lang );
-        Publication::publish( Page::class, [$page->id], $this->user, lang: $lang );
+        Publication::publish( PageView::class, [$page->id], $this->user, lang: $lang );
 
-        return Page::language( $lang )->findOrFail( $page->id );
+        return PageView::language( $lang )->findOrFail( $page->id );
     }
 }

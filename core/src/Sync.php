@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 
 
@@ -30,13 +30,13 @@ class Sync
      * and returns the translated texts in the same order. Without callback, the texts are
      * copied untranslated and their items get empty hashes so they still count as changed.
      *
-     * @param Page $source Page with its source variant and the "latest" relation loaded
-     * @param Page|null $variant Page with the target variant and the "latest" relation loaded or NULL to create one
+     * @param PageView $source Page with its source variant and the "latest" relation loaded
+     * @param PageView|null $variant Page with the target variant and the "latest" relation loaded or NULL to create one
      * @param string $lang Language code of the target variant
      * @param (callable(array<int, string>, string, ?string, string): array<int, string>)|null $translate Translate callback
      * @return array{data: array<string, mixed>, aux: array<string, mixed>, hashes: array<string, string>, slug: string, translated: bool}
      */
-    public static function translate( Page $source, ?Page $variant, string $lang, ?callable $translate = null ) : array
+    public static function translate( PageView $source, ?PageView $variant, string $lang, ?callable $translate = null ) : array
     {
         [$sdata, $saux] = self::version( $source );
         [$vdata, $vaux] = $variant ? self::version( $variant ) : [[], null];
@@ -361,10 +361,10 @@ class Sync
     /**
      * Returns the data and auxiliary data of the latest version of the page variant.
      *
-     * @param Page $page Page with the variant and the "latest" relation loaded
+     * @param PageView $page Page with the variant and the "latest" relation loaded
      * @return array{0: array<string, mixed>, 1: object} Version data and copy of the content, meta and config
      */
-    protected static function version( Page $page ) : array
+    protected static function version( PageView $page ) : array
     {
         if( $page->latest ) {
             return [(array) $page->latest->data, self::copy( $page->latest->aux ?? new \stdClass() )];
@@ -383,9 +383,9 @@ class Sync
      * Variants linked to the former source keep the hashes of the page fields and of the
      * shared elements, so only items which differ from the new source count as changed.
      *
-     * @param Page $page Page with the variant becoming the new source
+     * @param PageView $page Page with the variant becoming the new source
      */
-    public static function rebase( Page $page ) : void
+    public static function rebase( PageView $page ) : void
     {
         $hashes = Hashes::published( $page );
 
@@ -417,6 +417,8 @@ class Sync
                 'stale' => !$linked || Hashes::stale( $hashes, $new ),
             ] );
         }
+
+        self::reindex( $variants->modelKeys() );
     }
 
 
@@ -434,10 +436,10 @@ class Sync
         foreach( array_chunk( $ids, 50 ) as $chunk )
         {
             // only the columns used for the hashes of the published source variants
-            $sources = Page::withTrashed()->whereKey( $chunk )->get( ['id', ...Hashes::PAGE_FIELDS, 'content', 'meta', 'config'] );
+            $sources = PageView::withTrashed()->whereKey( $chunk )->get( ['id', ...Hashes::PAGE_FIELDS, 'content', 'meta', 'config'] );
 
             foreach( $sources as $source ) {
-                /** @var Page $source */
+                /** @var PageView $source */
                 $hashes[(string) $source->id] = Hashes::published( $source );
             }
         }
@@ -449,14 +451,19 @@ class Sync
     /**
      * Stores the hashes and the stale flag of the page variant.
      *
-     * @param Page $page Page with the variant
+     * @param PageView $page Page with the variant
      * @param array<string, string> $hashes Hashes by key
      * @param bool $stale If the variant needs an update
-     * @return Page Same page with the new hashes and stale flag
+     * @return PageView Same page with the new hashes and stale flag
      */
-    public static function state( Page $page, array $hashes, bool $stale ) : Page
+    public static function state( PageView $page, array $hashes, bool $stale ) : PageView
     {
-        PageVariant::withTrashed()->whereKey( $page->variant_id )->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => $stale] );
+        $page->variant()->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => $stale] );
+
+        if( (bool) $page->stale !== $stale ) {
+            self::reindex( [(string) $page->variant_id] );
+        }
+
         return $page->forceFill( ['hashes' => $hashes, 'stale' => $stale] )->syncOriginal();
     }
 
@@ -466,7 +473,7 @@ class Sync
      *
      * Trashed variants are skipped because restoring them recomputes the flag.
      *
-     * @param iterable<Page> $pages Published pages with their source variant
+     * @param iterable<PageView> $pages Published pages with their source variant
      */
     public static function markStale( iterable $pages ) : void
     {
@@ -496,9 +503,26 @@ class Sync
                 }
             }
 
-            if( !empty( $ids ) ) {
+            if( !empty( $ids ) )
+            {
                 PageVariant::whereIn( 'id', $ids )->toBase()->update( ['stale' => true] );
+                self::reindex( $ids );
             }
+        }
+    }
+
+
+    /**
+     * Reindexes the page variants whose stale flag was changed by bulk updates.
+     *
+     * Only external search engines filter page lists by the indexed stale flag.
+     *
+     * @param array<int, mixed> $ids Variant IDs
+     */
+    protected static function reindex( array $ids ) : void
+    {
+        if( Scout::usesExternalSearch() ) {
+            Scout::reindex( PageView::class, array_map( strval( ... ), $ids ), keys: true );
         }
     }
 }

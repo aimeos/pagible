@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 
 
 /**
@@ -74,10 +74,10 @@ class Hashes
     /**
      * Returns the hashes of the published variant of the page.
      *
-     * @param Page $page Page with the variant
+     * @param PageView $page Page with the variant
      * @return array<string, string> Hashes by key
      */
-    public static function published( Page $page ) : array
+    public static function published( PageView $page ) : array
     {
         return self::page( $page->only( self::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
     }

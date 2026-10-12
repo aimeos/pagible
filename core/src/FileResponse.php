@@ -8,7 +8,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -113,12 +113,12 @@ final class FileResponse
      *
      * Restricted renders receive a short-lived signed URL so embedded media can reuse the page authorization.
      *
-     * @param Page $page Page authorizing access to the File
+     * @param PageView $page Page authorizing access to the File
      * @param string $file File UUID
      * @param int|string|null $variant Preview width, or null for the original
      * @return string Page-aware access URL
      */
-    public static function url( Page $page, string $file, int|string|null $variant = null ) : string
+    public static function url( PageView $page, string $file, int|string|null $variant = null ) : string
     {
         $params = ['page' => $page->id, 'file' => $file];
 

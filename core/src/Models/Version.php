@@ -43,10 +43,10 @@ class Version extends Model
     use Tenancy;
 
     /** @var list<class-string<Base>> Supported versionable models */
-    public const TYPES = [Page::class, Element::class, File::class];
+    public const TYPES = [PageView::class, Element::class, File::class];
 
     /** @var array<string, class-string<Base>> Version owner types and the CMS models they belong to */
-    public const OWNERS = [PageVariant::class => Page::class, Element::class => Element::class, File::class => File::class];
+    public const OWNERS = [PageVariant::class => PageView::class, Element::class => Element::class, File::class => File::class];
 
     /** @var list<string> Most frequently used version projection */
     public const SELECT_COLUMNS = [
@@ -327,7 +327,7 @@ class Version extends Model
         }
 
         if( $this->versionable_type === PageVariant::class ) {
-            return Page::variant( $this->versionable_id )->first();
+            return PageView::query()->variant( $this->versionable_id )->first();
         }
 
         $model = $this->versionable;
@@ -344,7 +344,7 @@ class Version extends Model
     public static function loadOwners( \Illuminate\Database\Eloquent\Collection $versions ) : \Illuminate\Database\Eloquent\Collection
     {
         $variants = $versions->where( 'versionable_type', PageVariant::class );
-        $pages = Page::allVariants( true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
+        $pages = PageView::allVariants( true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
 
         foreach( $variants as $version ) {
             $version->setRelation( 'owner', $pages->get( $version->versionable_id ) );

@@ -7,7 +7,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\NestedSet;
@@ -56,9 +56,9 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testAccessFieldsReturnCanonicalStates(): void
     {
-        $public = Page::where( 'tag', 'root' )->firstOrFail();
-        $authenticated = Page::where( 'path', 'hidden' )->firstOrFail();
-        $restricted = Page::where( 'path', 'blog' )->firstOrFail();
+        $public = PageView::where( 'tag', 'root' )->firstOrFail();
+        $authenticated = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $restricted = PageView::where( 'path', 'blog' )->firstOrFail();
 
         PageAccess::set( [$authenticated->id], [] );
         PageAccess::set( [$restricted->id], ['beta', 'alpha'] );
@@ -85,7 +85,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testAccessValuesRequirePageAccessPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
         $this->user->cmsperms = ['page:view', 'access:view'];
 
@@ -103,7 +103,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testRestrictedFieldDoesNotRequirePageAccessPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
         $this->user->cmsperms = ['page:view'];
 
@@ -121,7 +121,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationAppliesAllAccessStates(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->assertSame( 1, $this->setAccess( [$page->id], [] ) );
         $this->assertSame( [''], PageAccess::where( 'page_id', $page->id )->pluck( 'value' )->all() );
@@ -136,7 +136,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationAppliesSelectedPages(): void
     {
-        $pages = Page::whereIn( 'path', ['hidden', 'blog'] )->get();
+        $pages = PageView::whereIn( 'path', ['hidden', 'blog'] )->get();
 
         $this->assertSame( 2, $this->setAccess( $pages->modelKeys(), ['member'] ) );
         $this->assertSame( 2, PageAccess::whereIn( 'page_id', $pages->modelKeys() )->count() );
@@ -145,8 +145,8 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationAppliesOneSubtree(): void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
-        $count = Page::query()
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $count = PageView::query()
             ->where( NestedSet::LFT, '>=', $root->getLft() )
             ->where( NestedSet::RGT, '<=', $root->getRgt() )
             ->count();
@@ -158,7 +158,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationRejectsMissingAccessArgument(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->actingAs( $this->user )->graphQL( '
             mutation($id: [ID!]!) {
@@ -172,7 +172,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationRejectsMultipleRecursiveRoots(): void
     {
-        $pages = Page::whereIn( 'path', ['hidden', 'blog'] )->get();
+        $pages = PageView::whereIn( 'path', ['hidden', 'blog'] )->get();
 
         $this->actingAs( $this->user )->graphQL( '
             mutation($id: [ID!]!, $access: [String!]) {
@@ -186,7 +186,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationRejectsOversizedLists(): void
     {
-        $ids = array_map( strval(...), range( 1, Page::MAX_BULK + 1 ) );
+        $ids = array_map( strval(...), range( 1, PageView::MAX_BULK + 1 ) );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation($id: [ID!]!, $access: [String!]) {
@@ -205,7 +205,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
                 setPageAccess(id: $id, access: $access)
             }
         ', [
-            'id' => [Page::where( 'path', 'hidden' )->firstOrFail()->id],
+            'id' => [PageView::where( 'path', 'hidden' )->firstOrFail()->id],
             'access' => array_map( fn( int $idx ) => 'access-' . $idx, range( 1, 251 ) ),
         ] );
 
@@ -219,7 +219,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationRequiresPageAccessPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $this->user->cmsperms = ['page:view', 'page:publish', 'access:view'];
 
         $this->actingAs( $this->user )->graphQL( '
@@ -233,7 +233,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
 
     public function testMutationOnlyRequiresPageAccessPermission(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $this->user = new \App\Models\User( ['cmsperms' => ['page:access']] );
 
         $this->actingAs( $this->user )->graphQL( '

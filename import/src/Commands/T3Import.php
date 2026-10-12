@@ -6,14 +6,13 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Illuminate\Console\Command;
@@ -1431,7 +1430,7 @@ class T3Import extends Command
      *
      * @param  Collection<int|string, mixed>  $contentElements
      */
-    protected function getRootPage(object $t3Root, string $domain, Collection $contentElements): Page
+    protected function getRootPage(object $t3Root, string $domain, Collection $contentElements): PageView
     {
         $page = Pages::find(['tag' => 'root', 'domain' => $domain]);
 
@@ -1875,8 +1874,8 @@ class T3Import extends Command
      *
      * @param  Collection<int, mixed>  $pagesById
      * @param  Collection<int|string, mixed>  $contentElements
-     * @param  Collection<int|string, Page>  $processed
-     * @return array{page: Page, updated: bool, path: string, domain: string}
+     * @param  Collection<int|string, PageView>  $processed
+     * @return array{page: PageView, updated: bool, path: string, domain: string}
      */
     protected function importSelectedPage(object $t3Page, Collection $pagesById, Collection $contentElements, Collection $processed): array
     {
@@ -1918,7 +1917,7 @@ class T3Import extends Command
     /**
      * Finds the destination counterpart of a TYPO3 source page.
      */
-    protected function findSourcePage(object $t3Page, string $domain): ?Page
+    protected function findSourcePage(object $t3Page, string $domain): ?PageView
     {
         if ((int) ($t3Page->pid ?? 0) === 0 || ! empty($t3Page->is_siteroot)) {
             return Pages::find(['tag' => 'root', 'domain' => $domain]);
@@ -1933,7 +1932,7 @@ class T3Import extends Command
      * @param  array<string, mixed>  $pageData
      * @param  Collection<int|string, mixed>  $contentElements
      */
-    protected function save(object $t3Page, array $pageData, Collection $contentElements, ?Page $page = null, ?Page $parent = null): Page
+    protected function save(object $t3Page, array $pageData, Collection $contentElements, ?PageView $page = null, ?PageView $parent = null): PageView
     {
         $content = $this->buildContent($this->recordsForPage($t3Page, $contentElements));
         $new = $page === null;
@@ -1942,7 +1941,7 @@ class T3Import extends Command
         Pages::publish($page, $pageData, ['content' => $content['elements']], $content['fileIds'], $content['elementIds'], $this->lang, $this->editor);
 
         if ($new && $parent && (int) ($t3Page->crdate ?? 0) > 0) {
-            Resource::updatePage( $page, ['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))] );
+            $page->variant->forceFill( ['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))] )->save();
         }
 
         $this->saveTranslations($t3Page, $page, $pageData, $contentElements);
@@ -1956,7 +1955,7 @@ class T3Import extends Command
      * @param  array<string, mixed>  $pageData  Data of the source variant
      * @param  Collection<int|string, mixed>  $contentElements
      */
-    protected function saveTranslations(object $t3Page, Page $page, array $pageData, Collection $contentElements): void
+    protected function saveTranslations(object $t3Page, PageView $page, array $pageData, Collection $contentElements): void
     {
         $sourceLang = $this->lang;
         $sourceDomain = (string) ($pageData['domain'] ?? '');
@@ -2065,7 +2064,7 @@ class T3Import extends Command
         $imported = 0;
         $reused = 0;
 
-        $importChildren = function (int $parentUid, Page $parentPage, string $domain) use (&$importChildren, $pageMap, $pagesById, $contentElements, &$imported, &$reused) {
+        $importChildren = function (int $parentUid, PageView $parentPage, string $domain) use (&$importChildren, $pageMap, $pagesById, $contentElements, &$imported, &$reused) {
             $children = $pageMap->get($parentUid, Collection::make());
 
             foreach ($children as $t3Page) {
@@ -2097,7 +2096,7 @@ class T3Import extends Command
                     $this->info("  Imported: {$t3Page->title} (/{$result['path']}) [{$domain}]");
                 }
 
-                /** @var Page $childParent */
+                /** @var PageView $childParent */
                 $childParent = $result['page'];
                 $importChildren($t3Page->uid, $childParent, $domain);
             }

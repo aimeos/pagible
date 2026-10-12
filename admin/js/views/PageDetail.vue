@@ -11,7 +11,7 @@ const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { ignoreChanges, translatePages } from '../variants'
+import { ignoreChanges, translateNew, translatePages } from '../variants'
 import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'
@@ -101,9 +101,9 @@ const FETCH_PAGE_VERSIONS = gql`
   }
 `
 
-const ADD_VARIANT = gql`
+const ADD_PAGE_VARIANT = gql`
   mutation ($id: ID!, $lang: String!) {
-    addVariant(id: $id, lang: $lang) {
+    addPageVariant(id: $id, lang: $lang) {
       id
     }
   }
@@ -585,7 +585,8 @@ export default {
       this.item.variants = (this.item.variants || []).map((v) => (v.lang === this.item.lang ? { ...v, state } : v))
     },
 
-    // switches the editor to the variant in the language, missing variants are created as untranslated copy
+    // switches the editor to the variant in the language, missing variants are created as untranslated
+    // copy and translated in the background if the user is allowed to translate pages
     async switchLang(entry) {
       if (entry.code === this.variantLang || entry.state === 'trashed' || this.switching) {
         return
@@ -603,12 +604,23 @@ export default {
 
       try {
         if (entry.state === 'missing') {
-          await this.$apollo.mutate({ mutation: ADD_VARIANT, variables: { id: this.item.id, lang: entry.code } })
+          await this.$apollo.mutate({ mutation: ADD_PAGE_VARIANT, variables: { id: this.item.id, lang: entry.code } })
           this.invalidate()
         }
       } catch (error) {
         this.switching = false
         return this.messages.error(this.$gettext('Error adding language'), error, entry.code)
+      }
+
+      // the untranslated copy stays if queueing its translation fails
+      if (entry.state === 'missing') {
+        await translateNew(
+          this.$apollo,
+          this.user,
+          [this.item.id],
+          entry.code,
+          this.$gettext('Translation saved as draft, review the changes')
+        ).catch((error) => this.messages.error(this.$gettext('Error translating page'), error))
       }
 
       this.variantLang = entry.code

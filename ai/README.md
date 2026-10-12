@@ -39,7 +39,6 @@ Global settings:
 | `maxinput` | `CMS_AI_MAXINPUT` | `1048576` | Maximum input size in bytes sent to a provider |
 | `maxdepth` | `CMS_AI_MAXDEPTH` | `20` | Maximum nesting depth of structured input |
 | `ratelimit` | `CMS_AI_RATELIMIT` | `60` | Maximum AI provider calls per minute and tenant made by page and file description translations |
-| `maxtranslate` | `CMS_AI_MAXTRANSLATE` | `100` | Maximum files times languages per file description translation request |
 | `middleware` | | `['web', 'throttle:cms-ai']` | Middleware of the `cmsapi/chat` streaming route |
 
 ### Environment Variables

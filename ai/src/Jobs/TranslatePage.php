@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Jobs;
 
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource;
@@ -309,7 +309,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
             Tenancy::run( $this->tenant, function() {
 
                 // pages moved to the trash or deleted after queuing aren't translated anymore
-                if( !Page::whereKey( $this->id )->exists() ) {
+                if( !PageView::whereKey( $this->id )->exists() ) {
                     return;
                 }
 
@@ -324,7 +324,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                 Auth::setUser( $user );
 
                 try {
-                    Ai::retryable( fn() => Resource::translatePage( $this->id, $this->lang, $user, Ai::translator( $user ) ), $this->tenant );
+                    Ai::limited( fn() => Resource::translatePage( $this->id, $this->lang, $user, Ai::translator( $user ) ), $this->tenant );
                 } finally {
                     $previous ? Auth::setUser( $previous ) : Auth::forgetUser();
                 }

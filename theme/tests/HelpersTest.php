@@ -11,7 +11,7 @@ class HelpersTest extends CoreTestAbstract
 {
     public function testCms()
     {
-        $page = new \Aimeos\Cms\Models\Page( ['path' => 'blog'] );
+        $page = new \Aimeos\Cms\Models\PageView( ['path' => 'blog'] );
 
         $this->assertEquals( 'blog', cms( $page, 'path' ) );
     }
@@ -29,7 +29,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsAssetKeepsPublicAndRemoteFileUrls()
     {
-        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id'] );
         $public = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'public', 'path' => 'cms/test/public.pdf',
             'previews' => [500 => 'cms/test/public.webp'],
@@ -47,18 +47,18 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsconfig()
     {
-        $root = new \Aimeos\Cms\Models\Page();
+        $root = new \Aimeos\Cms\Models\PageView();
         $root->setRawAttributes( ['config' => json_encode( [
             'website' => ['data' => ['title' => 'Root website']],
             'restaurant' => ['data' => ['name' => 'Root restaurant']],
         ] )] );
 
-        $parent = new \Aimeos\Cms\Models\Page();
+        $parent = new \Aimeos\Cms\Models\PageView();
         $parent->setRawAttributes( ['config' => json_encode( [
             'website' => ['data' => ['title' => 'Parent website']],
         ] )] );
 
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $page->setRawAttributes( ['config' => json_encode( [
             'website' => ['data' => ['title' => '   ']],
         ] )] );
@@ -73,7 +73,7 @@ class HelpersTest extends CoreTestAbstract
     public function testCmsAssetSignsPrivateFileForRestrictedRender()
     {
         config( ['cms.disks.private.ttl' => 120] );
-        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id'] );
         $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
         ] );
@@ -93,7 +93,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsAssetDoesNotSignPrivateFileOutsideRestrictedRender()
     {
-        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id'] );
         $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
         ] );
@@ -108,7 +108,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsSrcset()
     {
-        $page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id'] );
+        $page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id'] );
         $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
             'id' => 'file-id', 'disk' => 'public',
             'path' => 'not/exists.jpg', 'previews' => [1 => 'not/exists.jpg'],
@@ -127,7 +127,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmstheme()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
 
         $this->assertStringStartsWith( 'http://localhost/vendor/cms/theme/hero.css', cmstheme( $page, 'hero.css' ) );
     }
@@ -135,7 +135,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsthemeWithTheme()
     {
-        $page = new \Aimeos\Cms\Models\Page( ['theme' => 'notexist'] );
+        $page = new \Aimeos\Cms\Models\PageView( ['theme' => 'notexist'] );
 
         $this->assertStringStartsWith( 'http://localhost/vendor/cms/theme/hero.css', cmstheme( $page, 'hero.css' ) );
     }
@@ -165,7 +165,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviews()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $item = (object) ['type' => 'heading'];
 
         $views = cmsviews( $page, $item );
@@ -178,7 +178,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviewsWithTheme()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $page->theme = 'mytheme';
         $item = (object) ['type' => 'mytheme::card'];
 
@@ -190,7 +190,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviewsIgnoresPageThemeForNamespacedType()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $page->theme = 'cms';
         $item = (object) ['type' => 'style::hero'];
 
@@ -202,7 +202,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviewsWithPageThemeOverride()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $page->theme = 'mytheme';
         $item = (object) ['type' => 'hero'];
 
@@ -214,7 +214,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviewsIncludesMissingPageThemeFallback()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
         $page->theme = 'missingtheme';
         $item = (object) ['type' => 'hero'];
 
@@ -226,7 +226,7 @@ class HelpersTest extends CoreTestAbstract
 
     public function testCmsviewsNoType()
     {
-        $page = new \Aimeos\Cms\Models\Page();
+        $page = new \Aimeos\Cms\Models\PageView();
 
         $this->assertEquals( ['cms::invalid'], cmsviews( $page, (object) [] ) );
     }

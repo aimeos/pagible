@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Validation;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -55,9 +55,9 @@ class AddPage extends Tool
 
         $pid = $v['parent_id'] ?? null;
 
-        /** @var Page|null $parent */
+        /** @var PageView|null $parent */
         $parent = $pid
-            ? Page::withTrashed()
+            ? PageView::withTrashed()
                 ->select( 'id', 'tenant_id', 'latest_id' )
                 ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] )
                 ->find( $pid )

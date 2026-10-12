@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -67,10 +67,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the about page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAbout( Page $home ) : static
+    protected function addAbout( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -125,10 +125,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the contact page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addContact( Page $home ) : static
+    protected function addContact( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -169,10 +169,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the legal information page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addLegal( Page $home ) : static
+    protected function addLegal( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -194,10 +194,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the privacy policy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -219,10 +219,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the projects page and its project pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addProjects( Page $home ) : static
+    protected function addProjects( PageView $home ) : static
     {
         $projects = $this->projects( $home );
 
@@ -296,10 +296,10 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the services page and the service pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addServices( Page $home ) : static
+    protected function addServices( PageView $home ) : static
     {
         $services = $this->page( [
             'lang' => 'en',
@@ -407,9 +407,9 @@ class SolidDemo extends AbstractDemo
     /**
      * Creates the Courseline home page and returns it.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -566,10 +566,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -644,7 +644,7 @@ SVG;
     /**
      * Creates a project page below the projects page.
      *
-     * @param Page $parent Projects page
+     * @param PageView $parent Projects page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -653,10 +653,10 @@ SVG;
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $phases Build phases
      * @param array<int, string> $photos PHOTOS keys of the slideshow images
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function project( Page $parent, array $data, string $title, string $text, string $cover,
-        array $compare, array $facts, array $phases, array $photos ) : Page
+    protected function project( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $compare, array $facts, array $phases, array $photos ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',
@@ -697,10 +697,10 @@ SVG;
     /**
      * Creates the projects overview page and returns it.
      *
-     * @param Page $home Home page
-     * @return Page Projects page
+     * @param PageView $home Home page
+     * @return PageView Projects page
      */
-    protected function projects( Page $home ) : Page
+    protected function projects( PageView $home ) : PageView
     {
         return $this->page( [
             'id' => $this->projectsId,
@@ -729,17 +729,17 @@ SVG;
     /**
      * Creates a service page below the services page.
      *
-     * @param Page $parent Services page
+     * @param PageView $parent Services page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Hero headline
      * @param string $hero PHOTOS key of the hero image
      * @param string $image PHOTOS key of the text image
      * @param string $text Service description
      * @param array<int, array<string, string>> $steps What is included
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function service( Page $parent, array $data, string $title, string $hero, string $image,
-        string $text, array $steps ) : Page
+    protected function service( PageView $parent, array $data, string $title, string $hero, string $image,
+        string $text, array $steps ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',

@@ -971,7 +971,7 @@ class BackupTest extends BackupTestAbstract
             'data' => json_encode( ['path' => 'cms/test/' . $id . '/file.pdf', 'description' => ['en' => 'see cms/test/'] ] ),
         ], 'cms_versions', [$id => ['disk' => 'public', 'paths' => []]] );
         $page = $command->row( [
-            'versionable_type' => \Aimeos\Cms\Models\Page::class,
+            'versionable_type' => \Aimeos\Cms\Models\PageVariant::class,
             'data' => json_encode( ['title' => 'cms/test/ docs'] ),
         ], 'cms_versions' );
 

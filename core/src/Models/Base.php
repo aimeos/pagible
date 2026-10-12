@@ -22,7 +22,7 @@ use Laravel\Scout\Searchable;
 
 
 /**
- * Base model for CMS entities (Page, Element, File)
+ * Base model for CMS entities (PageView, Element, File)
  *
  * Provides shared methods: DB connection, UUID generation, timestamps,
  * versioning relations, version cleanup, and pruning.

@@ -7,7 +7,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -18,10 +18,10 @@ use Illuminate\Support\Collection;
  */
 final class Navigation
 {
-    /** @var Collection<int, Page>|null */
+    /** @var Collection<int, PageView>|null */
     private ?Collection $ancestors = null;
 
-    /** @var array<int, Collection<int, Page>> */
+    /** @var array<int, Collection<int, PageView>> */
     private array $items = [];
 
     /** @var Collection<int, object{lang: string, url: string}&\stdClass>|null */
@@ -31,7 +31,7 @@ final class Navigation
      * Creates a request-local navigation view for a page and frontend user.
      */
     public function __construct(
-        private Page $page,
+        private PageView $page,
         private ?Authenticatable $user,
     ) {}
 
@@ -39,7 +39,7 @@ final class Navigation
     /**
      * Returns visible ancestors of the current page.
      *
-     * @return Collection<int, Page>
+     * @return Collection<int, PageView>
      */
     public function ancestors() : Collection
     {
@@ -51,7 +51,7 @@ final class Navigation
      * Returns and memoizes the visible navigation tree for a root level.
      *
      * @param int $level Zero-based ancestor level
-     * @return Collection<int, Page>
+     * @return Collection<int, PageView>
      */
     public function items( int $level = 0 ) : Collection
     {
@@ -61,7 +61,7 @@ final class Navigation
 
         $start = $this->ancestors()->concat( [$this->page] )->skip( $level )->first();
 
-        if( !$start instanceof Page ) {
+        if( !$start instanceof PageView ) {
             return $this->items[$level] = collect();
         }
 
@@ -117,7 +117,7 @@ final class Navigation
 
         $editor && $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
 
-        if( $lang !== '' && !Page::fallbackToSource() )
+        if( $lang !== '' && !PageView::fallbackToSource() )
         {
             // translations without visible variant are pruned in "hide" mode, so only the variants of the language are fetched (indexable)
             $query->language( $lang );
@@ -139,11 +139,11 @@ final class Navigation
      * Pages in their source language are shown instead if the "source" fallback is configured
      * and the source variant is visible. Otherwise, the page is hidden with its sub-pages.
      *
-     * @param Page $page Navigation item in the current or its source language
+     * @param PageView $page Navigation item in the current or its source language
      * @param int $status Status of the navigation item
      * @return bool TRUE if the page and its sub-pages are hidden, FALSE if not
      */
-    private function fallback( Page $page, int $status ) : bool
+    private function fallback( PageView $page, int $status ) : bool
     {
         $lang = (string) $this->page->lang;
 
@@ -151,7 +151,7 @@ final class Navigation
             return false;
         }
 
-        return !Page::fallbackToSource() || $status !== 1;
+        return !PageView::fallbackToSource() || $status !== 1;
     }
 
 
@@ -159,7 +159,7 @@ final class Navigation
      * Filters unpublished nodes and recursively prunes hidden branches.
      *
      * @param iterable<int, mixed> $items
-     * @return Collection<int, Page>
+     * @return Collection<int, PageView>
      */
     private function visible( iterable $items, bool $nested = false ) : Collection
     {
@@ -167,7 +167,7 @@ final class Navigation
 
         foreach( $items as $page )
         {
-            if( !$page instanceof Page ) {
+            if( !$page instanceof PageView ) {
                 continue;
             }
 

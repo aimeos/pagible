@@ -14,18 +14,13 @@ export default {
     // number of selected pages
     count: { type: Number, default: 0 },
     // languages checked when the dialog opens
-    langs: { type: Array, default: () => [] },
-    // number of pages matching the filter, NULL while unknown or if only the selected pages can be translated
-    total: { type: Number, default: null },
-    // the page list is limited by a filter or search term
-    filtered: { type: Boolean, default: false }
+    langs: { type: Array, default: () => [] }
   },
 
   emits: ['apply', 'update:modelValue'],
 
   data() {
     return {
-      all: false,
       checked: []
     }
   },
@@ -36,11 +31,6 @@ export default {
   },
 
   computed: {
-    // all pages are only offered if there are more than the selected ones
-    allowAll() {
-      return this.total !== null && this.total > this.count
-    },
-
     items() {
       return this.languages.available.map((code) => ({ code, name: this.languages.translate(code) }))
     }
@@ -52,7 +42,7 @@ export default {
         return
       }
 
-      this.$emit('apply', { langs: [...this.checked], all: this.all && this.allowAll })
+      this.$emit('apply', { langs: [...this.checked] })
       this.$emit('update:modelValue', false)
     }
   },
@@ -62,7 +52,6 @@ export default {
       immediate: true,
       handler(open) {
         if (open) {
-          this.all = false
           this.checked = this.langs.filter((code) => this.languages.available.includes(code))
         }
       }
@@ -94,23 +83,7 @@ export default {
       />
     </div>
 
-    <v-radio-group v-if="allowAll" v-model="all" class="translate-scope" hide-details>
-      <v-radio
-        :value="false"
-        :label="$ngettext('Selected page (%{num})', 'Selected pages (%{num})', count, { num: count })"
-        class="scope-selected"
-      />
-      <v-radio
-        :value="true"
-        :label="
-          filtered
-            ? $gettext('All pages matching the filter (%{num})', { num: total })
-            : $gettext('All pages (%{num})', { num: total })
-        "
-        class="scope-all"
-      />
-    </v-radio-group>
-    <p v-else class="hint">
+    <p class="hint">
       {{ $ngettext('%{num} page selected.', '%{num} pages selected.', count, { num: count }) }}
     </p>
 
@@ -140,10 +113,6 @@ export default {
 .langs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  margin-bottom: 16px;
-}
-
-.translate-scope {
   margin-bottom: 16px;
 }
 

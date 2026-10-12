@@ -7,34 +7,30 @@
 
 namespace Aimeos\Cms\Query;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 
 
 /**
- * Base query builder for the page facade
+ * Base query builder for the page view
  *
  * Pages are stored in two tables: cms_pages contains the tree structure and
  * cms_page_variants one row per page and language. The builder reads from the
- * cms_page_view view joining both tables, aliased "cms_pages", so existing
- * queries using unqualified or "cms_pages." qualified columns continue to
- * work. A condition added by the Variant scope selects the variant of each
- * page. The view is read-only, the Resource class writes the tree columns to
- * cms_pages and the language specific ones to cms_page_variants.
+ * cms_page_view view joining both tables and a condition added by the Variant
+ * scope selects the variant of each page. The view is read-only, the Page
+ * model writes the tree columns to cms_pages and the PageVariant model the
+ * language specific ones to cms_page_variants.
  */
 class PageBuilder extends Builder
 {
-    /** @var string Alias of the page view, the table name of the page model */
-    public const ALIAS = 'cms_pages';
-
     /** @var string Name of the view joining the pages and their variants */
     public const VIEW = 'cms_page_view';
 
     /** @var list<string> Columns stored in the cms_pages table */
     public const PAGE_COLUMNS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
 
-    /** @var array<string, string> Facade columns stored in the cms_page_variants table and their real names */
+    /** @var array<string, string> Page view columns stored in the cms_page_variants table and their real names */
     public const VARIANT_COLUMNS = [
         'variant_id' => 'id', 'lang' => 'lang', 'domain' => 'domain', 'path' => 'path', 'to' => 'to',
         'name' => 'name', 'title' => 'title', 'type' => 'type', 'theme' => 'theme', 'tag' => 'tag',
@@ -51,11 +47,45 @@ class PageBuilder extends Builder
 
 
     /**
+     * Returns the values of the page view columns stored in the cms_pages table.
+     *
+     * @param array<string, mixed> $values Column/value pairs of the page view
+     * @return array<string, mixed> Column/value pairs of the page
+     */
+    public static function pageValues( array $values ) : array
+    {
+        return array_intersect_key( $values, array_flip( [...self::PAGE_COLUMNS, ...self::SHARED_COLUMNS] ) );
+    }
+
+
+    /**
+     * Returns the values of the page view columns stored in the cms_page_variants table by their variant column names.
+     *
+     * @param array<string, mixed> $values Column/value pairs of the page view
+     * @param bool $shared TRUE to include the columns stored in both tables, e.g. the timestamps
+     * @return array<string, mixed> Column/value pairs of the variant
+     */
+    public static function variantValues( array $values, bool $shared = false ) : array
+    {
+        $result = [];
+
+        foreach( self::VARIANT_COLUMNS as $col => $name )
+        {
+            if( array_key_exists( $col, $values ) ) {
+                $result[$name] = $values[$col];
+            }
+        }
+
+        return $shared ? $result + array_intersect_key( $values, array_flip( self::SHARED_COLUMNS ) ) : $result;
+    }
+
+
+    /**
      * Set the table which the query is targeting.
      *
      * The variant condition only applies to the page view, so it's removed if another table
-     * is used. The nested set builds subqueries on the cms_pages table, e.g. for has('ancestors')
-     * or whereAncestorOf(), and the condition would refer to the page view row of the outer query.
+     * is used or the page view is aliased. The nested set builds subqueries on the page view, e.g. for
+     * has('ancestors') or whereAncestorOf(), and the condition would refer to the row of the outer query.
      *
      * @param \Closure|Builder|\Illuminate\Contracts\Database\Query\Expression|string $table
      * @param string|null $as
@@ -92,7 +122,7 @@ class PageBuilder extends Builder
             throw new \InvalidArgumentException( sprintf( 'Invalid page variant mode "%1$s"', $mode ) );
         }
 
-        $this->from( self::VIEW, self::ALIAS );
+        $this->from( self::VIEW );
         $this->variant = [$mode, $value, $trashed];
 
         return $this;
@@ -114,7 +144,7 @@ class PageBuilder extends Builder
         $this->wheres = self::withoutVariant( $this->wheres );
 
         [$mode, $value, $trashed] = $this->variant;
-        $col = fn( string $name ) => self::ALIAS . '.' . $name;
+        $col = fn( string $name ) => self::VIEW . '.' . $name;
         $cond = $this->forNestedWhere();
         $literal = $this->literal( $value );
 
@@ -133,18 +163,32 @@ class PageBuilder extends Builder
                 $visible = $mode === 'visible';
                 $trashed = $trashed && !$visible;
 
-                $cond->where( function( $q ) use ( $col, $literal, $visible, $trashed ) {
+                // variant of the language, for "visible" only if published and enabled
+                $exists = fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
+                    ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
+                    ->where( 'w.lang', '=', $literal )
+                    ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
+                    ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
+
+                // MariaDB uses a subclass of the MySQL grammar
+                if( ( $grammar = $this->getGrammar() ) instanceof \Illuminate\Database\Query\Grammars\MySqlGrammar )
+                {
+                    // MySQL reads all variants of each page for the OR condition below, the language
+                    // computed per page lets it look up the single variant by the unique index instead
+                    $sql = 'CASE WHEN EXISTS (' . $exists( $this->newQuery() )->toSql() . ') THEN ' . $literal->getValue( $grammar )
+                        . ' ELSE ' . $grammar->wrap( $col( 'source' ) ) . ' END';
+
+                    // @phpstan-ignore argument.type (built from quoted values and constant column names)
+                    $cond->where( $col( 'lang' ), '=', new Expression( $sql ) );
+                    break;
+                }
+
+                $cond->where( function( $q ) use ( $col, $literal, $visible, $exists ) {
                     $q->where( function( $q ) use ( $col, $literal, $visible ) {
                         $q->where( $col( 'lang' ), '=', $literal )
                             ->when( $visible, fn( $q ) => $q->where( $col( 'status' ), '<>', new Expression( '0' ) ) );
-                    } )->orWhere( function( $q ) use ( $col, $literal, $visible, $trashed ) {
-                        $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( function( $q ) use ( $col, $literal, $visible, $trashed ) {
-                            $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
-                                ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
-                                ->where( 'w.lang', '=', $literal )
-                                ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
-                                ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
-                        } );
+                    } )->orWhere( function( $q ) use ( $col, $exists ) {
+                        $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( $exists );
                     } );
                 } );
                 break;
@@ -172,7 +216,7 @@ class PageBuilder extends Builder
 
 
     /**
-     * The page view is read-only, pages are written by the Resource class.
+     * The page view is read-only, write pages using the Page and PageVariant models.
      *
      * @param mixed $id
      * @return int
@@ -184,7 +228,7 @@ class PageBuilder extends Builder
 
 
     /**
-     * The page view is read-only, pages are written by the Resource class.
+     * The page view is read-only, write pages using the Page and PageVariant models.
      *
      * @param array<int|string, mixed> $values
      * @return bool
@@ -196,7 +240,7 @@ class PageBuilder extends Builder
 
 
     /**
-     * The page view is read-only, pages are written by the Resource class.
+     * The page view is read-only, write pages using the Page and PageVariant models.
      *
      * @param array<string, mixed> $values
      * @param string|null $sequence
@@ -209,7 +253,7 @@ class PageBuilder extends Builder
 
 
     /**
-     * The page view is read-only, pages are written by the Resource class.
+     * The page view is read-only, write pages using the Page and PageVariant models.
      *
      * @param array<string, mixed> $values
      * @return int
@@ -246,7 +290,7 @@ class PageBuilder extends Builder
      */
     protected function readOnly() : never
     {
-        throw new \LogicException( Page::READONLY );
+        throw new \LogicException( PageView::READONLY );
     }
 
 

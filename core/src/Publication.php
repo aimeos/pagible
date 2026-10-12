@@ -11,7 +11,7 @@ use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\PageQuery;
@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\DB;
  */
 final class Publication
 {
+    use \Aimeos\Cms\Concerns\Pages;
+
     /** @var array<string, Element> */
     private array $elements = [];
 
@@ -60,12 +62,12 @@ final class Publication
             return;
         }
 
-        $previous = $model instanceof Page
+        $previous = $model instanceof PageView
             ? [(string) $model->domain, (string) $model->path]
             : null;
 
         $model->stage( $version );
-        $model instanceof Page ? Resource::updatePage( $model ) : $model->save();
+        $model instanceof PageView ? self::saveVariant( $model ) : $model->save();
 
         $version->published = true;
         $version->save();
@@ -90,7 +92,7 @@ final class Publication
         );
 
         // translations whose source changed need an update
-        Sync::markStale( array_filter( $this->models[Page::class] ?? [], fn( $item ) => $item instanceof Page ) );
+        Sync::markStale( array_filter( $this->models[PageView::class] ?? [], fn( $item ) => $item instanceof PageView ) );
 
         foreach( $this->models as $model => $items ) {
             // only the published variants of pages change
@@ -269,7 +271,7 @@ final class Publication
             $id = (string) $model->id;
             $versionId = (string) $version->id;
 
-            $previous = $model instanceof Page
+            $previous = $model instanceof PageView
                 ? [(string) $model->domain, (string) $model->path]
                 : null;
 
@@ -296,12 +298,12 @@ final class Publication
                     $row[$column] = $attributes[$column] ?? null;
                 }
 
-                if( $model instanceof Page ) {
+                if( $model instanceof PageView ) {
                     // published page data is stored in the page variant
-                    [$row, $columns] = self::variantRow( $model, $row, $columns );
+                    [$row, $columns] = self::variantUpdate( $model, $row, $columns );
                 }
 
-                $groups[$key]['table'] = $model instanceof Page ? 'cms_page_variants' : $model->getTable();
+                $groups[$key]['table'] = $model instanceof PageView ? 'cms_page_variants' : $model->getTable();
                 $groups[$key]['columns'] = $columns;
                 $groups[$key]['rows'][] = $row;
             }
@@ -313,7 +315,7 @@ final class Publication
 
             $this->track( $model, $version );
 
-            if( $previous && $model instanceof Page ) {
+            if( $previous && $model instanceof PageView ) {
                 self::invalidate( $model, ...$previous );
             }
         }
@@ -389,7 +391,7 @@ final class Publication
     /**
      * Invalidates the previous and current route of one changed page.
      */
-    private static function invalidate( Page $page, string $domain, string $path ) : void
+    private static function invalidate( PageView $page, string $domain, string $path ) : void
     {
         $currentDomain = (string) $page->domain;
         $currentPath = (string) $page->path;
@@ -448,7 +450,7 @@ final class Publication
             $query->addSelect( "cms_latest.{$column} AS pub_{$column}" );
         }
 
-        if( !$compact && $model === Page::class )
+        if( !$compact && $model === PageView::class )
         {
             $query->addSelect( [
                 'access_count' => $db->table( 'cms_page_access' )
@@ -473,7 +475,7 @@ final class Publication
             ] );
         }
 
-        if( $model === Page::class )
+        if( $model === PageView::class )
         {
             $query->addSelect( [
                 'pub_target_elements' => $first( 'cms_version_element', 'version_id', 'cms_latest.id' ),
@@ -538,7 +540,7 @@ final class Publication
                 /** @var string $relatedId */
                 $relatedId = $row->{$related};
 
-                Page::checkBulk( ++$this->work );
+                PageView::checkBulk( ++$this->work );
                 $this->refs[$versionId][$target][] = $relatedId;
             }
         }
@@ -861,7 +863,7 @@ final class Publication
         $versionId = (string) $version->id;
         $projection = ['version_id' => $versionId];
 
-        if( $model instanceof Page )
+        if( $model instanceof PageView )
         {
             $projection += $model->route( $version ) + ['lang' => (string) ( $version->data->lang ?? $model->lang )];
 
@@ -884,19 +886,22 @@ final class Publication
 
 
     /**
-     * Maps a page facade row to the row of its page variant.
+     * Maps a page view row to the row of its page variant.
      *
      * @param array<string, mixed> $row
      * @param array<string> $columns
      * @return array{0: array<string, mixed>, 1: array<string>} Variant row and columns
      */
-    private static function variantRow( Page $page, array $row, array $columns ) : array
+    private static function variantUpdate( PageView $page, array $row, array $columns ) : array
     {
-        [$pageRow, $variantRow] = Resource::splitPage( array_intersect_key( $row, array_flip( $columns ) ) );
+        $values = array_intersect_key( $row, array_flip( $columns ) );
+        $other = array_diff_key( $values, PageBuilder::VARIANT_COLUMNS, array_flip( PageBuilder::SHARED_COLUMNS ) );
 
-        if( $column = array_key_first( array_diff_key( $pageRow, array_flip( PageBuilder::SHARED_COLUMNS ) ) ) ) {
+        if( $column = array_key_first( $other ) ) {
             throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
         }
+
+        $variantRow = PageBuilder::variantValues( $values, true );
 
         return [['id' => $page->variant_id] + $variantRow, array_keys( $variantRow )];
     }

@@ -21,7 +21,7 @@ class DB
      * @var array<string, list<string>>
      */
     public const MODEL_COLUMNS = [
-        'cms_pages' => ['id', 'tenant_id', 'parent_id', 'latest_id', NestedSet::DEPTH, NestedSet::LFT, NestedSet::RGT],
+        'cms_page_view' => ['id', 'tenant_id', 'parent_id', 'latest_id', NestedSet::DEPTH, NestedSet::LFT, NestedSet::RGT],
         'cms_files' => ['id', 'tenant_id', 'latest_id', 'name', 'mime', 'path'],
         'cms_elements' => ['id', 'tenant_id', 'latest_id', 'type', 'name'],
     ];
@@ -35,7 +35,7 @@ class DB
      * For MySQL/MariaDB/SQL Server, uses virtual/computed column names instead of JSON paths.
      *
      * @param string $field Unqualified field name
-     * @param string $table Model table name (e.g., cms_pages)
+     * @param string $table Model table name (e.g., cms_page_view)
      * @param bool $isDraft Whether draft mode is active (default: true)
      * @param string $driver Database driver name (default: '')
      * @return string|null Qualified column name, or null to skip

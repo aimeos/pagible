@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,15 +38,15 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testEditorPreviewLoadsImageFromDraft()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
-        $article = Page::where( 'tag', 'article' )->firstOrFail();
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
 
         $fileId = $article->files()->pluck( 'cms_files.id' )->first();
         File::whereKey( $fileId )->update( ['disk' => 'private'] );
 
         // The article is an already-published blog page (page columns reflect the published
         // state; a draft save only writes a new version, not the page row).
-        Resource::updatePage( $article, ['type' => 'blog'] );
+        $article->variant->update( ['type' => 'blog'] );
 
         // Re-save the article as an unpublished draft. Validation::page populates the
         // per-element "files" list, which lands in the new latest version's aux.content.
@@ -76,9 +76,9 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testNewsLoadsDraftPagesByTypeWithoutArticleTag()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
-        $article = Page::where( 'tag', 'article' )->firstOrFail();
-        Resource::updatePage( $article, ['tag' => '', 'type' => 'blog'] );
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
+        $article->variant->update( ['tag' => '', 'type' => 'blog'] );
 
         Resource::savePage( $article->id, ['type' => 'news'], $this->user );
 
@@ -101,7 +101,7 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testStoresCurrentPaginationPageOnRequest()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
         $request = Request::create( '/blog', 'GET', ['p' => 2] );
         $request->setUserResolver( fn() => null );
         $this->app->instance( 'request', $request );
@@ -113,7 +113,7 @@ class BlogActionTest extends ThemeTestAbstract
     }
 
 
-    protected function item( Page $page ) : object
+    protected function item( PageView $page ) : object
     {
         return (object) ['data' => (object) [
             'order' => '-id',

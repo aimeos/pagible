@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\CounselDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,11 +33,10 @@ class CounselDemoTest extends ThemeTestAbstract
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'counsel::firm'}->data->{'call-button'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -55,13 +54,13 @@ class CounselDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $insights = Page::where( 'path', 'insights' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $insights = PageView::where( 'path', 'insights' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $insights->id ) );
-        $this->assertSame( 8, Page::where( 'path', 'practice-areas' )->firstOrFail()->children()->count() );
-        $this->assertSame( 'counsel', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 8, PageView::where( 'path', 'practice-areas' )->firstOrFail()->children()->count() );
+        $this->assertSame( 'counsel', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

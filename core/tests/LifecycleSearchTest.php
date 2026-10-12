@@ -11,7 +11,7 @@ use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Database\Seeders\TestSeeder;
@@ -115,11 +115,11 @@ class LifecycleSearchTest extends CoreTestAbstract
 
         $this->assertTrue( $this->engine->document( Element::class )['published'] ?? false );
 
-        $page = Page::query()->where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::query()->where( 'path', 'hidden' )->firstOrFail();
         Resource::savePage( (string) $page->id, ['title' => 'Publish search test'], $this->user );
-        Publication::publish( Page::class, [(string) $page->id], $this->user );
+        Publication::publish( PageView::class, [(string) $page->id], $this->user );
 
-        $this->assertTrue( $this->engine->document( Page::class )['published'] ?? false );
+        $this->assertTrue( $this->engine->document( PageView::class )['published'] ?? false );
     }
 
 
@@ -156,12 +156,12 @@ class LifecycleSearchTest extends CoreTestAbstract
 
 class LifecycleSearchEngineSpy extends NullEngine
 {
-    /** @var array<class-string<Element|File|Page>, array<string, mixed>> */
+    /** @var array<class-string<Element|File|PageView>, array<string, mixed>> */
     public array $documents = [];
 
 
     /**
-     * @param class-string<Element|File|Page> $model
+     * @param class-string<Element|File|PageView> $model
      * @return array<string, mixed>|null
      */
     public function document( string $model ) : ?array
@@ -170,7 +170,7 @@ class LifecycleSearchEngineSpy extends NullEngine
     }
 
 
-    /** @param \Illuminate\Database\Eloquent\Collection<int, Element|File|Page> $models */
+    /** @param \Illuminate\Database\Eloquent\Collection<int, Element|File|PageView> $models */
     public function update( $models ) : void
     {
         foreach( $models as $model ) {

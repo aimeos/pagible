@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
@@ -135,7 +135,7 @@ trait Broadcasts
         }
 
         // page variants share the page ID, so each event contains the variants of one language only
-        $groups = $first instanceof Page
+        $groups = $first instanceof PageView
             ? $items->groupBy( fn( $item ) => (string) $item->getAttribute( 'lang' ) )
             : collect( [$items] );
 
@@ -156,12 +156,12 @@ trait Broadcasts
                     }
 
                     // lifecycle events of whole pages have no language, only those of single page variants
-                    if( $item instanceof Page && !in_array( $action, ['dropped', 'restored', 'purged'], true ) ) {
+                    if( $item instanceof PageView && !in_array( $action, ['dropped', 'restored', 'purged'], true ) ) {
                         $langs[$id] = (string) $item->lang;
                     }
                 }
 
-                static::announceBulk( strtolower( class_basename( $first ) ), $ids, $latest, $data, $editor, $action, $versions, $langs );
+                static::announceBulk( $first::PERM, $ids, $latest, $data, $editor, $action, $versions, $langs );
             }
         }
     }
@@ -201,12 +201,12 @@ trait Broadcasts
         // Lifecycle changes only alter list metadata, page routes remain because the audit listener records them
         $data = match( true ) {
             !in_array( $action, ['dropped', 'purged', 'restored'], true ) => (array) $version->data,
-            $this instanceof Page => $this->route( $version ),
+            $this instanceof PageView => $this->route( $version ),
             default => [],
         };
 
         return [
-            'contentType' => strtolower( class_basename( $this ) ),
+            'contentType' => static::PERM,
             'id' => $id,
             'latest_id' => $latestId,
             'editor' => is_string( $editor ) ? $editor : Utils::editor( $editor ),

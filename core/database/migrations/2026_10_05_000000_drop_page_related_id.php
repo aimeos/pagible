@@ -17,14 +17,6 @@ return new class extends Migration
 {
     public function down(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
-
-        if( !$schema->hasColumn( 'cms_pages', 'related_id' ) ) {
-            $schema->table( 'cms_pages', function( Blueprint $table ) {
-                $table->uuid( 'related_id' )->nullable();
-                $table->index( ['related_id', 'tenant_id'] );
-            } );
-        }
     }
 
 

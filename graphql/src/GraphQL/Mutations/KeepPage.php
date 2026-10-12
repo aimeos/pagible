@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
@@ -27,7 +27,7 @@ final class KeepPage
         }
 
         return Resource::restore(
-            Page::class,
+            PageView::class,
             $args['id'],
             Auth::user(),
             array_keys( $info?->getFieldSelection( 1 ) ?? [] ),

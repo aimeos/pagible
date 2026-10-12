@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\ManeDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,11 +33,10 @@ class ManeDemoTest extends ThemeTestAbstract
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'mane::salon'}->data->{'action-bar'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -45,12 +44,12 @@ class ManeDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $tips = Page::where( 'path', 'hair-tips' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $tips = PageView::where( 'path', 'hair-tips' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $tips->id ) );
-        $this->assertSame( 'mane', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'mane', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

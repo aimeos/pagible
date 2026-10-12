@@ -6,7 +6,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,7 +45,7 @@ class CashierProduct
             abort( 403 );
         }
 
-        $page = Page::query()
+        $page = PageView::query()
             ->when( $lang, fn( $query ) => $query->language( (string) $lang ) )
             ->when( $domain !== null, fn( $query ) => $query->whereIn( $query->qualifyColumn( 'domain' ), ['', mb_strtolower( (string) $domain )] ) )
             ->whereIn( 'status', [1, 2] )
@@ -93,7 +93,7 @@ class CashierProduct
     /**
      * Returns pricing data from an inline or referenced published element.
      */
-    private function pricing( Page $page, string $elementId ) : object
+    private function pricing( PageView $page, string $elementId ) : object
     {
         foreach( (array) $page->content as $item )
         {

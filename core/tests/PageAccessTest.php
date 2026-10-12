@@ -11,7 +11,9 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Query\PageBuilder;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
@@ -58,7 +60,7 @@ class PageAccessTest extends CoreTestAbstract
 
         try {
             $connection->setQueryGrammar( new SqlServerGrammar( $connection ) );
-            $sql = strtolower( Page::query()->select( 'id' )->withAccess( null )->toSql() );
+            $sql = strtolower( PageView::query()->select( 'id' )->withAccess( null )->toSql() );
         } finally {
             $connection->setQueryGrammar( $grammar );
         }
@@ -70,7 +72,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testEmptyAccessValueListsRequireAuthentication(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->assertSame( 1, PageAccess::set( [$page->id], [] ) );
         $this->assertSame( '', PageAccess::where( 'page_id', $page->id )->firstOrFail()->value );
@@ -81,7 +83,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testDatabaseRejectsAccessOwnedByAnotherTenant(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->expectException( QueryException::class );
 
@@ -98,7 +100,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionRequiresAvailableAccessConfiguration(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         Access::using( null );
 
         try {
@@ -115,7 +117,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionRequiresPageAccessPermissionForUsers(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => ['page:publish', 'access:view']] );
 
         try {
@@ -133,7 +135,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionsCanBeReleasedWhenAccessIsUnavailable(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
         Access::using( null );
 
@@ -144,7 +146,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRejectsMoreThanTwoHundredFiftyAccessValues(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $values = array_map( fn( $value ) => 'value-' . $value, range( 1, 251 ) );
 
         $this->expectException( Exception::class );
@@ -156,7 +158,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictsAndReleasesPageDatabaseFirst(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->assertSame( 1, PageAccess::set( [$page->id], [' beta ', 'alpha', 'alpha'] ) );
 
@@ -176,7 +178,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRefreshesExternalPageIndex(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $search = $this->searchEngine();
 
         PageAccess::set( [$page->id], ['alpha'] );
@@ -194,7 +196,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testExternalPageIndexRefreshIsQueuedAfterCommit(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $this->searchEngine();
         config( ['scout.queue' => true] );
         Queue::fake();
@@ -202,14 +204,14 @@ class PageAccessTest extends CoreTestAbstract
         PageAccess::set( [$page->id], [] );
 
         Queue::assertPushed( IndexModels::class, fn( IndexModels $job ) =>
-            $job->model === Page::class && $job->ids === [$page->id] && $job->tenant === 'test'
+            $job->model === PageView::class && $job->ids === [$page->id] && $job->tenant === 'test'
         );
     }
 
 
     public function testCmsPageIndexRefreshIsNotQueued(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
@@ -226,7 +228,7 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->searchEngine();
         Queue::fake();
-        Scout::reindex( Page::class, $ids );
+        Scout::reindex( PageView::class, $ids );
 
         $jobs = Queue::pushed( IndexModels::class );
         $this->assertCount( 3, $jobs );
@@ -238,17 +240,20 @@ class PageAccessTest extends CoreTestAbstract
     {
         \Aimeos\Cms\Tenancy::$callback = null;
         \Aimeos\Cms\Tenancy::set( '' );
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'No tenancy',
             'title' => 'No tenancy',
             'path' => 'no-tenancy',
             'status' => 1,
             'editor' => 'test',
-        ] ) );
+        ] )->view;
         $search = $this->searchEngine();
 
-        ( new IndexModels( Page::class, [$page->id], '' ) )->handle();
+        ( new IndexModels( PageView::class, [$page->id], '' ) )->handle();
 
         $this->assertSame( '', \Aimeos\Cms\Tenancy::value() );
         $this->assertSame( [[$page->id]], $search->updates );
@@ -257,8 +262,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testExternalPageIndexIsNotUpdatedAfterOuterRollback(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $public = PageView::where( 'path', 'blog' )->firstOrFail();
         $search = $this->searchEngine();
         $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
 
@@ -278,7 +283,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testExternalPageIndexIsUpdatedAfterOuterCommit(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $search = $this->searchEngine();
         $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
 
@@ -295,8 +300,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testInvalidatesRoutesAfterDatabaseChanges(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $public = PageView::where( 'path', 'blog' )->firstOrFail();
         PageAccess::set( [$page->id, $public->id], [] );
 
         $this->assertSame( 2, PageAccess::whereIn( 'page_id', [$page->id, $public->id] )->count() );
@@ -312,7 +317,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testSubtreeDoesNotAcquirePageTreeLock(): void
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
 
         Cache::shouldReceive( 'lock' )->never();
 
@@ -322,8 +327,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testIdempotentAccessChangesHaveNoSideEffects(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $public = PageView::where( 'path', 'blog' )->firstOrFail();
         $search = $this->searchEngine();
 
         $this->assertSame( 1, PageAccess::set( [$page->id], ['member'] ) );
@@ -338,8 +343,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testMixedAccessChangesOnlyInvalidateAndReindexChangedPages(): void
     {
-        $restricted = Page::where( 'path', 'hidden' )->firstOrFail();
-        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $restricted = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $public = PageView::where( 'path', 'blog' )->firstOrFail();
         $search = $this->searchEngine();
 
         PageAccess::set( [$restricted->id], ['member'] );
@@ -354,7 +359,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionReplacesAllAccessRows(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         PageAccess::set( [$page->id], ['alpha', 'beta'] );
         PageAccess::set( [$page->id], ['gamma'] );
@@ -368,7 +373,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictionRetryReplacesMoreThanOneChunk(): void
     {
-        $template = (array) Page::where( 'path', 'hidden' )->toBase()->first();
+        $template = (array) PageView::where( 'path', 'hidden' )->toBase()->first();
         $ids = $rows = [];
 
         for( $i = 0; $i <= PageAccess::CHUNK_SIZE; $i++ )
@@ -385,7 +390,7 @@ class PageAccessTest extends CoreTestAbstract
         }
 
         foreach( array_chunk( $rows, 50 ) as $chunk ) {
-            Resource::insertPages( $chunk );
+            $this->insertViewRows( $chunk );
         }
 
         $this->assertCount( PageAccess::CHUNK_SIZE + 1, $ids );
@@ -413,7 +418,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRejectsMoreThanOneThousandAccessAssignments(): void
     {
-        $ids = Page::query()->limit( 5 )->pluck( 'id' )->map( strval(...) )->all();
+        $ids = PageView::query()->limit( 5 )->pluck( 'id' )->map( strval(...) )->all();
         $values = array_map( fn( int $value ) => 'access-' . $value, range( 1, 250 ) );
         Access::using( fn() => $values );
 
@@ -426,8 +431,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testConsumesAllIdsBeforeApplyingSideEffects(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $second = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $second = PageView::where( 'path', 'blog' )->firstOrFail();
         $search = $this->searchEngine();
 
         $ids = function() use ( $page, $second, $search ) {
@@ -448,7 +453,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testGenericAncestorsUseOneQuery(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         DB::flushQueryLog();
         DB::enableQueryLog();
 
@@ -460,7 +465,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testSubtreeBulkOperationUsesConstantQueryCount(): void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         DB::flushQueryLog();
         DB::enableQueryLog();
 
@@ -468,7 +473,7 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->assertCount( 5, DB::getQueryLog() );
 
-        $count = Page::query()
+        $count = PageView::query()
             ->where( \Aimeos\Nestedset\NestedSet::LFT, '>=', $root->getLft() )
             ->where( \Aimeos\Nestedset\NestedSet::RGT, '<=', $root->getRgt() )
             ->count();
@@ -480,8 +485,8 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testSubtreeOperationRefreshesStaleRootBounds(): void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
-        $count = Page::query()
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $count = PageView::query()
             ->where( \Aimeos\Nestedset\NestedSet::LFT, '>=', $root->getLft() )
             ->where( \Aimeos\Nestedset\NestedSet::RGT, '<=', $root->getRgt() )
             ->count();
@@ -496,7 +501,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRetryDoesNotInvalidateOrReindex(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
         $search = $this->searchEngine();
         $this->invalidator->reset();
@@ -509,7 +514,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRejectsUnknownAccessValues(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Unknown frontend access value "unknown".' );
@@ -520,7 +525,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testRestrictSubtreeDoesNotFindForeignTenantRoot(): void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( 'other' ) );
 
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
@@ -531,7 +536,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testReleaseSubtreeDoesNotFindForeignTenantRoot(): void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         app()->instance( \Aimeos\Cms\Tenancy::class, new \Aimeos\Cms\Tenancy( 'other' ) );
 
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
@@ -542,14 +547,14 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testAccessScopeTreatsUsersFromAnotherTenantAsGuests(): void
     {
-        $restricted = Page::where( 'path', 'hidden' )->firstOrFail();
-        $public = Page::where( 'path', 'blog' )->firstOrFail();
+        $restricted = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $public = PageView::where( 'path', 'blog' )->firstOrFail();
         PageAccess::set( [$restricted->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'other';
 
-        $pages = Page::query()->access( $user )->whereKey( [$restricted->id, $public->id] )->pluck( 'id' );
+        $pages = PageView::query()->access( $user )->whereKey( [$restricted->id, $public->id] )->pluck( 'id' );
 
         $this->assertNotContains( $restricted->id, $pages );
         $this->assertContains( $public->id, $pages );
@@ -577,6 +582,19 @@ class PageAccessTest extends CoreTestAbstract
 
         return $engine;
     }
+
+
+    /**
+     * Inserts page rows in the format of the page view into the page and variant tables.
+     *
+     * @param array<int, array<string, mixed>> $rows Raw rows of the page view
+     */
+    protected function insertViewRows( array $rows ) : void
+    {
+        Page::query()->insert( array_map( fn( $row ) => PageBuilder::pageValues( $row ), $rows ) );
+        PageVariant::query()->insert( array_map( fn( $row ) => PageBuilder::variantValues( $row, true )
+            + ['page_id' => $row['id'], 'tenant_id' => $row['tenant_id']], $rows ) );
+    }
 }
 
 class SearchEngineSpy extends NullEngine
@@ -586,10 +604,11 @@ class SearchEngineSpy extends NullEngine
 
 
     /**
-     * @param \Illuminate\Database\Eloquent\Collection<int, Page> $models
+     * @param \Illuminate\Database\Eloquent\Collection<int, PageView> $models
      */
     public function update( $models ) : void
     {
         $this->updates[] = $models->modelKeys();
     }
+
 }

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\PawsDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -33,11 +33,10 @@ class PawsDemoTest extends ThemeTestAbstract
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'paws::clinic'}->data->{'call-button'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -45,13 +44,13 @@ class PawsDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $guides = Page::where( 'path', 'guides' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $guides = PageView::where( 'path', 'guides' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $guides->id ) );
-        $this->assertSame( 9, Page::where( 'path', 'services' )->firstOrFail()->children()->count() );
-        $this->assertSame( 'paws', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 9, PageView::where( 'path', 'services' )->firstOrFail()->children()->count() );
+        $this->assertSame( 'paws', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

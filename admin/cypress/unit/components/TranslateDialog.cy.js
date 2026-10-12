@@ -24,9 +24,8 @@ describe('TranslateDialog', () => {
 
     cy.get('.translate-lang[data-lang="de"] input').should('be.checked')
     cy.get('.translate-lang[data-lang="fr"] input').should('not.be.checked').check()
-    cy.get('.translate-scope').should('not.exist')
     cy.get('.btn-translate').click()
-    cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de', 'fr'], all: false })
+    cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de', 'fr'] })
   })
 
   it('disables translating without a language', () => {
@@ -34,13 +33,5 @@ describe('TranslateDialog', () => {
 
     cy.get('.translate-lang input:checked').should('have.length', 0)
     cy.get('.btn-translate').should('be.disabled')
-  })
-
-  it('offers all pages matching the filter if there are more than selected', () => {
-    mountDialog({ total: 120, filtered: true })
-
-    cy.get('.translate-scope .scope-all').should('contain', 'All pages matching the filter (120)').find('input').check({ force: true })
-    cy.get('.btn-translate').click()
-    cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de'], all: true })
   })
 })

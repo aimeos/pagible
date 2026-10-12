@@ -34,6 +34,8 @@ use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
@@ -680,7 +682,7 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['path' => $paths[2], 'previews' => [500 => $paths[3]]],
         ] );
 
-        $pages = Page::orderBy( 'id' )->limit( 2 )->get();
+        $pages = PageView::orderBy( 'id' )->limit( 2 )->get();
         $element = Element::firstOrFail();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->updateOrInsert( [
@@ -989,7 +991,7 @@ class ResourceTest extends CoreTestAbstract
         }
 
         Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
             'variant_id' => $page->variant_id, 'file_id' => $files[0]->id,
         ] );
@@ -1158,7 +1160,7 @@ class ResourceTest extends CoreTestAbstract
         $this->assertEquals( 'Renamed', $saved['data']['title'] );
         // the missing id was attempted but not saved, so it is counted as failed
         $this->assertSame( 1, $saved['failed'] );
-        $this->assertEquals( 'Renamed', ( (array) Page::findOrFail( $page->id )->latest->data )['title'] );
+        $this->assertEquals( 'Renamed', ( (array) PageView::findOrFail( $page->id )->latest->data )['title'] );
     }
 
 
@@ -1173,8 +1175,8 @@ class ResourceTest extends CoreTestAbstract
 
         $this->assertSame( [$good->id, $bad->id], $saved['ids'] );
         $this->assertSame( 0, $saved['failed'] );
-        $this->assertSame( 'Renamed', Page::findOrFail( $good->id )->latest->data->title );
-        $bad = Page::findOrFail( $bad->id );
+        $this->assertSame( 'Renamed', PageView::findOrFail( $good->id )->latest->data->title );
+        $bad = PageView::findOrFail( $bad->id );
         $this->assertSame( 'Renamed', $bad->latest->data->title );
         $this->assertTrue( DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_version_file' )
             ->where( 'version_id', $bad->latest_id )->where( 'file_id', $file->id )->exists() );
@@ -1210,7 +1212,7 @@ class ResourceTest extends CoreTestAbstract
             'content' => [['type' => 'heading', 'data' => ['title' => 'No image']]],
         ], $this->user );
 
-        $this->assertNotContains( $file->id, Page::findOrFail( $page->id )->latest->files()->pluck( 'cms_files.id' )->all() );
+        $this->assertNotContains( $file->id, PageView::findOrFail( $page->id )->latest->files()->pluck( 'cms_files.id' )->all() );
     }
 
 
@@ -1322,7 +1324,7 @@ class ResourceTest extends CoreTestAbstract
         $saved = Resource::bulkPage( [$a1->id, $p->id, $q->id], ['title' => 'Renamed'], $this->user, descendants: true );
 
         $this->assertSame( [$p->id, $a->id, $a1->id, $q->id], $saved['ids'] );
-        $this->assertSame( 2, Page::findOrFail( $a1->id )->versions()->count() );
+        $this->assertSame( 2, PageView::findOrFail( $a1->id )->versions()->count() );
     }
 
 
@@ -1336,7 +1338,7 @@ class ResourceTest extends CoreTestAbstract
         Resource::bulkPage( [$page->id], ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class
             && $job->ids === [$page->variant_id] && $job->keys );
     }
 
@@ -1350,7 +1352,7 @@ class ResourceTest extends CoreTestAbstract
         Resource::bulkPage( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( PruneVersions::class, 1 );
-        Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === Page::class
+        Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === PageView::class
             && $job->ids === collect( $pages )->pluck( 'variant_id' )->sort()->values()->all() );
     }
 
@@ -1371,15 +1373,15 @@ class ResourceTest extends CoreTestAbstract
 
     public function testScoutQueueDefersModelLoading()
     {
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->expectsDatabaseQueryCount( 0 );
 
-        Scout::index( Page::class, [$page->id] );
+        Scout::index( PageView::class, [$page->id] );
 
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class && $job->ids === [$page->id] );
     }
 
 
@@ -1388,13 +1390,13 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Indexed']]] );
         $tenant = Tenancy::value();
         $loaded = [];
-        Page::retrieved( function( Page $page ) use ( &$loaded ) {
+        PageView::retrieved( function( PageView $page ) use ( &$loaded ) {
             $loaded[] = $page->tenant_id;
         } );
         $this->app->instance( Tenancy::class, new Tenancy( 'other' ) );
         config( ['scout.driver' => 'cms'] );
 
-        ( new IndexModels( Page::class, [$page->id], $tenant ) )->handle();
+        ( new IndexModels( PageView::class, [$page->id], $tenant ) )->handle();
 
         $this->assertSame( 'other', Tenancy::value() );
         $this->assertContains( $tenant, $loaded );
@@ -1550,7 +1552,7 @@ class ResourceTest extends CoreTestAbstract
         ]] );
         $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
         $versionIds = [$file->latest_id, $element->latest_id, $page->latest_id];
 
@@ -1635,7 +1637,7 @@ class ResourceTest extends CoreTestAbstract
             'cmsperms' => ['publisher', '!element:publish', '!file:publish'],
         ] );
 
-        Publication::publish( Page::class, [$page->id], $user );
+        Publication::publish( PageView::class, [$page->id], $user );
 
         $this->assertTrue( (bool) $page->latest->fresh()->published );
     }
@@ -1656,7 +1658,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user );
+            Publication::publish( PageView::class, [$page->id], $user );
             $this->fail( 'Expected the unpublished element dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1684,7 +1686,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user );
+            Publication::publish( PageView::class, [$page->id], $user );
             $this->fail( 'Expected the unpublished file dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1712,7 +1714,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Publication::publish( PageView::class, [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected the scheduled published element dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1739,7 +1741,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Publication::publish( PageView::class, [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected a mutable element dependency to require file publication rights' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1762,7 +1764,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Publication::publish( PageView::class, [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected the scheduled file dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1782,7 +1784,7 @@ class ResourceTest extends CoreTestAbstract
         Event::fake( [PageInvalidated::class] );
         $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
+        Publication::publish( PageView::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
 
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
@@ -1808,9 +1810,9 @@ class ResourceTest extends CoreTestAbstract
         $db->table( 'cms_page_file' )->insert( ['variant_id' => $page->variant_id, 'file_id' => $other->id] );
         $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
-        $this->assertSame( [$target->id], Page::findOrFail( $page->id )->files()->pluck( 'cms_files.id' )->all() );
+        $this->assertSame( [$target->id], PageView::findOrFail( $page->id )->files()->pluck( 'cms_files.id' )->all() );
     }
 
 
@@ -1821,7 +1823,7 @@ class ResourceTest extends CoreTestAbstract
         $page = Resource::savePage( $page->id, ['path' => 'changed-route'], $this->user );
         Event::fake( [PageInvalidated::class] );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
         Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
             $event->domain === $previous['domain']
@@ -1989,7 +1991,7 @@ class ResourceTest extends CoreTestAbstract
         ], $this->user, parent: (string) $pages[0]->id );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
+        Resource::drop( PageView::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
         foreach( collect( $pages )->groupBy( 'domain' ) as $domain => $items ) {
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
@@ -2015,7 +2017,7 @@ class ResourceTest extends CoreTestAbstract
         ], $this->user, parent: (string) $page->id );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::purge( Page::class, [$page->id], $this->user );
+        Resource::purge( PageView::class, [$page->id], $this->user );
 
         $pages = collect( [$page, $child] );
 
@@ -2034,11 +2036,11 @@ class ResourceTest extends CoreTestAbstract
     public function testPageLifecycleSkipsLargeColumns()
     {
         $actions = [
-            'drop' => fn( Page $page ) => Resource::drop( Page::class, [$page->id], $this->user, ['id'] ),
-            'purge' => fn( Page $page ) => Resource::purge( Page::class, [$page->id], $this->user, ['id'] ),
-            'restore' => function( Page $page ) {
-                Resource::trashPage( $page );
-                return Resource::restore( Page::class, [$page->id], $this->user, ['id'] );
+            'drop' => fn( PageView $page ) => Resource::drop( PageView::class, [$page->id], $this->user, ['id'] ),
+            'purge' => fn( PageView $page ) => Resource::purge( PageView::class, [$page->id], $this->user, ['id'] ),
+            'restore' => function( PageView $page ) {
+                $page->page->delete();
+                return Resource::restore( PageView::class, [$page->id], $this->user, ['id'] );
             },
         ];
 
@@ -2062,7 +2064,7 @@ class ResourceTest extends CoreTestAbstract
         ]]] );
         $publication = new Publication();
         $property = new \ReflectionProperty( Publication::class, 'work' );
-        $property->setValue( $publication, Page::MAX_BULK );
+        $property->setValue( $publication, PageView::MAX_BULK );
         $version = $page->latest()->firstOrFail();
         $this->expectsDatabaseQueryCount( 1 );
 
@@ -2118,7 +2120,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectExceptionMessage( 'No more than 1000 items' );
 
         Resource::bulkPage(
-            array_map( strval(...), range( 1, Page::MAX_BULK + 1 ) ),
+            array_map( strval(...), range( 1, PageView::MAX_BULK + 1 ) ),
             ['title' => 'Renamed'],
             $this->user,
         );
@@ -2430,7 +2432,7 @@ class ResourceTest extends CoreTestAbstract
     public function testReferenceLimit()
     {
         $method = new \ReflectionMethod( Resource::class, 'refs' );
-        $content = array_map( fn( $num ) => ['type' => 'reference', 'refid' => 'ref-' . $num], range( 1, Page::MAX_BULK + 1 ) );
+        $content = array_map( fn( $num ) => ['type' => 'reference', 'refid' => 'ref-' . $num], range( 1, PageView::MAX_BULK + 1 ) );
 
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'No more than 1000 items' );
@@ -2443,9 +2445,9 @@ class ResourceTest extends CoreTestAbstract
      * Creates a draft page below the root node with the given content.
      *
      * @param array<int, array<string, mixed>> $content Content blocks
-     * @return Page
+     * @return PageView
      */
-    protected function page( array $content ) : Page
+    protected function page( array $content ) : PageView
     {
         return Resource::addPage( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
@@ -2487,9 +2489,9 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 
@@ -2499,7 +2501,7 @@ class ResourceTest extends CoreTestAbstract
     protected function sharedPages( Element $element ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $row = (array) Page::where( 'id', $element->bypages()->value( 'id' ) )->toBase()->first();
+        $row = (array) PageView::where( 'id', $element->bypages()->value( 'id' ) )->toBase()->first();
         $rows = [];
 
         for( $i = 0; $i < 251; $i++ ) {
@@ -2510,8 +2512,21 @@ class ResourceTest extends CoreTestAbstract
         // SQL Server allows max. 2100 bound parameters per statement
         foreach( array_chunk( $rows, 50 ) as $chunk )
         {
-            Resource::insertPages( $chunk );
+            $this->insertViewRows( $chunk );
             $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['variant_id' => $row['variant_id'], 'element_id' => $element->id], $chunk ) );
         }
+    }
+
+
+    /**
+     * Inserts page rows in the format of the page view into the page and variant tables.
+     *
+     * @param array<int, array<string, mixed>> $rows Raw rows of the page view
+     */
+    protected function insertViewRows( array $rows ) : void
+    {
+        Page::query()->insert( array_map( fn( $row ) => PageBuilder::pageValues( $row ), $rows ) );
+        PageVariant::query()->insert( array_map( fn( $row ) => PageBuilder::variantValues( $row, true )
+            + ['page_id' => $row['id'], 'tenant_id' => $row['tenant_id']], $rows ) );
     }
 }

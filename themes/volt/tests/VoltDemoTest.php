@@ -7,8 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\VoltDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,13 +33,13 @@ class VoltDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $jobs = Page::where( 'path', 'jobs' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $jobs = PageView::where( 'path', 'jobs' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $jobs->id ) );
-        $this->assertSame( 6, Page::where( 'path', 'services' )->firstOrFail()->children()->count() );
-        $this->assertSame( 'volt', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 6, PageView::where( 'path', 'services' )->firstOrFail()->children()->count() );
+        $this->assertSame( 'volt', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 
@@ -76,11 +75,10 @@ class VoltDemoTest extends ThemeTestAbstract
 
     public function testCallButtonDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'volt::business'}->data->{'call-button'} = false;
-        $home->config = $config;
-        Resource::updatePage( $home );
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="call-button"', false );
     }

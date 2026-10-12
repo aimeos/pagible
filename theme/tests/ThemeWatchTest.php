@@ -12,7 +12,7 @@ use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Http\Middleware\Origin;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\PageCache;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
@@ -209,7 +209,7 @@ class ThemeWatchTest extends ThemeTestAbstract
         config( ['cms.theme.watch' => true, 'cms.theme.cache' => 'array'] );
         Event::fake( [Observed::class] );
 
-        $page = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
 
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )

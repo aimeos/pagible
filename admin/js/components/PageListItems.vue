@@ -51,7 +51,7 @@ import {
   useChangeStore
 } from '../stores'
 import { listBase, mutation, tally, useListShortcuts } from '../lists'
-import { pageVariants } from '../variants'
+import { pageVariants, translateNew } from '../variants'
 import { command } from '../shortcuts'
 import { debounce, safeParse, sanitize } from '../utils'
 import { setupEcho, listEcho } from '../echo'
@@ -147,9 +147,9 @@ const PAGE_FIELDS = `id
             created_at
           }`
 
-const ADD_VARIANT = gql`
+const ADD_PAGE_VARIANT = gql`
   mutation ($id: ID!, $lang: String!, $access: Boolean!) {
-    addVariant(id: $id, lang: $lang) {
+    addPageVariant(id: $id, lang: $lang) {
       ${PAGE_FIELDS}
     }
   }
@@ -189,16 +189,6 @@ const FETCH_PAGES = gql`
       paginatorInfo {
         currentPage
         lastPage
-      }
-    }
-  }
-`
-
-const COUNT_PAGES = gql`
-  query($filter: PageFilter, $publish: Publish, $lang: String) {
-    pages(filter: $filter, first: 1, trashed: WITHOUT, publish: $publish, lang: $lang) {
-      paginatorInfo {
-        total
       }
     }
   }
@@ -649,7 +639,8 @@ export default {
       })
     },
 
-    // adds an untranslated copy of the source variant in the current language
+    // adds an untranslated copy of the source variant in the current language, which is
+    // translated in the background if the user is allowed to translate pages
     createLang(stat) {
       if (!this.allowed('add') || !this.missing(stat.data)) {
         return
@@ -657,16 +648,21 @@ export default {
 
       return this.$apollo
         .mutate({
-          mutation: ADD_VARIANT,
+          mutation: ADD_PAGE_VARIANT,
           variables: { id: stat.data.id, lang: this.lang, access: this.user.can('page:access') }
         })
         .then((result) => {
-          if (!result.data.addVariant) {
-            throw new Error('No data in addVariant mutation result')
+          if (!result.data.addPageVariant) {
+            throw new Error('No data in addPageVariant mutation result')
           }
 
-          Object.assign(stat.data, this.hydrate(result.data.addVariant))
+          Object.assign(stat.data, this.hydrate(result.data.addPageVariant))
           this.invalidate(true)
+
+          // the untranslated copy stays if queueing its translation fails
+          return translateNew(this.$apollo, this.user, [stat.data.id], this.lang).catch((error) => {
+            this.messages.error(this.$gettext('Error translating page'), error, stat.data.id)
+          })
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error adding language'), error, stat.data.id)
@@ -991,28 +987,6 @@ export default {
       return Object.assign(filter, values)
     },
 
-    // filter of all pages matching the list filters independent of their position in the tree
-    filters() {
-      return {
-        filter: this.listFilter(this.filter.view === 'list' && this.term ? { any: this.term } : {}),
-        publish: this.filter.publish || null,
-        filterLang: this.lang
-      }
-    },
-
-    // number of pages matching the list filters which aren't in the trash
-    total() {
-      const { filter, publish } = this.filters()
-
-      return this.$apollo
-        .query({
-          query: COUNT_PAGES,
-          fetchPolicy: 'no-cache',
-          variables: { filter, publish, lang: this.lang }
-        })
-        .then((result) => result.data?.pages?.paginatorInfo?.total ?? null)
-    },
-
     // queries the pages matching the list filters and the given filter values
     pages(values, page, limit, sort, msg, trashed = null) {
       if (!this.allowed('view')) {
@@ -1279,18 +1253,28 @@ export default {
         return
       }
 
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_PAGES,
-          variables: {
-            id: ids,
-            input: input,
-            descendants: descendants,
-            lang: this.lang
+      const { lang: source, ...props } = input
+      const save = (input, lang) =>
+        this.$apollo
+          .mutate({
+            mutation: SAVE_PAGES,
+            variables: { id: ids, input: input, descendants: descendants, lang: lang }
+          })
+          .then((result) => result.data.bulkPage || {})
+
+      // the language is changed in the source variants, the other values in the shown variants
+      const saved = Object.keys(props).length ? save(props, this.lang) : Promise.resolve({})
+
+      return saved
+        .then((res) => {
+          if (source === undefined) {
+            return res
           }
+
+          // the list is reloaded after language changes, so only the failures are counted
+          return save({ lang: source }, null).then((src) => ({ ...res, failed: (res.failed || 0) + (src.failed || 0) }))
         })
-        .then((result) => {
-          const res = result.data.bulkPage || {}
+        .then((res) => {
           const ids = new Set(res.ids || [])
           // data/latest are JSON scalar strings; sanitize drops prototype-pollution keys
           const data = sanitize(safeParse(res.data))
@@ -1976,8 +1960,6 @@ export default {
     v-model="translateDialog"
     :count="translateItems.length"
     :langs="translateLangs"
-    :total="translateTotal"
-    :filtered="filtered"
     @apply="translateApply"
   />
 

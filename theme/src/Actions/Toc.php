@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Actions;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Http\Request;
 
 
@@ -17,11 +17,11 @@ class Toc
      * Returns a nested tree of heading elements after the TOC element.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Aimeos\Cms\Models\Page $page
+     * @param \Aimeos\Cms\Models\PageView $page
      * @param object $item
      * @return array<int, array{id: string, title: string, children: array<int, mixed>}> Nested heading tree
      */
-    public function __invoke( Request $request, Page $page, object $item ): array
+    public function __invoke( Request $request, PageView $page, object $item ): array
     {
         $headings = [];
         $found = false;

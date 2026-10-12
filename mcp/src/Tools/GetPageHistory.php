@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -40,8 +40,8 @@ class GetPageHistory extends Tool
             'id.required' => 'You must specify the page ID to get version history for.',
         ] );
 
-        /** @var Page $page */
-        $page = Page::withTrashed()->language( $v['lang'] ?? null, true )
+        /** @var PageView $page */
+        $page = PageView::withTrashed()->language( $v['lang'] ?? null, true )
             ->select( 'id', 'variant_id', 'tenant_id', 'lang', 'name' )->findOrFail( $v['id'] );
 
         $result = [];

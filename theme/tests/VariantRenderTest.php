@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Actions\Blog;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Publication;
@@ -138,8 +138,8 @@ class VariantRenderTest extends ThemeTestAbstract
     public function testBlogListsVariantsInPageLanguage()
     {
         $blog = $this->blog();
-        $article = Page::where( 'tag', 'article' )->firstOrFail();
-        Resource::updatePage( $article, ['type' => 'blog'] );
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
+        $article->variant->update( ['type' => 'blog'] );
 
         $deBlog = $this->variant( $blog, 'de', 'blog-de' );
         $item = (object) ['data' => (object) ['order' => '-id', 'limit' => 10]];
@@ -159,6 +159,21 @@ class VariantRenderTest extends ThemeTestAbstract
         $this->assertSame( 'de', $result->first()->lang );
         $this->assertSame( 'artikel', $result->first()->path );
 
+        // translated articles replace their source variants instead of being listed twice
+        config( ['cms.translate.fallback' => 'source'] );
+        $result = ( new Blog() )( $this->request(), $deBlog, $item );
+        $this->assertSame( 1, $result->total() );
+        $this->assertSame( 'artikel', $result->getCollection()->first()->path );
+
+        // disabled translations show the source variant to visitors
+        $german = PageView::language( 'de' )->findOrFail( $article->id );
+        $german->variant->update( ['status' => 0] );
+        $result = ( new Blog() )( $this->request(), $deBlog, $item );
+        $this->assertSame( 1, $result->total() );
+        $this->assertSame( $article->path, $result->getCollection()->first()->path );
+        $german->variant->update( ['status' => 1] );
+        config( ['cms.translate.fallback' => 'hide'] );
+
         // only pages of the current domain
         $deBlog->domain = 'other.tld';
         $this->assertCount( 0, ( new Blog() )( $this->request(), $deBlog, $item )->getCollection() );
@@ -167,7 +182,7 @@ class VariantRenderTest extends ThemeTestAbstract
 
     public function testNavigationFallback()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $deRoot = $this->variant( $root, 'de', 'start' );
 
         $names = fn() => ( new Navigation( $deRoot, null ) )->items()->pluck( 'name' )->all();
@@ -182,11 +197,11 @@ class VariantRenderTest extends ThemeTestAbstract
         $this->assertContains( 'Blog DE', $names() );
 
         // disabled translations are hidden like missing ones, including their sub-pages
-        $this->variant( Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail(), 'de', 'artikel', ['name' => 'Artikel DE'] );
+        $this->variant( PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail(), 'de', 'artikel', ['name' => 'Artikel DE'] );
         $this->assertContains( 'Artikel DE', ( new Navigation( $deRoot, null ) )->items()->first( fn( $p ) => $p->name === 'Blog DE' )?->children->pluck( 'name' )->all() ?? [] );
 
         Resource::savePage( $this->blog()->id, ['status' => 0], $this->user, lang: 'de' );
-        Publication::publish( Page::class, [$this->blog()->id], $this->user, lang: 'de' );
+        Publication::publish( PageView::class, [$this->blog()->id], $this->user, lang: 'de' );
         $this->assertNotContains( 'Blog DE', $names() );
         $this->assertNotContains( 'Blog', $names() );
         $this->assertNotContains( 'Artikel DE', $names() );
@@ -196,15 +211,15 @@ class VariantRenderTest extends ThemeTestAbstract
     public function testChildrenHideDisabled()
     {
         $blog = $this->blog();
-        $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+        $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
 
         $deBlog = $this->variant( $blog, 'de', 'blog-de' );
         $this->variant( $article, 'de', 'artikel', ['name' => 'Artikel DE'] );
 
         Resource::savePage( $article->id, ['status' => 0], $this->user, lang: 'de' );
-        Publication::publish( Page::class, [$article->id], $this->user, lang: 'de' );
+        Publication::publish( PageView::class, [$article->id], $this->user, lang: 'de' );
 
-        $names = fn() => Page::language( 'de' )->findOrFail( $blog->id )->children->pluck( 'name' )->all();
+        $names = fn() => PageView::language( 'de' )->findOrFail( $blog->id )->children->pluck( 'name' )->all();
 
         // disabled variants are hidden for visitors but shown to editors
         $this->assertNotContains( 'Artikel DE', $names() );
@@ -216,7 +231,7 @@ class VariantRenderTest extends ThemeTestAbstract
 
     public function testRobotsFromSourceRoot()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $this->variant( $root, 'de', 'start' );
 
         $config = fn( $text ) => ['robots-txt' => ['type' => 'robots-txt', 'data' => ['text' => $text], 'files' => []]];
@@ -243,9 +258,9 @@ class VariantRenderTest extends ThemeTestAbstract
     }
 
 
-    protected function blog() : Page
+    protected function blog() : PageView
     {
-        return Page::where( 'tag', 'blog' )->firstOrFail();
+        return PageView::where( 'tag', 'blog' )->firstOrFail();
     }
 
 
@@ -258,12 +273,12 @@ class VariantRenderTest extends ThemeTestAbstract
     }
 
 
-    protected function variant( Page $page, string $lang, string $path, array $input = [] ) : Page
+    protected function variant( PageView $page, string $lang, string $path, array $input = [] ) : PageView
     {
         Resource::addVariant( $page->id, $lang, $this->user );
         Resource::savePage( $page->id, ['path' => $path, 'status' => 1] + $input, $this->user, lang: $lang );
-        Publication::publish( Page::class, [$page->id], $this->user, lang: $lang );
+        Publication::publish( PageView::class, [$page->id], $this->user, lang: $lang );
 
-        return Page::language( $lang )->findOrFail( $page->id );
+        return PageView::language( $lang )->findOrFail( $page->id );
     }
 }

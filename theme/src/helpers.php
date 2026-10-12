@@ -63,12 +63,12 @@ if( !function_exists( 'cmsasset' ) )
      * Public Files keep their direct storage or remote URL. Private Files use
      * the access-controlled page asset route.
      *
-     * @param \Aimeos\Cms\Models\Page $page Page containing the File
+     * @param \Aimeos\Cms\Models\PageView $page Page containing the File
      * @param object|null $file File associated with the page
      * @param int|string|null $variant Preview width or preview path
      * @return string Public storage URL, remote URL, or page-aware private access URL
      */
-    function cmsasset( \Aimeos\Cms\Models\Page $page, ?object $file, int|string|null $variant = null ) : string
+    function cmsasset( \Aimeos\Cms\Models\PageView $page, ?object $file, int|string|null $variant = null ) : string
     {
         if( !$file ) {
             return '';
@@ -94,12 +94,12 @@ if( !function_exists( 'cmsconfig' ) )
     /**
      * Returns the nearest configuration value from the page or its ancestors.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param string $path Property path below "config", e.g. "website.data.title"
      * @param mixed $default Value returned when no page contains the configuration
      * @return mixed Inherited configuration value or the default
      */
-    function cmsconfig( \Aimeos\Cms\Models\Page $page, string $path, mixed $default = null ) : mixed
+    function cmsconfig( \Aimeos\Cms\Models\PageView $page, string $path, mixed $default = null ) : mixed
     {
         foreach( $page->ancestorsAndSelf->reverse() as $item )
         {
@@ -135,11 +135,11 @@ if( !function_exists( 'cmsdata' ) )
     /**
      * Get the data for a CMS element.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param object $item The CMS element
      * @return array<string, mixed> The data for the CMS element
      */
-    function cmsdata( \Aimeos\Cms\Models\Page $page, object $item ) : array
+    function cmsdata( \Aimeos\Cms\Models\PageView $page, object $item ) : array
     {
         $files = cms( $page, 'files', collect() );
 
@@ -170,11 +170,11 @@ if( !function_exists( 'cmsfile' ) )
     /**
      * Get a file from the CMS page by its ID.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param string $fileId The ID of the file to retrieve
      * @return object|null The file object if found, or null if not found
      */
-    function cmsfile( \Aimeos\Cms\Models\Page $page, string $fileId ) : ?object
+    function cmsfile( \Aimeos\Cms\Models\PageView $page, string $fileId ) : ?object
     {
         return cms( cms( $page, 'files' ), $fileId );
     }
@@ -193,11 +193,11 @@ if( !function_exists( 'cmshashes' ) )
      * with no surrounding whitespace inside the tags, otherwise the browser-computed
      * hash will not match the value returned here.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param string $path Config path of the inline text, e.g. "config.styles.data.text"
      * @return string Space-separated 'sha256-...' source expressions for the CSP
      */
-    function cmshashes( \Aimeos\Cms\Models\Page $page, string $path ) : string
+    function cmshashes( \Aimeos\Cms\Models\PageView $page, string $path ) : string
     {
         return $page->ancestorsAndSelf
             ->map( fn( $item ) => cms( $item, $path ) )
@@ -264,12 +264,12 @@ if( !function_exists( 'cmsref' ) )
     /**
      * Resolve a reference item to its actual element if the user has permission to view it.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param object $item The item to resolve, which may be a reference
      * @return object The resolved item if it was a reference and the user has permission,
      *  or the original item if it was not a reference or the user does not have permission
      */
-    function cmsref( \Aimeos\Cms\Models\Page $page, object $item ) : object
+    function cmsref( \Aimeos\Cms\Models\PageView $page, object $item ) : object
     {
         if(($item->type ?? null) === 'reference' && ($refid = $item->refid ?? null) && ($element = cms(cms($page, 'elements'), $refid))) {
             return (object) $element;
@@ -285,12 +285,12 @@ if( !function_exists( 'cmsroute' ) )
     /**
      * Generate a URL for a CMS page or named route.
      *
-     * @param \Aimeos\Cms\Models\Page|string $route CMS page or route name
+     * @param \Aimeos\Cms\Models\PageView|string $route CMS page or route name
      * @param array<string, mixed> $params Named route parameters
      * @param string|null $domain Explicit page domain, or null for the request host
      * @return string The generated route URL
      */
-    function cmsroute( \Aimeos\Cms\Models\Page|string $route, array $params = [], ?string $domain = null ) : string
+    function cmsroute( \Aimeos\Cms\Models\PageView|string $route, array $params = [], ?string $domain = null ) : string
     {
         if( is_string( $route ) )
         {
@@ -320,11 +320,11 @@ if( !function_exists( 'cmssrcset' ) )
     /**
      * Generate a srcset for a page-aware CMS File.
      *
-     * @param \Aimeos\Cms\Models\Page $page Page containing the File
+     * @param \Aimeos\Cms\Models\PageView $page Page containing the File
      * @param object|null $file File associated with the page
      * @return string Comma-separated preview URLs and width descriptors
      */
-    function cmssrcset( \Aimeos\Cms\Models\Page $page, ?object $file ) : string
+    function cmssrcset( \Aimeos\Cms\Models\PageView $page, ?object $file ) : string
     {
         $list = [];
 
@@ -342,12 +342,12 @@ if( !function_exists( 'cmstheme' ) )
     /**
      * Generate a versioned theme asset URL, falling back to the base theme when the selected theme has no file.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page to resolve the theme from
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page to resolve the theme from
      * @param string $file The filename (e.g. "hero.css", "slideshow.js")
      * @param bool $version Whether to append a version query parameter based on the file's last modification time for cache busting
      * @return string The asset URL for the file
      */
-    function cmstheme( \Aimeos\Cms\Models\Page $page, string $file, bool $version = true ) : string
+    function cmstheme( \Aimeos\Cms\Models\PageView $page, string $file, bool $version = true ) : string
     {
         $themedir = 'vendor/cms/' . ( cms( $page, 'theme' ) ?: 'theme' );
         $path = $themedir . '/' . $file;
@@ -417,11 +417,11 @@ if( !function_exists( 'cmsviews' ) )
     /**
      * Get the list of view names to try for a CMS element, based on its type and the page theme.
      *
-     * @param \Aimeos\Cms\Models\Page $page The CMS page
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
      * @param object $item The CMS element for which to get the view names
      * @return array<int, string> An array of view names to try when rendering the element
      */
-    function cmsviews( \Aimeos\Cms\Models\Page $page, object $item ) : array
+    function cmsviews( \Aimeos\Cms\Models\PageView $page, object $item ) : array
     {
         if( !isset( $item->type ) ) {
             return ['cms::invalid'];

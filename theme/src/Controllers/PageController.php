@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
@@ -75,7 +75,7 @@ class PageController extends Controller
         $route = $request->attributes->get( 'cms.page' );
 
         if( !$route instanceof Nav && !$user ) {
-            $route = Nav::page( $path, $domain );
+            $route = Nav::lookup( $path, $domain );
         }
 
         if( !$route && !$user ) {
@@ -109,7 +109,7 @@ class PageController extends Controller
 
         // Database-first transition safety: re-read the rule after rendering so a
         // concurrent insert or permission change cannot expose or cache the response.
-        $access = Page::query()
+        $access = PageView::query()
             ->select( 'id' )
             ->withAccess( $user )
             ->findOrFail( $page->id );
@@ -163,13 +163,15 @@ class PageController extends Controller
 
         // every variant has its own URL, so look up the variant and not only the source variant
         // drafts can use domains which aren't used by any variant yet or aren't in the cached list,
-        // then the path is looked up in all domains which is slower but only required for editors
-        $page = Page::with( $with )
+        // then the path is looked up in all domains which is slower but only required for editors,
+        // it's done before the published page because a draft may have moved away from the path
+        $page = PageView::with( $with )
             ->allVariants()
             ->whereLatest( ['domain' => $domains ?: '', 'path' => $path], true )
             ->first()
-            ?? ( $domain === '' ? Page::with( $with )->allVariants()->whereLatest( ['path' => $path], true )->first() : null )
-            ?? Page::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+            ?? ( $domain === '' ? PageView::with( $with )->allVariants()->whereLatest( ['path' => $path], true )->first() : null )
+            ?? PageView::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->first()
+            ?? throw ( new \Illuminate\Database\Eloquent\ModelNotFoundException() )->setModel( PageView::class, [$path] );
 
         $version = $page->latest;
 
@@ -207,11 +209,11 @@ class PageController extends Controller
      * @param string $domain Requested domain
      * @param Authenticatable|null $user Frontend user
      * @param Nav|null $route Preloaded anonymous route projection
-     * @return Page Published page with access decision attributes
+     * @return PageView Published page with access decision attributes
      */
-    protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : Page
+    protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : PageView
     {
-        $query = Page::with( [
+        $query = PageView::with( [
             'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
@@ -234,7 +236,7 @@ class PageController extends Controller
      * @param Authenticatable|null $user Frontend user
      * @return string Rendered HTML
      */
-    protected function render( Page $page, mixed $value, string $locale, ?Authenticatable $user ) : string
+    protected function render( PageView $page, mixed $value, string $locale, ?Authenticatable $user ) : string
     {
         Theme::locale( $locale );
         Paginator::defaultView( 'cms::pagination' );

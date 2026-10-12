@@ -17,7 +17,7 @@ use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
@@ -52,7 +52,7 @@ class BroadcastsTest extends CoreTestAbstract
     {
         $this->expectException( \InvalidArgumentException::class );
 
-        ( new Page )->announce( 'bogus' );
+        ( new PageView )->announce( 'bogus' );
     }
 
 
@@ -96,7 +96,7 @@ class BroadcastsTest extends CoreTestAbstract
             && ( $e->data['title'] ?? null ) === 'Renamed'
             && ( $e->data['published'] ?? null ) === false
             && !empty( $e->data['updated_at'] )
-            && ( $e->latest[$page1->id] ?? null ) === Page::withTrashed()->find( $page1->id )->latest_id
+            && ( $e->latest[$page1->id] ?? null ) === PageView::withTrashed()->find( $page1->id )->latest_id
         );
     }
 
@@ -121,7 +121,7 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Published::class, Bulk::class] );
 
-        Publication::publish( Page::class, [$page1->id, $page2->id], $this->user );
+        Publication::publish( PageView::class, [$page1->id, $page2->id], $this->user );
 
         Event::assertNotDispatched( Published::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
@@ -146,7 +146,7 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Published::class, Bulk::class] );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Publication::publish( PageView::class, [$page->id], $this->user );
 
         Event::assertNotDispatched( Bulk::class );
         Event::assertDispatchedTimes( Published::class, 3 );
@@ -162,12 +162,12 @@ class BroadcastsTest extends CoreTestAbstract
         $published = $this->page();
         $draft = $this->page();
 
-        Publication::publish( Page::class, [$published->id], $this->user );
+        Publication::publish( PageView::class, [$published->id], $this->user );
 
         config( ['cms.broadcast' => true] );
         Event::fake( [Published::class, Bulk::class] );
 
-        Publication::publish( Page::class, [$published->id, $draft->id], $this->user );
+        Publication::publish( PageView::class, [$published->id, $draft->id], $this->user );
 
         Event::assertNotDispatched( Bulk::class );
         Event::assertDispatchedTimes( Published::class, 1 );
@@ -204,7 +204,7 @@ class BroadcastsTest extends CoreTestAbstract
         Event::assertNotDispatched( Published::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $event ) =>
-            $event->projected === $pages->mapWithKeys( fn( Page $page ) => [
+            $event->projected === $pages->mapWithKeys( fn( PageView $page ) => [
                 $page->id => $published[$page->variant_id]['version_id'],
             ] )->all()
             && !array_key_exists( 'projected', $event->broadcastWith() )
@@ -219,21 +219,21 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
 
         Event::fake( [Dropped::class, Bulk::class] );
-        Resource::drop( Page::class, $ids, $this->user );
+        Resource::drop( PageView::class, $ids, $this->user );
         Event::assertNotDispatched( Dropped::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'dropped'
             && count( $e->ids ) === 2 && !empty( $e->data['deleted_at'] ) );
 
         Event::fake( [Restored::class, Bulk::class] );
-        Resource::restore( Page::class, $ids, $this->user );
+        Resource::restore( PageView::class, $ids, $this->user );
         Event::assertNotDispatched( Restored::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'restored'
             && array_key_exists( 'deleted_at', $e->data ) && $e->data['deleted_at'] === null );
 
         Event::fake( [Purged::class, Bulk::class] );
-        Resource::purge( Page::class, $ids, $this->user );
+        Resource::purge( PageView::class, $ids, $this->user );
         Event::assertNotDispatched( Purged::class );
         Event::assertDispatchedTimes( Bulk::class, 1 );
         Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'purged'
@@ -280,7 +280,7 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Purged::class] );
 
-        Resource::purge( Page::class, [$page->id], $this->user );
+        Resource::purge( PageView::class, [$page->id], $this->user );
 
         Event::assertDispatched( Purged::class );
     }
@@ -315,7 +315,7 @@ class BroadcastsTest extends CoreTestAbstract
     {
         $page = $this->page();
         $id = (string) $page->id;
-        Publication::publish( Page::class, [$id], $this->user );
+        Publication::publish( PageView::class, [$id], $this->user );
         Resource::savePage( $id, [
             'path' => 'draft-route',
             'domain' => 'draft.example',
@@ -330,8 +330,8 @@ class BroadcastsTest extends CoreTestAbstract
             } );
         }
 
-        Resource::drop( Page::class, [$id], $this->user );
-        Resource::restore( Page::class, [$id], $this->user );
+        Resource::drop( PageView::class, [$id], $this->user );
+        Resource::restore( PageView::class, [$id], $this->user );
 
         $this->assertCount( 2, $events );
 
@@ -371,7 +371,7 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
-    protected function page( array $content = [] ) : Page
+    protected function page( array $content = [] ) : PageView
     {
         return Resource::addPage( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'bc-' . Utils::uid(),
@@ -380,8 +380,8 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 }

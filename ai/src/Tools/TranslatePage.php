@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Jobs\TranslatePage as Job;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -26,7 +26,7 @@ Translations run in the background if a queue is configured. Returns the number 
 Use this instead of copying content with save-page, which breaks the synchronization of the content elements.')]
 class TranslatePage extends Tool
 {
-    protected const PERMISSIONS = ['page:save'];
+    protected const PERMISSIONS = ['page:save', 'text:translate'];
 
 
     /**
@@ -43,7 +43,7 @@ class TranslatePage extends Tool
             'lang.required' => 'You must specify an array of language codes to translate the page into, e.g., ["de", "fr"].',
         ] );
 
-        $page = Page::findOrFail( (string) $v['id'] );
+        $page = PageView::findOrFail( (string) $v['id'] );
         $langs = array_values( array_unique( $v['lang'] ) );
         $user = $request->user();
         $batch = Job::dispatchPending( [(string) $page->id], $langs, $user?->getAuthIdentifier(), Permission::can( 'page:add', $user ) );

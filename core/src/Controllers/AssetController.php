@@ -7,7 +7,7 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\FileResponse;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\AuthenticationException;
@@ -37,14 +37,14 @@ class AssetController extends Controller
         {
             $user = $request->user();
             $editor = Permission::can( 'page:view', $user ) && Permission::can( 'file:view', $user );
-            $query = Page::select( 'id', 'tenant_id' );
+            $query = PageView::select( 'id', 'tenant_id' );
 
             // the status of the variants referencing the file is checked in attached()
             if( !$editor ) {
                 $query->withAccess( $user );
             }
 
-            /** @var Page $owner */
+            /** @var PageView $owner */
             $owner = $query->findOrFail( $page );
 
             if( !$editor && $owner->access_exists && !$owner->access_allowed )
@@ -71,7 +71,7 @@ class AssetController extends Controller
      *
      * Visitors only get files of variants which are enabled and not in the trash.
      */
-    protected function attached( Page $page, string $file, bool $editor ) : bool
+    protected function attached( PageView $page, string $file, bool $editor ) : bool
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
 

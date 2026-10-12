@@ -27,7 +27,7 @@ use Aimeos\Cms\JsonApi\V1\Filters\WhereLang;
 use Aimeos\Cms\JsonApi\V1\Filters\WhereVariant;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -56,7 +56,7 @@ class PageSchema extends Schema
      *
      * @var string
      */
-    public static string $model = Page::class;
+    public static string $model = PageView::class;
 
 
     /**
@@ -151,8 +151,8 @@ class PageSchema extends Schema
      * Build an index query for this resource.
      *
      * @param Request|null $request
-     * @param Builder<\Aimeos\Cms\Models\Page> $query
-     * @return Builder<\Aimeos\Cms\Models\Page>
+     * @param Builder<\Aimeos\Cms\Models\PageView> $query
+     * @return Builder<\Aimeos\Cms\Models\PageView>
      */
     public function indexQuery( ?Request $request, Builder $query ): Builder
     {
@@ -189,7 +189,7 @@ class PageSchema extends Schema
             return $query;
         }
 
-        return $query->where( (new Page())->qualifyColumn( 'parent_id' ), null );
+        return $query->where( (new PageView())->qualifyColumn( 'parent_id' ), null );
     }
 
 
@@ -207,11 +207,11 @@ class PageSchema extends Schema
     /**
      * Resolves element references, file references and actions for content items.
      *
-     * @param Page $model The page model with loaded relations
+     * @param PageView $model The page model with loaded relations
      * @param mixed $items The content items to resolve
      * @return array<int, mixed> The resolved content items
      */
-    protected function resolveContent( Page $model, mixed $items ) : array
+    protected function resolveContent( PageView $model, mixed $items ) : array
     {
         $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
         $elements = null;

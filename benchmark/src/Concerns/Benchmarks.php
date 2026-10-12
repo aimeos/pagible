@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\BenchmarkSeeder;
@@ -66,7 +66,7 @@ trait Benchmarks
 
             $result = 0;
 
-            Page::withoutSyncingToSearch( function() use ( &$result, $run ) {
+            PageView::withoutSyncingToSearch( function() use ( &$result, $run ) {
                 Element::withoutSyncingToSearch( function() use ( &$result, $run ) {
                     File::withoutSyncingToSearch( function() use ( &$result, $run ) {
                         $result = $run();
@@ -167,9 +167,9 @@ trait Benchmarks
     /**
      * Add an unpublished draft copying the latest version of the item.
      *
-     * @param Page|Element|File $item Item to add the draft to
+     * @param PageView|Element|File $item Item to add the draft to
      */
-    protected function draft( Page|Element|File $item ): void
+    protected function draft( PageView|Element|File $item ): void
     {
         $version = $item->versions()->forceCreate( [
             'lang' => 'en',
@@ -178,8 +178,8 @@ trait Benchmarks
             'published' => false,
             'editor' => 'benchmark',
         ] );
-        $item instanceof Page
-            ? Page::withoutSyncingToSearch( fn() => \Aimeos\Cms\Resource::updatePage( $item, ['latest_id' => $version->id] ) )
+        $item instanceof PageView
+            ? PageView::withoutSyncingToSearch( fn() => $item->variant->update( ['latest_id' => $version->id] ) )
             : $item->forceFill( ['latest_id' => $version->id] )->saveQuietly();
         $item->setRelation( 'latest', $version );
     }
@@ -247,20 +247,20 @@ trait Benchmarks
      *
      * @param string $domain Domain name
      * @param bool $all TRUE to add drafts for the element and file too, FALSE for the page only
-     * @return array{root: Page, page: Page, parent: Page, element: Element, file: File, trashed: array{page: Page, element: Element, file: File}}
+     * @return array{root: PageView, page: PageView, parent: PageView, element: Element, file: File, trashed: array{page: PageView, element: Element, file: File}}
      */
     protected function fixtures( string $domain, bool $all = false ): array
     {
-        $root = Page::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', $domain )->firstOrFail();
 
         // pages with translations, so the page operations include their language variants
-        $pages = Page::where( 'tag', '!=', 'root' )->whereIn( 'id', PageVariant::where( 'lang', BenchmarkSeeder::TRANSLATION )->select( 'page_id' ) );
-        $pages = $pages->exists() ? $pages : Page::where( 'tag', '!=', 'root' );
+        $pages = PageView::where( 'tag', '!=', 'root' )->whereIn( 'id', PageVariant::where( 'lang', BenchmarkSeeder::TRANSLATION )->select( 'page_id' ) );
+        $pages = $pages->exists() ? $pages : PageView::where( 'tag', '!=', 'root' );
 
         $count = $pages->count();
         $page = $pages->orderBy( NestedSet::LFT )->skip( (int) floor( $count / 2 ) )->firstOrFail();
 
-        $parent = Page::where( NestedSet::DEPTH, 1 )
+        $parent = PageView::where( NestedSet::DEPTH, 1 )
             ->whereNotIn( 'id', $page->ancestors()->get()->pluck( 'id' ) )->firstOrFail();
 
         $element = Element::where( 'editor', 'benchmark' )->firstOrFail();
@@ -273,7 +273,7 @@ trait Benchmarks
 
         // Pre-seeded soft-deleted items for the restore benchmarks
         $trashed = [
-            'page' => Page::onlyTrashed()->firstOrFail(),
+            'page' => PageView::onlyTrashed()->firstOrFail(),
             'element' => Element::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail(),
             'file' => File::onlyTrashed()->where( 'editor', 'benchmark' )->firstOrFail(),
         ];
@@ -429,7 +429,7 @@ trait Benchmarks
 
         \Aimeos\Cms\Tenancy::set( $tenant );
 
-        if( $seeded && !Page::where( 'editor', 'benchmark' )->exists() )
+        if( $seeded && !PageView::where( 'editor', 'benchmark' )->exists() )
         {
             $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
             return false;

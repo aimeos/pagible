@@ -7,14 +7,14 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Models\Page;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 
@@ -326,7 +326,7 @@ class WpImport extends Command
      *
      * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>}
      */
-    protected function findFooterReferences( Page $blogPage ): array
+    protected function findFooterReferences( PageView $blogPage ): array
     {
         $elements = collect( (array) $blogPage->content )
             ->filter( fn( $item ) => ( $item->type ?? null ) === 'reference'
@@ -384,7 +384,7 @@ class WpImport extends Command
     /**
      * Publishes the selected theme for an existing blog page.
      */
-    protected function updateBlogTheme( Page $page ): void
+    protected function updateBlogTheme( PageView $page ): void
     {
         if( $this->theme === '' || $page->theme === $this->theme ) {
             return;
@@ -402,7 +402,7 @@ class WpImport extends Command
     /**
      * Finds or creates the parent blog page.
      */
-    protected function getBlogPage(): Page
+    protected function getBlogPage(): PageView
     {
         $blogPath = (string) $this->option( 'blog-path' ); // @phpstan-ignore cast.string
         $blogName = (string) $this->option( 'blog-name' ); // @phpstan-ignore cast.string
@@ -421,7 +421,7 @@ class WpImport extends Command
 
         $data = ['tag' => ''] + $this->buildPageData( $blogName, $blogPath );
 
-        $root = Page::where( 'tag', 'root' )->where( 'domain', $this->domain )->first();
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', $this->domain )->first();
         $page = Pages::create( $data, $content, $root );
         Pages::publish( $page, $data, ['content' => $content], [], [], $this->lang, $this->editor );
 
@@ -575,7 +575,7 @@ class WpImport extends Command
      *
      * @param WpPost $post
      */
-    protected function importPost( object $post, Page $blogPage ): bool
+    protected function importPost( object $post, PageView $blogPage ): bool
     {
         $slug = $post->post_name ?: Utils::slugify( $post->post_title );
         $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' );
@@ -598,7 +598,7 @@ class WpImport extends Command
         if( !$page ) {
             $page = Pages::create( $pageData, $contentElements, $blogPage );
         } elseif( $page->parent_id !== $blogPage->id ) {
-            Resource::placePage( $page, parent: $blogPage->id );
+            $page->page->appendToNode( Page::findOrFail( $blogPage->id ) )->save();
         }
 
         Pages::publish( $page, $pageData, ['content' => $contentElements], $fileIds, $footer['elementIds'],
@@ -611,7 +611,7 @@ class WpImport extends Command
         }
 
         if( $date && $date !== '0000-00-00 00:00:00' ) {
-            Resource::updatePage( $page, ['created_at' => $date] );
+            $page->variant->forceFill( ['created_at' => $date] )->save();
         }
 
         return $updated;
@@ -621,7 +621,7 @@ class WpImport extends Command
     /**
      * Imports all posts under the given blog page.
      */
-    protected function importPosts( \Illuminate\Database\Query\Builder $query, Page $blogPage, int $total ): void
+    protected function importPosts( \Illuminate\Database\Query\Builder $query, PageView $blogPage, int $total ): void
     {
         $imported = 0;
         $updated = 0;

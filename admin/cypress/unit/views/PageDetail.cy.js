@@ -657,7 +657,7 @@ describe('PageDetail', () => {
       const query = cy.stub()
       query.onFirstCall().resolves(pageData('en', variants))
       query.resolves(pageData('fr', [...variants, { id: '1', lang: 'fr', source: false, state: 'current', published: false }]))
-      const mutate = cy.stub().resolves({ data: { addVariant: { id: '1', lang: 'fr' } } })
+      const mutate = cy.stub().resolves({ data: { addPageVariant: { id: '1', lang: 'fr' } } })
 
       mountDetail({ 'page:view': true, 'page:add': true }, {}, { query, mutate }).then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageDetail).vm
@@ -668,6 +668,28 @@ describe('PageDetail', () => {
           expect(mutate).to.have.been.calledOnce
           expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
           expect(query.lastCall.args[0].variables.lang).to.equal('fr')
+          expect(vm.variantLang).to.equal('fr')
+        })
+      })
+    })
+
+    it('queues the translation of a created variant if the user can translate', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      query.resolves(pageData('fr', [...variants, { id: '1', lang: 'fr', source: false, state: 'current', published: false }]))
+      const mutate = cy.stub()
+      mutate.onFirstCall().resolves({ data: { addPageVariant: { id: '1', lang: 'fr' } } })
+      mutate.resolves({ data: { translatePage: { id: 'b1', total: 1 } } })
+
+      mountDetail({ 'page:view': true, 'page:add': true, 'page:save': true, 'text:translate': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
+        cy.then(() => {
+          expect(mutate).to.have.been.calledTwice
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
+          expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['1'], lang: ['fr'] })
           expect(vm.variantLang).to.equal('fr')
         })
       })

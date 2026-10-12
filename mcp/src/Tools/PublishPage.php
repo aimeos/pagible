@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Publication;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -40,7 +40,7 @@ class PublishPage extends Tool
         ] );
 
         $ids = $v['id'];
-        $items = Publication::publish( Page::class, $ids, $request->user(), $v['at'] ?? null, $v['lang'] ?? null );
+        $items = Publication::publish( PageView::class, $ids, $request->user(), $v['at'] ?? null, $v['lang'] ?? null );
 
         return Response::structured( Presenter::published( $items, $ids, $v['at'] ?? null ) );
     }

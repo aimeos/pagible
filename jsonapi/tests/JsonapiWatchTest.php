@@ -43,7 +43,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     public function testReadDispatchesQueried() : void
     {
         config( ['cms.jsonapi.watch' => true] );
-        $page = \Aimeos\Cms\Models\Page::where( 'tag', 'root' )->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where( 'tag', 'root' )->firstOrFail();
         Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
@@ -70,7 +70,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
     public function testIncludesAreRecorded() : void
     {
         config( ['cms.jsonapi.watch' => true] );
-        $page = \Aimeos\Cms\Models\Page::where( 'tag', 'article' )->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where( 'tag', 'article' )->firstOrFail();
         Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->includePaths( 'ancestors' )->get( "cms/pages/{$page->id}" );

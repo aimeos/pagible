@@ -3,7 +3,6 @@
  */
 
 import gql from 'graphql-tag'
-import { toRaw } from 'vue'
 import { useTranslationStore } from './stores'
 
 const IGNORE_CHANGES = gql`
@@ -15,8 +14,8 @@ const IGNORE_CHANGES = gql`
 `
 
 const TRANSLATE_PAGE = gql`
-  mutation ($id: [ID!], $filter: PageFilter, $publish: Publish, $filterLang: String, $lang: [String!]!) {
-    translatePage(id: $id, filter: $filter, publish: $publish, filter_lang: $filterLang, lang: $lang) {
+  mutation ($id: [ID!]!, $lang: [String!]!) {
+    translatePage(id: $id, lang: $lang) {
       id
       total
     }
@@ -40,14 +39,12 @@ const TRANSLATE_PROGRESS = gql`
  * up to date translations are skipped by the server.
  *
  * @param {Object} apollo Apollo client
- * @param {Array<String>|Object} pages Page IDs or the page list filter as { filter, publish, filterLang } object
+ * @param {Array<String>} ids Page IDs
  * @param {Array<String>} langs Language codes
  * @returns {Promise<Object>} Batch with ID and number of queued translations
  */
-export function translatePages(apollo, pages, langs) {
-  const variables = Array.isArray(pages) ? { id: pages } : { ...pages }
-
-  return apollo.mutate({ mutation: TRANSLATE_PAGE, variables: { ...variables, lang: langs } }).then((result) => {
+export function translatePages(apollo, ids, langs) {
+  return apollo.mutate({ mutation: TRANSLATE_PAGE, variables: { id: ids, lang: langs } }).then((result) => {
     if (!result.data?.translatePage) {
       throw new Error('No data in translatePage mutation result')
     }
@@ -121,6 +118,34 @@ export async function awaitTranslation(apollo, batch, { onProgress = null, cance
 }
 
 /**
+ * Queues the translation of new variants, which are untranslated copies of the source until then.
+ *
+ * Nothing is queued if the user isn't allowed to translate pages. The translation store tracks
+ * the progress, reports the result and notifies its listeners when the translation is finished.
+ *
+ * @param {Object} apollo Apollo client
+ * @param {Object} user User store
+ * @param {Array<String>} ids Page IDs
+ * @param {String} lang Language code of the new variants
+ * @param {String} success Message shown when the translation is finished
+ * @returns {Promise<Object|null>} Batch or NULL if nothing was queued
+ */
+export function translateNew(apollo, user, ids, lang, success = '') {
+  if (!user.can('page:save') || !user.can('text:translate')) {
+    return Promise.resolve(null)
+  }
+
+  return translatePages(apollo, ids, [lang]).then((batch) => {
+    if (!batch.total) {
+      return null
+    }
+
+    useTranslationStore().add(batch, { ids, langs: [lang], success }, apollo)
+    return batch
+  })
+}
+
+/**
  * Marks the variants in the language as up to date without changing their content.
  *
  * @param {Object} apollo Apollo client
@@ -137,7 +162,7 @@ export function ignoreChanges(apollo, ids, lang) {
  *
  * Emits "changed" when the translation states changed.
  * Requires the lang, user, messages, confirm and languages properties, the tree ref and the
- * allowed(), selected(), missing(), mutate(), trashed(), refetch(), invalidate(), filters() and total() methods.
+ * allowed(), selected(), missing(), mutate(), trashed(), refetch() and invalidate() methods.
  *
  * The queued translations are tracked by the translation store, so several can run at the same
  * time and their progress is still shown after navigating away and back or reloading the tab.
@@ -149,8 +174,7 @@ export const pageVariants = {
   data() {
     return {
       translateDialog: false,
-      translateItems: [],
-      translateTotal: null
+      translateItems: []
     }
   },
 
@@ -318,34 +342,20 @@ export const pageVariants = {
       }
 
       this.translateItems = list
-      this.translateTotal = null
       this.translateDialog = true
-
-      // offer translating all pages matching the filter instead of the loaded ones only
-      if (!stat) {
-        this.total()
-          .then((num) => {
-            if (toRaw(this.translateItems) === list) {
-              this.translateTotal = num
-            }
-          })
-          .catch(() => {})
-      }
     },
 
-    // queues the translations of the selected pages or all pages matching the filter into the
-    // languages, the translation store shows the progress and refreshes the rows afterwards
-    translateApply({ langs, all }) {
+    // queues the translations of the selected pages into the languages,
+    // the translation store shows the progress and refreshes the rows afterwards
+    translateApply({ langs }) {
       const list = this.translateItems
       const ids = list.map((item) => item.data.id)
-      // in the list view, the rows shown are refreshed afterwards
-      const shown = all ? (this.$refs.tree?.statsFlat || []).map((stat) => stat.data?.id).filter(Boolean) : ids
 
       if (!list.length || !langs.length) {
         return
       }
 
-      return translatePages(this.$apollo, all ? this.filters() : ids, langs)
+      return translatePages(this.$apollo, ids, langs)
         .then((batch) => {
           list.forEach((item) => (item._checked = false))
 
@@ -355,10 +365,10 @@ export const pageVariants = {
             return
           }
 
-          return this.translationStore.add(batch, { ids: shown, langs }, this.$apollo)
+          return this.translationStore.add(batch, { ids, langs }, this.$apollo)
         })
         .catch((error) => {
-          this.messages.error(this.$gettext('Error translating pages'), error, all ? this.filters() : ids)
+          this.messages.error(this.$gettext('Error translating pages'), error, ids)
         })
     }
   }

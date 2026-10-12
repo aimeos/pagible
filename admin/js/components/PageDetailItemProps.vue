@@ -69,7 +69,7 @@ export default {
     },
 
     // the only configured language, there's nothing to choose from then
-    singleLang() {
+    defaultLang() {
       const list = this.locales()
       return list.length === 1 ? list[0].value : null
     }
@@ -172,8 +172,8 @@ export default {
     'item.lang': {
       immediate: true,
       handler(lang) {
-        if (!lang && this.singleLang && !this.readonly) {
-          this.update('lang', this.singleLang)
+        if (!lang && this.defaultLang && !this.readonly) {
+          this.update('lang', this.defaultLang)
         }
         this.validated?.()
       }
@@ -223,7 +223,7 @@ export default {
             item-value="key"
           ></v-select>
         </v-col>
-        <v-col v-if="!singleLang || item.lang !== singleLang" cols="12" md="6">
+        <v-col v-if="!defaultLang || item.lang !== defaultLang" cols="12" md="6">
           <v-select
             ref="lang"
             :items="locales()"

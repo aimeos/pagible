@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Models\Page;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,7 @@ use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Utils;
@@ -75,10 +76,13 @@ class BenchmarkCore extends Command
          */
 
         $this->benchmark( 'Page create', function() use ( $root ) {
-            $p = Resource::insertPage( ( new Page() )->forceFill( [
+            $node = new Page( ['source' => 'en'] );
+            $node->appendToNode( Page::findOrFail( $root->id ) )->save();
+
+            $p = $node->variants()->create( [
                 'lang' => 'en', 'name' => 'Bench page', 'title' => 'Bench',
                 'path' => 'bench-' . Utils::uid(), 'status' => 1, 'editor' => 'benchmark',
-            ] ), parent: $root->id );
+            ] )->view;
             $version = $p->versions()->forceCreate( [
                 'lang' => 'en', 'data' => ['name' => 'Bench page'], 'published' => false, 'editor' => 'benchmark',
             ] );
@@ -86,11 +90,11 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page read', function() use ( $page ) {
-            Page::with( 'files', 'elements.files' )->find( $page->id );
+            PageView::with( 'files', 'elements.files' )->find( $page->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page list', function() {
-            Page::with( 'files', 'elements.files' )->orderBy( NestedSet::LFT )->take( 100 )->get();
+            PageView::with( 'files', 'elements.files' )->orderBy( NestedSet::LFT )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Page update', function() use ( $page ) {
@@ -98,7 +102,7 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page move', function() use ( $page, $moveParent ) {
-            Resource::placePage( $page, parent: $moveParent->id );
+            $page->page->appendToNode( Page::findOrFail( $moveParent->id ) )->save();
         }, tries: $tries );
 
         $this->benchmark( 'Page publish', function() use ( $page, $draft ) {
@@ -108,23 +112,24 @@ class BenchmarkCore extends Command
         }, tries: $tries );
 
         $this->benchmark( 'Page delete', function() use ( $page ) {
-            Resource::trashPage( $page );
-            $page->deleted_at = null;
+            $page->page->delete();
+            $page->page->deleted_at = null;
+            $page->page->syncOriginal();
         }, tries: $tries );
 
         $this->benchmark( 'Page restore', function() use ( $trashedPage ) {
-            Resource::untrashPage( $trashedPage );
-            $trashedPage->deleted_at = now();
-            $trashedPage->syncOriginal();
+            $trashedPage->page->restore();
+            $trashedPage->page->deleted_at = now();
+            $trashedPage->page->syncOriginal();
         }, tries: $tries );
 
         $this->benchmark( 'Page purge', function() use ( $page ) {
-            Resource::removePage( $page );
-            $page->exists = true;
+            $page->page->forceDelete();
+            $page->page->exists = true;
         }, tries: $tries );
 
         $this->benchmark( 'Page tree', function() use ( $root ) {
-            Page::select( self::TREE_COLUMNS )
+            PageView::select( self::TREE_COLUMNS )
                 ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
@@ -245,64 +250,89 @@ class BenchmarkCore extends Command
     /**
      * Runs the language variant benchmarks, the source language queries are the baseline.
      *
-     * @param Page $root Root page of the benchmark pages
+     * @param PageView $root Root page of the benchmark pages
      * @param string $domain Domain name
      * @param int $tries Number of iterations per benchmark
      */
-    protected function variants( Page $root, string $domain, int $tries ): void
+    protected function variants( PageView $root, string $domain, int $tries ): void
     {
         $lang = BenchmarkSeeder::TRANSLATION;
         ['translated' => $translated, 'missing' => $missing] = $this->translations( $lang );
 
+        // translations are only allowed into configured languages
+        $locales = config( 'cms.locales' );
+        config( ['cms.locales' => array_unique( [...(array) $locales, $lang] )] );
+
+        try {
+            $this->variantBenchmarks( $root, $domain, $tries, $lang, $translated, $missing );
+        } finally {
+            config( ['cms.locales' => $locales] );
+        }
+    }
+
+
+    /**
+     * Runs the language variant benchmarks for the configured translation language.
+     *
+     * @param PageView $root Root page of the benchmark pages
+     * @param string $domain Domain name
+     * @param int $tries Number of iterations per benchmark
+     * @param string $lang Language code of the translations
+     * @param PageView $translated Page with a variant in the translation language
+     * @param PageView $missing Page without a variant in the translation language
+     */
+    protected function variantBenchmarks( PageView $root, string $domain, int $tries, string $lang, PageView $translated, PageView $missing ): void
+    {
+
         $this->benchmark( 'Variant lang', function() use ( $translated, $lang ) {
-            Page::language( $lang )->with( 'files', 'elements.files' )->find( $translated->id );
+            PageView::language( $lang )->with( 'files', 'elements.files' )->find( $translated->id );
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Variant fallback', function() use ( $missing, $lang ) {
-            Page::fallback( $lang )->with( 'files', 'elements.files' )->find( $missing->id );
+            PageView::fallback( $lang )->with( 'files', 'elements.files' )->find( $missing->id );
         }, readOnly: true, tries: $tries );
 
-        $sourcePath = Page::findOrFail( $translated->id )->path;
+        $sourcePath = PageView::findOrFail( $translated->id )->path;
 
         $this->benchmark( 'Source path', function() use ( $sourcePath, $domain ) {
-            Page::where( 'domain', $domain )->where( 'path', $sourcePath )->first();
+            PageView::where( 'domain', $domain )->where( 'path', $sourcePath )->first();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Variant path', function() use ( $translated, $domain, $lang ) {
-            Page::visible( $lang )->where( 'domain', $domain )->where( 'path', $translated->path )->first();
+            PageView::visible( $lang )->where( 'domain', $domain )->where( 'path', $translated->path )->first();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Source list', function() {
-            Page::orderBy( NestedSet::LFT )->take( 100 )->get();
+            PageView::orderBy( NestedSet::LFT )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Fallback list', function() use ( $lang ) {
-            Page::fallback( $lang )->orderBy( NestedSet::LFT )->take( 100 )->get();
+            PageView::fallback( $lang )->orderBy( NestedSet::LFT )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Visible list', function() use ( $lang ) {
-            Page::visible( $lang )->orderBy( NestedSet::LFT )->take( 100 )->get();
+            PageView::visible( $lang )->orderBy( NestedSet::LFT )->take( 100 )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Source count', function() {
-            Page::count();
+            PageView::count();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Fallback count', function() use ( $lang ) {
-            Page::fallback( $lang )->count();
+            PageView::fallback( $lang )->count();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Visible count', function() use ( $lang ) {
-            Page::visible( $lang )->count();
+            PageView::visible( $lang )->count();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Fallback tree', function() use ( $root, $lang ) {
-            Page::fallback( $lang )->select( self::TREE_COLUMNS )
+            PageView::fallback( $lang )->select( self::TREE_COLUMNS )
                 ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Visible tree', function() use ( $root, $lang ) {
-            Page::visible( $lang )->select( self::TREE_COLUMNS )
+            PageView::visible( $lang )->select( self::TREE_COLUMNS )
                 ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
@@ -328,14 +358,14 @@ class BenchmarkCore extends Command
      * Returns the pages used by the language variant benchmarks.
      *
      * @param string $lang Language of the translated variants
-     * @return array{translated: Page, missing: Page} Page with an enabled translation and one without translation
+     * @return array{translated: PageView, missing: PageView} Page with an enabled translation and one without translation
      */
     protected function translations( string $lang ): array
     {
         return [
-            'translated' => Page::visible( $lang )->where( 'lang', $lang )->where( 'tag', '!=', 'root' )
+            'translated' => PageView::visible( $lang )->where( 'lang', $lang )->where( 'tag', '!=', 'root' )
                 ->orderBy( NestedSet::DEPTH, 'desc' )->firstOrFail(),
-            'missing' => Page::fallback( $lang )->where( 'lang', '!=', $lang )->where( 'tag', '!=', 'root' )
+            'missing' => PageView::fallback( $lang )->where( 'lang', '!=', $lang )->where( 'tag', '!=', 'root' )
                 ->orderBy( NestedSet::DEPTH, 'desc' )->firstOrFail(),
         ];
     }
@@ -346,7 +376,7 @@ class BenchmarkCore extends Command
      */
     public static function invalidate( string $domain ): void
     {
-        $paths = array_values( Page::withTrashed()
+        $paths = array_values( PageView::withTrashed()
             ->where( 'editor', 'benchmark' )
             ->where( 'domain', $domain )
             ->pluck( 'path' )

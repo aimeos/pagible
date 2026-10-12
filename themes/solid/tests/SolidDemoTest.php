@@ -7,8 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\SolidDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,13 +33,13 @@ class SolidDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $projects = Page::where( 'path', 'projects' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $projects = PageView::where( 'path', 'projects' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $projects->id ) );
-        $this->assertSame( 3, Page::where( 'path', 'services' )->firstOrFail()->children()->count() );
-        $this->assertSame( 'solid', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 3, PageView::where( 'path', 'services' )->firstOrFail()->children()->count() );
+        $this->assertSame( 'solid', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 
@@ -71,11 +70,10 @@ class SolidDemoTest extends ThemeTestAbstract
 
     public function testCallButtonDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'solid::business'}->data->{'call-button'} = false;
-        $home->config = $config;
-        Resource::updatePage( $home );
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="call-button"', false );
     }

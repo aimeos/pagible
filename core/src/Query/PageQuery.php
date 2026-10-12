@@ -11,12 +11,12 @@ use Aimeos\Nestedset\QueryBuilder;
 
 
 /**
- * Eloquent query builder for the page facade
+ * Eloquent query builder for the page view
  *
  * Selects which page variant is joined to the page structure. Without one of
  * the methods, the variant of the source language is used.
  *
- * @template TModel of \Aimeos\Cms\Models\Page
+ * @template TModel of \Aimeos\Cms\Models\PageView
  * @extends QueryBuilder<TModel>
  */
 class PageQuery extends QueryBuilder
@@ -110,7 +110,7 @@ class PageQuery extends QueryBuilder
     /**
      * Set a model instance for the model being queried.
      *
-     * Models of the page table, e.g. Page and Nav, read from the page view
+     * Models of the page view, e.g. PageView and Nav, read from the page view
      * and keep the selected variants.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
@@ -122,31 +122,11 @@ class PageQuery extends QueryBuilder
 
         parent::setModel( $model );
 
-        if( $this->query instanceof PageBuilder && $model->getTable() === PageBuilder::ALIAS ) {
+        if( $this->query instanceof PageBuilder && $model->getTable() === PageBuilder::VIEW ) {
             $this->query->variants( ...( $variant ?? ['source'] ) );
         }
 
         return $this;
-    }
-
-
-    /**
-     * Add subselect queries to include an aggregate value for a relationship.
-     *
-     * The page view can't be qualified by its aliased FROM clause.
-     *
-     * @param mixed $relations
-     * @param \Illuminate\Contracts\Database\Query\Expression|string $column
-     * @param string|null $function
-     * @return $this
-     */
-    public function withAggregate( $relations, $column, $function = null )
-    {
-        if( !empty( $relations ) && $this->query->columns === null && $this->query->from !== $this->getModel()->getTable() ) {
-            $this->query->select( [$this->getModel()->getTable() . '.*'] );
-        }
-
-        return parent::withAggregate( $relations, $column, $function );
     }
 
 
@@ -162,16 +142,5 @@ class PageQuery extends QueryBuilder
         }
 
         return $query;
-    }
-
-
-    /**
-     * Get a wrapped table name.
-     *
-     * The structure queries of the nested set use the alias of the page view.
-     */
-    protected function wrappedTable() : string
-    {
-        return $this->query->getGrammar()->wrapTable( $this->getModel()->getTable() );
     }
 }

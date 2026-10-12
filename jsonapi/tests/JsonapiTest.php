@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\ResolvesFiles;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Schema;
 use Database\Seeders\TestSeeder;
@@ -76,7 +76,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPages()
     {
 
-        $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
+        $pages = \Aimeos\Cms\Models\PageView::where('tag', 'root')->get();
 
         $this->expectsDatabaseQueryCount( 6 ); // pages + page count + files + elements + elements.files + variants
         $response = $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
@@ -89,7 +89,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPagesFilter()
     {
 
-        $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
+        $pages = \Aimeos\Cms\Models\PageView::where('tag', 'root')->get();
 
         $this->expectsDatabaseQueryCount( 6 ); // pages + page count + files + elements + elements.files + variants
         $response = $this->jsonApi()->expects( 'pages' )
@@ -103,7 +103,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPage()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 4 ); // page + elements + elements.files + variants
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
@@ -115,7 +115,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testPrivateFileUsesCoreAssetRoute()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $file = File::forceCreate( [
             'disk' => 'private',
             'mime' => 'image/svg+xml',
@@ -138,10 +138,10 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testSchemaActionOverridesStoredCallable()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $stored = false;
         $trusted = null;
-        $action = function( Page $page ) use ( &$trusted ) {
+        $action = function( PageView $page ) use ( &$trusted ) {
             $trusted = $page->id;
             return 'trusted';
         };
@@ -170,7 +170,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testStoredCallableWithoutSchemaActionIsIgnored()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $stored = false;
         $items = [(object) [
             'type' => 'unknown',
@@ -189,7 +189,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeAncestors()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'article')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'article')->firstOrFail();
         $expected = [];
 
         foreach( $page->ancestors as $item ){
@@ -207,7 +207,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeChildren()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
         $expected = [];
 
         foreach( $page->children->filter( fn($item) => $item->status > 0 ) as $item ) {
@@ -225,7 +225,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeChildrenChildren()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
         $expected = [];
 
         foreach( $page->children->filter( fn($item) => $item->status > 0 ) as $item ) {
@@ -242,7 +242,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeMenu()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
         $expected = [];
 
         foreach( $page->menu as $item ) {
@@ -260,7 +260,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeMenuChildren()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
         $expected = [];
 
         foreach( $page->menu as $item ) {
@@ -278,7 +278,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageFilterSubtree()
     {
 
-        $pages = \Aimeos\Cms\Models\Page::where('tag', 'root')->get();
+        $pages = \Aimeos\Cms\Models\PageView::where('tag', 'root')->get();
         $expected = [];
 
         foreach( $pages->first()->subtree as $item ) {
@@ -298,7 +298,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeSubtree()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'root')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
         $expected = [];
 
         foreach( $page->subtree as $item ) {
@@ -316,7 +316,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageIncludeParent()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'article')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'article')->firstOrFail();
         $expected = $page->parent;
 
         $this->expectsDatabaseQueryCount( 5 ); // page + parent page + elements + elements.files + variants
@@ -329,7 +329,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageDisabled()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'disabled')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'disabled')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 1 );
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
@@ -341,7 +341,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageDisabledParent()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'disabled-child')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'disabled-child')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 ); // page + parent + variants
         $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'parent' )->get( "cms/pages/{$page->id}" );
@@ -353,7 +353,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testPageHidden()
     {
 
-        $page = \Aimeos\Cms\Models\Page::where('tag', 'hidden')->firstOrFail();
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'hidden')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 ); // page + variants
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
@@ -364,7 +364,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testRestrictedPageIsHiddenFromGuests()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
 
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
@@ -375,7 +375,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testEditorFromAnotherTenantCannotReadUnpublishedPage()
     {
-        $page = Page::where( 'status', 0 )->firstOrFail();
+        $page = PageView::where( 'status', 0 )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
         $user->id = 42;
         $user->tenant_id = 'other';
@@ -389,7 +389,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testAuthenticationOnlyPageIsVisibleToAuthenticatedUsers()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
@@ -404,7 +404,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testAnyGrantedPermissionMakesPageVisible()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         PageAccess::set( [$page->id], ['denied', 'member'] );
         $user = new \App\Models\User();
         $user->id = 42;
@@ -420,7 +420,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testDeniedPageIsHiddenFromAuthenticatedCollections()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         PageAccess::set( [$page->id], ['denied'] );
         $user = new \App\Models\User();
         $user->id = 42;
@@ -439,7 +439,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testAccessScopeIsLimitedToTheJsonapiRequest()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
         $allowed = new \App\Models\User();
         $allowed->id = 42;
@@ -455,7 +455,7 @@ class JsonapiTest extends JsonapiTestAbstract
             ->assertFetchedOne( $page );
 
         $this->actingAs( $denied );
-        $this->assertNotNull( Page::find( $page->id ) );
+        $this->assertNotNull( PageView::find( $page->id ) );
 
         $this->jsonApi()->expects( 'pages' )
             ->get( "cms/pages/{$page->id}" )
@@ -465,7 +465,7 @@ class JsonapiTest extends JsonapiTestAbstract
 
     public function testRestrictedRelationshipsAreHiddenFromGuests()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $child = $page->children()->where( 'status', '>', 0 )->firstOrFail();
         PageAccess::set( [$child->id], [] );
 
@@ -482,12 +482,12 @@ class JsonapiTest extends JsonapiTestAbstract
      * @param array<int|string, object> $items
      * @return array<int|string, object>
      */
-    private function resolveFiles( Page $page, array $items, ?\Illuminate\Support\Collection $files = null ): array
+    private function resolveFiles( PageView $page, array $items, ?\Illuminate\Support\Collection $files = null ): array
     {
         $resolver = new class {
             use ResolvesFiles;
 
-            public function resolve( Page $page, array $items, ?\Illuminate\Support\Collection $files ): array
+            public function resolve( PageView $page, array $items, ?\Illuminate\Support\Collection $files ): array
             {
                 return (array) $this->resolveFiles( $page, $items, $files );
             }

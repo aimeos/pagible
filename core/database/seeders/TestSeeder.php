@@ -11,7 +11,7 @@ use Illuminate\Database\Seeder;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\PageView;
 
 
 class TestSeeder extends Seeder
@@ -30,7 +30,7 @@ class TestSeeder extends Seeder
         // Resolve the tenant configured by the caller, not a stale scoped instance.
         app()->forgetInstance( \Aimeos\Cms\Tenancy::class );
 
-        Page::withoutSyncingToSearch( function() {
+        PageView::withoutSyncingToSearch( function() {
             Element::withoutSyncingToSearch( function() {
                 File::withoutSyncingToSearch( function() {
                     $home = $this->home();
@@ -44,7 +44,7 @@ class TestSeeder extends Seeder
         } );
 
         if( config('scout.driver') !== 'collection' ) {
-            Page::query()->searchable();
+            PageView::query()->searchable();
             Element::query()->searchable();
             File::query()->searchable();
         }
@@ -153,7 +153,9 @@ class TestSeeder extends Seeder
     {
         $elementId = $this->element();
 
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Home',
             'title' => 'Home | Laravel CMS',
@@ -169,7 +171,7 @@ class TestSeeder extends Seeder
                 ['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']],
                 ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
             ],
-        ] ) );
+        ] );
         $version = $page->versions()->forceCreate([
             'lang' => 'en',
             'data' => [
@@ -196,11 +198,11 @@ class TestSeeder extends Seeder
             'published' => true,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
         $version->elements()->attach( $elementId );
         $page->elements()->attach( $elementId );
 
-        return $page;
+        return $node;
     }
 
 
@@ -208,7 +210,9 @@ class TestSeeder extends Seeder
     {
         $elementId = $this->element();
 
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( $home )->save();
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Blog',
             'title' => 'Blog | Laravel CMS',
@@ -220,7 +224,7 @@ class TestSeeder extends Seeder
                 ['type' => 'blog', 'data' => ['text' => 'Blog example']],
                 ['type' => 'reference', 'refid' => $elementId, 'group' => 'footer']
             ],
-        ] ), parent: $home->id );
+        ] );
 
         $version = $page->versions()->forceCreate([
             'lang' => 'en',
@@ -241,11 +245,11 @@ class TestSeeder extends Seeder
             'published' => true,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
         $version->elements()->attach( $elementId );
         $page->elements()->attach( $elementId );
 
-        return $this->addBlogArticle( $page );
+        return $this->addBlogArticle( $node );
     }
 
 
@@ -292,7 +296,9 @@ mutation {
             'editor' => 'seeder'
         ];
 
-        $page = Resource::insertPage( ( new Page() )->forceFill( $data + ['content' => $content] ), parent: $blog->id );
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( $blog )->save();
+        $page = $node->variants()->create( $data + ['content' => $content] );
 
         $version = $page->versions()->forceCreate([
             'data' => $data,
@@ -304,7 +310,7 @@ mutation {
         ]);
         $version->files()->attach( $fileId );
         $version->elements()->attach( $elementId );
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
         $page->elements()->attach( $elementId );
         $page->files()->attach( $fileId );
 
@@ -317,7 +323,9 @@ mutation {
         $elementId = $this->element();
         $fileId = $this->file();
 
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( $home )->save();
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Dev',
             'title' => 'For Developer | Laravel CMS',
@@ -340,7 +348,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             ], [
                 'type' => 'reference', 'refid' => $elementId, 'group' => 'footer'
             ]]
-        ] ), parent: $home->id );
+        ] );
 
         $version = $page->versions()->forceCreate([
             'lang' => 'en',
@@ -372,7 +380,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
         $version->elements()->attach( $elementId );
         $page->elements()->attach( $elementId );
         $page->files()->attach( $fileId );
@@ -383,7 +391,9 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
 
     protected function addDisabled( Page $home )
     {
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( $home )->save();
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Disabled',
             'title' => 'Disabled page | Laravel CMS',
@@ -391,7 +401,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'tag' => 'disabled',
             'status' => 0,
             'editor' => 'seeder',
-        ] ), parent: $home->id );
+        ] );
 
         $version = $page->versions()->forceCreate([
             'data' => [
@@ -406,9 +416,11 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
 
-        $child = Resource::insertPage( ( new Page() )->forceFill( [
+        $childNode = new Page( ['source' => 'en'] );
+        $childNode->appendToNode( $node )->save();
+        $child = $childNode->variants()->create( [
             'lang' => 'en',
             'name' => 'Disabled child',
             'title' => 'Disabled child | Laravel CMS',
@@ -416,7 +428,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'tag' => 'disabled-child',
             'status' => 1,
             'editor' => 'seeder',
-        ] ), parent: $page->id );
+        ] );
 
         $version = $child->versions()->forceCreate([
             'data' => [
@@ -431,7 +443,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => true,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $child, ['latest_id' => $version->id] );
+        $child->update( ['latest_id' => $version->id] );
 
         return $this;
     }
@@ -439,7 +451,9 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
 
     protected function addHidden( Page $home )
     {
-        $page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( $home )->save();
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Hidden',
             'title' => 'Hidden page | Laravel CMS',
@@ -447,7 +461,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'tag' => 'hidden',
             'status' => 2,
             'editor' => 'seeder',
-        ] ), parent: $home->id );
+        ] );
 
         $version = $page->versions()->forceCreate([
             'data' => [
@@ -463,7 +477,7 @@ This is content created using [markdown syntax](https://www.markdownguide.org/ba
             'published' => false,
             'editor' => 'seeder',
         ]);
-        Resource::updatePage( $page, ['latest_id' => $version->id] );
+        $page->update( ['latest_id' => $version->id] );
 
         return $this;
     }

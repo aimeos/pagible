@@ -6,10 +6,10 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Navigation;
 use Database\Seeders\TestSeeder;
@@ -34,15 +34,15 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testPageLookupPreservesEloquentFind(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
 
         $this->assertSame( $page->id, Nav::find( $page->id )?->id );
-        $route = Nav::page( $page->path, $page->domain );
+        $route = Nav::lookup( $page->path, $page->domain );
         $this->assertNotNull( $route );
         $this->assertFalse( $route->access_exists );
 
         PageAccess::set( [$page->id], [] );
-        $route = Nav::page( $page->path, $page->domain );
+        $route = Nav::lookup( $page->path, $page->domain );
 
         $this->assertNotNull( $route );
         $this->assertSame( $page->id, $route->id );
@@ -52,8 +52,8 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testGuestNavigationQueryExcludesRestrictedPages(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
         PageAccess::set( [$blog->id], [] );
 
         $nav = new Navigation( $page, null );
@@ -66,10 +66,10 @@ class NavigationTest extends ThemeTestAbstract
     {
         config( ['cms.navdepth' => 3] );
 
-        $hidden = Page::where( 'path', 'hidden' )->firstOrFail();
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        $dev = Page::where( 'path', 'dev' )->firstOrFail();
-        Resource::placePage( $blog, parent: $hidden->id );
+        $hidden = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
+        $dev = PageView::where( 'path', 'dev' )->firstOrFail();
+        $blog->page->appendToNode( Page::findOrFail( $hidden->id ) )->save();
 
         $ids = ( new Navigation( $hidden, null ) )->items()->pluck( 'id' );
 
@@ -81,8 +81,8 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testAuthenticatedNavigationIncludesAuthenticationOnlyPages(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
         PageAccess::set( [$blog->id], [] );
         $user = new \App\Models\User();
         $user->id = 42;
@@ -96,9 +96,9 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testRestrictedParentDoesNotPromotePublicChildren(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
+        $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
         PageAccess::set( [$blog->id], [] );
 
         $ids = ( new Navigation( $page, null ) )->items()->pluck( 'id' );
@@ -110,11 +110,11 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testDisabledFirstChildDoesNotHideVisibleDescendants(): void
     {
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        $disabled = Page::where( 'path', 'disabled' )->firstOrFail();
-        $child = Page::where( 'path', 'disabled-child' )->firstOrFail();
-        $article = Page::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
-        Resource::placePage( $disabled, $article->id );
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
+        $disabled = PageView::where( 'path', 'disabled' )->firstOrFail();
+        $child = PageView::where( 'path', 'disabled-child' )->firstOrFail();
+        $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+        $disabled->page->beforeNode( Page::findOrFail( $article->id ) )->save();
 
         $items = ( new Navigation( $article, null ) )->items( 1 );
 
@@ -124,7 +124,7 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testMemoizesLazyCollections(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $nav = new Navigation( $page, null );
 
         $this->assertSame( $nav->ancestors(), $nav->ancestors() );
@@ -135,7 +135,7 @@ class NavigationTest extends ThemeTestAbstract
 
     public function testNavigationCollectionsUseTwoQueries(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $nav = new Navigation( $page, null );
         DB::flushQueryLog();
         DB::enableQueryLog();

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -41,7 +41,7 @@ class DropPage extends Tool
             return Response::structured( Presenter::item( Resource::dropVariant( $v['id'], $v['lang'], $request->user() ) ) );
         }
 
-        if( !( $item = Resource::drop( Page::class, [$v['id']], $request->user() )->first() ) ) {
+        if( !( $item = Resource::drop( PageView::class, [$v['id']], $request->user() )->first() ) ) {
             return Response::structured( ['error' => 'Page not found.'] );
         }
 

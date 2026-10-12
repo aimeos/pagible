@@ -6,7 +6,7 @@
 
 namespace Aimeos\Cms\GraphQL\Resolvers;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use GraphQL\Deferred;
 use Nuwave\Lighthouse\Execution\BatchLoader\BatchLoaderRegistry;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
@@ -30,14 +30,14 @@ final class VariantResolver
      *
      * @param array<string, mixed> $args
      */
-    public function __invoke( Page $page, array $args, GraphQLContext $context, ResolveInfo $info ) : Deferred
+    public function __invoke( PageView $page, array $args, GraphQLContext $context, ResolveInfo $info ) : Deferred
     {
         $loader = BatchLoaderRegistry::instance( $info->path, fn() => new self() );
         $id = (string) $page->id;
         $loader->pages[$id] = (string) $page->source;
 
         return new Deferred( function() use ( $loader, $id ) {
-            return ( $loader->result ??= Page::variantLists( $loader->pages ) )[$id] ?? [];
+            return ( $loader->result ??= PageView::variantLists( $loader->pages ) )[$id] ?? [];
         } );
     }
 }

@@ -7,11 +7,10 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Resource;
 use Aimeos\Cms\Access;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 
 
@@ -48,7 +47,7 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testIndexExcludesNoindex()
     {
-        Resource::updatePage( \Aimeos\Cms\Models\Page::where( 'path', 'hidden' )->firstOrFail(), ['meta' => ['robots' => [
+        \Aimeos\Cms\Models\PageView::where( 'path', 'hidden' )->firstOrFail()->variant->update( ['meta' => ['robots' => [
                 'type' => 'robots',
                 'data' => ['index' => 'noindex'],
                 'files' => [],
@@ -69,7 +68,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     public function testIndexMultidomain()
     {
         config( ['cms.multidomain' => true] );
-        Resource::updatePage( Page::where( 'path', 'hidden' )->firstOrFail(), ['domain' => 'other.test'] );
+        PageView::where( 'path', 'hidden' )->firstOrFail()->variant->update( ['domain' => 'other.test'] );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();
 
@@ -138,7 +137,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     {
         config( ['app.name' => 'Application name', 'app.locale' => 'de_DE'] );
 
-        Resource::updatePage( Page::where( 'tag', 'root' )->firstOrFail(), ['config' => [
+        PageView::where( 'tag', 'root' )->firstOrFail()->variant->update( ['config' => [
             'website' => [
                 'type' => 'website',
                 'data' => ['title' => 'CMS & News'],
@@ -146,28 +145,28 @@ class SitemapControllerTest extends ThemeTestAbstract
             ],
         ]] );
 
-        Resource::updatePage( Page::where( 'tag', 'article' )->firstOrFail(), [
+        PageView::where( 'tag', 'article' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHour(),
             'lang' => '',
             'path' => 'current & news',
             'tag' => '',
             'title' => 'Current & News',
             'type' => 'news',
-        ] );
-        Resource::updatePage( Page::where( 'path', 'hidden' )->firstOrFail(), [
+        ] )->save();
+        PageView::where( 'path', 'hidden' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHours( 2 ),
             'lang' => 'en_US',
             'title' => 'Hidden News',
             'type' => 'news',
-        ] );
-        Resource::updatePage( Page::where( 'path', 'dev' )->firstOrFail(), [
+        ] )->save();
+        PageView::where( 'path', 'dev' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subDays( 3 ),
             'type' => 'news',
-        ] );
-        Resource::updatePage( Page::where( 'path', 'disabled' )->firstOrFail(), [
+        ] )->save();
+        PageView::where( 'path', 'disabled' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHour(),
             'type' => 'news',
-        ] );
+        ] )->save();
 
         $response = $this->get( '/sitemap-news.xml' );
         $content = $response->streamedContent();
@@ -231,7 +230,7 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testIndexExcludesRestrictedPages()
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         Access::using( fn() => [] );
         PageAccess::set( [$page->id], [] );
 

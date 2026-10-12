@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Aimeos\Nestedset\NestedSet;
 
@@ -24,7 +24,7 @@ final class ClearCache
             return 0;
         }
 
-        $roots = Page::query()
+        $roots = PageView::query()
             ->withTrashed()
             ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
             ->whereIn( 'id', $ids )
@@ -34,7 +34,7 @@ final class ClearCache
             throw new \Aimeos\Cms\Exception( 'Page not found' );
         }
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, Page> $pages */
+        /** @var \Illuminate\Database\Eloquent\Collection<int, PageView> $pages */
         $pages = Resource::pageSubtree( $roots )->get( ['domain', 'path'] );
 
         Resource::invalidatePages( $pages );

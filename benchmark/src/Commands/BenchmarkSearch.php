@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -47,12 +47,12 @@ class BenchmarkSearch extends Command
         if( $unseed )
         {
             $this->output->write( '  Flushing search index... ' );
-            Page::removeAllFromSearch();
+            PageView::removeAllFromSearch();
             Element::removeAllFromSearch();
             File::removeAllFromSearch();
             $this->line( 'done' );
             $this->output->write( '  Rebuilding search index... ' );
-            Page::makeAllSearchable();
+            PageView::makeAllSearchable();
             Element::makeAllSearchable();
             File::makeAllSearchable();
             $this->line( 'done' );
@@ -63,22 +63,22 @@ class BenchmarkSearch extends Command
         if( $this->option( 'seed' ) )
         {
             $this->output->write( '  Indexing pages, elements, and files for search... ' );
-            Page::makeAllSearchable();
+            PageView::makeAllSearchable();
             Element::makeAllSearchable();
             File::makeAllSearchable();
             $this->line( 'done' );
         }
 
-        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
+        $page = PageView::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
 
         $this->header();
 
         $this->benchmark( 'Search pages (pub)', function() {
-            Page::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
+            PageView::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
         }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search pages (adm)', function() {
-            Page::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
+            PageView::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search elements', function() {

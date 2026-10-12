@@ -11,7 +11,7 @@ use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Scout\CmsEngine;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Publication;
@@ -67,36 +67,36 @@ class CmsEngineTest extends SearchTestAbstract
     public function testPages(): void
     {
         // full-text search draft
-        $result = Page::search( 'Home' )->searchFields( 'draft' )->take( 25 )->get();
+        $result = PageView::search( 'Home' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
         $this->assertTrue( $result->contains( fn( $p ) => $p->name === 'Home' ) );
 
         // full-text search published content
-        $result = Page::search( 'Home' )->searchFields( 'content' )->take( 25 )->get();
+        $result = PageView::search( 'Home' )->searchFields( 'content' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
 
         // empty search returns all
-        $all = Page::search( '' )->searchFields( 'draft' )->take( 25 )->get();
+        $all = PageView::search( '' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 1, $all->count() );
 
         // no match
-        $result = Page::search( 'xyznonexistent' )->searchFields( 'draft' )->take( 25 )->get();
+        $result = PageView::search( 'xyznonexistent' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertEquals( 0, $result->count() );
 
         // multiple words
-        $result = Page::search( 'Laravel CMS' )->searchFields( 'draft' )->take( 25 )->get();
+        $result = PageView::search( 'Laravel CMS' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
 
         // special characters don't cause errors
-        $result = Page::search( 'test+word "quoted"' )->searchFields( 'draft' )->take( 25 )->get();
+        $result = PageView::search( 'test+word "quoted"' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertInstanceOf( \Illuminate\Database\Eloquent\Collection::class, $result );
 
         // limit
-        $result = Page::search( '' )->searchFields( 'draft' )->take( 2 )->get();
+        $result = PageView::search( '' )->searchFields( 'draft' )->take( 2 )->get();
         $this->assertLessThanOrEqual( 2, $result->count() );
 
         // order by
-        $result = Page::search( '' )->searchFields( 'draft' )->orderBy( NestedSet::LFT, 'asc' )->take( 25 )->get();
+        $result = PageView::search( '' )->searchFields( 'draft' )->orderBy( NestedSet::LFT, 'asc' )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 2, $result->count() );
         $lfts = $result->pluck( NestedSet::LFT )->toArray();
         $sorted = $lfts;
@@ -104,51 +104,51 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEquals( $sorted, $lfts );
 
         // query callback eager-loads relation
-        $result = Page::search( 'Home' )->searchFields( 'draft' )
+        $result = PageView::search( 'Home' )->searchFields( 'draft' )
             ->query( fn( $q ) => $q->with( 'latest' ) )->take( 25 )->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
         $this->assertTrue( $result->first()->relationLoaded( 'latest' ) );
 
         // filter by tag
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['tag' => 'root'] );
         $result = $search->get();
         $this->assertEquals( 1, $result->count() );
         $this->assertEquals( 'root', $result->first()->tag );
 
         // filter by domain
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['domain' => 'mydomain.tld'] );
         $this->assertEquals( 1, $search->get()->count() );
 
         // filter by status
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['status' => 0] );
         $this->assertGreaterThanOrEqual( 1, $search->get()->count() );
 
         // filter by editor
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['editor' => 'seeder'] );
         $this->assertGreaterThanOrEqual( 1, $search->get()->count() );
 
         // filter by lang
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['lang' => 'en'] );
         $this->assertGreaterThanOrEqual( 1, $search->get()->count() );
 
         // filter by path
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['path' => 'blog'] );
         $this->assertEquals( 1, $search->get()->count() );
 
         // filter by cache
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['cache' => 5] );
         $this->assertEquals( 1, $search->get()->count() );
 
         // filter by parent_id
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['parent_id' => $root->id] );
         $result = $search->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
@@ -157,21 +157,21 @@ class CmsEngineTest extends SearchTestAbstract
         }
 
         // filter by IDs (whereIn)
-        $pages = Page::take( 2 )->get();
+        $pages = PageView::take( 2 )->get();
         $ids = $pages->pluck( 'id' )->toArray();
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['id' => $ids] );
         $this->assertEquals( count( $ids ), $search->get()->count() );
 
         // filter published
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['publish' => 'PUBLISHED'] );
         foreach( $search->get() as $page ) {
             $this->assertTrue( (bool) ( $page->latest?->published ?? false ) );
         }
 
         // filter draft
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['publish' => 'DRAFT'] );
         $result = $search->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
@@ -180,7 +180,7 @@ class CmsEngineTest extends SearchTestAbstract
         }
 
         // filter scheduled
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['publish' => 'SCHEDULED'] );
         $result = $search->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
@@ -189,19 +189,19 @@ class CmsEngineTest extends SearchTestAbstract
         }
 
         // paginate
-        $result = Page::search( '' )->searchFields( 'draft' )->paginate( 2 );
+        $result = PageView::search( '' )->searchFields( 'draft' )->paginate( 2 );
         $this->assertLessThanOrEqual( 2, $result->count() );
         $this->assertGreaterThanOrEqual( 1, $result->total() );
 
         // simple paginate
-        $result = Page::search( '' )->searchFields( 'draft' )->simplePaginate( 2 );
+        $result = PageView::search( '' )->searchFields( 'draft' )->simplePaginate( 2 );
         $this->assertLessThanOrEqual( 2, $result->count() );
 
         // trashed only
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
-        Resource::trashPage( $page );
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
+        $page->page->delete();
 
-        $search = Page::search( '' )->searchFields( 'draft' )->take( 25 );
+        $search = PageView::search( '' )->searchFields( 'draft' )->take( 25 );
         Filter::pages( $search, ['trashed' => 'only'] );
         $result = $search->get();
         $this->assertGreaterThanOrEqual( 1, $result->count() );
@@ -355,14 +355,14 @@ class CmsEngineTest extends SearchTestAbstract
         ] );
         Publication::publish( Element::class, [$element->id] );
 
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         Resource::savePage( $page->id, ['content' => [[
             'id' => Utils::uid(),
             'type' => 'reference',
             'refid' => $element->id,
             'group' => 'main',
         ]]] );
-        Publication::publish( Page::class, [$page->id] );
+        Publication::publish( PageView::class, [$page->id] );
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         Resource::saveFile( $file->id, ['name' => 'publicationfiletoken'] );
@@ -371,7 +371,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->assertTrue( Element::search( 'publicationelementtoken' )
             ->searchFields( 'content' )->get()->contains( 'id', $element->id ) );
-        $this->assertTrue( Page::search( 'publicationelementtoken' )
+        $this->assertTrue( PageView::search( 'publicationelementtoken' )
             ->searchFields( 'content' )->get()->contains( 'id', $page->id ) );
         $this->assertTrue( File::search( 'publicationfiletoken' )
             ->searchFields( 'content' )->get()->contains( 'id', $file->id ) );
@@ -465,7 +465,7 @@ class CmsEngineTest extends SearchTestAbstract
     public function testEngine(): void
     {
         $engine = new CmsEngine();
-        $builder = Page::search( '' )->searchFields( 'draft' );
+        $builder = PageView::search( '' )->searchFields( 'draft' );
         $results = $engine->search( $builder );
 
         // getTotalCount
@@ -477,7 +477,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertContainsOnlyString( $ids->toArray() );
 
         // lazyMap
-        $lazy = $engine->lazyMap( $builder, $results, new Page() );
+        $lazy = $engine->lazyMap( $builder, $results, new PageView() );
         $this->assertInstanceOf( \Illuminate\Support\LazyCollection::class, $lazy );
         $this->assertGreaterThanOrEqual( 1, $lazy->count() );
 
@@ -487,9 +487,8 @@ class CmsEngineTest extends SearchTestAbstract
 
         // update re-indexes
         $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )->count();
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
-        $page->name = 'Updated home';
-        Resource::updatePage( $page );
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
+        $page->variant->update( ['name' => 'Updated home'] );
 
         if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
@@ -509,9 +508,9 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEquals( 0, $indexAfter );
 
         // flush
-        $engine->flush( new Page() );
+        $engine->flush( new PageView() );
         $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_type', Page::class )->count();
+            ->where( 'indexable_type', PageView::class )->count();
         $this->assertEquals( 0, $count );
     }
 
@@ -523,7 +522,7 @@ class CmsEngineTest extends SearchTestAbstract
             'password' => 'secret', 'cmsperms' => Permission::all(),
         ] );
 
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
 
         // bulk suppresses Scout's per-item sync and reindexes the saved pages once afterwards
         Resource::bulkPage( [$page->id], ['name' => 'ztqbulkterm'], $user );
@@ -538,7 +537,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertStringContainsString( 'ztqbulkterm', $draft );
 
         // and it is findable via full-text search on the draft
-        $found = Page::search( 'ztqbulkterm' )->searchFields( 'draft' )->take( 25 )->get();
+        $found = PageView::search( 'ztqbulkterm' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertCount( 1, $found );
         $this->assertEquals( $page->id, $found->first()->id );
     }
@@ -551,14 +550,14 @@ class CmsEngineTest extends SearchTestAbstract
             'password' => 'secret', 'cmsperms' => Permission::all(),
         ] );
 
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $page = Resource::addPage( [
             'lang' => 'en', 'name' => 'zqvsourceterm', 'title' => 'Source', 'path' => 'zqv-source', 'status' => 1,
         ], $user, parent: $root->id );
 
         $variant = Resource::addVariant( $page->id, 'de', $user );
         Resource::savePage( $page->id, ['name' => 'zqvvariantterm', 'path' => 'zqv-variante'], $user, lang: 'de' );
-        Publication::publish( Page::class, [$page->id], $user, lang: 'de' );
+        Publication::publish( PageView::class, [$page->id], $user, lang: 'de' );
 
         $this->waitIndex();
 
@@ -567,10 +566,10 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
 
         // without a language, only the source variant matches
-        $this->assertCount( 1, Page::search( 'zqvsourceterm' )->searchFields( 'draft' )->take( 25 )->get() );
-        $this->assertCount( 0, Page::search( 'zqvvariantterm' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertCount( 1, PageView::search( 'zqvsourceterm' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertCount( 0, PageView::search( 'zqvvariantterm' )->searchFields( 'draft' )->take( 25 )->get() );
 
-        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'draft' )->take( 25 )->get();
+        $found = PageView::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertCount( 1, $found );
         $this->assertEquals( $page->id, $found->first()->id );
         $this->assertEquals( 'de', $found->first()->lang );
@@ -578,15 +577,15 @@ class CmsEngineTest extends SearchTestAbstract
         // index rows store the language of the variants to filter them before joining the pages
         $this->assertEquals( 'en', $db->table( 'cms_index' )->where( 'indexable_id', $page->variant_id )->value( 'indexable_lang' ) );
         $this->assertEquals( 'de', $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->value( 'indexable_lang' ) );
-        $this->assertCount( 0, Page::search( 'zqvvariantterm' )->where( 'lang', 'en' )->searchFields( 'draft' )->take( 25 )->get() );
+        $this->assertCount( 0, PageView::search( 'zqvvariantterm' )->where( 'lang', 'en' )->searchFields( 'draft' )->take( 25 )->get() );
 
-        $found = Page::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'content' )->take( 25 )->get();
+        $found = PageView::search( 'zqvvariantterm' )->where( 'lang', 'de' )->searchFields( 'content' )->take( 25 )->get();
         $this->assertCount( 1, $found );
         $this->assertEquals( 'zqv-variante', $found->first()->path );
 
         // preferring a language matches its variant, otherwise the source variant
         $search = fn( string $term, string $lang ) => \Aimeos\Cms\Scout::prefer(
-            Page::search( $term )->searchFields( 'draft' )->take( 25 ), $lang
+            PageView::search( $term )->searchFields( 'draft' )->take( 25 ), $lang
         )->get();
 
         $this->assertEquals( ['de'], $search( 'zqvvariantterm', 'de' )->pluck( 'lang' )->all() );
@@ -600,8 +599,50 @@ class CmsEngineTest extends SearchTestAbstract
         $keys = \Aimeos\Cms\Models\PageVariant::where( 'page_id', $page->id )->pluck( 'id' )->all();
         $this->assertCount( 2, $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->distinct()->pluck( 'indexable_id' ) );
 
-        Resource::purge( Page::class, [$page->id], $user );
+        Resource::purge( PageView::class, [$page->id], $user );
         $this->assertFalse( $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->exists() );
+    }
+
+
+    public function testIndexChangesOfRolledBackTransactionsAreDiscarded(): void
+    {
+        $page = PageView::where( 'tag', 'article' )->firstOrFail();
+        $queue = \Illuminate\Support\Facades\Queue::getFacadeRoot();
+        $prev = config( 'scout.queue' );
+
+        \Illuminate\Support\Facades\Queue::fake();
+        config( ['scout.queue' => true] );
+
+        try
+        {
+            $update = function( bool $fail ) use ( $page ) {
+                DB::connection( config( 'cms.db' ) )->transaction( function() use ( $page, $fail ) {
+                    $page->variant->update( ['name' => 'rolled back'] );
+                    $page->page->delete();
+                    $page->page->restore();
+
+                    if( $fail ) {
+                        throw new \RuntimeException( 'rollback' );
+                    }
+                } );
+            };
+
+            try {
+                $update( true );
+            } catch( \RuntimeException $e ) {
+            }
+
+            \Illuminate\Support\Facades\Queue::assertNotPushed( \Aimeos\Cms\Jobs\IndexModels::class );
+
+            // committed changes are indexed after the commit
+            $update( false );
+            \Illuminate\Support\Facades\Queue::assertPushed( \Aimeos\Cms\Jobs\IndexModels::class );
+        }
+        finally
+        {
+            config( ['scout.queue' => $prev] );
+            \Illuminate\Support\Facades\Queue::swap( $queue );
+        }
     }
 
 
@@ -612,8 +653,8 @@ class CmsEngineTest extends SearchTestAbstract
             'password' => 'secret', 'cmsperms' => Permission::all(),
         ] );
 
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
-        Resource::trashPage( $page );
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
+        $page->page->delete();
 
         // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
         Resource::bulkPage( [$page->id], ['name' => 'zttrashterm'], $user );
@@ -632,7 +673,7 @@ class CmsEngineTest extends SearchTestAbstract
             'name' => 'editor', 'email' => 'editor@testbench',
             'password' => 'secret', 'cmsperms' => Permission::all(),
         ] );
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $parent = Resource::addPage( [
             'lang' => 'en', 'name' => 'ztretainrows', 'title' => 'Parent',
             'path' => 'zt-retain-parent', 'content' => [],
@@ -642,10 +683,10 @@ class CmsEngineTest extends SearchTestAbstract
             'path' => 'zt-retain-child', 'content' => [],
         ], $user, parent: (string) $parent->id );
         $ids = [(string) $parent->id, (string) $child->id];
-        Publication::publish( Page::class, $ids, $user );
+        Publication::publish( PageView::class, $ids, $user );
         $keys = [(string) $parent->variant_id => (string) $parent->id, (string) $child->variant_id => (string) $child->id];
         $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
-            ->where( 'indexable_type', Page::class )
+            ->where( 'indexable_type', PageView::class )
             ->whereIn( 'indexable_id', array_keys( $keys ) );
         $indexed = fn( bool $latest ) => ( clone $query )
             ->where( 'latest', $latest )->pluck( 'indexable_id' )->map( fn( $key ) => $keys[(string) $key] )->all();
@@ -653,7 +694,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
-        Resource::drop( Page::class, [(string) $parent->id], $user );
+        Resource::drop( PageView::class, [(string) $parent->id], $user );
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
@@ -663,12 +704,12 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertSame( [(string) $child->id], $indexed( false ) );
 
-        Resource::restore( Page::class, [(string) $parent->id], $user );
+        Resource::restore( PageView::class, [(string) $parent->id], $user );
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
-        Resource::purge( Page::class, [(string) $parent->id], $user );
+        Resource::purge( PageView::class, [(string) $parent->id], $user );
 
         $this->assertSame( [], $indexed( true ) );
         $this->assertSame( [], $indexed( false ) );
@@ -677,8 +718,8 @@ class CmsEngineTest extends SearchTestAbstract
 
     public function testWithTrashedLikeCollectionEngine()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
-        Resource::trashPage( $page );
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
+        $page->page->delete();
 
         $softDelete = config( 'scout.soft_delete' );
         $results = [];
@@ -692,7 +733,7 @@ class CmsEngineTest extends SearchTestAbstract
                 foreach( ['cms', 'collection'] as $driver )
                 {
                     config( ['scout.driver' => $driver] );
-                    $ids = Page::search( '' )->searchFields( 'draft' )->withTrashed()->take( 50 )->get()->pluck( 'id' )->all();
+                    $ids = PageView::search( '' )->searchFields( 'draft' )->withTrashed()->take( 50 )->get()->pluck( 'id' )->all();
                     $results[$driver][(int) $flag] = in_array( $page->id, $ids );
                 }
             }
@@ -715,11 +756,11 @@ class CmsEngineTest extends SearchTestAbstract
             $this->markTestSkipped( 'FTS5 table upgrade' );
         }
 
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $db->statement( 'DROP TABLE cms_index' );
         $db->statement( 'CREATE VIRTUAL TABLE cms_index USING fts5(indexable_id UNINDEXED, indexable_type UNINDEXED, tenant_id UNINDEXED, latest UNINDEXED, content)' );
         $db->table( 'cms_index' )->insert( [
-            ['indexable_id' => $page->variant_id, 'indexable_type' => Page::class, 'tenant_id' => 'test', 'latest' => 0, 'content' => 'zqlupgradeterm'],
+            ['indexable_id' => $page->variant_id, 'indexable_type' => PageView::class, 'tenant_id' => 'test', 'latest' => 0, 'content' => 'zqlupgradeterm'],
             ['indexable_id' => 'other', 'indexable_type' => File::class, 'tenant_id' => 'test', 'latest' => 0, 'content' => 'zqlfileterm'],
         ] );
 

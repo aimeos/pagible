@@ -6,13 +6,14 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\CashierAccess;
 use Aimeos\Cms\CashierProduct;
 use Aimeos\Cms\CashierProvider;
 use Aimeos\Cms\CashierToken;
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -26,7 +27,7 @@ class CashierControllerTest extends CashierTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
-    private Page $page;
+    private PageView $page;
 
 
     protected function setUp(): void
@@ -43,7 +44,10 @@ class CashierControllerTest extends CashierTestAbstract
             'email' => 'test@example.com',
             'password' => 'password',
         ] );
-        $this->page = Resource::insertPage( ( new Page() )->forceFill( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $this->page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Pricing',
             'title' => 'Pricing',
@@ -71,7 +75,7 @@ class CashierControllerTest extends CashierTestAbstract
                     ]],
                 ],
             ]],
-        ] ) );
+        ] )->view;
     }
 
 
@@ -115,7 +119,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['prices'][0]['interval'] = 30;
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $product = app( CashierProduct::class )->find(
             $this->storedUser(),
@@ -140,7 +144,7 @@ class CashierControllerTest extends CashierTestAbstract
 
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['prices'][0]['currency'] = 'CHF';
-        Resource::updatePage( Page::language( 'de' )->findOrFail( $this->page->id ), ['content' => $content, 'status' => 1] );
+        PageView::language( 'de' )->findOrFail( $this->page->id )->variant->update( ['content' => $content, 'status' => 1] );
 
         $find = fn( ?string $lang ) => app( CashierProduct::class )->find(
             $this->storedUser(), (string) $this->page->id, 'pricing', 'professional', 'once', $lang
@@ -165,7 +169,7 @@ class CashierControllerTest extends CashierTestAbstract
         ] );
         \Aimeos\Cms\Resource::addVariant( (string) $this->page->id, 'de', $editor );
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
-        Resource::updatePage( Page::language( 'de' )->findOrFail( $this->page->id ), ['content' => $content, 'domain' => 'example.ch', 'status' => 1] );
+        PageView::language( 'de' )->findOrFail( $this->page->id )->variant->update( ['content' => $content, 'domain' => 'example.ch', 'status' => 1] );
 
         $find = fn( ?string $domain ) => app( CashierProduct::class )->find(
             $this->storedUser(), (string) $this->page->id, 'pricing', 'professional', 'once', 'de', $domain
@@ -203,7 +207,7 @@ class CashierControllerTest extends CashierTestAbstract
             'kind' => 'subscription',
             'currency' => 'EUR',
         ];
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )->post(
             route( 'cms.cashier' ),
@@ -351,7 +355,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][] = $content[0]['data']['items'][0];
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )->postJson(
             route( 'cms.cashier' ),
@@ -364,7 +368,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['prices'][] = $content[0]['data']['items'][0]['prices'][0];
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )->postJson(
             route( 'cms.cashier' ),
@@ -401,7 +405,7 @@ class CashierControllerTest extends CashierTestAbstract
         foreach( [-1, 366, '30'] as $interval )
         {
             $content[0]['data']['items'][0]['prices'][0]['interval'] = $interval;
-            Resource::updatePage( $this->page, ['content' => $content] );
+            $this->page->variant->update( ['content' => $content] );
 
             $this->actingAs( $this->storedUser() )->postJson(
                 route( 'cms.cashier' ),
@@ -423,7 +427,7 @@ class CashierControllerTest extends CashierTestAbstract
             ];
         }
 
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )->postJson(
             route( 'cms.cashier' ),
@@ -439,7 +443,7 @@ class CashierControllerTest extends CashierTestAbstract
         foreach( ['eur', 'EU', 'EURO', 'EU1'] as $currency )
         {
             $content[0]['data']['items'][0]['prices'][0]['currency'] = $currency;
-            Resource::updatePage( $this->page, ['content' => $content] );
+            $this->page->variant->update( ['content' => $content] );
 
             $this->actingAs( $this->storedUser() )->postJson(
                 route( 'cms.cashier' ),
@@ -453,7 +457,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['url'] = 'https://evil.example/collect';
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )
             ->post( route( 'cms.cashier' ), $this->checkout() )
@@ -469,7 +473,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['url'] = '/_account?tab=billing';
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )
             ->post( route( 'cms.cashier' ), $this->checkout() )
@@ -485,7 +489,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['access'] = 'frontend.unknown';
-        Resource::updatePage( $this->page, ['content' => $content] );
+        $this->page->variant->update( ['content' => $content] );
 
         $this->actingAs( $this->storedUser() )->postJson(
             route( 'cms.cashier' ),
@@ -532,7 +536,7 @@ class CashierControllerTest extends CashierTestAbstract
             'data' => $inline->data,
             'editor' => 'test@example.com',
         ] );
-        Resource::updatePage( $this->page, ['content' => [[
+        $this->page->variant->update( ['content' => [[
             'id' => 'reference',
             'type' => 'reference',
             'refid' => $element->id,

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -42,7 +42,7 @@ class GetPageTree extends Tool
             'lang' => 'string|max:10',
         ]);
 
-        $builder = Page::tree( $v['node_id'] ?? null )
+        $builder = PageView::tree( $v['node_id'] ?? null )
             ->select( 'id', 'parent_id', 'tenant_id', 'lang', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
             ->with( ['latest' => fn( $q ) => $q->select(
                 'id', 'tenant_id', 'versionable_id', 'data', 'published', 'publish_at'

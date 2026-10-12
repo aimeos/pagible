@@ -10,6 +10,7 @@ namespace Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Jobs\Throttled;
+use Aimeos\Cms\Jobs\TranslatePage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
@@ -24,8 +25,10 @@ final class TranslateFiles
     /**
      * Translates the descriptions of the files into the languages they are missing in and saves them as file drafts.
      *
-     * The number of files times languages is limited by "cms.ai.maxtranslate" and the provider
-     * calls count against the "cms.ai.ratelimit" of the tenant like queued page translations.
+     * The schema limits the request to 100 files and 10 languages and the provider calls
+     * count against the "cms.ai.ratelimit" of the tenant like queued page translations.
+     * All provider calls are reserved before the first one is sent, so throttled requests
+     * fail without translating anything.
      *
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -35,12 +38,6 @@ final class TranslateFiles
     {
         $ids = array_values( array_unique( array_map( 'strval', $args['id'] ) ) );
         $langs = array_values( array_unique( array_map( 'strval', $args['lang'] ) ) );
-        $max = max( 1, (int) config( 'cms.ai.maxtranslate', 100 ) );
-
-        if( count( $ids ) * count( $langs ) > $max ) {
-            throw new Exception( sprintf( 'No more than %d file translations (files × languages) may be requested at once', $max ) );
-        }
-
         $files = File::with( 'latest' )->whereIn( 'id', $ids )->get()->keyBy( 'id' );
         $descs = $todo = [];
 
@@ -66,46 +63,56 @@ final class TranslateFiles
             $descs[$id] = $desc;
         }
 
+        // identical descriptions are translated only once
+        $uniques = [];
+        $calls = 0;
+
+        foreach( $todo as $to => $sources )
+        {
+            foreach( $sources as $from => $texts ) {
+                $calls += count( Ai::chunks( $uniques[$to][$from] = array_values( array_unique( $texts ) ) ) );
+            }
+        }
+
         try
         {
-            // cached chunks are only kept for retrying failed translations
-            return Ai::retryable( function() use ( $todo, $files, $descs ) {
-
-                $changed = [];
-
-                foreach( $todo as $to => $sources )
-                {
-                    foreach( $sources as $from => $texts )
-                    {
-                        // identical descriptions are translated only once
-                        $unique = array_values( array_unique( $texts ) );
-                        $result = $this->ai( fn() => Ai::translate( $unique, $to, $from ) );
-
-                        foreach( $texts as $id => $text )
-                        {
-                            $idx = array_search( $text, $unique, true );
-
-                            if( $idx !== false && isset( $result[$idx] ) ) {
-                                $descs[$id][$to] = $result[$idx];
-                                $changed[$id] = $files->get( $id )?->latest_id;
-                            }
-                        }
-                    }
-                }
-
-                $saved = [];
-
-                foreach( $changed as $id => $latestId ) {
-                    $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
-                }
-
-                return $saved;
-            }, Tenancy::value() );
+            // reserve the provider calls of all languages before sending the first one
+            if( $calls > 0 ) {
+                TranslatePage::reserve( (string) Tenancy::value(), $calls );
+            }
         }
         catch( Throttled $e )
         {
-            // already translated chunks stay cached, so retrying doesn't count them again
             throw new Exception( 'Too many translations, please try again later' );
         }
+
+        $changed = [];
+
+        foreach( $todo as $to => $sources )
+        {
+            foreach( $sources as $from => $texts )
+            {
+                $unique = $uniques[$to][$from];
+                $result = $this->ai( fn() => Ai::translate( $unique, $to, $from ) );
+
+                        foreach( $texts as $id => $text )
+                {
+                    $idx = array_search( $text, $unique, true );
+
+                    if( $idx !== false && isset( $result[$idx] ) ) {
+                        $descs[$id][$to] = $result[$idx];
+                        $changed[$id] = $files->get( $id )?->latest_id;
+                    }
+                }
+            }
+        }
+
+        $saved = [];
+
+        foreach( $changed as $id => $latestId ) {
+            $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
+        }
+
+        return $saved;
     }
 }
