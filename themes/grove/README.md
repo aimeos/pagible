@@ -1,6 +1,6 @@
 # Grove Theme
 
-Natural design for gardeners, landscapers, garden designers and garden maintenance companies with moss green, cream and terracotta tones, elegant serif headings, arched photo frames, curved section edges and leaf details for [Pagible CMS](https://pagible.com).
+Natural design for gardeners, landscapers, garden designers and garden maintenance companies with moss green, cream and terracotta tones, elegant serif headings, full width garden photos in the heroes, curved section edges and leaf details for [Pagible CMS](https://pagible.com).
 
 This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible).
 
@@ -13,10 +13,10 @@ php artisan vendor:publish --tag=cms-theme
 
 ## Design
 
-- **Style**: Calm, organic look with a green top bar for the announcement and the service area, a blurred cream sticky header with the phone number and a pill-shaped "Free quote" button, dark green heroes with soft glows, an arched photo frame and a curved bottom edge, leaf marks before section headings, cream cards with rounded images, arched team portraits, leaf-shaped badge icons, large serif figures, care plans with a dark green highlighted plan, leaf markers in timelines, a dark green call to action and a curved forest green footer with address, office hours, service areas and guarantee notice
+- **Style**: Calm, organic look with a green top bar for the announcement and the service area, a blurred cream sticky header with the phone number and a pill-shaped "Free quote" button, dark green heroes with a full width garden photo behind a green overlay and a curved bottom edge, leaf marks before section headings, cream cards with rounded images, arched team portraits, leaf-shaped badge icons, large serif figures, care plans with a dark green highlighted plan, leaf markers in timelines, a dark green call to action and a curved forest green footer with address, office hours, service areas and guarantee notice
 - **Colors**: Cream (#F6F2EA, #FFFDF8), forest green (#1F3A2C, #2D4E3C), moss green (#3F6B3A), terracotta (#A0532D) and chartreuse (#C5D86D) for accents on dark backgrounds
 - **Typography**: Serif display headings (Hoefler Text, Iowan Old Style, Constantia, Palatino, Georgia) with italic green accents and system sans-serif body text
-- **Borders**: Soft `1rem` corners, pill-shaped buttons, tags and badges, arched hero and team images and round avatars
+- **Borders**: Soft `1rem` corners, pill-shaped buttons, tags and badges, arched team images and round avatars
 - **CSS framework**: Pico CSS with `--pico-*` custom property overrides
 
 ## Page Types

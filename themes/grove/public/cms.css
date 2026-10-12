@@ -238,6 +238,14 @@ header nav details.dropdown ul a {
     }
 }
 
+@media (min-width: 992px) and (max-width: 1199px) {
+    header nav a,
+    header nav details.is-menu > summary:not([role]) {
+        padding-inline: 0.375rem;
+        font-size: calc(var(--pico-font-size) * 0.9);
+    }
+}
+
 @media (min-width: 992px) and (max-width: 1279px) {
     header nav ul.menu > li.phone {
         display: none;

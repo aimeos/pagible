@@ -117,7 +117,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                     ['label' => 'See our projects', 'url' => '/projects'],
                 ],
-                'files' => [['id' => $this->frame( 'greenhouse' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'greenhouse' ), 'type' => 'file'],
             ]],
             $this->team(),
             ['id' => Utils::uid(), 'type' => 'timeline', 'group' => 'main', 'data' => [
@@ -176,7 +176,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Book a free visit', 'url' => '/quote'],
                     ['label' => 'Questions about plans', 'url' => '#plan-questions'],
                 ],
-                'files' => [['id' => $this->frame( 'lawn-mowing' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'lawn-mowing' ), 'type' => 'file'],
             ]],
             $this->plans(),
             ['id' => Utils::uid(), 'type' => 'table', 'group' => 'main', 'data' => [
@@ -230,7 +230,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Call 01632 960 418', 'url' => 'tel:+441632960418'],
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                 ],
-                'files' => [['id' => $this->frame( 'wheelbarrow' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'wheelbarrow' ), 'type' => 'file'],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'Areas we cover',
@@ -282,7 +282,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Book a design consultation', 'url' => '/quote'],
                     ['label' => 'See our projects', 'url' => '/projects'],
                 ],
-                'files' => [['id' => $this->frame( 'border' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'border' ), 'type' => 'file'],
             ]],
             ['id' => Utils::uid(), 'type' => 'timeline', 'group' => 'main', 'data' => [
                 'title' => 'From idea to finished garden',
@@ -363,7 +363,7 @@ class GroveDemo extends AbstractDemo
                 'title' => 'Notes from *the potting shed*',
                 'subtitle' => 'Journal',
                 'text' => 'What our gardeners do in their own gardens each season, and the advice they give customers over a cup of tea.',
-                'files' => [['id' => $this->frame( 'seedlings' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'seedlings' ), 'type' => 'file'],
             ]],
             ['id' => 'journal-list', 'type' => 'blog', 'group' => 'main', 'data' => [
                 'layout' => 'cards',
@@ -476,7 +476,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                     ['label' => 'See our projects', 'url' => '/projects'],
                 ],
-                'files' => [['id' => $this->frame( 'patio' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'patio' ), 'type' => 'file'],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'What we build',
@@ -533,7 +533,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                     ['label' => 'Lawn care guide', 'url' => '/lawn-care'],
                 ],
-                'files' => [['id' => $this->frame( 'hedge-trimming' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'hedge-trimming' ), 'type' => 'file'],
             ]],
             ['id' => Utils::uid(), 'type' => 'pricing', 'group' => 'main', 'data' => [
                 'title' => 'Prices for one-off jobs',
@@ -605,7 +605,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'See care plans', 'url' => '/care-plans'],
                     ['label' => 'Book a free visit', 'url' => '/quote'],
                 ],
-                'files' => [['id' => $this->frame( 'pruning' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'pruning' ), 'type' => 'file'],
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
                 'title' => 'What our gardeners do',
@@ -682,7 +682,7 @@ class GroveDemo extends AbstractDemo
                 'buttons' => [
                     ['label' => 'Start your project', 'url' => '/quote'],
                 ],
-                'files' => [['id' => $this->frame( 'small-garden' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'small-garden' ), 'type' => 'file'],
             ]],
             $this->projects( true ),
             ['id' => Utils::uid(), 'type' => 'before-after', 'group' => 'main', 'data' => [
@@ -721,7 +721,7 @@ class GroveDemo extends AbstractDemo
                 'title' => 'Your free *garden visit*',
                 'subtitle' => 'Free quote',
                 'text' => 'Tell us about your garden and what you would like to change. We visit you within a week and send a fixed, no-obligation quote afterwards.',
-                'files' => [['id' => $this->frame( 'tools' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'tools' ), 'type' => 'file'],
             ]],
             ['id' => 'quote-form', 'type' => 'contact', 'group' => 'main', 'data' => [
                 'title' => 'About your garden',
@@ -775,7 +775,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                     ['label' => 'Care plans', 'url' => '/care-plans'],
                 ],
-                'files' => [['id' => $this->frame( 'path' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'path' ), 'type' => 'file'],
             ]],
             $this->services(),
             $this->process(),
@@ -836,18 +836,6 @@ class GroveDemo extends AbstractDemo
 
 
     /**
-     * Creates (once) a 4:5 portrait image for the arched hero frames and returns its file ID.
-     *
-     * @param string $key PHOTOS key
-     * @return string File ID
-     */
-    protected function frame( string $key ) : string
-    {
-        return $this->cropped( $key, 960, 1200, true, [480, 960] );
-    }
-
-
-    /**
      * Returns the Bramble & Oak home page.
      *
      * @return Page Home page
@@ -900,7 +888,7 @@ class GroveDemo extends AbstractDemo
                     ['label' => 'Get a free quote', 'url' => '/quote'],
                     ['label' => 'See our projects', 'url' => '/projects'],
                 ],
-                'files' => [['id' => $this->frame( 'hero-garden' ), 'type' => 'file']],
+                'background' => ['id' => $this->wide( 'hero-garden' ), 'type' => 'file'],
                 'main' => true,
             ]],
             ['id' => Utils::uid(), 'type' => 'cards', 'group' => 'main', 'data' => [
@@ -1306,5 +1294,17 @@ SVG;
                 'file' => ['id' => $this->cropped( $person[1], 800, 1000 ), 'type' => 'file'],
             ], $people ),
         ]];
+    }
+
+
+    /**
+     * Creates (once) a 16:9 full width hero background image and returns its file ID.
+     *
+     * @param string $key PHOTOS key
+     * @return string File ID
+     */
+    protected function wide( string $key ) : string
+    {
+        return $this->cropped( $key, 1920, 1080, true, [960, 1920] );
     }
 }
