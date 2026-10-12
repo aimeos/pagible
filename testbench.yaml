@@ -7,6 +7,7 @@ providers:
   - Aimeos\Cms\FlowServiceProvider
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\GlowServiceProvider
+  - Aimeos\Cms\GroveServiceProvider
   - Aimeos\Cms\JournalServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\ManeServiceProvider
