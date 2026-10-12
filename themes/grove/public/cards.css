@@ -94,7 +94,7 @@ main .cards .card-list.layout-cards.cols-4 .card-item:hover {
 main .cards .card-list.layout-cards.cols-4 .card-item :is(picture.image, .card-image) {
     aspect-ratio: 4 / 5;
     margin: 0;
-    border-radius: 999px 999px 1.25rem 1.25rem;
+    border-radius: min(5rem, 35%) 1.25rem;
 }
 
 main .cards .card-list.layout-cards.cols-4 .card-text {

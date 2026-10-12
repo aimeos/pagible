@@ -36,12 +36,15 @@
     overflow: hidden;
 }
 
-.hero:has(.background)::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: #1F3A2CD9;
+.hero:has(.background) .first {
+    box-sizing: border-box;
+    max-width: 40rem;
+    padding: 3rem 2rem;
+    background-color: #1F3A2CB3;
+    border: 1px solid #C5D86D40;
+    border-radius: 5rem 1.5rem;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
 .hero .background img {
@@ -257,15 +260,13 @@
 }
 
 @media screen and (min-width: 1200px) {
-    .hero:has(.background)::after {
-        background: linear-gradient(90deg, #1F3A2CF2 0%, #1F3A2CD9 55%, #1F3A2C33 85%);
-    }
-
     .hero:has(.background) .container {
         padding-block: 9rem;
     }
 
     .hero:has(.background) .first {
-        max-width: min(40vw, 36rem);
+        max-width: min(48vw, 42rem);
+        padding: 3.5rem 3.5rem 3rem;
+        border-radius: 7rem 2rem;
     }
 }

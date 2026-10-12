@@ -53,7 +53,7 @@ class GroveDemo extends AbstractDemo
         'gravel' => ['photo-1762876244984-f9d493cf4aa1', 'Gravel garden', 'A raked white gravel garden with a large rock on a mossy island in front of a low earthen wall and trees'],
         'greenhouse' => ['photo-1508857650881-64475119d798', 'Greenhouse', 'Inside a long glass greenhouse with rows of young green plants on either side of a central path and a hose'],
         'hedge-trimming' => ['photo-1543309959-4d45288d1629', 'Hedge trimming', 'Close-up of a hedge trimmer blade cutting across the top of a rounded conifer shrub, with clippings flying'],
-        'hero-garden' => ['photo-1668120089662-42642838cfef', 'Landscaped garden', 'A landscaped garden with sweeping lawns, rounded shrubs and a curving gravel path leading towards a planted hillside'],
+        'hero-garden' => ['photo-1700689807667-82630348b301', 'Garden path', 'A curving red brick path with a long wooden bench between a tall clipped hedge and a border of ferns, phlox and marigolds'],
         'lavender' => ['photo-1595562161314-4ed3f3503826', 'Lavender', 'Close-up of flowering purple lavender spikes with a softly blurred lavender background'],
         'lawn' => ['photo-1625766924175-4c010046038d', 'Striped lawn', 'A large, freshly mown lawn with neat stripes, framed by mature trees and shrubs'],
         'lawn-mowing' => ['photo-1731082686849-d2e0a4d2c70c', 'Lawn mowing', 'A smiling man in a cap pushing a red lawn mower across long grass beneath old fruit trees on a sunny day'],
