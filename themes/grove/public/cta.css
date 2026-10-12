@@ -1,0 +1,88 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cms-content > .cta {
+    position: relative;
+    color: #F6F2EAE6;
+    background-color: #1F3A2C;
+    background-image: radial-gradient(circle at 100% 100%, #3F6B3A 0, #1F3A2C00 55%);
+}
+
+main .cms-content > .cta:nth-child(n) {
+    background-color: #1F3A2C;
+}
+
+.cta .container {
+    display: grid;
+    gap: 0 3rem;
+    align-items: center;
+}
+
+.cta .title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #FFFFFF;
+}
+
+.cta .title::before {
+    background-color: #C5D86D;
+}
+
+.cta .title em {
+    color: #C5D86D;
+}
+
+.cta .cms-text {
+    --pico-color: #F6F2EAE6;
+    max-width: 44rem;
+    color: #F6F2EAE6;
+    line-height: 1.65;
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .cms-text a {
+    color: #FFFFFF;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.cta .btn {
+    margin: 0;
+    color: #FFFFFF;
+    border-color: #F6F2EA80;
+}
+
+.cta .btn:first-child {
+    color: #1F3A2C;
+    background-color: #C5D86D;
+    border-color: #C5D86D;
+}
+
+.cta .btn:hover,
+.cta .btn:first-child:hover {
+    color: #1F3A2C;
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+@media screen and (min-width: 992px) {
+    .cta .container {
+        grid-template-columns: 3fr 2fr;
+    }
+
+    .cta .container > .actions {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        justify-content: flex-end;
+        margin-top: 0;
+    }
+}
