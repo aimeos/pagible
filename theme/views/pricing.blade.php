@@ -4,7 +4,7 @@
 @endPushOnce
 
 @if($data->title ?? null)
-	<h2 class="title">{{ $data->title }}</h2>
+	<h2 class="title">@text($data->title)</h2>
 @endif
 
 @if($data->text ?? null)
