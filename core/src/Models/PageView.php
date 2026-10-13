@@ -127,18 +127,7 @@ class PageView extends Base
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'tag' => 'string',
-        'lang' => 'string',
-        'path' => 'string',
-        'domain' => 'string',
-        'to' => 'string',
-        'name' => 'string',
-        'title' => 'string',
-        'type' => 'string',
-        'theme' => 'string',
-        ...PageVariant::CASTS,
-    ];
+    protected $casts = PageVariant::CASTS;
 
     /**
      * The attributes that are mass assignable.
@@ -467,6 +456,85 @@ class PageView extends Base
             ->select( 'id', 'tenant_id', 'page_id', 'lang', 'domain', 'path', 'to', 'status' )
             ->whereIn( 'status', [1, 2] )
             ->orderBy( 'lang' );
+    }
+
+
+    /**
+     * Returns the page of the page view for writing the tree columns.
+     *
+     * The page is built from the loaded values without querying the database, contains
+     * the changed tree values of the page view and is available as "page" relation.
+     *
+     * @return Page Page with the stored and the changed tree values
+     */
+    public function toPage() : Page
+    {
+        $cols = array_flip( PageBuilder::PAGE_COLUMNS );
+        $page = ( new Page() )->newFromBuilder( array_intersect_key( $this->getRawOriginal(), $cols ) );
+        $page->setRawAttributes( array_replace( $page->getAttributes(), array_intersect_key( $this->getDirty(), $cols ) ) );
+
+        $this->setRelation( 'page', $page );
+        return $page;
+    }
+
+
+    /**
+     * Returns the variant of the page view for writing the language specific columns.
+     *
+     * The variant is built from the loaded values without querying the database, contains
+     * the changed variant values of the page view and is available as "variant" relation.
+     *
+     * @return PageVariant Variant with the stored and the changed values
+     * @throws \LogicException If the page view wasn't loaded with its variant ID
+     */
+    public function toVariant() : PageVariant
+    {
+        $original = $this->getRawOriginal();
+
+        // without the variant ID, an update wouldn't change any row
+        if( empty( $original['variant_id'] ) ) {
+            throw new \LogicException( sprintf( 'Page "%s" must be loaded with its variant ID to be saved', $this->getKey() ) );
+        }
+
+        $variant = ( new PageVariant() )->newFromBuilder( PageBuilder::variantValues( $original, true )
+            + ['page_id' => $this->getKey(), 'tenant_id' => $original['tenant_id'] ?? null] );
+        $variant->setRawAttributes( array_replace( $variant->getAttributes(), PageBuilder::variantValues( $this->getDirty(), true ) ) );
+
+        $this->setRelation( 'variant', $variant );
+        return $variant;
+    }
+
+
+    /**
+     * Takes over the stored values of the page and its variant.
+     *
+     * The values are marked as unchanged and the models are available as "page"
+     * and "variant" relations afterwards. The variant overwrites the timestamps.
+     *
+     * @param Page|PageVariant ...$models Saved page and/or variant of the page view
+     * @return static Same page view with the stored values
+     */
+    public function synced( Page|PageVariant ...$models ) : static
+    {
+        $values = [];
+
+        foreach( $models as $model )
+        {
+            $attributes = $model->getAttributes();
+
+            if( $model instanceof Page ) {
+                $values = array_replace( $values, array_intersect_key( $attributes, array_flip( PageBuilder::PAGE_COLUMNS ) ) );
+                $this->setRelation( 'page', $model );
+            } else {
+                $values = array_replace( $values, PageBuilder::viewValues( $attributes ) );
+                $this->setRelation( 'variant', $model );
+            }
+        }
+
+        $this->setRawAttributes( array_replace( $this->getAttributes(), $values ) );
+        $this->syncOriginalAttributes( array_keys( $values ) );
+
+        return $this;
     }
 
 

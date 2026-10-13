@@ -6,7 +6,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 
@@ -22,23 +21,16 @@ return new class extends Migration
 
     public function up(): void
     {
-        $name = config( 'cms.db', 'sqlite' );
-        $schema = Schema::connection( $name );
-        $db = DB::connection( $name );
+        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
 
         if( !$schema->hasColumn( 'cms_pages', 'related_id' ) ) {
             return;
         }
 
+        // SQLite can't drop columns which are still part of an index
         foreach( $schema->getIndexes( 'cms_pages' ) as $index )
         {
-            if( !in_array( 'related_id', $index['columns'], true ) ) {
-                continue;
-            }
-
-            if( $db->getDriverName() === 'sqlite' ) {
-                $db->statement( 'DROP INDEX IF EXISTS ' . $db->getQueryGrammar()->wrap( $index['name'] ) );
-            } else {
+            if( in_array( 'related_id', $index['columns'], true ) ) {
                 $schema->table( 'cms_pages', fn( Blueprint $table ) => $index['unique']
                     ? $table->dropUnique( $index['name'] )
                     : $table->dropIndex( $index['name'] )

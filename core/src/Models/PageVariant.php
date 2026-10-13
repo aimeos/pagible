@@ -106,6 +106,15 @@ class PageVariant extends Model
      * Casts of the variant attributes, also used by the page view.
      */
     public const CASTS = [
+        'tag' => 'string',
+        'lang' => 'string',
+        'path' => 'string',
+        'domain' => 'string',
+        'to' => 'string',
+        'name' => 'string',
+        'title' => 'string',
+        'type' => 'string',
+        'theme' => 'string',
         'cache' => 'integer',
         'status' => 'integer',
         'meta' => 'object',

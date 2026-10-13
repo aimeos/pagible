@@ -346,7 +346,7 @@ trait Copies
         {
             $node->newNestedSetQuery()->makeGap( $rgt, 2 * ( $size - 1 ) );
             $node->refreshNode();
-            self::syncNode( $page, $node );
+            $page->synced( $node );
         }
 
         return [self::addVersion( $page, $data, $aux, $editor, $refs ), $node->getAttributes()];

@@ -134,7 +134,10 @@ return new class extends Migration
         foreach( $schema->getIndexes( 'cms_pages' ) as $index )
         {
             if( !( $index['primary'] ?? false ) && array_intersect( $index['columns'], self::MOVED ) ) {
-                $this->dropIndex( $schema, $db, 'cms_pages', $index['name'], (bool) ( $index['unique'] ?? false ) );
+                $schema->table( 'cms_pages', fn( Blueprint $table ) => ( $index['unique'] ?? false )
+                    ? $table->dropUnique( $index['name'] )
+                    : $table->dropIndex( $index['name'] )
+                );
             }
         }
 
@@ -155,22 +158,6 @@ return new class extends Migration
                 $table->index( ['deleted_at', 'tenant_id', 'depth', '_lft', '_rgt', 'id', 'parent_id', 'source'], 'cms_pages_covering_index' );
             }
         } );
-    }
-
-
-    /**
-     * Drops an index or unique constraint.
-     */
-    private function dropIndex( Builder $schema, Connection $db, string $table, string $index, bool $unique ): void
-    {
-        $driver = $db->getDriverName();
-
-        if( $driver === 'sqlite' ) {
-            $db->statement( 'DROP INDEX IF EXISTS ' . $db->getQueryGrammar()->wrap( $index ) );
-            return;
-        }
-
-        $schema->table( $table, fn( Blueprint $t ) => $unique ? $t->dropUnique( $index ) : $t->dropIndex( $index ) );
     }
 
 

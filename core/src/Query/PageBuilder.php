@@ -81,6 +81,27 @@ class PageBuilder extends Builder
 
 
     /**
+     * Returns the values stored in the cms_page_variants table by their page view column names.
+     *
+     * @param array<string, mixed> $values Column/value pairs of the variant
+     * @return array<string, mixed> Column/value pairs of the page view including the columns stored in both tables
+     */
+    public static function viewValues( array $values ) : array
+    {
+        $result = [];
+
+        foreach( self::VARIANT_COLUMNS as $col => $name )
+        {
+            if( array_key_exists( $name, $values ) ) {
+                $result[$col] = $values[$name];
+            }
+        }
+
+        return $result + array_intersect_key( $values, array_flip( self::SHARED_COLUMNS ) );
+    }
+
+
+    /**
      * Set the table which the query is targeting.
      *
      * The variant condition only applies to the page view, so it's removed if another table

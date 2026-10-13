@@ -44,16 +44,10 @@ trait Pages
         $variant = ( new PageVariant() )->setRawAttributes( self::variantRow( (string) $node->id, PageBuilder::variantValues( $page->getAttributes() ) ) );
         $node->variants()->save( $variant );
 
-        $page->setRawAttributes( array_replace( $page->getAttributes(), $node->getAttributes(), [
-            'variant_id' => $variant->id,
-            'created_at' => $variant->getAttributes()['created_at'] ?? null,
-            'updated_at' => $variant->getAttributes()['updated_at'] ?? null,
-        ] ) );
-
+        $page->syncChanges();
+        $page->synced( $node, $variant )->syncOriginal();
         $page->exists = true;
         $page->wasRecentlyCreated = true;
-        $page->syncChanges();
-        $page->syncOriginal();
 
         return $node;
     }
@@ -70,11 +64,10 @@ trait Pages
      */
     protected static function saveNode( PageView $page, \Closure $change ) : Page
     {
-        $node = ( new Page() )->newFromBuilder( array_intersect_key( $page->getRawOriginal(), array_flip( Page::COLUMNS ) ) );
-        $node->setRawAttributes( array_replace( $node->getAttributes(), array_intersect_key( $page->getDirty(), array_flip( PageBuilder::PAGE_COLUMNS ) ) ) );
+        $node = $page->toPage();
 
         $change( $node );
-        self::syncNode( $page, $node );
+        $page->synced( $node );
 
         return $node;
     }
@@ -119,17 +112,9 @@ trait Pages
             return $page;
         }
 
-        $dirty = PageBuilder::variantValues( $dirty, true );
-
         $original = $page->getRawOriginal();
 
-        // without the variant ID, the update wouldn't change any row
-        if( empty( $original['variant_id'] ) ) {
-            throw new \LogicException( sprintf( 'Page "%s" must be loaded with its variant ID to be saved', $page->getKey() ) );
-        }
-
-        $variant = ( new PageVariant() )->newFromBuilder( PageBuilder::variantValues( $original ) + ['page_id' => $page->getKey()] );
-        $variant->setRawAttributes( array_replace( $variant->getAttributes(), $dirty ) );
+        $variant = $page->toVariant();
         $variant->save();
 
         // the source language follows the language of the source variant
@@ -143,22 +128,6 @@ trait Pages
 
         return $page;
     }
-
-
-    /**
-     * Takes over the tree columns stored by the page.
-     *
-     * @param PageView $page Page view to update
-     * @param Page $node Saved page
-     */
-    protected static function syncNode( PageView $page, Page $node ) : void
-    {
-        $values = array_intersect_key( $node->getAttributes(), array_flip( PageBuilder::PAGE_COLUMNS ) );
-
-        $page->setRawAttributes( array_replace( $page->getAttributes(), $values ) );
-        $page->syncOriginalAttributes( array_keys( $values ) );
-    }
-
 
 
     /**

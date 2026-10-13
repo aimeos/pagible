@@ -41,21 +41,6 @@ class Nav extends PageView
         'config' => '{}',
     ];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'lang',
-        'path',
-        'domain',
-        'to',
-        'name',
-        'title',
-        'status',
-    ];
-
 
     /**
      * Finds the lightweight published page projection for a frontend route.
