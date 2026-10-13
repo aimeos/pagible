@@ -58,5 +58,6 @@
     "Please select": "Valitse",
     "Before": "Ennen",
     "After": "Jälkeen",
-    "Before and after comparison": "Ennen ja jälkeen -vertailu"
+    "Before and after comparison": "Ennen ja jälkeen -vertailu",
+    "Powered by :name": "Palvelun tarjoaa :name"
 }

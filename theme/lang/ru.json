@@ -58,5 +58,6 @@
     "Please select": "Пожалуйста, выберите",
     "Before": "До",
     "After": "После",
-    "Before and after comparison": "Сравнение до и после"
+    "Before and after comparison": "Сравнение до и после",
+    "Powered by :name": "Работает на :name"
 }

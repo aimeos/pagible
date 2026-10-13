@@ -77,6 +77,7 @@
 				"themes/torque/src/",
 				"themes/grove/src/",
 				"themes/launch/src/",
+				"themes/manual/src/",
 				"themes/bold/src/",
 				"themes/premium/src/",
 				"themes/luxury/src/",
@@ -116,6 +117,7 @@
 				"themes/torque/tests/",
 				"themes/grove/tests/",
 				"themes/launch/tests/",
+				"themes/manual/tests/",
 				"backup/tests/",
 				"webhooks/tests/"
 			]

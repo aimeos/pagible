@@ -58,5 +58,6 @@
     "Please select": "请选择",
     "Before": "之前",
     "After": "之后",
-    "Before and after comparison": "前后对比"
+    "Before and after comparison": "前后对比",
+    "Powered by :name": "由 :name 驱动"
 }

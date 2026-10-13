@@ -1,0 +1,24 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.article .cover {
+    display: block;
+    margin: 2rem 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+}
+
+.article .cover source,
+.article .cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.article .text {
+    line-height: 1.625;
+}

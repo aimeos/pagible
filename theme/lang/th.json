@@ -58,5 +58,6 @@
     "Please select": "โปรดเลือก",
     "Before": "ก่อน",
     "After": "หลัง",
-    "Before and after comparison": "การเปรียบเทียบก่อนและหลัง"
+    "Before and after comparison": "การเปรียบเทียบก่อนและหลัง",
+    "Powered by :name": "ขับเคลื่อนโดย :name"
 }

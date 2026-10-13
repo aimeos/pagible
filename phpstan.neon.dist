@@ -82,4 +82,6 @@ parameters:
 		- themes/grove/database/seeders
 		- themes/launch/src
 		- themes/launch/database/seeders
+		- themes/manual/src
+		- themes/manual/database/seeders
 		- tests/User.php

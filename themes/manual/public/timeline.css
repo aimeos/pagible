@@ -1,0 +1,204 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.timeline h2 {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.timeline .steps {
+    --marker: 0.75rem;
+    counter-reset: step;
+    display: grid;
+    gap: 0;
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Vertical layout: changelog with dates */
+.timeline .step {
+    counter-increment: step;
+    position: relative;
+    margin: 0;
+    padding: 0 0 3rem 2rem;
+    list-style: none;
+}
+
+[dir=rtl] .timeline .step {
+    padding: 0 2rem 3rem 0;
+}
+
+.timeline .step::before {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0;
+    inset-inline-start: calc(var(--marker) / 2 - 0.5px);
+    width: 1px;
+    background: linear-gradient(var(--pico-muted-border-color), var(--pico-muted-border-color));
+}
+
+.timeline .step:last-child::before {
+    background: linear-gradient(var(--pico-muted-border-color), #00000000);
+}
+
+.timeline .marker {
+    position: absolute;
+    top: 0.375rem;
+    inset-inline-start: 0;
+    z-index: 1;
+    width: var(--marker);
+    height: var(--marker);
+    background-color: var(--pico-background-color);
+    border: 2px solid var(--pico-muted-color);
+    border-radius: 50%;
+}
+
+.timeline .step:first-child .marker {
+    background-color: #2563EB;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px #2563EB33;
+}
+
+.timeline .label {
+    margin: 0 0 0.5rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 500;
+}
+
+.timeline .title {
+    margin: 0 0 0.75rem;
+    font-size: calc(var(--pico-font-size) * 1.35);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+}
+
+.timeline .step .cms-text {
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+    white-space: normal;
+}
+
+.timeline .step .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.timeline .step .cms-text ul {
+    padding-inline-start: 1.25rem;
+}
+
+.timeline .step .cms-text li {
+    margin-bottom: 0.375rem;
+}
+
+.timeline .step .cms-text strong {
+    color: var(--pico-contrast);
+}
+
+.timeline .step .cms-text code {
+    font-size: 0.85em;
+}
+
+@media (min-width: 768px) {
+    .timeline .layout-vertical .step {
+        display: grid;
+        grid-template-columns: 9rem 1fr;
+        column-gap: 2.5rem;
+        padding: 0 0 4rem;
+    }
+
+    .timeline .layout-vertical .step::before {
+        inset-inline-start: calc(9rem + 1.25rem - 0.5px);
+    }
+
+    .timeline .layout-vertical .marker {
+        inset-inline-start: calc(9rem + 1.25rem - var(--marker) / 2);
+    }
+
+    .timeline .layout-vertical .label {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        align-self: start;
+        position: sticky;
+        top: 6rem;
+        padding-top: 0.125rem;
+        text-align: end;
+    }
+
+    .timeline .layout-vertical .title,
+    .timeline .layout-vertical .cms-text {
+        grid-column: 2;
+        padding-inline-start: 1.5rem;
+    }
+}
+
+/* Horizontal layout: numbered steps */
+@media (min-width: 768px) {
+    .timeline .steps.layout-horizontal {
+        --marker: 2.25rem;
+        max-width: none;
+        gap: 1.5rem;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+    }
+
+    .timeline .layout-horizontal .step {
+        padding: calc(var(--marker) + 1.25rem) 0 0;
+    }
+
+    .timeline .layout-horizontal .step::before {
+        top: calc(var(--marker) / 2 - 0.5px);
+        bottom: auto;
+        inset-inline: calc(var(--marker) + 0.5rem) -1rem;
+        width: auto;
+        height: 1px;
+    }
+
+    .timeline .layout-horizontal .step:last-child::before {
+        display: none;
+    }
+}
+
+.timeline .layout-horizontal .marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: #FFFFFF;
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 700;
+    background: linear-gradient(135deg, #2563EB, #3B82F6);
+    border: 0;
+    box-shadow: 0 0.5rem 1rem -0.5rem #2563EBB3;
+}
+
+.timeline .layout-horizontal .marker::before {
+    content: counter(step);
+}
+
+.timeline .layout-horizontal .label {
+    font-family: var(--pico-font-family-sans-serif);
+    color: var(--pico-primary);
+    font-weight: 600;
+}
+
+.timeline .layout-horizontal .title {
+    font-size: calc(var(--pico-font-size) * 1.1);
+}
+
+@media (max-width: 767px) {
+    .timeline .layout-horizontal .step {
+        padding-inline-start: 3.25rem;
+    }
+
+    .timeline .layout-horizontal .step::before {
+        top: 2.75rem;
+        inset-inline-start: calc(1.125rem - 0.5px);
+    }
+}

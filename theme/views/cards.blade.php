@@ -19,7 +19,7 @@
 				@endif
 			@endif
 			<div class="card-text">
-				@if($card->title ?? null)
+				@if((string) ($card->title ?? '') !== '')
 					<h3 class="title">@if(cmslink($card->url ?? null))<a href="{{ cmslink($card->url) }}" rel="{{ $card->{'url-rel'} ?? '' }}">@endif{{ $card->title }}@if(cmslink($card->url ?? null))</a>@endif</h3>
 				@endif
 				@if($card->text ?? null)

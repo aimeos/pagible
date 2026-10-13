@@ -12,6 +12,7 @@ providers:
   - Aimeos\Cms\LaunchServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\ManeServiceProvider
+  - Aimeos\Cms\ManualServiceProvider
   - Aimeos\Cms\MedicalServiceProvider
   - Aimeos\Cms\NewsServiceProvider
   - Aimeos\Cms\PagibleServiceProvider

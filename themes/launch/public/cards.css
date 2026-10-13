@@ -104,8 +104,7 @@
 }
 
 /* SVG icons are shown as small gradient tiles */
-.cards .card-list.layout-cards .card-item picture.image:has(img[src$=".svg"]),
-.cards .card-list.layout-cards .card-item .card-image:has(img[src$=".svg"]) {
+.cards .card-list.layout-cards .card-item > :is(picture.image, .card-image):has(img[src$=".svg"]) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -118,6 +117,12 @@
     border: 0;
     border-radius: 0.75rem;
     box-shadow: inset 0 1px 0 #FFFFFF40, 0 0.5rem 1rem -0.5rem #6366F1B3;
+}
+
+.cards .card-list.layout-cards .card-item .card-image picture.image:has(img[src$=".svg"]) {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .cards .card-list.layout-cards .card-item:hover picture.image:has(img[src$=".svg"]) img {

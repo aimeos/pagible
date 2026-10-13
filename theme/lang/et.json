@@ -58,5 +58,6 @@
     "Please select": "Palun valige",
     "Before": "Enne",
     "After": "Pärast",
-    "Before and after comparison": "Enne ja pärast võrdlus"
+    "Before and after comparison": "Enne ja pärast võrdlus",
+    "Powered by :name": "Toetab :name"
 }

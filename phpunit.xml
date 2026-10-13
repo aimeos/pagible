@@ -86,6 +86,9 @@
     <testsuite name="Launch">
       <directory>./themes/launch/tests/</directory>
     </testsuite>
+    <testsuite name="Manual">
+      <directory>./themes/manual/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
