@@ -1,0 +1,357 @@
+/**
+ * Manual Theme - Documentation layout with sidebar, content and page outline
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 90rem;
+    margin: auto;
+    width: 100%;
+}
+
+/* Sidebar */
+
+main nav.sidebar {
+    display: block;
+    position: fixed;
+    z-index: 95;
+    top: 3.5rem;
+    bottom: 0;
+    inset-inline-start: -20rem;
+    width: 18rem;
+    padding: 1.5rem 1rem 3rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: var(--pico-background-color);
+    border-inline-end: 1px solid var(--pico-muted-border-color);
+    transition: inset-inline-start 0.25s ease;
+}
+
+main nav.sidebar.show {
+    inset-inline-start: 0;
+    box-shadow: var(--pico-dropdown-box-shadow);
+}
+
+@media (max-width: 991px) {
+    header nav .sidebar-open.show,
+    header nav .sidebar-close.show {
+        display: block;
+    }
+}
+
+main nav.sidebar ul {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+main nav.sidebar li {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+main nav.sidebar a {
+    display: block;
+    margin: 0;
+    padding: 0.3125rem 0.75rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.875);
+    line-height: 1.5;
+    text-decoration: none;
+    border-radius: 0.375rem;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+main nav.sidebar a:hover {
+    color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+}
+
+main nav.sidebar a.active {
+    color: var(--pico-primary);
+    text-decoration: none;
+    background-color: color-mix(in srgb, var(--pico-primary) 10%, #00000000);
+    font-weight: 600;
+}
+
+main nav.sidebar a.section {
+    margin-bottom: 1rem;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.95);
+    font-weight: 700;
+}
+
+main nav.sidebar li.group {
+    margin-top: 1.25rem;
+}
+
+main nav.sidebar li.group > a {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+main nav.sidebar li.group > a.active {
+    color: var(--pico-primary);
+}
+
+main nav.sidebar li.group > ul {
+    margin: 0.25rem 0 0 0.75rem;
+    padding-inline-start: 0.25rem;
+    border-inline-start: 1px solid var(--pico-muted-border-color);
+}
+
+[dir=rtl] main nav.sidebar li.group > ul {
+    margin: 0.25rem 0.75rem 0 0;
+}
+
+/* Content */
+
+main .content {
+    min-width: 0;
+    margin: 0;
+    padding: 2rem min(5%, 1.5rem) 4rem;
+    background: none;
+    border: 0;
+    box-shadow: none;
+}
+
+main .content > * {
+    max-width: 48rem;
+    margin-inline: auto;
+}
+
+main .content .intro {
+    margin-bottom: 2rem;
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+main .content .eyebrow {
+    margin-bottom: 0.5rem;
+    color: var(--pico-primary);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 600;
+}
+
+main .content h1 {
+    margin: 0;
+    padding: 0;
+}
+
+main .content .cms-content > div > .container {
+    padding: 0;
+    max-width: none !important;
+}
+
+main .content .cms-content > div {
+    margin-bottom: 1.25rem;
+}
+
+main .content .cms-content > .heading {
+    margin-top: 2.75rem;
+}
+
+main .content .cms-content > .heading:first-child {
+    margin-top: 0;
+}
+
+main .content .cms-content > .heading h2 {
+    padding-top: 2rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+main .content .cms-content > .heading:first-child h2 {
+    padding-top: 0;
+    border-top: 0;
+}
+
+main .content .heading :is(h2, h3) {
+    position: relative;
+    margin-bottom: 0;
+}
+
+main .content .heading .anchor {
+    margin-inline-start: 0.5rem;
+    color: var(--pico-muted-color);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+main .content .heading :is(h2, h3):hover .anchor,
+main .content .heading .anchor:focus {
+    opacity: 1;
+}
+
+main .content .cms-text {
+    color: var(--pico-color);
+}
+
+main .content .cms-text :is(p, ul, ol):last-child {
+    margin-bottom: 0;
+}
+
+/* Pager */
+
+main .content .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+main .content .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    transition: border-color 0.15s ease;
+}
+
+main .content .pager a:hover {
+    border-color: var(--pico-primary);
+}
+
+main .content .pager .next {
+    grid-column: 2;
+    text-align: end;
+}
+
+main .content .pager small {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+main .content .pager .prev small::before {
+    content: "← ";
+}
+
+main .content .pager .next small::after {
+    content: " →";
+}
+
+[dir=rtl] main .content .pager .prev small::before {
+    content: "→ ";
+}
+
+[dir=rtl] main .content .pager .next small::after {
+    content: " ←";
+}
+
+main .content .pager span {
+    color: var(--pico-contrast);
+    font-weight: 600;
+}
+
+main .content .updated {
+    margin-top: 2rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+/* Outline */
+
+main .outline {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    main {
+        grid-template-columns: 17rem minmax(0, 1fr);
+    }
+
+    main nav.sidebar {
+        position: sticky;
+        inset-inline-start: auto;
+        top: 3.5rem;
+        height: calc(100vh - 3.5rem);
+        width: auto;
+        padding-inline: 1rem 1.5rem;
+        background: none;
+        transition: none;
+    }
+
+    main .content {
+        padding: 2.5rem 3rem 4rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    main {
+        grid-template-columns: 17rem minmax(0, 1fr) 15rem;
+    }
+
+    main .outline {
+        display: block;
+        position: sticky;
+        top: 3.5rem;
+        align-self: start;
+        max-height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+        padding: 2.5rem 1.5rem 2rem 0;
+    }
+
+    [dir=rtl] main .outline {
+        padding: 2.5rem 0 2rem 1.5rem;
+    }
+}
+
+main .outline p {
+    margin-bottom: 0.75rem;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 600;
+}
+
+main .outline ul {
+    margin: 0;
+    padding: 0;
+    border-inline-start: 1px solid var(--pico-muted-border-color);
+}
+
+main .outline li {
+    list-style: none;
+    margin: 0;
+}
+
+main .outline a {
+    display: block;
+    margin-inline-start: -1px;
+    padding: 0.25rem 0 0.25rem 0.875rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    line-height: 1.45;
+    text-decoration: none;
+    border-inline-start: 1px solid #00000000;
+}
+
+[dir=rtl] main .outline a {
+    padding: 0.25rem 0.875rem 0.25rem 0;
+}
+
+main .outline .level-3 a {
+    padding-inline-start: 1.625rem;
+}
+
+main .outline a:hover {
+    color: var(--pico-contrast);
+}
+
+main .outline a.active {
+    color: var(--pico-primary);
+    border-inline-start-color: var(--pico-primary);
+}

@@ -1,0 +1,69 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root {
+    --pico-block-spacing-vertical: 0;
+    --pico-block-spacing-horizontal: 0;
+}
+
+.cms-content .container {
+    padding: 4rem min(5%, 2rem);
+}
+
+main .cms-content > .heading .container {
+    padding-bottom: 0;
+}
+
+main .cms-content > .heading + * .container {
+    padding-top: 2.5rem;
+}
+
+main .heading h1,
+main .heading h2,
+main .heading h3 {
+    margin: 0;
+    text-align: center;
+}
+
+main .cms-content > :is(.cards, .pricing, .testimonial, .questions, .cta, .timeline, .table) h2 {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.container h1:first-child,
+.container h2:first-child,
+.container h3:first-child {
+    margin-top: 0;
+}
+
+.text p:last-of-type {
+    margin-bottom: 0;
+}
+
+.text {
+    color: var(--pico-muted-color);
+    font-size: var(--pico-font-size);
+    line-height: 1.7;
+}
+
+.cms-content .text .container {
+    max-width: 46rem !important;
+    margin: auto;
+}
+
+.cms-content .text h2,
+.cms-content .text h3 {
+    margin-top: 2.5rem;
+}
+
+.cms-content .table .container {
+    max-width: 60rem !important;
+}
+
+@media screen and (min-width: 768px) {
+    .cms-content .container {
+        padding: 6rem min(5%, 2rem);
+    }
+}

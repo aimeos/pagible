@@ -1,0 +1,95 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.questions .title {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.questions .faqs {
+    max-width: 48rem;
+    margin-inline: auto;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+.questions details {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.questions summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    cursor: pointer;
+    list-style: none;
+}
+
+.questions summary::-webkit-details-marker,
+.questions summary::marker {
+    display: none;
+}
+
+.questions details summary::after {
+    display: none;
+}
+
+.questions h3 {
+    margin: 0;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 1);
+    font-weight: 550;
+    letter-spacing: -0.01em;
+    transition: color 0.15s ease;
+}
+
+.questions summary:hover h3 {
+    color: var(--pico-primary);
+}
+
+.questions details summary svg {
+    flex: 0 0 1.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0.375rem;
+    color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 50%;
+    transition: transform 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.questions details[open] summary svg {
+    color: var(--pico-primary);
+    border-color: var(--pico-primary);
+    transform: rotate(180deg);
+}
+
+.questions details > .cms-text {
+    margin: -0.25rem 0 0;
+    padding: 0 3rem 1.5rem 0;
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+}
+
+[dir=rtl] .questions details > .cms-text {
+    padding: 0 0 1.5rem 3rem;
+}
+
+.questions details > .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .questions details[open] > .cms-text {
+        animation: faq-open 0.3s ease both;
+    }
+}
+
+@keyframes faq-open {
+    from { opacity: 0; transform: translateY(-0.25rem); }
+    to { opacity: 1; transform: none; }
+}

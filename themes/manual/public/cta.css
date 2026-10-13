@@ -1,0 +1,113 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cta .container {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    max-width: 1200px;
+    padding: 0;
+}
+
+.cta .container > * {
+    position: relative;
+}
+
+.cta .container::before {
+    content: "";
+    position: absolute;
+    inset: 4rem min(5%, 2rem);
+    z-index: -1;
+    background-color: #0F172A;
+    background-image:
+        radial-gradient(ellipse 60% 80% at 50% 120%, #2563EB99 0%, #00000000 70%),
+        radial-gradient(ellipse 40% 50% at 85% 0%, #0EA5E94D 0%, #00000000 70%),
+        linear-gradient(#FFFFFF0D 1px, #00000000 1px),
+        linear-gradient(90deg, #FFFFFF0D 1px, #00000000 1px);
+    background-size: auto, auto, 2.5rem 2.5rem, 2.5rem 2.5rem;
+    background-repeat: no-repeat, no-repeat, repeat, repeat;
+    border: 1px solid #FFFFFF1A;
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+.cta .title {
+    max-width: 40rem;
+    margin: 0 auto 1rem;
+    padding: 8rem min(10%, 3rem) 0;
+    color: #F8FAFC;
+    text-align: center;
+    -webkit-text-fill-color: currentColor;
+}
+
+.cta .title em {
+    -webkit-text-fill-color: #00000000;
+}
+
+.cta .cms-text,
+.cta .cms-text p {
+    max-width: 36rem;
+    margin-inline: auto;
+    padding-inline: min(10%, 3rem);
+    color: #94A3B8;
+    font-size: calc(var(--pico-font-size) * 1.05);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .cms-text a {
+    color: #BFDBFE;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem min(10%, 3rem) 8rem;
+}
+
+.cta .btn {
+    margin: 0;
+    color: #F8FAFC;
+    background-color: #FFFFFF0D;
+    border-color: #FFFFFF26;
+}
+
+.cta .btn:hover {
+    color: #FFFFFF;
+    background-color: #FFFFFF1A;
+    border-color: #FFFFFF40;
+}
+
+.cta .btn:first-child {
+    color: #0F172A;
+    background-color: #FFFFFF;
+    border-color: #FFFFFF;
+    box-shadow: 0 0.5rem 2rem -0.5rem #2563EBCC;
+}
+
+.cta .btn:first-child:hover {
+    color: #0F172A;
+    background-color: #E2E8F0;
+    border-color: #E2E8F0;
+    box-shadow: 0 0 0 4px #FFFFFF26, 0 0.5rem 2rem -0.5rem #2563EBCC;
+}
+
+@media screen and (min-width: 768px) {
+    .cta .container::before {
+        inset: 6rem min(5%, 2rem);
+    }
+
+    .cta .title {
+        padding-top: 10rem;
+    }
+
+    .cta .actions {
+        padding-bottom: 10rem;
+    }
+}

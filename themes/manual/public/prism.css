@@ -1,0 +1,95 @@
+/**
+ * Manual Theme - Syntax highlighting for dark code blocks
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+code[class*=language-],
+pre[class*=language-] {
+    color: #E2E8F0;
+    background: none;
+    font-family: var(--pico-font-family-monospace);
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.65;
+    tab-size: 4;
+    hyphens: none;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #64748B;
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: #94A3B8;
+}
+
+.token.namespace {
+    opacity: 0.7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #F472B6;
+}
+
+.token.boolean,
+.token.number {
+    color: #FB923C;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #86EFAC;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+    color: #7DD3FC;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+    color: #93C5FD;
+}
+
+.token.keyword {
+    color: #C4B5FD;
+}
+
+.token.regex,
+.token.important {
+    color: #FCD34D;
+}
+
+.token.important,
+.token.bold {
+    font-weight: 700;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
