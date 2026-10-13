@@ -1,0 +1,134 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.image-text .r1-3 { --ratio: 25%; }
+.image-text .r1-2 { --ratio: 33.333%; }
+.image-text .r1-1 { --ratio: 50%; }
+.image-text .r2-1 { --ratio: 66.666%; }
+.image-text .r3-1 { --ratio: 75%; }
+
+.image-text .cms-text {
+    color: var(--pico-muted-color);
+    line-height: 1.7;
+}
+
+.image-text .cms-text h2 {
+    margin-bottom: 1rem;
+}
+
+.image-text .cms-text h2 + p {
+    font-size: calc(var(--pico-font-size) * 1.05);
+}
+
+.image-text .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.image-text .cms-text ul {
+    padding-inline-start: 0;
+}
+
+.image-text .cms-text li {
+    position: relative;
+    margin-bottom: 0.5rem;
+    padding-inline-start: 1.625rem;
+    list-style: none;
+}
+
+.image-text .cms-text li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.3em;
+    background-color: var(--pico-primary);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.image-text .cms-text li strong {
+    color: var(--pico-contrast);
+}
+
+.image-text .start::after,
+.image-text .end::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.image-text .start .image,
+.image-text .end .image {
+    max-width: var(--ratio);
+    margin-bottom: 1.5rem;
+}
+
+.image-text .start .image {
+    float: inline-start;
+    margin-inline-end: 2rem;
+}
+
+.image-text .end .image {
+    float: inline-end;
+    margin-inline-start: 2rem;
+}
+
+.image-text .grid-start,
+.image-text .grid-end {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.image-text .grid-end {
+    flex-direction: row-reverse;
+}
+
+.image-text .grid-start .cms-text,
+.image-text .grid-end .cms-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.image-text .grid-start .image,
+.image-text .grid-end .image {
+    position: relative;
+    flex: 0 0 var(--ratio);
+    max-width: var(--ratio);
+    padding: 0.375rem;
+    background-color: var(--pico-card-sectioning-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: var(--pico-box-shadow);
+}
+
+.image-text .grid-start .image img,
+.image-text .grid-end .image img {
+    display: block;
+    width: 100%;
+    border-radius: var(--pico-border-radius);
+}
+
+@media (max-width: 767px) {
+    .image-text .grid-start,
+    .image-text .grid-end {
+        flex-direction: column-reverse;
+        gap: 2rem;
+    }
+
+    .image-text .grid-start .image,
+    .image-text .grid-end .image {
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
+
+    .image-text .start .image,
+    .image-text .end .image {
+        float: none;
+        max-width: 100%;
+        margin-inline: 0;
+    }
+}

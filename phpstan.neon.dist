@@ -80,4 +80,6 @@ parameters:
 		- themes/torque/database/seeders
 		- themes/grove/src
 		- themes/grove/database/seeders
+		- themes/launch/src
+		- themes/launch/database/seeders
 		- tests/User.php
