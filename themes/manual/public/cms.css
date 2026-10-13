@@ -397,7 +397,8 @@ header nav li.search kbd {
     font-size: calc(var(--pico-font-size) * 0.7);
 }
 
-header nav li.repository a {
+header nav li.repository a,
+header nav li.login a {
     padding: 0.5rem;
     color: var(--pico-muted-color);
 }
