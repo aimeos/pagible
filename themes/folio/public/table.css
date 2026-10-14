@@ -1,0 +1,120 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.table-responsive {
+    margin-bottom: var(--pico-typography-spacing-vertical);
+    overflow: hidden;
+    background-color: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    font-variant-numeric: tabular-nums;
+}
+
+.table-responsive .table-row {
+    display: flex;
+    background-color: var(--pico-card-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    transition: background-color 0.2s ease;
+}
+
+.table-responsive .table-row:last-child {
+    border-bottom: 0;
+}
+
+.table-responsive .table-row:not(:first-child):hover {
+    background-color: color-mix(in srgb, var(--pico-primary) 5%, var(--pico-card-background-color));
+}
+
+/* Header row: all cells are header cells */
+.table-responsive .table-row:first-child:not(:has(> .td)) {
+    background-color: var(--pico-card-sectioning-background-color);
+}
+
+.table-responsive .table-col {
+    flex: 1;
+    min-width: 0;
+    padding: 0.875rem 1.25rem;
+    text-align: start;
+}
+
+.table-responsive .table-col:first-child {
+    flex: 1.4;
+}
+
+.table-responsive .th {
+    color: var(--pico-contrast);
+    font-weight: 600;
+}
+
+.table-responsive .table-row:first-child:not(:has(> .td)) .th {
+    padding-block: 0.75rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.table-responsive .td {
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.95);
+}
+
+/* Comparison tables with row and column headers */
+.table-responsive:has(.col) .table-row:first-child .th:not(.col) {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+.table-responsive:has(.col) .table-col:not(:first-child) {
+    text-align: center;
+}
+
+.table-responsive:has(.col) .table-row:not(:first-child) .th {
+    font-weight: 500;
+}
+
+.table-responsive .table-col > :first-child {
+    margin-top: 0;
+}
+
+.table-responsive .table-col > :last-child {
+    margin-bottom: 0;
+}
+
+.table-responsive .table-col :is(p, li) {
+    font-size: inherit;
+}
+
+.table-responsive .th img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin-block: 0.75rem;
+}
+
+@media (max-width: 576px) {
+    .table-responsive .table-row {
+        flex-wrap: wrap;
+        padding-inline: 0.5rem;
+    }
+
+    .table-responsive .table-row:first-child .table-col:first-child {
+        display: none;
+    }
+
+    .table-responsive .table-col {
+        min-width: auto;
+        padding-inline: 0.5rem;
+        overflow-wrap: normal;
+    }
+
+    .table-responsive .table-row:first-child:not(:has(> .td)) .th {
+        letter-spacing: 0.02em;
+    }
+
+    .table-responsive .table-col:first-child {
+        flex: 0 0 100%;
+        padding-bottom: 0;
+    }
+}

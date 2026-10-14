@@ -1,0 +1,59 @@
+/**
+ * Folio Theme - Contact and newsletter call to action
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+
+.cta .container::before {
+    content: "";
+    position: absolute;
+    inset: -1.75rem 0;
+    z-index: -1;
+    margin-inline: 1.25rem;
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+}
+
+.cta .container {
+    position: relative;
+    isolation: isolate;
+    padding-inline: 2.75rem !important;
+}
+
+.cta {
+    padding: 1.75rem 0;
+}
+
+.cta .title {
+    margin-bottom: 0.5rem;
+    font-size: calc(var(--pico-font-size) * 1.35);
+}
+
+.cta .title em {
+    color: var(--pico-primary);
+    font-style: normal;
+}
+
+.cta .cms-text {
+    color: var(--pico-muted-color);
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.cta .btn {
+    margin: 0;
+}
+
+.cta .btn:not(:first-child):hover {
+    background-color: var(--pico-background-color);
+}

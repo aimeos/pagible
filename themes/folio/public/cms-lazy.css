@@ -1,0 +1,258 @@
+/**
+ * Folio Theme - Lazy loaded CSS
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+dialog > article {
+    background-color: var(--pico-contrast-inverse);
+    height: calc(100vh - 2rem);
+    overflow: unset;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2);
+    padding-bottom: 2rem;
+}
+
+dialog header {
+    background-color: var(--pico-muted-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 2) calc(var(--pico-border-radius) * 2) 0 0;
+}
+
+dialog form {
+    display: flex;
+    padding: 1rem;
+}
+
+dialog input,
+dialog button {
+    background-color: var(--pico-contrast-inverse);
+    color: var(--pico-contrast);
+    appearance: none;
+    box-shadow: none;
+    border: none;
+    padding: 0.5rem;
+}
+
+dialog button[type=reset] {
+    border-radius: var(--pico-border-radius);
+    margin-inline-start: 4px;
+    cursor: pointer;
+}
+
+dialog button[type=reset]:hover {
+    background-color: var(--pico-muted-background-color);
+}
+
+dialog input {
+    border: 1px solid var(--pico-contrast-border);
+    background-color: var(--pico-contrast-inverse);
+    font-size: var(--pico-font-size);
+    display: block;
+    width: 100%;
+    margin: 0 1px;
+    outline: none;
+    border-radius: var(--pico-border-radius);
+    padding: 0.5rem 1rem;
+}
+
+dialog input:focus-visible {
+    border: 1px solid var(--pico-primary);
+    box-shadow: 0 0 0 3px #1F7A4D40;
+}
+
+dialog input::-webkit-input-placeholder {
+    color: var(--pico-muted-color);
+}
+
+dialog.search .results {
+    height: calc(100% - 4.25rem);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+dialog.search a.result-item {
+    border-inline-start: 2px solid var(--pico-muted-border-color);
+    color: var(--pico-color);
+    text-decoration: none;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
+    padding-inline-start: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    transition: background-color 0.15s ease;
+}
+
+dialog.search a.result-item:hover {
+    background-color: var(--pico-muted-background-color);
+    border-inline-start-color: var(--pico-primary);
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+dialog.search .result-title {
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    display: block;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+dialog.search .result-content {
+    display: block;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+dialog.search .result-content b {
+    background-color: var(--pico-text-selection-color);
+    color: var(--pico-primary);
+    padding: 0.1rem 0.25rem;
+    border-radius: calc(var(--pico-border-radius) * 0.5);
+}
+
+dialog.search .load-more {
+    background-color: var(--pico-contrast-inverse);
+    color: var(--pico-contrast);
+    border: 1px solid var(--pico-contrast-border);
+    cursor: pointer;
+    display: block;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    margin: 1rem auto;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease;
+}
+
+dialog.search .load-more:hover {
+    background-color: var(--pico-muted-background-color);
+}
+
+dialog.search .load-more:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+@media (min-width: 1024px) {
+    dialog>article {
+        max-width: 950px;
+    }
+}
+
+
+blockquote {
+    padding-block: 0.25rem;
+}
+
+.caption:not(:empty) {
+    max-width: 60rem;
+    margin: 0.75rem auto;
+    font-size: calc(var(--pico-font-size) * 0.65);
+    color: var(--pico-muted-color);
+}
+
+
+p code {
+    overflow-wrap: anywhere;
+}
+
+:not(.code-box) > pre code[class*=language-],
+:not(.code-box) > pre > code {
+    background-color: #161513;
+    color: #ECE8E1;
+    overflow-x: auto;
+    font-family: var(--pico-font-family-monospace);
+    border-radius: calc(var(--pico-border-radius) * 2);
+}
+
+:not(.code-box) > pre:has(code[class*="language-"]),
+:not(.code-box) > pre:has(> code) {
+    background-color: #161513;
+    border-radius: var(--pico-border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--pico-muted-border-color);
+}
+
+
+footer.cms-content {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+}
+
+footer.cms-content > div {
+    margin: 3rem 0 0;
+}
+
+footer.cms-content h2 {
+    font-size: var(--pico-font-size);
+}
+
+footer.cms-content a,
+footer.cms-content a:visited {
+    color: var(--pico-muted-color);
+}
+
+footer.cms-content a:hover {
+    color: var(--pico-contrast);
+}
+
+footer.bottom {
+    margin: 0;
+}
+
+/* Content tables (markdown/HTML) — mirrors table.css .table-responsive */
+.cms-content table {
+    width: 100%;
+    margin-bottom: var(--pico-typography-spacing-vertical);
+    overflow: hidden;
+    border: 1px solid var(--pico-muted-border-color);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--pico-border-radius);
+    font-variant-numeric: tabular-nums;
+}
+
+.cms-content th,
+.cms-content td {
+    padding: 0.875rem 1.25rem;
+    background-color: var(--pico-card-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    text-align: start;
+    vertical-align: middle;
+}
+
+.cms-content tr:last-child > :is(th, td) {
+    border-bottom: 0;
+}
+
+.cms-content thead th {
+    padding-block: 0.75rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background-color: var(--pico-card-sectioning-background-color);
+}
+
+.cms-content tbody th {
+    color: var(--pico-contrast);
+    font-weight: 600;
+}
+
+.cms-content td {
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.95);
+}
+
+.cms-content tbody tr:hover > :is(th, td) {
+    background-color: var(--pico-muted-background-color);
+}
+
+.cms-content :is(th, td) > :first-child {
+    margin-top: 0;
+}
+
+.cms-content :is(th, td) > :last-child {
+    margin-bottom: 0;
+}

@@ -92,6 +92,9 @@
     <testsuite name="Aura">
       <directory>./themes/aura/tests/</directory>
     </testsuite>
+    <testsuite name="Folio">
+      <directory>./themes/folio/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>
