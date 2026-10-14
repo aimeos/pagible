@@ -1,0 +1,130 @@
+/**
+ * Aura Theme - Intro with glowing avatar ring, gradient headline and staggered entrance
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    position: relative;
+}
+
+.hero .background {
+    display: none;
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    padding-top: clamp(2rem, 8vw, 6rem) !important;
+    padding-bottom: clamp(1rem, 4vw, 3rem) !important;
+}
+
+.hero .second {
+    position: relative;
+    order: -1;
+    width: 6rem;
+    height: 6rem;
+    padding: 3px;
+    border-radius: 50%;
+    isolation: isolate;
+}
+
+.hero .second::before,
+.hero .second::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: conic-gradient(from 0deg, #6D4AFF, #FF5FB1, #FF9F5A, #2DD4F0, #6D4AFF);
+    border-radius: 50%;
+}
+
+.hero .second::after {
+    inset: -0.75rem;
+    z-index: -2;
+    opacity: 0.35;
+    filter: blur(1.25rem);
+}
+
+.hero .second :is(picture, img, video) {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero .second :is(img, video) {
+    object-fit: cover;
+    border: 3px solid var(--pico-background-color);
+    border-radius: 50%;
+}
+
+.hero .first {
+    max-width: 52rem;
+}
+
+.hero .subtitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.25rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    letter-spacing: 0.04em;
+}
+
+.hero .subtitle::before {
+    content: "";
+    width: 1.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, #6D4AFF, #FF5FB1);
+}
+
+.hero .title {
+    margin-bottom: 1.5rem;
+    font-size: clamp(2.75rem, 7.5vw, 5.5rem);
+}
+
+.hero .cms-text {
+    max-width: 40rem;
+    color: var(--pico-muted-color);
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+    line-height: 1.65;
+}
+
+.hero .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.hero .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+}
+
+@keyframes hero-rise {
+    from { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes hero-spin {
+    to { transform: rotate(1turn); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .second::before,
+    .hero .second::after {
+        animation: hero-spin 8s linear infinite;
+    }
+
+    .hero .second,
+    .hero .first > * {
+        animation: hero-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .hero .first > :nth-child(2) { animation-delay: 0.1s; }
+    .hero .first > :nth-child(3) { animation-delay: 0.2s; }
+    .hero .first > :nth-child(4) { animation-delay: 0.3s; }
+}

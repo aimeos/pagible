@@ -78,6 +78,7 @@
 				"themes/grove/src/",
 				"themes/launch/src/",
 				"themes/manual/src/",
+				"themes/aura/src/",
 				"themes/folio/src/",
 				"themes/bold/src/",
 				"themes/premium/src/",
@@ -109,6 +110,7 @@
 				"themes/grove/database/seeders/",
 				"themes/launch/database/seeders/",
 				"themes/manual/database/seeders/",
+				"themes/aura/database/seeders/",
 				"themes/folio/database/seeders/",
 				"themes/bold/database/seeders/",
 				"themes/premium/database/seeders/",
@@ -146,6 +148,7 @@
 				"themes/grove/tests/",
 				"themes/launch/tests/",
 				"themes/manual/tests/",
+				"themes/aura/tests/",
 				"themes/folio/tests/",
 				"backup/tests/",
 				"webhooks/tests/"
