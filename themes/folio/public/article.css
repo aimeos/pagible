@@ -1,0 +1,49 @@
+/**
+ * Folio Theme - Post header with date, reading time, lead and cover
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.article .post-head .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-bottom: 1rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.78);
+}
+
+.article .post-head .meta span::before {
+    content: "·";
+    margin-inline-end: 1rem;
+}
+
+.article .post-head .title {
+    margin-bottom: 1.25rem;
+}
+
+.article .post-head .lead {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 1.15);
+    line-height: 1.6;
+}
+
+.article .post-head .lead > :last-child {
+    margin-bottom: 0;
+}
+
+.article .cover {
+    display: block;
+    margin: 2rem 0 0;
+    overflow: hidden;
+    aspect-ratio: 2 / 1;
+    border: 1px solid var(--pico-muted-border-color);
+}
+
+.article .cover source,
+.article .cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
