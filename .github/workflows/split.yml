@@ -59,6 +59,7 @@ jobs:
           - { package: themes/grove, repo: pagible-themes-grove }
           - { package: themes/launch, repo: pagible-themes-launch }
           - { package: themes/manual, repo: pagible-themes-manual }
+          - { package: themes/folio, repo: pagible-themes-folio }
     steps:
       - uses: actions/checkout@v5
 

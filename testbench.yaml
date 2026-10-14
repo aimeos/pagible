@@ -5,6 +5,7 @@ providers:
   - Aimeos\Cms\CounselServiceProvider
   - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\FlowServiceProvider
+  - Aimeos\Cms\FolioServiceProvider
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\GlowServiceProvider
   - Aimeos\Cms\GroveServiceProvider

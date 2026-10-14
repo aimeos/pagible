@@ -1,0 +1,79 @@
+/**
+ * Folio Theme - Experience list with years in the gutter
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.timeline .steps {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.timeline .step {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--pico-muted-border-color);
+    list-style: none;
+}
+
+.timeline .marker {
+    display: none;
+}
+
+.timeline .label {
+    margin: 0 0 0.25rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.78);
+}
+
+.timeline .title {
+    margin: 0 0 0.375rem;
+    font-size: var(--pico-font-size);
+    font-weight: 600;
+}
+
+.timeline .step .cms-text {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.92);
+    line-height: 1.65;
+}
+
+.timeline .step .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.timeline .step .cms-text code {
+    display: inline-block;
+    margin: 0.125rem 0.125rem 0 0;
+    padding: 0.0625rem 0.5rem;
+    color: var(--pico-muted-color);
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-size: calc(var(--pico-font-size) * 0.7);
+}
+
+@media (min-width: 640px) {
+    .timeline .layout-vertical .step {
+        grid-template-columns: 8rem 1fr;
+        column-gap: 1.5rem;
+    }
+
+    .timeline .layout-vertical .label {
+        grid-row: span 2;
+        margin-top: 0.2rem;
+    }
+
+    .timeline .layout-vertical .step:not(:has(.label)) > * {
+        grid-column: 2;
+    }
+
+    .timeline .layout-horizontal {
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        gap: 0 1.5rem;
+    }
+}

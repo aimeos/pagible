@@ -1,0 +1,219 @@
+/**
+ * Folio Theme - Blog post layout with reading column, outline, author box and post navigation
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main .post {
+    position: relative;
+    max-width: 48rem;
+    margin: auto;
+    padding: 2rem 0 1rem;
+}
+
+main .post .cms-content > div {
+    margin: 1.75rem 0;
+}
+
+main .post .cms-content > .article {
+    margin-top: 1rem;
+}
+
+main .post :is(.text, .heading) .container {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: calc(var(--pico-font-size) * 1.08);
+    line-height: 1.75;
+}
+
+main .post .heading :is(h2, h3) {
+    margin: 1.5rem 0 0;
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: calc(var(--pico-font-size) * 1.35);
+}
+
+main .post .heading h3 {
+    font-size: calc(var(--pico-font-size) * 1.1);
+}
+
+main .post .heading .anchor {
+    margin-inline-start: 0.5rem;
+    color: var(--pico-muted-border-color);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+main .post .heading :is(h2, h3):hover .anchor {
+    opacity: 1;
+}
+
+main .post .heading .anchor:hover {
+    color: var(--pico-primary);
+}
+
+main .post .text .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+main .post .outline {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    main .post .outline {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        inset-inline-start: calc(100% + 1rem);
+        width: 13rem;
+        padding-top: 22rem;
+    }
+
+    main .post .outline > * {
+        position: sticky;
+        top: 6rem;
+    }
+
+    main .post .outline p {
+        margin-bottom: 0.75rem;
+        color: var(--pico-muted-color);
+        font-family: var(--pico-font-family-monospace);
+        font-size: calc(var(--pico-font-size) * 0.72);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    main .post .outline ul {
+        position: sticky;
+        top: 8rem;
+        margin: 0;
+        padding: 0;
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+    }
+
+    main .post .outline li {
+        margin: 0;
+        list-style: none;
+    }
+
+    main .post .outline a {
+        display: block;
+        margin-inline-start: -1px;
+        padding: 0.3rem 0 0.3rem 1rem;
+        color: var(--pico-muted-color);
+        border-inline-start: 1px solid #00000000;
+        font-size: calc(var(--pico-font-size) * 0.8);
+        line-height: 1.4;
+        text-decoration: none;
+    }
+
+    main .post .outline .level-3 a {
+        padding-inline-start: 1.75rem;
+    }
+
+    main .post .outline a:hover,
+    main .post .outline a.active {
+        color: var(--pico-contrast);
+        border-inline-start-color: var(--pico-primary);
+    }
+}
+
+main .post .post-foot {
+    margin: 3rem 0 0;
+    padding: 0 1.25rem;
+}
+
+main .post .author {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+main .post .author img {
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+main .post .author p {
+    margin: 0;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+}
+
+main .post .author p.name {
+    margin-bottom: 0.25rem;
+    color: var(--pico-contrast);
+    font-weight: 600;
+}
+
+main .post .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+main .post .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+}
+
+main .post .pager a:hover {
+    border-color: var(--pico-muted-color);
+}
+
+main .post .pager a.next {
+    grid-column: 2;
+    text-align: end;
+}
+
+main .post .pager small {
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.72);
+}
+
+main .post .pager a.prev small::before {
+    content: "← ";
+}
+
+main .post .pager a.next small::after {
+    content: " →";
+}
+
+[dir=rtl] main .post .pager a.prev small::before {
+    content: "→ ";
+}
+
+[dir=rtl] main .post .pager a.next small::after {
+    content: " ←";
+}
+
+main .post .pager span {
+    color: var(--pico-contrast);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+    main .post .pager {
+        grid-template-columns: 1fr;
+    }
+
+    main .post .pager a.next {
+        grid-column: auto;
+    }
+}

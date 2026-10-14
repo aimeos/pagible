@@ -1,0 +1,172 @@
+{
+    "label": "Folio",
+    "description": "Personal developer blog and portfolio inspired by leerob.com, overreacted.io, brittanychiang.com and antfu.me with a narrow reading column, serif article text, warm neutrals with one green accent, automatic light and dark mode with a toggle, writing grouped by year, reading time, a sticky outline on posts, previous and next posts, project tiles with tech pills, an experience timeline and Person markup for search engines",
+    "maintainer": "Aimeos",
+    "email": "info@aimeos.org",
+    "website": "https://pagible.com",
+    "types": {
+        "page": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        },
+        "blog": {
+            "sections": [
+                "main",
+                "footer"
+            ]
+        }
+    },
+    "config": {
+        "profile": {
+            "group": "basic",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 4A4 4 0 0 1 16 8A4 4 0 0 1 12 12A4 4 0 0 1 8 8A4 4 0 0 1 12 4M12 14C16.42 14 20 15.79 20 18V20H4V18C4 15.79 7.58 14 12 14Z\"/></svg>",
+            "fields": {
+                "name": {
+                    "type": "string",
+                    "hint": "Your full name, shown as logo and author of the posts",
+                    "required": true
+                },
+                "job": {
+                    "type": "string",
+                    "label": "Job title",
+                    "hint": "Your role used for search engines, e.g. Staff Engineer"
+                },
+                "company": {
+                    "type": "string",
+                    "label": "Company",
+                    "hint": "Company or organization you work for, e.g. Northwind Labs"
+                },
+                "location": {
+                    "type": "string",
+                    "label": "Location",
+                    "hint": "City or region you live in, e.g. Berlin, Germany"
+                },
+                "avatar": {
+                    "type": "image",
+                    "label": "Photo",
+                    "hint": "Square photo or avatar of you shown below the posts"
+                },
+                "bio": {
+                    "type": "string",
+                    "label": "Short bio",
+                    "hint": "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+                },
+                "email": {
+                    "type": "string",
+                    "label": "E-mail",
+                    "hint": "E-mail address shown in the footer with a copy button"
+                },
+                "links": {
+                    "type": "items",
+                    "label": "Profiles",
+                    "hint": "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn",
+                    "item": {
+                        "label": {
+                            "type": "string",
+                            "hint": "Name of the website, e.g. GitHub",
+                            "required": true
+                        },
+                        "url": {
+                            "type": "url",
+                            "hint": "Link to your profile, e.g. https://github.com/lena",
+                            "required": true
+                        }
+                    }
+                }
+            }
+        },
+        "theme": {
+            "group": "theme",
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M19 2L14 6.5V17.5L19 13V2M6.5 5C4.55 5 2.45 5.4 1 6.5V21.16C1 21.41 1.25 21.66 1.5 21.66C1.6 21.66 1.65 21.59 1.75 21.59C3.1 20.94 5.05 20.5 6.5 20.5C8.45 20.5 10.55 20.9 12 22C13.35 21.15 15.8 20.5 17.5 20.5C19.15 20.5 20.85 20.81 22.25 21.56C22.35 21.61 22.4 21.59 22.5 21.59C22.75 21.59 23 21.34 23 21.09V6.5C22.4 6.05 21.75 5.75 21 5.5V19C19.9 18.65 18.7 18.5 17.5 18.5C15.8 18.5 13.35 19.15 12 20V6.5C10.55 5.4 8.45 5 6.5 5Z\"/></svg>",
+            "fields": {
+                "--pico-font-family-sans-serif": {
+                    "type": "string",
+                    "hint": "Comma separated list of fonts used for the text",
+                    "default": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+                },
+                "--pico-color": {
+                    "type": "color",
+                    "hint": "Default text color",
+                    "default": "#2B2924"
+                },
+                "--pico-background-color": {
+                    "type": "color",
+                    "hint": "Background color of the pages",
+                    "default": "#FBFAF8"
+                },
+                "--pico-text-selection-color": {
+                    "type": "color",
+                    "hint": "Background color of selected text",
+                    "default": "#1F7A4D33"
+                },
+                "--pico-contrast": {
+                    "type": "color",
+                    "hint": "Color of elements with strong contrast to the background",
+                    "default": "#1C1A17"
+                },
+                "--pico-contrast-hover": {
+                    "type": "color",
+                    "hint": "Contrast color when hovering or focusing an element",
+                    "default": "#3A3731"
+                },
+                "--pico-contrast-inverse": {
+                    "type": "color",
+                    "hint": "Text color on elements using the contrast color",
+                    "default": "#FBFAF8"
+                },
+                "--pico-primary": {
+                    "type": "color",
+                    "hint": "Main brand color used for links and buttons",
+                    "default": "#1F7A4D"
+                },
+                "--pico-primary-background": {
+                    "type": "color",
+                    "hint": "Background color of primary buttons and highlights",
+                    "default": "#1F7A4D"
+                },
+                "--pico-primary-hover": {
+                    "type": "color",
+                    "hint": "Primary color when hovering or focusing an element",
+                    "default": "#17603C"
+                },
+                "--pico-primary-hover-background": {
+                    "type": "color",
+                    "hint": "Primary background color when hovering or focusing an element",
+                    "default": "#17603C"
+                },
+                "--pico-secondary": {
+                    "type": "color",
+                    "hint": "Additional color used for less important links and buttons",
+                    "default": "#6B665E"
+                },
+                "--pico-secondary-background": {
+                    "type": "color",
+                    "hint": "Background color of secondary buttons",
+                    "default": "#6B665E"
+                },
+                "--pico-secondary-hover": {
+                    "type": "color",
+                    "hint": "Secondary color when hovering or focusing an element",
+                    "default": "#4A463F"
+                },
+                "--pico-secondary-hover-background": {
+                    "type": "color",
+                    "hint": "Secondary background color when hovering or focusing an element",
+                    "default": "#4A463F"
+                },
+                "--pico-border-radius": {
+                    "type": "string",
+                    "hint": "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners",
+                    "default": "0.5rem"
+                },
+                "--pico-nav-breadcrumb-divider": {
+                    "type": "string",
+                    "hint": "Character shown between the breadcrumb links",
+                    "default": "/"
+                }
+            }
+        }
+    }
+}
