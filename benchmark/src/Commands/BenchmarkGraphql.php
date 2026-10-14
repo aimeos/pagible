@@ -40,15 +40,11 @@ class BenchmarkGraphql extends Command
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-
-        if( !$this->checks( $tenant, $tries, $force ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        ['domain' => $domain, 'tries' => $tries] = $options;
 
         config( ['scout.driver' => 'cms'] );
 

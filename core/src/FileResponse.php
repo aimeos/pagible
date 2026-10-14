@@ -9,8 +9,8 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -50,24 +50,37 @@ final class FileResponse
             : (string) ( $previews[$variant] ?? '' );
 
         if( !$path || str_starts_with( $path, 'http' )
-            || !File::owns( (string) $file->tenant_id, (string) $file->id, $path ) ) {
+            || !Files::owns( (string) $file->tenant_id, (string) $file->id, $path ) ) {
             abort( 404 );
         }
 
-        $storage = Storage::disk( File::diskName( (string) $file->disk ) );
-
-        $adapter = $storage->getAdapter();
         $name = $variant === null
             ? ( (string) ( $data->name ?? '' ) ?: (string) $file->name )
             : $path;
         $mime = $variant === null
             ? ( (string) ( $data->mime ?? '' ) ?: (string) $file->mime ?: 'application/octet-stream' )
             : self::mime( $path );
+
+        $storage = Files::disk( (string) $file->disk );
+        return self::send( $storage, $path, self::headers( $name, $mime ), $expires );
+    }
+
+
+    /**
+     * Returns the headers for delivering the file securely.
+     *
+     * @param string $name File name for downloading
+     * @param string $mime Mime type of the file
+     * @return array<string, string> Response headers
+     */
+    private static function headers( string $name, string $mime ) : array
+    {
         $inline = self::inline( $mime );
         $filename = self::filename( $name );
         $fallback = preg_match( '/^[\x20-\x7E]+$/', $filename ) && !str_contains( $filename, '%' )
             ? $filename : 'download';
-        $headers = [
+
+        return [
             'Cache-Control' => 'private, no-store',
             'Content-Disposition' => HeaderUtils::makeDisposition(
                 $inline ? 'inline' : 'attachment',
@@ -78,6 +91,23 @@ final class FileResponse
             'Content-Type' => $inline ? $mime : 'application/octet-stream',
             'X-Content-Type-Options' => 'nosniff',
         ];
+    }
+
+
+    /**
+     * Returns the response delivering the file from the storage.
+     *
+     * Storages providing temporary URLs redirect to them, others stream the file.
+     *
+     * @param FilesystemAdapter $storage Storage containing the file
+     * @param string $path Path of the file in the storage
+     * @param array<string, string> $headers Response headers
+     * @param int|null $expires Expiry time of temporary URLs in seconds
+     * @return Response File or redirect response
+     */
+    private static function send( FilesystemAdapter $storage, string $path, array $headers, ?int $expires ) : Response
+    {
+        $adapter = $storage->getAdapter();
 
         if( !( $adapter instanceof LocalFilesystemAdapter ) && $storage->providesTemporaryUrls() )
         {

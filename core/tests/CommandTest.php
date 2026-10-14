@@ -18,7 +18,6 @@ use Aimeos\Cms\Resource;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
@@ -373,6 +372,22 @@ class CoreCommandTest extends CoreTestAbstract
         $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-l' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
+    }
+
+
+    public function testUserListSkipsDeniedRoles(): void
+    {
+        User::create( [
+            'name' => 'Role user',
+            'email' => 'roles@example.com',
+            'password' => 'secret',
+            'cmsperms' => ['editor', '!viewer', 'page:view'],
+        ] );
+
+        $this->artisan( 'cms:user', ['-l' => true, 'email' => 'roles@example.com'] )
+            ->expectsOutput( '  editor' )
+            ->doesntExpectOutput( '  !viewer' )
+            ->assertExitCode( 0 );
     }
 
 

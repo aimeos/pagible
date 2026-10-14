@@ -9,53 +9,55 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Response;
-use Laravel\Mcp\Request;
+use Laravel\Scout\Builder;
 
 
 #[IsReadOnly]
 #[Name('search-files')]
 #[Title('Search files by keyword')]
 #[Description('Lists and searches media files. Optional: term (full-text search), mime, lang, trashed, publish, editor. Without term, returns all matching files. Returns up to 25 results.')]
-class SearchFiles extends Tool
+class SearchFiles extends SearchTool
 {
+    protected const MODEL = File::class;
+    protected const COLUMNS = ['cms_files.id', 'cms_files.tenant_id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id'];
+    protected const KEY = 'files';
     protected const PERMISSIONS = ['file:view'];
+    protected const RULES = [
+        'term' => 'string|max:255',
+        'mime' => 'string|max:50',
+        'lang' => 'nullable|string|max:10',
+    ] + parent::FILTERS;
 
 
     /**
-     * Handle the tool request.
+     * Applies the file specific filters.
+     *
+     * @param Builder<Model> $search Scout search builder
+     * @param array<string, mixed> $filter Validated filter values
+     * @return Builder<Model> Filtered search builder
      */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
+    protected function filter( Builder $search, array $filter ) : Builder
     {
-        $v = $request->validate([
-            'term' => 'string|max:255',
-            'mime' => 'string|max:50',
-            'lang' => 'nullable|string|max:10',
-            'trashed' => 'string|in:without,with,only',
-            'publish' => 'string|in:PUBLISHED,DRAFT,SCHEDULED',
-            'editor' => 'string|max:255',
-        ] );
+        return Filter::files( $search, $filter );
+    }
 
-        $search = Filter::search( File::class, $v['term'] ?? '' )
-            ->query( fn( $q ) => $q->select( 'cms_files.id', 'cms_files.tenant_id', 'cms_files.created_at', 'cms_files.updated_at', 'cms_files.deleted_at', 'cms_files.latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
-            ->take( 25 );
 
-        $result = [];
-
-        foreach( Filter::files( $search, $v )->get() as $item )
-        {
-            /** @var File $item */
-            $result[] = Presenter::file( $item, false );
-        }
-
-        return Response::structured( ['files' => $result] );
+    /**
+     * Returns the data of the found file.
+     *
+     * @param Model $item Found file
+     * @return array<string, mixed> File data
+     */
+    protected function present( Model $item ) : array
+    {
+        /** @var File $item */
+        return Presenter::file( $item, false );
     }
 
 
@@ -73,12 +75,7 @@ class SearchFiles extends Tool
                 ->description('Filter by MIME type prefix, e.g., "image" for all images, "video" for all videos.'),
             'lang' => $schema->string()
                 ->description('Filter by ISO language code, e.g., "en" or "de".'),
-            'trashed' => $schema->string()
-                ->description('Include trashed items: "without" (default), "with" (include deleted), or "only" (only deleted).'),
-            'publish' => $schema->string()
-                ->description('Filter by publish status: "PUBLISHED", "DRAFT", or "SCHEDULED".'),
-            'editor' => $schema->string()
-                ->description('Filter by editor name.'),
+            ...$this->filters( $schema ),
         ];
     }
 }

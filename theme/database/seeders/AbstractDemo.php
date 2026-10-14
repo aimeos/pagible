@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -75,9 +76,7 @@ abstract class AbstractDemo
             } );
         } );
 
-        PageView::makeAllSearchable();
-        Element::makeAllSearchable();
-        File::makeAllSearchable();
+        Scout::rebuild();
     }
 
 

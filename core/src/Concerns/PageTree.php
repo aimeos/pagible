@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Aimeos\Cms\Permission;
+use Aimeos\Nestedset\QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 
 /**
@@ -44,9 +48,9 @@ trait PageTree
      * Returns a query builder for the full page tree including disabled and trashed pages.
      *
      * @param string|null $id Root page ID or null for all root pages
-     * @return \Aimeos\Nestedset\QueryBuilder<Nav> Query builder for further chaining, call ->get()->toTree() to execute
+     * @return QueryBuilder<Nav> Query builder for further chaining, call ->get()->toTree() to execute
      */
-    public static function tree( ?string $id = null ) : \Aimeos\Nestedset\QueryBuilder
+    public static function tree( ?string $id = null ) : QueryBuilder
     {
         $root = $id ? static::withTrashed()->findOrFail( $id ) : null;
         $maxDepth = ( $root?->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
@@ -72,6 +76,50 @@ trait PageTree
 
 
     /**
+     * Returns the query for the complete subtrees of the given non-empty list of pages, including trashed ones.
+     *
+     * @param iterable<Model> $roots Pages with their nested set bounds
+     * @return QueryBuilder<PageView>
+     */
+    public static function subtrees( iterable $roots ) : QueryBuilder
+    {
+        $list = self::topmost( $roots );
+
+        return PageView::withTrashed()->where( function( $query ) use ( $list ) {
+            $query->whereRaw( '1 = 0' ); // no roots must match no pages
+
+            foreach( $list as $root ) {
+                $query->whereDescendantOrSelf( $root, 'or' );
+            }
+        } );
+    }
+
+
+    /**
+     * Returns the pages in tree order without the ones within the subtree of another given page.
+     *
+     * @param iterable<Model> $roots Pages with their nested set bounds
+     * @return Collection<int, Model>
+     */
+    public static function topmost( iterable $roots ) : Collection
+    {
+        $right = null;
+
+        return collect( $roots )
+            ->sortBy( fn( $root ) => (int) $root->getAttribute( NestedSet::LFT ) )
+            ->filter( function( $root ) use ( &$right ) {
+                if( $right !== null && (int) $root->getAttribute( NestedSet::LFT ) < $right ) {
+                    return false;
+                }
+
+                $right = (int) $root->getAttribute( NestedSet::RGT );
+                return true;
+            } )
+            ->values();
+    }
+
+
+    /**
      * Get query ancestors of the node.
      *
      * @return  AncestorsRelation
@@ -84,7 +132,7 @@ trait PageTree
             ->defaultOrder();
 
         // ancestors provide the inherited config, so they fall back to the source variant in both modes
-        $this->localize( $builder, false );
+        $this->localize( $builder, hide: false );
         return new AncestorsRelation( $builder, $this );
     }
 
@@ -156,7 +204,7 @@ trait PageTree
             ->select( Nav::SELECT_COLUMNS )->setModel( new Nav() );
 
         // the parent page always exists, so it falls back to the source variant in both modes
-        $this->localize( $relation->getQuery(), false );
+        $this->localize( $relation->getQuery(), hide: false );
         return $relation;
     }
 
@@ -206,7 +254,7 @@ trait PageTree
         // without a variant in that language are pruned by the relation
         $this->localize( $builder );
 
-        if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+        if( Permission::can( 'page:view', Auth::user() ) ) {
             $builder->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
         }
 
@@ -233,26 +281,23 @@ trait PageTree
      * unpublished variants too. Queries of models without a language, e.g. when eager
      * loading relations, keep using the source variants.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<*> $builder Page or navigation query
+     * @param Builder<*> $builder Page or navigation query
      * @param bool $hide Leave out pages without variant in "hide" mode, FALSE always falls back to the source variant
-     * @return bool TRUE if the query has been restricted to the language, FALSE if not
      */
-    public function localize( $builder, bool $hide = true ) : bool
+    public function localize( Builder $builder, bool $hide = true ) : void
     {
         $lang = $this->attributes['lang'] ?? null;
 
         if( !is_string( $lang ) || $lang === '' || !$builder instanceof PageQuery ) {
-            return false;
+            return;
         }
 
-        $editor = \Aimeos\Cms\Permission::can( 'page:view', Auth::user() );
+        $editor = Permission::can( 'page:view', Auth::user() );
 
         // disabled variants are left out for visitors like in the "source" mode
         $hide && !self::fallbackToSource()
             ? $builder->language( $lang )->when( !$editor, fn( $q ) => $q->where( $q->qualifyColumn( 'status' ), '<>', 0 ) )
             : $builder->localized( $lang, $editor );
-
-        return true;
     }
 
 
@@ -262,9 +307,9 @@ trait PageTree
      * The nested set writes the page tree directly instead of the page view.
      *
      * @param string|null $table Table name
-     * @return \Aimeos\Nestedset\QueryBuilder<PageView> Query builder including trashed nodes
+     * @return QueryBuilder<PageView> Query builder including trashed nodes
      */
-    public function newNestedSetQuery( ?string $table = null ) : \Aimeos\Nestedset\QueryBuilder
+    public function newNestedSetQuery( ?string $table = null ) : QueryBuilder
     {
         return ( new Page() )->newNestedSetQuery( $table );
     }

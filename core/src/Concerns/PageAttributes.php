@@ -73,19 +73,6 @@ trait PageAttributes
 
 
     /**
-     * Interact with the "name" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "name" property
-     */
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
      * Interact with the "meta" property.
      *
      * @return Attribute<mixed, mixed> Eloquent attribute for the "meta" property
@@ -99,19 +86,6 @@ trait PageAttributes
 
 
     /**
-     * Interact with the "path" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "path" property
-     */
-    protected function path(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
      * Interact with the "status" property.
      *
      * @return Attribute<mixed, mixed> Eloquent attribute for the "status" property
@@ -120,58 +94,6 @@ trait PageAttributes
     {
         return Attribute::make(
             set: fn( $value ) => (int) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "tag" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "tag" property
-     */
-    protected function tag(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "theme" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "theme" property
-     */
-    protected function theme(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "to" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "to" property
-     */
-    protected function to(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "type" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "type" property
-     */
-    protected function type(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
         );
     }
 }

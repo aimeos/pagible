@@ -100,7 +100,7 @@ class CmsServer extends Server
         $this->tools = array_merge( $this->tools, static::$registered );
 
         // Tag content changes made through MCP tools as 'mcp' for the audit log.
-        Utils::source( 'mcp' );
+        Watch::source( 'mcp' );
     }
 
 
@@ -133,7 +133,7 @@ class CmsServer extends Server
             action: $action,
             durationMs: Watch::duration( $start ),
             dimensions: [
-                'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
+                'domain' => Utils::domain(),
                 'success' => $success,
             ],
         );

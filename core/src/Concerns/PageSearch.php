@@ -7,10 +7,14 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Query\PageQuery;
+use Aimeos\Cms\Query\SearchQuery;
 use Aimeos\Cms\Scout;
+use Laravel\Scout\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 
 /**
@@ -59,20 +63,20 @@ trait PageSearch
     /**
      * Gets the page variants matching the search index keys.
      *
-     * @param \Laravel\Scout\Builder<static> $builder Scout search builder
+     * @param Builder<static> $builder Scout search builder
      * @param array<int, mixed> $ids Variant IDs
-     * @return \Illuminate\Database\Eloquent\Builder<static> Query for the page variants
+     * @return EloquentBuilder<static> Query for the page variants
      */
-    public function queryScoutModelsByIds( \Laravel\Scout\Builder $builder, array $ids )
+    public function queryScoutModelsByIds( Builder $builder, array $ids )
     {
         $query = $this->newQuery();
         $query->withTrashed();
 
-        if( !Scout::fallback( $query, $builder ) ) {
-            $query->allVariants( true );
+        if( !SearchQuery::fallback( $query, $builder ) ) {
+            $query->allVariants( trashed: true );
         }
 
-        Scout::columns( $query, $builder );
+        SearchQuery::columns( $query, $builder );
 
         if( $builder->queryCallback ) {
             call_user_func( $builder->queryCallback, $query );
@@ -146,8 +150,8 @@ trait PageSearch
             'restricted' => $this->restricted(),
         ] + ( Scout::usesExternalSearch() ? [
             // languages for searches with language fallback in external engines
-            'langs' => Scout::langs( $this, false ),
-            'langs_trashed' => Scout::langs( $this, true ),
+            'langs' => $this->searchLangs( trashed: false ),
+            'langs_trashed' => $this->searchLangs( trashed: true ),
             // translation state for page lists of a language
             'stale' => (bool) $this->stale,
         ] : [] );
@@ -155,15 +159,44 @@ trait PageSearch
 
 
     /**
+     * Returns the languages a page variant is listed for by searches with language fallback.
+     *
+     * Variants are listed for their own language and source variants also for the languages
+     * from "cms.locales" the page has no variant for.
+     *
+     * @param bool $trashed TRUE if trashed variants are listed too
+     * @return array<int, string> Language codes
+     */
+    protected function searchLangs( bool $trashed ) : array
+    {
+        $lang = (string) $this->lang;
+
+        if( !$trashed && $this->getAttribute( 'variant_deleted_at' ) !== null ) {
+            return [];
+        }
+
+        if( $lang !== (string) $this->source ) {
+            return [$lang];
+        }
+
+        $variants = $this->languages;
+        $existing = ( $trashed ? $variants : $variants->whereNull( 'deleted_at' ) )->pluck( 'lang' )->all();
+        $locales = Utils::locales();
+
+        return array_values( array_unique( [$lang, ...array_diff( $locales, $existing )] ) );
+    }
+
+
+    /**
      * Modify the query used to retrieve models when making all of the models searchable.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param EloquentBuilder<static> $query
+     * @return EloquentBuilder<static>
      */
     protected function makeAllSearchableUsing( $query )
     {
         if( $query instanceof PageQuery ) {
-            $query->allVariants( true );
+            $query->allVariants( trashed: true );
         }
 
         return $query->select( [...self::SELECT_COLUMNS, 'variant_deleted_at', 'stale'] )->withCount( 'access' )->with( [

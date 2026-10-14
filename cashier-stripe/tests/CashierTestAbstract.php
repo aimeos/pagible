@@ -43,7 +43,7 @@ abstract class CashierTestAbstract extends \Orchestra\Testbench\TestCase
     {
         \Aimeos\Cms\Access::extend( null );
         \Aimeos\Cms\Access::using( null );
-        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, false );
+        \Aimeos\Cms\Hooks::get()->managed = false;
 
         parent::tearDown();
     }

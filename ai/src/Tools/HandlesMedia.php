@@ -9,11 +9,14 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Resource;
-use Aimeos\Cms\Utils;
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Uploads;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
+use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 
 
 /**
@@ -24,6 +27,46 @@ use Illuminate\Http\UploadedFile;
  */
 trait HandlesMedia
 {
+    /**
+     * Validates the request, edits the image and stores it as new version of the file.
+     *
+     * @param Request $request Tool request with the "file" and "latest_id" parameters
+     * @param array<string, string> $rules Validation rules of the additional parameters
+     * @param array<string, string> $messages Validation messages incl. the one for "file.required"
+     * @param \Closure(Image, array<string, mixed>): string $edit Receives the image and the validated parameters, returns the base64 encoded result
+     * @return ResponseFactory The updated file
+     */
+    protected function edit( Request $request, array $rules, array $messages, \Closure $edit ) : ResponseFactory
+    {
+        $v = $request->validate( ['file' => 'required|string|max:36'] + $rules + ['latest_id' => 'required|string|max:36'], $messages + [
+            'latest_id.required' => 'You must pass the latest_id returned by get-file, add-file, or a previous save-file so concurrent edits are detected.',
+        ] );
+
+        $base64 = $edit( $this->image( $v['file'] ), $v );
+
+        $result = $this->upload( $base64, 'image', function( UploadedFile $upload ) use ( $v, $request ) {
+
+            $file = Resource::saveFile( $v['file'], [], $request->user(), $v['latest_id'], $upload );
+            return Presenter::saved( Presenter::file( $file ), $file );
+        } );
+
+        return Response::structured( $result );
+    }
+
+
+    /**
+     * Returns the input schema of the "latest_id" parameter.
+     *
+     * @return \Illuminate\JsonSchema\Types\Type
+     */
+    protected function latest( JsonSchema $schema ) : \Illuminate\JsonSchema\Types\Type
+    {
+        return $schema->string()
+            ->description( 'Required. The latest_id value returned by get-file, add-file, or your previous save-file for this file. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
+            ->required();
+    }
+
+
     /**
      * Loads a stored image file and returns it as a Prisma image object.
      *
@@ -51,40 +94,9 @@ trait HandlesMedia
      */
     protected function store( string $base64, string $name, ?string $lang, ?array $description, ?Authenticatable $user ) : array
     {
-        return $this->upload( $base64, $name, function( UploadedFile $upload ) use ( $lang, $description, $user ) {
-
-            $file = new File();
-            $file->lang = $lang;
-
-            if( $description ) {
-                $file->description = $description;
-            }
-
-            // Store the file and generate previews outside the transaction to
-            // keep slow disk and image work off the database connection.
-            $file->ingest( $upload );
-
-            return Presenter::item( Resource::addFile( $file, $user ) );
-        } );
-    }
-
-
-    /**
-     * Stores a base64 encoded image as a new draft version of an existing file.
-     *
-     * @param string $id UUID of the file to update
-     * @param string $base64 Base64 encoded image data of the edited image
-     * @param string $latestId Version ID the caller last retrieved (conflict detection)
-     * @param Authenticatable|null $user Authenticated user updating the file
-     * @return array<string, mixed> The updated file as array
-     */
-    protected function update( string $id, string $base64, string $latestId, ?Authenticatable $user ) : array
-    {
-        return $this->upload( $base64, 'image', function( UploadedFile $upload ) use ( $id, $latestId, $user ) {
-
-            $file = Resource::saveFile( $id, [], $user, $latestId, $upload );
-            return Presenter::saved( Presenter::file( $file ), $file );
-        } );
+        return $this->upload( $base64, $name, fn( UploadedFile $upload ) => Presenter::item(
+            Resource::createFile( $upload, array_filter( ['lang' => $lang, 'description' => $description] ), $user )
+        ) );
     }
 
 
@@ -113,6 +125,6 @@ trait HandlesMedia
             default => 'png',
         };
 
-        return Utils::upload( $binary, $name . '.' . $ext, $mime, $callback );
+        return Uploads::upload( $binary, $name . '.' . $ext, $mime, $callback );
     }
 }

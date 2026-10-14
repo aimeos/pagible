@@ -150,13 +150,7 @@ if( !function_exists( 'cmsdata' ) )
 
         $data = ['files' => $files];
 
-        // Resolve the action handler from the trusted schema by element type only. The handler
-        // must never be taken from the stored element data, which a content author could set to
-        // an arbitrary callable that app()->call() would invoke server-side (RCE).
-        $fields = \Aimeos\Cms\Schema::schemas( section: 'content' )[$item->type ?? '']['fields'] ?? [];
-        $action = ( $fields['action']['type'] ?? null ) === 'hidden' ? ( $fields['action']['value'] ?? null ) : null;
-
-        if( $action ) {
+        if( $action = \Aimeos\Cms\Schema::action( $item->type ?? '' ) ) {
             $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
         }
 
@@ -376,7 +370,7 @@ if( !function_exists( 'cmsurl' ) )
             return $path ?? '';
         }
 
-        return \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( $path );
+        return \Aimeos\Cms\Files::disk( 'public' )->url( $path );
     }
 }
 

@@ -68,11 +68,7 @@ class AddPage extends Tool
         $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
         $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
 
-        // Use the raw request input, not the validated copy: validate() rebuilds
-        // wildcard arrays via rule expansion, which materializes elements matched
-        // by content.*.id first and appends id-less elements at the end, scrambling
-        // the author's order. The raw input preserves it; Validation::content()
-        // still whitelists each element's keys.
+        // Raw input preserves the element order, see SavePage
         $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
         $v['cache'] = $v['cache'] ?? 5;
         $v['tag'] = $v['tag'] ?? '';

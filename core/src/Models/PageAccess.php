@@ -7,10 +7,12 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Concerns\Tenancy;
+use Aimeos\Cms\Concerns\Connection;
+use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Query\Expression;
+use Aimeos\Cms\Tenancy;
 
 
 /**
@@ -36,7 +39,8 @@ use Illuminate\Database\Query\Expression;
  */
 class PageAccess extends Model
 {
-    use Tenancy;
+    use Connection;
+    use HasTenancy;
 
     public const CHUNK_SIZE = 250;
     public $incrementing = false;
@@ -90,15 +94,6 @@ class PageAccess extends Model
 
 
     /**
-     * Returns the configured CMS database connection.
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
-    }
-
-
-    /**
      * Returns the page owning this explicit frontend access rule.
      *
      * @return BelongsTo<PageView, $this>
@@ -131,35 +126,12 @@ class PageAccess extends Model
 
         $values = $access === null ? null : self::normalize( $access );
 
-        [$pages, $changed, $reindex] = Utils::transaction( function() use ( $descendants, $ids, $user, $values ) {
+        [$pages, $changed, $reindex] = DB::transaction( function() use ( $descendants, $ids, $user, $values ) {
             $pages = $descendants ? self::subtree( $ids[0] ) : self::pages( $ids );
             PageView::checkBulk( count( $pages ) );
 
-            $pageIds = array_map( fn( Nav $page ) => (string) $page->id, $pages );
-
-            if( !$pageIds ) {
-                return [$pages, [], []];
-            }
-
-            $current = self::currentValues( $pageIds );
-            $restricted = $values !== null;
-            $changed = $changedIds = $reindex = [];
-
-            foreach( $pages as $page )
-            {
-                $id = (string) $page->id;
-
-                if( ( $current[$id] ?? null ) === $values ) {
-                    continue;
-                }
-
-                $changed[] = $page;
-                $changedIds[] = $id;
-
-                if( array_key_exists( $id, $current ) !== $restricted ) {
-                    $reindex[] = $id;
-                }
-            }
+            [$changed, $reindex] = self::changes( $pages, $values );
+            $changedIds = array_map( fn( Nav $page ) => (string) $page->id, $changed );
 
             self::checkAssignments( $changedIds, $values );
 
@@ -175,7 +147,7 @@ class PageAccess extends Model
 
         if( $changed )
         {
-            Resource::invalidatePages( $changed );
+            Invalidation::pages( self::variants( $changed ) );
 
             if( Scout::usesExternalSearch() ) {
                 Scout::reindex( PageView::class, $reindex );
@@ -198,10 +170,6 @@ class PageAccess extends Model
 
         foreach( $rules as $rule )
         {
-            if( !$rule instanceof self ) {
-                continue;
-            }
-
             if( $rule->value === '' ) {
                 return [];
             }
@@ -217,6 +185,42 @@ class PageAccess extends Model
         sort( $values, SORT_STRING );
 
         return $values;
+    }
+
+
+    /**
+     * Returns the pages whose access state differs from the new one.
+     *
+     * @param list<Nav> $pages Pages to update
+     * @param array<int, string>|null $values New access state
+     * @return array{0: list<Nav>, 1: list<string>} Changed pages and IDs of the pages switching between public and restricted
+     */
+    private static function changes( array $pages, ?array $values ) : array
+    {
+        if( !$pages ) {
+            return [[], []];
+        }
+
+        $current = self::currentValues( array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+        $restricted = $values !== null;
+        $changed = $reindex = [];
+
+        foreach( $pages as $page )
+        {
+            $id = (string) $page->id;
+
+            if( ( $current[$id] ?? null ) === $values ) {
+                continue;
+            }
+
+            $changed[] = $page;
+
+            if( array_key_exists( $id, $current ) !== $restricted ) {
+                $reindex[] = $id;
+            }
+        }
+
+        return [$changed, $reindex];
     }
 
 
@@ -261,7 +265,7 @@ class PageAccess extends Model
             }
 
             foreach( $groups as $id => $rules ) {
-                $result[$id] = self::values( $rules ) ?? [];
+                $result[$id] = (array) self::values( $rules );
             }
         }
 
@@ -290,16 +294,7 @@ class PageAccess extends Model
      */
     private static function ids( iterable $ids ) : array
     {
-        $keys = [];
-
-        foreach( $ids as $id ) {
-            if( is_string( $id ) ) {
-                $keys[$id] = true;
-                PageView::checkBulk( count( $keys ) );
-            }
-        }
-
-        $ids = array_keys( $keys );
+        $ids = PageView::bulkIds( $ids );
         sort( $ids, SORT_STRING );
 
         return $ids;
@@ -359,7 +354,7 @@ class PageAccess extends Model
 
 
     /**
-     * Replaces access rows for the supplied pages in bounded inserts.
+     * Replaces access rows for the supplied pages.
      *
      * @param list<string> $ids
      * @param array<int, string> $values
@@ -369,7 +364,7 @@ class PageAccess extends Model
         $now = now()->startOfSecond();
         $model = new self();
         $table = $model->getConnection()->table( $model->getTable() );
-        $tenant = \Aimeos\Cms\Tenancy::value();
+        $tenant = Tenancy::value();
 
         self::deleteAccess( $ids );
 
@@ -387,17 +382,10 @@ class PageAccess extends Model
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
-
-                if( count( $rows ) >= self::CHUNK_SIZE ) {
-                    $table->insert( $rows );
-                    $rows = [];
-                }
             }
         }
 
-        if( $rows ) {
-            $table->insert( $rows );
-        }
+        DB::insertRows( $table, $rows );
     }
 
 
@@ -408,7 +396,7 @@ class PageAccess extends Model
      */
     private static function rules( ?Authenticatable $user ) : ?\Closure
     {
-        if( !$user || !\Aimeos\Cms\Tenancy::allows( $user, \Aimeos\Cms\Tenancy::value() ) ) {
+        if( !$user || !Tenancy::allows( $user, Tenancy::value() ) ) {
             return null;
         }
 
@@ -440,8 +428,7 @@ class PageAccess extends Model
         $query = Nav::query()
             ->select( 'id', 'tenant_id', 'domain', 'path', NestedSet::LFT )
             ->withoutGlobalScope( 'jsonapi' )
-            ->where( NestedSet::LFT, '>=', $root->getLft() )
-            ->where( NestedSet::RGT, '<=', $root->getRgt() )
+            ->whereDescendantOrSelf( $root )
             ->orderBy( NestedSet::LFT )
             ->limit( PageView::MAX_BULK + 1 );
 
@@ -449,5 +436,24 @@ class PageAccess extends Model
         $pages = $query->get()->all();
 
         return $pages;
+    }
+
+
+    /**
+     * Loads the routes of all language variants of the pages, whose cached responses must be invalidated.
+     *
+     * @param list<Nav> $pages Pages loaded with their source variant
+     * @return list<PageVariant> Variants with their domain and path
+     */
+    private static function variants( array $pages ) : array
+    {
+        $variants = [];
+        $ids = array_map( fn( Nav $page ) => (string) $page->id, $pages );
+
+        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
+            array_push( $variants, ...PageVariant::whereIn( 'page_id', $chunk )->get( ['domain', 'path'] )->all() );
+        }
+
+        return $variants;
     }
 }

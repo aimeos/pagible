@@ -55,7 +55,7 @@ The `colors` section defines the Vuetify theme colors for the `light` and `dark`
 |--------|--------------|---------|-------------|
 | `proxy.maxsize` | `CMS_PROXY_MAXSIZE` | `10` | Maximum file size in MB downloadable via the proxy |
 | `proxy.timeout` | `CMS_PROXY_TIMEOUT` | `30` | Stream timeout in seconds |
-| `proxy.middleware` | | `['throttle:cms-proxy']` | Middleware applied to the proxy route |
+| `proxy.middleware` | | `['web', 'auth', 'throttle:cms-proxy']` | Middleware applied to the proxy route |
 
 ## Development
 

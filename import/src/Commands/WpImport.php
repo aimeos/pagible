@@ -637,7 +637,7 @@ class WpImport extends Command
 
                 try {
                     $post = $this->post( $post );
-                    $existing = Utils::transaction( fn() => $this->importPost( $post, $blogPage ) );
+                    $existing = \Aimeos\Cms\DB::transaction( fn() => $this->importPost( $post, $blogPage ) );
 
                     $existing ? $updated++ : $imported++;
                     $action = $existing ? 'Updated' : 'Imported';

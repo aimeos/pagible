@@ -148,7 +148,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 'en', $page->source );
 
         $de = PageView::language( 'de' )->findOrFail( $page->id );
-        $hashes = Hashes::page( $page->only( Hashes::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
+        $hashes = Hashes::page( $page->only( PageVariant::SYNC_FIELDS ), $page->content, $page->meta, $page->config );
 
         $this->assertSame( 'Über uns', $de->title );
         $this->assertSame( 'ueber-uns', $de->path );

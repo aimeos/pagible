@@ -5,13 +5,14 @@
  */
 
 
-namespace Aimeos\Cms\Concerns;
+namespace Aimeos\Cms\Resource;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Tenancy;
+use Illuminate\Support\Collection;
 
 
 /**
@@ -20,8 +21,10 @@ use Aimeos\Cms\Tenancy;
  * The resource methods work with the read-only PageView models, these helpers
  * write their values to the Page and PageVariant models and keep the page
  * views in sync with the stored values.
+ *
+ * @internal
  */
-trait Pages
+final class Pages
 {
     /**
      * Inserts the new page and its variant into the page tree.
@@ -31,7 +34,7 @@ trait Pages
      * @param string|null $parent Parent page ID to append to, as root page if both are NULL
      * @return Page Inserted page
      */
-    protected static function createPage( PageView $page, ?string $ref = null, ?string $parent = null ) : Page
+    public static function create( PageView $page, ?string $ref, ?string $parent ) : Page
     {
         $page->setUniqueIds();
 
@@ -41,7 +44,7 @@ trait Pages
         self::position( $node, $ref, $parent )->save();
 
         // saved as model to update the search index
-        $variant = ( new PageVariant() )->setRawAttributes( self::variantRow( (string) $node->id, PageBuilder::variantValues( $page->getAttributes() ) ) );
+        $variant = ( new PageVariant() )->setRawAttributes( self::variantRow( (string) $node->id, PageBuilder::variantValues( $page->getAttributes() ), raw: true ) );
         $node->variants()->save( $variant );
 
         $page->syncChanges();
@@ -62,7 +65,7 @@ trait Pages
      * @param \Closure(Page): mixed $change Writes the page, e.g. by moving, trashing or restoring it
      * @return Page Saved page
      */
-    protected static function saveNode( PageView $page, \Closure $change ) : Page
+    public static function saveNode( PageView $page, \Closure $change ) : Page
     {
         $node = $page->toPage();
 
@@ -81,7 +84,7 @@ trait Pages
      * @param string|null $parent Parent page ID to append to, as root page if both are NULL
      * @return Page Same page with the pending position
      */
-    protected static function position( Page $node, ?string $ref = null, ?string $parent = null ) : Page
+    public static function position( Page $node, ?string $ref, ?string $parent ) : Page
     {
         if( $ref !== null ) {
             $node->beforeNode( Page::withTrashed()->findOrFail( $ref ) );
@@ -102,7 +105,7 @@ trait Pages
      * @param array<string, mixed> $values Additional column/value pairs of the page view to save
      * @return PageView Same page view with the saved values
      */
-    protected static function saveVariant( PageView $page, array $values = [] ) : PageView
+    public static function saveVariant( PageView $page, array $values = [] ) : PageView
     {
         $page->forceFill( $values );
 
@@ -131,49 +134,23 @@ trait Pages
 
 
     /**
-     * Inserts the records in chunks which stay below the parameter limits of the databases.
-     *
-     * @param \Illuminate\Database\Query\Builder $query Query builder for the table
-     * @param array<int, array<string, mixed>> $records Records to insert
-     */
-    protected static function insertRows( \Illuminate\Database\Query\Builder $query, array $records ) : void
-    {
-        $groups = [];
-
-        // bulk inserts require the same columns in each record
-        foreach( $records as $record )
-        {
-            ksort( $record );
-            $groups[implode( ',', array_keys( $record ) )][] = $record;
-        }
-
-        foreach( $groups as $list )
-        {
-            // SQL Server allows up to 2100 parameters per statement
-            foreach( array_chunk( $list, max( 1, intdiv( 2000, count( $list[0] ) ) ) ) as $chunk ) {
-                ( clone $query )->insert( $chunk );
-            }
-        }
-    }
-
-
-    /**
      * Returns the complete record of a new page variant for inserting it.
      *
      * Missing values are set to the defaults of the variants, a new unique ID,
      * the current tenant and the current time. NULL values are skipped.
      *
      * @param string $pageId ID of the page the variant belongs to
-     * @param array<string, mixed> $raw Column values as stored in the database
      * @param array<string, mixed> $values Attribute values which are converted like in the PageVariant model
+     * @param bool $raw TRUE if the values are column values as stored in the database
      * @return array<string, mixed> Record of the page variant
      */
-    protected static function variantRow( string $pageId, array $raw, array $values = [] ) : array
+    public static function variantRow( string $pageId, array $values, bool $raw = false ) : array
     {
+        $values = array_filter( $values, fn( $v ) => $v !== null );
+
         $variant = new PageVariant();
-        $variant->setRawAttributes( array_replace( $variant->getAttributes(), ['tenant_id' => Tenancy::value()],
-            array_filter( $raw, fn( $v ) => $v !== null ) ) );
-        $variant->forceFill( array_filter( $values, fn( $v ) => $v !== null ) + ['page_id' => $pageId] );
+        $variant->setRawAttributes( array_replace( $variant->getAttributes(), ['tenant_id' => Tenancy::value()], $raw ? $values : [] ) );
+        $variant->forceFill( ( $raw ? [] : $values ) + ['page_id' => $pageId] );
 
         if( !$variant->getKey() ) {
             $variant->setAttribute( 'id', $variant->newUniqueId() );
@@ -188,5 +165,63 @@ trait Pages
         }
 
         return $variant->getAttributes();
+    }
+
+
+    /**
+     * Returns the language and the variant attributes contained in the page data.
+     *
+     * @param array<string, mixed> $data Page data
+     * @return array<string, mixed> Language and variant attribute values
+     */
+    public static function variantData( array $data ) : array
+    {
+        return array_intersect_key( $data, array_flip( ['lang', ...PageVariant::DATA_FIELDS] ) );
+    }
+
+
+    /**
+     * Adds a new version to the page variant and saves the page.
+     *
+     * @param PageView $page Page with the variant the version belongs to
+     * @param array<string, mixed> $data Version data
+     * @param array<string, mixed> $aux Content, meta and config
+     * @param string $editor Name of the editing user
+     * @param array<string, array<string>>|null $refs File and element references or NULL to copy the ones of the previous version
+     * @param array<string, mixed>|null $diffs Merge differences for the change info
+     * @param string|null $lang Language of the version, the one of the data or the page by default
+     * @return PageView Page with the new version as "latest"
+     */
+    public static function addVersion( PageView $page, array $data, array $aux, string $editor,
+        ?array $refs, ?array $diffs = null, ?string $lang = null ) : PageView
+    {
+        $page->newDraft( [
+            'data' => $data,
+            'lang' => $lang ?? $data['lang'] ?? $page->lang,
+            'editor' => $editor,
+            'aux' => $aux,
+        ], $refs, $diffs );
+
+        return self::saveVariant( $page );
+    }
+
+
+    /**
+     * Returns the pages of the list.
+     *
+     * @param iterable<mixed> $items List of models
+     * @return Collection<int, PageView> List of pages
+     */
+    public static function views( iterable $items ) : Collection
+    {
+        $list = [];
+
+        foreach( $items as $item ) {
+            if( $item instanceof PageView ) {
+                $list[] = $item;
+            }
+        }
+
+        return collect( $list );
     }
 }

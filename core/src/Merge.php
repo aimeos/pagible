@@ -311,7 +311,6 @@ class Merge
             return null;
         }
 
-        /** @var Version|null */
         return $model->versions()->find( $latestId );
     }
 

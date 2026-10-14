@@ -7,13 +7,18 @@
 
 namespace Aimeos\Cms\Concerns;
 
+use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageAccess;
-use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Paths;
+use Aimeos\Cms\Resource\Refs;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
@@ -24,6 +29,8 @@ use Illuminate\Support\Collection;
 
 /**
  * Copies of pages including their sub-pages and language variants.
+ *
+ * @phpstan-type CopyRecords array{variant: array<string, mixed>, version: array<string, mixed>, refs: array<string, array<int, string>>}
  */
 trait Copies
 {
@@ -44,42 +51,15 @@ trait Copies
     {
         $editor = Utils::editor( $user );
 
-        [$copy, $indexed, $restricted] = Utils::lockedTransaction(
-            fn() => self::copyTree( $id, $ref, $parent, $editor, $user ),
-            self::copyLifetime( $id )
-        );
+        // the copies are mostly inserted in bulk, so all of them are indexed once after the transaction including their access rules
+        // the lock is released after copying, its lifetime only protects large subtrees until then
+        [$copy, $ids] = Scout::mute( [PageView::class], fn() => DB::lockedTransaction(
+            fn() => self::copyTree( $id, $ref, $parent, $editor, $user ), 300
+        ) );
 
-        // the variants inserted in bulk aren't indexed by saving the models
-        if( $indexed && Scout::usesSearchIndex() ) {
-            Scout::index( PageView::class, $indexed );
-        }
-
-        // external search engines store if pages are restricted, which was unknown when the copied page was saved
-        if( Scout::usesExternalSearch() ) {
-            Scout::reindex( PageView::class, array_diff( $restricted, $indexed ) );
-        }
+        Scout::index( PageView::class, $ids );
 
         return $copy;
-    }
-
-
-    /**
-     * Returns the lifetime of the lock which must last until all pages of the subtree are copied.
-     *
-     * The copied root page takes about 0.05s and each other variant about 0.01s because they are inserted in bulk.
-     *
-     * @param string $id Page UUID
-     * @return int Lifetime in seconds
-     */
-    protected static function copyLifetime( string $id ) : int
-    {
-        $node = PageView::select( 'id', NestedSet::LFT, NestedSet::RGT )->findOrFail( $id );
-        $variants = PageVariant::whereIn( 'page_id', fn( $q ) => $q->select( 'id' )->from( 'cms_pages' )
-            ->where( 'tenant_id', Tenancy::value() )
-            ->whereBetween( NestedSet::LFT, [$node->getLft(), $node->getRgt()] )
-        )->count();
-
-        return (int) ceil( 1 + $variants / 100 );
     }
 
 
@@ -94,45 +74,20 @@ trait Copies
      * @param string|null $parent Parent page ID to append to
      * @param string $editor Name of the editor
      * @param Authenticatable|null $user Authenticated user for the references of variants without versions
-     * @return array{0: PageView, 1: array<int, string>, 2: array<int, string>} Copy of the root page, IDs of the copies
-     *  inserted in bulk which must be indexed and IDs of the copies which are restricted
+     * @return array{0: PageView, 1: array<int, string>} Copy of the root page and IDs of the copied pages
      */
     protected static function copyTree( string $id, ?string $ref, ?string $parent, string $editor, ?Authenticatable $user ) : array
     {
-        /** @var PageView $root */
-        $root = PageView::select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )->findOrFail( $id );
-        $rootId = (string) $root->id;
-
-        $pages = PageView::select( 'id', 'parent_id', 'source', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
-            ->where( NestedSet::LFT, '>=', $root->getLft() )
-            ->where( NestedSet::RGT, '<=', $root->getRgt() )
-            ->orderBy( NestedSet::LFT )
-            ->get();
-
-        PageView::checkBulk( $pages->count() );
-
-        $variants = PageVariant::select( ['id', 'page_id', 'lang', 'latest_id', 'hashes', 'stale', ...PageVariant::FIELDS] )
-            ->whereIn( 'page_id', $pages->pluck( 'id' )->all() )
-            ->orderBy( 'lang' )->get();
-
-        $sizes = self::copySizes( self::pages( $pages ), $variants->pluck( 'page_id', 'page_id' )->all(), $rootId );
-
-        if( !isset( $sizes[$rootId] ) ) {
-            throw new Exception( sprintf( 'Page "%1$s" has no variants', $id ) );
-        }
-
-        $variants = $variants->toBase()->groupBy( 'page_id' );
-        [$known, $loaded] = self::knownPaths( $variants->collapse() );
+        [$rootId, $pages, $variants, $sizes] = self::copySubtree( $id );
+        [$known, $loaded] = Paths::known( $variants->collapse() );
         $copy = null;
         $nodes = $next = $inserts = $rows = [];
-        $bulk = false;
 
         // the latest versions with the content are loaded and the copies inserted per chunk to limit the memory
-        foreach( $pages->toBase()->chunk( 50 ) as $chunk )
+        foreach( $pages->chunk( Base::CHUNK ) as $chunk )
         {
             $versions = self::copyVersions( $variants->only( $chunk->pluck( 'id' )->all() )->collapse() );
 
-            /** @var PageView $orig */
             foreach( $chunk as $orig )
             {
                 $oid = (string) $orig->id;
@@ -158,14 +113,8 @@ trait Copies
                         continue;
                     }
 
-                    if( !$page )
-                    {
-                        $pid = (string) $orig->parent_id;
-                        $lft = $next[$pid];
-                        $next[$pid] = $lft + 2 * $sizes[$oid];
-                        $next[$oid] = $lft + 1;
-
-                        $inserts[] = $nodes[$oid] = self::copyNode( $variant->lang, $lft, $next[$pid] - 1, $nodes[$pid] );
+                    if( !$page ) {
+                        $inserts[] = $nodes[$oid] = self::copyNode( $variant->lang, $oid, (string) $orig->parent_id, $sizes[$oid], $next, $nodes );
                     }
 
                     $rows[] = $row = self::copyRows( (string) $nodes[$oid]['id'], $variant, $data, $aux, $refs, $editor );
@@ -177,16 +126,21 @@ trait Copies
                     }
                 }
 
-                $page?->announce( 'added', $editor );
+                $page?->announce( ContentAction::Added, $editor );
             }
 
-            $bulk = self::flushCopies( $inserts, $rows ) || $bulk;
+            self::flushCopies( $inserts, $rows );
         }
 
-        /** @var PageView $copy */
+        if( !$copy ) {
+            throw new Exception( sprintf( 'Page "%1$s" has not been copied', $id ) );
+        }
+
         $ids = array_map( fn( $node ) => (string) $node['id'], $nodes );
 
-        return [$copy, $bulk ? array_values( $ids ) : [], self::copyAccess( $ids, $editor )];
+        self::copyAccess( $ids, $editor );
+
+        return [$copy, array_values( $ids )];
     }
 
 
@@ -195,11 +149,10 @@ trait Copies
      *
      * @param array<string, string> $ids IDs of the copied pages as values and the IDs of the original pages as keys
      * @param string $editor Name of the editor
-     * @return array<int, string> IDs of the copied pages which are restricted
      */
-    protected static function copyAccess( array $ids, string $editor ) : array
+    protected static function copyAccess( array $ids, string $editor ) : void
     {
-        $rows = $restricted = [];
+        $rows = [];
         $now = now()->startOfSecond();
         $tenant = Tenancy::value();
 
@@ -208,7 +161,7 @@ trait Copies
             foreach( PageAccess::select( 'page_id', 'value' )->whereIn( 'page_id', $chunk )->toBase()->get() as $access )
             {
                 $rows[] = [
-                    'page_id' => $restricted[] = $ids[(string) $access->page_id],
+                    'page_id' => $ids[(string) $access->page_id],
                     'tenant_id' => $tenant,
                     'value' => (string) $access->value,
                     'editor' => $editor,
@@ -218,9 +171,7 @@ trait Copies
             }
         }
 
-        self::insertRows( PageAccess::query()->toBase(), $rows );
-
-        return array_values( array_unique( $restricted ) );
+        DB::insertRows( PageAccess::query()->toBase(), $rows );
     }
 
 
@@ -233,12 +184,12 @@ trait Copies
      * @param array<string, mixed> $aux Content, meta and config of the copied variant
      * @param array<string, array<int, string>> $refs File and element IDs referenced by the version
      * @param string $editor Name of the editor
-     * @return array{variant: array<string, mixed>, version: array<string, mixed>, refs: array<string, array<int, string>>} Records to insert
+     * @return CopyRecords Records to insert
      */
     protected static function copyRows( string $pageId, PageVariant $variant, array $data, array $aux, array $refs, string $editor ) : array
     {
         $tenant = Tenancy::value();
-        $copy = self::variantRow( $pageId, [], ['status' => 0] + array_intersect_key( $data, array_flip( ['lang', ...PageVariant::FIELDS] ) ) + [
+        $copy = Pages::variantRow( $pageId, ['status' => 0] + Pages::variantData( $data ) + [
             'hashes' => (array) $variant->hashes,
             'stale' => (bool) $variant->stale,
             'editor' => $editor,
@@ -267,19 +218,26 @@ trait Copies
      * Returns the record of a copied page inserted into the gap of the copied subtree.
      *
      * @param string $lang Source language of the copied page
-     * @param int $lft Left value in the page tree
-     * @param int $rgt Right value in the page tree
-     * @param array<string, mixed> $parent Record of the copied parent page
+     * @param string $id ID of the original page
+     * @param string $pid ID of the original parent page
+     * @param int $size Number of copied pages in the subtree of the page including itself
+     * @param array<string, int> $next Next free left values by original page ID, updated for the page and its parent
+     * @param array<string, array<string, mixed>> $nodes Records of the copied pages by original page ID
      * @return array<string, mixed> Record of the page tree
      */
-    protected static function copyNode( string $lang, int $lft, int $rgt, array $parent ) : array
+    protected static function copyNode( string $lang, string $id, string $pid, int $size, array &$next, array $nodes ) : array
     {
+        $parent = $nodes[$pid];
+        $lft = $next[$pid];
+        $next[$pid] = $lft + 2 * $size;
+        $next[$id] = $lft + 1;
+
         $node = ( new Page() )->forceFill( [
-            'id' => ( new PageView() )->newUniqueId(),
+            'id' => ( new Page() )->newUniqueId(),
             'tenant_id' => Tenancy::value(),
             'source' => $lang,
         ] );
-        $node->rawNode( $lft, $rgt, (string) $parent['id'], (int) $parent[NestedSet::DEPTH] + 1 );
+        $node->rawNode( $lft, $lft + 2 * $size - 1, (string) $parent['id'], (int) $parent[NestedSet::DEPTH] + 1 );
         $node->updateTimestamps();
 
         return $node->getAttributes();
@@ -298,18 +256,18 @@ trait Copies
      */
     protected static function copyData( PageVariant $variant, ?Version $version, array &$known, array $loaded, ?Authenticatable $user ) : array
     {
-        $data = (array) ( $version->data ?? $variant->only( PageVariant::FIELDS ) );
+        $data = (array) ( $version->data ?? $variant->only( PageVariant::DATA_FIELDS ) );
         $aux = (array) ( $version->aux ?? self::variantAux( (string) $variant->id ) );
         $domain = (string) ( $data['domain'] ?? $variant->domain );
 
         $data['lang'] = $variant->lang;
         $data['domain'] = $domain;
-        $data['path'] = self::uniquePath( $domain, (string) ( $data['path'] ?? $variant->path ), $variant->lang, $known, $loaded );
+        $data['path'] = Paths::unique( $domain, (string) ( $data['path'] ?? $variant->path ), $variant->lang, $known, $loaded );
 
         $refs = $version ? [
             'files' => $version->files->pluck( 'id' )->all(),
             'elements' => $version->elements->pluck( 'id' )->all(),
-        ] : self::refs( $aux, $user );
+        ] : Refs::page( $aux, $user );
 
         return [$data, $aux, $refs];
     }
@@ -333,14 +291,14 @@ trait Copies
     {
         $page = new PageView();
         // copies are disabled until published because the live columns come from the draft
-        $page->forceFill( ['status' => 0] + array_intersect_key( $data, array_flip( ['lang', ...PageVariant::FIELDS] ) ) + [
+        $page->forceFill( ['status' => 0] + Pages::variantData( $data ) + [
             'source' => $variant->lang,
             'hashes' => $variant->hashes,
             'stale' => $variant->stale,
             'editor' => $editor,
         ] );
 
-        $node = self::createPage( $page, $ref, $parent );
+        $node = Pages::create( $page, $ref, $parent );
 
         if( $size > 1 && ( $rgt = $node->getRgt() ) !== null )
         {
@@ -349,7 +307,7 @@ trait Copies
             $page->synced( $node );
         }
 
-        return [self::addVersion( $page, $data, $aux, $editor, $refs ), $node->getAttributes()];
+        return [Pages::addVersion( $page, $data, $aux, $editor, $refs ), $node->getAttributes()];
     }
 
 
@@ -357,13 +315,12 @@ trait Copies
      * Inserts the copied pages, their variants, versions and the references of the versions and resets the lists.
      *
      * @param array<int, array<string, mixed>> $nodes Records of the copied pages
-     * @param array<int, array{variant: array<string, mixed>, version: array<string, mixed>, refs: array<string, array<int, string>>}> $rows Records of the copied variants
-     * @return bool TRUE if records have been inserted
+     * @param array<int, CopyRecords> $rows Records of the copied variants
      */
-    protected static function flushCopies( array &$nodes, array &$rows ) : bool
+    protected static function flushCopies( array &$nodes, array &$rows ) : void
     {
         if( empty( $rows ) ) {
-            return false;
+            return;
         }
 
         $pivots = [];
@@ -373,8 +330,7 @@ trait Copies
         {
             foreach( $row['refs'] as $relation => $ids )
             {
-                /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<Base, Version> $rel */
-                $rel = $version->{$relation}();
+                $rel = $version->reference( $relation );
 
                 foreach( array_unique( $ids ) as $refId ) {
                     $pivots[$rel->getTable()][] = [$rel->getForeignPivotKeyName() => $row['version']['id'], $rel->getRelatedPivotKeyName() => $refId];
@@ -383,16 +339,49 @@ trait Copies
         }
 
         // the pages first because of the foreign keys of the variants and versions before their references
-        self::insertRows( Page::withoutGlobalScopes()->toBase(), $nodes );
-        self::insertRows( Version::query()->toBase(), array_column( $rows, 'version' ) );
-        self::insertRows( PageVariant::query()->toBase(), array_column( $rows, 'variant' ) );
+        DB::insertRows( Page::withoutGlobalScopes()->toBase(), $nodes );
+        DB::insertRows( Version::query()->toBase(), array_column( $rows, 'version' ) );
+        DB::insertRows( PageVariant::query()->toBase(), array_column( $rows, 'variant' ) );
 
         foreach( $pivots as $table => $list ) {
-            self::insertRows( $version->getConnection()->table( $table ), $list );
+            DB::insertRows( $version->getConnection()->table( $table ), $list );
         }
 
         $nodes = $rows = [];
-        return true;
+    }
+
+
+    /**
+     * Loads the pages and variants of the subtree and the number of copied pages per page.
+     *
+     * @param string $id ID of the root page of the subtree
+     * @return array{0: string, 1: Collection<int, PageView>, 2: Collection<array-key, Collection<int, PageVariant>>, 3: array<string, int>} Root ID, pages in tree order, variants by page ID and copy sizes
+     * @throws Exception If the root page has no variants
+     */
+    protected static function copySubtree( string $id ) : array
+    {
+        $root = PageView::select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )->findOrFail( $id );
+        $rootId = (string) $root->id;
+
+        $pages = Pages::views( PageView::select( 'id', 'parent_id', 'source', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
+            ->where( NestedSet::LFT, '>=', $root->getLft() )
+            ->where( NestedSet::RGT, '<=', $root->getRgt() )
+            ->orderBy( NestedSet::LFT )
+            ->get() );
+
+        PageView::checkBulk( $pages->count() );
+
+        $variants = PageVariant::select( ['id', 'page_id', 'lang', 'latest_id', 'hashes', 'stale', ...PageVariant::DATA_FIELDS] )
+            ->whereIn( 'page_id', $pages->pluck( 'id' )->all() )
+            ->orderBy( 'lang' )->get();
+
+        $sizes = self::copySizes( $pages, $variants->pluck( 'page_id', 'page_id' )->all(), $rootId );
+
+        if( !isset( $sizes[$rootId] ) ) {
+            throw new Exception( sprintf( 'Page "%1$s" has no variants', $id ) );
+        }
+
+        return [$rootId, $pages, $variants->toBase()->groupBy( 'page_id' ), $sizes];
     }
 
 
@@ -442,7 +431,7 @@ trait Copies
     {
         $versions = [];
 
-        foreach( $variants->pluck( 'latest_id' )->filter()->chunk( 500 ) as $chunk )
+        foreach( $variants->pluck( 'latest_id' )->filter()->chunk( DB::IN_SIZE ) as $chunk )
         {
             foreach( Version::with( ['files:id', 'elements:id'] )->whereIn( 'id', $chunk->all() )->get() as $version ) {
                 $versions[(string) $version->id] = $version;
@@ -465,65 +454,4 @@ trait Copies
         return ['content' => $variant->content, 'meta' => $variant->meta, 'config' => $variant->config];
     }
 
-
-    /**
-     * Returns the used paths the copies of the page variants can collide with.
-     *
-     * The paths of the copies are the paths of the variants or, if they are used, the paths
-     * with the language and an optional number appended. Paths of drafts which differ from
-     * the paths of their variants are checked by uniquePath() itself.
-     *
-     * @param Collection<int, PageVariant> $variants Page variants to copy
-     * @return array{0: array<string, array<string, bool>>, 1: array<string, array<string, string>>} Used paths by domain
-     *  and the languages by domain and path whose collision candidates are all included
-     */
-    protected static function knownPaths( Collection $variants ) : array
-    {
-        $known = $loaded = $list = [];
-
-        // LIKE is case insensitive in SQLite and can't use the index, GLOB is case sensitive like the other databases
-        $sqlite = ( new PageVariant() )->getConnection()->getDriverName() === 'sqlite';
-        $sql = $sqlite ? 'path glob ?' : "path like ? escape '='";
-        $map = $sqlite ? ['*' => '[*]', '?' => '[?]', '[' => '[[]'] : ['=' => '==', '%' => '=%', '_' => '=_'];
-        $any = $sqlite ? '*' : '%';
-
-        // domain and path are unique for all page variants
-        foreach( $variants as $variant ) {
-            $list[] = [(string) $variant->domain, (string) $variant->path, (string) $variant->lang];
-            $loaded[(string) $variant->domain][(string) $variant->path] = (string) $variant->lang;
-        }
-
-        // up to three parameters per path stay below the limit of 2100 parameters of SQL Server
-        foreach( array_chunk( $list, 600 ) as $chunk )
-        {
-            $groups = [];
-
-            foreach( $chunk as [$domain, $path, $lang] ) {
-                $groups[$domain][$path] = $lang;
-            }
-
-            // flat conditions allow the databases to use the index for each of them
-            $query = PageVariant::withTrashed()->select( 'domain', 'path' )->where( function( $query ) use ( $groups, $sql, $map, $any ) {
-
-                foreach( $groups as $domain => $paths )
-                {
-                    $query->orWhere( fn( $query ) => $query->where( 'domain', (string) $domain )
-                        ->whereIn( 'path', array_map( 'strval', array_keys( $paths ) ) ) );
-
-                    foreach( $paths as $path => $lang )
-                    {
-                        $base = $path === '' ? $lang : $path . '-' . $lang;
-                        $query->orWhere( fn( $query ) => $query->where( 'domain', (string) $domain )
-                            ->whereRaw( $sql, [strtr( $base, $map ) . $any] ) );
-                    }
-                }
-            } );
-
-            foreach( $query->toBase()->get() as $row ) {
-                $known[(string) $row->domain][(string) $row->path] = true;
-            }
-        }
-
-        return [$known, $loaded];
-    }
 }

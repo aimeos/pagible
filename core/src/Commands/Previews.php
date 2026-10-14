@@ -7,17 +7,18 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\FilePreviews;
+use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Files;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Aimeos\Cms\DB;
 
 
 /**
@@ -26,6 +27,9 @@ use Illuminate\Support\Facades\Storage;
  * The new previews are stored in a new version of the file, which is published if the latest
  * version was. Removed previews are never deleted directly. They are still referenced by the
  * previous versions and deleted when these versions are pruned.
+ *
+ * @phpstan-import-type PreviewDiff from FilePreviews
+ * @phpstan-type PreviewSource array{file: File|null, version: Version|null, item: array{file: File, previews: array<int, string>}|null}
  */
 class Previews extends Command
 {
@@ -42,12 +46,12 @@ class Previews extends Command
     /**
      * Files whose pages are invalidated at once
      */
-    public const INVALIDATE = 500;
+    private const INVALIDATE = 500;
 
     /**
      * Files whose versions are pruned at once, which loads all their kept versions
      */
-    public const PRUNE = 100;
+    private const PRUNE = 100;
 
     /**
      * Command name
@@ -88,25 +92,84 @@ class Previews extends Command
 
 
     /**
-     * Stores the new previews under the storage and file locks.
+     * Updates the previews of the file and adds the result to the statistics.
      *
-     * Files locked by other operations for too long are skipped like changed files.
+     * Errors of single files are reported and don't stop the processing of the other files
+     * but a locked storage stops the processing of the tenant.
      *
      * @param string $id File ID
-     * @param array{file: File|null, version: Version|null, item: array{file: File, previews: array<int, string>}|null} $source
-     * @param array<int, string> $map New previews as width/path pairs
-     * @return bool TRUE if the previews have been stored, FALSE if the file has been changed or is locked
+     * @param array{updated: int, skipped: list<string>, failed: list<string>} $stats Statistics updated in place
+     * @return bool TRUE if the previews of the file have been updated, FALSE if not
      * @throws LockTimeoutException If the storage is locked for too long, e.g. by a running backup
      */
-    protected function commit( string $id, array $source, array $map ) : bool
+    protected function attempt( string $id, array &$stats ) : bool
     {
-        return Utils::storageLock( Tenancy::value(), function() use ( $id, $map, $source ) {
-            try {
-                return Utils::fileLock( Tenancy::value(), $id, fn() => $this->store( $id, $source, $map ) );
-            } catch( LockTimeoutException ) {
-                return false;
+        try {
+            $result = $this->sync( $id );
+        } catch( LockTimeoutException $e ) {
+            throw $e;
+        } catch( \Throwable $t ) {
+            $this->flush();
+            $this->error( sprintf( 'File "%s": %s', $id, $t->getMessage() ) );
+            $stats['failed'][] = $id;
+            return false;
+        }
+
+        $stats = $this->report( $stats, $id, $result );
+        return $result['updated'];
+    }
+
+
+    /**
+     * Updates the previews of a batch of files and notifies about the updated ones.
+     *
+     * Updated files are notified even if a later file of the batch throws an exception.
+     *
+     * @param array<string> $ids File IDs
+     * @param array{updated: int, skipped: list<string>, failed: list<string>} $stats Statistics updated in place
+     * @param array<string> $live IDs of the files whose previews are live so far
+     * @param array<string> $changed IDs of the files updated so far
+     */
+    protected function batch( array $ids, array &$stats, array &$live, array &$changed ) : void
+    {
+        $updated = [];
+
+        try
+        {
+            foreach( $ids as $id )
+            {
+                if( $this->attempt( $id, $stats ) ) {
+                    $updated[] = $id;
+                }
             }
-        } );
+        }
+        finally
+        {
+            if( $updated ) {
+                $live = array_merge( $live, $this->notify( $updated ) );
+                $changed = array_merge( $changed, $updated );
+            }
+        }
+    }
+
+
+    /**
+     * Tests if the file or its latest version has changed since the previews were generated.
+     *
+     * @param PreviewSource $source File and version the previews were generated from
+     * @param PreviewSource $current Current file and version
+     * @return bool TRUE if the file, its storage location, previews or latest version differ
+     */
+    protected static function changed( array $source, array $current ) : bool
+    {
+        $file = $source['file'];
+        $now = $current['file'];
+
+        return !$file || !$now || $now->getAttribute( 'disk' ) !== $file->getAttribute( 'disk' )
+            || $now->path !== $file->path || $now->latest_id !== $file->latest_id
+            || self::previews( $now->previews ) !== self::previews( $file->previews )
+            || $current['version']?->data != $source['version']?->data
+            || $current['version']?->published !== $source['version']?->published;
     }
 
 
@@ -133,7 +196,7 @@ class Previews extends Command
      */
     protected function files() : Builder
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
         // JSON_VALUE() used by Laravel for SQL Server returns NULL for objects
         $previews = $db->getDriverName() === 'sqlsrv'
             ? $db->raw( "JSON_QUERY([data], '$.previews') AS [previews]" )
@@ -160,7 +223,7 @@ class Previews extends Command
     protected function notify( array $ids ) : array
     {
         $files = File::withTrashed()->select( 'id', 'latest_id' )->with( 'latest:id,published' )->whereIn( 'id', $ids )->get();
-        File::announceMany( $files, 'saved', self::EDITOR, [], true );
+        File::announceMany( $files, ContentAction::Saved, self::EDITOR, [], bulk: true );
 
         // the live files and therefore the pages don't change if only a draft version has been added
         return $files->filter( fn( File $file ) => $file->latest->published ?? true )->modelKeys();
@@ -198,7 +261,7 @@ class Previews extends Command
      * Compares the previews of the file with the configured sizes without generating images.
      *
      * @param array{file: File, previews: array<int, string>} $item File and its previews
-     * @return array{keep: array<int, string>, missing: array<string, array<string, mixed>>}|null
+     * @return PreviewDiff|null
      *  Previews to keep and missing sizes or NULL if nothing must be changed
      */
     protected function plan( array $item ) : ?array
@@ -238,14 +301,14 @@ class Previews extends Command
     protected function refresh( array $live, array $ids ) : void
     {
         foreach( array_chunk( $live, self::INVALIDATE ) as $chunk ) {
-            Resource::invalidateRefs( [], $chunk );
+            Invalidation::refs( [], $chunk );
         }
 
         try
         {
             // locked per chunk so other media operations of the tenant can run in between
             foreach( array_chunk( $ids, self::PRUNE ) as $chunk ) {
-                Utils::storageLock( Tenancy::value(), fn() => File::pruneVersions( Tenancy::value(), $chunk ) );
+                File::locked( fn() => File::pruneVersions( Tenancy::value(), $chunk ) );
             }
         }
         catch( LockTimeoutException )
@@ -263,19 +326,11 @@ class Previews extends Command
      *
      * @param array{updated: int, skipped: list<string>, failed: list<string>} $stats Statistics
      * @param string $id File ID
-     * @param array{updated: bool, skipped: bool}|string $result Result or error message
+     * @param array{updated: bool, skipped: bool} $result Result of updating the previews
      * @return array{updated: int, skipped: list<string>, failed: list<string>} Updated statistics
      */
-    protected function report( array $stats, string $id, array|string $result ) : array
+    protected function report( array $stats, string $id, array $result ) : array
     {
-        if( is_string( $result ) )
-        {
-            $this->flush();
-            $this->error( sprintf( 'File "%s": %s', $id, $result ) );
-            $stats['failed'][] = $id;
-            return $stats;
-        }
-
         if( $result['skipped'] )
         {
             $this->flush();
@@ -301,7 +356,7 @@ class Previews extends Command
      * The source is the latest version or the file itself if it has no versions.
      *
      * @param string $id File ID
-     * @return array{file: File|null, version: Version|null, item: array{file: File, previews: array<int, string>}|null}
+     * @return PreviewSource
      */
     protected function source( string $id ) : array
     {
@@ -323,29 +378,24 @@ class Previews extends Command
      * Stores the new previews if the file and its latest version haven't changed in the meantime.
      *
      * Creates a new version with the new previews, which is published if the latest version
-     * was. Files without versions are updated directly. Must be called while the storage and
-     * file locks are held.
+     * was. Files without versions are updated directly. Must be called while the storage
+     * lock is held.
      *
      * @param string $id File ID
-     * @param array{file: File|null, version: Version|null, item: array{file: File, previews: array<int, string>}|null} $source
+     * @param PreviewSource $source
      * @param array<int, string> $map New previews as width/path pairs
      * @return bool TRUE if the previews have been stored, FALSE if the file has been changed
      */
     protected function store( string $id, array $source, array $map ) : bool
     {
-        $current = $this->source( $id );
         $file = $source['file'];
         $version = $source['version'];
 
-        if( !$file || !$current['file'] || $current['file']->getAttribute( 'disk' ) !== $file->getAttribute( 'disk' )
-            || $current['file']->path !== $file->path || $current['file']->latest_id !== $file->latest_id
-            || self::previews( $current['file']->previews ) !== self::previews( $file->previews )
-            || $current['version']?->data != $version?->data || $current['version']?->published !== $version?->published
-        ) {
+        if( !$file || self::changed( $source, $this->source( $id ) ) ) {
             return false;
         }
 
-        Utils::transaction( function() use ( $file, $map, $version ) {
+        DB::transaction( function() use ( $file, $map, $version ) {
             if( !$version ) {
                 File::withTrashed()->whereKey( $file->id )->toBase()->update( ['previews' => json_encode( (object) $map )] );
                 return;
@@ -400,14 +450,15 @@ class Previews extends Command
             return ['updated' => false, 'skipped' => false];
         }
 
-        $disk = Storage::disk( File::diskName( (string) $item['file']->getAttribute( 'disk' ) ) );
+        $disk = Files::disk( (string) $item['file']->getAttribute( 'disk' ) );
         $created = [];
 
         try
         {
             $map = $item['file']->syncPreviews( $item['previews'], $plan );
             $created = array_values( array_diff( (array) $map, $item['previews'] ) );
-            $updated = $map !== null && $this->commit( $id, $source, $map );
+            // FALSE if the file has been changed meanwhile
+            $updated = $map !== null && File::locked( fn() => $this->store( $id, $source, $map ) );
         }
         catch( \Throwable $t )
         {
@@ -438,35 +489,7 @@ class Previews extends Command
         try
         {
             $this->walk( function( array $ids ) use ( &$changed, &$live, &$stats ) {
-                $updated = [];
-
-                try
-                {
-                    foreach( $ids as $id )
-                    {
-                        // errors of single files don't stop the processing of the other files
-                        try {
-                            $result = $this->sync( $id );
-                        } catch( LockTimeoutException $e ) {
-                            throw $e;
-                        } catch( \Throwable $t ) {
-                            $result = $t->getMessage();
-                        }
-
-                        $stats = $this->report( $stats, $id, $result );
-
-                        if( is_array( $result ) && $result['updated'] ) {
-                            $updated[] = $id;
-                        }
-                    }
-                }
-                finally
-                {
-                    if( $updated ) {
-                        $live = array_merge( $live, $this->notify( $updated ) );
-                        $changed = array_merge( $changed, $updated );
-                    }
-                }
+                $this->batch( $ids, $stats, $live, $changed );
             } );
         }
         catch( LockTimeoutException )
@@ -486,17 +509,7 @@ class Previews extends Command
         $this->info( sprintf( 'Tenant "%s": %d file(s) updated, %d skipped, %d failed', $tenant,
             $stats['updated'], count( $stats['skipped'] ), count( $stats['failed'] ) ) );
 
-        // the exit code only reports failures, so monitoring must be able to find skipped files
-        if( $stats['skipped'] || $stats['failed'] || $locked )
-        {
-            Watch::warn( 'cms.previews', [
-                'action' => 'sync',
-                'tenant_id' => $tenant,
-                'skipped' => $stats['skipped'],
-                'failed' => $stats['failed'],
-                'locked' => $locked,
-            ] );
-        }
+        $this->monitor( $tenant, $stats, $locked );
 
         // files changed by editors in the meantime are no error
         return !$stats['failed'] && !$locked;
@@ -528,7 +541,7 @@ class Previews extends Command
             return [Tenancy::check( (string) $tenant )];
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
 
         return $db->table( 'cms_files' )->distinct()->orderBy( 'tenant_id' )->pluck( 'tenant_id' )->map( strval(...) )->all();
     }
@@ -574,5 +587,27 @@ class Previews extends Command
         }
 
         $bar?->clear();
+    }
+
+
+    /**
+     * Logs skipped and failed files because the exit code only reports failures.
+     *
+     * @param string $tenant Tenant ID
+     * @param array{updated: int, skipped: list<string>, failed: list<string>} $stats Statistics
+     * @param bool $locked TRUE if the processing stopped because the storage is locked
+     */
+    protected function monitor( string $tenant, array $stats, bool $locked ) : void
+    {
+        if( $stats['skipped'] || $stats['failed'] || $locked )
+        {
+            Watch::warn( 'cms.previews', [
+                'action' => 'sync',
+                'tenant_id' => $tenant,
+                'skipped' => $stats['skipped'],
+                'failed' => $stats['failed'],
+                'locked' => $locked,
+            ] );
+        }
     }
 }

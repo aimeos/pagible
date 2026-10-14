@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\Query;
 
-use Illuminate\Database\Connection;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\DB;
 
 
 /**
@@ -25,18 +25,18 @@ class PageViewSchema
      */
     public static function create() : void
     {
-        $db = self::connection();
+        $db = DB::connection();
         $cols = [];
 
-        foreach( PageBuilder::PAGE_COLUMNS as $col ) {
+        foreach( Page::FIELDS as $col ) {
             $cols[] = 'p.' . $col;
         }
 
-        foreach( PageBuilder::VARIANT_COLUMNS as $alias => $col ) {
+        foreach( PageBuilder::variantFields() as $alias => $col ) {
             $cols[] = $alias === $col ? 'v.' . $col : 'v.' . $col . ' as ' . $alias;
         }
 
-        foreach( PageBuilder::SHARED_COLUMNS as $col ) {
+        foreach( PageBuilder::SHARED_FIELDS as $col ) {
             $cols[] = 'v.' . $col;
         }
 
@@ -58,16 +58,7 @@ class PageViewSchema
      */
     public static function drop() : void
     {
-        $db = self::connection();
+        $db = DB::connection();
         $db->statement( 'DROP VIEW IF EXISTS ' . $db->getQueryGrammar()->wrapTable( PageBuilder::VIEW ) );
-    }
-
-
-    /**
-     * Returns the database connection of the pages.
-     */
-    protected static function connection() : Connection
-    {
-        return DB::connection( config( 'cms.db', 'sqlite' ) );
     }
 }

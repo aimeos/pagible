@@ -149,9 +149,32 @@ return new class extends Migration
 
         $names = array_column( $schema->getIndexes( 'cms_pages' ), 'name' );
 
+        // the tree updates and subtree locks must only scan the rows of their tenant
+        $replaced = array_intersect( $names, [
+            'cms_pages__lft__rgt_parent_id_tenant_id_index',
+            'cms_pages__rgt_tenant_id_index',
+            'cms_pages_depth_deleted_at_tenant_id__lft_index',
+        ] );
+
+        foreach( $replaced as $index ) {
+            $schema->table( 'cms_pages', fn( Blueprint $table ) => $table->dropIndex( $index ) );
+        }
+
         $schema->table( 'cms_pages', function( Blueprint $table ) use ( $db, $names ) {
             if( !in_array( 'cms_pages_deleted_at_tenant_id__lft__rgt_index', $names, true ) ) {
                 $table->index( ['deleted_at', 'tenant_id', '_lft', '_rgt'] );
+            }
+
+            if( !in_array( 'cms_pages_tenant_id__lft__rgt_parent_id_index', $names, true ) ) {
+                $table->index( ['tenant_id', '_lft', '_rgt', 'parent_id'] );
+            }
+
+            if( !in_array( 'cms_pages_tenant_id__rgt_index', $names, true ) ) {
+                $table->index( ['tenant_id', '_rgt'] );
+            }
+
+            if( !in_array( 'cms_pages_tenant_id_depth_deleted_at__lft_index', $names, true ) ) {
+                $table->index( ['tenant_id', 'depth', 'deleted_at', '_lft'] );
             }
 
             if( $db->getDriverName() === 'sqlite' && !in_array( 'cms_pages_covering_index', $names, true ) ) {

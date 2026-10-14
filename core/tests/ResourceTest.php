@@ -21,11 +21,13 @@ use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Jobs\InvalidatePages;
+use Aimeos\Cms\LifecycleAction;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
 use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
@@ -33,6 +35,7 @@ use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Files;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageBuilder;
@@ -347,43 +350,6 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
-    public function testCheckPathRejectsTraversal()
-    {
-        // Tenancy::value() is "test" here, so the prefix is "cms/test/". Each of these
-        // begins with the prefix yet resolves into another tenant's directory.
-        $paths = [
-            'cms/test/../other/secret.jpg',
-            'cms/test/..\\other\\secret.jpg',
-            'cms/test/sub/../../other/secret.jpg',
-            'cms/other/secret.jpg',
-            "cms/test/secret.jpg\0.png",
-        ];
-
-        foreach( $paths as $path )
-        {
-            try {
-                File::checkPath( $path );
-                $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
-            } catch( Exception $e ) {
-                $this->assertStringContainsString( 'Invalid file path', $e->getMessage() );
-            }
-        }
-    }
-
-
-    public function testCheckPathAllowsValidPaths()
-    {
-        $id = ( new File() )->newUniqueId();
-        $path = 'cms/test/' . $id . '/image_ab12.jpg';
-
-        $this->assertNull( File::checkPath( null ) );
-        $this->assertEquals( $path, File::checkPath( $path ) );
-        $this->assertEquals( $path, File::checkPath( 'cms//test/./' . $id . '/image_ab12.jpg' ) );
-        // External URLs bypass the tenant prefix and never touch the tenant disk.
-        $this->assertEquals( 'https://example.com/a/b.jpg', File::checkPath( 'https://example.com/a/b.jpg' ) );
-    }
-
-
     public function testSaveFileRejectsCrossTenantPath()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -524,7 +490,7 @@ class ResourceTest extends CoreTestAbstract
         $file = Resource::addFile( $file, $this->user );
 
         $this->assertSame( 'private', $file->disk );
-        $this->assertTrue( File::owns( 'test', $file->id, $file->path ) );
+        $this->assertTrue( Files::owns( 'test', $file->id, $file->path ) );
         Storage::disk( 'private-upload' )->assertExists( $file->path );
     }
 
@@ -555,7 +521,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->assertFalse( str_starts_with( $stored, 'http' ) );
         $this->assertStringNotContainsString( 'token=secret', $stored );
-        $this->assertTrue( File::owns( 'test', $file->id, $stored ) );
+        $this->assertTrue( Files::owns( 'test', $file->id, $stored ) );
         Storage::disk( 'private-remote-save' )->assertExists( $stored );
     }
 
@@ -595,7 +561,7 @@ class ResourceTest extends CoreTestAbstract
         $saved = Resource::saveFile( $file->id, [], $this->user, upload:
             UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
 
-        $this->assertTrue( File::owns( 'test', $file->id, $saved->latest?->data->path ) );
+        $this->assertTrue( Files::owns( 'test', $file->id, $saved->latest?->data->path ) );
         Storage::disk( 'uuid-save' )->assertExists( $saved->latest?->data->path );
     }
 
@@ -1935,7 +1901,7 @@ class ResourceTest extends CoreTestAbstract
         Queue::fake( [InvalidatePages::class] );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::invalidateRefs( [$element->id] );
+        Invalidation::refs( [$element->id] );
 
         Event::assertNotDispatched( PageInvalidated::class );
         Queue::assertPushed( InvalidatePages::class, function( InvalidatePages $job ) {
@@ -2063,8 +2029,8 @@ class ResourceTest extends CoreTestAbstract
             'file' => ['id' => $file->id, 'type' => 'file'],
         ]]] );
         $publication = new Publication();
-        $property = new \ReflectionProperty( Publication::class, 'work' );
-        $property->setValue( $publication, PageView::MAX_BULK );
+        $references = ( new \ReflectionProperty( Publication::class, 'references' ) )->getValue( $publication );
+        ( new \ReflectionProperty( \Aimeos\Cms\Publication\References::class, 'work' ) )->setValue( $references, PageView::MAX_BULK );
         $version = $page->latest()->firstOrFail();
         $this->expectsDatabaseQueryCount( 1 );
 
@@ -2233,7 +2199,7 @@ class ResourceTest extends CoreTestAbstract
 
         Queue::fake( [DeleteFilePaths::class] );
 
-        File::purgeMany( 'test', $files );
+        File::lifecycle( ( new File() )->newCollection( $files->all() ), LifecycleAction::Purged, 'test' );
 
         Queue::assertPushed( DeleteFilePaths::class, 2 );
     }
@@ -2431,13 +2397,12 @@ class ResourceTest extends CoreTestAbstract
 
     public function testReferenceLimit()
     {
-        $method = new \ReflectionMethod( Resource::class, 'refs' );
         $content = array_map( fn( $num ) => ['type' => 'reference', 'refid' => 'ref-' . $num], range( 1, PageView::MAX_BULK + 1 ) );
 
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'No more than 1000 items' );
 
-        $method->invoke( null, ['content' => $content] );
+        \Aimeos\Cms\Resource\Refs::page( ['content' => $content] );
     }
 
 

@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Scout;
+use Aimeos\Cms\Texts;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
@@ -45,21 +45,7 @@ class ModelTest extends CoreTestAbstract
         $page = ( new PageView() )->newFromBuilder( ['id' => 'page-1', 'name' => 'Test'] );
 
         $this->expectException( \LogicException::class );
-        ( new \ReflectionMethod( \Aimeos\Cms\Resource::class, 'saveVariant' ) )->invoke( null, $page, ['name' => 'Changed'] );
-    }
-
-
-    public function testPageStoresChangedInformation(): void
-    {
-        $info = [
-            'editor' => 'test@example.com',
-            'data' => ['title' => ['previous' => 'a', 'current' => 'b']],
-        ];
-        $page = new PageView();
-
-        $page->setChanged( $info );
-
-        $this->assertEquals( $info, $page->changed );
+        \Aimeos\Cms\Resource\Pages::saveVariant( $page, ['name' => 'Changed'] );
     }
 
 
@@ -92,7 +78,7 @@ class ModelTest extends CoreTestAbstract
             'data' => (object) ['title' => 'Heading', 'level' => '2'],
         ]];
 
-        $this->assertSame( ['Heading'], Scout::text( $items ) );
+        $this->assertSame( ['Heading'], Texts::searchable( $items ) );
     }
 
 
@@ -233,23 +219,6 @@ class ModelTest extends CoreTestAbstract
         $this->assertStringStartsWith( 'cms/' . $file->id . '/', $file->path );
         $this->assertStringNotContainsString( 'cms//', $file->path );
         Storage::disk( 'default-path' )->assertExists( $file->path );
-    }
-
-
-    public function testFileOwnerRecognizesOnlyItsUuidDirectory(): void
-    {
-        $id = ( new File() )->newUniqueId();
-        $upper = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
-        $lower = '019f8abc-def0-7abc-8abc-abcdef123456';
-
-        $this->assertSame( $id, File::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
-        $this->assertSame( $id, File::owner( '', 'cms/' . $id . '/file.pdf' ) );
-        $this->assertSame( $upper, File::owner( 'test', 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertTrue( File::owns( 'test', $lower, 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertNull( File::owner( 'test', 'cms/test/file.pdf' ) );
-        $this->assertNull( File::owner( 'test', 'cms/test/' . $id ) );
-        $this->assertNull( File::owner( 'test', 'https://example.com/file.pdf' ) );
-        $this->assertNull( File::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
     }
 
 

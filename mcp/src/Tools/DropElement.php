@@ -8,53 +8,17 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Resource;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
-use Laravel\Mcp\Response;
-use Laravel\Mcp\Request;
 
 
 #[Name('drop-element')]
 #[Title('Soft-delete a shared content element')]
 #[Description('Soft-deletes a shared content element. The element can be restored within the retention period. Returns the deleted element as a JSON object.')]
-class DropElement extends Tool
+class DropElement extends DropTool
 {
     protected const PERMISSIONS = ['element:drop'];
-
-
-    /**
-     * Handle the tool request.
-     */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
-    {
-        $v = $request->validate([
-            'id' => 'required|string|max:36',
-        ], [
-            'id.required' => 'You must specify the ID of the element to delete.',
-        ] );
-
-        if( !( $item = Resource::drop( Element::class, [$v['id']], $request->user() )->first() ) ) {
-            return Response::structured( ['error' => 'Element not found.'] );
-        }
-
-        return Response::structured( Presenter::item( $item ) );
-    }
-
-
-    /**
-     * Get the tool's input schema.
-     *
-     * @return array<string, \Illuminate\JsonSchema\Types\Type>
-     */
-    public function schema( JsonSchema $schema ) : array
-    {
-        return [
-            'id' => $schema->string()
-                ->description('The UUID of the element to delete.')
-                ->required(),
-        ];
-    }
+    protected const MODEL = Element::class;
+    protected const NOUN = 'element';
 }

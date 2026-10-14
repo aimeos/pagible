@@ -9,11 +9,11 @@ namespace Aimeos\Cms;
 
 
 /**
- * Collects the texts of page items for translation and writes the translations back.
+ * Collects the texts of page items for translation and search and writes the translations back.
  */
 class Texts
 {
-    /** @var list<string> Field types containing text to translate */
+    /** @var list<string> Field types containing texts for translation and search */
     public const TYPES = ['string', 'text', 'plaintext', 'markdown'];
 
     /** @var array<int, string> Hash keys of the collected texts */
@@ -30,6 +30,37 @@ class Texts
 
     /** @var array<int, mixed> References to the collected URLs */
     private array $urls = [];
+
+
+    /**
+     * Returns the searchable text values from content elements.
+     *
+     * @param iterable<array<string, mixed>|object> $items Content elements
+     * @return array<int, string> Searchable text values
+     */
+    public static function searchable( iterable $items ) : array
+    {
+        $schemas = Schema::schemas( section: 'content' );
+        $result = [];
+
+        foreach( $items as $item )
+        {
+            $item = (object) $item;
+            $fields = (array) ( $schemas[$item->type ?? '']['fields'] ?? [] );
+
+            foreach( (array) ( $item->data ?? [] ) as $name => $value )
+            {
+                if( is_string( $value ) && isset( $fields[$name] )
+                    && ( $fields[$name]['searchable'] ?? true )
+                    && in_array( $fields[$name]['type'], self::TYPES, true )
+                ) {
+                    $result[] = $value;
+                }
+            }
+        }
+
+        return $result;
+    }
 
 
     /**
@@ -170,42 +201,67 @@ class Texts
 
             $type = $field['type'] ?? '';
 
-            if( $type === 'url' )
-            {
+            if( $type === 'url' ) {
                 $this->url( $data->{$name} );
+            } elseif( ( $field['translate'] ?? true ) !== false ) {
+                $this->field( $key, $type, $data->{$name}, $field );
             }
-            elseif( ( $field['translate'] ?? true ) === false )
-            {
-                continue;
-            }
-            elseif( in_array( $type, self::TYPES, true ) && is_string( $data->{$name} ) && trim( $data->{$name} ) !== '' )
-            {
-                if( in_array( $type, ['text', 'markdown'], true ) ) {
-                    $this->markdown[] = count( $this->refs );
-                }
+        }
+    }
 
-                $this->push( $key, $data->{$name} );
+
+    /**
+     * Collects the translatable texts of one field value.
+     *
+     * @param string $key Key of the item the field belongs to
+     * @param string $type Field type from the schema
+     * @param mixed $value Field value, texts are collected by reference
+     * @param array<string, mixed> $field Field schema
+     */
+    private function field( string $key, string $type, mixed &$value, array $field ) : void
+    {
+        if( in_array( $type, self::TYPES, true ) && is_string( $value ) && trim( $value ) !== '' )
+        {
+            if( in_array( $type, ['text', 'markdown'], true ) ) {
+                $this->markdown[] = count( $this->refs );
             }
-            elseif( $type === 'table' && is_array( $data->{$name} ) )
+
+            $this->push( $key, $value );
+        }
+        elseif( $type === 'table' && is_array( $value ) )
+        {
+            foreach( array_keys( $value ) as $row ) {
+                $this->cells( $key, $value[$row] );
+            }
+        }
+        elseif( $type === 'items' && is_array( $value ) )
+        {
+            foreach( $value as $item )
             {
-                foreach( $data->{$name} as $row => $cells )
-                {
-                    foreach( is_array( $cells ) ? $cells : [] as $col => $cell )
-                    {
-                        if( is_string( $cell ) && trim( $cell ) !== '' ) {
-                            $this->push( $key, $data->{$name}[$row][$col] );
-                        }
-                    }
+                if( is_object( $item ) ) {
+                    $this->fields( $key, $item, (array) ( $field['item'] ?? [] ) );
                 }
             }
-            elseif( $type === 'items' && is_array( $data->{$name} ) )
-            {
-                foreach( $data->{$name} as $item )
-                {
-                    if( is_object( $item ) ) {
-                        $this->fields( $key, $item, (array) ( $field['item'] ?? [] ) );
-                    }
-                }
+        }
+    }
+
+
+    /**
+     * Collects the non-empty texts of one table row.
+     *
+     * @param string $key Key of the item the table belongs to
+     * @param mixed $cells Table row, texts are collected by reference
+     */
+    private function cells( string $key, mixed &$cells ) : void
+    {
+        if( !is_array( $cells ) ) {
+            return;
+        }
+
+        foreach( $cells as $col => $cell )
+        {
+            if( is_string( $cell ) && trim( $cell ) !== '' ) {
+                $this->push( $key, $cells[$col] );
             }
         }
     }

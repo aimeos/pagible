@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Query\SearchQuery;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Sync;
 use Aimeos\Cms\Tenancy;
@@ -237,7 +238,7 @@ final class Query
             $fields = array_keys( (array) ( $resolveInfo->getFieldSelection( 1 )['data'] ?? [] ) );
             $columns = [...PageView::REQUIRED_COLUMNS, 'variant_deleted_at', ...array_intersect( PageView::RESPONSE_COLUMNS, $fields )];
 
-            Scout::select( $search, array_values( array_unique( $columns ) ) );
+            SearchQuery::select( $search, array_values( array_unique( $columns ) ) );
         }
 
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
@@ -251,7 +252,7 @@ final class Query
      * @param  array<string, mixed>  $args Arguments of the page list query ("filter", "lang", "publish", "trashed")
      * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> Unsorted search builder
      */
-    public function search( array $args ) : \Laravel\Scout\Builder
+    private function search( array $args ) : \Laravel\Scout\Builder
     {
         $filter = $args['filter'] ?? [];
         $route = array_key_exists( 'path', $filter )
@@ -267,7 +268,7 @@ final class Query
         {
             // trashed variants of the language are selected by the fallback
             $state = $filter['translation'] ?? null;
-            Scout::prefer( $search, $lang, $trashed );
+            SearchQuery::prefer( $search, $lang, $trashed );
             $args['trashed'] = $trashed === 'only' ? 'with' : $trashed;
             unset( $filter['lang'], $args['lang'] );
         }

@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Query;
 
 use Aimeos\Nestedset\QueryBuilder;
+use Illuminate\Database\Eloquent\Model;
 
 
 /**
@@ -113,12 +114,12 @@ class PageQuery extends QueryBuilder
      * Models of the page view, e.g. PageView and Nav, read from the page view
      * and keep the selected variants.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Model $model
      * @return $this
      */
-    public function setModel( \Illuminate\Database\Eloquent\Model $model )
+    public function setModel( Model $model )
     {
-        $variant = $this->query instanceof PageBuilder ? $this->query->variant : null;
+        $variant = $this->query instanceof PageBuilder ? $this->query->variant() : null;
 
         parent::setModel( $model );
 

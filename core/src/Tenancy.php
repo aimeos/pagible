@@ -18,8 +18,6 @@ use Illuminate\Support\Str;
  */
 class Tenancy
 {
-    private static bool $managed = false;
-
     /**
      * Anonymous callback which provides the value of the current tenant.
      */
@@ -126,7 +124,6 @@ class Tenancy
     public static function lock( Authenticatable&Model $user, string $tenant, string $error, \Closure $callback ) : mixed
     {
         return $user->getConnection()->transaction( function() use ( $callback, $error, $tenant, $user ) {
-            /** @var Authenticatable&Model $locked */
             $locked = $user->newQuery()->whereKey( $user->getKey() )->lockForUpdate()->firstOrFail();
 
             if( !self::allows( $locked, $tenant ) ) {
@@ -145,19 +142,25 @@ class Tenancy
     {
         $initializing = 'Stancl\\Tenancy\\Events\\InitializingTenancy';
         $ended = 'Stancl\\Tenancy\\Events\\TenancyEnded';
+        $contract = 'Stancl\\Tenancy\\Contracts\\Tenant';
 
         if( !class_exists( $initializing ) ) {
             throw new \LogicException( 'stancl/tenancy must be installed before calling Tenancy::stancl().' );
         }
 
-        if( self::$managed ) {
+        $hooks = Hooks::get();
+
+        if( $hooks->managed ) {
             return;
         }
 
-        self::$managed = true;
+        $hooks->managed = true;
 
-        /** @phpstan-ignore function.notFound */
-        self::$callback = fn() : string => (string) tenant()?->getTenantKey();
+        // same as the tenant() helper of stancl/tenancy
+        self::$callback = function() use ( $contract ) : string {
+            $tenant = app()->bound( $contract ) ? app( $contract ) : null;
+            return is_object( $tenant ) && method_exists( $tenant, 'getTenantKey' ) ? (string) $tenant->getTenantKey() : '';
+        };
 
         Event::listen( $initializing, function( object $event ) {
             $tenant = data_get( $event, 'tenancy.tenant' );
@@ -180,7 +183,7 @@ class Tenancy
      */
     public static function managed() : bool
     {
-        return self::$managed;
+        return Hooks::get()->managed;
     }
 
 
@@ -202,7 +205,7 @@ class Tenancy
             return $callback();
         }
 
-        if( self::$managed ) {
+        if( self::managed() ) {
             throw new \LogicException( 'Operation was not initialized in its tenant context.' );
         }
 

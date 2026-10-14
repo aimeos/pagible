@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
@@ -48,15 +49,12 @@ class BenchmarkTheme extends Command
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-
-        if( !$this->checks( $tenant, $tries, $force ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        ['domain' => $domain, 'tries' => $tries] = $options;
+
         $multidomain = config( 'cms.multidomain' );
 
         // Benchmark data is scoped by --domain. Make the synthetic request use the
@@ -98,13 +96,10 @@ class BenchmarkTheme extends Command
         $middleware = new ServeCachedPage();
 
         // Page render (uncached)
-        $this->benchmark( 'Page render', function() use ( $uncachedPage, $domain, $baseurl, $middleware ) {
-            $request = Request::create( $baseurl . '/' . $uncachedPage->path, 'GET' );
-            $response = $middleware->handle( $request, fn( $request ) =>
-                ( new PageController )->index( $request, $uncachedPage->path, $domain )
-            );
-            $this->expectStatus( $response, Response::HTTP_OK );
-        }, readOnly: true, tries: $tries );
+        $this->benchmark( 'Page render', fn() =>
+            $this->render( $middleware, $baseurl, $uncachedPage->path, $domain ),
+            readOnly: true, tries: $tries,
+        );
 
         // Translated page whose navigation falls back to the source language of untranslated pages
         $variantPage = PageView::visible( BenchmarkSeeder::TRANSLATION )->where( 'lang', BenchmarkSeeder::TRANSLATION )
@@ -115,22 +110,15 @@ class BenchmarkTheme extends Command
         {
             PageView::withoutSyncingToSearch( fn() => $variantPage->variant->update( ['cache' => 0] ) );
 
-            $this->benchmark( 'Variant render', function() use ( $variantPage, $domain, $baseurl, $middleware ) {
-                $request = Request::create( $baseurl . '/' . $variantPage->path, 'GET' );
-                $response = $middleware->handle( $request, fn( $request ) =>
-                    ( new PageController )->index( $request, $variantPage->path, $domain )
-                );
-                $this->expectStatus( $response, Response::HTTP_OK );
-            }, readOnly: true, tries: $tries );
+            $this->benchmark( 'Variant render', fn() =>
+                $this->render( $middleware, $baseurl, $variantPage->path, $domain ),
+                readOnly: true, tries: $tries,
+            );
         }
 
         // Complete-page caching belongs to the pre-session middleware. Warm it by
         // running the controller through that boundary once.
-        $warmRequest = Request::create( $baseurl . '/' . $cachedPage->path, 'GET' );
-        $warmResponse = $middleware->handle( $warmRequest, fn( $request ) =>
-            ( new PageController )->index( $request, $cachedPage->path, $domain )
-        );
-        $this->expectStatus( $warmResponse, Response::HTTP_OK );
+        $this->render( $middleware, $baseurl, $cachedPage->path, $domain );
 
         // True anonymous hot path: middleware returns the complete-page cache before
         // the session middleware and controller are invoked.
@@ -159,21 +147,16 @@ class BenchmarkTheme extends Command
         $viewer = new $userClass();
 
         if( !$viewer instanceof \Illuminate\Database\Eloquent\Model
-            || !$viewer instanceof \Illuminate\Contracts\Auth\Authenticatable
+            || !$viewer instanceof Authenticatable
         ) {
             throw new \RuntimeException( 'User model must be an authenticatable Eloquent model' );
         }
 
         $viewer->forceFill( ['cmsperms' => []] );
-        $this->benchmark( 'Page authenticated', function() use ( $cachedPage, $domain, $baseurl, $middleware, $viewer ) {
-            $request = Request::create( $baseurl . '/' . $cachedPage->path, 'GET' );
-            $request->headers->set( 'Authorization', 'Bearer benchmark' );
-            $request->setUserResolver( fn() => $viewer );
-            $response = $middleware->handle( $request, fn( $request ) =>
-                ( new PageController() )->index( $request, $cachedPage->path, $domain )
-            );
-            $this->expectStatus( $response, Response::HTTP_OK );
-        }, readOnly: true, tries: $tries );
+        $this->benchmark( 'Page authenticated', fn() =>
+            $this->render( $middleware, $baseurl, $cachedPage->path, $domain, $viewer ),
+            readOnly: true, tries: $tries,
+        );
 
         $this->benchmarkAccess( $uncachedPage, $domain, $baseurl, $middleware, $tries );
 
@@ -286,6 +269,27 @@ class BenchmarkTheme extends Command
                 Access::using( null );
             }
         }
+    }
+
+
+    /**
+     * Renders the page through the complete-page cache middleware and expects a successful response.
+     */
+    private function render( ServeCachedPage $middleware, string $baseurl, string $path, string $domain,
+        ?Authenticatable $user = null ) : void
+    {
+        $request = Request::create( $baseurl . '/' . $path, 'GET' );
+
+        if( $user )
+        {
+            $request->headers->set( 'Authorization', 'Bearer benchmark' );
+            $request->setUserResolver( fn() => $user );
+        }
+
+        $response = $middleware->handle( $request, fn( $request ) =>
+            ( new PageController )->index( $request, $path, $domain )
+        );
+        $this->expectStatus( $response, Response::HTTP_OK );
     }
 
 

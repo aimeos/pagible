@@ -21,12 +21,9 @@ use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\ID;
-use LaravelJsonApi\Eloquent\Schema;
-use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\JsonApi\V1\CmsSchema;
 use Aimeos\Cms\JsonApi\V1\Filters\WhereLang;
 use Aimeos\Cms\JsonApi\V1\Filters\WhereVariant;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
@@ -34,52 +31,14 @@ use Aimeos\Nestedset\NestedSet;
 use Illuminate\Support\Facades\Auth;
 
 
-class PageSchema extends Schema
+class PageSchema extends CmsSchema
 {
-    use ResolvesFiles;
-    /**
-     * Default page value if no pagination was sent by the client.
-     *
-     * @var array<string, mixed>|null
-     */
-    protected ?array $defaultPagination = ['number' => 1];
-
-    /**
-     * The maximum depth of include paths.
-     *
-     * @var int
-     */
-    protected int $maxDepth = 1;
-
     /**
      * The model the schema corresponds to.
      *
      * @var string
      */
     public static string $model = PageView::class;
-
-
-    /**
-     * Schema constructor.
-     *
-     * @param \LaravelJsonApi\Contracts\Server\Server $server
-     */
-    public function __construct( \LaravelJsonApi\Contracts\Server\Server $server )
-    {
-        parent::__construct( $server );
-        $this->maxDepth = config( 'cms.jsonapi.maxdepth', 1 );
-    }
-
-
-    /**
-     * Determine if the resource is authorizable.
-     *
-     * @return bool
-     */
-    public function authorizable(): bool
-    {
-        return false;
-    }
 
 
     /**
@@ -105,8 +64,7 @@ class PageSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ...array_map( fn( $name ) => ArrayHash::make( $name )->readOnly()->extractUsing( function( $model, $column, $items ) use ( $name ) {
-                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
-                $items = $version ? $version->aux->{$name} : $items;
+                $items = $this->aux( $model, $name, $items );
 
                 return $name === 'content' ? $this->resolveContent( $model, $items ) : $this->resolveFiles( $model, $items );
             } ), ['meta', 'config', 'content'] ),
@@ -163,17 +121,11 @@ class PageSchema extends Schema
             || str_contains( $fields, 'config' );
 
         if( $needsRelations ) {
-            $with = [
-                'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-                'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-                'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-            ];
+            $with = PageView::contentRelations();
 
             if( Permission::can( 'page:view', Auth::user() ) ) {
                 $with['latest'] = fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' );
-                $with['latest.files'] = fn( $q ) => $q->select( File::SELECT_COLUMNS );
-                $with['latest.elements'] = fn( $q ) => $q->select( Element::SELECT_COLUMNS );
-                $with['latest.elements.files'] = fn( $q ) => $q->select( File::SELECT_COLUMNS );
+                $with += PageView::contentRelations( 'latest.' );
             }
 
             $query = $query->with( $with );
@@ -213,7 +165,7 @@ class PageSchema extends Schema
      */
     protected function resolveContent( PageView $model, mixed $items ) : array
     {
-        $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+        $version = $this->version( $model );
         $elements = null;
         $allFiles = null;
 

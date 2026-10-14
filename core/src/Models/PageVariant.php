@@ -7,9 +7,14 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Casts\AsString;
+use Aimeos\Cms\Concerns\Connection;
 use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\PageAttributes;
-use Aimeos\Cms\Concerns\Tenancy;
+use Aimeos\Cms\Concerns\PrunesTrashed;
+use Aimeos\Cms\Concerns\SecondTimestamps;
+use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Scout;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Events\ModelsPruned;
@@ -21,7 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Database\Eloquent\Collection;
+use Aimeos\Cms\Tenancy;
 
 
 /**
@@ -66,16 +72,32 @@ use Illuminate\Support\Facades\Date;
  */
 class PageVariant extends Model
 {
+    use Connection;
     use HasUuids;
     use PageAttributes;
     use Prunable;
+    use PrunesTrashed;
+    use SecondTimestamps;
     use SoftDeletes;
-    use Tenancy;
+    use HasTenancy;
 
     /**
-     * Page fields stored in the variant besides its language.
+     * Columns stored in the cms_page_variants table besides the IDs and the timestamps.
      */
-    public const FIELDS = [...\Aimeos\Cms\Hashes::PAGE_FIELDS, 'path', 'domain', 'to', 'status'];
+    public const FIELDS = [
+        'lang', 'domain', 'path', 'to', 'name', 'title', 'type', 'theme', 'tag', 'cache', 'status',
+        'meta', 'config', 'content', 'hashes', 'stale', 'latest_id', 'editor',
+    ];
+
+    /**
+     * Page fields tracked for translations, the language specific fields are excluded.
+     */
+    public const SYNC_FIELDS = ['title', 'name', 'type', 'theme', 'tag', 'cache'];
+
+    /**
+     * Page fields stored in the version data besides the language.
+     */
+    public const DATA_FIELDS = [...self::SYNC_FIELDS, 'path', 'domain', 'to', 'status'];
 
 
     /**
@@ -106,15 +128,15 @@ class PageVariant extends Model
      * Casts of the variant attributes, also used by the page view.
      */
     public const CASTS = [
-        'tag' => 'string',
+        'tag' => AsString::class,
         'lang' => 'string',
-        'path' => 'string',
+        'path' => AsString::class,
         'domain' => 'string',
-        'to' => 'string',
-        'name' => 'string',
+        'to' => AsString::class,
+        'name' => AsString::class,
         'title' => 'string',
-        'type' => 'string',
-        'theme' => 'string',
+        'type' => AsString::class,
+        'theme' => AsString::class,
         'cache' => 'integer',
         'status' => 'integer',
         'meta' => 'object',
@@ -144,10 +166,7 @@ class PageVariant extends Model
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'lang', 'domain', 'path', 'to', 'name', 'title', 'type', 'theme', 'tag', 'cache', 'status',
-        'meta', 'config', 'content', 'hashes', 'stale', 'latest_id', 'editor',
-    ];
+    protected $fillable = self::FIELDS;
 
     /**
      * The table associated with the model.
@@ -173,28 +192,6 @@ class PageVariant extends Model
         static::saved( fn( PageVariant $variant ) => $variant->index() );
         static::restored( fn( PageVariant $variant ) => $variant->index() );
         static::deleted( fn( PageVariant $variant ) => $variant->isForceDeleting() ? $variant->unindex() : $variant->index() );
-    }
-
-
-    /**
-     * Get the current timestamp in seconds precision.
-     *
-     * @return \Illuminate\Support\Carbon Current timestamp
-     */
-    public function freshTimestamp()
-    {
-        return Date::now()->startOfSecond(); // SQL Server workaround
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     *
-     * @return string Name of the database connection to use
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
     }
 
 
@@ -260,8 +257,7 @@ class PageVariant extends Model
      */
     public function view() : HasOne
     {
-        /** @var HasOne<PageView, $this> */
-        return $this->hasOne( PageView::class, 'variant_id' )->withTrashed()->allVariants( true );
+        return $this->hasOne( PageView::class, 'variant_id' )->withTrashed()->allVariants( trashed: true );
     }
 
 
@@ -272,8 +268,7 @@ class PageVariant extends Model
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+        return static::expired();
     }
 
 
@@ -287,14 +282,14 @@ class PageVariant extends Model
     {
         $total = 0;
 
-        $this->prunable()->withoutGlobalScope( SoftDeletingScope::class )->select( 'id', 'page_id', 'tenant_id' )->chunkById( $chunkSize, function( \Illuminate\Database\Eloquent\Collection $models ) use ( &$total ) {
+        $this->prunable()->withoutGlobalScope( SoftDeletingScope::class )->select( 'id', 'page_id', 'tenant_id' )->chunkById( $chunkSize, function( Collection $models ) use ( &$total ) {
 
             $count = static::purge( array_map( strval( ... ), $models->modelKeys() ) );
             $total += $count;
 
             // source variants are listed for the languages of the pruned variants afterwards
             foreach( $models->groupBy( 'tenant_id' ) as $tenant => $list ) {
-                \Aimeos\Cms\Tenancy::run( (string) $tenant, function() use ( $list ) {
+                Tenancy::run( (string) $tenant, function() use ( $list ) {
                     Scout::unindex( PageView::class, array_map( strval( ... ), $list->modelKeys() ) );
                     Scout::sources( $list->pluck( 'page_id' )->map( strval( ... ) )->all() );
                 } );
@@ -322,7 +317,7 @@ class PageVariant extends Model
     {
         $count = 0;
 
-        foreach( array_chunk( array_values( $ids ), 500 ) as $chunk )
+        foreach( array_chunk( array_values( $ids ), DB::IN_SIZE ) as $chunk )
         {
             Version::withoutGlobalScopes()->where( 'versionable_type', static::class )->whereIn( 'versionable_id', $chunk )->toBase()->delete();
             $count += static::withoutGlobalScopes()->whereKey( $chunk )->toBase()->delete();
@@ -348,10 +343,8 @@ class PageVariant extends Model
      */
     protected function unindex() : void
     {
-        if( Scout::syncs( PageView::class ) )
-        {
-            $ids = [(string) $this->id];
-            Scout::afterCommit( PageView::class, fn() => Scout::unindex( PageView::class, $ids ) );
+        if( Scout::syncs( PageView::class ) ) {
+            Scout::remove( PageView::class, [(string) $this->id] );
         }
     }
 }

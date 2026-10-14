@@ -10,19 +10,17 @@ namespace Aimeos\Cms\Jobs;
 use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Files;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 
 
 class DeleteFilePaths implements ShouldQueue
 {
     use Dispatchable;
     use Queueable;
-    use SerializesModels;
+    use RoutesQueue;
 
 
     /**
@@ -31,36 +29,32 @@ class DeleteFilePaths implements ShouldQueue
      */
     public function __construct( public string $tenant, public array $paths )
     {
-        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->routeQueue();
     }
 
 
     public function handle(): void
     {
-        Utils::storageLock( $this->tenant, function() {
+        Files::storageLock( $this->tenant, function() {
             $owners = [];
 
             foreach( $this->paths as $path )
             {
-                if( ( $path = Utils::normalizePath( $path, $this->tenant ) ) !== null
-                    && ( $owner = File::owner( $this->tenant, $path ) ) !== null ) {
+                if( ( $path = Files::normalizePath( $path, $this->tenant ) ) !== null
+                    && ( $owner = Files::owner( $this->tenant, $path ) ) !== null ) {
                     $owners[$owner][$path] = true;
                 }
             }
 
             foreach( $owners as $owner => $paths ) {
-                Utils::fileLock(
-                    $this->tenant,
-                    (string) $owner,
-                    fn() => $this->delete( (string) $owner, $paths ),
-                );
+                $this->delete( (string) $owner, $paths );
             }
         } );
     }
 
 
     /**
-     * Deletes valid paths that are still unreferenced while holding their owner lock.
+     * Deletes valid paths that are still unreferenced while holding the storage lock.
      *
      * @param array<string, bool> $paths Candidate deletion paths
      */
@@ -101,7 +95,7 @@ class DeleteFilePaths implements ShouldQueue
         }
 
         foreach( ['public', 'private'] as $disk ) {
-            Storage::disk( File::diskName( $disk ) )->delete( array_keys( $paths ) );
+            Files::disk( $disk )->delete( array_keys( $paths ) );
         }
 
         FilesRemoved::dispatch( $this->tenant, array_keys( $paths ) );
@@ -116,7 +110,7 @@ class DeleteFilePaths implements ShouldQueue
      */
     private function forget( array &$paths, mixed $path ): void
     {
-        if( ( $path = Utils::normalizePath( $path, $this->tenant ) ) !== null ) {
+        if( ( $path = Files::normalizePath( $path, $this->tenant ) ) !== null ) {
             unset( $paths[$path] );
         }
     }

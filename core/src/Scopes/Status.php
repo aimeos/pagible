@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
+use Aimeos\Cms\Permission;
 
 
 /**
@@ -23,25 +24,13 @@ class Status implements Scope
     /**
      * Applys additional restrictions to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $builder Query builder
-     * @param \Illuminate\Database\Eloquent\Model $model Eloquent model
+     * @param Builder<covariant Model> $builder Query builder
+     * @param Model $model Eloquent model
      */
     public function apply( Builder $builder, Model $model ): void
     {
-        if( !\Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
+        if( !Permission::can( 'page:view', Auth::user() ) ) {
             $builder->whereIn( $model->qualifyColumn( 'status' ), [1, 2] );
         }
-    }
-
-
-    /**
-     * Adds additional macros to the query builder.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
-     */
-    public function extend( Builder $builder ): void
-    {
-        $scope = $this;
-        $builder->macro( 'withoutStatus', fn( Builder $builder ) => $builder->withoutGlobalScope( $scope ));
     }
 }

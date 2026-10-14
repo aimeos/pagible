@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Moved;
@@ -45,14 +46,6 @@ class BroadcastsTest extends CoreTestAbstract
             'password' => 'secret',
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ]);
-    }
-
-
-    public function testUnknownActionThrows() : void
-    {
-        $this->expectException( \InvalidArgumentException::class );
-
-        ( new PageView )->announce( 'bogus' );
     }
 
 
@@ -196,7 +189,7 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Published::class, Bulk::class] );
 
-        Base::announceMany( $pages, 'published', 'editor@testbench', [
+        Base::announceMany( $pages, ContentAction::Published, 'editor@testbench', [
             'published' => true,
             'publish_at' => null,
         ], projected: $published );

@@ -8,6 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Access\Adapter;
+use Aimeos\Cms\Hooks;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
@@ -229,8 +231,7 @@ class TenancyTest extends CoreTestAbstract
     {
         $access = app( Access::class );
         $calls = 0;
-        $property = new \ReflectionProperty( Access::class, 'activateCallback' );
-        $property->setValue( null, function( string $tenant ) use ( &$calls ) {
+        Hooks::get()->access = new Adapter( activate: function( string $tenant ) use ( &$calls ) {
             $calls++;
             throw new \RuntimeException( "Failed to activate {$tenant}" );
         } );

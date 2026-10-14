@@ -7,10 +7,14 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Referenced;
+use Aimeos\Cms\Invalidation;
+use Aimeos\Cms\LifecycleAction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Aimeos\Cms\Texts;
 
 /**
  * Element model
@@ -31,6 +35,8 @@ use Illuminate\Support\Collection;
  */
 class Element extends Base
 {
+    use Referenced;
+
     public const PERM = 'element';
     protected const REFS = ['files'];
 
@@ -105,32 +111,8 @@ class Element extends Base
     {
         return trim( implode( "\n", [
             $this->name ?? '',
-            ...\Aimeos\Cms\Scout::text( [$this->data] ),
+            ...Texts::searchable( [$this->data] ),
         ] ) );
-    }
-
-
-    /**
-     * Get the pages the element is referenced by.
-     *
-     * @return BelongsToMany<PageView, $this> Eloquent relationship to the pages
-     */
-    public function bypages() : BelongsToMany
-    {
-        return $this->belongsToMany( PageView::class, 'cms_page_element', 'element_id', 'variant_id', 'id', 'variant_id' )
-            ->allVariants()->select('id', 'path', 'name' );
-    }
-
-
-    /**
-     * Get the versions the element is referenced by.
-     *
-     * @return BelongsToMany<Version, $this> Eloquent relationship to the versions referencing the element
-     */
-    public function byversions() : BelongsToMany
-    {
-        return $this->belongsToMany( Version::class, 'cms_version_element' )
-            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
     }
 
 
@@ -161,15 +143,36 @@ class Element extends Base
 
 
     /**
+     * Invalidates the cached pages which reference the elements.
+     *
+     * @param array<int, string> $ids Element IDs
+     */
+    public static function invalidateRefs( array $ids ) : void
+    {
+        Invalidation::refs( $ids );
+    }
+
+
+    /**
+     * Returns the columns a lifecycle action needs in addition to the identifying ones.
+     *
+     * @param LifecycleAction $action Lifecycle action
+     * @return array<int, string> Column names
+     */
+    public static function lifecycleColumns( LifecycleAction $action ) : array
+    {
+        return $action === LifecycleAction::Restored ? self::SELECT_COLUMNS : [];
+    }
+
+
+    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder for pruning models
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
-            ->select( 'id', 'tenant_id', 'deleted_at' )
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+        return static::expired()->select( 'id', 'tenant_id', 'deleted_at' );
     }
 
 
@@ -180,22 +183,7 @@ class Element extends Base
      */
     public function toSearchableArray(): array
     {
-        $attrs = ['name', 'type', 'data', 'deleted_at', 'latest_id'];
-
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
-
-        return [
-            'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
-            'draft' => mb_strtolower( (string) $this->latest ),
-            'tenant_id' => $this->tenant_id ?? '',
-            'lang' => $this->latest?->lang,
-            'editor' => $this->latest->editor ?? '',
-            'type' => $this->latest?->data->type ?? '',
-            'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
-        ];
+        return $this->searchableVersion( ['name', 'type', 'data', 'deleted_at', 'latest_id'], 'type' );
     }
 
 

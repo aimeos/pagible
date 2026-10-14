@@ -13,25 +13,20 @@ namespace Aimeos\Cms;
 class Schema
 {
     /**
-     * Cached schema results.
+     * Returns the action handler of a content element type.
      *
-     * @var array<string, array<string, mixed>>
-     */
-    private static array $schemas = [];
-
-    /**
-     * Optional dynamic theme source.
+     * The handler is only taken from the trusted schema and must never be read from the
+     * stored element data, which a content author could set to an arbitrary callable
+     * that app()->call() would invoke server-side (RCE).
      *
-     * @var (\Closure(): array<string, array<string, mixed>>)|null
+     * @param string $type Content element type
+     * @return callable|string|null Callable or "Class@method" for app()->call(), NULL if the type has no action
      */
-    private static ?\Closure $source = null;
-
-    /**
-     * Registered themes (Composer packages).
-     *
-     * @var array<string, array<string, mixed>>
-     */
-    private static array $themes = [];
+    public static function action( string $type ) : callable|string|null
+    {
+        $field = self::schemas( section: 'content' )[$type]['fields']['action'] ?? [];
+        return ( $field['type'] ?? null ) === 'hidden' ? ( $field['value'] ?? null ) : null;
+    }
 
 
     /**
@@ -41,7 +36,7 @@ class Schema
      */
     public static function all() : array
     {
-        return array_merge( self::loaded(), self::$themes );
+        return array_merge( self::loaded(), Hooks::get()->themes );
     }
 
 
@@ -53,7 +48,7 @@ class Schema
      */
     public static function get( string $name ) : ?array
     {
-        return self::$themes[$name] ?? self::loaded()[$name] ?? null;
+        return Hooks::get()->themes[$name] ?? self::loaded()[$name] ?? null;
     }
 
 
@@ -72,64 +67,27 @@ class Schema
             $data = self::prefix( $data, $name );
         }
 
-        self::$themes[$name] = $data;
-        self::$schemas = [];
+        Hooks::get()->themes[$name] = $data;
     }
 
 
     /**
-     * Returns flattened schemas across all themes.
+     * Returns the flattened schemas of one section across all themes.
      *
      * Core keys are un-prefixed, non-core keys are prefixed with "{name}::".
      *
-     * @param string|null $name Theme name filter or null for all
-     * @param string|null $section Schema section filter (content, meta, config) or null for all
+     * @param string $section Schema section (content, meta, config)
      * @return array<string, mixed> Flattened schemas
      */
-    public static function schemas( ?string $name = null, ?string $section = null ) : array
+    public static function schemas( string $section ) : array
     {
-        // Tenant-scope the cache key so a process-global static never serves one tenant's
-        // registered schemas to another under Octane. Dynamic sources own their caching and
-        // must be resolved on every call so uploaded theme changes can become visible.
-        $key = Tenancy::value() . '/' . ( $name ?? '*' ) . '/' . ( $section ?? '*' );
-
-        if( self::$source === null && isset( self::$schemas[$key] ) ) {
-            return self::$schemas[$key];
-        }
-
         $result = [];
-        $themes = $name !== null ? [$name => self::get( $name )] : self::all();
-        $sections = $section ? [$section] : ['content', 'meta', 'config'];
 
-        foreach( $themes as $themeName => $theme )
+        foreach( self::all() as $theme )
         {
-            if( !$theme ) {
-                continue;
+            foreach( $theme[$section] ?? [] as $entry => $value ) {
+                $result[$entry] ??= $value;
             }
-
-            foreach( $sections as $sec )
-            {
-                if( empty( $theme[$sec] ) ) {
-                    continue;
-                }
-
-                if( $section !== null )
-                {
-                    foreach( $theme[$sec] as $entry => $value ) {
-                        $result[$entry] = $result[$entry] ?? $value;
-                    }
-                }
-                else
-                {
-                    foreach( $theme[$sec] as $entry => $value ) {
-                        $result[$sec][$entry] = $result[$sec][$entry] ?? $value;
-                    }
-                }
-            }
-        }
-
-        if( self::$source === null ) {
-            self::$schemas[$key] = $result;
         }
 
         return $result;
@@ -186,8 +144,7 @@ class Schema
      */
     public static function source( ?\Closure $callback ) : void
     {
-        self::$source = $callback;
-        self::$schemas = [];
+        Hooks::get()->source = $callback;
     }
 
 
@@ -198,11 +155,11 @@ class Schema
      */
     private static function loaded() : array
     {
-        if( self::$source === null ) {
+        if( !( $source = Hooks::get()->source ) ) {
             return [];
         }
 
-        $themes = ( self::$source )();
+        $themes = $source();
 
         foreach( $themes as $name => $data ) {
             $themes[$name] = self::prefix( $data, $name );
@@ -239,7 +196,7 @@ class Schema
             throw new Exception( sprintf( 'Invalid JSON in schema.json at "%s"', $path ) );
         }
 
-        if( isset( $data['website'] ) && !Utils::isValidUrl( $data['website'] ) ) {
+        if( isset( $data['website'] ) && !Utils::isValidUrl( $data['website'], strict: false ) ) {
             unset( $data['website'] );
         }
 

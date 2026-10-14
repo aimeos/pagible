@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Events\Authed;
 use Aimeos\Cms\Events\UserChanged;
 use Aimeos\Cms\GraphQL\Directives\CmsExceptionDirective;
@@ -81,7 +82,7 @@ class GraphqlServiceProvider extends Provider
         $events->listen(
             StartExecution::class,
             function( StartExecution $event ) {
-                Utils::source( 'graphql' );
+                Watch::source( 'graphql' );
 
                 request()->attributes->set( self::PENDING, ['start' => hrtime( true ), 'action' => $this->action( $event )] );
             }
@@ -104,7 +105,7 @@ class GraphqlServiceProvider extends Provider
                     action: $current['action'],
                     durationMs: Watch::duration( $current['start'] ),
                     dimensions: [
-                        'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
+                        'domain' => Utils::domain(),
                         'success' => $event->result->errors === [],
                     ],
                 );

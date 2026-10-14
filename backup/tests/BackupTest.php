@@ -17,7 +17,7 @@ use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Events\RestoreCompleted;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Files;
 
 
 class BackupTest extends BackupTestAbstract
@@ -118,7 +118,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupRejectsConcurrentMediaOperation(): void
     {
-        $status = Utils::storageLock( $this->tenant, fn() =>
+        $status = Files::storageLock( $this->tenant, fn() =>
             \Illuminate\Support\Facades\Artisan::call( 'cms:backup', [
                 '--tenant' => $this->tenant,
                 '--disk' => 'backup',
@@ -885,8 +885,7 @@ class BackupTest extends BackupTestAbstract
     {
         $conn = config( 'cms.db', 'sqlite' );
         $backupFile = $this->backup( $this->tenant );
-        $managed = new \ReflectionProperty( Tenancy::class, 'managed' );
-        $managed->setValue( null, true );
+        \Aimeos\Cms\Hooks::get()->managed = true;
 
         try
         {
@@ -901,7 +900,7 @@ class BackupTest extends BackupTestAbstract
                 ->assertExitCode( 1 );
         }
         finally {
-            $managed->setValue( null, false );
+            \Aimeos\Cms\Hooks::get()->managed = false;
         }
 
         $this->assertSame( 0, DB::connection( $conn )->table( 'cms_pages' )

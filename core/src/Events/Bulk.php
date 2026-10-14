@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
+use Aimeos\Cms\LifecycleAction;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 
@@ -49,7 +50,7 @@ class Bulk implements Loggable, ShouldBroadcastNow
 
     public function broadcastAs() : string
     {
-        return $this->contentType . '.' . ( $this->action === 'purged' ? 'purged' : 'bulk' );
+        return $this->contentType . '.' . ( $this->action === LifecycleAction::Purged->value ? 'purged' : 'bulk' );
     }
 
 

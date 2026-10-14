@@ -49,19 +49,8 @@ class AddFile extends Tool
             'url.url' => 'The URL must be a valid "http" or "https" URL.',
         ] );
 
-        $file = new File();
-        $file->disk = $v['disk'] ?? 'public';
-        $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
-
-        if( isset( $v['description'] ) ) {
-            $file->description = $v['description'];
-        }
-
-        // Fetch the file and generate previews outside the transaction to keep
-        // slow network and image work off the database connection.
-        $this->source( $v, fn( UploadedFile|string $source ) => $file->ingest( $source ) );
-
-        $file = Resource::addFile( $file, $request->user() );
+        $values = array_intersect_key( $v, array_flip( ['name', 'lang', 'description'] ) );
+        $file = $this->source( $v, fn( UploadedFile|string $source ) => Resource::createFile( $source, $values, $request->user(), $v['disk'] ?? null ) );
 
         return Response::structured( Presenter::item( $file ) );
     }

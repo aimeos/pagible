@@ -22,20 +22,21 @@ class Tenancy implements Scope
     /**
      * Applys additional restrictions to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<covariant \Illuminate\Database\Eloquent\Model> $builder Query builder
-     * @param \Illuminate\Database\Eloquent\Model $model Eloquent model
+     * @param Builder<covariant Model> $builder Query builder
+     * @param Model $model Eloquent model
      */
     public function apply( Builder $builder, Model $model ): void
     {
-        /** @phpstan-ignore method.notFound */
-        $builder->where( $model->qualifyColumn( $model->getTenantColumn() ), \Aimeos\Cms\Tenancy::value() );
+        // models without the Tenancy trait use the default tenant column
+        $column = method_exists( $model, 'getTenantColumn' ) ? $model->getTenantColumn() : 'tenant_id';
+        $builder->where( $model->qualifyColumn( $column ), \Aimeos\Cms\Tenancy::value() );
     }
 
 
     /**
      * Adds additional macros to the query builder.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder Query builder
+     * @param Builder<Model> $builder Query builder
      */
     public function extend( Builder $builder ): void
     {

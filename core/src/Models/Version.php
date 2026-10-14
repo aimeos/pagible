@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Connection;
 use Aimeos\Cms\Concerns\HasUuids;
+use Aimeos\Cms\Concerns\MapsReferences;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\Validation;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Collection;
+use Aimeos\Cms\Texts;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
 /**
@@ -39,7 +41,9 @@ use Illuminate\Support\Collection;
  */
 class Version extends Model
 {
+    use Connection;
     use HasUuids;
+    use MapsReferences;
     use Tenancy;
 
     /** @var list<class-string<Base>> Supported versionable models */
@@ -105,6 +109,7 @@ class Version extends Model
     protected $casts = [
         'data' => 'object',
         'aux' => 'object',
+        'published' => 'boolean',
     ];
 
     /**
@@ -166,7 +171,7 @@ class Version extends Model
         }
 
         $items[] = $data;
-        array_push( $parts, ...\Aimeos\Cms\Scout::text( $items ) );
+        array_push( $parts, ...Texts::searchable( $items ) );
 
         return trim( implode( "\n", $parts ) );
     }
@@ -184,6 +189,23 @@ class Version extends Model
 
 
     /**
+     * Returns the relation of the referenced elements or files.
+     *
+     * @param string $name Relation name, "elements" or "files"
+     * @return BelongsToMany<Element, $this>|BelongsToMany<File, $this>
+     * @throws \InvalidArgumentException If the name isn't a reference relation
+     */
+    public function reference( string $name ) : BelongsToMany
+    {
+        return match( $name ) {
+            'elements' => $this->elements(),
+            'files' => $this->files(),
+            default => throw new \InvalidArgumentException( 'Invalid reference relation: ' . $name ),
+        };
+    }
+
+
+    /**
      * Get all files referenced by the versioned data.
      *
      * @return BelongsToMany<File, $this>
@@ -191,81 +213,6 @@ class Version extends Model
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_version_file' );
-    }
-
-
-    /**
-     * Get a fresh timestamp for the model.
-     *
-     * @return \Illuminate\Support\Carbon
-     */
-    public function freshTimestamp()
-    {
-        return Date::now();
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     */
-    public function getConnectionName()
-    {
-        return config( 'cms.db', 'sqlite' );
-    }
-
-
-    /**
-     * Returns the list of changed attributes.
-     * Required to return the correct boolean value if the "published" property
-     * is stored as integer in the database.
-     *
-     * @return array<string, mixed> List of changed attributes
-     */
-    public function getDirty()
-    {
-        $dirty = [];
-
-        foreach( $this->getAttributes() as $key => $value )
-        {
-            if( $key === 'published' )
-            {
-                if( (bool)$value !== (bool)$this->original[$key] ) {
-                    $dirty[$key] = $value;
-                }
-
-                continue;
-            }
-
-            if( !$this->originalIsEquivalent( $key ) ) {
-                $dirty[$key] = $value;
-            }
-        }
-
-        return $dirty;
-    }
-
-
-    /**
-     * Maps the elements by ID automatically.
-     *
-     * @return Collection<string, Element> List elements with ID as keys and element models as values
-     */
-    public function getElementsAttribute() : Collection
-    {
-        $this->relationLoaded( 'elements' ) ?: $this->load( 'elements' );
-        return $this->getRelation( 'elements' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Maps the files by ID automatically.
-     *
-     * @return Collection<string, File> List files with ID as keys and file models as values
-     */
-    public function getFilesAttribute() : Collection
-    {
-        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
-        return $this->getRelation( 'files' )->pluck( null, 'id' );
     }
 
 
@@ -338,13 +285,13 @@ class Version extends Model
     /**
      * Loads the CMS models the versions belong to with one query per model type.
      *
-     * @param \Illuminate\Database\Eloquent\Collection<int, Version> $versions Versions to load the owners for
-     * @return \Illuminate\Database\Eloquent\Collection<int, Version> Same versions for fluent interface
+     * @param EloquentCollection<int, Version> $versions Versions to load the owners for
+     * @return EloquentCollection<int, Version> Same versions for fluent interface
      */
-    public static function loadOwners( \Illuminate\Database\Eloquent\Collection $versions ) : \Illuminate\Database\Eloquent\Collection
+    public static function loadOwners( EloquentCollection $versions ) : EloquentCollection
     {
         $variants = $versions->where( 'versionable_type', PageVariant::class );
-        $pages = PageView::allVariants( true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
+        $pages = PageView::allVariants( trashed: true )->whereIn( 'variant_id', $variants->pluck( 'versionable_id' )->unique()->all() )->get()->keyBy( 'variant_id' );
 
         foreach( $variants as $version ) {
             $version->setRelation( 'owner', $pages->get( $version->versionable_id ) );

@@ -8,19 +8,9 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Publication;
-use Illuminate\Support\Facades\Auth;
 
 
-final class PubPage
+final class PubPage extends Publish
 {
-    /**
-     * @param  null  $rootValue
-     * @param  array<string, mixed>  $args
-     * @return array<int, mixed>
-     */
-    public function __invoke( $rootValue, array $args ) : array
-    {
-        return Publication::publish( PageView::class, $args['id'], Auth::user(), $args['at'] ?? null, $args['lang'] ?? null )->all();
-    }
+    protected const MODEL = PageView::class;
 }

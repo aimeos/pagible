@@ -76,12 +76,11 @@ class SavePage extends Tool
             'latest_id.required' => 'You must pass the latest_id returned by get-page, add-page, or a previous save-page so concurrent edits are detected.',
         ] );
 
+        // Uses the raw request input, not the validated copy: validate() rebuilds wildcard arrays
+        // via rule expansion, which materializes elements matched by content.*.id first and appends
+        // id-less elements at the end, scrambling the author's order. The raw input preserves it;
+        // Validation::content() still whitelists each element's keys.
         if( isset( $v['content'] ) ) {
-            // Use the raw request input, not the validated copy: validate() rebuilds
-            // wildcard arrays via rule expansion, which materializes elements matched
-            // by content.*.id first and appends id-less elements at the end, scrambling
-            // the author's order. The raw input preserves it; Validation::content()
-            // still whitelists each element's keys.
             $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] ?? null );
         }
 

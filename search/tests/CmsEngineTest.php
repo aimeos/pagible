@@ -584,7 +584,7 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEquals( 'zqv-variante', $found->first()->path );
 
         // preferring a language matches its variant, otherwise the source variant
-        $search = fn( string $term, string $lang ) => \Aimeos\Cms\Scout::prefer(
+        $search = fn( string $term, string $lang ) => \Aimeos\Cms\Query\SearchQuery::prefer(
             PageView::search( $term )->searchFields( 'draft' )->take( 25 ), $lang
         )->get();
 

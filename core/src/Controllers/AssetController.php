@@ -13,7 +13,7 @@ use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -44,7 +44,6 @@ class AssetController extends Controller
                 $query->withAccess( $user );
             }
 
-            /** @var PageView $owner */
             $owner = $query->findOrFail( $page );
 
             if( !$editor && $owner->access_exists && !$owner->access_allowed )
@@ -73,7 +72,7 @@ class AssetController extends Controller
      */
     protected function attached( PageView $page, string $file, bool $editor ) : bool
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
 
         $variants = $db->table( 'cms_page_variants' )->select( 'id' )
             ->where( 'page_id', $page->id )->where( 'tenant_id', $page->tenant_id )

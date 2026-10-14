@@ -69,7 +69,7 @@ class WebhookManager
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = Utils::lockedTransaction( function() use ( $actor, $events, $name, $secret, $status, $url ) {
+        $webhook = \Aimeos\Cms\DB::lockedTransaction( function() use ( $actor, $events, $name, $secret, $status, $url ) {
             if( Webhook::query()->count() >= max( 1, (int) config( 'cms.webhooks.limit', 25 ) ) ) {
                 throw new Exception( 'The webhook limit has been reached.' );
             }
@@ -107,7 +107,7 @@ class WebhookManager
         }
 
         $actor = Utils::editor( $user );
-        $webhooks = Utils::lockedTransaction( function() use ( $ids ) {
+        $webhooks = \Aimeos\Cms\DB::lockedTransaction( function() use ( $ids ) {
             $webhooks = Webhook::query()->whereIn( 'id', $ids )->get();
 
             Webhook::query()
@@ -179,7 +179,7 @@ class WebhookManager
         $secret = $this->secret();
         $actor = Utils::editor( $user );
 
-        $webhook = Utils::lockedTransaction( function() use ( $actor, $id, $secret ) {
+        $webhook = \Aimeos\Cms\DB::lockedTransaction( function() use ( $actor, $id, $secret ) {
             $webhook = $this->find( $id );
 
             // Only the replaced secret stays valid, a secret rotated before isn't accepted any more
@@ -221,7 +221,7 @@ class WebhookManager
         $name = $name !== null ? $this->name( $name ) : null;
         $actor = Utils::editor( $user );
 
-        [$webhook, $changes] = Utils::lockedTransaction( function() use ( $actor, $events, $id, $name, $status ) {
+        [$webhook, $changes] = \Aimeos\Cms\DB::lockedTransaction( function() use ( $actor, $events, $id, $name, $status ) {
             $webhook = $this->find( $id );
 
             $webhook->forceFill( [

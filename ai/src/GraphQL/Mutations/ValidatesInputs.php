@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Uploads;
 use Aimeos\Prisma\Exceptions\PrismaException;
 use GraphQL\Error\Error;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -57,7 +57,7 @@ trait ValidatesInputs
      */
     protected function upload( UploadedFile $value, string $class, string $label = 'file' ) : \Aimeos\Prisma\Files\File
     {
-        File::checkUpload( $value );
+        Uploads::checkUpload( $value );
 
         $type = strtolower( class_basename( $class ) );
 
@@ -66,7 +66,7 @@ trait ValidatesInputs
         }
 
         if( $type === 'image' ) {
-            File::checkPixels( $value );
+            Uploads::checkPixels( $value );
         }
 
         return $this->ai( fn() => $class::fromBinary( $value->getContent(), $mime ) );

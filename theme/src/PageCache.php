@@ -49,6 +49,17 @@ class PageCache
 
 
     /**
+     * Returns the Cache-Control header value of public pages shared caches may store.
+     *
+     * @param int $maxage Seconds shared caches may serve the page
+     */
+    public static function policy( int $maxage ) : string
+    {
+        return "public, s-maxage={$maxage}, max-age=0, must-revalidate";
+    }
+
+
+    /**
      * Returns a cached response or renders and stores it on a cache miss.
      *
      * A contending request receives a stale entry when available. On a cold miss,
@@ -121,7 +132,7 @@ class PageCache
 
         $response = ( new Response( $content, 200 ) )
             ->header( 'Content-Type', 'text/html' )
-            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Cache-Control', self::policy( $maxage ) )
             ->header( 'Expires', $expires )
             ->header( 'Vary', 'Accept-Encoding' );
 

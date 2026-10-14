@@ -8,7 +8,9 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageVariant;
+use Illuminate\Support\Collection;
 
 
 /**
@@ -57,26 +59,8 @@ class Sync
         $changed = fn( string $key ) => !$linked || ( $vhashes[$key] ?? null ) !== ( $shashes[$key] ?? null );
         $texts = new Texts();
 
-        // page fields
         $data = $variant ? $vdata : ['lang' => $lang, 'status' => 0] + $sdata;
-
-        foreach( Hashes::PAGE_FIELDS as $field )
-        {
-            $key = 'page:' . $field;
-
-            if( $changed( $key ) )
-            {
-                if( array_key_exists( $field, $sdata ) ) {
-                    $data[$field] = $sdata[$field];
-                } else {
-                    unset( $data[$field] );
-                }
-
-                if( in_array( $field, ['title', 'name'] ) ) {
-                    $texts->add( $key, $data, $field );
-                }
-            }
-        }
+        self::fields( $sdata, $data, $changed, $texts );
 
         // translated slug of the path for new variants, empty if untranslated
         $slug = ['slug' => $variant ? '' : str_replace( '-', ' ', basename( (string) ( $sdata['path'] ?? '' ) ) )];
@@ -190,6 +174,37 @@ class Sync
 
 
     /**
+     * Updates the page fields of the variant by the changed fields of the source.
+     *
+     * The texts collector references the values of the data for writing the translations.
+     *
+     * @param array<string, mixed> $source Version data of the source variant
+     * @param array<string, mixed> $data Version data of the target variant, updated in place
+     * @param \Closure(string): bool $changed Returns if the item with the hash key has changed
+     * @param Texts $texts Collector of the texts to translate
+     */
+    protected static function fields( array $source, array &$data, \Closure $changed, Texts $texts ) : void
+    {
+        foreach( PageVariant::SYNC_FIELDS as $field )
+        {
+            if( !$changed( $key = 'page:' . $field ) ) {
+                continue;
+            }
+
+            if( array_key_exists( $field, $source ) ) {
+                $data[$field] = $source[$field];
+            } else {
+                unset( $data[$field] );
+            }
+
+            if( in_array( $field, ['title', 'name'] ) ) {
+                $texts->add( $key, $data, $field );
+            }
+        }
+    }
+
+
+    /**
      * Returns the URLs of the same pages in the target language for the URLs of internal pages.
      *
      * URLs of pages without a variant in the target language and external URLs are skipped.
@@ -208,55 +223,12 @@ class Sync
         $multi = (bool) config( 'cms.multidomain' );
         $base = (array) parse_url( $url );
         $prefix = strstr( (string) ( $base['path'] ?? '' ), '_path_', true ) ?: '/';
-        $found = [];
 
-        foreach( $urls as $url )
-        {
-            if( !is_array( $parts = parse_url( $url ) ) || isset( $parts['user'] ) ) {
-                continue;
-            }
-
-            if( isset( $parts['scheme'], $parts['host'] ) && in_array( strtolower( $parts['scheme'] ), ['http', 'https'], true )
-                && ( $multi || strtolower( $parts['host'] ) === strtolower( (string) ( $base['host'] ?? '' ) ) )
-            ) {
-                $dom = $multi ? strtolower( $parts['host'] ) : '';
-            } elseif( !isset( $parts['scheme'] ) && str_starts_with( $url, '/' ) && !str_starts_with( $url, '//' ) ) {
-                $dom = $multi ? $domain : '';
-            } else {
-                continue;
-            }
-
-            if( str_starts_with( ( $path = $parts['path'] ?? '/' ) . '/', $prefix ) ) {
-                $found[$url] = [$dom, trim( rawurldecode( substr( $path, strlen( $prefix ) ) ), '/' ), $parts];
-            }
-        }
-
-        if( empty( $found ) ) {
+        if( empty( $found = self::linked( $urls, $domain, (string) ( $base['host'] ?? '' ), $prefix, $multi ) ) ) {
             return [];
         }
 
-        // variants in the target language of the pages the URLs point to, keyed by the linked domain and path
-        $table = ( new PageVariant() )->getTable();
-        $targets = collect();
-
-        // chunked to stay below the parameter limits of the databases for pages with many links
-        foreach( collect( $found )->groupBy( fn( array $item ) => $item[0] ) as $domain => $list )
-        {
-            foreach( $list->pluck( 1 )->unique()->chunk( 1000 ) as $paths )
-            {
-                $targets = $targets->merge( PageVariant::join( $table . ' as src', fn( $join ) => $join
-                        ->on( 'src.page_id', '=', $table . '.page_id' )
-                        ->on( 'src.tenant_id', '=', $table . '.tenant_id' )
-                        ->whereNull( 'src.deleted_at' )
-                    )
-                    ->where( $table . '.lang', $lang )
-                    ->where( 'src.domain', (string) $domain )
-                    ->whereIn( 'src.path', $paths->values()->all() )
-                    ->get( ['src.domain as src_domain', 'src.path as src_path', $table . '.domain', $table . '.path'] )
-                    ->keyBy( fn( $v ) => $v->getAttribute( 'src_domain' ) . '/' . $v->getAttribute( 'src_path' ) ) );
-            }
-        }
-
+        $targets = self::targets( $found, $lang );
         $map = [];
 
         foreach( $found as $url => [$dom, $path, $parts] )
@@ -283,6 +255,79 @@ class Sync
         }
 
         return $map;
+    }
+
+
+    /**
+     * Returns the URLs pointing to pages of the CMS.
+     *
+     * @param array<int, string> $urls Absolute URLs or site-relative paths
+     * @param string $domain Domain of the page variant containing the URLs
+     * @param string $host Host name of the pages
+     * @param string $prefix Path prefix of the pages
+     * @param bool $multi TRUE if several domains are served
+     * @return array<string, array{0: string, 1: string, 2: array<string, int|string>}> Domain, page path and parsed URL by URL
+     */
+    protected static function linked( array $urls, string $domain, string $host, string $prefix, bool $multi ) : array
+    {
+        $found = [];
+
+        foreach( $urls as $url )
+        {
+            if( !is_array( $parts = parse_url( $url ) ) || isset( $parts['user'] ) ) {
+                continue;
+            }
+
+            if( isset( $parts['scheme'], $parts['host'] ) && in_array( strtolower( $parts['scheme'] ), ['http', 'https'], true )
+                && ( $multi || strtolower( $parts['host'] ) === strtolower( $host ) )
+            ) {
+                $dom = $multi ? strtolower( $parts['host'] ) : '';
+            } elseif( !isset( $parts['scheme'] ) && str_starts_with( $url, '/' ) && !str_starts_with( $url, '//' ) ) {
+                $dom = $multi ? $domain : '';
+            } else {
+                continue;
+            }
+
+            if( str_starts_with( ( $path = $parts['path'] ?? '/' ) . '/', $prefix ) ) {
+                $found[$url] = [$dom, trim( rawurldecode( substr( $path, strlen( $prefix ) ) ), '/' ), $parts];
+            }
+        }
+
+        return $found;
+    }
+
+
+    /**
+     * Returns the variants in the target language of the pages the URLs point to.
+     *
+     * @param array<string, array{0: string, 1: string, 2: array<string, int|string>}> $found Domain, page path and parsed URL by URL
+     * @param string $lang Language of the target variants
+     * @return Collection<string, PageVariant> Page variants keyed by the linked domain and path
+     */
+    protected static function targets( array $found, string $lang ) : Collection
+    {
+        $table = ( new PageVariant() )->getTable();
+        $targets = collect();
+
+        // chunked to stay below the parameter limits of the databases for pages with many links
+        foreach( collect( $found )->groupBy( fn( array $item ) => $item[0] ) as $domain => $list )
+        {
+            foreach( $list->pluck( 1 )->unique()->chunk( DB::IN_SIZE ) as $paths )
+            {
+                $targets = $targets->merge( PageVariant::join( $table . ' as src', fn( $join ) => $join
+                        ->on( 'src.page_id', '=', $table . '.page_id' )
+                        ->on( 'src.tenant_id', '=', $table . '.tenant_id' )
+                        ->whereNull( 'src.deleted_at' )
+                    )
+                    ->where( $table . '.lang', $lang )
+                    ->where( 'src.domain', (string) $domain )
+                    ->whereIn( 'src.path', $paths->values()->all() )
+                    ->get( ['src.domain as src_domain', 'src.path as src_path', $table . '.domain', $table . '.path'] )
+                    ->keyBy( fn( $v ) => $v->getAttribute( 'src_domain' ) . '/' . $v->getAttribute( 'src_path' ) ) );
+            }
+        }
+
+        return $targets;
     }
 
 
@@ -371,7 +416,7 @@ class Sync
         }
 
         return [
-            $page->only( PageVariant::FIELDS ),
+            $page->only( PageVariant::DATA_FIELDS ),
             self::copy( (object) ['content' => $page->content, 'meta' => $page->meta, 'config' => $page->config] )
         ];
     }
@@ -433,10 +478,10 @@ class Sync
         $hashes = [];
 
         // small chunks because the content of the pages is loaded
-        foreach( array_chunk( $ids, 50 ) as $chunk )
+        foreach( array_chunk( $ids, Base::CHUNK ) as $chunk )
         {
             // only the columns used for the hashes of the published source variants
-            $sources = PageView::withTrashed()->whereKey( $chunk )->get( ['id', ...Hashes::PAGE_FIELDS, 'content', 'meta', 'config'] );
+            $sources = PageView::withTrashed()->whereKey( $chunk )->get( ['id', ...PageVariant::SYNC_FIELDS, 'content', 'meta', 'config'] );
 
             foreach( $sources as $source ) {
                 /** @var PageView $source */
@@ -454,13 +499,14 @@ class Sync
      * @param PageView $page Page with the variant
      * @param array<string, string> $hashes Hashes by key
      * @param bool $stale If the variant needs an update
+     * @param bool $index FALSE if the variant is reindexed by the caller anyway
      * @return PageView Same page with the new hashes and stale flag
      */
-    public static function state( PageView $page, array $hashes, bool $stale ) : PageView
+    public static function state( PageView $page, array $hashes, bool $stale, bool $index = true ) : PageView
     {
         $page->variant()->update( ['hashes' => json_encode( (object) $hashes ), 'stale' => $stale] );
 
-        if( (bool) $page->stale !== $stale ) {
+        if( $index && (bool) $page->stale !== $stale ) {
             self::reindex( [(string) $page->variant_id] );
         }
 

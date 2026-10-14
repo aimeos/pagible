@@ -7,25 +7,15 @@
 
 namespace Aimeos\Cms;
 
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriResolver;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Client\Response;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
 
 
 class Utils
 {
     private static int $counter = 0;
     private static ?\HTMLPurifier $purifier = null;
-    /** @var array<string, array{owner: object, callbacks: list<\Closure>}> */
-    private static array $storageCallbacks = [];
 
 
     /**
@@ -37,189 +27,6 @@ class Utils
     public static function editor( ?object $user = null ) : string
     {
         return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
-    }
-
-
-    /**
-     * Runs work after the active tenant storage gate is released.
-     */
-    public static function deferStorage( string $tenant, \Closure $callback ): void
-    {
-        $key = hash( 'sha256', $tenant );
-
-        if( isset( self::$storageCallbacks[$key] ) ) {
-            self::$storageCallbacks[$key]['callbacks'][] = $callback;
-        } else {
-            $callback();
-        }
-    }
-
-
-    /**
-     * Formats a number of seconds as a "HH:MM:SS.mmm" timestamp.
-     *
-     * @param float $seconds Time in seconds
-     * @return string Formatted timestamp, e.g. "00:01:23.500"
-     */
-    public static function formatSeconds( float $seconds ) : string
-    {
-        $hours = floor( $seconds / 3600 );
-        $minutes = floor( ( $seconds % 3600 ) / 60 );
-        $secs = floor( $seconds % 60 );
-        $millis = ( $seconds - floor( $seconds ) ) * 1000;
-
-        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
-    }
-
-
-    /**
-     * Executes a callback within a database transaction using the CMS connection.
-     *
-     * @template T
-     * @param \Closure(): T $callback The callback to execute within the transaction
-     * @return T The return value of the callback
-     */
-    public static function transaction( \Closure $callback ) : mixed
-    {
-        return DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( $callback, 3 );
-    }
-
-
-    /**
-     * Executes a callback within a cache-locked database transaction for tree safety.
-     *
-     * @template T
-     * @param \Closure(): T $callback The callback to execute within the locked transaction
-     * @param int $lifetime Minimum lock lifetime in seconds for long running callbacks
-     * @return T The return value of the callback
-     */
-    public static function lockedTransaction( \Closure $callback, int $lifetime = 0 ) : mixed
-    {
-        $wait = max( 1, (int) config( 'cms.lock', 30 ) );
-
-        return Cache::lock( 'cms_pages_' . Tenancy::value(), max( $wait, $lifetime ) )
-            ->block( $wait, fn() => self::transaction( $callback ) );
-    }
-
-
-    /**
-     * Rejects MIME types which aren't allowed for uploads.
-     *
-     * @param string $mime MIME type to check
-     * @param string $label Name of the checked item used in the error message
-     * @param string $prefix Additionally required MIME type prefix, e.g. "image/"
-     * @throws InvalidException If the MIME type isn't allowed
-     */
-    public static function checkMimetype( string $mime, string $label = 'File', string $prefix = '' ) : void
-    {
-        if( !str_starts_with( $mime, $prefix ) || !self::isValidMimetype( $mime ) ) {
-            throw new InvalidException( sprintf( '%s type "%s" not allowed, permitted types: %s',
-                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
-        }
-    }
-
-
-    /**
-     * Sanitizes SVG/SVGZ content, returns NULL for non-SVG or invalid input.
-     *
-     * @param mixed $content Raw SVG or gzip-compressed SVGZ content
-     * @return string|null Sanitized content (re-compressed if input was SVGZ), or NULL on failure
-     */
-    public static function cleanSvg( mixed $content ) : string|null
-    {
-        if( !$content || !is_string( $content ) ) {
-            return null;
-        }
-
-        $isZip = str_starts_with( $content, "\x1f\x8b" );
-        $sanitizer = new \enshrined\svgSanitize\Sanitizer();
-
-        if( !( $content = self::gunzip( $content ) ) || !( $clean = $sanitizer->sanitize( $content ) ) ) {
-            return null;
-        }
-
-        return ( $isZip ? gzencode( $clean ) : $clean ) ?: null;
-    }
-
-
-    /**
-     * Decompresses gzip content up to the maximum upload size, other content is returned unchanged.
-     *
-     * @param string $content Raw or gzip-compressed content
-     * @return string Decompressed content
-     * @throws InvalidException If the decompressed content exceeds the maximum upload size
-     */
-    public static function gunzip( string $content ) : string
-    {
-        if( !str_starts_with( $content, "\x1f\x8b" ) ) {
-            return $content;
-        }
-
-        $max = max( 0, (int) ( (float) config( 'cms.upload.filesize', 50 ) * 1024 * 1024 ) );
-        $result = @gzdecode( $content, $max + 1 );
-
-        if( $result === false || strlen( $result ) > $max ) {
-            throw new InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Runs a callback while changes to one File's storage paths are serialized.
-     *
-     * @template T
-     * @param string $tenant Tenant ID owning the file namespace
-     * @param string $file File UUID owning the storage paths
-     * @param \Closure(): T $callback Work that reads or changes file ownership
-     * @return T Callback result
-     */
-    public static function fileLock( string $tenant, string $file, \Closure $callback ) : mixed
-    {
-        $key = 'cms_files_' . hash( 'sha256', $tenant . "\0" . $file );
-
-        return Cache::lock( $key, 600 )->block( 30, $callback );
-    }
-
-
-    /**
-     * Runs a callback while backup/restore and tenant media mutations are serialized.
-     *
-     * @template T
-     * @param string $tenant Tenant ID owning the storage namespace
-     * @param \Closure(): T $callback Work that reads or changes the media catalog
-     * @param int $wait Maximum seconds to wait for the tenant gate
-     * @return T Callback result
-     */
-    public static function storageLock( string $tenant, \Closure $callback, int $wait = 30 ) : mixed
-    {
-        $id = hash( 'sha256', $tenant );
-        $owner = new \stdClass();
-
-        try {
-            return Cache::lock( 'cms_storage_' . $id, 86400 )->block( $wait, function() use (
-                $callback, $id, $owner
-            ) {
-                self::$storageCallbacks[$id] = ['owner' => $owner, 'callbacks' => []];
-                return $callback();
-            } );
-        } finally {
-            $state = self::$storageCallbacks[$id] ?? null;
-
-            if( $state && $state['owner'] === $owner )
-            {
-                unset( self::$storageCallbacks[$id] );
-
-                foreach( $state['callbacks'] as $deferred ) {
-                    try {
-                        $deferred();
-                    } catch( \Throwable $e ) {
-                        report( $e );
-                    }
-                }
-            }
-        }
     }
 
 
@@ -245,44 +52,6 @@ class Utils
 
 
     /**
-     * Sends a request while resolving and pinning every redirect target.
-     *
-     * @param string $url Initial http(s) URL
-     * @param array<string, mixed> $options Additional safe HTTP client options
-     * @param array<string, string> $headers Request headers
-     * @param string $method HTTP method, e.g. "GET" or "HEAD"
-     * @return Response Final response, including unsuccessful non-redirect responses
-     */
-    public static function http( string $url, array $options = [], array $headers = [], string $method = 'GET' ) : Response
-    {
-        for( $redirects = 0; ; $redirects++ )
-        {
-            $pending = Http::withHeaders( $headers )->withOptions( self::safeHttp( $url ) + $options );
-
-            // Guzzle's stream handler ignores the "curl" options including the IP pin
-            if( !empty( $options['stream'] ) ) {
-                $pending->setHandler( new HttpStream );
-            }
-
-            $response = $pending->send( $method, $url );
-
-            if( !in_array( $response->status(), [301, 302, 303, 307, 308], true ) ) {
-                return $response;
-            }
-
-            $location = trim( $response->header( 'Location' ) );
-            $response->toPsrResponse()->getBody()->close();
-
-            if( $location === '' || $redirects >= 2 ) {
-                throw new InvalidException( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
-            }
-
-            $url = (string) UriResolver::resolve( new Uri( $url ), new Uri( $location ) );
-        }
-    }
-
-
-    /**
      * Registers a per-minute rate limiter keyed by the user ID or the client IP.
      *
      * @param string $name Rate limiter name used by the "throttle" middleware
@@ -294,75 +63,6 @@ class Utils
         RateLimiter::for( $name, fn( $request ) => Limit::perMinute( $perMinute )->by(
             $user ? ( $request->user()?->getAuthIdentifier() ?: $request->ip() ) : $request->ip()
         ) );
-    }
-
-
-    /**
-     * Writes binary content into a temporary upload and passes it to the callback.
-     *
-     * The temporary file is removed again after the callback returns.
-     *
-     * @param string $binary File content
-     * @param string $filename Client file name of the upload
-     * @param string|null $mime Client MIME type or NULL to guess it from the content
-     * @param \Closure(UploadedFile): mixed $fn Receives the temporary upload
-     * @return mixed Return value of the callback
-     * @throws \Aimeos\Cms\Exception If the temporary file can't be written
-     */
-    public static function upload( string $binary, string $filename, ?string $mime, \Closure $fn ) : mixed
-    {
-        if( ( $path = tempnam( sys_get_temp_dir(), 'cms' ) ) === false || file_put_contents( $path, $binary ) === false )
-        {
-            if( $path !== false ) {
-                @unlink( $path );
-            }
-
-            throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-        }
-
-        try {
-            return $fn( new UploadedFile( $path, $filename, $mime, null, true ) );
-        } finally {
-            @unlink( $path );
-        }
-    }
-
-
-    /**
-     * Returns a file extension that is safe to serve from the storage disk.
-     *
-     * Neutralizes dangerous uploads/restores (e.g. .php, .html, .phar) by replacing
-     * extensions the web server may execute or serve as active content with "bin",
-     * so user-supplied files cannot run as code or script.
-     *
-     * @param string|null $ext File extension (without leading dot)
-     * @return string Safe file extension
-     */
-    public static function extension( ?string $ext ) : string
-    {
-        $ext = strtolower( (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $ext ) ) ?: 'bin';
-
-        return match( true ) {
-            in_array( $ext, ['htaccess', 'cgi', 'pht', 'phtml', 'phar', 'pl'], true ),
-            str_starts_with( $ext, 'php' ),
-            str_starts_with( $ext, 'asp' ),
-            str_starts_with( $ext, 'jsp' ),
-            str_contains( $ext, 'htm' ) => 'bin',
-            default => $ext,
-        };
-    }
-
-
-    /**
-     * Validates a MIME type against configured allowed prefixes.
-     *
-     * @param string $mime The MIME type to validate
-     * @return bool True if the MIME type is allowed, false otherwise
-     */
-    public static function isValidMimetype( string $mime ) : bool
-    {
-        $allowed = config( 'cms.upload.mimetypes', [] );
-        return empty( $allowed ) || Str::startsWith( $mime, $allowed );
     }
 
 
@@ -430,7 +130,7 @@ class Utils
 
         // In strict mode, require the host to resolve to an allowed IP address
         if( $strict ) {
-            return self::resolve( $parsed['host'] ) !== null;
+            return SafeHttp::resolve( $parsed['host'] ) !== null;
         }
 
         return true;
@@ -438,109 +138,13 @@ class Utils
 
 
     /**
-     * Validates file upload size against configured limit.
+     * Returns the request host if multiple domains are enabled.
      *
-     * @param UploadedFile $upload The uploaded file to validate
-     * @return bool True if the file size is within the limit, false otherwise
+     * @return string Request host or empty string if "cms.multidomain" is disabled
      */
-    public static function isValidUpload( UploadedFile $upload ) : bool
+    public static function domain() : string
     {
-        return $upload->getSize() <= config( 'cms.upload.filesize', 50 ) * 1024 * 1024;
-    }
-
-
-    /**
-     * Determines the MIME type of a file located at the given path or URL.
-     *
-     * @param string $path The file path or URL
-     * @return string The MIME type of the file
-     * @throws Exception If the file cannot be accessed or read
-     */
-    public static function mimetype( string $path, ?string $disk = null ) : string
-    {
-        if( str_starts_with( $path, 'http') )
-        {
-            $response = self::http( $path, ['stream' => true], ['Range' => 'bytes=0-299'] );
-
-            if( !$response->successful() ) {
-                throw new InvalidException( 'URL not accessible' );
-            }
-
-            $body = $response->toPsrResponse()->getBody();
-            $buffer = $body->read( 300 );
-            $body->close();
-        }
-        else
-        {
-            if( ( $path = self::normalizePath( $path ) ) === null ) {
-                throw new Exception( 'Invalid file path' );
-            }
-
-            $stream = Storage::disk( $disk ?: config( 'cms.disks.public.name', 'public' ) )->readStream( $path );
-
-            if( !$stream ) {
-                throw new Exception( 'File not accessible' );
-            }
-
-            if( ( $buffer = fread( $stream, 300 ) ) === false ) {
-                fclose( $stream );
-                throw new Exception( 'File not readable' );
-            }
-
-            fclose( $stream );
-        }
-
-        $finfo = new \finfo( FILEINFO_MIME_TYPE );
-
-        if( ( $mime = $finfo->buffer( $buffer ) ) === false ) {
-            throw new Exception( 'Failed to get mime type' );
-        }
-
-        return $mime;
-    }
-
-
-    /**
-     * Canonicalizes a UUID-owned local storage path and verifies its tenant namespace.
-     *
-     * The first path segment below the tenant prefix must be a File UUID and must be followed by a non-empty relative
-     * path. Invalid tenant IDs, traversal, control characters, remote URLs, and foreign namespaces return null.
-     *
-     * @param mixed $path Local storage path
-     * @param string|null $tenant Tenant ID or null for the current tenant
-     * @return string|null Canonical path or null if it is invalid
-     */
-    public static function normalizePath( mixed $path, ?string $tenant = null ) : ?string
-    {
-        try {
-            $tenant = Tenancy::check( $tenant ?? Tenancy::value() );
-        } catch( \InvalidArgumentException ) {
-            return null;
-        }
-
-        if( !is_string( $path ) || $path === '' || str_contains( $path, '..' )
-            || str_contains( $path, '\\' ) || preg_match( '/\p{C}/u', $path ) !== 0 ) {
-            return null;
-        }
-
-        $path = implode( '/', array_filter(
-            explode( '/', $path ),
-            static fn( string $part ) : bool => $part !== '' && $part !== '.',
-        ) );
-        $prefix = self::prefix( $tenant );
-
-        if( !str_starts_with( $path, $prefix ) ) {
-            return null;
-        }
-
-        $relative = substr( $path, strlen( $prefix ) );
-        $parts = explode( '/', $relative, 2 );
-
-        if( count( $parts ) !== 2 || !Str::isUuid( $parts[0] ) || $parts[1] === '' ) {
-            return null;
-        }
-
-        return $path;
+        return config( 'cms.multidomain' ) ? request()->getHost() : '';
     }
 
 
@@ -553,128 +157,12 @@ class Utils
      */
     public static function pageUrl( string $path, ?string $domain = null ) : ?string
     {
-        if( !\Illuminate\Support\Facades\Route::has( 'cms.page' ) ) {
+        if( !Route::has( 'cms.page' ) ) {
             return null;
         }
 
         $params = config( 'cms.multidomain' ) ? ['domain' => $domain ?: request()->getHost()] : [];
         return route( 'cms.page', $params + ['path' => $path] );
-    }
-
-
-    /**
-     * Returns the storage path prefix of managed files for the tenant.
-     *
-     * @param string $tenant Tenant ID
-     * @return string Path prefix with trailing slash, e.g. "cms/" or "cms/{tenant}/"
-     */
-    public static function prefix( string $tenant ) : string
-    {
-        return $tenant === '' ? 'cms/' : 'cms/' . $tenant . '/';
-    }
-
-
-    /**
-     * Gets or sets the originating interface for content changes in the current request.
-     *
-     * Used to tag audit events with their origin: the GraphQL and MCP entry points set 'graphql'
-     * resp. 'mcp', everything else (console commands, scheduled jobs) defaults to 'cli'. Stored on
-     * the request instance rather than a static, so it neither leaks between requests under Octane
-     * nor needs a reset.
-     *
-     * @param string|null $source Origin to set for this request, or null to only read it
-     * @return string The current origin, defaulting to 'cli'
-     */
-    public static function source( ?string $source = null ) : string
-    {
-        $request = request();
-
-        if( $source !== null ) {
-            $request->attributes->set( 'cms-source', $source );
-        }
-
-        $value = $request->attributes->get( 'cms-source', 'cli' );
-        return is_string( $value ) ? $value : 'cli';
-    }
-
-
-    /**
-     * Resolves a hostname to an allowed IP address.
-     *
-     * Private and reserved ranges are accepted unless "cms.allow-internal" is
-     * disabled. Literal IP hosts are validated directly without a DNS lookup.
-     *
-     * @param string $host The hostname or IP address to resolve
-     * @return string|null The first allowed IP address, or null if none found
-     */
-    public static function resolve( string $host ) : ?string
-    {
-        $flags = config( 'cms.allow-internal', false )
-            ? 0 : FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
-
-        // Literal IP host: validate directly, a DNS lookup would never resolve it
-        if( filter_var( $host, FILTER_VALIDATE_IP ) ) {
-            return filter_var( $host, FILTER_VALIDATE_IP, $flags ) ? $host : null;
-        }
-
-        foreach( @dns_get_record( $host, DNS_A + DNS_AAAA ) ?: [] as $r )
-        {
-            $ip = $r['ip'] ?? $r['ipv6'] ?? null;
-
-            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
-                return $ip;
-            }
-        }
-
-        // dns_get_record( DNS_A | DNS_AAAA ) misses CNAME-only hosts on some
-        // resolvers; fall back to the system resolver to avoid rejecting them.
-        foreach( @gethostbynamel( $host ) ?: [] as $ip )
-        {
-            if( filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
-                return $ip;
-            }
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Returns internal Guzzle HTTP options that mitigate SSRF for the given URL.
-     *
-     * Validates the URL syntactically, resolves the host once and pins the
-     * connection to that IP (preventing DNS rebinding). Redirects are disabled
-     * here and followed by http(), which repeats validation and pinning for
-     * every target. Private/reserved targets are allowed unless
-     * "cms.allow-internal" is disabled.
-     *
-     * @param string $url The http(s) URL that will be fetched
-     * @return array<string, mixed> Options to pass to Http::withOptions()
-     * @throws Exception If the URL is invalid or the host does not resolve
-     */
-    protected static function safeHttp( string $url ) : array
-    {
-        // Syntactic validation only; the host is resolved once below and the
-        // result reused for both the allow-check and the connection pin.
-        if( !self::isValidUrl( $url, false ) ) {
-            throw new InvalidException( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
-        }
-
-        $parsed = (array) parse_url( $url );
-        $host = (string) ( $parsed['host'] ?? '' );
-        $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
-
-        if( !( $ip = self::resolve( $host ) ) ) {
-            throw new InvalidException( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
-        }
-
-        return [
-            'verify' => true,
-            'connect_timeout' => 10,
-            'allow_redirects' => false,
-            // Disable proxies from the environment, they would connect instead of the pinned IP
-        'curl' => [CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip], CURLOPT_PROXY => ''],
-        ];
     }
 
 
@@ -698,8 +186,19 @@ class Utils
      */
     public static function isLocale( string $code ) : bool
     {
-        $locales = array_map( 'strval', (array) config( 'cms.locales', [] ) );
+        $locales = self::locales();
         return self::isValidLang( $code ) && ( !$locales || in_array( $code, $locales, true ) );
+    }
+
+
+    /**
+     * Returns the configured language codes.
+     *
+     * @return array<int, string> Language codes from "cms.locales"
+     */
+    public static function locales() : array
+    {
+        return array_map( 'strval', (array) config( 'cms.locales', [] ) );
     }
 
 

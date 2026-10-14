@@ -14,6 +14,8 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Scout;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\BenchmarkSeeder;
 use Closure;
@@ -59,23 +61,7 @@ trait Benchmarks
             return $elapsed;
         };
 
-        $execute = function() use ( $run, $searchSync ) {
-            if( $searchSync ) {
-                return $run();
-            }
-
-            $result = 0;
-
-            PageView::withoutSyncingToSearch( function() use ( &$result, $run ) {
-                Element::withoutSyncingToSearch( function() use ( &$result, $run ) {
-                    File::withoutSyncingToSearch( function() use ( &$result, $run ) {
-                        $result = $run();
-                    } );
-                } );
-            } );
-
-            return $result;
-        };
+        $execute = fn() => $searchSync ? $run() : Scout::mute( Version::TYPES, $run );
 
         // Warmup iteration
         $execute();
@@ -199,39 +185,15 @@ trait Benchmarks
 
         try
         {
-            if( $driver === 'sqlsrv' )
-            {
-                $results = DB::connection( $conn )->select("
-                        SELECT TOP 1 CAST(qp.query_plan AS NVARCHAR(MAX)) AS query_plan
-                        FROM sys.dm_exec_query_stats AS qs
-                        CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) AS st
-                        CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) AS qp
-                        WHERE st.text LIKE ? AND st.text NOT LIKE '%dm_exec%'
-                        ORDER BY qs.last_execution_time DESC
-                    ",
-                    ['%' . substr( $sql, 0, 6 ) . '%']
-                );
-
-                return $this->xml2plan( $results[0]->query_plan ?? '' );
+            if( $driver === 'sqlsrv' ) {
+                return ['EXPLAIN is not supported for SQL Server'];
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
             $rows = DB::connection( $conn )->select( $prefix . $sql, $bindings );
 
-            $lines = [];
-
-            foreach( $rows as $row )
-            {
-                $row = (array) $row;
-
-                if( $driver === 'sqlite' ) {
-                    $lines[] = ( $row['detail'] ?? implode( ' | ', $row ) );
-                } else {
-                    $lines[] = implode( ' | ', $row );
-                }
-            }
-
-            return $lines;
+            // SQLite returns the plan step in the "detail" column, other drivers in multiple columns
+            return array_map( fn( $row ) => ( (array) $row )['detail'] ?? implode( ' | ', (array) $row ), $rows );
         }
         catch( \Throwable $e )
         {
@@ -399,135 +361,45 @@ trait Benchmarks
 
 
     /**
-     * Validate common options, set up the tenant and abort if invalid.
+     * Validate common options, set up the tenant and return the options.
      *
-     * @param string $tenant Tenant ID
-     * @param int $tries Number of iterations per benchmark
-     * @param bool $force TRUE to run in production
-     * @param bool $seeded TRUE to require existing benchmark data
-     * @return bool True if validation passed
+     * Existing benchmark data is required unless --unseed is passed.
+     *
+     * @return array{domain: string, tenant: string, tries: int, unseed: bool}|null Options or NULL if invalid
      */
-    protected function checks( string $tenant, int $tries, bool $force = false, bool $seeded = true ): bool
+    protected function settings(): ?array
     {
+        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        $tenant = (string) $this->option( 'tenant' );
+        $tries = (int) $this->option( 'tries' );
+        $unseed = (bool) $this->option( 'unseed' );
+
         if( empty( $tenant ) )
         {
             $this->error( 'The --tenant option must not be empty.' );
-            return false;
+            return null;
         }
 
         if( $tries <= 0 )
         {
             $this->error( 'The --tries option must be greater than 0.' );
-            return false;
+            return null;
         }
 
-        if( app()->isProduction() && !$force )
+        if( app()->isProduction() && !$this->option( 'force' ) )
         {
             $this->error( 'Use --force to run in production.' );
-            return false;
+            return null;
         }
 
         \Aimeos\Cms\Tenancy::set( $tenant );
 
-        if( $seeded && !PageView::where( 'editor', 'benchmark' )->exists() )
+        if( !$unseed && !PageView::where( 'editor', 'benchmark' )->exists() )
         {
             $this->error( 'No benchmark data found. Run `php artisan cms:benchmark --seed` first.' );
-            return false;
+            return null;
         }
 
-        return true;
-    }
-
-
-    /**
-     * @return array<int, string>
-     */
-    protected function xml2plan( string $xml ) : array
-    {
-        $doc = simplexml_load_string($xml);
-
-        if( $doc === false ) {
-            return [];
-        }
-
-        $doc->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
-
-        $nodes = $doc->xpath('//qp:RelOp') ?: [];
-        $raw = [];
-
-        foreach ($nodes as $node) {
-            $node->registerXPathNamespace('qp', 'http://schemas.microsoft.com/sqlserver/2004/07/showplan');
-            $depth = count($node->xpath('ancestor::qp:RelOp') ?: []);
-            $indent = str_repeat('  ', $depth);
-
-            $raw[] = $indent . (string) $node['PhysicalOp']
-                . ' / ' . (string) $node['LogicalOp']
-                . ' (cost: ' . round((float) $node['EstimatedTotalSubtreeCost'], 4) . ')';
-
-            // Pull index/table info from child Object elements
-            $objects = $node->xpath('*/qp:Object') ?: [];
-
-            foreach ($objects as $obj) {
-                $parts = array_filter([
-                    (string) $obj['Table'],
-                    (string) $obj['Index'],
-                    (string) $obj['Alias'] ? 'AS ' . (string) $obj['Alias'] : null,
-                ]);
-                if ($parts) {
-                    $raw[] = $indent . '  → ' . implode(' ', $parts);
-                }
-            }
-        }
-
-        // Collapse consecutive repeated line groups (single or multi-line patterns)
-        $lines = [];
-        $total = count($raw);
-        $i = 0;
-
-        while ($i < $total)
-        {
-            $bestSize = 1;
-            $bestCount = 1;
-            $maxGroup = min(5, intdiv($total - $i, 2));
-
-            for ($size = 1; $size <= $maxGroup; $size++)
-            {
-                $count = 1;
-
-                while ($i + ($count + 1) * $size <= $total)
-                {
-                    $match = true;
-
-                    for ($k = 0; $k < $size; $k++) {
-                        if ($raw[$i + $k] !== $raw[$i + $count * $size + $k]) {
-                            $match = false;
-                            break;
-                        }
-                    }
-
-                    if (!$match) {
-                        break;
-                    }
-
-                    $count++;
-                }
-
-                if ($count > 1 && $size * $count > $bestSize * $bestCount) {
-                    $bestSize = $size;
-                    $bestCount = $count;
-                }
-            }
-
-            for ($k = 0; $k < $bestSize; $k++) {
-                $line = $raw[$i + $k];
-                $lines[] = ($bestCount > 1 && $k === $bestSize - 1)
-                    ? $line . ' [x' . $bestCount . ']'
-                    : $line;
-            }
-
-            $i += $bestSize * $bestCount;
-        }
-
-        return $lines;
+        return ['domain' => $domain, 'tenant' => $tenant, 'tries' => $tries, 'unseed' => $unseed];
     }
 }

@@ -7,10 +7,13 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Concerns\MapsReferences;
 use Aimeos\Cms\Concerns\PageAttributes;
 use Aimeos\Cms\Concerns\PageRestrictions;
 use Aimeos\Cms\Concerns\PageSearch;
 use Aimeos\Cms\Concerns\PageTree;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Nestedset\NodeTrait;
@@ -19,6 +22,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Aimeos\Cms\Scopes\Variant;
+use Aimeos\Cms\Texts;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 
 /**
@@ -76,9 +83,11 @@ use Illuminate\Support\Collection;
  * @method static PageQuery<static> fallback(string $lang, bool $trashed = false)
  * @method static PageQuery<static> visible(string $lang)
  * @method static PageQuery<static> localized(string $lang, bool $editor)
+ * @phpstan-type VariantState array{id: string|null, lang: string, source: bool, state: string, published: bool}
  */
 class PageView extends Base
 {
+    use MapsReferences;
     use PageAttributes;
     use PageRestrictions;
     use PageSearch;
@@ -91,9 +100,24 @@ class PageView extends Base
         PageTree::restoreDescendants insteadof NodeTrait;
     }
 
-    public const PERM = 'page';
+    public const PERM = Page::PERM;
     public const READONLY = 'Page views are read-only, write pages using the Page and PageVariant models';
     protected const REFS = ['files', 'elements'];
+
+    /** @var list<string> Fields which are mass assignable and returned by toArray() */
+    protected const FIELDS = [
+        'tag',
+        'lang',
+        'path',
+        'domain',
+        'to',
+        'name',
+        'title',
+        'type',
+        'theme',
+        'status',
+        'cache',
+    ];
 
     /** @var list<string> Columns required for Page lifecycle operations */
     public const REQUIRED_COLUMNS = [
@@ -134,38 +158,14 @@ class PageView extends Base
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'tag',
-        'lang',
-        'path',
-        'domain',
-        'to',
-        'name',
-        'title',
-        'type',
-        'theme',
-        'status',
-        'cache',
-    ];
+    protected $fillable = self::FIELDS;
 
     /**
      * The attributes that are returned by toArray()
      *
      * @var list<string>
      */
-    protected $visible = [
-        'tag',
-        'lang',
-        'path',
-        'domain',
-        'to',
-        'name',
-        'title',
-        'type',
-        'theme',
-        'status',
-        'cache',
-    ];
+    protected $visible = self::FIELDS;
 
     /**
      * The table associated with the model.
@@ -180,7 +180,7 @@ class PageView extends Base
      */
     protected static function booted() : void
     {
-        static::addGlobalScope( new \Aimeos\Cms\Scopes\Variant() );
+        static::addGlobalScope( new Variant() );
     }
 
 
@@ -198,7 +198,7 @@ class PageView extends Base
             $this->name ?? '',
             $this->title ?? '',
             $this->meta->{'meta-tags'}->data->description ?? '',
-            ...\Aimeos\Cms\Scout::text( $items ),
+            ...Texts::searchable( $items ),
         ] ) );
     }
 
@@ -219,7 +219,7 @@ class PageView extends Base
      *
      * @return string Versionable type
      */
-    public static function versionType() : string
+    protected static function versionType() : string
     {
         return PageVariant::class;
     }
@@ -230,7 +230,7 @@ class PageView extends Base
      *
      * @return string Attribute name
      */
-    public function getVersionKeyName() : string
+    protected function getVersionKeyName() : string
     {
         return 'variant_id';
     }
@@ -250,7 +250,7 @@ class PageView extends Base
     /**
      * Creates a new Eloquent query builder for the model.
      *
-     * @param \Illuminate\Database\Query\Builder $query
+     * @param Builder $query
      * @return PageQuery<self>
      */
     public function newEloquentBuilder( $query ) : PageQuery
@@ -272,6 +272,24 @@ class PageView extends Base
 
 
     /**
+     * Returns the relations of the files and elements used by the page content.
+     *
+     * @param string $prefix Prefix of the relation names, e.g. "latest."
+     * @return array<string, \Closure> Relation names as keys and column constraints as values
+     */
+    public static function contentRelations( string $prefix = '' ) : array
+    {
+        $files = fn( $q ) => $q->select( File::SELECT_COLUMNS );
+
+        return [
+            $prefix . 'files' => $files,
+            $prefix . 'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
+            $prefix . 'elements.files' => $files,
+        ];
+    }
+
+
+    /**
      * Returns the references of the latest versions of the given pages in the language.
      *
      * @param array<string> $ids Page IDs
@@ -284,7 +302,7 @@ class PageView extends Base
             return [];
         }
 
-        return static::versionRefs( static::withTrashed()->language( $lang, true )->whereIn( 'id', $ids )
+        return static::versionRefs( static::withTrashed()->language( $lang, trashed: true )->whereIn( 'id', $ids )
             ->whereNotNull( 'latest_id' )->pluck( 'latest_id' )->all() );
     }
 
@@ -292,7 +310,7 @@ class PageView extends Base
     /**
      * Returns the language variants of the page and their state.
      *
-     * @return list<array{id: string|null, lang: string, source: bool, state: string, published: bool}> Variant list
+     * @return list<VariantState> Variant list
      */
     public function variantList() : array
     {
@@ -309,14 +327,14 @@ class PageView extends Base
      * the latest version of the variant is published.
      *
      * @param array<string, string> $pages Source language codes keyed by page ID
-     * @return array<string, list<array{id: string|null, lang: string, source: bool, state: string, published: bool}>> Variant lists keyed by page ID
+     * @return array<string, list<VariantState>> Variant lists keyed by page ID
      */
     public static function variantLists( array $pages ) : array
     {
         $variants = [];
 
         // the publish state of the latest version is joined to avoid a second ID list
-        foreach( array_chunk( array_map( 'strval', array_keys( $pages ) ), 1000 ) as $chunk )
+        foreach( array_chunk( array_map( 'strval', array_keys( $pages ) ), DB::IN_SIZE ) as $chunk )
         {
             $list = PageVariant::withTrashed()
                 ->leftJoin( 'cms_versions', 'cms_versions.id', '=', 'cms_page_variants.latest_id' )
@@ -332,7 +350,7 @@ class PageView extends Base
             }
         }
 
-        $locales = array_fill_keys( array_map( 'strval', (array) config( 'cms.locales', [] ) ), null );
+        $locales = array_fill_keys( Utils::locales(), null );
         $result = array_fill_keys( array_keys( $pages ), $locales );
 
         foreach( $variants as $variant )
@@ -382,30 +400,6 @@ class PageView extends Base
     public function files() : BelongsToMany
     {
         return $this->belongsToMany( File::class, 'cms_page_file', 'variant_id', 'file_id', 'variant_id' );
-    }
-
-
-    /**
-     * Maps the elements by ID automatically.
-     *
-     * @return Collection<string, Element> List elements with ID as keys and element models as values
-     */
-    public function getElementsAttribute() : Collection
-    {
-        $this->relationLoaded( 'elements' ) ?: $this->load( 'elements' );
-        return $this->getRelation( 'elements' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Maps the files by ID automatically.
-     *
-     * @return Collection<string, File> List files with ID as keys and file models as values
-     */
-    public function getFilesAttribute() : Collection
-    {
-        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
-        return $this->getRelation( 'files' )->pluck( null, 'id' );
     }
 
 
@@ -469,7 +463,7 @@ class PageView extends Base
      */
     public function toPage() : Page
     {
-        $cols = array_flip( PageBuilder::PAGE_COLUMNS );
+        $cols = array_flip( Page::FIELDS );
         $page = ( new Page() )->newFromBuilder( array_intersect_key( $this->getRawOriginal(), $cols ) );
         $page->setRawAttributes( array_replace( $page->getAttributes(), array_intersect_key( $this->getDirty(), $cols ) ) );
 
@@ -496,9 +490,9 @@ class PageView extends Base
             throw new \LogicException( sprintf( 'Page "%s" must be loaded with its variant ID to be saved', $this->getKey() ) );
         }
 
-        $variant = ( new PageVariant() )->newFromBuilder( PageBuilder::variantValues( $original, true )
+        $variant = ( new PageVariant() )->newFromBuilder( PageBuilder::variantValues( $original, shared: true )
             + ['page_id' => $this->getKey(), 'tenant_id' => $original['tenant_id'] ?? null] );
-        $variant->setRawAttributes( array_replace( $variant->getAttributes(), PageBuilder::variantValues( $this->getDirty(), true ) ) );
+        $variant->setRawAttributes( array_replace( $variant->getAttributes(), PageBuilder::variantValues( $this->getDirty(), shared: true ) ) );
 
         $this->setRelation( 'variant', $variant );
         return $variant;
@@ -523,7 +517,7 @@ class PageView extends Base
             $attributes = $model->getAttributes();
 
             if( $model instanceof Page ) {
-                $values = array_replace( $values, array_intersect_key( $attributes, array_flip( PageBuilder::PAGE_COLUMNS ) ) );
+                $values = array_replace( $values, array_intersect_key( $attributes, array_flip( Page::FIELDS ) ) );
                 $this->setRelation( 'page', $model );
             } else {
                 $values = array_replace( $values, PageBuilder::viewValues( $attributes ) );
@@ -626,29 +620,52 @@ class PageView extends Base
     /**
      * Restricts queries reloading the model to the variant of the model.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param EloquentBuilder<static> $query
+     * @return EloquentBuilder<static>
      */
     protected function setKeysForSelectQuery( $query )
     {
         parent::setKeysForSelectQuery( $query );
-        return $this->useVariant( $query );
-    }
 
-
-    /**
-     * Uses the variant of the model in the query if known.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    protected function useVariant( $query )
-    {
         if( $query instanceof PageQuery && ( $id = $this->original['variant_id'] ?? $this->attributes['variant_id'] ?? null ) ) {
             $query->variant( (string) $id );
         }
 
         return $query;
+    }
+
+
+    /**
+     * Returns the language of the page variant reported in content events.
+     *
+     * @return string Language of the page variant
+     */
+    public function eventLang() : string
+    {
+        return (string) $this->lang;
+    }
+
+
+    /**
+     * Returns the page variant row a published update of the page is written to.
+     *
+     * @param array<string, mixed> $row Row with the ID and the updated column values
+     * @param array<string> $columns Updated columns
+     * @return array{0: string, 1: array<string>, 2: array<string, mixed>} Table, columns and row
+     * @throws \LogicException If a column of the page tree should be published
+     */
+    public function publishedRow( array $row, array $columns ) : array
+    {
+        $values = array_intersect_key( $row, array_flip( $columns ) );
+        $other = array_diff_key( $values, PageBuilder::variantFields(), array_flip( PageBuilder::SHARED_FIELDS ) );
+
+        if( $column = array_key_first( $other ) ) {
+            throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
+        }
+
+        $variantRow = PageBuilder::variantValues( $values, shared: true );
+
+        return ['cms_page_variants', array_keys( $variantRow ), ['id' => $this->variant_id] + $variantRow];
     }
 
 

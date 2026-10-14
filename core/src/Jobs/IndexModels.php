@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Laravel\Scout\Traits\ConfiguresJobOptions;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Models\Base;
 
 
 class IndexModels implements ShouldQueue
@@ -30,7 +31,7 @@ class IndexModels implements ShouldQueue
 
 
     /**
-     * @param class-string<\Aimeos\Cms\Models\Base> $model
+     * @param class-string<Base> $model
      * @param array<string> $ids
      * @param string $tenant Tenant ID
      * @param bool $sources TRUE to reindex only the source variants of the pages

@@ -7,8 +7,6 @@
 
 namespace Aimeos\Cms\Concerns;
 
-use Illuminate\Database\Eloquent\Model;
-
 
 /**
  * Provides multi-tenancy for models
@@ -33,8 +31,7 @@ trait Tenancy
     {
         static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
 
-        static::creating( function( Model $model ) {
-            /** @phpstan-ignore method.notFound */
+        static::creating( function( self $model ) {
             $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
         } );
     }

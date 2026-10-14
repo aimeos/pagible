@@ -40,7 +40,7 @@ class CashierController extends Controller
         {
             $checkout = $request->validate( [
                 'page' => ['required', 'string', 'max:36'],
-                'lang' => ['nullable', 'string', 'max:10', 'regex:/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/'],
+                'lang' => ['nullable', 'string', 'cms_lang'],
                 'element' => ['required', 'string', 'max:255'],
                 'package' => ['required', 'string', 'max:100'],
                 'price' => ['required', 'string', 'max:100'],

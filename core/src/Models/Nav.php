@@ -47,7 +47,7 @@ class Nav extends PageView
      *
      * The returned model is partial and must be treated as read-only.
      */
-    public static function lookup( string $path, string $domain = '' ) : ?self
+    public static function lookup( string $path, string $domain ) : ?self
     {
         return self::query()
             ->allVariants()

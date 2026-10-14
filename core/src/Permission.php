@@ -10,6 +10,7 @@ namespace Aimeos\Cms;
 use \Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Aimeos\Cms\Events\PermissionChanged;
 
 
 /**
@@ -22,11 +23,11 @@ class Permission
     private const MAX_LENGTH = 100;
 
     /**
-     * Available permission names
+     * Permission names available by default, packages register more via register()
      *
      * @var array<int, string>
      */
-    private static array $can = [
+    public const ACTIONS = [
         'page:view',
         'page:save',
         'page:add',
@@ -58,29 +59,13 @@ class Permission
     ];
 
     /**
-     * Anonymous callback which allows or denies actions.
-     */
-    private static ?\Closure $canCallback = null;
-
-    /**
-     * Cached resolved permissions per user (Octane-safe).
-     *
-     * Entries are validated against the user's current assignment fingerprint, so
-     * writes to the "cmsperms" attribute outside of set() re-resolve automatically
-     * instead of serving stale permissions.
-     *
-     * @var \WeakMap<object, array{key: string, resolved: array<int, string>}>|null
-     */
-    private static ?\WeakMap $resolvedCache = null;
-
-    /**
      * Returns the list of all available actions.
      *
      * @return array<int, string> List of action names
      */
     public static function all(): array
     {
-        return self::$can;
+        return Hooks::get()->actions;
     }
 
 
@@ -104,7 +89,7 @@ class Permission
      */
     public static function has( string $action ) : bool
     {
-        return in_array( $action, self::$can, true );
+        return in_array( $action, Hooks::get()->actions, true );
     }
 
 
@@ -127,7 +112,7 @@ class Permission
             return false;
         }
 
-        if( $closure = self::$canCallback ) {
+        if( $closure = Hooks::get()->can ) {
             return $closure( $action, $user );
         }
 
@@ -135,10 +120,11 @@ class Permission
             return self::assigned( $user ) !== [];
         }
 
-        self::$resolvedCache ??= new \WeakMap();
-
+        // Cached per user and validated against the current assignment fingerprint, so writes to
+        // the "cmsperms" attribute outside of set() re-resolve instead of serving stale permissions
+        $cache = Hooks::get()->resolved;
         $assignments = self::assigned( $user );
-        $entry = self::$resolvedCache[$user] ?? null;
+        $entry = $cache[$user] ?? null;
 
         $key = (string) json_encode( $assignments, JSON_INVALID_UTF8_SUBSTITUTE )
             . '|' . md5( (string) json_encode( config( 'cms.roles', [] ), JSON_INVALID_UTF8_SUBSTITUTE ) );
@@ -146,7 +132,7 @@ class Permission
         if( $entry === null || $entry['key'] !== $key )
         {
             $entry = ['key' => $key, 'resolved' => self::resolve( $assignments )];
-            self::$resolvedCache[$user] = $entry;
+            $cache[$user] = $entry;
         }
 
         return in_array( $action, $entry['resolved'] );
@@ -160,7 +146,7 @@ class Permission
      */
     public static function canUsing( ?\Closure $callback ) : void
     {
-        self::$canCallback = $callback;
+        Hooks::get()->can = $callback;
     }
 
 
@@ -192,7 +178,7 @@ class Permission
     {
         $map = [];
 
-        foreach( self::$can as $action ) {
+        foreach( self::all() as $action ) {
             $map[$action] = self::can( $action, $user );
         }
 
@@ -207,16 +193,12 @@ class Permission
      */
     public static function register( array|string $actions ) : void
     {
-        foreach( (array) $actions as $action )
-        {
-            if( !self::has( $action ) ) {
-                self::$can[] = $action;
-            }
-        }
+        $hooks = Hooks::get();
+        $hooks->actions = array_values( array_unique( array_merge( $hooks->actions, (array) $actions ) ) );
 
-        // Wildcard entries ("*" / "page:*") expand against self::$can at resolve
+        // Wildcard entries ("*" / "page:*") expand against the actions at resolve
         // time, so changes to the action list invalidate cached resolutions.
-        self::$resolvedCache = null;
+        $hooks->resolved = new \WeakMap();
     }
 
 
@@ -227,8 +209,9 @@ class Permission
      */
     public static function unregister( array|string $actions ) : void
     {
-        self::$can = array_values( array_diff( self::$can, (array) $actions ) );
-        self::$resolvedCache = null;
+        $hooks = Hooks::get();
+        $hooks->actions = array_values( array_diff( $hooks->actions, (array) $actions ) );
+        $hooks->resolved = new \WeakMap();
     }
 
 
@@ -294,11 +277,11 @@ class Permission
      */
     private static function audit( Authenticatable $user, array $result, string $tenant ) : void
     {
-        Watch::dispatch( \Aimeos\Cms\Events\PermissionChanged::class, function() use ( $user, $result, $tenant ) {
+        Watch::dispatch( PermissionChanged::class, function() use ( $user, $result, $tenant ) {
             $actor = Auth::user();
             $request = app()->bound( 'request' ) ? app( 'request' ) : null;
 
-            return new \Aimeos\Cms\Events\PermissionChanged(
+            return new PermissionChanged(
                 actorEmail: (string) data_get( $actor, 'email' ),
                 targetEmail: (string) data_get( $user, 'email' ),
                 targetId: (string) $user->getAuthIdentifier(),
@@ -314,12 +297,12 @@ class Permission
     /**
      * Clears resolved-permission caches.
      *
-     * Registered automatically on queue/Octane lifecycle events; call it manually
-     * before long-running loops that touch many users (imports, fixtures).
+     * Entries are fingerprinted and released with their user objects, so this is only
+     * needed to free memory before long-running loops that touch many users.
      */
     public static function flush() : void
     {
-        self::$resolvedCache = null;
+        Hooks::get()->resolved = new \WeakMap();
     }
 
 
@@ -374,13 +357,13 @@ class Permission
             if( str_starts_with( $entry, '!' ) ) {
                 array_push( $deny, ...self::resolve( [substr( $entry, 1 )] ) );
             } elseif( $entry === '*' ) {
-                array_push( $perms, ...self::$can );
+                array_push( $perms, ...self::all() );
             } elseif( !str_contains( $entry, ':' ) ) {
                 array_push( $perms, ...self::resolve( $roles[$entry] ?? [] ) );
             } elseif( str_contains( $entry, '*' ) ) {
                 [$prefix, $suffix] = explode( ':', $entry, 2 );
 
-                foreach( self::$can as $perm )
+                foreach( self::all() as $perm )
                 {
                     [$p, $s] = explode( ':', $perm, 2 );
 

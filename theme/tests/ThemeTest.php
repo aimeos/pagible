@@ -1160,7 +1160,7 @@ class ThemeTest extends ThemeTestAbstract
         $this->assertNotNull( $theme['preview'] ?? null );
         $this->assertArrayHasKey( 'custom::first', $theme['content'] ?? [] );
 
-        $this->assertArrayHasKey( 'custom::first', Schema::schemas( 'custom', 'content' ) );
+        $this->assertArrayHasKey( 'custom::first', Schema::schemas( 'content' ) );
 
         $disk->put( 'custom/schema.json', json_encode( [
             'label' => 'Changed',
@@ -1168,7 +1168,7 @@ class ThemeTest extends ThemeTestAbstract
         ] ) );
         Cache::forget( 'cms-themes_test' );
 
-        $schemas = Schema::schemas( 'custom', 'content' );
+        $schemas = Schema::schemas( 'content' );
 
         $this->assertArrayHasKey( 'custom::second', $schemas );
         $this->assertArrayNotHasKey( 'custom::first', $schemas );
@@ -1313,25 +1313,16 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testSchemasAllSections()
+	public function testSchemasSections()
 	{
-		$schemas = Schema::schemas();
+		$content = Schema::schemas( 'content' );
+		$meta = Schema::schemas( 'meta' );
 
-		$this->assertArrayHasKey( 'content', $schemas );
-		$this->assertArrayHasKey( 'meta', $schemas );
-		$this->assertArrayHasKey( 'heading', $schemas['content'] );
-		$this->assertArrayHasKey( 'meta-tags', $schemas['meta'] );
-		$this->assertArrayHasKey( 'description', $schemas['meta']['meta-tags']['fields'] );
-		$this->assertArrayHasKey( 'description', $schemas['meta']['social-media']['fields'] );
-	}
-
-
-	public function testSchemasFilterByTheme()
-	{
-		$schemas = Schema::schemas( name: 'cms', section: 'content' );
-
-		$this->assertArrayHasKey( 'heading', $schemas );
-		$this->assertArrayHasKey( 'text', $schemas );
+		$this->assertArrayHasKey( 'heading', $content );
+		$this->assertArrayHasKey( 'text', $content );
+		$this->assertArrayHasKey( 'meta-tags', $meta );
+		$this->assertArrayHasKey( 'description', $meta['meta-tags']['fields'] );
+		$this->assertArrayHasKey( 'description', $meta['social-media']['fields'] );
 	}
 
 

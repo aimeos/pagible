@@ -7,19 +7,21 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Events\FilesRemoved;
+use Aimeos\Cms\Casts\AsString;
+use Aimeos\Cms\Concerns\FilePreviews;
+use Aimeos\Cms\Concerns\FileStorage;
+use Aimeos\Cms\Concerns\Referenced;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Files;
+use Aimeos\Cms\Invalidation;
+use Aimeos\Cms\LifecycleAction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Interfaces\DriverInterface;
-use Intervention\Image\Interfaces\ImageInterface;
-use Intervention\Image\ImageManager;
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Tenancy;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
 /**
@@ -46,6 +48,10 @@ use Intervention\Image\ImageManager;
  */
 class File extends Base
 {
+    use FilePreviews;
+    use FileStorage;
+    use Referenced;
+
     public const PERM = 'file';
     protected const PRUNE_SIZE = 100;
 
@@ -81,7 +87,7 @@ class File extends Base
      */
     protected $casts = [
         'disk' => 'string',
-        'name' => 'string',
+        'name' => AsString::class,
         'previews' => 'object',
         'description' => 'object',
         'transcription' => 'object',
@@ -145,96 +151,6 @@ class File extends Base
 
 
     /**
-     * Adds the uploaded file to the storage and returns the path to it
-     *
-     * @param UploadedFile $upload File upload
-     * @return self The current instance for method chaining
-     */
-    public function addFile( UploadedFile $upload ) : self
-    {
-        $this->path = null;
-
-        $disk = $this->storage();
-        $dir = $this->dir();
-
-        $name = $this->filename( $upload->getClientOriginalName(), $upload->guessExtension() );
-        $path = $dir . '/' . $name;
-
-        if( $upload->getMimeType() === 'image/svg+xml' )
-        {
-            $content = file_get_contents( $upload->getRealPath() );
-
-            if( !( $content = Utils::cleanSvg( $content ) ) ) {
-                $msg = 'Invalid file "%s"';
-                throw new \Aimeos\Cms\InvalidException( sprintf( $msg, $upload->getClientOriginalName() ) );
-            }
-
-            $stored = $disk->put( $path, $content );
-        }
-        else
-        {
-            $stored = $disk->putFileAs( $dir, $upload, $name );
-        }
-
-        if( !$stored ) {
-            $msg = 'Unable to store file "%s" to "%s"';
-            throw new \Aimeos\Cms\Exception( sprintf( $msg, $upload->getClientOriginalName(), $path ) );
-        }
-
-        $this->path = $path;
-        return $this;
-    }
-
-
-    /**
-     * Creates and adds the preview images
-     *
-     * @param UploadedFile|string $resource File upload or URL to the file
-     * @return self The current instance for method chaining
-     */
-    public function addPreviews( UploadedFile|string $resource ) : self
-    {
-        $sizes = config( 'cms.image.preview-sizes', [[]] );
-        $manager = $this->imageManager();
-
-        if( is_string( $resource ) && Utils::isValidUrl( $resource ) ) {
-            $resource = $this->fetchUrl( $resource, $manager->driver() );
-
-            if( !is_resource( $resource ) ) {
-                return $this;
-            }
-
-            // SVG images can't be rasterized, so store the SVG itself as preview
-            if( in_array( $this->mime, ['image/svg+xml', 'application/gzip'] ) ) {
-                return $this->addSvgPreview( $resource );
-            }
-        }
-
-        if( $resource instanceof UploadedFile ) {
-            $filename = $resource->getClientOriginalName();
-            $mime = (string) $resource->getMimeType();
-        } else {
-            $filename = $this->name;
-            $mime = $this->mime;
-        }
-
-        if( !$manager->driver()->supports( $mime ) ) {
-            return $this;
-        }
-
-        if( is_string( $resource ) ) {
-            throw new \Aimeos\Cms\InvalidException( 'Invalid image URL' );
-        }
-
-        // previews of the previous image must not remain if creating the new ones fails
-        $this->previews = [];
-        $this->previews = $this->storePreviews( $resource, $sizes, [], $filename );
-
-        return $this;
-    }
-
-
-    /**
      * Get all (shared) content elements referencing the file.
      *
      * @return BelongsToMany<Element, $this> Eloquent relationship to the element referencing the file
@@ -247,377 +163,14 @@ class File extends Base
 
 
     /**
-     * Get all pages referencing the file.
+     * Returns the value of the latest version or the stored value if the latest version has none.
      *
-     * @return BelongsToMany<PageView, $this> Eloquent relationship to the pages referencing the file
+     * @param string $name Name of the file property, e.g. "path" or "previews"
+     * @return mixed Value of the latest version or stored value
      */
-    public function bypages() : BelongsToMany
+    public function latestValue( string $name ) : mixed
     {
-        return $this->belongsToMany( PageView::class, 'cms_page_file', 'file_id', 'variant_id', 'id', 'variant_id' )
-            ->allVariants()->select('id', 'path', 'name' );
-    }
-
-
-    /**
-     * Get all versions referencing the file.
-     *
-     * @return BelongsToMany<Version, $this> Eloquent relationship to the versions referencing the file
-     */
-    public function byversions() : BelongsToMany
-    {
-        return $this->belongsToMany( Version::class, 'cms_version_file' )
-            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
-    }
-
-
-    /**
-     * Rejects raster images whose decoded dimensions exceed the configured limit.
-     *
-     * @param UploadedFile|resource $resource Uploaded image or downloaded temporary file
-     */
-    public static function checkPixels( mixed $resource ) : void
-    {
-        $path = $resource instanceof UploadedFile ? $resource->getRealPath() : null;
-
-        if( is_resource( $resource ) ) {
-            $path = stream_get_meta_data( $resource )['uri'] ?? null;
-        }
-
-        if( !is_string( $path ) || !( $info = @getimagesize( $path ) ) ) {
-            throw new \Aimeos\Cms\InvalidException( 'Invalid image' );
-        }
-
-        $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
-        $width = (int) $info[0];
-        $height = (int) $info[1];
-
-        if( $height < 1 || $width < 1 || $width > intdiv( $max, $height ) ) {
-            throw new \Aimeos\Cms\InvalidException( sprintf( 'Image exceeds the maximum size of %d pixels', $max ) );
-        }
-    }
-
-
-    /**
-     * Validates a primary or preview upload before storage or image decoding.
-     */
-    public static function checkUpload( UploadedFile $upload, bool $preview = false ) : void
-    {
-        $label = $preview ? 'Preview' : 'File';
-
-        if( !$upload->isValid() ) {
-            throw new \Aimeos\Cms\InvalidException( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
-        }
-
-        if( !Utils::isValidUpload( $upload ) ) {
-            throw new \Aimeos\Cms\InvalidException( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
-                $label, round( $upload->getSize() / 1024 / 1024, 3 ), config( 'cms.upload.filesize', 50 ) ) );
-        }
-
-        $mime = (string) $upload->getMimeType();
-
-        Utils::checkMimetype( $mime, $label, $preview ? 'image/' : '' );
-    }
-
-
-    /**
-     * Ensures a client-supplied file path stays within the current tenant's storage or is a system URL.
-     *
-     * @param string|null $path Storage path or URL provided by the caller
-     * @return ($path is null ? null : string) The validated path or null if none was given
-     * @throws \Aimeos\Cms\Exception If the path escapes the tenant's storage directory
-     */
-    public static function checkPath( ?string $path ) : ?string
-    {
-        if( $path === null ) {
-            return null;
-        }
-
-        $value = str_starts_with( $path, 'http' )
-            ? ( Utils::isValidUrl( $path, false ) ? $path : null )
-            : Utils::normalizePath( $path );
-
-        if( $value === null ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file path "%s"', $path ) );
-        }
-
-        return $value;
-    }
-
-
-    /**
-     * Ensures newly assigned managed paths belong to the UUID directory of this file.
-     *
-     * @param array<array-key, mixed> $paths Storage paths or remote URLs
-     * @throws \Aimeos\Cms\Exception If a path is outside the UUID directory or a private file uses a remote path
-     */
-    public function checkPaths( array $paths ) : void
-    {
-        $tenant = \Aimeos\Cms\Tenancy::value();
-
-        foreach( $paths as $path )
-        {
-            if( $path === null || $path === '' ) {
-                continue;
-            }
-
-            if( is_string( $path ) && str_starts_with( $path, 'http' ) )
-            {
-                if( $this->getAttribute( 'disk' ) === 'private' ) {
-                    throw new \Aimeos\Cms\Exception( 'Private files cannot use remote paths' );
-                }
-
-                continue;
-            }
-
-            if( !self::owns( $tenant, (string) $this->id, $path ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'File path "%s" is outside its UUID directory', (string) $path ) );
-            }
-        }
-    }
-
-
-    /**
-     * Ensures prepared local files still exist on the disk of this file while the ownership lock is held.
-     *
-     * @param array<array-key, mixed> $paths Prepared storage paths or remote URLs
-     * @throws \Aimeos\Cms\Exception If a path is invalid or not available on the storage disk
-     */
-    public function checkStored( array $paths ) : void
-    {
-        $storage = $this->storage();
-
-        foreach( $paths as $path )
-        {
-            if( $path === null ) {
-                continue;
-            }
-
-            $value = self::checkPath( (string) $path );
-
-            if( !str_starts_with( $value, 'http' ) && !$storage->exists( $value ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Prepared file "%s" is not available', (string) $path ) );
-            }
-        }
-    }
-
-
-    /**
-     * Returns the UUID-owned storage directory for this File.
-     */
-    public function dir() : string
-    {
-        $this->setUniqueIds();
-        return Utils::prefix( \Aimeos\Cms\Tenancy::value() ) . (string) $this->getAttribute( 'id' );
-    }
-
-
-    /**
-     * Returns the configured Laravel storage disk name.
-     */
-    public static function diskName( string $disk ) : string
-    {
-        if( !in_array( $disk, ['public', 'private'], true ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Invalid file disk "%s"', $disk ) );
-        }
-
-        $name = (string) config( "cms.disks.{$disk}.name", $disk === 'private' ? 'local' : 'public' );
-
-        if( $disk === 'private' && $name === (string) config( 'cms.disks.public.name', 'public' ) ) {
-            throw new \Aimeos\Cms\Exception( 'Public and private file disks must be different' );
-        }
-
-        return $name;
-    }
-
-
-    /**
-     * Returns the File UUID owning a canonical managed path.
-     *
-     * @param string $tenant Tenant namespace
-     * @param mixed $path Candidate storage path
-     * @return string|null Owner UUID as stored in the path, or null for invalid, remote, legacy, or foreign paths
-     */
-    public static function owner( string $tenant, mixed $path ) : ?string
-    {
-        if( !( $path = Utils::normalizePath( $path, $tenant ) ) ) {
-            return null;
-        }
-
-        return explode( '/', substr( $path, strlen( Utils::prefix( $tenant ) ) ), 2 )[0];
-    }
-
-
-    /**
-     * Tests whether a managed path belongs to a File UUID without changing either representation.
-     */
-    public static function owns( string $tenant, string $id, mixed $path ) : bool
-    {
-        $owner = self::owner( $tenant, $path );
-
-        return $owner !== null && strcasecmp( $owner, $id ) === 0;
-    }
-
-
-    /**
-     * Fetches a URL as a bounded temporary stream.
-     *
-     * @param string $url URL to fetch
-     * @param DriverInterface|null $driver Image driver for an optional format support check
-     * @return resource|null Seekable tmpfile resource or null if not an image
-     */
-    public function fetchUrl( string $url, ?DriverInterface $driver = null )
-    {
-        $response = Utils::http( $url, ['stream' => true], ['User-Agent' => 'Pagible/1.0 (+https://pagible.com)'] );
-
-        if( !$response->successful() ) {
-            throw new \Aimeos\Cms\InvalidException( sprintf( 'Failed to download "%s"', $url ) );
-        }
-
-        $limit = max( 0, (float) config( 'cms.upload.filesize', 50 ) );
-        $max = (int) ( $limit * 1024 * 1024 );
-        $body = $response->toPsrResponse()->getBody();
-        $length = trim( $response->header( 'Content-Length' ) );
-        $message = $driver
-            ? sprintf( 'Remote file exceeds the maximum size of %s MB', $limit )
-            : 'Remote file exceeds the maximum upload size';
-
-        try
-        {
-            if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
-                throw new \Aimeos\Cms\InvalidException( $message );
-            }
-
-            $bytes = $body->read( min( 4096, $max + 1 ) );
-
-            if( strlen( $bytes ) > $max ) {
-                throw new \Aimeos\Cms\InvalidException( $message );
-            }
-
-            $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
-
-            // SVG (incl. gzip-compressed SVGZ) isn't supported by the image drivers but is stored as preview itself
-            if( $driver && !in_array( $this->mime, ['image/svg+xml', 'application/gzip'] )
-                && !$driver->supports( $this->mime ) )
-            {
-                return null;
-            }
-
-            if( !( $tmp = tmpfile() ) ) {
-                throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-            }
-
-            fwrite( $tmp, $bytes );
-            $size = strlen( $bytes );
-
-            while( !$body->eof() )
-            {
-                $chunk = $body->read( min( 1048576, $max - $size + 1 ) );
-                $size += strlen( $chunk );
-
-                if( $size > $max ) {
-                    fclose( $tmp );
-                    throw new \Aimeos\Cms\InvalidException( $message );
-                }
-
-                fwrite( $tmp, $chunk );
-            }
-
-            fseek( $tmp, 0 );
-            return $tmp;
-        }
-        finally
-        {
-            $body->close();
-        }
-    }
-
-
-    /**
-     * Validates and ingests a new primary file or preview outside the database transaction.
-     *
-     * Private remote URLs are downloaded into UUID-owned storage. Failed ingestion removes generated previews and any
-     * uploaded primary path before rethrowing the original error.
-     *
-     * @param UploadedFile|string|null $source Uploaded primary file or local/remote path
-     * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
-     * @return self The ingested file
-     * @throws \Aimeos\Cms\Exception If the source, type, size, storage disk, or generated preview is invalid
-     */
-    public function ingest( UploadedFile|string|null $source = null, ?UploadedFile $preview = null ) : self
-    {
-        if( $source instanceof UploadedFile ) {
-            self::checkUpload( $source );
-        } elseif( is_string( $source ) && str_starts_with( $source, 'http' ) && !Utils::isValidUrl( $source ) ) {
-            throw new \Aimeos\Cms\InvalidException( sprintf( 'Invalid URL "%s"', $source ) );
-        }
-
-        if( $preview ) {
-            self::checkUpload( $preview, true );
-        }
-
-        $resource = null;
-        $started = false;
-
-        try
-        {
-            if( is_string( $source ) && str_starts_with( $source, 'http' ) && $this->getAttribute( 'disk' ) === 'private' )
-            {
-                $resource = $this->fetchUrl( $source );
-
-                if( !is_resource( $resource ) ) {
-                    throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-                }
-
-                $path = stream_get_meta_data( $resource )['uri'] ?? null;
-                $name = basename( (string) parse_url( $source, PHP_URL_PATH ) ) ?: 'file';
-
-                if( !is_string( $path ) ) {
-                    throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-                }
-
-                $source = new UploadedFile( $path, $name, null, null, true );
-                self::checkUpload( $source );
-            }
-
-            $started = true;
-
-            if( $source instanceof UploadedFile ) {
-                $this->ingestUpload( $source, $preview );
-            } elseif( is_string( $source ) ) {
-                $this->ingestPath( $source, $preview );
-            } elseif( $preview ) {
-                $this->addPreviews( $preview );
-            }
-
-            if( $source !== null ) {
-                Utils::checkMimetype( (string) $this->mime );
-            }
-
-            return $this;
-        }
-        catch( \Throwable $t )
-        {
-            if( $started )
-            {
-                try {
-                    $this->removePreviews();
-
-                    if( $source instanceof UploadedFile ) {
-                        $this->removeFile();
-                    }
-                } catch( \Throwable $cleanup ) {
-                    report( $cleanup );
-                }
-            }
-
-            throw $t;
-        }
-        finally
-        {
-            if( is_resource( $resource ) ) {
-                fclose( $resource );
-            }
-        }
+        return $this->latest?->data->{$name} ?? $this->getAttribute( $name );
     }
 
 
@@ -628,9 +181,8 @@ class File extends Base
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
+        return static::expired()
             ->select( 'id', 'tenant_id', 'path', 'previews', 'deleted_at' )
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) )
             // model:prune runs outside the tenant of the file, references of trashed items keep the file too
             ->whereDoesntHave( 'byversions', fn( $q ) => $q->withoutGlobalScopes() )
             ->whereDoesntHave( 'bypages', fn( $q ) => $q->withoutGlobalScopes() )
@@ -645,9 +197,7 @@ class File extends Base
      */
     public function prune() : ?bool
     {
-        $tenant = (string) $this->tenant_id;
-
-        return Utils::storageLock( $tenant, fn() => Utils::fileLock( $tenant, (string) $this->id, function() {
+        return Files::storageLock( (string) $this->tenant_id, function() {
             // the file may have been referenced again since it has been selected
             if( !$this->prunable()->withTrashed()->whereKey( $this->id )->exists() ) {
                 return false;
@@ -655,24 +205,51 @@ class File extends Base
 
             $this->pruning();
             return $this->forceDelete();
-        } ) );
+        } );
     }
 
 
     /**
      * Applies a lifecycle action to the locked files and removes the stored files when purging.
      *
-     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Files
-     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
+     * @param EloquentCollection<int, Base> $items Files
+     * @param LifecycleAction $action Lifecycle action
      * @param string $editor Name of the editing user
      */
-    public static function lifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
+    public static function lifecycle( EloquentCollection $items, LifecycleAction $action, string $editor ) : void
     {
-        if( $action === 'purged' ) {
-            self::purgeMany( \Aimeos\Cms\Tenancy::value(), $items );
+        if( $action === LifecycleAction::Purged ) {
+            self::purgeMany( Tenancy::value(), $items );
         }
 
         parent::lifecycle( $items, $action, $editor );
+    }
+
+
+    /**
+     * Invalidates the cached pages which reference the files.
+     *
+     * @param array<int, string> $ids File IDs
+     */
+    public static function invalidateRefs( array $ids ) : void
+    {
+        Invalidation::refs( [], $ids );
+    }
+
+
+    /**
+     * Returns the columns a lifecycle action needs in addition to the identifying ones.
+     *
+     * @param LifecycleAction $action Lifecycle action
+     * @return array<int, string> Column names
+     */
+    public static function lifecycleColumns( LifecycleAction $action ) : array
+    {
+        return match( $action ) {
+            LifecycleAction::Purged => ['path', 'previews'],
+            LifecycleAction::Restored => self::SELECT_COLUMNS,
+            default => [],
+        };
     }
 
 
@@ -685,7 +262,16 @@ class File extends Base
      */
     public static function locked( \Closure $fcn ) : mixed
     {
-        return Utils::storageLock( \Aimeos\Cms\Tenancy::value(), $fcn );
+        return Files::storageLock( Tenancy::value(), $fcn );
+    }
+
+
+    /**
+     * Tests if purging removes stored data which can fail per item, so failed batches are purged item by item.
+     */
+    public static function purgesStorage() : bool
+    {
+        return true;
     }
 
 
@@ -694,7 +280,7 @@ class File extends Base
      *
      * @param Collection<int, covariant Base> $files
      */
-    public static function purgeMany( string $tenant, Collection $files ) : void
+    protected static function purgeMany( string $tenant, Collection $files ) : void
     {
         /** @var array<string> $ids */
         $ids = $files->pluck( 'id' )->all();
@@ -705,7 +291,7 @@ class File extends Base
                 ->where( 'tenant_id', $tenant )
                 ->whereIn( 'versionable_id', $ids )
                 ->where( 'versionable_type', File::class )
-                ->orderBy( 'id' )->limit( 500 )->get();
+                ->orderBy( 'id' )->limit( DB::IN_SIZE )->get();
 
             if( !$versions->isEmpty() ) {
                 Version::withoutTenancy()->where( 'tenant_id', $tenant )
@@ -713,121 +299,9 @@ class File extends Base
                 self::deletePaths( self::paths( $versions->pluck( 'data' ) ), $tenant );
             }
         }
-        while( $versions->count() === 500 );
+        while( $versions->count() === DB::IN_SIZE );
 
         self::deletePaths( self::paths( $files ), $tenant );
-    }
-
-
-    /**
-     * Moves the current and historical managed paths to another logical disk.
-     *
-     * The caller must hold the tenant storage and file locks.
-     *
-     * @param string $disk Target logical disk, either "public" or "private"
-     * @param string $editor Name of the editor relocating the file
-     * @return self The current instance for method chaining
-     * @throws \Aimeos\Cms\Exception If a path is remote, foreign, missing or can't be copied and verified
-     */
-    public function relocate( string $disk, string $editor ) : self
-    {
-        $paths = $this->relocatable( $disk );
-        $source = $this->storage();
-        $target = Storage::disk( self::diskName( $disk ) );
-
-        foreach( $paths as $path )
-        {
-            $sourceExists = $source->exists( $path );
-
-            if( !$sourceExists && !$target->exists( $path ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'File "%s" is missing from both storage disks', $path ) );
-            }
-
-            if( $sourceExists )
-            {
-                $size = $source->size( $path );
-                $stream = $source->readStream( $path );
-
-                if( !$stream ) {
-                    throw new \Aimeos\Cms\Exception( sprintf( 'Unable to read file "%s"', $path ) );
-                }
-
-                try {
-                    if( !$target->writeStream( $path, $stream ) ) {
-                        throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store file "%s"', $path ) );
-                    }
-                } finally {
-                    if( is_resource( $stream ) ) {
-                        fclose( $stream );
-                    }
-                }
-
-                if( !$target->exists( $path ) || $size !== $target->size( $path ) ) {
-                    throw new \Aimeos\Cms\Exception( sprintf( 'Unable to verify file "%s"', $path ) );
-                }
-            }
-        }
-
-        if( !$paths->isEmpty() ) {
-            $source->delete( $paths->all() );
-        }
-
-        foreach( $paths as $path ) {
-            if( $source->exists( $path ) ) {
-                throw new \Aimeos\Cms\Exception( sprintf( 'Unable to remove file "%s" from its previous disk', $path ) );
-            }
-        }
-
-        Utils::transaction( function() use ( $disk, $editor ) {
-            /** @var File $locked */
-            $locked = self::lockForUpdate()->findOrFail( $this->id );
-            $locked->disk = $disk;
-            $locked->editor = $editor;
-            self::withoutSyncingToSearch( fn() => $locked->save() );
-        } );
-
-        $this->disk = $disk;
-        $this->editor = $editor;
-
-        if( $disk === 'private' && !$paths->isEmpty() ) {
-            FilesRemoved::dispatch( (string) $this->tenant_id, array_values( $paths->all() ) );
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * Removes the file from the storage
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removeFile() : self
-    {
-        if( $this->path && !str_starts_with( $this->path, 'http' ) ) {
-            $this->erase( [$this->path] );
-        }
-
-        $this->path = null;
-        return $this;
-    }
-
-
-    /**
-     * Removes all preview images from the storage
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removePreviews() : self
-    {
-        $previews = array_values( (array) $this->previews );
-
-        if( !empty( $previews ) ) {
-            $this->erase( $previews );
-        }
-
-        $this->previews = [];
-        return $this;
     }
 
 
@@ -850,141 +324,13 @@ class File extends Base
 
 
     /**
-     * Tests if previews can be generated from the file itself.
-     *
-     * @return bool TRUE if the file is an image supported by the image driver, FALSE if not
-     */
-    public function previewable() : bool
-    {
-        return (string) $this->path !== '' && $this->imageManager()->driver()->supports( (string) $this->mime );
-    }
-
-
-    /**
-     * Compares the previews with the configured sizes without generating images.
-     *
-     * The configured size of a preview is taken from its file name. Previews of files which
-     * aren't supported images as well as remote and SVG previews are never changed.
-     *
-     * @param array<int|string, string> $previews Existing previews as width/path pairs
-     * @param bool $force Replace all previews
-     * @return array{keep: array<int, string>, missing: array<string, array<string, mixed>>}
-     *  Previews to keep and missing sizes by name
-     */
-    public function diffPreviews( array $previews, bool $force = false ) : array
-    {
-        $config = [];
-        $keep = [];
-
-        foreach( config( 'cms.image.preview-sizes', [[]] ) as $size ) {
-            $config[self::sizeName( $size )] = $size;
-        }
-
-        $missing = $config;
-        $all = [];
-
-        foreach( $previews as $width => $path ) {
-            $all[(int) $width] = (string) $path;
-        }
-
-        if( !$this->previewable() ) {
-            return ['keep' => $all, 'missing' => []];
-        }
-
-        foreach( $all as $width => $path )
-        {
-            if( str_starts_with( $path, 'http' ) || strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) === 'svg' ) {
-                return ['keep' => $all, 'missing' => []];
-            }
-
-            // previews without the sizes in their file names are replaced
-            if( ( $names = array_flip( self::previewSizes( $path ) ) ) && array_intersect_key( $config, $names ) ) {
-                $missing = array_diff_key( $missing, $names );
-                $keep[$width] = $path;
-            }
-        }
-
-        if( $force ) {
-            return ['keep' => [], 'missing' => $config];
-        }
-
-        return ['keep' => $keep, 'missing' => $missing];
-    }
-
-
-    /**
-     * Adds previews for missing configured sizes and leaves out previews of sizes no longer configured.
-     *
-     * Missing previews are generated from the file itself if it's a supported image. Removed
-     * previews are not deleted from the storage.
-     *
-     * @param array<int|string, string> $previews Existing previews as width/path pairs
-     * @param array{keep: array<int, string>, missing: array<string, array<string, mixed>>}|null $diff
-     *  Result of diffPreviews() for these previews if already available
-     * @return array<int, string>|null New previews as width/path pairs or NULL if nothing changed
-     * @throws \Aimeos\Cms\Exception If the source image is not available or invalid
-     * @see diffPreviews()
-     */
-    public function syncPreviews( array $previews, ?array $diff = null ) : ?array
-    {
-        ['keep' => $map, 'missing' => $sizes] = $diff ?? $this->diffPreviews( $previews );
-
-        if( $sizes && ( $resource = $this->previewSource( $this->imageManager()->driver() ) ) )
-        {
-            // all sizes are required to find the ones resulting in the same width as the missing sizes
-            try {
-                $map = $this->storePreviews( $resource, config( 'cms.image.preview-sizes', [[]] ), $map, $this->name ?: 'image' );
-            } finally {
-                fclose( $resource );
-            }
-        }
-
-        ksort( $map );
-        $old = array_map( 'strval', $previews );
-        ksort( $old );
-
-        return $map === $old ? null : $map;
-    }
-
-
-    /**
      * Returns the searchable data for the file.
      *
      * @return array<string, mixed>
      */
     public function toSearchableArray(): array
     {
-        $attrs = ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'];
-
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
-
-        $version = $this->latest;
-
-        return [
-            'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
-            'draft' => mb_strtolower( (string) $version ),
-            'tenant_id' => $this->tenant_id ?? '',
-            'lang' => $version?->lang,
-            'editor' => $version->editor ?? '',
-            'mime' => $version?->data->mime ?? '',
-            'published' => (bool) ( $version->published ?? false ),
-            'scheduled' => (int) ( $version?->data->scheduled ?? 0 ),
-        ];
-    }
-
-
-    /**
-     * Interact with the "name" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "name" property
-     */
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
+        return $this->searchableVersion( ['name', 'mime', 'description', 'transcription', 'deleted_at', 'latest_id'], 'mime' );
     }
 
 
@@ -998,299 +344,6 @@ class File extends Base
         return Attribute::make(
             set: fn( $value ) => json_encode( $value ),
         );
-    }
-
-
-    /**
-     * Stores a downloaded SVG image locally and uses it as the preview.
-     *
-     * SVG images can't be rasterized into webp/jpg previews, so the sanitized
-     * SVG itself is stored on the disk and referenced as the preview at the
-     * largest configured preview width. Gzip-compressed SVGZ content is
-     * decompressed so the stored preview is a plain, browser-renderable SVG.
-     * Returns without a preview if the content isn't a valid SVG.
-     *
-     * @param resource $resource Seekable file pointer to the downloaded SVG content
-     * @return self The current instance for method chaining
-     */
-    protected function addSvgPreview( $resource ) : self
-    {
-        $raw = (string) stream_get_contents( $resource );
-
-        // decompress SVGZ so the stored preview is a plain, browser-renderable SVG
-        if( !( $content = Utils::cleanSvg( Utils::gunzip( $raw ) ) ) ) {
-            return $this;
-        }
-
-        $disk = $this->storage();
-        $dir = $this->dir();
-        $path = $dir . '/' . $this->filename( $this->name ?: 'image.svg', 'svg' );
-
-        if( !$disk->put( $path, $content ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
-        }
-
-        $widths = array_filter( array_column( config( 'cms.image.preview-sizes', [[]] ), 'width' ) );
-
-        $this->mime = 'image/svg+xml';
-        $this->previews = [( $widths ? max( $widths ) : 1920 ) => $path];
-        return $this;
-    }
-
-
-    /**
-     * Returns the new name for the uploaded file
-     *
-     * @param string $filename Name of the file
-     * @param string|null $ext File extension to use, if not given, the original file extension is used
-     * @param string $size Names of the preview sizes, if used
-     * @return string New file name
-     */
-    protected function filename( string $filename, ?string $ext = null, string $size = '' ) : string
-    {
-        $regex = '/([[:cntrl:]]|[[:blank:]]|\/|\.)+/smu';
-
-        $ext = Utils::extension( $ext ?: pathinfo( $filename, PATHINFO_EXTENSION ) );
-        $name = preg_replace( $regex, '', pathinfo( $filename, PATHINFO_FILENAME ) );
-
-        $hash = strtr( base64_encode( random_bytes( 3 ) ), '+/', '-_' );
-
-        return $name . '_' . $size . '_' . $hash . '.' . $ext;
-    }
-
-
-    /**
-     * Returns the image manager for the configured image driver.
-     */
-    protected function imageManager() : ImageManager
-    {
-        return ImageManager::withDriver( '\\Intervention\\Image\\Drivers\\' . ucFirst( config( 'cms.image.driver', 'gd' ) ) . '\Driver' );
-    }
-
-
-    /**
-     * Assigns a public URL or existing managed path and creates requested previews.
-     *
-     * @param string $source Public URL or managed storage path
-     * @param UploadedFile|null $preview Explicit preview upload, or null for remote automatic previews
-     */
-    protected function ingestPath( string $source, ?UploadedFile $preview ) : void
-    {
-        $this->path = $source;
-        $this->name = $this->name ?: ( str_starts_with( $source, 'http' )
-            ? substr( $source, 0, 255 )
-            : pathinfo( $source, PATHINFO_BASENAME ) );
-
-        if( $preview ) {
-            $this->addPreviews( $preview );
-        } elseif( str_starts_with( $source, 'http' ) ) {
-            $this->addPreviews( $source );
-        }
-
-        $this->mime = $this->mime ?: Utils::mimetype( $source, self::diskName( (string) $this->disk ) );
-    }
-
-
-    /**
-     * Stores an uploaded file and creates its previews.
-     *
-     * @param UploadedFile $source Validated primary upload
-     * @param UploadedFile|null $preview Explicit preview upload, or null to derive previews from images
-     */
-    protected function ingestUpload( UploadedFile $source, ?UploadedFile $preview ) : void
-    {
-        $this->addFile( $source );
-        $this->mime = Utils::mimetype( (string) $this->path, self::diskName( (string) $this->disk ) );
-        $this->name = $this->name ?: pathinfo( $source->getClientOriginalName(), PATHINFO_BASENAME );
-
-        if( $preview || str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {
-            $this->addPreviews( $preview ?? $source );
-        }
-    }
-
-
-    /**
-     * Returns the image previews can be generated from as temporary file.
-     *
-     * @param DriverInterface $driver Image driver for the format support check
-     * @return resource|null Seekable temporary file or NULL if the file is no supported image
-     */
-    protected function previewSource( DriverInterface $driver )
-    {
-        $path = (string) $this->path;
-
-        if( $path === '' || !$driver->supports( (string) $this->mime ) ) {
-            return null;
-        }
-
-        if( str_starts_with( $path, 'http' ) ) {
-            return Utils::isValidUrl( $path ) ? $this->fetchUrl( $path, $driver ) : null;
-        }
-
-        $disk = $this->storage();
-
-        if( !( $stream = $disk->readStream( $path ) ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to read file "%s"', $path ) );
-        }
-
-        try
-        {
-            if( !( $tmp = tmpfile() ) ) {
-                throw new \Aimeos\Cms\Exception( 'Unable to create temporary file' );
-            }
-
-            stream_copy_to_stream( $stream, $tmp );
-            fseek( $tmp, 0 );
-
-            return $tmp;
-        }
-        finally
-        {
-            fclose( $stream );
-        }
-    }
-
-
-    /**
-     * Returns the unique current and historical managed paths which can be relocated.
-     *
-     * @param string $disk Target logical disk
-     * @return Collection<int, non-empty-string> Local storage paths
-     * @throws \Aimeos\Cms\Exception If a path is remote where unsupported or does not belong to the file UUID
-     */
-    protected function relocatable( string $disk ) : Collection
-    {
-        $paths = self::paths( collect( [$this] )->concat( Version::where( 'versionable_id', $this->id )
-            ->where( 'versionable_type', self::class )
-            ->select( 'data' )->cursor()->pluck( 'data' ) ) );
-
-        if( $disk === 'private' && $paths->contains( fn( $path ) => str_starts_with( $path, 'http' ) ) ) {
-            throw new \Aimeos\Cms\Exception( 'Remote files cannot be relocated' );
-        }
-
-        $paths = $paths->reject( fn( $path ) => str_starts_with( $path, 'http' ) )->values();
-        $this->checkPaths( $paths->all() );
-
-        return $paths;
-    }
-
-
-    /**
-     * Returns the storage disk of the file.
-     */
-    protected function storage() : \Illuminate\Contracts\Filesystem\Filesystem
-    {
-        return Storage::disk( self::diskName( (string) $this->disk ) );
-    }
-
-
-    /**
-     * Stores previews of the image for the sizes not contained in the file names of the existing previews.
-     *
-     * Sizes resulting in the same width, e.g. because the image is smaller, share one preview
-     * whose file name contains all of them. An existing preview of that width is replaced if
-     * its file name doesn't contain all of them.
-     *
-     * @param UploadedFile|resource $resource Uploaded image or image file handle
-     * @param iterable<array<string, mixed>> $sizes Maximum preview widths and heights
-     * @param array<int, string> $map Existing previews as width/path pairs
-     * @param string $filename Name of the original file
-     * @return array<int, string> Existing and new previews as width/path pairs
-     */
-    protected function storePreviews( mixed $resource, iterable $sizes, array $map, string $filename ) : array
-    {
-        self::checkPixels( $resource );
-
-        $image = $this->imageManager()->read( $resource );
-        $existing = array_merge( ...array_map( self::previewSizes( ... ), array_values( $map ) ) );
-        $targets = [];
-        $created = [];
-
-        foreach( $sizes as $size )
-        {
-            $target = $image->size()->scaleDown( $size['width'] ?? null, $size['height'] ?? null );
-            $targets[$target->width()][0] ??= $target;
-            $targets[$target->width()][1][] = self::sizeName( $size );
-        }
-
-        krsort( $targets );
-
-        try
-        {
-            foreach( $targets as $width => [$target, $names] )
-            {
-                if( !array_diff( $names, $existing ) ) {
-                    continue;
-                }
-
-                // each preview is scaled down from the next larger one, so the full image is scaled only once
-                if( $image->width() !== $target->width() || $image->height() !== $target->height() ) {
-                    $image->resize( $target->width(), $target->height() );
-                }
-
-                $map[$width] = $created[] = $this->storePreview( $image, implode( '-', $names ), $filename );
-            }
-        }
-        catch( \Throwable $t )
-        {
-            $this->storage()->delete( $created );
-            throw $t;
-        }
-
-        ksort( $map );
-        return $map;
-    }
-
-
-    /**
-     * Returns the name of the preview size used in the preview file names.
-     *
-     * @param array<string, mixed> $size Maximum preview width and height
-     * @return string Width, height if no width is configured or empty string
-     */
-    protected static function sizeName( array $size ) : string
-    {
-        return (string) ( $size['width'] ?? $size['height'] ?? '' );
-    }
-
-
-    /**
-     * Returns the names of the preview sizes contained in the preview file name.
-     *
-     * @param string $path Preview path
-     * @return list<string> Names of the preview sizes or empty if the file name contains none
-     */
-    protected static function previewSizes( string $path ) : array
-    {
-        if( preg_match( '/_([\d-]*)_[A-Za-z0-9_-]{4}\.[A-Za-z0-9]+$/', $path, $match ) !== 1 ) {
-            return [];
-        }
-
-        return explode( '-', $match[1] );
-    }
-
-
-    /**
-     * Stores the image as preview.
-     *
-     * @param ImageInterface $image Image scaled down to the preview size
-     * @param string $size Names of the configured preview sizes used in the file name
-     * @param string $filename Name of the original file
-     * @return string Path of the stored preview
-     */
-    protected function storePreview( ImageInterface $image, string $size, string $filename ) : string
-    {
-        $ext = $this->imageManager()->driver()->supports( 'image/webp' ) ? 'webp' : 'jpg';
-        $disk = $this->storage();
-
-        $ptr = $image->encodeByExtension( $ext, quality: (int) config( 'cms.image.quality', 75 ) )->toFilePointer();
-        $path = $this->dir() . '/' . $this->filename( $filename, $ext, $size );
-
-        if( !$disk->put( $path, $ptr ) ) {
-            throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store preview "%s"', $path ) );
-        }
-
-        return $path;
     }
 
 
@@ -1310,7 +363,7 @@ class File extends Base
         }
 
         foreach( $paths->chunk( 100 ) as $chunk ) {
-            DB::afterCommit( fn() => Utils::deferStorage( $tenant,
+            DB::connection()->afterCommit( fn() => Files::deferStorage( $tenant,
                 fn() => DeleteFilePaths::dispatch( $tenant, $chunk->all() ),
             ) );
         }
@@ -1398,16 +451,5 @@ class File extends Base
             'path' => $version->data->path,
             'mime' => $version->data->mime,
         ];
-    }
-
-
-    /**
-     * Deletes the given storage paths of this file immediately.
-     *
-     * @param array<int, string> $paths Storage paths
-     */
-    private function erase( array $paths ) : void
-    {
-        ( new DeleteFilePaths( $this->exists ? (string) $this->tenant_id : \Aimeos\Cms\Tenancy::value(), $paths ) )->handle();
     }
 }

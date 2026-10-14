@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools\Concerns;
 
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Uploads;
 
 
 /**
@@ -38,6 +38,6 @@ trait Upload
             throw new \Aimeos\Cms\InvalidException( 'Invalid file content, must be base64 encoded' );
         }
 
-        return Utils::upload( $data, basename( $input['name'] ?? '' ) ?: 'file', null, $fn );
+        return Uploads::upload( $data, basename( $input['name'] ?? '' ) ?: 'file', null, $fn );
     }
 }

@@ -90,8 +90,8 @@ return new class extends Migration
     /**
      * Replaces the page model by the page view model in the remaining index rows.
      *
-     * Updated in chunks per tenant using the index of the table, SQLite FTS5 tables
-     * have no index and are updated at once.
+     * Updated per tenant using the index of the table because only SQL Server has an ID
+     * column to update in chunks, SQLite FTS5 tables have no index and are updated at once.
      */
     private function convert( Connection $db ): void
     {
@@ -103,13 +103,11 @@ return new class extends Migration
 
         foreach( $db->table( 'cms_index' )->distinct()->pluck( 'tenant_id' ) as $tenant )
         {
-            $db->table( 'cms_index' )->select( 'id' )
+            $db->table( 'cms_index' )
                 ->where( 'tenant_id', $tenant )
                 ->where( 'indexable_type', self::PAGE )
-                ->chunkById( 1000, fn( $rows ) => $db->table( 'cms_index' )
-                    ->whereIn( 'id', $rows->pluck( 'id' )->all() )
-                    ->update( ['indexable_type' => PageView::class] )
-                );
+                ->whereIn( 'latest', [false, true] )
+                ->update( ['indexable_type' => PageView::class] );
         }
     }
 

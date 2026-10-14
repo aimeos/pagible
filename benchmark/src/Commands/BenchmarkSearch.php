@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Commands;
 use Illuminate\Console\Command;
 
 use Aimeos\Cms\Concerns\Benchmarks;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
@@ -35,16 +36,13 @@ class BenchmarkSearch extends Command
 
     public function handle(): int
     {
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-        $unseed = (bool) $this->option( 'unseed' );
-
-        if( !$this->checks( $tenant, $tries, $force, !$unseed ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        if( $unseed )
+        $tries = $options['tries'];
+
+        if( $options['unseed'] )
         {
             $this->output->write( '  Flushing search index... ' );
             PageView::removeAllFromSearch();
@@ -52,9 +50,7 @@ class BenchmarkSearch extends Command
             File::removeAllFromSearch();
             $this->line( 'done' );
             $this->output->write( '  Rebuilding search index... ' );
-            PageView::makeAllSearchable();
-            Element::makeAllSearchable();
-            File::makeAllSearchable();
+            Scout::rebuild();
             $this->line( 'done' );
             return self::SUCCESS;
         }
@@ -63,9 +59,7 @@ class BenchmarkSearch extends Command
         if( $this->option( 'seed' ) )
         {
             $this->output->write( '  Indexing pages, elements, and files for search... ' );
-            PageView::makeAllSearchable();
-            Element::makeAllSearchable();
-            File::makeAllSearchable();
+            Scout::rebuild();
             $this->line( 'done' );
         }
 

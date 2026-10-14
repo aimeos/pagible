@@ -8,7 +8,9 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Scout;
 
 
 /**
@@ -18,6 +20,8 @@ class Pages
 {
     /**
      * Creates a page and appends it to the parent page if given.
+     *
+     * The page isn't indexed because the importers publish it afterwards, which indexes it.
      *
      * @param array<string, mixed> $data Page data
      * @param array<int|string, mixed> $content Content elements
@@ -29,7 +33,7 @@ class Pages
         $node = new Page( ['source' => (string) ( $data['lang'] ?? '' )] );
         $parent ? $node->appendToNode( Page::findOrFail( $parent->id ) )->save() : $node->save();
 
-        return $node->variants()->forceCreate( $data + ['content' => $content] )->view;
+        return Scout::mute( [PageView::class], fn() => $node->variants()->forceCreate( $data + ['content' => $content] ) )->view;
     }
 
 
@@ -83,7 +87,7 @@ class Pages
             $version->elements()->attach( $elementIds );
         }
 
-        $page->variant->update( ['latest_id' => $version->id] );
+        PageVariant::whereKey( $page->variant_id )->toBase()->update( ['latest_id' => $version->id] );
         $page->latest_id = $version->id;
         $page->publish( $version );
     }

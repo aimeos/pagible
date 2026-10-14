@@ -46,6 +46,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
+    use RoutesQueue;
 
 
     /** @var int Number of jobs added to the batch at once to stay below the placeholder limits */
@@ -80,7 +81,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      */
     public function __construct( public string $id, public string $lang, public string $tenant, public int|string|null $userId )
     {
-        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->routeQueue();
         $this->guard = Auth::getDefaultDriver();
 
         if( ( $user = Auth::user() ) && $userId !== null && (string) $user->getAuthIdentifier() === (string) $userId ) {
@@ -212,48 +213,66 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     protected static function enqueue( array $pairs, int|string|null $userId ) : array
     {
         $lock = new UniqueLock( app( \Illuminate\Contracts\Cache\Repository::class ) );
-        $jobs = [];
-
-        foreach( $pairs as [$id, $lang] )
-        {
-            $job = new self( $id, $lang, Tenancy::value(), $userId );
-            // spread the jobs over the minutes the rate limit allows them to run
-            $delay = intdiv( count( $jobs ), self::max() ) * 60;
-            // locks of lost jobs expire after the job would have been retried
-            $job->uniqueFor = $delay + 3600 * self::HOURS + 600;
-
-            if( $lock->acquire( $job ) ) {
-                $jobs[] = $job->delay( $delay );
-            }
-        }
-
-        $chunks = array_chunk( $jobs, self::CHUNK );
         $connection = config( 'cms.queue.connection' );
         $queue = config( 'cms.queue.name' );
-        $added = 0;
+        $batch = null;
+        $total = 0;
 
-        try
+        // locks are acquired per chunk right before it's queued, so an aborted request strands one chunk at most
+        foreach( array_chunk( $pairs, self::CHUNK ) as $chunk )
         {
-            $batch = Bus::batch( $chunks[0] ?? [] )->name( self::batchName() )->allowFailures()
-                ->when( $connection, fn( $batch ) => $batch->onConnection( $connection ) )
-                ->when( $queue, fn( $batch ) => $batch->onQueue( $queue ) )
-                ->dispatch();
+            $jobs = [];
 
-            $added = count( $chunks[0] ?? [] );
-
-            foreach( array_slice( $chunks, 1 ) as $chunk )
+            foreach( $chunk as [$id, $lang] )
             {
-                $batch->add( $chunk );
-                $added += count( $chunk );
+                $job = new self( $id, $lang, Tenancy::value(), $userId );
+                // spread the jobs over the minutes the rate limit allows them to run
+                $delay = intdiv( $total + count( $jobs ), self::max() ) * 60;
+                // locks of lost jobs expire after the job would have been retried
+                $job->uniqueFor = $delay + 3600 * self::HOURS + 600;
+
+                if( $lock->acquire( $job ) ) {
+                    $jobs[] = $job->delay( $delay );
+                }
             }
-        }
-        catch( \Throwable $e )
-        {
-            array_map( fn( $job ) => $lock->release( $job ), array_slice( $jobs, $added ) );
-            throw $e;
+
+            try
+            {
+                if( $batch ) {
+                    $batch->add( $jobs );
+                } elseif( $jobs ) {
+                    $batch = self::batch( $jobs, $connection, $queue );
+                }
+            }
+            catch( \Throwable $e )
+            {
+                array_map( fn( $job ) => $lock->release( $job ), $jobs );
+                throw $e;
+            }
+
+            $total += count( $jobs );
         }
 
-        return ['id' => $batch->id, 'total' => count( $jobs )];
+        $batch ??= self::batch( [], $connection, $queue );
+
+        return ['id' => $batch->id, 'total' => $total];
+    }
+
+
+    /**
+     * Dispatches a new batch of translations.
+     *
+     * @param array<int, self> $jobs Translation jobs
+     * @param string|null $connection Queue connection
+     * @param string|null $queue Queue name
+     * @return \Illuminate\Bus\Batch Dispatched batch
+     */
+    protected static function batch( array $jobs, ?string $connection, ?string $queue ) : \Illuminate\Bus\Batch
+    {
+        return Bus::batch( $jobs )->name( self::batchName() )->allowFailures()
+            ->when( $connection, fn( $batch ) => $batch->onConnection( $connection ) )
+            ->when( $queue, fn( $batch ) => $batch->onQueue( $queue ) )
+            ->dispatch();
     }
 
 
@@ -266,7 +285,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      */
     protected static function batchName() : string
     {
-        return 'cms-translate:' . sha1( (string) Tenancy::value() );
+        return self::limiter( (string) Tenancy::value() );
     }
 
 
@@ -395,6 +414,18 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
 
     /**
+     * Returns the seconds the calls of the rate limiter are blocked after a burst.
+     *
+     * @param string $key Key of the rate limiter
+     * @return int Seconds to wait, zero or negative if not blocked
+     */
+    protected static function blocked( string $key ) : int
+    {
+        return (int) Cache::get( $key . ':until', 0 ) - now()->getTimestamp();
+    }
+
+
+    /**
      * Returns the maximum number of provider calls per minute.
      */
     protected static function max() : int
@@ -439,7 +470,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     {
         $key = self::limiter( $tenant );
 
-        if( ( $wait = (int) Cache::get( $key . ':until', 0 ) - now()->getTimestamp() ) > 0 ) {
+        if( ( $wait = self::blocked( $key ) ) > 0 ) {
             throw new Throttled( $wait );
         }
 
@@ -470,7 +501,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     {
         $key = self::limiter( $tenant );
 
-        if( ( $wait = (int) Cache::get( $key . ':until', 0 ) - now()->getTimestamp() ) > 0 ) {
+        if( ( $wait = self::blocked( $key ) ) > 0 ) {
             return $wait;
         }
 

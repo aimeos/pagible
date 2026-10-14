@@ -9,12 +9,26 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Schema;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\Version;
 
 
 trait ResolvesFiles
 {
+    /**
+     * Returns the value from the latest version if loaded, otherwise the passed value.
+     *
+     * @param PageView $model The page model
+     * @param string $name Name of the version aux value, e.g. "config"
+     * @param mixed $items Value of the page model
+     * @return mixed Value from the latest version or the passed value
+     */
+    protected function aux( PageView $model, string $name, mixed $items ) : mixed
+    {
+        return ( $version = $this->version( $model ) ) ? $version->aux->{$name} : $items;
+    }
+
+
     /**
      * Resolves file references and actions for a list of items.
      *
@@ -25,11 +39,10 @@ trait ResolvesFiles
      */
     protected function resolveFiles( PageView $model, object|array|null $items, ?\Illuminate\Support\Collection $lookup = null ) : object|array|null
     {
-        $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+        $version = $this->version( $model );
         $filesById = null;
         $lang = $model->lang;
         $lang2 = substr( $lang, 0, 2 );
-        $schemas = Schema::schemas( section: 'content' );
 
         foreach( (array) $items as $item )
         {
@@ -68,10 +81,7 @@ trait ResolvesFiles
                 unset( $item->files );
             }
 
-            $field = $schemas[$item->type ?? '']['fields']['action'] ?? [];
-            $action = ( $field['type'] ?? null ) === 'hidden' ? ( $field['value'] ?? null ) : null;
-
-            if( $action ) {
+            if( $action = Schema::action( $item->type ?? '' ) ) {
                 $item->data->action = app()->call( $action, ['page' => $model, 'item' => $item] );
             } elseif( isset( $item->data->action ) ) {
                 unset( $item->data->action );
@@ -79,5 +89,17 @@ trait ResolvesFiles
         }
 
         return $items;
+    }
+
+
+    /**
+     * Returns the latest version of the page if it has been loaded.
+     *
+     * @param PageView $model The page model
+     * @return Version|null Latest version or NULL if not loaded
+     */
+    protected function version( PageView $model ) : ?Version
+    {
+        return $model->relationLoaded( 'latest' ) ? $model->latest : null;
     }
 }

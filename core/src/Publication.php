@@ -7,26 +7,45 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Publication\References;
+use Aimeos\Cms\Resource\Pages;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
 
 
 /**
  * Holds bounded shared state while publishing related CMS models.
+ *
+ * @phpstan-import-type Projection from Event
  */
 final class Publication
 {
-    use \Aimeos\Cms\Concerns\Pages;
+
+    /**
+     * Version columns loaded together with the models.
+     */
+    private const LATEST_COLUMNS = [
+        'id',
+        'tenant_id',
+        'versionable_id',
+        'versionable_type',
+        'published',
+        'publish_at',
+        'lang',
+        'data',
+        'aux',
+        'editor',
+        'created_at',
+    ];
 
     /** @var array<string, Element> */
     private array $elements = [];
@@ -34,23 +53,23 @@ final class Publication
     /** @var array<class-string<Base>, array<string, Base>> Models by version key, pages per variant */
     private array $models = [];
 
-    /** @var array<class-string<Base>, array<string, array{version_id: string, path?: string, domain?: string, lang?: string}>> */
+    /** @var array<class-string<Base>, array<string, Projection>> */
     private array $projected = [];
 
-    /**
-     * @var array<string, array{
-     *     files: array<string>,
-     *     elements: array<string>,
-     *     active_files: bool|null,
-     *     active_elements: bool|null
-     * }>
-     */
-    private array $refs = [];
+    private References $references;
 
     /** @var array<string, Version> */
     private array $versions = [];
 
-    private int $work = 0;
+
+
+    /**
+     * Initializes the publication state.
+     */
+    public function __construct()
+    {
+        $this->references = new References();
+    }
 
 
     /**
@@ -62,20 +81,18 @@ final class Publication
             return;
         }
 
-        $previous = $model instanceof PageView
-            ? [(string) $model->domain, (string) $model->path]
-            : null;
+        $moved = self::moved( $model );
 
         $model->stage( $version );
-        $model instanceof PageView ? self::saveVariant( $model ) : $model->save();
+        $model instanceof PageView ? Pages::saveVariant( $model ) : $model->save();
 
         $version->published = true;
         $version->save();
 
         $this->track( $model, $version );
 
-        if( $previous ) {
-            self::invalidate( $model, ...$previous );
+        if( $moved ) {
+            $moved();
         }
     }
 
@@ -86,21 +103,21 @@ final class Publication
     public function flush( ?string $editor = null ) : void
     {
         // Pages show the published content of shared elements and files
-        Resource::invalidateRefs(
+        Invalidation::refs(
             array_map( strval( ... ), array_keys( $this->models[Element::class] ?? [] ) ),
             array_map( strval( ... ), array_keys( $this->models[File::class] ?? [] ) ),
         );
 
         // translations whose source changed need an update
-        Sync::markStale( array_filter( $this->models[PageView::class] ?? [], fn( $item ) => $item instanceof PageView ) );
+        Sync::markStale( Pages::views( $this->models[PageView::class] ?? [] ) );
 
         foreach( $this->models as $model => $items ) {
             // only the published variants of pages change
-            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), array_values( $items ) ), collect( array_values( $items ) ), keys: true );
+            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), array_values( $items ) ), keys: true );
         }
 
         foreach( $this->models as $model => $items ) {
-            Base::announceMany( collect( array_values( $items ) ), 'published', $editor ?? '', [
+            Base::announceMany( collect( array_values( $items ) ), ContentAction::Published, $editor ?? '', [
                 'published' => true,
                 'publish_at' => null,
             ], projected: $this->projected[$model] ?? [] );
@@ -143,7 +160,7 @@ final class Publication
             return;
         }
 
-        Utils::storageLock( Tenancy::value(), fn() =>
+        File::locked( fn() =>
             Scout::mute( Version::TYPES, function() use ( $model, $version ) {
                 $this->prepare( collect( [$version] ) );
                 $this->apply( $model, $version );
@@ -162,13 +179,14 @@ final class Publication
     public function prepare( Collection $versions, ?Authenticatable $user = null ) : void
     {
         $this->elements = [];
-        $this->refs = [];
 
-        $owners = $this->references( $versions );
+        $refs = $this->references;
+        $refs->reset();
+        $owners = $refs->load( $versions );
 
-        $this->filter( $owners, 'files', $this->publishFiles( $this->related( $owners, 'files' ), $user ) );
-        $this->filter( $owners, 'elements', $this->publishElements( $this->related( $owners, 'elements' ), $user ) );
-        $this->sync( $owners );
+        $refs->filter( $owners, 'files', $this->publishFiles( $refs->related( $owners, 'files' ), $user ) );
+        $refs->filter( $owners, 'elements', $this->publishElements( $refs->related( $owners, 'elements' ), $user ) );
+        $refs->sync( $owners );
     }
 
 
@@ -193,61 +211,29 @@ final class Publication
 
         Permission::check( $model::PERM . ':publish', $user );
 
-        $ids = array_values( array_unique( $ids ) );
-        $model::checkBulk( count( $ids ) );
+        $ids = $model::bulkIds( $ids );
         $editor = Utils::editor( $user );
         $publication = new self();
 
-        $publish = fn() => Utils::transaction(
-            function() use ( $at, $editor, $ids, $lang, $model, $publication, $user ) {
+        $publish = fn() => DB::transaction( function() use ( $at, $editor, $ids, $lang, $model, $publication, $user ) {
+            $items = $pending = collect();
 
-                /** @var Collection<int, Base> $items */
-                $items = collect();
-                /** @var Collection<int, Base> $pending */
-                $pending = collect();
+            foreach( array_chunk( $ids, Base::CHUNK ) as $chunk )
+            {
+                $loaded = self::items( $model, $chunk, (bool) $at, $lang );
+                $pending = $pending->concat( $publication->publishItems( $loaded, $user, $at, $editor ) );
+                $items = $items->concat( $loaded );
+            }
 
-                foreach( array_chunk( $ids, 50 ) as $chunk )
-                {
-                    $loaded = self::items( $model, $chunk, (bool) $at, $lang );
-                    $unpublished = $loaded->filter(
-                        fn( Base $item ) => $item->latest && !$item->latest->published,
-                    )->values();
+            return [$items, $pending];
+        } );
 
-                    if( !$unpublished->isEmpty() )
-                    {
-                        $versions = $unpublished->pluck( 'latest' );
-
-                        if( !$at ) {
-                            $publication->prepare( $versions, $user );
-                            $publication->applyAll( $unpublished->map( fn( Base $item ) => [
-                                $item, $item->latest ?? throw new \LogicException( 'Unpublished model has no latest version.' )
-                            ] )->all() );
-                            $publication->publishVersions();
-                        } else {
-                            if( $user ) {
-                                $publication->authorize( $versions, $user );
-                            }
-
-                            $publication->schedule( $unpublished, $at, $editor );
-                        }
-                    }
-
-                    $items = $items->concat( $loaded );
-                    $pending = $pending->concat( $unpublished );
-                }
-
-                return [$items, $pending];
-            },
-        );
-
-        [$items, $pending] = Utils::storageLock( Tenancy::value(),
-            fn() => $at ? $publish() : Scout::mute( Version::TYPES, $publish ),
-        );
+        [$items, $pending] = File::locked( fn() => $at ? $publish() : Scout::mute( Version::TYPES, $publish ) );
 
         if( !$at ) {
             $publication->flush( $editor );
         } else {
-            Base::announceMany( $pending, 'published', $editor, [
+            Base::announceMany( $pending, ContentAction::Published, $editor, [
                 'published' => false,
                 'publish_at' => $at,
             ] );
@@ -265,68 +251,107 @@ final class Publication
     private function applyAll( array $items ) : void
     {
         $groups = [];
+        $sources = [];
 
         foreach( $items as [$model, $version] )
         {
-            $id = (string) $model->id;
-            $versionId = (string) $version->id;
-
-            $previous = $model instanceof PageView
-                ? [(string) $model->domain, (string) $model->path]
-                : null;
+            $moved = self::moved( $model );
 
             $model->stage( $version );
             $columns = array_keys( $model->getDirty() );
-            $updated = $model->getUpdatedAtColumn();
 
-            if( $columns && $model->usesTimestamps() && $updated !== null )
-            {
-                $model->setUpdatedAt( $model->freshTimestamp() );
-                $columns[] = $updated;
+            // the source language follows the language of the source variant
+            if( $model instanceof PageView && in_array( 'lang', $columns, true )
+                && $model->getRawOriginal( 'lang' ) === $model->getRawOriginal( 'source' )
+            ) {
+                $sources[] = $model;
             }
 
-            $columns = array_values( array_unique( $columns ) );
-            sort( $columns, SORT_STRING );
-
-            if( $columns )
+            if( $update = self::dirtyRow( $model, $columns ) )
             {
-                $attributes = $model->getAttributes();
-                $key = $model::class . '|' . implode( '|', $columns );
-                $row = ['id' => $id];
+                [$table, $cols, $row] = $update;
+                $key = $model::class . '|' . implode( '|', $cols );
 
-                foreach( $columns as $column ) {
-                    $row[$column] = $attributes[$column] ?? null;
-                }
-
-                if( $model instanceof PageView ) {
-                    // published page data is stored in the page variant
-                    [$row, $columns] = self::variantUpdate( $model, $row, $columns );
-                }
-
-                $groups[$key]['table'] = $model instanceof PageView ? 'cms_page_variants' : $model->getTable();
-                $groups[$key]['columns'] = $columns;
+                $groups[$key]['table'] = $table;
+                $groups[$key]['columns'] = $cols;
                 $groups[$key]['rows'][] = $row;
             }
 
-            if( !$version->published ) {
-                $version->published = true;
-                $this->versions[$versionId] = $version;
-            }
+            $version->published = true;
+            $this->versions[(string) $version->id] = $version;
 
             $this->track( $model, $version );
 
-            if( $previous && $model instanceof PageView ) {
-                self::invalidate( $model, ...$previous );
+            if( $moved ) {
+                $moved();
             }
         }
 
         foreach( $groups as $group ) {
-            self::updateRows( $group['table'], $group['rows'], $group['columns'] );
+            DB::updateRows( $group['table'], $group['rows'], $group['columns'] );
+        }
+
+        foreach( $sources as $page )
+        {
+            Page::withTrashed()->whereKey( $page->id )->toBase()->update( ['source' => $page->lang] );
+            $page->setAttribute( 'source', $page->lang );
         }
 
         foreach( $items as [$model, $_] ) {
             $model->syncChanges()->syncOriginal();
         }
+    }
+
+
+    /**
+     * Returns the invalidation of the previous URL used after the model has been published.
+     *
+     * @return \Closure|null Invalidates the URL of the page if it changed or NULL for other models
+     */
+    private static function moved( Base $model ) : ?\Closure
+    {
+        if( !$model instanceof PageView ) {
+            return null;
+        }
+
+        $domain = (string) $model->domain;
+        $path = (string) $model->path;
+
+        return fn() => Invalidation::moved( $model, $domain, $path );
+    }
+
+
+    /**
+     * Returns the update row for the dirty columns of a staged model.
+     *
+     * @param array<string> $columns Dirty columns
+     * @return array{0: string, 1: array<string>, 2: array<string, mixed>}|null Table, columns and row or NULL if unchanged
+     */
+    private static function dirtyRow( Base $model, array $columns ) : ?array
+    {
+        $updated = $model->getUpdatedAtColumn();
+
+        if( $columns && $model->usesTimestamps() && $updated !== null )
+        {
+            $model->setUpdatedAt( $model->freshTimestamp() );
+            $columns[] = $updated;
+        }
+
+        $columns = array_values( array_unique( $columns ) );
+        sort( $columns, SORT_STRING );
+
+        if( !$columns ) {
+            return null;
+        }
+
+        $attributes = $model->getAttributes();
+        $row = ['id' => (string) $model->id];
+
+        foreach( $columns as $column ) {
+            $row[$column] = $attributes[$column] ?? null;
+        }
+
+        return $model->publishedRow( $row, $columns );
     }
 
 
@@ -344,63 +369,14 @@ final class Publication
             return;
         }
 
-        $this->refs = [];
-        $owners = $this->references( $versions );
-        $elements = $this->related( $owners, 'elements' );
-        $files = $this->related( $owners, 'files' );
+        $this->references->reset();
+        $owners = $this->references->load( $versions );
+        $elements = $this->references->related( $owners, 'elements' );
+        $files = $this->references->related( $owners, 'files' );
 
         if( ( $elements && ( !$canElements || !$canFiles ) )
             || ( $files && !$canFiles ) ) {
             throw new Exception( 'Insufficient permissions' );
-        }
-    }
-
-
-    /**
-     * Removes unavailable related IDs from active references.
-     *
-     * @param array<string, array{type: string, id: string}> $owners
-     * @param 'files'|'elements' $type
-     * @param array<string, bool|Element> $existing Existing-ID map
-     */
-    private function filter( array $owners, string $type, array $existing ) : void
-    {
-        foreach( $owners as $versionId => $_ )
-        {
-            $this->refs[$versionId][$type] = array_values( array_filter(
-                $this->refs[$versionId][$type],
-                fn( $id ) => isset( $existing[$id] ),
-            ) );
-        }
-    }
-
-
-    /**
-     * Returns whether a portable pivot-presence projection is known to contain rows.
-     */
-    private function flag( Version $version, string $name ) : ?bool
-    {
-        if( !array_key_exists( $name, $version->getAttributes() ) ) {
-            return null;
-        }
-
-        return $version->getAttribute( $name ) !== null;
-    }
-
-
-    /**
-     * Invalidates the previous and current route of one changed page.
-     */
-    private static function invalidate( PageView $page, string $domain, string $path ) : void
-    {
-        $currentDomain = (string) $page->domain;
-        $currentPath = (string) $page->path;
-
-        if( $domain === $currentDomain ) {
-            PageInvalidated::dispatch( $domain, $path === $currentPath ? [$path] : [$path, $currentPath] );
-        } else {
-            PageInvalidated::dispatch( $domain, [$path] );
-            PageInvalidated::dispatch( $currentDomain, [$currentPath] );
         }
     }
 
@@ -417,22 +393,6 @@ final class Publication
     {
         $instance = new $model();
         $table = $instance->getTable();
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $first = fn( string $from, string $col, string $ref ) => $db->table( $from )->select( $col )->whereColumn( $col, $ref )->limit( 1 );
-        $columns = [
-            'id',
-            'tenant_id',
-            'versionable_id',
-            'versionable_type',
-            'published',
-            'publish_at',
-            'lang',
-            'data',
-            'aux',
-            'editor',
-            'created_at',
-        ];
-
         $query = $instance->newQuery();
 
         if( $lang !== null && $query instanceof PageQuery ) {
@@ -446,75 +406,16 @@ final class Publication
             } )
             ->whereIn( "{$table}.id", $ids );
 
-        foreach( $columns as $column ) {
+        foreach( self::LATEST_COLUMNS as $column ) {
             $query->addSelect( "cms_latest.{$column} AS pub_{$column}" );
         }
 
-        if( !$compact && $model === PageView::class )
-        {
-            $query->addSelect( [
-                'access_count' => $db->table( 'cms_page_access' )
-                    ->selectRaw( 'count(*)' )
-                    ->whereColumn( 'page_id', "{$table}.id" )
-                    ->where( 'tenant_id', Tenancy::value() ),
-                'pub_active_files' => $first( 'cms_page_file', 'variant_id', "{$table}.variant_id" ),
-                'pub_active_elements' => $first( 'cms_page_element', 'variant_id', "{$table}.variant_id" ),
-            ] );
-        }
-        elseif( !$compact && $model === Element::class )
-        {
-            $query->addSelect( [
-                'pub_active_files' => $first( 'cms_element_file', 'element_id', "{$table}.id" ),
-            ] );
-        }
-
-        if( $model !== File::class )
-        {
-            $query->addSelect( [
-                'pub_target_files' => $first( 'cms_version_file', 'version_id', 'cms_latest.id' ),
-            ] );
-        }
-
-        if( $model === PageView::class )
-        {
-            $query->addSelect( [
-                'pub_target_elements' => $first( 'cms_version_element', 'version_id', 'cms_latest.id' ),
-            ] );
-        }
+        $query->addSelect( self::flags( $instance, $compact ) );
 
         $items = $query->get();
 
-        foreach( $items as $item )
-        {
-            $attributes = [];
-
-            foreach( $columns as $column )
-            {
-                $attributes[$column] = $item->getAttribute( "pub_{$column}" );
-                $item->offsetUnset( "pub_{$column}" );
-            }
-
-            if( $attributes['id'] === null )
-            {
-                $item->setRelation( 'latest', null );
-                continue;
-            }
-
-            /** @var Version $version */
-            $version = ( new Version() )->newFromBuilder( $attributes, $item->getConnectionName() );
-
-            foreach( ['active_files', 'active_elements', 'target_files', 'target_elements'] as $name )
-            {
-                $attribute = "pub_{$name}";
-
-                if( array_key_exists( $attribute, $item->getAttributes() ) )
-                {
-                    $version->setAttribute( $name, $item->getAttribute( $attribute ) );
-                    $item->offsetUnset( $attribute );
-                }
-            }
-
-            $item->setRelation( 'latest', $version );
+        foreach( $items as $item ) {
+            $item->setRelation( 'latest', self::latest( $item ) );
         }
 
         return $items;
@@ -522,28 +423,74 @@ final class Publication
 
 
     /**
-     * Loads version pivot IDs into the active reference maps.
+     * Returns the subqueries projecting the presence of active and target pivot rows.
      *
-     * @param array<string, array{type: string, id: string}> $owners
-     * @param 'files'|'elements' $target
+     * @return array<string, Builder> Subqueries by alias
      */
-    private function load( string $table, string $related, array $owners, string $target ) : void
+    private static function flags( Base $instance, bool $compact ) : array
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
+        $table = $instance->getTable();
+        $first = fn( string $from, string $col, string $ref ) => $db->table( $from )->select( $col )->whereColumn( $col, $ref )->limit( 1 );
+        $selects = [];
 
-        foreach( array_chunk( array_keys( $owners ), 50 ) as $ids )
+        if( !$compact && $instance instanceof PageView )
         {
-            foreach( $db->table( $table )->select( 'version_id', $related )->whereIn( 'version_id', $ids )->cursor() as $row )
-            {
-                /** @var string $versionId */
-                $versionId = $row->version_id;
-                /** @var string $relatedId */
-                $relatedId = $row->{$related};
+            $selects['access_count'] = $db->table( 'cms_page_access' )
+                ->selectRaw( 'count(*)' )
+                ->whereColumn( 'page_id', "{$table}.id" )
+                ->where( 'tenant_id', Tenancy::value() );
+        }
 
-                PageView::checkBulk( ++$this->work );
-                $this->refs[$versionId][$target][] = $relatedId;
+        $version = new Version();
+
+        foreach( References::pivots( $instance ) as $name => $relation )
+        {
+            if( !$compact ) {
+                $selects["pub_active_{$name}"] = $first( $relation->getTable(), $relation->getForeignPivotKeyName(), $relation->getQualifiedParentKeyName() );
+            }
+
+            $target = $version->{$name}();
+            $selects["pub_target_{$name}"] = $first( $target->getTable(), $target->getForeignPivotKeyName(), 'cms_latest.id' );
+        }
+
+        return $selects;
+    }
+
+
+    /**
+     * Moves the joined latest version columns of the item into a version model.
+     *
+     * @return Version|null Latest version or NULL if the item has none
+     */
+    private static function latest( Base $item ) : ?Version
+    {
+        $attributes = [];
+
+        foreach( self::LATEST_COLUMNS as $column )
+        {
+            $attributes[$column] = $item->getAttribute( "pub_{$column}" );
+            $item->offsetUnset( "pub_{$column}" );
+        }
+
+        if( $attributes['id'] === null ) {
+            return null;
+        }
+
+        $version = ( new Version() )->newFromBuilder( $attributes, $item->getConnectionName() );
+
+        foreach( ['active_files', 'active_elements', 'target_files', 'target_elements'] as $name )
+        {
+            $attribute = "pub_{$name}";
+
+            if( array_key_exists( $attribute, $item->getAttributes() ) )
+            {
+                $version->setAttribute( $name, $item->getAttribute( $attribute ) );
+                $item->offsetUnset( $attribute );
             }
         }
+
+        return $version;
     }
 
 
@@ -555,37 +502,17 @@ final class Publication
      */
     private function publishElements( array $ids, ?Authenticatable $user = null ) : array
     {
-        $existing = [];
+        $existing = $this->publishRelated( Element::class, $ids, $user, function( array $items ) use ( $user ) {
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
-        {
-            $loaded = self::items( Element::class, $chunk )->whereInstanceOf( Element::class );
-            $items = [];
-
-            foreach( $loaded as $element )
-            {
-                $id = (string) $element->id;
-                $existing[$id] = $element;
-                $this->elements[$id] = $element;
-
-                if( ( $version = $element->latest ) && !$version->published ) {
-                    $items[] = [$element, $version];
-                }
-            }
-
-            Permission::check( 'element:publish', $user, (bool) $items );
-
-            $owners = $this->references( collect( array_column( $items, 1 ) ) );
-            $files = $this->publishFiles( $this->related( $owners, 'files' ), $user );
-            $this->filter( $owners, 'files', $files );
-            $this->sync( $owners );
+            $refs = $this->references;
+            $owners = $refs->load( collect( array_column( $items, 1 ) ) );
+            $refs->filter( $owners, 'files', $this->publishFiles( $refs->related( $owners, 'files' ), $user ) );
+            $refs->sync( $owners );
             $this->applyAll( $items );
+            $refs->forget( $owners );
+        } );
 
-            foreach( array_keys( $owners ) as $versionId ) {
-                unset( $this->refs[$versionId] );
-            }
-        }
-
+        $this->elements = array_replace( $this->elements, $existing );
         return $existing;
     }
 
@@ -594,32 +521,84 @@ final class Publication
      * Publishes referenced files in bounded, deduplicated chunks.
      *
      * @param array<string> $ids
-     * @return array<string, bool> Existing-ID map
+     * @return array<string, File> Existing files by ID
      */
     private function publishFiles( array $ids, ?Authenticatable $user = null ) : array
     {
+        return $this->publishRelated( File::class, $ids, $user, fn( array $items ) => $this->applyAll( $items ) );
+    }
+
+
+    /**
+     * Publishes the unpublished latest versions of the referenced items in bounded, deduplicated chunks.
+     *
+     * @template T of Element|File
+     * @param class-string<T> $model Model class of the items
+     * @param array<string> $ids
+     * @param \Closure(array<int, array{T, Version}>) : void $apply Applies the unpublished items of a chunk
+     * @return array<string, T> Existing items by ID
+     */
+    private function publishRelated( string $model, array $ids, ?Authenticatable $user, \Closure $apply ) : array
+    {
         $existing = [];
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        foreach( array_chunk( array_values( array_unique( $ids ) ), Base::CHUNK ) as $chunk )
         {
             $items = [];
-            $loaded = self::items( File::class, $chunk );
 
-            foreach( $loaded as $file )
+            foreach( self::items( $model, $chunk )->whereInstanceOf( $model ) as $item )
             {
-                $existing[(string) $file->id] = true;
+                $existing[(string) $item->id] = $item;
 
-                if( $file->latest && !$file->latest->published ) {
-                    $items[] = [$file, $file->latest];
+                if( ( $version = $item->latest ) && !$version->published ) {
+                    $items[] = [$item, $version];
                 }
             }
 
-            Permission::check( 'file:publish', $user, (bool) $items );
-
-            $this->applyAll( $items );
+            Permission::check( $model::PERM . ':publish', $user, (bool) $items );
+            $apply( $items );
         }
 
         return $existing;
+    }
+
+
+    /**
+     * Publishes or schedules the unpublished latest versions of the loaded items.
+     *
+     * @param Collection<int, Base> $items Items with the "latest" relation loaded
+     * @param Authenticatable|null $user Authenticated user or NULL for system calls
+     * @param string|null $at Date/time to publish at or NULL to publish immediately
+     * @param string $editor Name of the editing user
+     * @return Collection<int, Base> Items whose latest versions were unpublished
+     */
+    private function publishItems( Collection $items, ?Authenticatable $user, ?string $at, string $editor ) : Collection
+    {
+        $unpublished = $items->filter( fn( Base $item ) => $item->latest && !$item->latest->published )->values();
+
+        if( $unpublished->isEmpty() ) {
+            return $unpublished;
+        }
+
+        $versions = $unpublished->pluck( 'latest' );
+
+        if( $at )
+        {
+            if( $user ) {
+                $this->authorize( $versions, $user );
+            }
+
+            $this->schedule( $unpublished, $at, $editor );
+            return $unpublished;
+        }
+
+        $this->prepare( $versions, $user );
+        $this->applyAll( $unpublished->map( fn( Base $item ) => [
+            $item, $item->latest ?? throw new \LogicException( 'Unpublished model has no latest version.' )
+        ] )->all() );
+        $this->publishVersions();
+
+        return $unpublished;
     }
 
 
@@ -628,7 +607,7 @@ final class Publication
      */
     private function publishVersions() : void
     {
-        foreach( array_chunk( array_keys( $this->versions ), 500 ) as $ids ) {
+        foreach( array_chunk( array_keys( $this->versions ), DB::IN_SIZE ) as $ids ) {
             Version::whereIn( 'id', $ids )->update( ['published' => true] );
         }
 
@@ -637,79 +616,6 @@ final class Publication
         }
 
         $this->versions = [];
-    }
-
-
-    /**
-     * Loads scalar references for a bounded collection of versions.
-     *
-     * @param Collection<int, Version> $versions
-     * @return array<string, array{type: string, id: string}>
-     */
-    private function references( Collection $versions ) : array
-    {
-        $elementOwners = [];
-        $fileOwners = [];
-        $owners = [];
-
-        foreach( $versions as $version )
-        {
-            /** @var class-string<Base> $type */
-            $type = $version->versionable_type;
-
-            if( $type === File::class ) {
-                continue;
-            }
-
-            /** @var string $id */
-            $id = $version->versionable_id;
-            $versionId = (string) $version->id;
-
-            $owners[$versionId] = ['type' => $type, 'id' => $id];
-
-            $this->refs[$versionId] = [
-                'files' => [],
-                'elements' => [],
-                'active_files' => $this->flag( $version, 'active_files' ),
-                'active_elements' => $this->flag( $version, 'active_elements' ),
-            ];
-
-            if( $this->flag( $version, 'target_files' ) !== false ) {
-                $fileOwners[$versionId] = $owners[$versionId];
-            }
-
-            if( $type === PageVariant::class && $this->flag( $version, 'target_elements' ) !== false ) {
-                $elementOwners[$versionId] = $owners[$versionId];
-            }
-        }
-
-        $this->load( 'cms_version_file', 'file_id', $fileOwners, 'files' );
-
-        $this->load( 'cms_version_element', 'element_id', $elementOwners, 'elements' );
-
-        return $owners;
-    }
-
-
-    /**
-     * Flattens one active reference type for the given owners.
-     *
-     * @param array<string, array{type: string, id: string}> $owners
-     * @param 'files'|'elements' $type
-     * @return array<string>
-     */
-    private function related( array $owners, string $type ) : array
-    {
-        $result = [];
-
-        foreach( $owners as $versionId => $_ )
-        {
-            foreach( $this->refs[$versionId][$type] as $id ) {
-                $result[] = $id;
-            }
-        }
-
-        return $result;
     }
 
 
@@ -745,110 +651,10 @@ final class Publication
             $versions[] = $version;
         }
 
-        self::updateRows( ( new Version() )->getTable(), $rows, ['data', 'editor', 'publish_at'] );
+        DB::updateRows( ( new Version() )->getTable(), $rows, ['data', 'editor', 'publish_at'] );
 
         foreach( $versions as $version ) {
             $version->syncChanges()->syncOriginal();
-        }
-    }
-
-
-    /**
-     * Synchronizes active page and element pivots.
-     *
-     * @param array<string, array{type: string, id: string}> $owners
-     */
-    private function sync( array $owners ) : void
-    {
-        $pages = [];
-        $elements = [];
-
-        foreach( $owners as $versionId => $owner )
-        {
-            if( $owner['type'] === PageVariant::class ) {
-                $pages[$owner['id']] = $this->refs[$versionId];
-            } else {
-                $elements[$owner['id']] = $this->refs[$versionId];
-            }
-        }
-
-        $this->syncPivot( 'cms_page_file', 'variant_id', 'file_id', $pages, 'files' );
-        $this->syncPivot( 'cms_page_element', 'variant_id', 'element_id', $pages, 'elements' );
-        $this->syncPivot( 'cms_element_file', 'element_id', 'file_id', $elements, 'files' );
-    }
-
-
-    /**
-     * Replaces pivots only for owners whose target references changed.
-     *
-     * @param array<string, array{
-     *     files: array<string>,
-     *     elements: array<string>,
-     *     active_files: bool|null,
-     *     active_elements: bool|null
-     * }> $groups
-     * @param 'files'|'elements' $key
-     */
-    private function syncPivot( string $table, string $owner, string $related, array $groups, string $key ) : void
-    {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $active = "active_{$key}";
-        $groups = array_filter(
-            $groups,
-            fn( $sets ) => $sets[$key] || ( $sets[$active] ?? null ) !== false,
-        );
-
-        foreach( array_chunk( $groups, 50, true ) as $chunk )
-        {
-            $current = array_fill_keys( array_keys( $chunk ), [] );
-
-            foreach( $db->table( $table )->select( $owner, $related )->whereIn( $owner, array_keys( $chunk ) )->cursor() as $row )
-            {
-                /** @var string $ownerId */
-                $ownerId = $row->{$owner};
-                /** @var string $relatedId */
-                $relatedId = $row->{$related};
-
-                $current[$ownerId][$relatedId] = true;
-            }
-
-            $replace = [];
-
-            foreach( $chunk as $id => $sets )
-            {
-                $target = array_fill_keys( $sets[$key], true );
-
-                $existing = $current[$id];
-
-                if( count( $target ) !== count( $existing ) || array_diff_key( $target, $existing ) ) {
-                    $replace[$id] = $target;
-                }
-            }
-
-            if( !$replace ) {
-                continue;
-            }
-
-            $db->table( $table )->whereIn( $owner, array_keys( $replace ) )->delete();
-            $rows = [];
-
-            foreach( $replace as $id => $refs )
-            {
-                foreach( array_keys( $refs ) as $ref )
-                {
-                    $rows[] = [$owner => $id, $related => $ref];
-
-                    if( count( $rows ) === 500 )
-                    {
-                        $db->table( $table )->insert( $rows );
-                        $rows = [];
-                    }
-                }
-            }
-
-            if( $rows ) {
-                $db->table( $table )->insert( $rows );
-            }
         }
     }
 
@@ -869,7 +675,7 @@ final class Publication
 
             $elements = [];
 
-            foreach( $this->refs[$versionId]['elements'] ?? [] as $elementId ) {
+            foreach( $this->references->elements( $versionId ) as $elementId ) {
                 if( isset( $this->elements[$elementId] ) ) {
                     $elements[] = $this->elements[$elementId];
                 }
@@ -882,74 +688,5 @@ final class Publication
 
         $this->models[$model::class][$id] = $model;
         $this->projected[$model::class][$id] = $projection;
-    }
-
-
-    /**
-     * Maps a page view row to the row of its page variant.
-     *
-     * @param array<string, mixed> $row
-     * @param array<string> $columns
-     * @return array{0: array<string, mixed>, 1: array<string>} Variant row and columns
-     */
-    private static function variantUpdate( PageView $page, array $row, array $columns ) : array
-    {
-        $values = array_intersect_key( $row, array_flip( $columns ) );
-        $other = array_diff_key( $values, PageBuilder::VARIANT_COLUMNS, array_flip( PageBuilder::SHARED_COLUMNS ) );
-
-        if( $column = array_key_first( $other ) ) {
-            throw new \LogicException( sprintf( 'Page column "%1$s" can\'t be published', $column ) );
-        }
-
-        $variantRow = PageBuilder::variantValues( $values, true );
-
-        return [['id' => $page->variant_id] + $variantRow, array_keys( $variantRow )];
-    }
-
-
-    /**
-     * Updates different row values in parameter-safe CASE batches.
-     *
-     * @param array<int, array<string, mixed>> $rows
-     * @param array<string> $columns
-     */
-    private static function updateRows( string $table, array $rows, array $columns ) : void
-    {
-        if( !$rows || !$columns ) {
-            return;
-        }
-
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $grammar = $db->getQueryGrammar();
-        $id = $grammar->wrap( 'id' );
-        $size = max( 1, intdiv( 2000, count( $columns ) * 2 + 1 ) );
-
-        foreach( array_chunk( $rows, $size ) as $chunk )
-        {
-            $bindings = [];
-            $sets = [];
-
-            foreach( $columns as $column )
-            {
-                $name = $grammar->wrap( $column );
-                $case = 'CASE ' . $id;
-
-                foreach( $chunk as $row ) {
-                    $case .= ' WHEN ? THEN ?';
-                    $bindings[] = $row['id'];
-                    $bindings[] = $row[$column];
-                }
-
-                $sets[] = $name . ' = ' . $case . ' ELSE ' . $name . ' END';
-            }
-
-            $bindings = [...$bindings, ...array_column( $chunk, 'id' )];
-            $placeholders = implode( ', ', array_fill( 0, count( $chunk ), '?' ) );
-            $sql = 'UPDATE ' . $grammar->wrapTable( $table )
-                . ' SET ' . implode( ', ', $sets )
-                . ' WHERE ' . $id . ' IN (' . $placeholders . ')';
-
-            $db->update( $sql, $bindings );
-        }
     }
 }

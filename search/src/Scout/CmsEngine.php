@@ -5,7 +5,7 @@ namespace Aimeos\Cms\Scout;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Scout as ScoutHelper;
+use Aimeos\Cms\Query\SearchQuery;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
@@ -295,7 +295,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         // Pages are indexed per variant, a language filter selects the variants of that language
-        ScoutHelper::variants( $query, $builder );
+        SearchQuery::variants( $query, $builder );
 
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
@@ -306,7 +306,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         if( $builder->callback ) {
             call_user_func( $builder->callback, $query, $builder, $builder->query );
         } else {
-            ScoutHelper::apply( $query, $builder, $isDraft );
+            SearchQuery::apply( $query, $builder, $isDraft );
         }
 
         if( !is_null( $builder->queryCallback ) ) {
@@ -318,7 +318,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
             $driver = $builder->model->getConnection()->getDriverName();
 
             foreach( $builder->orders as $order ) {
-                // In non-callback mode Scout::apply() already qualified the column.
+                // In non-callback mode SearchQuery::apply() already qualified the column.
                 $col = $builder->callback
                     ? ( DB::qualify( $order['column'], $modelTable, $isDraft, $driver ) ?? $order['column'] )
                     : $order['column'];
@@ -390,7 +390,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         // variants of other languages are skipped before joining the pages, not for language fallbacks
-        if( $builder->model instanceof PageView && ( $lang = ScoutHelper::language( $builder ) ) !== null ) {
+        if( $builder->model instanceof PageView && ( $lang = SearchQuery::language( $builder ) ) !== null ) {
             $query->where( 'cms_index.indexable_lang', $lang );
         }
 

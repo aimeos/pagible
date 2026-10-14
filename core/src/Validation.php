@@ -94,7 +94,7 @@ class Validation
     {
         self::limits( PageView::class, $input );
 
-        if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
+        if( !Utils::isValidUrl( $input['to'] ?? null, strict: false ) ) {
             throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
         }
 
@@ -336,7 +336,7 @@ class Validation
      * @param string $type Element type
      * @param object|array<string, mixed> &$data Element data (modified in place)
      */
-    public static function html( string $type, object|array &$data ) : void
+    private static function html( string $type, object|array &$data ) : void
     {
         if( $type !== 'html' ) {
             return;
@@ -499,7 +499,7 @@ class Validation
         try {
             $date = Carbon::parse( $at );
         } catch( \Exception $e ) {
-            throw new Exception( sprintf( 'Invalid publish date "%s"', $at ) );
+            throw new Exception( sprintf( 'Invalid publish date "%s"', $at ), 0, $e );
         }
 
         if( $date->isPast() ) {

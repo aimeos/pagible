@@ -8,6 +8,9 @@
 namespace Aimeos\Cms;
 
 use Laravel\Scout\Builder;
+use Aimeos\Cms\Models\Base;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 
 /**
@@ -18,116 +21,63 @@ class Filter
     /**
      * Apply element-specific filters to a Scout builder.
      *
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param Builder<Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     * @return Builder<Model>
      */
     public static function elements( Builder $builder, array $filter ) : Builder
     {
-        if( array_key_exists( 'id', $filter ) ) {
-            $builder->whereIn( 'id', (array) $filter['id'] );
-        }
-
-        if( array_key_exists( 'lang', $filter ) ) {
-            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
-        }
-
-        if( array_key_exists( 'type', $filter ) ) {
-            $builder->where( 'type', (string) ( $filter['type'] ?? '' ) );
-        }
-
-        if( array_key_exists( 'editor', $filter ) ) {
-            $builder->where( 'editor', (string) ( $filter['editor'] ?? '' ) );
-        }
-
-        static::publish( $builder, $filter['publish'] ?? null );
-        static::trashed( $builder, $filter['trashed'] ?? null );
-
-        return $builder;
+        return static::common( $builder, $filter, ['lang', 'type', 'editor'] );
     }
 
 
     /**
      * Apply file-specific filters to a Scout builder.
      *
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param Builder<Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     * @return Builder<Model>
      */
     public static function files( Builder $builder, array $filter ) : Builder
     {
-        if( array_key_exists( 'id', $filter ) ) {
-            $builder->whereIn( 'id', (array) $filter['id'] );
-        }
-
-        if( array_key_exists( 'lang', $filter ) ) {
-            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
-        }
-
         if( isset( $filter['mime'] ) ) {
             $builder->whereIn( 'mime', (array) $filter['mime'] );
         }
 
-        if( array_key_exists( 'editor', $filter ) ) {
-            $builder->where( 'editor', (string) ( $filter['editor'] ?? '' ) );
-        }
-
-        static::publish( $builder, $filter['publish'] ?? null );
-        static::trashed( $builder, $filter['trashed'] ?? null );
-
-        return $builder;
+        return static::common( $builder, $filter, ['lang', 'editor'] );
     }
 
 
     /**
      * Apply page-specific filters to a Scout builder.
      *
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param Builder<Model> $builder
      * @param array<string, mixed> $filter Validated filter values (may include 'publish' and 'trashed')
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     * @return Builder<Model>
      */
     public static function pages( Builder $builder, array $filter ) : Builder
     {
-        if( array_key_exists( 'id', $filter ) ) {
-            $builder->whereIn( 'id', (array) $filter['id'] );
-        }
-
         if( array_key_exists( 'parent_id', $filter ) ) {
             $builder->where( 'parent_id', $filter['parent_id'] );
         }
 
-        if( array_key_exists( 'lang', $filter ) ) {
-            $builder->where( 'lang', (string) ( $filter['lang'] ?? '' ) );
-        }
-
-        if( array_key_exists( 'status', $filter ) ) {
-            $builder->where( 'status', (int) ( $filter['status'] ?? 0 ) );
-        }
-
-        if( array_key_exists( 'cache', $filter ) ) {
-            $builder->where( 'cache', (int) ( $filter['cache'] ?? 0 ) );
-        }
-
-        foreach( ['domain', 'editor', 'path', 'tag', 'theme', 'to', 'type'] as $field )
+        foreach( ['status', 'cache'] as $field )
         {
             if( array_key_exists( $field, $filter ) ) {
-                $builder->where( $field, (string) ( $filter[$field] ?? '' ) );
+                $builder->where( $field, (int) ( $filter[$field] ?? 0 ) );
             }
         }
 
-        static::publish( $builder, $filter['publish'] ?? null );
-        static::trashed( $builder, $filter['trashed'] ?? null );
-
-        return $builder;
+        return static::common( $builder, $filter, ['lang', 'domain', 'editor', 'path', 'tag', 'theme', 'to', 'type'] );
     }
 
 
     /**
      * Creates a Scout builder searching the draft texts of the given model.
      *
-     * @param class-string<\Aimeos\Cms\Models\Base> $class Model class, e.g. PageView::class
+     * @param class-string<Base> $class Model class, e.g. PageView::class
      * @param mixed $term Search term, trimmed and limited to 200 characters
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
+     * @return Builder<Model>
      */
     public static function search( string $class, mixed $term ) : Builder
     {
@@ -145,13 +95,13 @@ class Filter
      * variants of that language or the source variants of the pages without one. This avoids
      * the fallback condition which can't use the indexes and would check all variants.
      *
-     * @template TModel of \Illuminate\Database\Eloquent\Model
-     * @param \Illuminate\Database\Eloquent\Builder<TModel> $query Page query with the fallback of the language
+     * @template TModel of Model
+     * @param EloquentBuilder<TModel> $query Page query with the fallback of the language
      * @param string $lang Language code
      * @param string $state Translation state, "stale", "missing" or "ai"
-     * @return \Illuminate\Database\Eloquent\Builder<TModel> Same query for fluent calls
+     * @return EloquentBuilder<TModel> Same query for fluent calls
      */
-    public static function translation( \Illuminate\Database\Eloquent\Builder $query, string $lang, string $state ) : \Illuminate\Database\Eloquent\Builder
+    public static function translation( EloquentBuilder $query, string $lang, string $state ) : EloquentBuilder
     {
         if( !in_array( $state, ['missing', 'stale', 'ai'], true ) ) {
             throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) );
@@ -161,7 +111,7 @@ class Filter
         $base = $query->getQuery();
 
         // trashed variants of the language are included if the fallback includes them
-        $trashed = $base instanceof Query\PageBuilder && ( $base->variant[2] ?? false );
+        $trashed = $base instanceof Query\PageBuilder && ( $base->variant()[2] ?? false );
 
         if( $query instanceof Query\PageQuery ) {
             $state === 'missing' ? $query->language( null ) : $query->language( $lang, $trashed );
@@ -189,12 +139,40 @@ class Filter
 
 
     /**
+     * Apply the ID, string field, publish-status and soft-delete filters.
+     *
+     * @param Builder<Model> $builder
+     * @param array<string, mixed> $filter Validated filter values
+     * @param array<int, string> $fields Names of the string fields to filter by
+     * @return Builder<Model>
+     */
+    protected static function common( Builder $builder, array $filter, array $fields ) : Builder
+    {
+        if( array_key_exists( 'id', $filter ) ) {
+            $builder->whereIn( 'id', (array) $filter['id'] );
+        }
+
+        foreach( $fields as $field )
+        {
+            if( array_key_exists( $field, $filter ) ) {
+                $builder->where( $field, (string) ( $filter[$field] ?? '' ) );
+            }
+        }
+
+        static::publish( $builder, $filter['publish'] ?? null );
+        static::trashed( $builder, $filter['trashed'] ?? null );
+
+        return $builder;
+    }
+
+
+    /**
      * Apply publish-status filter.
      *
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param Builder<Model> $builder
      * @param string|null $publish PUBLISHED, DRAFT, or SCHEDULED
      */
-    protected static function publish( $builder, ?string $publish ) : void
+    protected static function publish( Builder $builder, ?string $publish ) : void
     {
         match( $publish ) {
             'PUBLISHED' => $builder->where( 'published', true ),
@@ -208,10 +186,10 @@ class Filter
     /**
      * Apply soft-delete filter.
      *
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     * @param Builder<Model> $builder
      * @param string|null $trashed without, with, or only
      */
-    protected static function trashed( $builder, ?string $trashed ) : void
+    protected static function trashed( Builder $builder, ?string $trashed ) : void
     {
         match( $trashed ) {
             'with' => $builder->withTrashed(),

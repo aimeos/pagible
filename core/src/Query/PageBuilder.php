@@ -7,9 +7,13 @@
 
 namespace Aimeos\Cms\Query;
 
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Grammars\MySqlGrammar;
 
 
 /**
@@ -27,23 +31,14 @@ class PageBuilder extends Builder
     /** @var string Name of the view joining the pages and their variants */
     public const VIEW = 'cms_page_view';
 
-    /** @var list<string> Columns stored in the cms_pages table */
-    public const PAGE_COLUMNS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
+    /** @var array<string, string> Page view columns of the variant columns which are also stored in cms_pages, and their real names */
+    private const ALIAS_FIELDS = ['variant_id' => 'id', 'variant_deleted_at' => 'deleted_at'];
 
-    /** @var array<string, string> Page view columns stored in the cms_page_variants table and their real names */
-    public const VARIANT_COLUMNS = [
-        'variant_id' => 'id', 'lang' => 'lang', 'domain' => 'domain', 'path' => 'path', 'to' => 'to',
-        'name' => 'name', 'title' => 'title', 'type' => 'type', 'theme' => 'theme', 'tag' => 'tag',
-        'cache' => 'cache', 'status' => 'status', 'meta' => 'meta', 'config' => 'config', 'content' => 'content',
-        'hashes' => 'hashes', 'stale' => 'stale', 'latest_id' => 'latest_id', 'editor' => 'editor',
-        'variant_deleted_at' => 'deleted_at',
-    ];
-
-    /** @var list<string> Columns stored in both tables */
-    public const SHARED_COLUMNS = ['created_at', 'updated_at'];
+    /** @var list<string> Columns stored in both tables, the page view contains the ones of the variants */
+    public const SHARED_FIELDS = ['created_at', 'updated_at'];
 
     /** @var array{0: string, 1: string|null, 2: bool}|null Mode, value and trashed flag of the variant condition */
-    public ?array $variant = null;
+    private ?array $variant = null;
 
 
     /**
@@ -54,7 +49,7 @@ class PageBuilder extends Builder
      */
     public static function pageValues( array $values ) : array
     {
-        return array_intersect_key( $values, array_flip( [...self::PAGE_COLUMNS, ...self::SHARED_COLUMNS] ) );
+        return array_intersect_key( $values, array_flip( [...Page::FIELDS, ...self::SHARED_FIELDS] ) );
     }
 
 
@@ -69,14 +64,14 @@ class PageBuilder extends Builder
     {
         $result = [];
 
-        foreach( self::VARIANT_COLUMNS as $col => $name )
+        foreach( self::variantFields() as $col => $name )
         {
             if( array_key_exists( $col, $values ) ) {
                 $result[$name] = $values[$col];
             }
         }
 
-        return $shared ? $result + array_intersect_key( $values, array_flip( self::SHARED_COLUMNS ) ) : $result;
+        return $shared ? $result + array_intersect_key( $values, array_flip( self::SHARED_FIELDS ) ) : $result;
     }
 
 
@@ -90,14 +85,25 @@ class PageBuilder extends Builder
     {
         $result = [];
 
-        foreach( self::VARIANT_COLUMNS as $col => $name )
+        foreach( self::variantFields() as $col => $name )
         {
             if( array_key_exists( $name, $values ) ) {
                 $result[$col] = $values[$name];
             }
         }
 
-        return $result + array_intersect_key( $values, array_flip( self::SHARED_COLUMNS ) );
+        return $result + array_intersect_key( $values, array_flip( self::SHARED_FIELDS ) );
+    }
+
+
+    /**
+     * Returns the page view columns stored in the cms_page_variants table besides the timestamps.
+     *
+     * @return array<string, string> Page view column names as keys and the variant column names as values
+     */
+    public static function variantFields() : array
+    {
+        return array_combine( PageVariant::FIELDS, PageVariant::FIELDS ) + self::ALIAS_FIELDS;
     }
 
 
@@ -137,7 +143,7 @@ class PageBuilder extends Builder
      * @param bool $trashed Include soft-deleted variants
      * @return static Same builder for fluent interface
      */
-    public function variants( string $mode = 'source', ?string $value = null, bool $trashed = false ) : static
+    public function variants( string $mode, ?string $value = null, bool $trashed = false ) : static
     {
         if( !in_array( $mode, ['source', 'lang', 'fallback', 'visible', 'variant', 'all'], true ) ) {
             throw new \InvalidArgumentException( sprintf( 'Invalid page variant mode "%1$s"', $mode ) );
@@ -147,6 +153,17 @@ class PageBuilder extends Builder
         $this->variant = [$mode, $value, $trashed];
 
         return $this;
+    }
+
+
+    /**
+     * Returns the variant condition of the query.
+     *
+     * @return array{0: string, 1: string|null, 2: bool}|null Mode, value and trashed flag or NULL if no variant is selected
+     */
+    public function variant() : ?array
+    {
+        return $this->variant;
     }
 
 
@@ -181,37 +198,8 @@ class PageBuilder extends Builder
             case 'fallback':
             case 'visible':
                 // "visible" only uses published and enabled variants of the language
-                $visible = $mode === 'visible';
-                $trashed = $trashed && !$visible;
-
-                // variant of the language, for "visible" only if published and enabled
-                $exists = fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
-                    ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
-                    ->where( 'w.lang', '=', $literal )
-                    ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
-                    ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
-
-                // MariaDB uses a subclass of the MySQL grammar
-                if( ( $grammar = $this->getGrammar() ) instanceof \Illuminate\Database\Query\Grammars\MySqlGrammar )
-                {
-                    // MySQL reads all variants of each page for the OR condition below, the language
-                    // computed per page lets it look up the single variant by the unique index instead
-                    $sql = 'CASE WHEN EXISTS (' . $exists( $this->newQuery() )->toSql() . ') THEN ' . $literal->getValue( $grammar )
-                        . ' ELSE ' . $grammar->wrap( $col( 'source' ) ) . ' END';
-
-                    // @phpstan-ignore argument.type (built from quoted values and constant column names)
-                    $cond->where( $col( 'lang' ), '=', new Expression( $sql ) );
-                    break;
-                }
-
-                $cond->where( function( $q ) use ( $col, $literal, $visible, $exists ) {
-                    $q->where( function( $q ) use ( $col, $literal, $visible ) {
-                        $q->where( $col( 'lang' ), '=', $literal )
-                            ->when( $visible, fn( $q ) => $q->where( $col( 'status' ), '<>', new Expression( '0' ) ) );
-                    } )->orWhere( function( $q ) use ( $col, $exists ) {
-                        $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( $exists );
-                    } );
-                } );
+                $trashed = $trashed && $mode !== 'visible';
+                $this->whereFallback( $cond, $literal, $mode === 'visible', $trashed );
                 break;
             case 'variant':
                 $cond->where( $col( 'variant_id' ), '=', $literal );
@@ -286,21 +274,62 @@ class PageBuilder extends Builder
 
 
     /**
+     * Adds the condition selecting the variant of the language or the source variant if there is none.
+     *
+     * @param Builder $cond Nested condition the variant condition is added to
+     * @param Literal $literal Quoted language code
+     * @param bool $visible TRUE to use published and enabled variants of the language only
+     * @param bool $trashed TRUE to use trashed variants of the language too
+     */
+    protected function whereFallback( Builder $cond, Literal $literal, bool $visible, bool $trashed ) : void
+    {
+        $col = fn( string $name ) => self::VIEW . '.' . $name;
+
+        // variant of the language, for "visible" only if published and enabled
+        $exists = fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
+            ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
+            ->where( 'w.lang', '=', $literal )
+            ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
+            ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
+
+        // MariaDB uses a subclass of the MySQL grammar
+        if( ( $grammar = $this->getGrammar() ) instanceof MySqlGrammar )
+        {
+            // MySQL reads all variants of each page for the OR condition below, the language
+            // computed per page lets it look up the single variant by the unique index instead
+            $sql = 'CASE WHEN EXISTS (' . $exists( $this->newQuery() )->toSql() . ') THEN ' . $literal->getValue( $grammar )
+                . ' ELSE ' . $grammar->wrap( $col( 'source' ) ) . ' END';
+
+            $cond->where( $col( 'lang' ), '=', new Literal( $sql ) );
+            return;
+        }
+
+        $cond->where( function( $q ) use ( $col, $literal, $visible, $exists ) {
+            $q->where( function( $q ) use ( $col, $literal, $visible ) {
+                $q->where( $col( 'lang' ), '=', $literal )
+                    ->when( $visible, fn( $q ) => $q->where( $col( 'status' ), '<>', new Expression( '0' ) ) );
+            } )->orWhere( function( $q ) use ( $col, $exists ) {
+                $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( $exists );
+            } );
+        } );
+    }
+
+
+    /**
      * Returns the quoted value as SQL expression.
      *
      * @param string|null $value Language code or variant ID
-     * @return Expression<float|int|literal-string> Quoted value
+     * @return Literal Quoted value
      */
-    protected function literal( ?string $value ) : Expression
+    protected function literal( ?string $value ) : Literal
     {
         $conn = $this->getConnection();
 
-        if( !$conn instanceof \Illuminate\Database\Connection ) {
+        if( !$conn instanceof Connection ) {
             throw new \LogicException( 'The page view requires a database connection' );
         }
 
-        // @phpstan-ignore argument.type (the value is quoted and escaped by the connection)
-        return new Expression( $conn->escape( (string) $value ) );
+        return new Literal( $conn->escape( (string) $value ) );
     }
 
 

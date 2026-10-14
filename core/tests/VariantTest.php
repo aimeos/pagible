@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Exception;
@@ -265,7 +266,7 @@ class VariantTest extends CoreTestAbstract
         $de = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
         $en = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'en' )->firstOrFail();
         $published = PageView::language( 'de' )->findOrFail( $page->id );
-        $expected = Hashes::page( $published->only( Hashes::PAGE_FIELDS ), $published->content, $published->meta, $published->config );
+        $expected = Hashes::page( $published->only( PageVariant::SYNC_FIELDS ), $published->content, $published->meta, $published->config );
 
         $this->assertEquals( [], $de->hashes );
         $this->assertFalse( $de->stale );
@@ -336,6 +337,31 @@ class VariantTest extends CoreTestAbstract
     }
 
 
+    public function testPublishLanguageChangeUpdatesSource()
+    {
+        $page = $this->page();
+        Resource::savePage( $page->id, ['lang' => 'fr'], $this->user );
+
+        Publication::publish( PageView::class, [$page->id], $this->user );
+
+        $this->assertEquals( 'fr', Page::findOrFail( $page->id )->source );
+        $this->assertEquals( 'fr', PageView::findOrFail( $page->id )->lang );
+    }
+
+
+    public function testPublishOneLanguageChangeUpdatesSource()
+    {
+        $page = $this->page();
+        Resource::savePage( $page->id, ['lang' => 'fr'], $this->user );
+
+        $page = PageView::with( 'latest' )->findOrFail( $page->id );
+        $page->publish( $page->latest );
+
+        $this->assertEquals( 'fr', Page::findOrFail( $page->id )->source );
+        $this->assertEquals( 'fr', $page->source );
+    }
+
+
     public function testAddVariantTrashedPage()
     {
         $page = $this->page();
@@ -391,7 +417,7 @@ class VariantTest extends CoreTestAbstract
         Resource::addVariant( $page->id, 'fr', $this->user );
 
         $source = PageView::findOrFail( $page->id );
-        $hashes = Hashes::page( $source->only( Hashes::PAGE_FIELDS ), $source->content, $source->meta, $source->config );
+        $hashes = Hashes::page( $source->only( PageVariant::SYNC_FIELDS ), $source->content, $source->meta, $source->config );
 
         // de is up to date, fr ignores the title change
         PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )
@@ -612,6 +638,19 @@ class VariantTest extends CoreTestAbstract
     }
 
 
+    public function testPrunableSkipsDescendantsOfExpiredPages()
+    {
+        $parent = Resource::addPage( ['name' => 'Parent', 'path' => 'prunable-parent'], $this->user );
+        $child = Resource::addPage( ['name' => 'Child', 'path' => 'prunable-child'], $this->user, parent: $parent->id );
+        Resource::addPage( ['name' => 'Sub', 'path' => 'prunable-sub'], $this->user, parent: $child->id );
+        Resource::drop( PageView::class, [$parent->id], $this->user );
+
+        $this->travel( config( 'cms.prune', 30 ) + 1 )->days();
+
+        $this->assertEquals( [$parent->id], ( new \Aimeos\Cms\Models\Page() )->prunable()->withTrashed()->pluck( 'id' )->all() );
+    }
+
+
     public function testPrunePageWithTrashedChild()
     {
         $parent = Resource::addPage( ['name' => 'Parent', 'path' => 'prune-parent'], $this->user );
@@ -692,7 +731,7 @@ class VariantTest extends CoreTestAbstract
         } );
 
         $items = collect( [PageView::findOrFail( $page->id ), PageView::language( 'de', true )->findOrFail( $page->id )] );
-        PageView::announceMany( $items, 'published', 'editor', ['published' => true], true );
+        PageView::announceMany( $items, ContentAction::Published, 'editor', ['published' => true], true );
 
         $this->assertCount( 2, $events );
         $this->assertEquals( [[$page->id => 'en'], [$page->id => 'de']], array_map( fn( Bulk $event ) => $event->langs, $events ) );

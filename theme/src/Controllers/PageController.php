@@ -16,13 +16,12 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
+use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Theme;
@@ -127,7 +126,7 @@ class PageController extends Controller
         $maxage = (int) $page->cache * 60;
 
         return $response
-            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Cache-Control', PageCache::policy( $maxage ) )
             ->setExpires( now()->addSeconds( $maxage ) );
     }
 
@@ -147,11 +146,9 @@ class PageController extends Controller
     {
         $with = [
             'latest',
-            'latest.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+            ...PageView::contentRelations( 'latest.' ),
             'latest.files.latest',
-            'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'latest.elements.latest',
-            'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.elements.files.latest',
         ];
 
@@ -213,11 +210,7 @@ class PageController extends Controller
      */
     protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : PageView
     {
-        $query = PageView::with( [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-            'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-            'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-        ] )
+        $query = PageView::with( PageView::contentRelations() )
             ->withGlobalScope( 'status', new Status() )
             ->withAccess( $user );
 

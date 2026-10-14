@@ -315,6 +315,22 @@ class PageAccessTest extends CoreTestAbstract
     }
 
 
+    public function testInvalidatesRoutesOfAllVariants(): void
+    {
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
+        $page->page->variants()->create( [
+            'lang' => 'de',
+            'domain' => $page->domain,
+            'path' => 'versteckt',
+            'name' => 'Versteckt',
+        ] );
+
+        PageAccess::set( [$page->id], [] );
+
+        $this->assertInvalidated( ['hidden', 'versteckt'] );
+    }
+
+
     public function testSubtreeDoesNotAcquirePageTreeLock(): void
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
@@ -471,7 +487,7 @@ class PageAccessTest extends CoreTestAbstract
 
         PageAccess::set( [$root->id], [], descendants: true );
 
-        $this->assertCount( 5, DB::getQueryLog() );
+        $this->assertCount( 6, DB::getQueryLog() );
 
         $count = PageView::query()
             ->where( \Aimeos\Nestedset\NestedSet::LFT, '>=', $root->getLft() )

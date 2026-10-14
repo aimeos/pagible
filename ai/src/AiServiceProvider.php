@@ -3,7 +3,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Generated;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider as Provider;
 
 class AiServiceProvider extends Provider
@@ -36,10 +35,6 @@ class AiServiceProvider extends Provider
             'text:translate',
             'text:write',
         ] );
-
-        // languages from "cms.locales" or any valid language code if none are configured
-        Validator::extend( 'cms_locale', fn( $attribute, $value ) => is_string( $value ) && Utils::isLocale( $value ),
-            'The :attribute must be a configured language.' );
 
         if( class_exists( \Aimeos\Cms\Mcp\CmsServer::class ) )
         {

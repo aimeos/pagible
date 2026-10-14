@@ -1,0 +1,443 @@
+<?php
+
+/**
+ * @license MIT, https://opensource.org/license/mit
+ */
+
+
+namespace Aimeos\Cms\Concerns;
+
+use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Exception;
+use Aimeos\Cms\Files;
+use Aimeos\Cms\Invalidation;
+use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\Merge;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource\Bulk;
+use Aimeos\Cms\Uploads;
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
+
+
+/**
+ * File writes of the resource methods.
+ *
+ * @phpstan-import-type BulkResult from Bulk
+ * @phpstan-type StoredFile array{disk: string, path: string|null, mime: string|null, previews: array<int|string, mixed>|null, prepared: bool}
+ */
+trait ResourceFiles
+{
+    /**
+     * Ingests the source as new media item with its first version.
+     *
+     * @param UploadedFile|string $source Uploaded file or remote URL
+     * @param array<string, mixed> $values File values like name, lang and description
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $disk Storage disk, "public" (default) or "private"
+     * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
+     * @return File New file
+     */
+    public static function createFile( UploadedFile|string $source, array $values = [], ?Authenticatable $user = null,
+        ?string $disk = null, ?UploadedFile $preview = null ) : File
+    {
+        $file = new File();
+        $file->disk = $disk ?? 'public';
+        $file->fill( $values );
+
+        // Store the file and generate previews outside the transaction to keep
+        // slow network, disk and image work off the database connection.
+        $file->ingest( $source, $preview );
+
+        return self::addFile( $file, $user );
+    }
+
+
+    /**
+     * Persists a prepared file as a new media item with its first version.
+     *
+     * The caller fills the file's path, mime, previews, name, lang, description
+     * and transcription; this method stores it, creates the initial version,
+     * indexes it and broadcasts the change.
+     *
+     * @param File $file Prepared file model (path/mime/previews/name set)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File
+     */
+    public static function addFile( File $file, ?Authenticatable $user = null ) : File
+    {
+        $editor = Utils::editor( $user );
+        $file->setUniqueIds();
+        $file->checkPaths( [$file->path, ...(array) $file->previews] );
+
+        try
+        {
+            Validation::limits( File::class, $file->only( ['lang', 'mime', 'name', 'path'] ) );
+
+            $result = File::locked( function() use ( $file, $editor ) {
+                $file->checkStored( [$file->path, ...(array) $file->previews] );
+
+                return DB::transaction( function() use ( $file, $editor ) {
+                    $file->editor = $editor;
+
+                    // Saves the file with its draft version so the draft (latest=true) row is indexed
+                    $file->draft( [
+                        'lang' => $file->lang,
+                        'editor' => $editor,
+                        ...File::snapshot( $file->toArray() ),
+                    ], [] );
+
+                    return $file;
+                } );
+            } );
+        }
+        catch( \Throwable $t )
+        {
+            self::discardFile( $file );
+            throw $t;
+        }
+
+        $result->announce( ContentAction::Added, $editor );
+        return $result;
+    }
+
+
+    /**
+     * Moves the managed paths of several Files to another logical disk under tenant and File locks.
+     *
+     * @param array<string> $ids File UUIDs
+     * @param string $disk Target logical disk, either "public" or "private"
+     * @param Authenticatable|null $user Authenticated user authorizing and recording the relocation
+     * @return Collection<int, File>
+     * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
+     */
+    public static function relocateFiles( array $ids, string $disk,
+        ?Authenticatable $user = null ) : Collection
+    {
+        Files::diskName( $disk );
+        $ids = array_values( array_unique( $ids ) );
+
+        if( count( $ids ) > self::MAX_RELOCATE ) {
+            throw new Exception( sprintf(
+                'No more than %d files may be relocated at once.',
+                self::MAX_RELOCATE,
+            ) );
+        }
+
+        if( !$ids ) {
+            return ( new File() )->newCollection();
+        }
+
+        $editor = Utils::editor( $user );
+        $changed = [];
+
+        $found = File::whereIn( 'id', $ids )->pluck( 'id' )->map( strval(...) )->flip();
+
+        foreach( $ids as $id ) {
+            if( !$found->has( $id ) ) {
+                File::findOrFail( $id );
+            }
+        }
+
+        Permission::check( 'file:relocate', $user );
+
+        try
+        {
+            return File::locked( function() use ( &$changed, $disk, $editor, $ids ) {
+                $result = [];
+
+                foreach( $ids as $id ) {
+                    $result[] = self::relocateFile( $id, $disk, $editor, $changed );
+                }
+
+                return ( new File() )->newCollection( $result );
+            } );
+        }
+        finally
+        {
+            if( $changed )
+            {
+                $files = ( new File() )->newCollection( array_values( $changed ) );
+
+                Invalidation::refs( [], $files->modelKeys() );
+                File::announceMany( $files, ContentAction::Saved, $editor, ['disk' => $disk], bulk: true );
+            }
+        }
+    }
+
+
+    /**
+     * Moves the managed paths of one locked File to another logical disk.
+     *
+     * @param string $id File UUID
+     * @param string $disk Target logical disk, either "public" or "private"
+     * @param string $editor Name of the editor
+     * @param array<string, File> $changed Relocated files by ID, the file is added if it was moved
+     * @return File File on the target disk
+     */
+    private static function relocateFile( string $id, string $disk, string $editor, array &$changed ) : File
+    {
+        $file = File::findOrFail( $id );
+
+        if( $file->getAttribute( 'disk' ) !== $disk )
+        {
+            $file->relocate( $disk, $editor );
+            $changed[$id] = $file;
+        }
+
+        return $file;
+    }
+
+
+    /**
+     * Ingests optional file data, updates metadata, and creates a conflict-aware version.
+     *
+     * Storage work completes before the transaction; the File lock then verifies the prepared paths and logical disk.
+     *
+     * @param string $id File UUID
+     * @param array<string, mixed> $input File fields to update
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @param UploadedFile|null $upload File upload to store
+     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     * @return File
+     */
+    public static function saveFile( string $id, array $input, ?Authenticatable $user = null,
+        ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
+    {
+        Validation::limits( File::class, $input );
+        $editor = Utils::editor( $user );
+        $stored = ['disk' => 'public', 'path' => null, 'mime' => null, 'previews' => null, 'prepared' => false];
+
+        try
+        {
+            // Prepare storage and remote image work before opening the transaction.
+            self::prepareFile( $stored, $id, $input, $upload, $preview );
+            $file = self::writeFile( $id, $input, $editor, $latestId, $preview, $stored );
+        }
+        catch( \Throwable $t )
+        {
+            self::discardFile( ( new File() )->forceFill( [
+                'id' => $id,
+                'disk' => $stored['disk'],
+                'path' => $stored['path'],
+                'previews' => $stored['previews'] ?? [],
+            ] ) );
+            throw $t;
+        }
+
+        $file->announce( ContentAction::Saved, $editor );
+        return $file;
+    }
+
+
+    /**
+     * Applies the same input to several files at once.
+     *
+     * @param array<string> $ids File IDs to update
+     * @param array<string, mixed> $input Fields applied to every file (e.g. ['lang' => 'de'])
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return BulkResult
+     * @throws Exception If the input carries the file-specific "path" or "previews"
+     */
+    public static function bulkFile( array $ids, array $input, ?Authenticatable $user = null ) : array
+    {
+        if( isset( $input['path'] ) || isset( $input['previews'] ) ) {
+            throw new Exception( 'Bulk edits cannot change the path or previews of a file' );
+        }
+
+        Validation::limits( File::class, $input );
+
+        return Bulk::save( File::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input ) : ?File {
+            $file = self::file()->lockForUpdate()->find( $id );
+            return $file ? self::applyFile( $file, $input, $editor ) : null;
+        } );
+    }
+
+
+    /**
+     * Returns the file query with the latest version columns required for saving.
+     *
+     * @return Builder<File> File query including trashed files
+     */
+    protected static function file() : Builder
+    {
+        return File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] );
+    }
+
+
+    /**
+     * Three-way merges input into an already loaded File and creates its new latest version.
+     *
+     * Shared by saveFile() (single) and bulkFile() (bulk). Must run inside a transaction.
+     *
+     * @param File $orig File model with the "latest" relation loaded
+     * @param array<string, mixed> $input File fields to update (merged with latest version)
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @param string|null $stored Path of an already stored upload, if any
+     * @param array<int|string, mixed>|null $storedPreviews Previews generated for the stored upload, if any
+     * @param UploadedFile|false|null $preview False to clear previews, otherwise null after preparation
+     * @param string|null $storedMime MIME type detected while preparing the new path
+     * @return File Updated file with the new version as "latest"
+     */
+    protected static function applyFile( File $orig, array $input, string $editor, ?string $latestId = null,
+        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null,
+        ?string $storedMime = null ) : File
+    {
+        $previews = $orig->latestValue( 'previews' );
+        $path = $orig->latestValue( 'path' );
+
+        $file = clone $orig;
+
+        $input = File::snapshot( $input );
+        [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
+        $file->fill( $data + $aux );
+
+        $paths = array_map( Files::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
+        array_push( $paths, $stored, ...array_values( $storedPreviews ?? [] ) );
+
+        $file->previews = $input['data']['previews'] ?? $previews;
+        $file->path = $stored ?? Files::checkPath( $input['data']['path'] ?? null ) ?? $path;
+
+        if( isset( $input['data']['path'] ) ) {
+            $paths[] = $file->path;
+        }
+
+        $orig->checkPaths( $paths );
+        $file->editor = $editor;
+
+        if( $file->path !== $path )
+        {
+            $file->mime = $storedMime ?? Uploads::mimetype( $file->path, (string) $file->disk );
+
+            Uploads::checkMimetype( (string) $file->mime );
+        }
+
+        if( $storedPreviews !== null ) {
+            $file->previews = $storedPreviews;
+        } elseif( $preview === false ) {
+            $file->previews = [];
+        }
+
+        $snapshot = File::snapshot( $file->toArray() );
+
+        $orig->draft( [
+            'lang' => $file->lang,
+            'editor' => $editor,
+            'data' => $snapshot['data'],
+            'aux' => array_replace( $snapshot['aux'], $aux ),
+        ], [], $diffs );
+
+        return $orig;
+    }
+
+
+    /**
+     * Removes the data stored for a file whose save failed.
+     *
+     * Cleanup errors are reported instead of thrown so they don't hide the error of the failed save.
+     *
+     * @param File $file File with the stored path and previews
+     */
+    private static function discardFile( File $file ) : void
+    {
+        try {
+            $file->removePreviews()->removeFile();
+        } catch( \Throwable $cleanup ) {
+            report( $cleanup );
+        }
+    }
+
+
+    /**
+     * Stores the uploaded or fetched file and its previews before the file is saved.
+     *
+     * @param StoredFile $stored
+     *  Prepared storage data, updated while preparing so it can be removed if a later step fails
+     * @param string $id File UUID
+     * @param array<string, mixed> $input File fields to update
+     * @param UploadedFile|null $upload File upload to store
+     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     */
+    private static function prepareFile( array &$stored, string $id, array $input, ?UploadedFile $upload,
+        UploadedFile|false|null $preview ) : void
+    {
+        $tmp = ( new File() )->forceFill( ['id' => $id] );
+        $newPath = Files::checkPath( $input['path'] ?? null );
+        $previewUpload = $preview instanceof UploadedFile ? $preview : null;
+        $currentPath = null;
+
+        if( $upload || $previewUpload || $newPath !== null )
+        {
+            $current = self::file()->findOrFail( $id );
+            $currentPath = (string) $current->latestValue( 'path' );
+            $stored['disk'] = $tmp->disk = (string) $current->getAttribute( 'disk' );
+            $tmp->name = (string) ( $input['name'] ?? $current->latestValue( 'name' ) );
+
+            if( $newPath !== null && !( $stored['disk'] === 'private' && str_starts_with( $newPath, 'http' ) ) ) {
+                $current->checkPaths( [$newPath] );
+            }
+        }
+
+        $source = $upload ?? ( $newPath !== null && $newPath !== $currentPath ? $newPath : null );
+
+        if( $source === null && !$previewUpload ) {
+            return;
+        }
+
+        $remote = is_string( $source ) && str_starts_with( $source, 'http' );
+
+        $stored['prepared'] = true;
+        $tmp->ingest( $source, $previewUpload );
+        $stored['path'] = $upload !== null || $stored['disk'] === 'private' && $remote ? $tmp->path : null;
+        $stored['mime'] = $source !== null ? (string) $tmp->mime : null;
+
+        if( $previewUpload || $remote || $source instanceof UploadedFile && str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {
+            $stored['previews'] = (array) $tmp->previews;
+        } elseif( is_string( $source ) && $preview === null && !isset( $input['previews'] ) ) {
+            // previews of the previous image don't belong to the new path, they are created for supported images
+            $stored['previews'] = $tmp->syncPreviews( [] ) ?? [];
+        }
+    }
+
+
+    /**
+     * Saves the file with the prepared storage data while the file is locked.
+     *
+     * @param string $id File UUID
+     * @param array<string, mixed> $input File fields to update
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
+     * @param StoredFile $stored Prepared storage data
+     * @return File Saved file
+     */
+    private static function writeFile( string $id, array $input, string $editor, ?string $latestId,
+        UploadedFile|false|null $preview, array $stored ) : File
+    {
+
+        return File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored ) {
+            $file = self::file()->findOrFail( $id );
+
+            if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
+                throw new Exception( 'File disk changed while saving; retry the request' );
+            }
+
+            $file->checkStored( [$stored['path'], ...( $stored['previews'] ?? [] )] );
+
+            return DB::transaction( function() use ( $file, $input, $editor, $latestId, $preview, $stored ) {
+                self::applyFile( $file, $input, $editor, $latestId, $stored['path'], $stored['previews'], $preview, $stored['mime'] );
+                PruneVersions::dispatchChunked( File::class, [$file->id] );
+
+                return $file;
+            } );
+        } );
+    }
+}

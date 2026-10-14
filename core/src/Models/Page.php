@@ -7,9 +7,12 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Connection;
 use Aimeos\Cms\Concerns\HasUuids;
-use Aimeos\Cms\Concerns\Tenancy;
-use Aimeos\Cms\Query\PageBuilder;
+use Aimeos\Cms\Concerns\PrunesTrashed;
+use Aimeos\Cms\Concerns\SecondTimestamps;
+use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Scout;
 use Aimeos\Nestedset\NestedSet;
 use Aimeos\Nestedset\NodeTrait;
@@ -18,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Date;
+use Aimeos\Cms\Tenancy;
 
 
 /**
@@ -42,18 +45,21 @@ use Illuminate\Support\Facades\Date;
  */
 class Page extends Model
 {
+    use Connection;
     use HasUuids;
     use NodeTrait {
         deleteDescendants as protected deleteNodeDescendants;
     }
     use Prunable;
+    use PrunesTrashed;
+    use SecondTimestamps;
     use SoftDeletes;
-    use Tenancy;
+    use HasTenancy;
 
     public const PERM = 'page';
 
-    /** @var list<string> Columns stored in the cms_pages table */
-    public const COLUMNS = [...PageBuilder::PAGE_COLUMNS, ...PageBuilder::SHARED_COLUMNS];
+    /** @var list<string> Columns stored in the cms_pages table besides the timestamps */
+    public const FIELDS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
 
     /**
      * The model's default values for attributes.
@@ -102,6 +108,11 @@ class Page extends Model
      */
     private array $removed = [];
 
+    /**
+     * TRUE if the caller already removed the variants of the subtree.
+     */
+    private bool $bare = false;
+
 
     /**
      * Updates the search index and removes the variants of purged pages.
@@ -109,33 +120,15 @@ class Page extends Model
     protected static function booted() : void
     {
         static::deleted( function( Page $page ) {
-            $page->isForceDeleting() ? $page->unindex() : $page->index( true );
+            $page->isForceDeleting() ? $page->unindex() : $page->index( trashed: true );
         } );
 
-        static::forceDeleting( fn( Page $page ) => $page->removeVariants() );
-        static::restored( fn( Page $page ) => $page->index( false ) );
-    }
-
-
-    /**
-     * Get the current timestamp in seconds precision.
-     *
-     * @return \Illuminate\Support\Carbon Current timestamp
-     */
-    public function freshTimestamp()
-    {
-        return Date::now()->startOfSecond(); // SQL Server workaround
-    }
-
-
-    /**
-     * Get the connection name for the model.
-     *
-     * @return string Name of the database connection to use
-     */
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
+        static::forceDeleting( function( Page $page ) {
+            if( !$page->bare ) {
+                $page->removeVariants();
+            }
+        } );
+        static::restored( fn( Page $page ) => $page->index( trashed: false ) );
     }
 
 
@@ -146,9 +139,15 @@ class Page extends Model
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
-            ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+        $table = $this->getTable();
+        $date = now()->subDays( config( 'cms.prune', 30 ) );
+
+        // descendants are pruned together with their topmost expired ancestor
+        return static::expired()
+            ->whereNotExists( fn( $query ) => $query->selectRaw( '1' )->from( $table . ' as parent' )
+                ->whereColumn( 'parent.id', $table . '.parent_id' )
+                ->where( 'parent.deleted_at', '<=', $date ) )
+            ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH );
     }
 
 
@@ -160,7 +159,7 @@ class Page extends Model
     public function prune()
     {
         // the nested set queries are tenant scoped, so they must run in the tenant of the page
-        \Aimeos\Cms\Tenancy::run( (string) $this->tenant_id, function() {
+        Tenancy::run( (string) $this->tenant_id, function() {
             // pages removed together with an ancestor don't exist anymore and the positions may be outdated
             static::withTrashed()->find( $this->id )?->forceDelete();
         } );
@@ -170,13 +169,14 @@ class Page extends Model
 
 
     /**
-     * Relation to the explicit frontend access rules of the page.
+     * Permanently deletes the page and its descendants whose variants have been removed by the caller.
      *
-     * @return HasMany<PageAccess, $this>
+     * @return bool|null TRUE on success
      */
-    public function access() : HasMany
+    public function purge() : ?bool
     {
-        return $this->hasMany( PageAccess::class, 'page_id' );
+        $this->bare = true;
+        return $this->forceDelete();
     }
 
 
@@ -225,15 +225,17 @@ class Page extends Model
             return;
         }
 
-        $ids = $this->newNestedSetQuery()->whereDescendantOrSelf( $this )->pluck( 'id' )->map( strval( ... ) )->all();
+        // the cms index keeps the entries of trashed descendants, so only the restored page changes
+        $ids = Scout::usesExternalSearch() ? $this->subtreeIds() : [(string) $this->id];
 
         if( !$trashed || config( 'scout.soft_delete' ) ) {
             Scout::reindex( PageView::class, $ids );
             return;
         }
 
-        $keys = PageVariant::withTrashed()->whereIn( 'page_id', $ids )->pluck( 'id' )->map( strval( ... ) )->all();
-        Scout::afterCommit( PageView::class, fn() => Scout::unindex( PageView::class, $keys ) );
+        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
+            Scout::remove( PageView::class, PageVariant::withTrashed()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all() );
+        }
     }
 
 
@@ -242,9 +244,7 @@ class Page extends Model
      */
     protected function removeVariants() : void
     {
-        $ids = $this->newNestedSetQuery()->whereDescendantOrSelf( $this )->pluck( 'id' )->all();
-
-        foreach( array_chunk( array_map( strval( ... ), $ids ), 500 ) as $chunk )
+        foreach( array_chunk( $this->subtreeIds(), DB::IN_SIZE ) as $chunk )
         {
             $variantIds = PageVariant::withoutGlobalScopes()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all();
 
@@ -274,8 +274,19 @@ class Page extends Model
         $ids = $this->removed;
         $this->removed = [];
 
-        if( $ids && Scout::syncs( PageView::class ) ) {
-            Scout::afterCommit( PageView::class, fn() => Scout::unindex( PageView::class, $ids ) );
+        if( Scout::syncs( PageView::class ) ) {
+            Scout::remove( PageView::class, $ids );
         }
+    }
+
+
+    /**
+     * Returns the IDs of the page and its descendants.
+     *
+     * @return array<int, string> Page IDs
+     */
+    protected function subtreeIds() : array
+    {
+        return $this->newNestedSetQuery()->whereDescendantOrSelf( $this )->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

@@ -8,10 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Scout;
 
 
 class Index extends Command
@@ -32,8 +29,6 @@ class Index extends Command
      */
     public function handle(): void
     {
-        foreach( [PageView::class, Element::class, File::class] as $model ) {
-            $model::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class )->searchable( 50 ); // @phpstan-ignore method.notFound
-        }
+        Scout::rebuild();
     }
 }

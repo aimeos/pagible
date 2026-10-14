@@ -13,7 +13,6 @@ use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\ResponseFactory;
-use Laravel\Mcp\Response;
 use Laravel\Mcp\Request;
 
 
@@ -47,9 +46,7 @@ class UncropImage extends Tool
                 ->description( 'Pixels to add at the bottom.' ),
             'left' => $schema->integer()
                 ->description( 'Pixels to add on the left.' ),
-            'latest_id' => $schema->string()
-                ->description( 'Required. The latest_id value returned by get-file, add-file, or your previous save-file for this file. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
-                ->required(),
+            'latest_id' => $this->latest( $schema ),
         ];
     }
 
@@ -59,21 +56,13 @@ class UncropImage extends Tool
      */
     protected function run( Request $request ) : ResponseFactory
     {
-        $v = $request->validate( [
-            'file' => 'required|string|max:36',
+        return $this->edit( $request, [
             'top' => 'integer|min:0|max:4096',
             'right' => 'integer|min:0|max:4096',
             'bottom' => 'integer|min:0|max:4096',
             'left' => 'integer|min:0|max:4096',
-            'latest_id' => 'required|string|max:36',
         ], [
             'file.required' => 'You must specify the UUID of the image file to extend.',
-            'latest_id.required' => 'You must pass the latest_id returned by get-file, add-file, or a previous save-file so concurrent edits are detected.',
-        ] );
-
-        $image = $this->image( $v['file'] );
-        $base64 = Ai::uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 );
-
-        return Response::structured( $this->update( $v['file'], $base64, $v['latest_id'], $request->user() ) );
+        ], fn( $image, $v ) => Ai::uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) );
     }
 }

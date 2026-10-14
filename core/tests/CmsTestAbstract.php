@@ -51,7 +51,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
      */
     protected function manageTenancy( bool $managed = true ) : void
     {
-        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, $managed );
+        \Aimeos\Cms\Hooks::get()->managed = $managed;
     }
 
 
@@ -60,8 +60,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
         \Aimeos\Cms\Access::extend( null );
         \Aimeos\Cms\Access::using( null );
         $this->manageTenancy( false );
-        ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
-        \Aimeos\Cms\Schema::source( null );
+        $this->app?->forgetInstance( \Aimeos\Cms\Hooks::class );
         parent::tearDown();
     }
 

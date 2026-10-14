@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Query\SearchQuery;
 use Aimeos\Cms\Resource;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
@@ -136,6 +137,53 @@ class VariantSearchTest extends CoreTestAbstract
     }
 
 
+    public function testBulkVariantRestoreIndexesOnlyTheRestoredVariants(): void
+    {
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
+        $de = Resource::addVariant( $page->id, 'de' );
+        $fr = Resource::addVariant( $page->id, 'fr' );
+        Resource::dropVariant( $page->id, 'de' );
+
+        $this->engine->updates = [];
+        Resource::variants( 'restore', [$page->id], 'de', fields: ['name'] );
+
+        // the source variant is reindexed for its language list, the other variants are unchanged
+        $this->assertContains( $de->variant_id, $this->engine->updates );
+        $this->assertNotContains( $fr->variant_id, $this->engine->updates );
+    }
+
+
+    public function testCopiesAreIndexedOnceWithTheirAccess(): void
+    {
+        $root = PageView::where( 'path', 'blog' )->firstOrFail();
+        $page = Resource::addPage( ['lang' => 'en', 'name' => 'Copy', 'path' => 'copy-page'], parent: $root->id );
+
+        \Aimeos\Cms\Models\PageAccess::query()->toBase()->insert( [
+            'page_id' => $page->id, 'tenant_id' => 'test', 'value' => '', 'editor' => 'test', 'created_at' => now(), 'updated_at' => now(),
+        ] );
+
+        // single page, no bulk inserts
+        $this->engine->updates = [];
+        $copy = Resource::copyPage( $page->id, null, $root->id );
+
+        $this->assertSame( [$copy->variant_id], $this->engine->updates );
+        $this->assertTrue( $this->engine->documents[$copy->variant_id]['restricted'] ?? null );
+
+        // subtree with bulk inserted variants
+        Resource::addVariant( $copy->id, 'de' );
+        Resource::addPage( ['lang' => 'en', 'name' => 'Child', 'path' => 'copy-child'], parent: $copy->id );
+
+        $this->engine->updates = [];
+        $tree = Resource::copyPage( $copy->id, null, $root->id );
+        $keys = \Aimeos\Cms\Models\PageVariant::whereIn( 'page_id', PageView::where( 'parent_id', $tree->id )->pluck( 'id' )->push( $tree->id ) )
+            ->pluck( 'id' )->map( strval( ... ) )->all();
+
+        $this->assertCount( 3, $keys );
+        $this->assertEqualsCanonicalizing( $keys, $this->engine->updates );
+        $this->assertTrue( $this->engine->documents[$tree->variant_id]['restricted'] ?? null );
+    }
+
+
     public function testSourcesAreReindexedOnceAfterCommit(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
@@ -157,17 +205,17 @@ class VariantSearchTest extends CoreTestAbstract
     public function testPreferFiltersTheEngineByLanguage(): void
     {
         $search = PageView::search( 'blog' );
-        Scout::prefer( $search, 'de' );
+        SearchQuery::prefer( $search, 'de' );
         $this->assertSame( 'de', $this->where( $search, 'langs' ) );
 
         $search = PageView::search( 'blog' );
-        Scout::prefer( $search, 'de', 'with' );
+        SearchQuery::prefer( $search, 'de', 'with' );
         $this->assertSame( 'de', $this->where( $search, 'langs_trashed' ) );
 
         config( ['scout.driver' => 'collection'] );
 
         $search = PageView::search( 'blog' );
-        Scout::prefer( $search, 'de' );
+        SearchQuery::prefer( $search, 'de' );
         $this->assertNull( $this->where( $search, 'langs' ) );
     }
 
@@ -175,7 +223,7 @@ class VariantSearchTest extends CoreTestAbstract
     public function testPreferInvalidLanguage(): void
     {
         $this->expectException( \InvalidArgumentException::class );
-        Scout::prefer( PageView::search( 'blog' ), 'de" OR langs = "en' );
+        SearchQuery::prefer( PageView::search( 'blog' ), 'de" OR langs = "en' );
     }
 
 

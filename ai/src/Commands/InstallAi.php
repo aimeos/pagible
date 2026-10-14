@@ -41,19 +41,8 @@ class InstallAi extends Command
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\AiServiceProvider'] );
 
         $this->comment( '  Adding AI GraphQL schema ...' );
-        $result += $this->schema();
+        $result += $this->append( 'graphql/schema.graphql', '#import cms-ai.graphql' );
 
         return $result ? 1 : 0;
-    }
-
-
-    /**
-     * Updates Lighthouse GraphQL schema file to import AI schema
-     *
-     * @return int 0 on success, 1 on failure
-     */
-    protected function schema() : int
-    {
-        return $this->append( 'graphql/schema.graphql', '#import cms-ai.graphql' );
     }
 }

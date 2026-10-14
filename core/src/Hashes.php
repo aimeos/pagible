@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 
 
@@ -18,10 +19,6 @@ use Aimeos\Cms\Models\PageView;
  */
 class Hashes
 {
-    /** @var list<string> Page fields tracked for translations */
-    public const PAGE_FIELDS = ['title', 'name', 'type', 'theme', 'tag', 'cache'];
-
-
     /**
      * Returns the hashes of a page variant.
      *
@@ -31,8 +28,8 @@ class Hashes
      * @param iterable<mixed>|object|null $config Config entries by key
      * @return array<string, string> Hashes by key
      */
-    public static function page( array|object $data, iterable|object|null $content = null,
-        iterable|object|null $meta = null, iterable|object|null $config = null ) : array
+    public static function page( array|object $data, iterable|object|null $content,
+        iterable|object|null $meta, iterable|object|null $config ) : array
     {
         $data = (array) $data;
         $hashes = [];
@@ -59,7 +56,7 @@ class Hashes
             $hashes['meta:' . $key] = self::hash( $item );
         }
 
-        foreach( self::PAGE_FIELDS as $field ) {
+        foreach( PageVariant::SYNC_FIELDS as $field ) {
             $hashes['page:' . $field] = self::hash( $data[$field] ?? null );
         }
 
@@ -79,7 +76,7 @@ class Hashes
      */
     public static function published( PageView $page ) : array
     {
-        return self::page( $page->only( self::PAGE_FIELDS ), $page->content, $page->meta, $page->config );
+        return self::page( $page->only( PageVariant::SYNC_FIELDS ), $page->content, $page->meta, $page->config );
     }
 
 

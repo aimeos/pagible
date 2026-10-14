@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Invalidation;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -35,9 +35,9 @@ final class ClearCache
         }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, PageView> $pages */
-        $pages = Resource::pageSubtree( $roots )->get( ['domain', 'path'] );
+        $pages = PageView::subtrees( $roots )->get( ['domain', 'path'] );
 
-        Resource::invalidatePages( $pages );
+        Invalidation::pages( $pages );
 
         return $pages->unique( fn( $page ) => $page->domain . '|' . $page->path )->count();
     }
