@@ -241,7 +241,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                 if( $batch ) {
                     $batch->add( $jobs );
                 } elseif( $jobs ) {
-                    $batch = self::batch( $jobs, $connection, $queue );
+                    $batch = self::dispatchBatch( $jobs, $connection, $queue );
                 }
             }
             catch( \Throwable $e )
@@ -253,7 +253,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
             $total += count( $jobs );
         }
 
-        $batch ??= self::batch( [], $connection, $queue );
+        $batch ??= self::dispatchBatch( [], $connection, $queue );
 
         return ['id' => $batch->id, 'total' => $total];
     }
@@ -267,12 +267,19 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
      * @param string|null $queue Queue name
      * @return \Illuminate\Bus\Batch Dispatched batch
      */
-    protected static function batch( array $jobs, ?string $connection, ?string $queue ) : \Illuminate\Bus\Batch
+    protected static function dispatchBatch( array $jobs, ?string $connection, ?string $queue ) : \Illuminate\Bus\Batch
     {
-        return Bus::batch( $jobs )->name( self::batchName() )->allowFailures()
-            ->when( $connection, fn( $batch ) => $batch->onConnection( $connection ) )
-            ->when( $queue, fn( $batch ) => $batch->onQueue( $queue ) )
-            ->dispatch();
+        $batch = Bus::batch( $jobs )->name( self::batchName() )->allowFailures();
+
+        if( $connection ) {
+            $batch->onConnection( $connection );
+        }
+
+        if( $queue ) {
+            $batch->onQueue( $queue );
+        }
+
+        return $batch->dispatch();
     }
 
 
