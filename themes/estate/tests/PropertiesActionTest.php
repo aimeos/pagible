@@ -84,8 +84,6 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testDemoGroupsHiddenPagesAndUsesNewsRedirect(): void
     {
-        require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
-
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
         Tenancy::$callback = fn() => 'estate';
         app()->forgetInstance( Tenancy::class );
@@ -137,8 +135,6 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testPropertyListUsesNativeListSemantics(): void
     {
-        require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
-
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
         Tenancy::$callback = fn() => 'estate';
         app()->forgetInstance( Tenancy::class );
@@ -158,8 +154,6 @@ class PropertiesActionTest extends ThemeTestAbstract
     public function testDemoPropertyEntriesRenderMaps(): void
     {
         config( ['app.name' => 'Laravel'] );
-
-        require_once dirname( __DIR__ ) . '/database/seeders/EstateDemo.php';
 
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
         Tenancy::$callback = fn() => 'estate';

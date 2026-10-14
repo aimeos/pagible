@@ -23,8 +23,6 @@ class LaunchDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/LaunchDemo.php';
-
         ( new LaunchDemo( 'launch', 'launch' ) )->seed();
         Tenancy::$callback = fn() => 'launch';
         app()->forgetInstance( Tenancy::class );

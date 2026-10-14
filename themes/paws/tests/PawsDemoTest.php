@@ -23,8 +23,6 @@ class PawsDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/PawsDemo.php';
-
         ( new PawsDemo( 'paws', 'paws' ) )->seed();
         Tenancy::$callback = fn() => 'paws';
         app()->forgetInstance( Tenancy::class );
