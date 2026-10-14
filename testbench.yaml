@@ -1,16 +1,20 @@
 providers:
+  - Aimeos\Cms\AuraServiceProvider
   - Aimeos\Cms\BenchmarkServiceProvider
   - Aimeos\Cms\BoldServiceProvider
   - Aimeos\Cms\BrewServiceProvider
   - Aimeos\Cms\CounselServiceProvider
   - Aimeos\Cms\EstateServiceProvider
   - Aimeos\Cms\FlowServiceProvider
+  - Aimeos\Cms\FolioServiceProvider
   - Aimeos\Cms\GlassServiceProvider
   - Aimeos\Cms\GlowServiceProvider
   - Aimeos\Cms\GroveServiceProvider
   - Aimeos\Cms\JournalServiceProvider
+  - Aimeos\Cms\LaunchServiceProvider
   - Aimeos\Cms\LuxuryServiceProvider
   - Aimeos\Cms\ManeServiceProvider
+  - Aimeos\Cms\ManualServiceProvider
   - Aimeos\Cms\MedicalServiceProvider
   - Aimeos\Cms\NewsServiceProvider
   - Aimeos\Cms\PagibleServiceProvider

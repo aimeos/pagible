@@ -1,0 +1,852 @@
+/**
+ * Launch Theme - Modern SaaS and startup landing pages with automatic light and dark mode
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root:not([data-theme=dark]) {
+    --pico-font-family-sans-serif: 'Inter', 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --pico-font-family-monospace: 'Geist Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+    --pico-nav-breadcrumb-divider: '/';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.5rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #3F3F46;
+    --pico-background-color: #FFFFFF;
+    --pico-text-selection-color: #6366F140;
+    --pico-muted-color: #52525B;
+    --pico-muted-border-color: #E4E4E7;
+    --pico-muted-background-color: #FAFAFA;
+    --pico-card-background-color: #FFFFFF;
+    --pico-card-sectioning-background-color: #F4F4F5;
+    --pico-contrast: #09090B;
+    --pico-contrast-border: #09090B;
+    --pico-contrast-background: #09090B;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #27272A;
+    --pico-contrast-hover-border: #27272A;
+    --pico-contrast-hover-background: #27272A;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #FFFFFF;
+    --pico-primary: #4F46E5;
+    --pico-primary-background: #4F46E5;
+    --pico-primary-border: #4F46E5;
+    --pico-primary-underline: #4F46E566;
+    --pico-primary-hover: #4338CA;
+    --pico-primary-hover-background: #4338CA;
+    --pico-primary-hover-border: #4338CA;
+    --pico-primary-hover-underline: #4338CA;
+    --pico-primary-focus: #6366F140;
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #7C3AED;
+    --pico-secondary-background: #7C3AED;
+    --pico-secondary-border: #7C3AED;
+    --pico-secondary-underline: #7C3AED;
+    --pico-secondary-hover: #6D28D9;
+    --pico-secondary-hover-background: #6D28D9;
+    --pico-secondary-hover-border: #6D28D9;
+    --pico-secondary-hover-underline: #6D28D9;
+    --pico-secondary-focus: #7C3AED40;
+    --pico-secondary-inverse: #FFFFFF;
+    --pico-h1-color: #09090B;
+    --pico-h2-color: #09090B;
+    --pico-h3-color: #09090B;
+    --pico-h4-color: #09090B;
+    --pico-h5-color: #09090B;
+    --pico-h6-color: #52525B;
+    --pico-box-shadow: 0 1px 2px #09090B0D, 0 0.75rem 2rem -1rem #09090B26;
+    --pico-dropdown-color: #3F3F46;
+    --pico-dropdown-border-color: #E4E4E7;
+    --pico-dropdown-background-color: #FFFFFF;
+    --pico-dropdown-hover-background-color: #F4F4F5;
+    --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #09090B26;
+    --pico-modal-overlay-background-color: #09090B99;
+    --pico-code-background-color: #F4F4F5;
+    --pico-code-color: #18181B;
+    --pico-form-element-background-color: #FFFFFF;
+    --pico-form-element-border-color: #D4D4D8;
+    --pico-form-element-color: #09090B;
+    --pico-form-element-placeholder-color: #71717A;
+    --pico-form-element-focus-color: #4F46E5;
+    --pico-border-radius: 0.75rem;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme=light]) {
+        --pico-color: #D4D4D8;
+        --pico-background-color: #09090B;
+        --pico-text-selection-color: #818CF859;
+        --pico-muted-color: #A1A1AA;
+        --pico-muted-border-color: #FFFFFF1A;
+        --pico-muted-background-color: #0E0E11;
+        --pico-card-background-color: #111114;
+        --pico-card-sectioning-background-color: #18181B;
+        --pico-contrast: #FAFAFA;
+        --pico-contrast-border: #FAFAFA;
+        --pico-contrast-background: #FAFAFA;
+        --pico-contrast-hover: #E4E4E7;
+        --pico-contrast-hover-border: #E4E4E7;
+        --pico-contrast-hover-background: #E4E4E7;
+        --pico-contrast-inverse: #09090B;
+        --pico-primary: #A5B4FC;
+        --pico-primary-underline: #A5B4FC66;
+        --pico-primary-hover: #C7D2FE;
+        --pico-primary-hover-underline: #C7D2FE;
+        --pico-primary-focus: #818CF859;
+        --pico-secondary: #C4B5FD;
+        --pico-secondary-underline: #C4B5FD;
+        --pico-secondary-hover: #DDD6FE;
+        --pico-secondary-hover-underline: #DDD6FE;
+        --pico-h1-color: #FAFAFA;
+        --pico-h2-color: #FAFAFA;
+        --pico-h3-color: #FAFAFA;
+        --pico-h4-color: #FAFAFA;
+        --pico-h5-color: #FAFAFA;
+        --pico-h6-color: #A1A1AA;
+        --pico-box-shadow: 0 0 0 1px #FFFFFF0A, 0 0.75rem 2rem -1rem #00000099;
+        --pico-dropdown-color: #D4D4D8;
+        --pico-dropdown-border-color: #FFFFFF1A;
+        --pico-dropdown-background-color: #111114;
+        --pico-dropdown-hover-background-color: #1C1C21;
+        --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #000000CC;
+        --pico-modal-overlay-background-color: #000000B3;
+        --pico-code-background-color: #18181B;
+        --pico-code-color: #E4E4E7;
+        --pico-form-element-background-color: #111114;
+        --pico-form-element-border-color: #3F3F46;
+        --pico-form-element-color: #FAFAFA;
+        --pico-form-element-placeholder-color: #A1A1AA;
+        --pico-form-element-focus-color: #818CF8;
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme=dark] {
+    --pico-font-family-sans-serif: 'Inter', 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --pico-font-family-monospace: 'Geist Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+    --pico-nav-breadcrumb-divider: '/';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.75rem;
+    --pico-nav-link-spacing-vertical: 0.5rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-color: #D4D4D8;
+    --pico-background-color: #09090B;
+    --pico-text-selection-color: #818CF859;
+    --pico-muted-color: #A1A1AA;
+    --pico-muted-border-color: #FFFFFF1A;
+    --pico-muted-background-color: #0E0E11;
+    --pico-card-background-color: #111114;
+    --pico-card-sectioning-background-color: #18181B;
+    --pico-contrast: #FAFAFA;
+    --pico-contrast-border: #FAFAFA;
+    --pico-contrast-background: #FAFAFA;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover: #E4E4E7;
+    --pico-contrast-hover-border: #E4E4E7;
+    --pico-contrast-hover-background: #E4E4E7;
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    --pico-contrast-inverse: #09090B;
+    --pico-primary: #A5B4FC;
+    --pico-primary-background: #4F46E5;
+    --pico-primary-border: #4F46E5;
+    --pico-primary-underline: #A5B4FC66;
+    --pico-primary-hover: #C7D2FE;
+    --pico-primary-hover-background: #4338CA;
+    --pico-primary-hover-border: #4338CA;
+    --pico-primary-hover-underline: #C7D2FE;
+    --pico-primary-focus: #818CF859;
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #C4B5FD;
+    --pico-secondary-background: #7C3AED;
+    --pico-secondary-border: #7C3AED;
+    --pico-secondary-underline: #C4B5FD;
+    --pico-secondary-hover: #DDD6FE;
+    --pico-secondary-hover-background: #6D28D9;
+    --pico-secondary-hover-border: #6D28D9;
+    --pico-secondary-hover-underline: #DDD6FE;
+    --pico-secondary-focus: #7C3AED40;
+    --pico-secondary-inverse: #FFFFFF;
+    --pico-h1-color: #FAFAFA;
+    --pico-h2-color: #FAFAFA;
+    --pico-h3-color: #FAFAFA;
+    --pico-h4-color: #FAFAFA;
+    --pico-h5-color: #FAFAFA;
+    --pico-h6-color: #A1A1AA;
+    --pico-box-shadow: 0 0 0 1px #FFFFFF0A, 0 0.75rem 2rem -1rem #00000099;
+    --pico-dropdown-color: #D4D4D8;
+    --pico-dropdown-border-color: #FFFFFF1A;
+    --pico-dropdown-background-color: #111114;
+    --pico-dropdown-hover-background-color: #1C1C21;
+    --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #000000CC;
+    --pico-modal-overlay-background-color: #000000B3;
+    --pico-code-background-color: #18181B;
+    --pico-code-color: #E4E4E7;
+    --pico-form-element-background-color: #111114;
+    --pico-form-element-border-color: #3F3F46;
+    --pico-form-element-color: #FAFAFA;
+    --pico-form-element-placeholder-color: #A1A1AA;
+    --pico-form-element-focus-color: #818CF8;
+    --pico-border-radius: 0.75rem;
+    color-scheme: dark;
+}
+
+@media (min-width: 1024px) {
+    :host, :root {
+        --pico-font-size: 1.0625rem !important;
+    }
+}
+
+* {
+    scrollbar-color: var(--pico-muted-color) var(--pico-background-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: 3px;
+}
+
+:where(a:not([role=button]):not([role=menuitem])),
+:where(a:not([role=button]):not([role=menuitem]):visited) {
+    color: var(--pico-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--pico-primary-underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+}
+
+:where(a:not([role=button]):not([role=menuitem]):hover) {
+    color: var(--pico-primary-hover);
+    text-decoration-color: var(--pico-primary-hover);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-contrast);
+    text-decoration: none;
+    margin: 0;
+}
+
+.topbar {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem min(5%, 2rem);
+    color: #FFFFFF;
+    background: linear-gradient(90deg, #4338CA 0%, #6D28D9 50%, #4338CA 100%);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    text-align: center;
+}
+
+.topbar a,
+.topbar a:visited,
+.topbar a:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.topbar a::after {
+    content: "→";
+    display: inline-block;
+    margin-inline-start: 0.375rem;
+    transition: transform 0.2s ease;
+}
+
+[dir=rtl] .topbar a::after {
+    content: "←";
+}
+
+.topbar a:hover::after {
+    transform: translateX(0.2rem);
+}
+
+[dir=rtl] .topbar a:hover::after {
+    transform: translateX(-0.2rem);
+}
+
+.topbar .tag {
+    display: inline-block;
+    margin-inline-end: 0.5rem;
+    padding: 0.0625rem 0.5rem;
+    background-color: #FFFFFF26;
+    border: 1px solid #FFFFFF40;
+    border-radius: 999px;
+    font-size: calc(var(--pico-font-size) * 0.7);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+body > header {
+    background-color: color-mix(in srgb, var(--pico-background-color) 80%, #00000000);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    backdrop-filter: saturate(1.8) blur(12px);
+    -webkit-backdrop-filter: saturate(1.8) blur(12px);
+    position: sticky;
+    z-index: 100;
+    top: 0;
+}
+
+body > header > nav {
+    max-width: 1200px;
+    padding-block: 0.25rem;
+    margin: auto;
+}
+
+header nav ol,
+header nav ul,
+header nav li {
+    margin: 0 var(--pico-nav-element-spacing-horizontal);
+}
+
+header nav > ul > li {
+    list-style: none;
+    padding: 0 0.25rem;
+}
+
+header nav > ul:not(.menu) > li {
+    padding: 0;
+}
+
+header nav a,
+header nav details.is-menu > summary:not([role]) {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.625rem 0.75rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.875);
+    font-weight: 500;
+    transition: color 0.15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    margin: 0;
+    height: auto;
+    background: #00000000;
+    border: 0;
+    box-shadow: none;
+}
+
+header nav details.dropdown ul a {
+    color: var(--pico-color);
+}
+
+@media (min-width: 992px) {
+    header nav ul.menu,
+    header nav ul.menu > li {
+        margin: 0;
+        padding: 0;
+    }
+
+    header nav ul.menu {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        min-width: 0;
+        margin-inline-end: 0.75rem;
+    }
+
+    header nav ul.menu > li:is(.login, .signin) {
+        margin-inline-start: 0.75rem;
+        padding-inline-start: 0.75rem;
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+    }
+
+    header nav ul.menu > li.signup > a {
+        margin-inline-start: 0.5rem;
+    }
+}
+
+header nav ul.menu > li:is(.login, .signin) {
+    order: 1;
+}
+
+header nav ul.menu > li.signup {
+    order: 2;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus,
+header nav a:not([role]):active {
+    text-decoration: none;
+}
+
+header nav ul.menu > li:not(.signup) > a:hover,
+header nav ul.menu > li:not(.signup) > a:focus,
+header nav ul.menu > li:not(.signup) > a.active,
+header nav details.is-menu > summary.active:not([role]),
+header nav details.is-menu > summary:not([role]):hover,
+header nav details.is-menu > summary:not([role]):focus,
+header nav details.is-menu > summary:not([role]):focus-visible,
+header nav details.is-menu > summary:not([role]):active,
+header nav details.is-menu[open] > summary:not([role]) {
+    color: var(--pico-contrast);
+    background: #00000000;
+    box-shadow: none;
+    border: 0;
+}
+
+header nav ul.menu > li:is(.login, .signin) > a {
+    color: var(--pico-contrast);
+}
+
+header nav ul.menu > li.login > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+header nav ul.menu > li.signup > a {
+    padding: 0.5rem 1rem;
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border-radius: 999px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+header nav ul.menu > li.signup > a:hover,
+header nav ul.menu > li.signup > a:focus,
+header nav ul.menu > li.signup > a:active {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-hover-background);
+    box-shadow: 0 0 0 4px var(--pico-primary-focus);
+}
+
+header nav details summary::marker,
+header nav details summary::-webkit-details-marker {
+    display: none;
+}
+
+header nav details[open] summary::after {
+    transform: rotate(0.5turn) translateX(-0.2rem);
+}
+
+header nav details > summary + ul.align {
+    width: auto;
+    left: auto;
+    right: auto;
+    padding: 0.375rem;
+    border: 1px solid var(--pico-dropdown-border-color);
+    border-radius: var(--pico-border-radius);
+    overflow: hidden;
+}
+
+header nav details.dropdown ul li a {
+    border-radius: calc(var(--pico-border-radius) * 0.66);
+}
+
+header nav details.dropdown ul a:hover,
+header nav details.dropdown ul a.active {
+    background-color: var(--pico-dropdown-hover-background-color);
+    color: var(--pico-contrast);
+}
+
+header nav > ul:first-child {
+    flex-shrink: 0;
+}
+
+header nav .brand {
+    flex-grow: 1;
+}
+
+header nav .brand a,
+header nav .brand img {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+}
+
+header nav .brand img {
+    width: auto;
+    border-radius: 0;
+}
+
+header nav .brand a {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 1.2);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+header nav .menu-open,
+header nav .menu-close,
+header nav .sidebar-open,
+header nav .sidebar-close {
+    display: none;
+}
+
+header nav .menu-open button,
+header nav .menu-close button,
+header nav .sidebar-open button,
+header nav .sidebar-close button {
+    color: var(--pico-contrast);
+    padding: 0.75rem;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 991px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 0.5rem 1.5rem;
+        background-color: var(--pico-background-color);
+        min-height: 100vh;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    header nav .menu {
+        display: none;
+    }
+
+    header nav.small .menu {
+        flex-direction: column;
+        display: flex;
+    }
+
+    header nav .menu ul {
+        display: block;
+    }
+
+    header nav .menu li {
+        padding: 0 2rem;
+        width: 100%;
+    }
+
+    header nav.small .menu > li:not(.login, .signin, .signup) {
+        border-bottom: 1px solid var(--pico-muted-border-color);
+    }
+
+    header nav.small .menu a,
+    header nav.small .menu details > summary:not([role]) {
+        color: var(--pico-contrast);
+        font-size: calc(var(--pico-font-size) * 1.25);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+    }
+
+    header nav.small .menu > li:is(.login, .signin, .signup) > a {
+        justify-content: center;
+        margin-top: 0.75rem;
+        font-size: var(--pico-font-size);
+    }
+
+    header nav.small .menu > li:is(.login, .signin) > a {
+        margin-top: 1.5rem;
+        border: 1px solid var(--pico-muted-border-color);
+        border-radius: 999px;
+    }
+
+    header nav.small .menu > li.signup > a {
+        padding: 0.625rem 1rem;
+    }
+
+    header nav.small .menu details ul a {
+        color: var(--pico-color);
+        font-size: calc(var(--pico-font-size) * 1.05);
+        font-weight: 500;
+    }
+
+    header nav.small .menu details > summary + ul.align {
+        position: relative;
+        backdrop-filter: none;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    header nav.small .menu details > summary {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        cursor: pointer;
+    }
+
+    header nav.small .menu details > summary::after {
+        content: "";
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        margin-inline-start: 0.375rem;
+        background-image: var(--pico-icon-chevron);
+        background-position: center;
+        background-size: 1rem auto;
+        background-repeat: no-repeat;
+        transition: transform 0.15s ease;
+    }
+
+    header nav.small .menu details[open] > summary::after {
+        transform: rotate(0.5turn);
+    }
+}
+
+nav.breadcrumb {
+    background-color: var(--pico-background-color);
+}
+
+nav.breadcrumb > ul {
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+    padding: 0 min(5%, 2rem);
+}
+
+nav.breadcrumb ul li {
+    display: flex;
+    align-items: center;
+    font-size: calc(var(--pico-font-size) * 0.8);
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li:not(:first-child) {
+    margin-inline-start: 0;
+}
+
+nav.breadcrumb ul li:not(:last-child)::after {
+    color: var(--pico-muted-border-color);
+}
+
+nav.breadcrumb ul li a {
+    color: var(--pico-muted-color);
+}
+
+nav.breadcrumb ul li a:hover {
+    color: var(--pico-contrast);
+    opacity: 1;
+}
+
+
+.container {
+    max-width: 1200px !important;
+}
+
+.cms-text {
+    white-space: pre-line;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    white-space: pre-line;
+}
+
+h1, h2 {
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    font-size: calc(var(--pico-font-size) * 2.5);
+    line-height: 1.05;
+}
+
+h2 {
+    margin-bottom: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 1.9);
+    line-height: 1.1;
+}
+
+h3 {
+    margin-bottom: 0.75rem;
+    font-size: calc(var(--pico-font-size) * 1.2);
+    line-height: 1.3;
+}
+
+h4 {
+    margin-bottom: 0.75rem;
+    font-size: calc(var(--pico-font-size) * 1.05);
+    line-height: 1.35;
+}
+
+:is(h1, h2, h3) em {
+    font-style: normal;
+    color: var(--pico-primary);
+    background: linear-gradient(90deg, #6366F1 0%, #A855F7 55%, #06B6D4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: #00000000;
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 3.75);
+    }
+
+    h2 {
+        font-size: calc(var(--pico-font-size) * 2.6);
+    }
+}
+
+img {
+    border-radius: var(--pico-border-radius);
+}
+
+code, kbd, samp {
+    font-family: var(--pico-font-family-monospace);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    vertical-align: sub;
+    padding: 0.75rem 1.375rem;
+    margin: 0.5rem 0;
+    line-height: inherit;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    font-weight: 600;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    color: var(--pico-contrast);
+    background-color: var(--pico-card-background-color);
+    box-shadow: 0 1px 2px #09090B0D;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    color: var(--pico-contrast);
+    background-color: var(--pico-card-sectioning-background-color);
+    border-color: var(--pico-muted-border-color);
+    opacity: 1;
+}
+
+.btn-primary,
+.btn:first-child {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-background);
+    border-color: var(--pico-primary-border);
+    box-shadow: inset 0 1px 0 #FFFFFF33, 0 0.5rem 1.5rem -0.5rem #4F46E599;
+}
+
+.btn-primary:hover,
+.btn:first-child:hover {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-hover-background);
+    border-color: var(--pico-primary-hover-border);
+    box-shadow: inset 0 1px 0 #FFFFFF33, 0 0 0 4px var(--pico-primary-focus), 0 0.75rem 2rem -0.5rem #4F46E5B3;
+}
+
+.btn:first-child::after {
+    content: "→";
+    font-weight: 400;
+    transition: transform 0.2s ease;
+}
+
+[dir=rtl] .btn:first-child::after {
+    content: "←";
+}
+
+.btn:first-child:hover::after {
+    transform: translateX(0.2rem);
+}
+
+[dir=rtl] .btn:first-child:hover::after {
+    transform: translateX(-0.2rem);
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+
+body > footer.bottom {
+    color: var(--pico-muted-color);
+    background-color: var(--pico-background-color);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+body > footer.bottom .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem 2rem;
+    padding: 1.5rem min(5%, 2rem) 2rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+body > footer.bottom .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    order: 2;
+    padding: 0.25rem 0.75rem;
+    color: var(--pico-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+body > footer.bottom .status::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #22C55E;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px #22C55E33;
+}
+
+body > footer.bottom .status:hover {
+    color: var(--pico-contrast);
+    border-color: var(--pico-muted-color);
+}
+
+body > footer.bottom .notice {
+    order: 1;
+    flex: 1 1 20rem;
+    margin: 0;
+}
+
+body > footer.bottom .copyright {
+    order: 0;
+}

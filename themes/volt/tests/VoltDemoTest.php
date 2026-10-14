@@ -23,8 +23,6 @@ class VoltDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/VoltDemo.php';
-
         ( new VoltDemo( 'volt', 'volt' ) )->seed();
         Tenancy::$callback = fn() => 'volt';
         app()->forgetInstance( Tenancy::class );

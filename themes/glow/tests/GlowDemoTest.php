@@ -23,8 +23,6 @@ class GlowDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/GlowDemo.php';
-
         ( new GlowDemo( 'glow', 'glow' ) )->seed();
         Tenancy::$callback = fn() => 'glow';
         app()->forgetInstance( Tenancy::class );

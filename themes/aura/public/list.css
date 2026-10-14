@@ -1,0 +1,221 @@
+/**
+ * Aura Theme - Writing as cover cards with spotlights or as large rows with arrows
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.list-cards {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .list-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 960px) {
+    .list-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.list-cards a.list-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0.625rem 0.625rem 1.5rem;
+    overflow: hidden;
+    color: var(--pico-color);
+    background-color: color-mix(in srgb, var(--pico-card-background-color) 75%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    text-decoration: none;
+    isolation: isolate;
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.list-cards a.list-item .spot {
+    z-index: -1;
+}
+
+.list-cards a.list-item:hover {
+    border-color: color-mix(in srgb, var(--pico-primary) 45%, #00000000);
+    box-shadow: 0 2rem 4rem -2rem #6D4AFF59;
+    transform: translateY(-4px);
+}
+
+.list-cards .cover {
+    display: block;
+    margin-bottom: 1.125rem;
+    overflow: hidden;
+    border-radius: var(--pico-border-radius);
+}
+
+.list-cards .cover img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.list-cards a.list-item:hover .cover img {
+    transform: scale(1.05);
+}
+
+.list-cards .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    padding: 0 0.75rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.72);
+}
+
+.list-cards .meta span::before {
+    content: "·";
+    margin-inline-end: 0.75rem;
+}
+
+.list-cards h3 {
+    margin: 0.5rem 0;
+    padding: 0 0.75rem;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 1.15);
+    letter-spacing: -0.02em;
+}
+
+.list-cards p {
+    margin: 0;
+    padding: 0 0.75rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+    line-height: 1.6;
+}
+
+.list-rows {
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+.list-rows a.list-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 9rem 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem 0.5rem;
+    color: var(--pico-contrast);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    text-decoration: none;
+    isolation: isolate;
+    transition: padding 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.list-rows a.list-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, #6D4AFF1F, #FF5FB114 60%, #00000000);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.list-rows a.list-item:hover {
+    padding-inline: 1.25rem;
+}
+
+.list-rows a.list-item:hover::before {
+    opacity: 1;
+}
+
+.list-rows time {
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+.list-rows .name {
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+}
+
+.list-rows .arrow {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 50%;
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+[dir=rtl] .list-rows .arrow {
+    transform: scaleX(-1);
+}
+
+.list-rows a.list-item:hover .arrow {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border-color: var(--pico-contrast-background);
+    transform: rotate(-45deg);
+}
+
+[dir=rtl] .list-rows a.list-item:hover .arrow {
+    transform: scaleX(-1) rotate(-45deg);
+}
+
+@media (max-width: 639px) {
+    .list-rows a.list-item {
+        grid-template-columns: 1fr auto;
+        gap: 0.25rem 1rem;
+    }
+
+    .list-rows time {
+        grid-column: 1 / -1;
+    }
+}
+
+.list .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.375rem;
+    margin: 2rem 0 0;
+    padding: 0;
+}
+
+.list .pagination li {
+    margin: 0;
+    list-style: none;
+}
+
+.list .pagination .page-link {
+    display: block;
+    min-width: 2.5rem;
+    padding: 0.375rem 0.75rem;
+    color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    text-align: center;
+    text-decoration: none;
+}
+
+.list .pagination a.page-link:hover,
+.list .pagination .active .page-link {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border-color: var(--pico-contrast-background);
+}
+
+.list[aria-busy=true] {
+    opacity: 0.6;
+}

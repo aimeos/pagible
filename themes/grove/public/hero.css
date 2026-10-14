@@ -36,12 +36,15 @@
     overflow: hidden;
 }
 
-.hero:has(.background)::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: #1F3A2CCC;
+.hero:has(.background) .first {
+    box-sizing: border-box;
+    max-width: 40rem;
+    padding: 3rem 2rem;
+    background-color: #1F3A2CB3;
+    border: 1px solid #C5D86D40;
+    border-radius: 5rem 1.5rem;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
 .hero .background img {
@@ -162,8 +165,8 @@
     display: block;
     position: relative;
     isolation: isolate;
-    width: fit-content;
-    margin: 3rem auto 0;
+    width: calc(100% - 1.25rem);
+    margin: 3rem 1.25rem 1.25rem 0;
     padding: 0;
 }
 
@@ -173,7 +176,7 @@
     z-index: -1;
     inset: 1.25rem -1.25rem -1.25rem 1.25rem;
     border: 1.5px solid #C5D86D80;
-    border-radius: 999px 999px 1.5rem 1.5rem;
+    border-radius: 1.5rem;
 }
 
 .hero .second img {
@@ -181,10 +184,12 @@
 }
 
 .hero .second:not(.multiple) img {
+    width: 100%;
+    max-width: none;
     aspect-ratio: 4 / 5;
-    max-height: 34rem;
+    max-height: 40rem;
     object-fit: cover;
-    border-radius: 999px 999px 1.5rem 1.5rem;
+    border-radius: 1.5rem;
 }
 
 .hero .second.multiple {
@@ -240,26 +245,28 @@
 @media screen and (min-width: 992px) {
     .hero .container:has(> .first + .second:not(.multiple)) {
         display: grid;
-        grid-template-columns: 7fr 5fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         align-items: center;
-        gap: 4rem;
+        gap: 3rem;
     }
 
     .hero .first + .second:not(.multiple) picture {
-        margin: 1rem 1.5rem 1.5rem auto;
+        margin: 0 1.25rem 1.25rem 0;
+    }
+
+    .hero .first + .second:not(.multiple) img {
+        aspect-ratio: 1 / 1;
     }
 }
 
 @media screen and (min-width: 1200px) {
-    .hero:has(.background)::after {
-        background: linear-gradient(90deg, #1F3A2CF2 0%, #1F3A2CCC 45%, #1F3A2C33 75%);
-    }
-
     .hero:has(.background) .container {
         padding-block: 9rem;
     }
 
     .hero:has(.background) .first {
-        max-width: min(40vw, 36rem);
+        max-width: min(48vw, 42rem);
+        padding: 3.5rem 3.5rem 3rem;
+        border-radius: 7rem 2rem;
     }
 }

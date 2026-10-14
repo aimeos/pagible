@@ -23,8 +23,6 @@ class TorqueDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/TorqueDemo.php';
-
         ( new TorqueDemo( 'torque', 'torque' ) )->seed();
         Tenancy::$callback = fn() => 'torque';
         app()->forgetInstance( Tenancy::class );

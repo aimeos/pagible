@@ -1,0 +1,258 @@
+/**
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.pricing .title {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.pricing .subtitle {
+    max-width: 36rem;
+    margin: 0 auto 2.5rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 1.05);
+    text-align: center;
+}
+
+.pricing .pricing-toggle {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 3rem;
+    padding: 0.25rem;
+    overflow-x: auto;
+    background-color: var(--pico-card-sectioning-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+}
+
+.pricing .pricing-toggle > span {
+    padding: 0.4375rem 1.125rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.pricing .pricing-toggle > span:hover {
+    color: var(--pico-contrast);
+}
+
+.pricing .pricing-toggle > span.active {
+    color: var(--pico-contrast);
+    background-color: var(--pico-card-background-color);
+    box-shadow: 0 1px 3px #09090B26, 0 0 0 1px var(--pico-muted-border-color);
+}
+
+.pricing .pricing-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 1rem;
+    padding-top: 0.75rem;
+}
+
+@media screen and (min-width: 768px) {
+    .pricing .pricing-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 1100px) {
+    .pricing .pricing-list:has(> :nth-child(3)) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .pricing .pricing-list:has(> :nth-child(4)) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.pricing .pricing-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    background-color: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    box-shadow: 0 1px 2px #09090B0D;
+}
+
+.pricing .pricing-item.highlight {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 1px #6366F1, 0 1.5rem 3rem -1.5rem #6366F199;
+    background-image: radial-gradient(ellipse 120% 50% at 50% 0%, #6366F11F 0%, #00000000 70%);
+}
+
+.pricing .badge {
+    position: absolute;
+    top: -0.75rem;
+    left: 50%;
+    padding: 0.1875rem 0.75rem;
+    color: #FFFFFF;
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 600;
+    white-space: nowrap;
+    background: linear-gradient(90deg, #6366F1, #8B5CF6);
+    border-radius: 999px;
+    box-shadow: 0 0.25rem 0.75rem -0.25rem #6366F1B3;
+    transform: translateX(-50%);
+}
+
+.pricing .pricing-image {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.pricing .pricing-image img {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+}
+
+.pricing .pricing-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.pricing .name {
+    order: 1;
+    margin: 0 0 0.375rem;
+    font-size: calc(var(--pico-font-size) * 1.05);
+    font-weight: 600;
+}
+
+.pricing .highlight .name {
+    color: var(--pico-primary);
+}
+
+.pricing .pricing-header .cms-text {
+    order: 2;
+    min-height: 3em;
+    margin: 0 0 1.25rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.875);
+    line-height: 1.5;
+}
+
+.pricing .price {
+    order: 3;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.pricing .pricing-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.375rem;
+}
+
+.pricing .pricing-price[hidden] {
+    display: none;
+}
+
+.pricing .amount {
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 2.5);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+}
+
+.pricing .currency,
+.pricing .unit {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
+}
+
+.pricing .features {
+    flex: 1;
+    white-space: normal;
+}
+
+.pricing .features p {
+    margin-bottom: 0.75rem;
+    color: var(--pico-contrast);
+    font-size: calc(var(--pico-font-size) * 0.85);
+    font-weight: 600;
+}
+
+.pricing .features ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    list-style: none;
+}
+
+.pricing .features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    margin: 0;
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 0.875);
+    line-height: 1.45;
+    list-style: none;
+}
+
+.pricing .features li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.125em;
+    background-color: var(--pico-primary);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.pricing form {
+    margin: 0;
+}
+
+.pricing .btn {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0.6875rem 1.25rem;
+    color: var(--pico-contrast);
+    background-color: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    box-shadow: 0 1px 2px #09090B0D;
+}
+
+.pricing .btn::after {
+    content: none;
+}
+
+.pricing .btn:hover {
+    color: var(--pico-contrast);
+    background-color: var(--pico-card-sectioning-background-color);
+    border-color: var(--pico-muted-border-color);
+    box-shadow: 0 1px 2px #09090B0D;
+}
+
+.pricing .highlight .btn {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-background);
+    border-color: var(--pico-primary-border);
+    box-shadow: inset 0 1px 0 #FFFFFF33, 0 0.5rem 1.5rem -0.5rem #4F46E599;
+}
+
+.pricing .highlight .btn:hover {
+    color: var(--pico-primary-inverse);
+    background-color: var(--pico-primary-hover-background);
+    border-color: var(--pico-primary-hover-border);
+    box-shadow: inset 0 1px 0 #FFFFFF33, 0 0 0 4px var(--pico-primary-focus);
+}

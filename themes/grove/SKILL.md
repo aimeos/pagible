@@ -1,6 +1,6 @@
 ---
 name: grove
-description: Natural design for gardeners, landscapers, garden designers and garden maintenance companies with moss green, cream and terracotta tones, serif headings, arched photo frames, curved section edges and leaf details.
+description: Natural design for gardeners, landscapers, garden designers and garden maintenance companies with moss green, cream and terracotta tones, serif headings, full width garden photos in the heroes, curved section edges and leaf details.
 license: MIT
 metadata:
   author: Aimeos
@@ -18,11 +18,11 @@ Use a calm, warm and trustworthy layout that feels like a well-kept garden: crea
 - Use system fonts (serif display headings with italic accents, sans-serif body) and the existing `--pico-*` variables.
 - Keep page content within a `1280px` maximum width.
 - Use the cream (`#F6F2EA`, `#FFFDF8`) background, forest green (`#1F3A2C`, `#2D4E3C`) for headings, heroes, the highlighted care plan and the footer, moss green (`#3F6B3A`) for links, filled buttons and accents in headings, terracotta (`#A0532D`) for eyebrows and leaf marks, and chartreuse (`#C5D86D`) only on dark green.
-- Use soft `1rem` corners, pill-shaped buttons, tags and badges, arched hero and team images, round avatars, leaf marks before section headings and curved edges below heroes and above the footer.
+- Use soft `1rem` corners, pill-shaped buttons, tags and badges, leaf-shaped team images, round avatars, leaf marks before section headings and curved edges below heroes and above the footer.
 
 ## Components
 
-- Hero: a dark green split hero with a single 4:5 garden photo in `files`, shown in an arched frame, an eyebrow naming the services and region, a short headline with an accent in `*...*` and two actions ("Get a free quote" and "See our projects"). Nest service pages (garden design, landscaping, garden maintenance, lawns and hedges) below a top-level page so the header keeps about six links next to the phone number and "Free quote".
+- Hero: a 16:9 garden photo in `background` with the text on a leaf-shaped translucent green panel, an eyebrow naming the services and region, a short headline with an accent in `*...*` and two actions ("Get a free quote" and "See our projects"). Nest service pages (garden design, landscaping, garden maintenance, lawns and hedges) below a top-level page so the header keeps about six links next to the phone number and "Free quote".
 - Figures and badges: cards in the `figures` layout for rating, gardens in care, founding year and plant guarantee, and in the `badges` layout with white line icons for insurance, accreditation, plant guarantee, the same gardener and peat-free gardening.
 - Services: cards in three columns with a photo, the service as title, a link to its page and a bold first line as eyebrow ("Design", "Build", "Care").
 - Process: a horizontal `timeline` with four steps from the free garden visit to regular care.

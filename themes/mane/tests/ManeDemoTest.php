@@ -23,8 +23,6 @@ class ManeDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/ManeDemo.php';
-
         ( new ManeDemo( 'mane', 'mane' ) )->seed();
         Tenancy::$callback = fn() => 'mane';
         app()->forgetInstance( Tenancy::class );

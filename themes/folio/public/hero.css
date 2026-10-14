@@ -1,0 +1,89 @@
+/**
+ * Folio Theme - Personal intro with photo, role, short bio and links
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.hero {
+    position: relative;
+}
+
+.hero .background {
+    display: none;
+}
+
+.hero .container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 2rem;
+}
+
+.hero .second {
+    order: -1;
+    width: 5rem;
+    height: 5rem;
+}
+
+.hero .second :is(img, video) {
+    display: block;
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 50%;
+}
+
+.hero .subtitle {
+    margin-bottom: 0.75rem;
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+}
+
+.hero .title {
+    margin-bottom: 1.25rem;
+    font-size: calc(var(--pico-font-size) * 2);
+}
+
+.hero .title em {
+    color: var(--pico-primary);
+    font-style: normal;
+}
+
+.hero .cms-text {
+    color: var(--pico-color);
+    font-size: calc(var(--pico-font-size) * 1.1);
+    line-height: 1.7;
+}
+
+.hero .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.hero .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .hero .title {
+        font-size: calc(var(--pico-font-size) * 2.5);
+    }
+}
+
+@keyframes hero-rise {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero .container > * {
+        animation: hero-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .hero .first {
+        animation-delay: 0.08s;
+    }
+}

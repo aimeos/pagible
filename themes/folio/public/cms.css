@@ -1,0 +1,822 @@
+/**
+ * Folio Theme - Personal website, developer blog and portfolio with light and dark mode
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+:root:not([data-theme=dark]) {
+    --pico-font-family-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --pico-font-family-monospace: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    --pico-nav-breadcrumb-divider: '/';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.5rem;
+    --pico-nav-link-spacing-vertical: 0.375rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-font-size: 1.0625rem !important;
+    --pico-line-height: 1.7;
+    --pico-border-radius: 0.5rem;
+    --pico-color: #2B2924;
+    --pico-background-color: #FBFAF8;
+    --pico-text-selection-color: #1F7A4D33;
+    --pico-muted-color: #6B665E;
+    --pico-muted-border-color: #E4E0D9;
+    --pico-muted-background-color: #F3F1ED;
+    --pico-card-background-color: #FFFFFF;
+    --pico-card-sectioning-background-color: #F3F1ED;
+    --pico-contrast: #1C1A17;
+    --pico-contrast-border: #1C1A17;
+    --pico-contrast-background: #1C1A17;
+    --pico-contrast-hover: #3A3731;
+    --pico-contrast-hover-border: #3A3731;
+    --pico-contrast-hover-background: #3A3731;
+    --pico-contrast-inverse: #FBFAF8;
+    --pico-primary: #1F7A4D;
+    --pico-primary-background: #1F7A4D;
+    --pico-primary-border: #1F7A4D;
+    --pico-primary-underline: #1F7A4D59;
+    --pico-primary-hover: #17603C;
+    --pico-primary-hover-background: #17603C;
+    --pico-primary-hover-border: #17603C;
+    --pico-primary-hover-underline: #17603C;
+    --pico-primary-focus: #1F7A4D33;
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #6B665E;
+    --pico-secondary-background: #6B665E;
+    --pico-secondary-border: #6B665E;
+    --pico-secondary-underline: #6B665E;
+    --pico-secondary-hover: #4A463F;
+    --pico-secondary-hover-background: #4A463F;
+    --pico-secondary-hover-border: #4A463F;
+    --pico-secondary-hover-underline: #4A463F;
+    --pico-secondary-focus: #1F7A4D33;
+    --pico-secondary-inverse: #FFFFFF;
+    --pico-h1-color: #1C1A17;
+    --pico-h2-color: #1C1A17;
+    --pico-h3-color: #1C1A17;
+    --pico-h4-color: #1C1A17;
+    --pico-h5-color: #1C1A17;
+    --pico-h6-color: #6B665E;
+    --pico-box-shadow: 0 1px 2px #1C1A170D, 0 0.5rem 1.5rem -0.75rem #1C1A1726;
+    --pico-dropdown-color: #2B2924;
+    --pico-dropdown-border-color: #E4E0D9;
+    --pico-dropdown-background-color: #FFFFFF;
+    --pico-dropdown-hover-background-color: #F3F1ED;
+    --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #1C1A1733;
+    --pico-modal-overlay-background-color: #1C1A1799;
+    --pico-code-background-color: #F0EDE7;
+    --pico-code-color: #1C1A17;
+    --pico-form-element-background-color: #FFFFFF;
+    --pico-form-element-border-color: #D6D1C8;
+    --pico-form-element-color: #1C1A17;
+    --pico-form-element-placeholder-color: #9A948A;
+    --pico-form-element-focus-color: #1F7A4D;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme=light]) {
+        --pico-color: #D9D4CB;
+        --pico-background-color: #0F0E0C;
+        --pico-text-selection-color: #4FBF874D;
+        --pico-muted-color: #9A948A;
+        --pico-muted-border-color: #2A2824;
+        --pico-muted-background-color: #1A1916;
+        --pico-card-background-color: #161513;
+        --pico-card-sectioning-background-color: #1A1916;
+        --pico-contrast: #ECE8E1;
+        --pico-contrast-border: #ECE8E1;
+        --pico-contrast-background: #ECE8E1;
+        --pico-contrast-hover: #FFFFFF;
+        --pico-contrast-hover-border: #FFFFFF;
+        --pico-contrast-hover-background: #FFFFFF;
+        --pico-contrast-inverse: #0F0E0C;
+        --pico-primary: #4FBF87;
+        --pico-primary-background: #2E9A63;
+        --pico-primary-border: #2E9A63;
+        --pico-primary-underline: #4FBF8766;
+        --pico-primary-hover: #7BD6A6;
+        --pico-primary-hover-background: #258052;
+        --pico-primary-hover-border: #258052;
+        --pico-primary-hover-underline: #7BD6A6;
+        --pico-primary-focus: #4FBF874D;
+        --pico-primary-inverse: #FFFFFF;
+        --pico-secondary: #9A948A;
+        --pico-secondary-background: #9A948A;
+        --pico-secondary-border: #9A948A;
+        --pico-secondary-underline: #9A948A;
+        --pico-secondary-hover: #D9D4CB;
+        --pico-secondary-hover-background: #D9D4CB;
+        --pico-secondary-hover-border: #D9D4CB;
+        --pico-secondary-hover-underline: #D9D4CB;
+        --pico-secondary-focus: #4FBF874D;
+        --pico-secondary-inverse: #0F0E0C;
+        --pico-h1-color: #ECE8E1;
+        --pico-h2-color: #ECE8E1;
+        --pico-h3-color: #ECE8E1;
+        --pico-h4-color: #ECE8E1;
+        --pico-h5-color: #ECE8E1;
+        --pico-h6-color: #9A948A;
+        --pico-box-shadow: 0 0 0 1px #FFFFFF0A, 0 0.75rem 2rem -1rem #00000099;
+        --pico-dropdown-color: #D9D4CB;
+        --pico-dropdown-border-color: #2A2824;
+        --pico-dropdown-background-color: #161513;
+        --pico-dropdown-hover-background-color: #1A1916;
+        --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #000000CC;
+        --pico-modal-overlay-background-color: #000000B3;
+        --pico-code-background-color: #1F1D1A;
+        --pico-code-color: #ECE8E1;
+        --pico-form-element-background-color: #161513;
+        --pico-form-element-border-color: #3A3731;
+        --pico-form-element-color: #ECE8E1;
+        --pico-form-element-placeholder-color: #6B665E;
+        --pico-form-element-focus-color: #4FBF87;
+        --pico-contrast-underline: var(--pico-contrast);
+        --pico-contrast-hover-underline: var(--pico-contrast-hover);
+        --pico-contrast-focus: var(--pico-text-selection-color);
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme=dark] {
+    --pico-font-family-sans-serif: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --pico-font-family-monospace: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    --pico-nav-breadcrumb-divider: '/';
+    --pico-block-spacing-vertical: 0;
+    --pico-nav-element-spacing-horizontal: 1rem;
+    --pico-nav-element-spacing-vertical: 0.5rem;
+    --pico-nav-link-spacing-vertical: 0.375rem;
+    --pico-nav-link-spacing-horizontal: 0.625rem;
+    --pico-font-size: 1.0625rem !important;
+    --pico-line-height: 1.7;
+    --pico-border-radius: 0.5rem;
+    --pico-color: #D9D4CB;
+    --pico-background-color: #0F0E0C;
+    --pico-text-selection-color: #4FBF874D;
+    --pico-muted-color: #9A948A;
+    --pico-muted-border-color: #2A2824;
+    --pico-muted-background-color: #1A1916;
+    --pico-card-background-color: #161513;
+    --pico-card-sectioning-background-color: #1A1916;
+    --pico-contrast: #ECE8E1;
+    --pico-contrast-border: #ECE8E1;
+    --pico-contrast-background: #ECE8E1;
+    --pico-contrast-hover: #FFFFFF;
+    --pico-contrast-hover-border: #FFFFFF;
+    --pico-contrast-hover-background: #FFFFFF;
+    --pico-contrast-inverse: #0F0E0C;
+    --pico-primary: #4FBF87;
+    --pico-primary-background: #2E9A63;
+    --pico-primary-border: #2E9A63;
+    --pico-primary-underline: #4FBF8766;
+    --pico-primary-hover: #7BD6A6;
+    --pico-primary-hover-background: #258052;
+    --pico-primary-hover-border: #258052;
+    --pico-primary-hover-underline: #7BD6A6;
+    --pico-primary-focus: #4FBF874D;
+    --pico-primary-inverse: #FFFFFF;
+    --pico-secondary: #9A948A;
+    --pico-secondary-background: #9A948A;
+    --pico-secondary-border: #9A948A;
+    --pico-secondary-underline: #9A948A;
+    --pico-secondary-hover: #D9D4CB;
+    --pico-secondary-hover-background: #D9D4CB;
+    --pico-secondary-hover-border: #D9D4CB;
+    --pico-secondary-hover-underline: #D9D4CB;
+    --pico-secondary-focus: #4FBF874D;
+    --pico-secondary-inverse: #0F0E0C;
+    --pico-h1-color: #ECE8E1;
+    --pico-h2-color: #ECE8E1;
+    --pico-h3-color: #ECE8E1;
+    --pico-h4-color: #ECE8E1;
+    --pico-h5-color: #ECE8E1;
+    --pico-h6-color: #9A948A;
+    --pico-box-shadow: 0 0 0 1px #FFFFFF0A, 0 0.75rem 2rem -1rem #00000099;
+    --pico-dropdown-color: #D9D4CB;
+    --pico-dropdown-border-color: #2A2824;
+    --pico-dropdown-background-color: #161513;
+    --pico-dropdown-hover-background-color: #1A1916;
+    --pico-dropdown-box-shadow: 0 1rem 2rem -0.5rem #000000CC;
+    --pico-modal-overlay-background-color: #000000B3;
+    --pico-code-background-color: #1F1D1A;
+    --pico-code-color: #ECE8E1;
+    --pico-form-element-background-color: #161513;
+    --pico-form-element-border-color: #3A3731;
+    --pico-form-element-color: #ECE8E1;
+    --pico-form-element-placeholder-color: #6B665E;
+    --pico-form-element-focus-color: #4FBF87;
+    --pico-contrast-underline: var(--pico-contrast);
+    --pico-contrast-hover-underline: var(--pico-contrast-hover);
+    --pico-contrast-focus: var(--pico-text-selection-color);
+    color-scheme: dark;
+}
+
+* {
+    scrollbar-color: var(--pico-muted-border-color) var(--pico-background-color);
+    scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+html {
+    scroll-padding-top: 5rem;
+}
+
+body {
+    font-family: var(--pico-font-family-sans-serif);
+    background-color: var(--pico-background-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background-color: var(--pico-text-selection-color);
+}
+
+:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: 2px;
+}
+
+:where(a:not([role=button]):not([role=menuitem])),
+:where(a:not([role=button]):not([role=menuitem]):visited) {
+    color: var(--pico-contrast);
+    text-decoration: underline;
+    text-decoration-color: var(--pico-primary-underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+:where(a:not([role=button]):not([role=menuitem]):hover) {
+    color: var(--pico-primary);
+    text-decoration-color: var(--pico-primary);
+}
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+}
+
+.skip-link:focus {
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 200;
+    padding: 0.5rem 1rem;
+    background-color: var(--pico-background-color);
+}
+
+nav ol:first-of-type, nav ul:first-of-type,
+nav ol:last-of-type, nav ul:last-of-type {
+    margin: 0;
+}
+
+nav li :where(a,[role=link]) {
+    color: var(--pico-contrast);
+    text-decoration: none;
+    margin: 0;
+}
+
+/* Header */
+
+body > header {
+    background-color: color-mix(in srgb, var(--pico-background-color) 85%, #00000000);
+    backdrop-filter: saturate(1.6) blur(10px);
+    -webkit-backdrop-filter: saturate(1.6) blur(10px);
+    position: sticky;
+    z-index: 100;
+    top: 0;
+}
+
+body > header > nav {
+    max-width: 48rem;
+    padding: 1rem 1.25rem;
+    margin: auto;
+}
+
+header nav ul,
+header nav li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header nav a,
+header nav button {
+    display: flex;
+    align-items: center;
+    padding: 0.375rem 0.5rem;
+    margin: 0;
+    color: var(--pico-muted-color);
+    background: #00000000;
+    border: 0;
+    font-size: calc(var(--pico-font-size) * 0.9);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+}
+
+header nav a:not([role]):hover,
+header nav a:not([role]):focus-visible,
+header nav button:hover,
+header nav a.active {
+    color: var(--pico-contrast);
+    background: #00000000;
+    text-decoration: none;
+}
+
+header nav .brand a {
+    padding-inline-start: 0;
+    color: var(--pico-contrast);
+    font-size: var(--pico-font-size);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+
+header nav .brand img {
+    width: auto;
+    height: 32px;
+    border-radius: 0;
+}
+
+header nav ul.menu {
+    flex-grow: 1;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+header nav ul.tools {
+    gap: 0.125rem;
+    margin-inline-start: 0.5rem;
+    padding-inline-start: 0.5rem;
+    border-inline-start: 1px solid var(--pico-muted-border-color);
+}
+
+header nav button.mode .sun,
+header nav .menu-open,
+header nav .menu-close {
+    display: none;
+}
+
+:root[data-theme=dark] header nav button.mode .sun {
+    display: block;
+}
+
+:root[data-theme=dark] header nav button.mode .moon {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme=light]) header nav button.mode .sun {
+        display: block;
+    }
+
+    :root:not([data-theme=light]) header nav button.mode .moon {
+        display: none;
+    }
+}
+
+header nav .menu-open button,
+header nav .menu-close button {
+    color: var(--pico-contrast);
+    padding: 0.5rem;
+}
+
+@media (max-width: 767px) {
+    header nav .menu-open.show,
+    header nav .menu-close.show {
+        display: flex;
+    }
+
+    header nav > ul:first-child {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    header nav ul.tools {
+        border: 0;
+    }
+
+    header nav ul.menu {
+        display: none;
+    }
+
+    header nav.small {
+        display: block;
+        overflow-y: auto;
+        position: fixed;
+        padding: 1rem 1.25rem;
+        background-color: var(--pico-background-color);
+        z-index: 100;
+        inset: 0;
+    }
+
+    header nav.small > ul:first-child {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    header nav.small ul.menu {
+        flex-direction: column;
+        align-items: stretch;
+        display: flex;
+        margin: 1.5rem 0;
+    }
+
+    header nav.small ul.menu li {
+        border-bottom: 1px solid var(--pico-muted-border-color);
+    }
+
+    header nav.small ul.menu a {
+        padding: 0.875rem 0;
+        color: var(--pico-contrast);
+        font-size: calc(var(--pico-font-size) * 1.25);
+        font-weight: 600;
+    }
+
+    header nav.small ul.tools {
+        display: none;
+    }
+}
+
+/* Layout and typography */
+
+main .cms-content > div > .container,
+footer.cms-content > div > .container {
+    max-width: 48rem !important;
+    padding: 0 1.25rem;
+    margin: auto;
+}
+
+main .cms-content > div {
+    margin: 2.5rem 0;
+}
+
+.cms-text {
+    white-space: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    white-space: pre-line;
+    text-wrap: balance;
+}
+
+h1 {
+    margin-bottom: 1rem;
+    font-size: calc(var(--pico-font-size) * 2);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+
+h2 {
+    margin: 0 0 1rem;
+    font-size: calc(var(--pico-font-size) * 1.35);
+    line-height: 1.3;
+}
+
+h3 {
+    margin-bottom: 0.5rem;
+    font-size: calc(var(--pico-font-size) * 1.1);
+    line-height: 1.4;
+}
+
+h4 {
+    margin-bottom: 0.5rem;
+    font-size: var(--pico-font-size);
+}
+
+.cms-content > .heading h2 {
+    margin-top: 1rem;
+}
+
+.cms-content > div > .container > h2:first-child,
+.cms-content .list > h2,
+.cms-content .timeline > h2 {
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.8);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cms-content > .heading > .container > h2:first-child,
+.cms-content > .cta > .container > h2:first-child {
+    color: var(--pico-h2-color);
+    font-family: inherit;
+    font-size: calc(var(--pico-font-size) * 1.35);
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    text-transform: none;
+}
+
+@media screen and (min-width: 768px) {
+    h1 {
+        font-size: calc(var(--pico-font-size) * 2.5);
+    }
+}
+
+img {
+    border-radius: var(--pico-border-radius);
+}
+
+code, kbd, samp {
+    font-family: var(--pico-font-family-monospace);
+}
+
+:not(pre) > code {
+    padding: 0.125rem 0.375rem;
+    color: var(--pico-code-color);
+    background-color: var(--pico-code-background-color);
+    border-radius: 0.3rem;
+    font-size: 0.85em;
+}
+
+kbd {
+    padding: 0.125rem 0.375rem;
+    color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-bottom-width: 2px;
+    border-radius: 0.375rem;
+    font-size: 0.8em;
+}
+
+.cms-text :is(ul, ol) li {
+    margin-bottom: 0.375rem;
+}
+
+.cms-text hr {
+    margin: 2.5rem 0;
+    border-color: var(--pico-muted-border-color);
+}
+
+.cms-text blockquote {
+    margin: 1.5rem 0;
+    padding: 0.25rem 1.25rem;
+    color: var(--pico-muted-color);
+    border-inline-start: 3px solid var(--pico-muted-border-color);
+    font-style: italic;
+}
+
+.cms-text blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.cms-text blockquote.callout {
+    padding: 0.875rem 1.125rem;
+    color: var(--pico-color);
+    border-inline-start-color: #3B82F6;
+    border-radius: 0 var(--pico-border-radius) var(--pico-border-radius) 0;
+    background-color: #3B82F614;
+    font-style: normal;
+}
+
+.cms-text blockquote.callout.tip {
+    border-inline-start-color: #22A06B;
+    background-color: #22A06B14;
+}
+
+.cms-text blockquote.callout.important {
+    border-inline-start-color: #8B5CF6;
+    background-color: #8B5CF614;
+}
+
+.cms-text blockquote.callout.warning {
+    border-inline-start-color: #D97706;
+    background-color: #D9770614;
+}
+
+.cms-text blockquote.callout.caution {
+    border-inline-start-color: #DC2626;
+    background-color: #DC262614;
+}
+
+.cms-text .callout-title {
+    margin-bottom: 0.25rem;
+    color: var(--pico-contrast);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.75);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Code */
+
+.code-box {
+    margin: 1.5rem 0;
+    overflow: hidden;
+    background-color: #161513;
+    border: 1px solid #2A2824;
+    border-radius: var(--pico-border-radius);
+}
+
+.code-box .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.375rem 0.5rem 0.375rem 1rem;
+    border-bottom: 1px solid #2A2824;
+}
+
+.code-box .code-lang {
+    color: #9A948A;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.72);
+    text-transform: lowercase;
+}
+
+.code-box .code-copy {
+    width: auto;
+    margin: 0;
+    padding: 0.2rem 0.625rem;
+    color: #D9D4CB;
+    background: #00000000;
+    border: 1px solid #3A3731;
+    border-radius: 0.375rem;
+    font-size: calc(var(--pico-font-size) * 0.72);
+    cursor: pointer;
+}
+
+.code-box .code-copy:hover {
+    color: #FFFFFF;
+    border-color: #6B665E;
+}
+
+.code-box .code-copy.copied {
+    color: #4FBF87;
+    border-color: #4FBF87;
+}
+
+.code-box pre {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    color: #ECE8E1;
+    background: #161513;
+    border-radius: 0;
+    font-size: calc(var(--pico-font-size) * 0.82);
+    line-height: 1.65;
+    overflow-x: auto;
+}
+
+.code-box pre code {
+    padding: 0;
+    color: inherit;
+    background: none;
+    font-size: inherit;
+}
+
+/* Buttons */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0.25rem 0;
+    padding: 0.5rem 1rem;
+    color: var(--pico-contrast);
+    background-color: #00000000;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-size: calc(var(--pico-font-size) * 0.875);
+    font-weight: 500;
+    line-height: inherit;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover {
+    color: var(--pico-contrast);
+    background-color: var(--pico-muted-background-color);
+    border-color: var(--pico-muted-color);
+}
+
+.btn:first-child {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border-color: var(--pico-contrast-border);
+}
+
+.btn:first-child:hover {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-hover-background);
+    border-color: var(--pico-contrast-hover-border);
+}
+
+.btn:first-child::after {
+    content: "→";
+    transition: transform 0.15s ease;
+}
+
+[dir=rtl] .btn:first-child::after {
+    content: "←";
+}
+
+.btn:first-child:hover::after {
+    transform: translateX(0.2rem);
+}
+
+[dir=rtl] .btn:first-child:hover::after {
+    transform: translateX(-0.2rem);
+}
+
+.hidden {
+    display: none;
+}
+
+.file,
+.audio,
+.image,
+.video {
+    max-width: 100%;
+    text-align: center;
+    display: block;
+    margin: auto;
+}
+
+/* Footer */
+
+body > footer.bottom {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.85);
+}
+
+body > footer.bottom .container {
+    max-width: 48rem !important;
+    margin: 3rem auto 0;
+    padding: 2rem 1.25rem 3rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+}
+
+body > footer.bottom ul.profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0 0 1.25rem;
+    padding: 0;
+}
+
+body > footer.bottom ul.profiles li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    list-style: none;
+}
+
+body > footer.bottom a {
+    color: var(--pico-muted-color);
+    text-decoration: none;
+}
+
+body > footer.bottom a:hover {
+    color: var(--pico-contrast);
+}
+
+body > footer.bottom ul.profiles a:not([href^=mailto])::after {
+    content: " ↗";
+    font-size: 0.85em;
+}
+
+body > footer.bottom button.copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: auto;
+    margin: 0;
+    padding: 0.25rem;
+    color: var(--pico-muted-color);
+    background: #00000000;
+    border: 0;
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+body > footer.bottom button.copy:hover {
+    color: var(--pico-contrast);
+}
+
+body > footer.bottom button.copy.copied {
+    color: var(--pico-primary);
+}
+
+body > footer.bottom button.copy.copied::after {
+    content: attr(data-copied);
+}
+
+body > footer.bottom .colophon {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin: 0;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}

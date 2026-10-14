@@ -59,5 +59,6 @@
     "Please select": "Kérjük, válasszon",
     "Before": "Előtte",
     "After": "Utána",
-    "Before and after comparison": "Előtte-utána összehasonlítás"
+    "Before and after comparison": "Előtte-utána összehasonlítás",
+    "Powered by :name": "Működteti: :name"
 }

@@ -23,8 +23,6 @@ class GroveDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/GroveDemo.php';
-
         ( new GroveDemo( 'grove', 'grove' ) )->seed();
         Tenancy::$callback = fn() => 'grove';
         app()->forgetInstance( Tenancy::class );

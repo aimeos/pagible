@@ -1,0 +1,40 @@
+{
+    "name": "aimeos/pagible-themes-launch",
+    "description": "Pagible CMS - Launch theme for SaaS products, startups, developer tools and software landing pages with pricing and checkout",
+    "keywords": [
+        "laravel",
+        "cms",
+        "theme",
+        "saas",
+        "startup",
+        "landing page",
+        "pricing",
+        "changelog",
+        "software"
+    ],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-theme": "*@dev"
+    },
+    "suggest": {
+        "aimeos/pagible-cashier-stripe": "Checkout for the pricing plans via Stripe",
+        "aimeos/pagible-cashier-paddle": "Checkout for the pricing plans via Paddle",
+        "aimeos/pagible-cashier-mollie": "Checkout for the pricing plans via Mollie"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\LaunchServiceProvider"
+            ]
+        }
+    }
+}

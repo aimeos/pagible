@@ -23,8 +23,6 @@ class TonicDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/TonicDemo.php';
-
         ( new TonicDemo( 'tonic', 'tonic' ) )->seed();
         Tenancy::$callback = fn() => 'tonic';
         app()->forgetInstance( Tenancy::class );

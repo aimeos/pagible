@@ -23,8 +23,6 @@ class CounselDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/CounselDemo.php';
-
         ( new CounselDemo( 'counsel', 'counsel' ) )->seed();
         Tenancy::$callback = fn() => 'counsel';
         app()->forgetInstance( Tenancy::class );

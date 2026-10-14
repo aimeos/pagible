@@ -23,8 +23,6 @@ class SolarDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/SolarDemo.php';
-
         ( new SolarDemo( 'solar', 'solar' ) )->seed();
         Tenancy::$callback = fn() => 'solar';
         app()->forgetInstance( Tenancy::class );

@@ -23,8 +23,6 @@ class FlowDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/FlowDemo.php';
-
         ( new FlowDemo( 'flow', 'flow' ) )->seed();
         Tenancy::$callback = fn() => 'flow';
         app()->forgetInstance( Tenancy::class );
