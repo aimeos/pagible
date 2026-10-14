@@ -89,6 +89,9 @@
     <testsuite name="Manual">
       <directory>./themes/manual/tests/</directory>
     </testsuite>
+    <testsuite name="Aura">
+      <directory>./themes/aura/tests/</directory>
+    </testsuite>
     <testsuite name="Search">
       <directory>./search/tests/</directory>
     </testsuite>

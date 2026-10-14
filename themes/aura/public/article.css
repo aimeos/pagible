@@ -1,0 +1,90 @@
+/**
+ * Aura Theme - Post header with date, reading time, gradient title, lead and glowing cover
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.article .post-head {
+    text-align: center;
+}
+
+.article .post-head .meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0.3rem 1rem;
+    color: var(--pico-muted-color);
+    background-color: color-mix(in srgb, var(--pico-card-background-color) 60%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.75);
+}
+
+.article .post-head .meta span::before {
+    content: "·";
+    margin-inline-end: 0.75rem;
+}
+
+.article .post-head .title {
+    margin-bottom: 1.5rem;
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+}
+
+.article .post-head .lead {
+    max-width: 38rem;
+    margin: auto;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 1.2);
+    line-height: 1.6;
+}
+
+.article .post-head .lead > :last-child {
+    margin-bottom: 0;
+}
+
+.article .cover {
+    position: relative;
+    display: block;
+    margin: 3rem 0 0;
+    aspect-ratio: 2 / 1;
+    isolation: isolate;
+}
+
+.article .cover::before {
+    content: "";
+    position: absolute;
+    inset: 8% 6% -6%;
+    z-index: -1;
+    background: linear-gradient(120deg, #6D4AFF, #FF5FB1, #2DD4F0);
+    border-radius: 2rem;
+    opacity: 0.35;
+    filter: blur(3rem);
+}
+
+.article .cover source,
+.article .cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .article .post-head > *,
+    .article .cover {
+        animation: post-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .article .post-head > :nth-child(2) { animation-delay: 0.08s; }
+    .article .post-head > :nth-child(3) { animation-delay: 0.16s; }
+    .article .cover { animation-delay: 0.24s; }
+}
+
+@keyframes post-rise {
+    from { opacity: 0; transform: translateY(1.25rem); }
+    to { opacity: 1; transform: none; }
+}

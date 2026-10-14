@@ -1,0 +1,46 @@
+/**
+ * Aura Theme - Page layout with roomy sections and a readable text column
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main > .cms-content {
+    padding: 1rem 0;
+}
+
+main > .cms-content > div {
+    margin: clamp(4rem, 9vw, 7rem) 0;
+}
+
+main > .cms-content > div:first-child {
+    margin-top: 0;
+}
+
+main > .cms-content > .heading {
+    margin-bottom: 0;
+}
+
+main > .cms-content > .heading + div {
+    margin-top: 1.5rem;
+}
+
+main > .cms-content > .heading h1 {
+    margin: clamp(2rem, 6vw, 4.5rem) 0 0;
+}
+
+main > .cms-content > .text + .text {
+    margin-top: -2rem;
+}
+
+main > .cms-content > .text .cms-text {
+    max-width: 46rem;
+    font-size: calc(var(--pico-font-size) * 1.05);
+}
+
+.text .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cms-content .text h2,
+.cms-content .text h3 {
+    margin-top: 2.5rem;
+}

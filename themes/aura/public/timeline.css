@@ -1,0 +1,144 @@
+/**
+ * Aura Theme - Experience timeline with a glowing gradient line
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.timeline .steps {
+    position: relative;
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.timeline .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+    margin: 0;
+    padding: 0 0 2.5rem 2.25rem;
+    list-style: none;
+}
+
+.timeline .step::before {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    bottom: -0.5rem;
+    inset-inline-start: 0.3125rem;
+    width: 1px;
+    background: linear-gradient(#8B7CFF, #FF5FB180);
+}
+
+.timeline .step:last-child::before {
+    background: linear-gradient(#8B7CFF, #FF5FB100);
+}
+
+.timeline .marker {
+    position: absolute;
+    top: 0.35rem;
+    inset-inline-start: 0;
+    width: 0.6875rem;
+    height: 0.6875rem;
+    background-color: var(--pico-background-color);
+    border: 2px solid #8B7CFF;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px #8B7CFF26, 0 0 1rem #8B7CFF99;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.timeline .step:hover .marker {
+    background-color: #8B7CFF;
+    transform: scale(1.25);
+}
+
+.timeline .label {
+    margin: 0 0 0.375rem;
+    color: var(--pico-primary);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.78);
+}
+
+.timeline .title {
+    margin: 0 0 0.5rem;
+    font-size: calc(var(--pico-font-size) * 1.2);
+    font-weight: 650;
+}
+
+.timeline .step .cms-text {
+    max-width: 40rem;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.95);
+    line-height: 1.65;
+}
+
+.timeline .step .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.timeline .step .cms-text code {
+    display: inline-block;
+    margin: 0.25rem 0.125rem 0 0;
+    padding: 0.125rem 0.625rem;
+    color: var(--pico-color);
+    background-color: color-mix(in srgb, var(--pico-muted-background-color) 70%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: calc(var(--pico-font-size) * 0.72);
+}
+
+@media (min-width: 768px) {
+    .timeline .layout-vertical .step {
+        grid-template-columns: 10rem 1fr;
+        column-gap: 2rem;
+        padding-inline-start: 0;
+    }
+
+    .timeline .layout-vertical .step::before {
+        inset-inline-start: calc(10rem + 1rem);
+    }
+
+    .timeline .layout-vertical .marker {
+        inset-inline-start: calc(10rem + 0.6875rem);
+    }
+
+    .timeline .layout-vertical .label {
+        grid-row: span 2;
+        margin-top: 0.15rem;
+        text-align: end;
+    }
+
+    .timeline .layout-vertical .step > :not(.label, .marker) {
+        grid-column: 2;
+        padding-inline-start: 1.5rem;
+    }
+
+    .timeline .layout-horizontal {
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        gap: 0 2rem;
+    }
+
+    .timeline .layout-horizontal .step {
+        padding: 2.25rem 0 0;
+    }
+
+    .timeline .layout-horizontal .step::before {
+        top: 0.3125rem;
+        bottom: auto;
+        inset-inline: 0 -2rem;
+        width: auto;
+        height: 1px;
+        background: linear-gradient(90deg, #8B7CFF, #FF5FB180);
+    }
+
+    .timeline .layout-horizontal .step:last-child::before {
+        inset-inline-end: 0;
+        background: linear-gradient(90deg, #8B7CFF, #FF5FB100);
+    }
+
+    .timeline .layout-horizontal .marker {
+        top: 0;
+    }
+}

@@ -84,4 +84,6 @@ parameters:
 		- themes/launch/database/seeders
 		- themes/manual/src
 		- themes/manual/database/seeders
+		- themes/aura/src
+		- themes/aura/database/seeders
 		- tests/User.php

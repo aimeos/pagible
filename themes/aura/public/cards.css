@@ -1,0 +1,313 @@
+/**
+ * Aura Theme - Bento project grid with spotlights, endless skill marquee and counting figures
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cards .card-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media screen and (min-width: 640px) {
+    .cards .card-list:not(.cols-1) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 960px) {
+    .cards .card-list:is(.cols-auto, .cols-3) {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-flow: dense;
+    }
+
+    .cards .card-list.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .cards .card-list.layout-cards:is(.cols-auto, .cols-3) .card-item:is(:nth-child(4n+1), :nth-child(4n)) {
+        grid-column: span 2;
+    }
+}
+
+.cards .card-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.625rem 0.625rem 1.375rem;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--pico-card-background-color) 75%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    isolation: isolate;
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.4s ease;
+}
+
+.cards .card-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    background: linear-gradient(135deg, #8B7CFF, #FF5FB1 50%, #2DD4F0);
+    border-radius: inherit;
+    -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000000 0 0) content-box exclude, linear-gradient(#000000 0 0);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.cards .card-item .spot {
+    z-index: -1;
+}
+
+.cards .card-list:not(.layout-badges) .card-item:hover {
+    box-shadow: 0 2rem 4rem -2rem #6D4AFF59;
+    transform: translateY(-4px);
+}
+
+.cards .card-list:not(.layout-badges) .card-item:hover::before {
+    opacity: 1;
+}
+
+.cards .card-item .card-text {
+    padding: 0 0.75rem;
+}
+
+.cards .card-item:not(:has(picture.image)) {
+    padding: 1.5rem 1.375rem;
+}
+
+.cards .card-item:not(:has(picture.image)) .card-text {
+    padding: 0;
+}
+
+.cards .card-item :is(picture.image, .card-image) {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--pico-border-radius);
+}
+
+.cards .card-item picture.image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.cards .card-item:hover picture.image img {
+    transform: scale(1.05);
+}
+
+@media screen and (min-width: 960px) {
+    .cards .card-list.layout-cards:is(.cols-auto, .cols-3) .card-item:is(:nth-child(4n+1), :nth-child(4n)) :is(.card-image, picture.image:not(.card-image picture)) {
+        position: relative;
+        display: flex;
+        flex: 1;
+        min-height: 14rem;
+    }
+
+    .cards .card-list.layout-cards:is(.cols-auto, .cols-3) .card-item:is(:nth-child(4n+1), :nth-child(4n)) .card-image picture.image {
+        flex: 1;
+    }
+
+    .cards .card-list.layout-cards:is(.cols-auto, .cols-3) .card-item:is(:nth-child(4n+1), :nth-child(4n)) picture.image img {
+        position: absolute;
+        inset: 0;
+        aspect-ratio: auto;
+    }
+}
+
+.cards .card-item picture.image:has(img[src$=".svg"]) {
+    width: 2.5rem;
+    margin: 0.75rem 0.75rem 0;
+}
+
+.cards .card-item picture.image img[src$=".svg"] {
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.cards .title {
+    margin: 0 0 0.375rem;
+    font-size: calc(var(--pico-font-size) * 1.15);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.cards .title a {
+    color: var(--pico-contrast);
+    text-decoration: none;
+}
+
+.cards .title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.cards .card-list:not(.layout-figures, .layout-badges) .title a::before {
+    content: "↗";
+    float: inline-end;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-inline-start: 0.5rem;
+    color: var(--pico-muted-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 50%;
+    font-size: 0.85em;
+    font-weight: 400;
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.cards .card-item:hover .title a::before {
+    color: var(--pico-contrast-inverse);
+    background-color: var(--pico-contrast-background);
+    border-color: var(--pico-contrast-background);
+    transform: rotate(45deg);
+}
+
+.cards .card-item .cms-text {
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.92);
+    line-height: 1.6;
+}
+
+.cards .card-item .cms-text p {
+    margin-bottom: 0.75rem;
+}
+
+.cards .card-item .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cards .card-item .cms-text a {
+    position: relative;
+    z-index: 2;
+}
+
+.cards .card-item .cms-text code {
+    display: inline-block;
+    margin: 0.25rem 0.125rem 0 0;
+    padding: 0.125rem 0.625rem;
+    color: var(--pico-color);
+    background-color: color-mix(in srgb, var(--pico-muted-background-color) 70%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 999px;
+    font-family: var(--pico-font-family-sans-serif);
+    font-size: calc(var(--pico-font-size) * 0.72);
+}
+
+/* Badges: endless marquee, wrapped list without JavaScript or with reduced motion */
+
+.cards .card-list.layout-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+}
+
+.cards .card-list.layout-badges .card-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 1.125rem;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.cards .card-list.layout-badges picture.image,
+.cards .card-list.layout-badges picture.image:has(img[src$=".svg"]) {
+    width: 1.375rem;
+    margin: 0;
+}
+
+.cards .card-list.layout-badges .card-text {
+    padding: 0;
+}
+
+.cards .card-list.layout-badges .title {
+    margin: 0;
+    font-size: calc(var(--pico-font-size) * 0.95);
+    font-weight: 550;
+    white-space: nowrap;
+}
+
+.cards .card-list.layout-badges .cms-text {
+    display: none;
+}
+
+.cards:has(.marquee) {
+    overflow: hidden;
+}
+
+.cards:has(.marquee) .container {
+    -webkit-mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
+    mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
+}
+
+@media screen and (min-width: 768px) {
+    .cards:has(.marquee) .container {
+        -webkit-mask-image: linear-gradient(90deg, #00000000, #000000 6rem, #000000 calc(100% - 6rem), #00000000);
+        mask-image: linear-gradient(90deg, #00000000, #000000 6rem, #000000 calc(100% - 6rem), #00000000);
+    }
+}
+
+.cards .card-list.layout-badges.marquee {
+    flex-wrap: nowrap;
+    gap: 0;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+}
+
+.cards .card-list.layout-badges.marquee:hover {
+    animation-play-state: paused;
+}
+
+.cards .card-list.layout-badges.marquee .card-item {
+    margin-inline-end: 0.625rem;
+}
+
+@keyframes marquee {
+    to { transform: translateX(-50%); }
+}
+
+[dir=rtl] .cards .card-list.layout-badges.marquee {
+    animation-name: marquee-rtl;
+}
+
+@keyframes marquee-rtl {
+    to { transform: translateX(50%); }
+}
+
+/* Figures: big gradient numbers */
+
+.cards .card-list.layout-figures .card-item {
+    gap: 0.25rem;
+    padding: 1.75rem 1.5rem;
+}
+
+.cards .card-list.layout-figures .card-text {
+    padding: 0;
+}
+
+.cards .card-list.layout-figures .title {
+    margin: 0 0 0.5rem;
+    background: linear-gradient(120deg, var(--pico-contrast) 30%, #8B7CFF 70%, #FF5FB1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #00000000;
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.05em;
+    line-height: 1;
+}

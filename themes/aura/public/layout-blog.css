@@ -1,0 +1,290 @@
+/**
+ * Aura Theme - Post layout with reading progress, sticky outline, author card and post navigation
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+main > .progress {
+    display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+        main > .progress {
+            display: block;
+            position: fixed;
+            top: 0;
+            inset-inline: 0;
+            z-index: 101;
+            height: 3px;
+            background: linear-gradient(90deg, #6D4AFF, #FF5FB1, #FF9F5A);
+            transform-origin: 0 50%;
+            animation: progress linear both;
+            animation-timeline: scroll(root);
+        }
+
+        [dir=rtl] main > .progress {
+            transform-origin: 100% 50%;
+        }
+    }
+}
+
+@keyframes progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+main .post {
+    position: relative;
+    max-width: 48rem;
+    margin: auto;
+    padding: clamp(2rem, 6vw, 4rem) 0 1rem;
+}
+
+main .post .cms-content > div {
+    margin: 1.75rem 0;
+}
+
+main .post .cms-content > .article {
+    margin: 0 0 3.5rem;
+}
+
+main .post :is(.text, .heading) .container {
+    font-size: calc(var(--pico-font-size) * 1.06);
+    line-height: 1.8;
+}
+
+main .post .text .cms-text :is(p, li) {
+    color: var(--pico-color);
+}
+
+main .post .article + .text .cms-text > p:first-child::first-letter {
+    float: inline-start;
+    margin: 0.35rem 0.625rem 0 0;
+    background: linear-gradient(135deg, #6D4AFF, #FF5FB1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #00000000;
+    font-family: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-size: 3.75em;
+    font-style: italic;
+    line-height: 0.8;
+}
+
+main .post .heading :is(h2, h3) {
+    margin: 2.5rem 0 0;
+    font-size: calc(var(--pico-font-size) * 1.6);
+    letter-spacing: -0.03em;
+}
+
+main .post .heading h3 {
+    font-size: calc(var(--pico-font-size) * 1.2);
+}
+
+main .post .heading .anchor {
+    margin-inline-start: 0.5rem;
+    background: linear-gradient(135deg, #6D4AFF, #FF5FB1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: #00000000;
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+main .post .heading :is(h2, h3):hover .anchor {
+    opacity: 1;
+}
+
+main .post .text .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+main .post .outline {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    main .post .outline {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        inset-inline-start: calc(100% + 1.5rem);
+        width: 13rem;
+        padding-top: 30rem;
+    }
+
+    main .post .outline > * {
+        position: sticky;
+        top: 7rem;
+    }
+
+    main .post .outline p {
+        margin-bottom: 0.75rem;
+        color: var(--pico-muted-color);
+        font-family: var(--pico-font-family-monospace);
+        font-size: calc(var(--pico-font-size) * 0.72);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    main .post .outline ul {
+        top: 9rem;
+        margin: 0;
+        padding: 0;
+        border-inline-start: 1px solid var(--pico-muted-border-color);
+    }
+
+    main .post .outline li {
+        margin: 0;
+        list-style: none;
+    }
+
+    main .post .outline a {
+        display: block;
+        margin-inline-start: -1px;
+        padding: 0.35rem 0 0.35rem 1rem;
+        color: var(--pico-muted-color);
+        border-inline-start: 2px solid #00000000;
+        font-size: calc(var(--pico-font-size) * 0.8);
+        line-height: 1.4;
+        text-decoration: none;
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    main .post .outline .level-3 a {
+        padding-inline-start: 1.75rem;
+    }
+
+    main .post .outline a:hover,
+    main .post .outline a.active {
+        color: var(--pico-contrast);
+    }
+
+    main .post .outline a.active {
+        border-image: linear-gradient(#6D4AFF, #FF5FB1) 1;
+    }
+}
+
+main .post .post-foot {
+    margin: 4rem 0 0;
+    padding: 0 1.5rem;
+}
+
+main .post .author {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--pico-card-background-color) 75%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    isolation: isolate;
+}
+
+main .post .author::before {
+    content: "";
+    position: absolute;
+    top: -6rem;
+    inset-inline-end: -6rem;
+    z-index: -1;
+    width: 16rem;
+    height: 16rem;
+    background: radial-gradient(closest-side, #6D4AFF40, #FF5FB11A 60%, #00000000);
+}
+
+main .post .author img {
+    flex-shrink: 0;
+    width: 4rem;
+    height: 4rem;
+    padding: 2px;
+    object-fit: cover;
+    background: conic-gradient(#6D4AFF, #FF5FB1, #FF9F5A, #2DD4F0, #6D4AFF);
+    border-radius: 50%;
+}
+
+main .post .author p {
+    margin: 0;
+    color: var(--pico-muted-color);
+    font-size: calc(var(--pico-font-size) * 0.9);
+}
+
+main .post .author p.name {
+    margin-bottom: 0.25rem;
+    color: var(--pico-contrast);
+    font-weight: 650;
+}
+
+main .post .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+main .post .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 1.25rem 1.5rem;
+    background-color: color-mix(in srgb, var(--pico-card-background-color) 75%, #00000000);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: calc(var(--pico-border-radius) * 1.5);
+    text-decoration: none;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+main .post .pager a:hover {
+    border-color: color-mix(in srgb, var(--pico-primary) 45%, #00000000);
+    box-shadow: 0 1.5rem 3rem -1.5rem #6D4AFF59;
+    transform: translateY(-3px);
+}
+
+main .post .pager a.next {
+    grid-column: 2;
+    text-align: end;
+}
+
+main .post .pager small {
+    color: var(--pico-muted-color);
+    font-family: var(--pico-font-family-monospace);
+    font-size: calc(var(--pico-font-size) * 0.72);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+main .post .pager a.prev small::before {
+    content: "← ";
+}
+
+main .post .pager a.next small::after {
+    content: " →";
+}
+
+[dir=rtl] main .post .pager a.prev small::before {
+    content: "→ ";
+}
+
+[dir=rtl] main .post .pager a.next small::after {
+    content: " ←";
+}
+
+main .post .pager span {
+    color: var(--pico-contrast);
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+}
+
+@media (max-width: 575px) {
+    main .post .pager {
+        grid-template-columns: 1fr;
+    }
+
+    main .post .pager a.next {
+        grid-column: auto;
+    }
+}

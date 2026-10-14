@@ -1,0 +1,104 @@
+/**
+ * Aura Theme - Call to action panel with a slowly rotating gradient glow
+ * @license MIT, https://opensource.org/license/MIT
+ */
+
+.cta .container {
+    position: relative;
+    padding: clamp(3rem, 7vw, 5.5rem) clamp(1.5rem, 5vw, 4rem) !important;
+    overflow: hidden;
+    background-color: #0B0A12;
+    border: 1px solid #262436;
+    border-radius: calc(var(--pico-border-radius) * 2);
+    text-align: center;
+    isolation: isolate;
+}
+
+.cta .container::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    width: 150%;
+    aspect-ratio: 1;
+    margin: -75% 0 0 -75%;
+    background: conic-gradient(from 0deg, #6D4AFF00, #6D4AFF59, #FF5FB140, #2DD4F033, #6D4AFF00 70%);
+}
+
+.cta .container::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: radial-gradient(60% 80% at 50% 0%, #1A163300, #0B0A12E6);
+    border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cta .container::before {
+        animation: cta-spin 18s linear infinite;
+    }
+}
+
+@keyframes cta-spin {
+    to { transform: rotate(1turn); }
+}
+
+.cta .title {
+    max-width: 44rem;
+    margin: 0 auto 1rem;
+    color: #FFFFFF;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+}
+
+.cta .title em {
+    background-image: linear-gradient(100deg, #B4A6FF 0%, #FF8CC8 55%, #FFC089 100%);
+}
+
+.cta .cms-text {
+    --pico-color: #B5B3C8;
+    max-width: 34rem;
+    margin: auto;
+    color: #B5B3C8;
+    font-size: calc(var(--pico-font-size) * 1.1);
+}
+
+.cta .cms-text > :last-child {
+    margin-bottom: 0;
+}
+
+.cta .cms-text a {
+    color: #FFFFFF;
+}
+
+.cta .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.cta .btn {
+    margin: 0;
+    color: #FFFFFF;
+    background-color: #FFFFFF0F;
+    border-color: #FFFFFF26;
+}
+
+.cta .btn:hover {
+    color: #FFFFFF;
+    background-color: #FFFFFF1F;
+    border-color: #FFFFFF4D;
+}
+
+.cta .btn:first-child,
+.cta .btn:first-child:hover {
+    color: #0B0A12;
+    background:
+        linear-gradient(#FFFFFF, #FFFFFF) padding-box,
+        linear-gradient(100deg, #6D4AFF, #FF5FB1, #FF9F5A) border-box;
+}
