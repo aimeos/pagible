@@ -23,8 +23,6 @@ class MedicalDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/MedicalDemo.php';
-
         ( new MedicalDemo( 'medical', 'medical' ) )->seed();
         Tenancy::$callback = fn() => 'medical';
         app()->forgetInstance( Tenancy::class );

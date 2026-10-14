@@ -153,10 +153,6 @@ class DemoTest extends ThemeTestAbstract
     private function assertThemeImages( string $theme, string $provider, string $seeder, int $heroFiles,
         string $image, ?int $slides = null
     ) : void {
-        $class = basename( str_replace( '\\', '/', $seeder ) );
-
-        require_once dirname( __DIR__, 2 ) . "/themes/{$theme}/database/seeders/{$class}.php";
-
         app()->register( $provider );
 
         ( new $seeder( $theme, $theme ) )->seed();

@@ -23,8 +23,6 @@ class BrewDemoTest extends ThemeTestAbstract
     {
         parent::setUp();
 
-        require_once dirname( __DIR__ ) . '/database/seeders/BrewDemo.php';
-
         ( new BrewDemo( 'brew', 'brew' ) )->seed();
         Tenancy::$callback = fn() => 'brew';
         app()->forgetInstance( Tenancy::class );
