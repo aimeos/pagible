@@ -319,11 +319,27 @@ class PageVariant extends Model
 
         foreach( array_chunk( array_values( $ids ), DB::IN_SIZE ) as $chunk )
         {
-            Version::withoutGlobalScopes()->where( 'versionable_type', static::class )->whereIn( 'versionable_id', $chunk )->toBase()->delete();
+            static::purgeVersions( $chunk );
             $count += static::withoutGlobalScopes()->whereKey( $chunk )->toBase()->delete();
         }
 
         return $count;
+    }
+
+
+    /**
+     * Permanently deletes the versions of the variants.
+     *
+     * The versions are deleted without the global scopes, so the caller must pass
+     * only the IDs of the variants it's allowed to delete.
+     *
+     * @param array<string> $ids Variant IDs
+     */
+    public static function purgeVersions( array $ids ) : void
+    {
+        foreach( array_chunk( array_values( $ids ), DB::IN_SIZE ) as $chunk ) {
+            Version::withoutGlobalScopes()->where( 'versionable_type', static::class )->whereIn( 'versionable_id', $chunk )->toBase()->delete();
+        }
     }
 
 

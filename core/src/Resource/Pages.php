@@ -41,7 +41,8 @@ final class Pages
         $node = new Page( ['source' => $page->getAttribute( 'source' ) ?: (string) $page->getAttribute( 'lang' )] );
         $node->setAttribute( 'id', $page->getKey() );
 
-        self::position( $node, $ref, $parent )->save();
+        // the positions are loaded within the locked transaction and the page tree isn't changed in between
+        Page::trusted( fn() => self::position( $node, $ref, $parent )->save() );
 
         // saved as model to update the search index
         $variant = ( new PageVariant() )->setRawAttributes( self::variantRow( (string) $node->id, PageBuilder::variantValues( $page->getAttributes() ), raw: true ) );

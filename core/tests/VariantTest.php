@@ -595,6 +595,109 @@ class VariantTest extends CoreTestAbstract
     }
 
 
+    public function testPurgeSubtreesKeepsTree()
+    {
+        $root = $this->root();
+        $add = fn( string $name, string $parent ) => Resource::addPage( ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => $name], $this->user, parent: $parent );
+
+        $first = $add( 'purge-first', $root->id );
+        $child = $add( 'purge-child', $first->id );
+        $kept = $add( 'purge-kept', $root->id );
+        $last = $add( 'purge-last', $root->id );
+        $count = Page::withTrashed()->count();
+
+        // the nested child is removed together with its parent already
+        Resource::purge( PageView::class, [$last->id, $child->id, $first->id], $this->user );
+
+        $this->assertFalse( Page::withTrashed()->isBroken() );
+        $this->assertEquals( $count - 3, Page::withTrashed()->count() );
+        $this->assertEquals( 0, PageVariant::withTrashed()->whereIn( 'page_id', [$first->id, $child->id, $last->id] )->count() );
+        $this->assertNotNull( PageView::find( $kept->id ) );
+        $this->assertEquals( $root->id, Page::findOrFail( $kept->id )->parent_id );
+    }
+
+
+    public function testTrustedTreeChangesKeepTree()
+    {
+        $root = $this->root();
+        $add = fn( string $name, ?string $parent = null, ?string $ref = null ) => Resource::addPage( ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => $name], $this->user, $ref, $parent );
+
+        $first = $add( 'trusted-first', $root->id );
+        $child = $add( 'trusted-child', $first->id );
+        $second = $add( 'trusted-second', $root->id );
+        $before = $add( 'trusted-before', ref: $first->id );
+
+        // subtree moves to the right and to the left of the original position
+        Resource::movePage( $first->id, parent: $second->id, user: $this->user );
+        Resource::movePage( $child->id, ref: $before->id, user: $this->user );
+        Resource::movePage( $first->id, parent: $root->id, user: $this->user );
+        Resource::copyPage( $second->id, ref: $first->id, user: $this->user );
+
+        $this->assertFalse( Page::withTrashed()->isBroken() );
+        $this->assertEquals( $root->id, Page::findOrFail( $first->id )->parent_id );
+        $this->assertEquals( $root->id, Page::findOrFail( $child->id )->parent_id );
+
+        // positions are re-read again outside of the trusted scope
+        $node = Page::findOrFail( $second->id );
+        Page::query()->whereKey( $node->id )->update( ['_rgt' => 0] );
+        $node->refreshNode();
+
+        $this->assertEquals( 0, $node->getRgt() );
+    }
+
+
+    public function testDropRestoreSubtrees()
+    {
+        $root = $this->root();
+        $add = fn( string $name, string $parent ) => Resource::addPage( ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => $name], $this->user, parent: $parent );
+        $trashed = fn( PageView ...$pages ) => Page::onlyTrashed()->whereKey( array_map( fn( $page ) => $page->id, $pages ) )->count();
+
+        $first = $add( 'subtree-first', $root->id );
+        $child = $add( 'subtree-child', $first->id );
+        $leaf = $add( 'subtree-leaf', $child->id );
+        $second = $add( 'subtree-second', $root->id );
+
+        Resource::drop( PageView::class, [$leaf->id], $this->user );
+        $this->travel( 2 )->seconds();
+
+        // the nested child is dropped together with its parent and the trashed leaf keeps its time
+        $items = Resource::drop( PageView::class, [$second->id, $child->id, $first->id], $this->user );
+
+        $this->assertEquals( 4, $trashed( $first, $child, $leaf, $second ) );
+        $this->assertTrue( $items->every( fn( PageView $item ) => $item->trashed() ) );
+        $this->assertLessThan( Page::withTrashed()->findOrFail( $first->id )->deleted_at, Page::withTrashed()->findOrFail( $leaf->id )->deleted_at );
+
+        // the leaf trashed before its ancestors stays in the trash
+        $items = Resource::restore( PageView::class, [$first->id, $second->id], $this->user );
+
+        $this->assertEquals( 1, $trashed( $first, $child, $leaf, $second ) );
+        $this->assertEquals( 1, $trashed( $leaf ) );
+        $this->assertFalse( $items->contains( fn( PageView $item ) => $item->trashed() ) );
+
+        // pages trashed before are restored if passed together with their ancestors
+        Resource::drop( PageView::class, [$first->id], $this->user );
+        Resource::restore( PageView::class, [$first->id, $leaf->id], $this->user );
+
+        $this->assertEquals( 0, $trashed( $first, $child, $leaf, $second ) );
+        $this->assertFalse( Page::withTrashed()->isBroken() );
+    }
+
+
+    public function testAddVariantReturnsStoredView()
+    {
+        $page = $this->page();
+        $de = Resource::addVariant( $page->id, 'de', $this->user );
+        $stored = PageView::language( 'de' )->findOrFail( $page->id );
+
+        $keys = ['id', 'variant_id', 'variant_deleted_at', 'parent_id', 'source', 'lang', 'domain', 'path', 'to', 'name', 'title',
+            'type', 'theme', 'tag', 'cache', 'status', 'meta', 'config', 'content', 'hashes', 'stale', 'latest_id', 'editor',
+            '_lft', '_rgt', 'depth', 'deleted_at'];
+
+        $this->assertEquals( $stored->only( $keys ), $de->only( $keys ) );
+        $this->assertTrue( $de->exists );
+    }
+
+
     public function testPruneVariant()
     {
         $page = $this->page();

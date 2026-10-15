@@ -105,7 +105,7 @@ class Resource
             $page = PageView::withTrashed()->findOrFail( $id );
 
             PageView::withoutSyncingToSearch( function() use ( $page, $ref, $parent, $editor ) {
-                Pages::saveNode( $page, fn( Page $node ) => Pages::position( $node, $ref, $parent )->save() );
+                Pages::saveNode( $page, fn( Page $node ) => Page::trusted( fn() => Pages::position( $node, $ref, $parent )->save() ) );
                 Pages::saveVariant( $page, ['editor' => $editor] );
             } );
 

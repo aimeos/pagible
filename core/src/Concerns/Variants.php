@@ -47,12 +47,7 @@ trait Variants
      */
     public static function addVariant( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        // trashed variants are rejected by translatePage()
-        if( PageVariant::where( 'page_id', $id )->where( 'lang', $lang )->exists() ) {
-            throw new Exception( sprintf( 'Language "%1$s" already exists', $lang ) );
-        }
-
-        return self::translatePage( $id, $lang, $user );
+        return self::translateVariant( $id, $lang, $user, add: true );
     }
 
 
@@ -189,12 +184,35 @@ trait Variants
      */
     public static function translatePage( string $id, string $lang, ?Authenticatable $user = null, ?callable $translate = null ) : PageView
     {
+        return self::translateVariant( $id, $lang, $user, $translate );
+    }
+
+
+    /**
+     * Adds or updates the language variant of a page from its source variant.
+     *
+     * @param string $id Page UUID
+     * @param string $lang Language code of the variant
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param (callable(array<int, string>, string, ?string, string): array<int, string>)|null $translate Translate callback
+     * @param bool $add TRUE if the variant must not exist yet
+     * @return PageView Page with the variant and its new draft
+     * @throws Exception If the language is the source language, its variant is in the trash or exists when adding
+     */
+    protected static function translateVariant( string $id, string $lang, ?Authenticatable $user = null,
+        ?callable $translate = null, bool $add = false ) : PageView
+    {
         // existing variants in unconfigured languages (e.g. imported ones) can still be translated
         if( !Utils::isLocale( $lang ) && !PageVariant::where( 'page_id', $id )->where( 'lang', $lang )->exists() ) {
             throw new Exception( sprintf( 'Invalid language code "%1$s"', $lang ) );
         }
 
         [$source, $variant] = self::translatable( $id, $lang );
+
+        // trashed variants are already rejected by translatable()
+        if( $add && $variant ) {
+            throw new Exception( sprintf( 'Language "%1$s" already exists', $lang ) );
+        }
 
         // translate outside of the transaction because the AI call is slow
         $result = Sync::translate( $source, $variant, $lang, $translate );
@@ -468,7 +486,12 @@ trait Variants
 
         PageVariant::withoutGlobalScopes()->toBase()->insert( $variant );
 
-        return PageView::query()->variant( (string) $variant['id'] )->firstOrFail();
+        // the page view is built from the page of the source and the new variant instead of reading it again,
+        // the variant columns left out of the inserted record because they are NULL must replace the source values
+        $values = array_fill_keys( [...PageVariant::FIELDS, 'id', 'deleted_at'], null );
+
+        return ( new PageView() )->newFromBuilder( $source->getAttributes() )
+            ->synced( ( new PageVariant() )->setRawAttributes( array_replace( $values, $variant ) ) );
     }
 
 

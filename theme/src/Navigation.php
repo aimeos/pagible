@@ -43,7 +43,7 @@ final class Navigation
      */
     public function ancestors() : Collection
     {
-        return $this->ancestors ??= $this->visible( $this->query()->whereAncestorOf( $this->page )->defaultOrder()->get() );
+        return $this->ancestors ??= $this->visible( $this->loaded() ?? $this->query()->whereAncestorOf( $this->page )->defaultOrder()->get() );
     }
 
 
@@ -130,6 +130,30 @@ final class Navigation
         }
 
         return $query;
+    }
+
+
+    /**
+     * Returns the accessible ancestors already loaded with their access decisions for visitors.
+     *
+     * The ancestors of the page are localized like the navigation for visitors, so pages without
+     * visible variant in the current language are left out by visible() in the same way.
+     *
+     * @return Collection<int, PageView>|null Accessible ancestors or NULL if not loaded with access decisions
+     */
+    private function loaded() : ?Collection
+    {
+        if( !$this->page->relationLoaded( 'ancestors' ) || Permission::can( 'page:view', $this->user ) ) {
+            return null;
+        }
+
+        $items = $this->page->getRelation( 'ancestors' );
+
+        if( !$items instanceof Collection || $items->contains( fn( PageView $item ) => !array_key_exists( 'access_exists', $item->getAttributes() ) ) ) {
+            return null;
+        }
+
+        return $items->reject( fn( PageView $item ) => $item->access_exists && !$item->access_allowed )->values();
     }
 
 

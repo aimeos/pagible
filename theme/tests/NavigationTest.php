@@ -147,4 +147,30 @@ class NavigationTest extends ThemeTestAbstract
         $this->assertNotEmpty( $ancestors );
         $this->assertFalse( $page->relationLoaded( 'ancestors' ) );
     }
+
+
+    public function testLoadedAncestorsMatchQueriedAncestors(): void
+    {
+        $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
+        PageAccess::set( [$blog->id], [] );
+
+        $user = new \App\Models\User();
+        $user->id = 42;
+        $user->tenant_id = 'test';
+
+        foreach( [null, $user] as $current )
+        {
+            $expected = ( new Navigation( PageView::findOrFail( $article->id ), $current ) )->ancestors()->pluck( 'id' )->all();
+
+            $page = PageView::findOrFail( $article->id );
+            $page->setRelation( 'ancestors', $page->ancestors()->withAccess( $current )->get() );
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+
+            $this->assertSame( $expected, ( new Navigation( $page, $current ) )->ancestors()->pluck( 'id' )->all() );
+            $this->assertCount( 0, DB::getQueryLog() );
+            $current ? $this->assertContains( $blog->id, $expected ) : $this->assertNotContains( $blog->id, $expected );
+        }
+    }
 }

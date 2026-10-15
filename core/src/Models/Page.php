@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Date;
 use Aimeos\Cms\Tenancy;
 
 
@@ -49,6 +50,7 @@ class Page extends Model
     use HasUuids;
     use NodeTrait {
         deleteDescendants as protected deleteNodeDescendants;
+        refreshNode as protected refreshNodeData;
     }
     use Prunable;
     use PrunesTrashed;
@@ -109,10 +111,9 @@ class Page extends Model
     private array $removed = [];
 
     /**
-     * TRUE if the caller already removed the variants of the subtree.
+     * If the tree positions of loaded pages are up to date and don't need to be re-read.
      */
-    private bool $bare = false;
-
+    private static bool $trusted = false;
 
     /**
      * Updates the search index and removes the variants of purged pages.
@@ -123,11 +124,7 @@ class Page extends Model
             $page->isForceDeleting() ? $page->unindex() : $page->index( trashed: true );
         } );
 
-        static::forceDeleting( function( Page $page ) {
-            if( !$page->bare ) {
-                $page->removeVariants();
-            }
-        } );
+        static::forceDeleting( fn( Page $page ) => $page->removeVariants() );
         static::restored( fn( Page $page ) => $page->index( trashed: false ) );
     }
 
@@ -169,14 +166,122 @@ class Page extends Model
 
 
     /**
-     * Permanently deletes the page and its descendants whose variants have been removed by the caller.
+     * Permanently deletes the passed pages and their descendants whose variants have been removed by the caller.
      *
-     * @return bool|null TRUE on success
+     * Doesn't fire model events because the caller updates the search index. Removes the rightmost
+     * subtree first because closing its gap doesn't shift the positions of the subtrees left of it,
+     * so the positions of the passed pages stay valid without reloading them.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
      */
-    public function purge() : ?bool
+    public static function purge( iterable $pages ) : void
     {
-        $this->bare = true;
-        return $this->forceDelete();
+        $model = new self();
+
+        foreach( PageView::topmost( $pages )->reverse() as $page )
+        {
+            $lft = (int) $page->getAttribute( NestedSet::LFT );
+            $rgt = (int) $page->getAttribute( NestedSet::RGT );
+
+            $model->newNestedSetQuery()->whereBetween( NestedSet::LFT, [$lft, $rgt] )->toBase()->delete();
+            $model->newNestedSetQuery()->makeGap( $rgt + 1, $lft - $rgt - 1 );
+        }
+    }
+
+
+    /**
+     * Restores the passed pages and their descendants which have been trashed together with them.
+     *
+     * Doesn't fire model events because the caller updates the search index. Each page restores
+     * the descendants trashed at the same time or later, so descendants trashed before stay in the trash.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
+     * @param \DateTimeInterface $at Time of the change
+     */
+    public static function restoreSubtrees( iterable $pages, \DateTimeInterface $at ) : void
+    {
+        $model = new self();
+        $pages = collect( $pages )->filter( fn( Model $page ) => $page->getAttribute( 'deleted_at' ) !== null );
+
+        if( $pages->isEmpty() ) {
+            return;
+        }
+
+        $model->newNestedSetQuery()->where( function( $query ) use ( $model, $pages ) {
+            foreach( $pages as $page )
+            {
+                $deleted = Date::make( $page->getAttribute( 'deleted_at' ) )?->startOfSecond();
+                $bounds = [$page->getAttribute( NestedSet::LFT ), $page->getAttribute( NestedSet::RGT )];
+
+                $query->orWhere( fn( $query ) => $query->whereBetween( NestedSet::LFT, $bounds )
+                    ->where( 'deleted_at', '>=', $model->fromDateTime( $deleted ) ) );
+            }
+        } )->toBase()->update( ['deleted_at' => null, 'updated_at' => $model->fromDateTime( $at )] );
+    }
+
+
+    /**
+     * Moves the passed pages and their descendants into the trash.
+     *
+     * Doesn't fire model events because the caller updates the search index. Descendants which are
+     * already in the trash keep their deletion time, so they aren't restored together with the pages.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
+     * @param \DateTimeInterface $at Time of the change
+     */
+    public static function trashSubtrees( iterable $pages, \DateTimeInterface $at ) : void
+    {
+        $model = new self();
+        $roots = PageView::topmost( $pages );
+
+        if( $roots->isEmpty() ) {
+            return;
+        }
+
+        $ids = collect( $pages )->map( fn( Model $page ) => (string) $page->getKey() )->all();
+        $time = $model->fromDateTime( $at );
+
+        $model->newNestedSetQuery()
+            ->where( function( $query ) use ( $roots ) {
+                foreach( $roots as $root ) {
+                    $query->orWhereBetween( NestedSet::LFT, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
+                }
+            } )
+            ->where( fn( $query ) => $query->whereNull( 'deleted_at' )->orWhereIn( 'id', $ids ) )
+            ->toBase()->update( ['deleted_at' => $time, 'updated_at' => $time] );
+    }
+
+
+    /**
+     * Re-reads the tree position of the page unless the positions of loaded pages are trusted.
+     */
+    public function refreshNode() : void
+    {
+        if( !self::$trusted ) {
+            $this->refreshNodeData();
+        }
+    }
+
+
+    /**
+     * Runs the callback with the tree positions of loaded pages trusted.
+     *
+     * Only for code that loads the pages within the locked transaction immediately before
+     * changing the tree and doesn't reuse them after the tree has been changed.
+     *
+     * @param \Closure $callback Callback changing the page tree
+     * @return mixed Result of the callback
+     */
+    public static function trusted( \Closure $callback ) : mixed
+    {
+        $prev = self::$trusted;
+        self::$trusted = true;
+
+        try {
+            return $callback();
+        } finally {
+            self::$trusted = $prev;
+        }
     }
 
 

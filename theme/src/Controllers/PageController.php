@@ -200,7 +200,7 @@ class PageController extends Controller
 
 
     /**
-     * Loads the published page and its access decision in the same query.
+     * Loads the published page and its access decision in the same query and its ancestors.
      *
      * @param string $path Page URL segment
      * @param string $domain Requested domain
@@ -214,11 +214,12 @@ class PageController extends Controller
             ->withGlobalScope( 'status', new Status() )
             ->withAccess( $user );
 
-        if( $route && $route->variant_id ) {
-            return $query->variant( (string) $route->variant_id )->findOrFail( $route->id );
-        }
+        $page = $route && $route->variant_id
+            ? $query->variant( (string) $route->variant_id )->findOrFail( $route->id )
+            : $query->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
-        return $query->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+        // the ancestors are loaded with their access decisions, so the navigation doesn't load them again
+        return $page->setRelation( 'ancestors', $page->ancestors()->getQuery()->scopes( ['withAccess' => [$user]] )->get() );
     }
 
 
