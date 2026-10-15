@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Resource;
+namespace Aimeos\Cms\Resource\Support;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\PageVariant;

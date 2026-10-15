@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -51,7 +51,7 @@ class RestorePage extends RestoreTool
     protected function apply( array $v, ?Authenticatable $user ) : array
     {
         if( isset( $v['lang'] ) ) {
-            return Presenter::item( Resource::restoreVariant( $v['id'], $v['lang'], $user ), true );
+            return Presenter::item( Variants::restore( $v['id'], $v['lang'], $user ), true );
         }
 
         return parent::apply( $v, $user );

@@ -44,7 +44,7 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
     final public function handle( Request $request ) : ResponseFactory
     {
         if( !$this->allowed( $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exceptions\PermissionException( 'Insufficient permissions' );
         }
 
         try {

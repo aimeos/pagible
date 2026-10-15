@@ -1,0 +1,284 @@
+<?php
+
+/**
+ * @license MIT, https://opensource.org/license/mit
+ */
+
+
+namespace Aimeos\Cms\Resource;
+
+use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Exceptions\InvalidInputException;
+use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\Merge;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource\Support\Bulk;
+use Aimeos\Cms\Resource\Support\Refs;
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Lifecycle;
+use Aimeos\Cms\Publication;
+use Illuminate\Support\Collection;
+
+
+/**
+ * Operations on shared content elements.
+ *
+ * Each method checks the permission of its action for the passed user, e.g. "element:save" for
+ * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
+ * trusted like in commands and jobs and no permissions are checked.
+ *
+ * @phpstan-type ElementInput array{type?: string, name?: string|null, lang?: string|null, data?: array<string, mixed>|object|null, ...}
+ */
+class Elements
+{
+    /**
+     * Creates a new element with version and attached files.
+     *
+     * Files attached to the version are derived from the element's content data.
+     *
+     * @param ElementInput $input Element fields (type, name, lang, data)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Element
+     * @throws InvalidInputException If the input is invalid
+     */
+    public static function add( array $input, ?Authenticatable $user = null ) : Element
+    {
+        Permission::check( 'element:add', $user );
+
+        Validation::limits( Element::class, $input );
+        $input['data'] = Validation::element( $input['type'] ?? '', $input['data'] ?? [] );
+
+        $editor = Utils::editor( $user );
+
+        return DB::transaction( function() use ( $input, $editor, $user ) {
+
+            $fileIds = Refs::element( $input, $user );
+
+            $element = new Element();
+            $element->setUniqueIds();
+            $element->fill( $input );
+            $element->editor = $editor;
+
+            // Saves the element with its draft version so the draft (latest=true) row is indexed
+            $element->draft( [
+                'data' => $element->toArray(),
+                'lang' => $input['lang'] ?? null,
+                'editor' => $editor,
+            ], ['files' => $fileIds] );
+
+            $element->files()->attach( $fileIds );
+            $element->announce( ContentAction::Added, $editor );
+
+            return $element;
+        } );
+    }
+
+
+    /**
+     * Updates an existing element with a new version.
+     *
+     * @param string $id Element UUID
+     * @param ElementInput $input Changed fields (merged with latest version)
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
+     * @return Element
+     * @throws InvalidInputException If the input is invalid
+     * @throws ModelNotFoundException If element not found
+     */
+    public static function save( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Element
+    {
+        Permission::check( 'element:save', $user );
+
+        $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
+        $type = $input['type'] ?? $element->type;
+        Validation::limits( Element::class, $input );
+
+        if( isset( $input['data'] ) ) {
+            $input['data'] = Validation::element( $type, $input['data'], isset( $input['type'] ) );
+        } elseif( isset( $input['type'] ) ) {
+            Validation::element( $type );
+        }
+
+        $editor = Utils::editor( $user );
+
+        return DB::transaction( function() use ( $element, $input, $editor, $latestId, $user ) {
+
+            self::apply( $element, $input, $editor, $latestId, $user );
+            $element->announce( ContentAction::Saved, $editor );
+            PruneVersions::dispatchChunked( Element::class, [$element->id] );
+
+            return $element;
+        } );
+    }
+
+
+    /**
+     * Applies the same input to several shared content elements at once.
+     *
+     * @param array<string> $ids Element IDs to update
+     * @param ElementInput $input Fields applied to every element (e.g. ['lang' => 'de'])
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return BulkResult
+     * @throws InvalidInputException If the input carries the element-specific "type" or "data"
+     */
+    public static function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
+    {
+        Permission::check( 'element:save', $user );
+
+        if( isset( $input['type'] ) || isset( $input['data'] ) ) {
+            throw new InvalidInputException( 'Bulk edits cannot change the type or data of an element' );
+        }
+
+        Validation::limits( Element::class, $input );
+
+        return Bulk::save( Element::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?Element {
+            $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id );
+            return $element ? self::apply( $element, $input, $editor, null, $user, $refs[$element->latest_id ?? ''] ?? null ) : null;
+        } );
+    }
+
+    /**
+     * Publishes or schedules the latest version of the element.
+     *
+     * @param string $id Element ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $at Publication date or NULL to publish immediately
+     * @return Element Published element
+     * @throws ModelNotFoundException If the element doesn't exist
+     */
+    public static function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : Element
+    {
+        return Items::one( Element::class, self::publishMany( [$id], $user, $at ), $id );
+    }
+
+
+    /**
+     * Publishes or schedules the latest versions of the elements.
+     *
+     * @param array<string> $ids Element IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $at Publication date or NULL to publish immediately
+     * @return Collection<int, Element> Published elements
+     */
+    public static function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    {
+        return Publication::publish( Element::class, $ids, $user, $at );
+    }
+
+
+    /**
+     * Moves the element to the trash.
+     *
+     * @param string $id Element ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Element Trashed element
+     * @throws ModelNotFoundException If the element doesn't exist
+     */
+    public static function drop( string $id, ?Authenticatable $user = null ) : Element
+    {
+        return Items::one( Element::class, self::dropMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Permanently deletes the element.
+     *
+     * @param string $id Element ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Element Deleted element
+     * @throws ModelNotFoundException If the element doesn't exist
+     */
+    public static function purge( string $id, ?Authenticatable $user = null ) : Element
+    {
+        return Items::one( Element::class, self::purgeMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Restores the trashed element.
+     *
+     * @param string $id Element ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return Element Restored element
+     * @throws ModelNotFoundException If the element doesn't exist
+     */
+    public static function restore( string $id, ?Authenticatable $user = null ) : Element
+    {
+        return Items::one( Element::class, self::restoreMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Moves elements to the trash.
+     *
+     * @param array<string> $ids Element IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, Element> Trashed elements
+     */
+    public static function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::drop( Element::class, $ids, $user, $fields );
+    }
+
+    /**
+     * Permanently deletes elements.
+     *
+     * @param array<string> $ids Element IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, Element> Deleted elements
+     */
+    public static function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::purge( Element::class, $ids, $user, $fields );
+    }
+
+    /**
+     * Restores trashed elements.
+     *
+     * @param array<string> $ids Element IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, Element> Restored elements
+     */
+    public static function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::restore( Element::class, $ids, $user, $fields );
+    }
+
+
+    /**
+     * Creates a new version for an already loaded element from the given input.
+     *
+     * Shared by saveElement() (single) and bulkElement() (bulk). Must run inside a transaction.
+     *
+     * @param Element $element Element model with the "latest" relation loaded
+     * @param array<string, mixed> $input Validated element input (merged with latest version)
+     * @param string $editor Name of the editing user
+     * @param string|null $latestId Version ID the editor was working on for conflict detection
+     * @param Authenticatable|null $user Current user accepting new file references
+     * @param array<string, array<string>>|null $refs Prefetched references of the latest version to copy
+     * @return Element Updated element with the new version as "latest"
+     */
+    protected static function apply( Element $element, array $input, string $editor,
+        ?string $latestId, ?Authenticatable $user, ?array $refs = null ) : Element
+    {
+        [$data, $dd] = Merge::model( $element, $input, $latestId );
+
+        // without new data, the file references of the previous version are copied
+        $element->draft( [
+            'data' => $data,
+            'editor' => $editor,
+            'lang' => $input['lang'] ?? $element->latest?->lang,
+        ], array_key_exists( 'data', $input ) ? ['files' => Refs::element( $data, $user )] : $refs, $dd ? ['data' => $dd] : null );
+
+        return $element;
+    }
+}

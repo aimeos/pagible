@@ -8,8 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -148,9 +147,9 @@ class RobotsControllerTest extends ThemeTestAbstract
             'cmsperms' => ['admin'],
         ] );
 
-        Resource::savePage( $root->id, ['config' => $config( 'Disallow: /published' )], $user );
-        Publication::publish( PageView::class, [$root->id], $user );
-        Resource::savePage( $root->id, ['config' => $config( 'Disallow: /draft' )], $user );
+        Pages::save( $root->id, ['config' => $config( 'Disallow: /published' )], $user );
+        Pages::publishMany( [$root->id], $user );
+        Pages::save( $root->id, ['config' => $config( 'Disallow: /draft' )], $user );
 
         $root->refresh()->load( 'latest' );
         $this->assertSame( 'Disallow: /published', $root->config->{'robots-txt'}->data->text );

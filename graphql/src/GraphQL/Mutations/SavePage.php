@@ -8,7 +8,8 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,13 +21,13 @@ final class SavePage
      */
     public function __invoke( $rootValue, array $args ) : PageView
     {
-        return Resource::savePage(
-            $args['id'],
-            $args['input'] ?? [],
-            Auth::user(),
-            $args['latestId'] ?? null,
-            $args['lang'] ?? null,
-            !empty( $args['restore'] ),
-        );
+        if( isset( $args['lang'] ) )
+        {
+            return empty( $args['restore'] )
+                ? Variants::save( $args['id'], $args['lang'], $args['input'] ?? [], Auth::user(), $args['latestId'] ?? null )
+                : Variants::revert( $args['id'], $args['lang'], $args['input'] ?? [], Auth::user(), $args['latestId'] ?? null );
+        }
+
+        return Pages::save( $args['id'], $args['input'] ?? [], Auth::user(), $args['latestId'] ?? null );
     }
 }

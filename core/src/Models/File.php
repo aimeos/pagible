@@ -12,6 +12,7 @@ use Aimeos\Cms\Concerns\FilePreviews;
 use Aimeos\Cms\Concerns\FileStorage;
 use Aimeos\Cms\Concerns\Referenced;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
+use Aimeos\Cms\ContentType;
 use Aimeos\Cms\Files;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\LifecycleAction;
@@ -52,7 +53,7 @@ class File extends Base
     use FileStorage;
     use Referenced;
 
-    public const PERM = 'file';
+    public const PERM = ContentType::File->value;
     protected const PRUNE_SIZE = 100;
 
     /** @var list<string> Columns for eager-loading file relations */

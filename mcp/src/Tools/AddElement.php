@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Elements;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -40,7 +40,7 @@ class AddElement extends Tool
             'data.required' => 'You must provide the element data as a JSON object with field values.',
         ] );
 
-        $element = Resource::addElement( $v, $request->user() );
+        $element = Elements::add( $v, $request->user() );
 
         return Response::structured( Presenter::item( $element ) );
     }

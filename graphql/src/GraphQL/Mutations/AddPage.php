@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,7 +20,7 @@ final class AddPage
      */
     public function __invoke( $rootValue, array $args ) : PageView
     {
-        return Resource::addPage(
+        return Pages::add(
             $args['input'] ?? [],
             Auth::user(),
             $args['ref'] ?? null,

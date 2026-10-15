@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Aimeos\Cms\Uploads;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -46,7 +46,7 @@ trait HandlesMedia
 
         $result = $this->upload( $base64, 'image', function( UploadedFile $upload ) use ( $v, $request ) {
 
-            $file = Resource::saveFile( $v['file'], [], $request->user(), $v['latest_id'], $upload );
+            $file = Files::save( $v['file'], [], $request->user(), $v['latest_id'], $upload );
             return Presenter::saved( Presenter::file( $file ), $file );
         } );
 
@@ -95,7 +95,7 @@ trait HandlesMedia
     protected function store( string $base64, string $name, ?string $lang, ?array $description, ?Authenticatable $user ) : array
     {
         return $this->upload( $base64, $name, fn( UploadedFile $upload ) => Presenter::item(
-            Resource::createFile( $upload, array_filter( ['lang' => $lang, 'description' => $description] ), $user )
+            Files::add( $upload, array_filter( ['lang' => $lang, 'description' => $description] ), $user )
         ) );
     }
 

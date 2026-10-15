@@ -8,7 +8,13 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Publication;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Resource\Elements;
+use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -54,7 +60,14 @@ abstract class PublishTool extends Tool
         ] );
 
         $ids = $v['id'];
-        $items = Publication::publish( static::MODEL, $ids, $request->user(), $v['at'] ?? null, $v['lang'] ?? null );
+        $items = match( static::MODEL ) {
+            PageView::class => isset( $v['lang'] )
+                ? Variants::publishMany( $ids, $v['lang'], $request->user(), $v['at'] ?? null )
+                : Pages::publishMany( $ids, $request->user(), $v['at'] ?? null ),
+            Element::class => Elements::publishMany( $ids, $request->user(), $v['at'] ?? null ),
+            File::class => Files::publishMany( $ids, $request->user(), $v['at'] ?? null ),
+            default => throw new \LogicException( 'No resource for ' . static::MODEL ),
+        };
 
         return Response::structured( Presenter::published( $items, $ids, $v['at'] ?? null ) );
     }

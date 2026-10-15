@@ -9,7 +9,8 @@ namespace Tests;
 
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\SearchQuery;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Scout;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -66,7 +67,7 @@ class VariantSearchTest extends CoreTestAbstract
         $source = (string) $page->lang;
         config( ['cms.locales' => [$source, 'de', 'fr']] );
 
-        $variant = Resource::addVariant( $page->id, 'de' );
+        $variant = Variants::add( $page->id, 'de' );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'fr'], $doc['langs'] ?? null );
@@ -75,7 +76,7 @@ class VariantSearchTest extends CoreTestAbstract
         Scout::sync( PageView::class, [(string) $page->id] );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
 
-        Resource::dropVariant( $page->id, 'de' );
+        Variants::drop( $page->id, 'de' );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'de', 'fr'], $doc['langs'] ?? null );
@@ -83,7 +84,7 @@ class VariantSearchTest extends CoreTestAbstract
         $this->assertSame( [], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs_trashed'] ?? null );
 
-        Resource::variants( 'purge', [$page->id], 'de' );
+        Variants::purgeMany( [$page->id], 'de' );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'de', 'fr'], $doc['langs_trashed'] ?? null );
@@ -104,7 +105,7 @@ class VariantSearchTest extends CoreTestAbstract
     public function testSyncIndexesAllVariantsOfThePages(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Resource::addVariant( $page->id, 'de' );
+        $variant = Variants::add( $page->id, 'de' );
         $this->engine->documents = [];
 
         Scout::sync( PageView::class, [(string) $page->id] );
@@ -116,10 +117,10 @@ class VariantSearchTest extends CoreTestAbstract
     public function testBulkAndPublishIndexOnlyTheChangedVariants(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Resource::addVariant( $page->id, 'de' );
+        $variant = Variants::add( $page->id, 'de' );
         $this->engine->updates = [];
 
-        Resource::bulkPage( [$page->id], ['title' => 'Blog DE'], null, lang: 'de' );
+        Variants::bulk( [$page->id], 'de', ['title' => 'Blog DE'], null );
         $this->assertSame( [$variant->variant_id], $this->engine->updates );
 
         $this->engine->updates = [];
@@ -127,7 +128,7 @@ class VariantSearchTest extends CoreTestAbstract
         \Illuminate\Support\Facades\Queue::fake();
 
         try {
-            \Aimeos\Cms\Publication::publish( PageView::class, [$page->id], null, lang: 'de' );
+            Variants::publishMany( [$page->id], 'de', null );
         } finally {
             config( ['scout.queue' => false] );
         }
@@ -140,12 +141,12 @@ class VariantSearchTest extends CoreTestAbstract
     public function testBulkVariantRestoreIndexesOnlyTheRestoredVariants(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $de = Resource::addVariant( $page->id, 'de' );
-        $fr = Resource::addVariant( $page->id, 'fr' );
-        Resource::dropVariant( $page->id, 'de' );
+        $de = Variants::add( $page->id, 'de' );
+        $fr = Variants::add( $page->id, 'fr' );
+        Variants::drop( $page->id, 'de' );
 
         $this->engine->updates = [];
-        Resource::variants( 'restore', [$page->id], 'de', fields: ['name'] );
+        Variants::restoreMany( [$page->id], 'de', fields: ['name'] );
 
         // the source variant is reindexed for its language list, the other variants are unchanged
         $this->assertContains( $de->variant_id, $this->engine->updates );
@@ -156,7 +157,7 @@ class VariantSearchTest extends CoreTestAbstract
     public function testCopiesAreIndexedOnceWithTheirAccess(): void
     {
         $root = PageView::where( 'path', 'blog' )->firstOrFail();
-        $page = Resource::addPage( ['lang' => 'en', 'name' => 'Copy', 'path' => 'copy-page'], parent: $root->id );
+        $page = Pages::add( ['lang' => 'en', 'name' => 'Copy', 'path' => 'copy-page'], parent: $root->id );
 
         \Aimeos\Cms\Models\PageAccess::query()->toBase()->insert( [
             'page_id' => $page->id, 'tenant_id' => 'test', 'value' => '', 'editor' => 'test', 'created_at' => now(), 'updated_at' => now(),
@@ -164,17 +165,17 @@ class VariantSearchTest extends CoreTestAbstract
 
         // single page, no bulk inserts
         $this->engine->updates = [];
-        $copy = Resource::copyPage( $page->id, null, $root->id );
+        $copy = Pages::copy( $page->id, parent: $root->id );
 
         $this->assertSame( [$copy->variant_id], $this->engine->updates );
         $this->assertTrue( $this->engine->documents[$copy->variant_id]['restricted'] ?? null );
 
         // subtree with bulk inserted variants
-        Resource::addVariant( $copy->id, 'de' );
-        Resource::addPage( ['lang' => 'en', 'name' => 'Child', 'path' => 'copy-child'], parent: $copy->id );
+        Variants::add( $copy->id, 'de' );
+        Pages::add( ['lang' => 'en', 'name' => 'Child', 'path' => 'copy-child'], parent: $copy->id );
 
         $this->engine->updates = [];
-        $tree = Resource::copyPage( $copy->id, null, $root->id );
+        $tree = Pages::copy( $copy->id, parent: $root->id );
         $keys = \Aimeos\Cms\Models\PageVariant::whereIn( 'page_id', PageView::where( 'parent_id', $tree->id )->pluck( 'id' )->push( $tree->id ) )
             ->pluck( 'id' )->map( strval( ... ) )->all();
 

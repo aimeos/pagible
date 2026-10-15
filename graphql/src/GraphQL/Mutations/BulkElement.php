@@ -7,7 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\BulkResult;
+use Aimeos\Cms\Resource\Elements;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -16,10 +17,10 @@ final class BulkElement
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     * @return BulkResult
      */
-    public function __invoke( $rootValue, array $args ) : array
+    public function __invoke( $rootValue, array $args ) : BulkResult
     {
-        return Resource::bulkElement( $args['id'], $args['input'] ?? [], Auth::user() );
+        return Elements::bulk( $args['id'], $args['input'] ?? [], Auth::user() );
     }
 }

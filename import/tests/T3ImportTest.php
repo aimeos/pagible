@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Hashes;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -312,7 +312,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
         $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
-        $fr = Resource::translatePage( $page->id, 'fr' );
+        $fr = Variants::translate( $page->id, 'fr' );
 
         $this->assertSame( array_column( (array) $page->content, 'id' ), array_column( (array) $fr->latest->aux->content, 'id' ) );
     }

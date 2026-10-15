@@ -10,7 +10,9 @@ namespace Aimeos\Cms\Concerns;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\ContentType;
 use Aimeos\Cms\LifecycleAction;
+use Aimeos\Cms\VariantAction;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
@@ -20,6 +22,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Aimeos\Cms\DB;
 use Illuminate\Support\Facades\Event as Events;
+use Illuminate\Support\Testing\Fakes\EventFake;
 use Aimeos\Cms\Models\Base;
 
 
@@ -85,13 +88,13 @@ trait Broadcasts
         static::send( new $class(
             contentType: static::PERM,
             id: $id,
-            latest_id: $latestId,
+            latestId: $latestId,
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             data: $data,
             published: (bool) $version->published,
-            deleted_at: $this->deleted_at ? (string) $this->deleted_at : null,
-            publish_at: $version->publish_at,
-            updated_at: $version->created_at ? (string) $version->created_at : null,
+            deletedAt: $this->deleted_at ? (string) $this->deleted_at : null,
+            publishAt: $version->publish_at,
+            updatedAt: $version->created_at ? (string) $version->created_at : null,
             tenant: Tenancy::value(),
             source: Watch::source(),
             projection: $projection,
@@ -104,31 +107,32 @@ trait Broadcasts
      *
      * A no-op when broadcasting is disabled or nothing was saved.
      *
-     * @param string $type Content type: 'page', 'element' or 'file'
+     * @param ContentType $type Type of the saved items
      * @param list<string> $ids Ids of the saved items
      * @param array<string, string> $latest Saved item id => its new latest version id
      * @param array<string, mixed> $data Shared fields applied to every saved item
      * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @param string $action Audit action name
+     * @param ContentAction|LifecycleAction|VariantAction $action Action applied to the items
      * @param array<string, string> $projected Item id => actually projected version id
      * @param array<string, string> $langs Item id => language of the page variant
      */
-    public static function announceBulk( string $type, array $ids, array $latest, array $data,
-        Authenticatable|string|null $editor = null, string $action = 'bulk', array $projected = [], array $langs = [] ) : void
+    public static function announceBulk( ContentType $type, array $ids, array $latest, array $data = [],
+        Authenticatable|string|null $editor = null, ContentAction|LifecycleAction|VariantAction $action = ContentAction::Saved,
+        array $projected = [], array $langs = [] ) : void
     {
         if( empty( $ids ) || !static::announces( Bulk::class ) ) {
             return;
         }
 
         static::send( new Bulk(
-            contentType: $type,
+            contentType: $type->value,
             ids: $ids,
             latest: $latest,
             data: $data,
             editor: is_string( $editor ) ? $editor : Utils::editor( $editor ),
             tenant: Tenancy::value(),
             source: Watch::source(),
-            action: $action,
+            action: $action->value,
             projected: $projected,
             langs: $langs,
         ) );
@@ -184,20 +188,21 @@ trait Broadcasts
                     }
                 }
 
-                static::announceBulk( $first::PERM, $ids, $latest, $data, $editor, $action->value, $versions, $langs );
+                static::announceBulk( ContentType::from( $first::PERM ), $ids, $latest, $data, $editor, $action, projected: $versions, langs: $langs );
             }
         }
     }
 
 
     /**
-     * Returns whether an event needs to be built for broadcasting or an in-process listener.
+     * Returns whether an event needs to be built for broadcasting, an in-process listener or Event::fake().
      *
      * @param class-string<Event|Bulk> $event
      */
     public static function announces( string $event ) : bool
     {
-        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $event );
+        return (bool) config( 'cms.broadcast' ) || Events::hasListeners( $event )
+            || Events::getFacadeRoot() instanceof EventFake;
     }
 
 

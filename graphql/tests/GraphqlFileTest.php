@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use PHPUnit\Framework\Attributes\Group;
 
 
@@ -229,7 +229,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testRelocateFileRejectsOversizedLists()
     {
-        $ids = array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) );
+        $ids = array_map( strval(...), range( 1, Files::MAX_RELOCATE + 1 ) );
 
         $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
         $response = $this->actingAs( $relocator )->graphQL( '

@@ -5,135 +5,49 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Resource\Support;
 
+use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Exceptions\ConflictException;
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource\Bulk;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Refs;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Resource\BulkResult;
+use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Utils;
+use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 /**
- * @phpstan-import-type BulkResult from Bulk
+ * Saves new versions of page variants shared by the Pages and Variants resource classes.
+ *
+ * @internal Use Pages::save()/bulk() for the source variants and Variants::save()/bulk() for the others
  */
-class Resource
+final class PageEdits
 {
-    use Concerns\Copies;
-    use Concerns\Lifecycle;
-    use Concerns\ResourceElements;
-    use Concerns\ResourceFiles;
-    use Concerns\Variants;
-
-    public const MAX_RELOCATE = 100;
-
-
     /**
-     * Creates a new page with version and attached relations.
-     *
-     * Files and elements attached to the page are derived from the content, meta and config data.
-     *
-     * @param array<string, mixed> $input Page fields (content/meta/config go into version aux), "lang" defaults to the app locale
-     * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
-     * @param string|null $ref Sibling page ID to insert before
-     * @param string|null $parent Parent page ID to append to
-     * @return PageView
-     * @throws \InvalidArgumentException On validation failure
-     */
-    public static function addPage( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : PageView
-    {
-        $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
-        $input = Validation::page( $input, $user );
-        $editor = Utils::editor( $user );
-
-        return DB::lockedTransaction( function() use ( $input, $editor, $ref, $parent, $user ) {
-
-            $aux = [
-                'content' => $input['content'] ?? [],
-                'meta' => $input['meta'] ?? [],
-                'config' => $input['config'] ?? [],
-            ];
-            $refs = Refs::page( $aux, $user );
-
-            $page = new PageView();
-            $page->setUniqueIds();
-            $page->fill( $input );
-            $page->editor = $editor;
-
-            // Inserts the page with its draft version so the draft (latest=true) row is indexed
-            $page->newDraft( [
-                'data' => array_diff_key( $input, $aux ),
-                'lang' => $input['lang'] ?? null,
-                'editor' => $editor,
-                'aux' => $aux,
-            ], $refs );
-
-            Pages::create( $page, $ref, $parent );
-
-            $page->files()->attach( $refs['files'] );
-            $page->elements()->attach( $refs['elements'] );
-
-            $page->announce( ContentAction::Added, $editor );
-
-            return $page;
-        } );
-    }
-
-
-    /**
-     * Moves a page to a new position in the tree and broadcasts the change.
-     *
-     * @param string $id Page UUID
-     * @param string|null $ref Sibling page ID to insert before
-     * @param string|null $parent Parent page ID to append to
-     * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @return PageView
-     * @throws ModelNotFoundException If page not found
-     */
-    public static function movePage( string $id, ?string $ref = null, ?string $parent = null, ?Authenticatable $user = null ) : PageView
-    {
-        $editor = Utils::editor( $user );
-
-        $page = DB::lockedTransaction( function() use ( $id, $ref, $parent, $editor ) {
-
-            $page = PageView::withTrashed()->findOrFail( $id );
-
-            PageView::withoutSyncingToSearch( function() use ( $page, $ref, $parent, $editor ) {
-                Pages::saveNode( $page, fn( Page $node ) => Page::trusted( fn() => Pages::position( $node, $ref, $parent )->save() ) );
-                Pages::saveVariant( $page, ['editor' => $editor] );
-            } );
-
-            return $page;
-        } );
-
-        $page->announce( ContentAction::Moved, $editor );
-        return $page;
-    }
-
-
-    /**
-     * Updates an existing page with a new version.
+     * Updates the variant of an existing page with a new version.
      *
      * @param string $id Page UUID
      * @param array<string, mixed> $input Changed fields (merged with latest version)
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
-     * @param string|null $lang Language of the page variant or null for the source variant
+     * @param string|null $lang Language of the page variant or NULL for the source variant
      * @param bool $restore TRUE if the input restores an old version, which marks translations as outdated
      * @return PageView
-     * @throws \InvalidArgumentException On validation failure
-     * @throws ModelNotFoundException If page not found
-     * @throws Exception If the new source language in $input['source'] has no variant
      */
-    public static function savePage( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null,
-        ?string $lang = null, bool $restore = false ) : PageView
+    public static function save( string $id, array $input, ?Authenticatable $user, ?string $latestId,
+        ?string $lang, bool $restore = false ) : PageView
     {
+        Permission::check( 'page:save', $user );
+
         $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
@@ -144,7 +58,7 @@ class Resource
 
             if( !empty( $input ) || $source === null )
             {
-                self::applyPage( $page, $input, $editor, $latestId, $user );
+                self::apply( $page, $input, $editor, $latestId, $user );
                 $page->announce( ContentAction::Saved, $editor );
                 PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] );
             }
@@ -158,7 +72,7 @@ class Resource
 
             if( $source !== null && $source !== $page->source )
             {
-                self::setSource( (string) $page->id, $source, $user );
+                Variants::setSource( (string) $page->id, $source, $user );
 
                 $variant = $page->variant()->firstOrFail( ['id', 'hashes', 'stale'] );
                 $page->forceFill( ['source' => $source, 'hashes' => $variant->hashes, 'stale' => $variant->stale] )->syncOriginal();
@@ -170,7 +84,7 @@ class Resource
 
 
     /**
-     * Applies the same partial input to multiple pages, optionally including all sub-pages.
+     * Applies the same partial input to the variants of multiple pages, optionally including all sub-pages.
      *
      * @param array<string> $ids Page IDs to update
      * @param array<string, mixed> $input Partial page input applied to every page
@@ -179,9 +93,10 @@ class Resource
      * @param string|null $lang Language of the page variants to update or NULL for the source variants
      * @return BulkResult
      */
-    public static function bulkPage( array $ids, array $input, ?Authenticatable $user = null, bool $descendants = false,
-        ?string $lang = null ) : array
+    public static function bulk( array $ids, array $input, ?Authenticatable $user, bool $descendants, ?string $lang ) : BulkResult
     {
+        Permission::check( 'page:save', $user );
+
         $input = Validation::page( $input, $user );
 
         // recursive save: expand to the whole subtree in depth-first order (defaultOrder() is the
@@ -213,7 +128,7 @@ class Resource
             }
 
             // bulk only creates new draft versions, so the cached published output is unchanged
-            self::applyPage( $page, $input, $editor, null, $user, $refs[$page->latest_id ?? ''] ?? null );
+            self::apply( $page, $input, $editor, null, $user, $refs[$page->latest_id ?? ''] ?? null );
 
             return $page;
         }, $lang );
@@ -223,7 +138,7 @@ class Resource
     /**
      * Creates a new version for an already loaded page from the given input.
      *
-     * Shared by savePage() (single) and bulkPage() (bulk) so the versioning, merge
+     * Shared by save() (single) and bulk() (bulk) so the versioning, merge
      * and reference handling stays in one place. Must run inside a transaction.
      *
      * @param PageView $page Page model with the "latest" relation loaded
@@ -233,7 +148,7 @@ class Resource
      * @param Authenticatable|null $user Current user
      * @param array<string, array<string>>|null $refs Prefetched references of the latest version to copy
      */
-    protected static function applyPage( PageView $page, array $input, string $editor,
+    private static function apply( PageView $page, array $input, string $editor,
         ?string $latestId, ?Authenticatable $user, ?array $refs = null ) : void
     {
         $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
@@ -244,11 +159,11 @@ class Resource
         {
             // new languages must be configured so they don't become allowed for AI translation
             if( !Utils::isLocale( (string) $input['lang'] ) ) {
-                throw new Exception( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
+                throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
             }
 
             if( PageVariant::withTrashed()->where( 'page_id', $page->id )->where( 'lang', $input['lang'] )->exists() ) {
-                throw new Exception( sprintf( 'The page already has a variant in "%1$s"', $input['lang'] ) );
+                throw new ConflictException( sprintf( 'The page already has a variant in "%1$s"', $input['lang'] ) );
             }
         }
 
@@ -257,6 +172,6 @@ class Resource
         $data['domain'] ??= $page->domain;
 
         // without new content, meta or config, the references of the previous version are copied
-        Pages::addVersion( $page, $data, $aux, $editor, $accepts ? Refs::page( $aux, $user ) : $refs, $diffs, $input['lang'] ?? $page->latest?->lang );
+        PageRows::addVersion( $page, $data, $aux, $editor, $accepts ? Refs::page( $aux, $user ) : $refs, $diffs, $input['lang'] ?? $page->latest?->lang );
     }
 }

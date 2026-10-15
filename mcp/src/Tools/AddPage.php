@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -77,7 +77,7 @@ class AddPage extends Tool
 
         $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
-        $page = Resource::addPage(
+        $page = Pages::add(
             $input,
             $request->user(),
             $v['ref'] ?? null,

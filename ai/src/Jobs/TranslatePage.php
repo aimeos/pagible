@@ -12,7 +12,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Exceptions\OverloadedException;
@@ -350,7 +350,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                 Auth::setUser( $user );
 
                 try {
-                    Ai::limited( fn() => Resource::translatePage( $this->id, $this->lang, $user, Ai::translator( $user ) ), $this->tenant );
+                    Ai::limited( fn() => Variants::translate( $this->id, $this->lang, $user, Ai::translator( $user ) ), $this->tenant );
                 } finally {
                     $previous ? Auth::setUser( $previous ) : Auth::forgetUser();
                 }

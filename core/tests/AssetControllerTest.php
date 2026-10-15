@@ -13,7 +13,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -350,7 +350,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testPrivateFileOfTranslationCanBeDelivered()
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Resource::addVariant( $page->id, 'de' );
+        $variant = Variants::add( $page->id, 'de' );
         PageVariant::whereKey( $variant->variant_id )->update( ['status' => 1] );
 
         [$page, $file] = $this->asset( true, $variant );

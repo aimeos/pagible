@@ -5,14 +5,16 @@
  */
 
 
-namespace Aimeos\Cms\Resource;
+namespace Aimeos\Cms\Resource\Support;
 
+use Aimeos\Cms\ContentType;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Resource\BulkResult;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -22,7 +24,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
  * Saves the same input to several items of one type.
  *
  * @internal
- * @phpstan-type BulkResult array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
  */
 final class Bulk
 {
@@ -38,10 +39,10 @@ final class Bulk
      * @return BulkResult
      */
     public static function save( string $model, array $ids, array $input, ?Authenticatable $user, \Closure $save,
-        ?string $lang = null ) : array
+        ?string $lang = null ) : BulkResult
     {
         if( empty( $ids ) || empty( $input ) ) {
-            return ['ids' => [], 'latest' => [], 'data' => [], 'failed' => 0];
+            return new BulkResult();
         }
 
         $editor = Utils::editor( $user );
@@ -85,14 +86,14 @@ final class Bulk
             Scout::index( $model, $keys, keys: true );
         }
 
-        $result = [
-            'ids' => $saved,
-            'latest' => $latest,
-            'data' => $input + ( $lang !== null ? ['lang' => $lang] : [] ) + ['published' => false, 'updated_at' => (string) now()],
-            'failed' => count( $ids ) - count( $saved ),
-        ];
+        $result = new BulkResult(
+            ids: $saved,
+            latest: $latest,
+            data: $input + ( $lang !== null ? ['lang' => $lang] : [] ) + ['published' => false, 'updated_at' => (string) now()],
+            failed: count( $ids ) - count( $saved ),
+        );
 
-        Base::announceBulk( $model::PERM, $result['ids'], $result['latest'], $result['data'], $editor, langs: $langs );
+        Base::announceBulk( ContentType::from( $model::PERM ), $result->ids, $result->latest, $result->data, $editor, langs: $langs );
 
         // versions belong to the version key, e.g. the page variant
         $model::locked( fn() => PruneVersions::dispatchChunked( $model, $keys ) );

@@ -17,7 +17,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\BenchmarkSeeder;
@@ -333,19 +333,19 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Variant add', function() use ( $missing, $lang ) {
-            Resource::addVariant( (string) $missing->id, $lang );
+            Variants::add( (string) $missing->id, $lang );
         }, tries: $tries );
 
         $this->benchmark( 'Variant translate', function() use ( $missing, $lang ) {
-            Resource::translatePage( (string) $missing->id, $lang, translate: fn( array $texts ) => $texts );
+            Variants::translate( (string) $missing->id, $lang, translate: fn( array $texts ) => $texts );
         }, tries: $tries );
 
         $this->benchmark( 'Variant source', function() use ( $translated, $lang ) {
-            Resource::setSource( (string) $translated->id, $lang );
+            Variants::setSource( (string) $translated->id, $lang );
         }, tries: $tries );
 
         $this->benchmark( 'Variant delete', function() use ( $translated, $lang ) {
-            Resource::dropVariant( (string) $translated->id, $lang );
+            Variants::drop( (string) $translated->id, $lang );
         }, tries: $tries );
     }
 

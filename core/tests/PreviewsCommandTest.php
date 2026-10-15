@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Commands\Previews;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -162,9 +162,7 @@ class PreviewsCommandTest extends CoreTestAbstract
     {
         config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720], ['width' => 960]]] );
 
-        $file = new File();
-        $file->ingest( UploadedFile::fake()->image( 'small.jpg', 600, 300 ) );
-        $file = Resource::addFile( $file );
+        $file = Files::add( UploadedFile::fake()->image( 'small.jpg', 600, 300 ) );
 
         // the 720 and 960 sizes result in the same width because the image is smaller and share one preview
         $this->assertEquals( [480, 600], array_keys( (array) $file->previews ) );
@@ -303,12 +301,10 @@ class PreviewsCommandTest extends CoreTestAbstract
     {
         config( ['cms.image.preview-sizes' => [['width' => 960]]] );
 
-        $file = new File();
-        $file->ingest(
+        $file = Files::add(
             UploadedFile::fake()->createWithContent( 'document.txt', 'text' ),
-            UploadedFile::fake()->image( 'preview.jpg', 1200, 600 ),
+            preview: UploadedFile::fake()->image( 'preview.jpg', 1200, 600 ),
         );
-        $file = Resource::addFile( $file );
 
         config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720]]] );
 
@@ -464,9 +460,7 @@ class PreviewsCommandTest extends CoreTestAbstract
 
     protected function file( bool $published = true ): File
     {
-        $file = new File();
-        $file->ingest( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) );
-        $file = Resource::addFile( $file );
+        $file = Files::add( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) );
 
         return $published ? $this->publish( $file ) : $file;
     }

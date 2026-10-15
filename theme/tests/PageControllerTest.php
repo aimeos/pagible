@@ -15,8 +15,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Aimeos\Cms\Validation;
 use Database\Seeders\TestSeeder;
 use Illuminate\Contracts\Cache\LockProvider;
@@ -174,9 +173,9 @@ class PageControllerTest extends ThemeTestAbstract
     {
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
-        Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Published website' )], $this->user );
-        Publication::publish( PageView::class, [$root->id], $this->user );
-        Resource::savePage( $root->id, ['config' => $this->websiteConfig( 'Draft website' )], $this->user );
+        Pages::save( $root->id, ['config' => $this->websiteConfig( 'Published website' )], $this->user );
+        Pages::publishMany( [$root->id], $this->user );
+        Pages::save( $root->id, ['config' => $this->websiteConfig( 'Draft website' )], $this->user );
 
         $response = $this->get( '/blog?website=published' );
         $response->assertOk();
@@ -195,7 +194,7 @@ class PageControllerTest extends ThemeTestAbstract
         $page = PageView::where( 'tag', 'blog' )->firstOrFail();
 
         // Save with a new path (mimics admin panel which always sends domain)
-        Resource::savePage(
+        Pages::save(
             $page->id,
             ['path' => 'new-blog-path', 'domain' => $page->domain ?? ''],
             $this->user,
@@ -215,7 +214,7 @@ class PageControllerTest extends ThemeTestAbstract
 
         // the cached domain list doesn't contain the new domain of the draft yet
         $this->actingAs( $this->user )->get( '/blog' )->assertOk();
-        Resource::savePage( $page->id, ['path' => $other->path, 'domain' => 'new.tld', 'name' => 'Moved draft'], $this->user );
+        Pages::save( $page->id, ['path' => $other->path, 'domain' => 'new.tld', 'name' => 'Moved draft'], $this->user );
 
         $response = $this->actingAs( $this->user )->get( '/' . $other->path );
         $response->assertOk();
@@ -233,8 +232,8 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $oldPath, 'old-route', $page->domain );
         $this->cache( $newPath, 'new-route', $page->domain );
 
-        Resource::savePage( $page->id, ['path' => $newPath], $this->user );
-        Publication::publish( PageView::class, [$page->id], $this->user );
+        Pages::save( $page->id, ['path' => $newPath], $this->user );
+        Pages::publishMany( [$page->id], $this->user );
 
         $this->assertNull( PageCache::response( $oldPath, $page->domain ) );
         $this->assertNull( PageCache::response( $newPath, $page->domain ) );
@@ -245,11 +244,11 @@ class PageControllerTest extends ThemeTestAbstract
     {
         config( ['cms.theme.cache' => 'array'] );
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
-        $parent = Resource::addPage( [
+        $parent = Pages::add( [
             'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'cache-parent',
             'content' => [],
         ], $this->user, parent: (string) $root->id );
-        $child = Resource::addPage( [
+        $child = Pages::add( [
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'cache-child',
             'content' => [],
         ], $this->user, parent: (string) $parent->id );
@@ -257,7 +256,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $parent, 'cached-parent' );
         $this->cache( $child, 'cached-child' );
 
-        Resource::drop( PageView::class, [(string) $parent->id], $this->user );
+        Pages::dropMany( [(string) $parent->id], $this->user );
 
         $this->assertNull( PageCache::response( $parent ) );
         $this->assertNull( PageCache::response( $child ) );
@@ -269,7 +268,7 @@ class PageControllerTest extends ThemeTestAbstract
         $page = PageView::where( 'tag', 'article' )->firstOrFail();
 
         // Save with a new path (no domain in input — e.g. MCP tool)
-        Resource::savePage(
+        Pages::save(
             $page->id,
             ['path' => 'changed-article-path'],
             $this->user,
@@ -288,7 +287,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->assertEquals( 'mydomain.tld', $page->domain );
 
         // Admin panel save sends the page's domain
-        Resource::savePage(
+        Pages::save(
             $page->id,
             ['path' => 'new-home', 'domain' => $page->domain],
             $this->user,
@@ -308,7 +307,7 @@ class PageControllerTest extends ThemeTestAbstract
         // populates the cached list of the domains used by the variants
         $this->actingAs( $this->user )->get( '/welcome-to-laravelcms' )->assertOk();
 
-        Resource::savePage( $page->id, ['path' => 'new-domain-path', 'domain' => 'New.Example.com'], $this->user );
+        Pages::save( $page->id, ['path' => 'new-domain-path', 'domain' => 'New.Example.com'], $this->user );
 
         $this->assertSame( 'new.example.com', PageView::find( $page->id )->latest?->data->domain );
         $this->actingAs( $this->user )->get( '/new-domain-path' )->assertOk();
@@ -351,7 +350,7 @@ class PageControllerTest extends ThemeTestAbstract
         $page->variant->update( ['latest_id' => $version->id] );
 
         // Now save with a new path (no domain in input)
-        Resource::savePage(
+        Pages::save(
             $page->id,
             ['path' => 'new-test-page'],
             $this->user,
@@ -423,7 +422,7 @@ class PageControllerTest extends ThemeTestAbstract
         $tiff = File::where( 'mime', 'image/tiff' )->firstOrFail();
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en',
             'name' => 'Hero images',
             'title' => 'Hero images',
@@ -461,7 +460,7 @@ class PageControllerTest extends ThemeTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en',
             'name' => 'Hero files',
             'title' => 'Hero files',
@@ -491,7 +490,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en',
             'name' => 'Hero buttons',
             'title' => 'Hero buttons',

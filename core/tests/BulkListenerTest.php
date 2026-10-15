@@ -33,7 +33,7 @@ class BulkListenerTest extends TestCase
     {
         $logger = \Mockery::mock( LoggerInterface::class );
         $logger->shouldReceive( 'info' )->once()->with( 'cms.element', \Mockery::on( fn( $ctx ) =>
-            $ctx['action'] === 'bulk'
+            $ctx['action'] === 'saved'
             && $ctx['type'] === 'element'
             && $ctx['source'] === 'graphql'
             && $ctx['ids'] === ['a', 'b']

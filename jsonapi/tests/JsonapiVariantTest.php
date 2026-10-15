@@ -8,8 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use LaravelJsonApi\Testing\MakesJsonApiRequests;
@@ -68,7 +68,7 @@ class JsonapiVariantTest extends JsonapiTestAbstract
 
     public function testLangFilterUnpublishedVariant()
     {
-        Resource::addVariant( $this->blog()->id, 'fr', $this->user );
+        Variants::add( $this->blog()->id, 'fr', $this->user );
 
         $response = $this->jsonApi()->expects( 'pages' )->filter( ['lang' => 'fr'] )->get( 'cms/pages' );
 
@@ -90,7 +90,7 @@ class JsonapiVariantTest extends JsonapiTestAbstract
     {
         $blog = $this->blog();
         $this->variant( $blog, 'de', 'blog-de' );
-        Resource::addVariant( $blog->id, 'fr', $this->user );
+        Variants::add( $blog->id, 'fr', $this->user );
 
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$blog->id}" );
 
@@ -146,9 +146,9 @@ class JsonapiVariantTest extends JsonapiTestAbstract
 
     protected function variant( PageView $page, string $lang, string $path ) : PageView
     {
-        Resource::addVariant( $page->id, $lang, $this->user );
-        Resource::savePage( $page->id, ['path' => $path, 'status' => 1], $this->user, lang: $lang );
-        Publication::publish( PageView::class, [$page->id], $this->user, lang: $lang );
+        Variants::add( $page->id, $lang, $this->user );
+        Variants::save( $page->id, $lang, ['path' => $path, 'status' => 1], $this->user );
+        Variants::publishMany( [$page->id], $lang, $this->user );
 
         return PageView::language( $lang )->findOrFail( $page->id );
     }

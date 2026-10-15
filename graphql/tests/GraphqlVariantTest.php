@@ -7,8 +7,8 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
@@ -42,8 +42,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testPageLanguage()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['title' => 'Deutsch'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['title' => 'Deutsch'], $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             page(id: "' . $page->id . '", lang: "de") {
@@ -72,8 +72,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     {
         $page = $this->page();
         $other = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Publication::publish( PageView::class, [$page->id], $this->user );
+        Variants::add( $page->id, 'de', $this->user );
+        Pages::publishMany( [$page->id], $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             pages(filter: {id: ["' . $page->id . '", "' . $other->id . '"]}) {
@@ -94,7 +94,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $this->assertEquals( ['current', 'missing'], array_column( $items[$other->id]['variants'], 'state' ) );
         $this->assertNull( $items[$other->id]['variants'][1]['id'] );
 
-        Resource::dropVariant( $page->id, 'de', $this->user );
+        Variants::drop( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             page(id: "' . $page->id . '") { variants { lang state } }
@@ -107,7 +107,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testPagesFilterLanguage()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '{
             pages(filter: {lang: "de"}) {
@@ -123,7 +123,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     {
         $page = $this->page();
         $other = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $query = fn( string $trashed ) => $this->actingAs( $this->user )->graphQL( '{
             pages(filter: {id: ["' . $page->id . '", "' . $other->id . '"]}, lang: "de", trashed: ' . $trashed . ') {
@@ -138,7 +138,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $this->assertEquals( [], $query( 'ONLY' ) );
 
         // a trashed variant falls back to the source variant unless trashed ones are requested
-        Resource::dropVariant( $page->id, 'de', $this->user );
+        Variants::drop( $page->id, 'de', $this->user );
 
         $result = collect( $query( 'WITHOUT' ) )->keyBy( 'id' );
         $this->assertEquals( 'en', $result[$page->id]['lang'] );
@@ -158,7 +158,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     {
         $page = $this->page();
         $other = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -215,8 +215,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testAddPageVariantTrashed()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::dropVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::drop( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -245,7 +245,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testSavePageLanguages()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $en = PageView::findOrFail( $page->id )->latest_id;
         $de = PageView::language( 'de' )->findOrFail( $page->id )->latest_id;
@@ -275,9 +275,9 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testSavePageSource()
     {
         $page = $this->page();
-        Publication::publish( PageView::class, [$page->id], $this->user );
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Publication::publish( PageView::class, [$page->id], $this->user, lang: 'de' );
+        Pages::publishMany( [$page->id], $this->user );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::publishMany( [$page->id], 'de', $this->user );
 
         $versions = PageView::findOrFail( $page->id )->versions()->count();
 
@@ -313,7 +313,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     {
         $page = $this->page();
         $other = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -329,8 +329,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
 
         // trashing and restoring the page keeps the variant trashed
-        Resource::drop( PageView::class, [$page->id], $this->user );
-        Resource::restore( PageView::class, [$page->id], $this->user );
+        Pages::dropMany( [$page->id], $this->user );
+        Pages::restoreMany( [$page->id], $this->user );
         $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -347,7 +347,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testDropPageSourceLanguage()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -383,7 +383,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testPurgePageLanguage()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -400,8 +400,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testPubPageLanguage()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['title' => 'Deutsch'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['title' => 'Deutsch'], $this->user );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -417,12 +417,12 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testCopyPage()
     {
         $page = $this->page();
-        $child = Resource::addPage( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'child-' . Utils::uid(),
+        $child = Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'child-' . Utils::uid(),
             'content' => [['id' => 'el2', 'type' => 'text', 'data' => ['text' => 'Child']]],
         ], $this->user, parent: $page->id );
 
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::addVariant( $child->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::add( $child->id, 'de', $this->user );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -459,8 +459,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $missing = $this->page();
         $stale = $this->page();
 
-        Resource::translatePage( $ai->id, 'de', $this->user, $this->translator() );
-        Resource::addVariant( $stale->id, 'de', $this->user );
+        Variants::translate( $ai->id, 'de', $this->user, $this->translator() );
+        Variants::add( $stale->id, 'de', $this->user );
 
         $query = fn( string $state ) => array_column( $this->actingAs( $this->user )->graphQL( '{
             pages(filter: {id: ["' . $ai->id . '", "' . $missing->id . '", "' . $stale->id . '"], translation: "' . $state . '"}, lang: "de") {
@@ -499,7 +499,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
             $this->assertEquals( ['en', 'de', 'fr'], array_keys( $before ) );
 
             $page = $this->page();
-            Resource::addVariant( $page->id, 'de', $this->user );
+            Variants::add( $page->id, 'de', $this->user );
 
             $after = $states();
 
@@ -528,7 +528,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $before = $states( '' );
         $page = $this->page();
 
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         // cached counts are used until fresh ones are requested
         $this->assertEquals( ['stale' => $before['stale']], $states( ', cached: true' ) );
@@ -546,7 +546,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         $before = $states();
         \Illuminate\Support\Facades\RateLimiter::increment( 'cms-translation-states:' . sha1( \Aimeos\Cms\Tenancy::value() . ':' . $this->user->id ), 60, 10 );
 
-        Resource::addVariant( $this->page()->id, 'de', $this->user );
+        Variants::add( $this->page()->id, 'de', $this->user );
 
         // fresh counts scan all variants, so they are computed at most ten times a minute
         $this->assertEquals( $before, $states() );
@@ -559,8 +559,8 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testSavePageRestore()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::ignoreVariants( [$page->id], 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::ignoreMany( [$page->id], 'de', $this->user );
 
         $this->actingAs( $this->user )->graphQL( '
             mutation { savePage(id: "' . $page->id . '", input: {title: "Alt"}, lang: "de") { stale } }
@@ -577,7 +577,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     public function testIgnoreChanges()
     {
         $page = $this->page();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $this->assertTrue( (bool) PageView::language( 'de' )->findOrFail( $page->id )->stale );
 
@@ -595,7 +595,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
     protected function page() : PageView
     {
-        return Resource::addPage( [
+        return Pages::add( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'var-' . Utils::uid(),
             'content' => [['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']]],
         ], $this->user, parent: $this->root()->id );

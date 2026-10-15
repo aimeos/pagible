@@ -8,7 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
@@ -669,8 +670,8 @@ class PageToolsTest extends McpTestAbstract
     public function testGetPageLanguage()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
@@ -691,8 +692,8 @@ class PageToolsTest extends McpTestAbstract
     public function testGetPageHistoryLanguage()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageHistory::class, [
             'id' => $page->id,
@@ -706,8 +707,8 @@ class PageToolsTest extends McpTestAbstract
     public function testSearchPagesLanguage()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
             'lang' => 'de',
@@ -737,7 +738,7 @@ class PageToolsTest extends McpTestAbstract
     public function testCopyPage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\CopyPage::class, [
             'id' => $page->id,
@@ -786,7 +787,7 @@ class PageToolsTest extends McpTestAbstract
     public function testSavePageLanguage()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
         $de = PageView::language( 'de' )->findOrFail( $page->id );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -805,7 +806,7 @@ class PageToolsTest extends McpTestAbstract
     public function testSavePageSource()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
         $de = PageView::language( 'de' )->findOrFail( $page->id );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -824,7 +825,7 @@ class PageToolsTest extends McpTestAbstract
     public function testDropRestorePageLanguage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
             'id' => $page->id,
@@ -848,7 +849,7 @@ class PageToolsTest extends McpTestAbstract
     public function testDropPageSourceLanguage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de', $this->user );
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
             'id' => $page->id,
@@ -862,8 +863,8 @@ class PageToolsTest extends McpTestAbstract
     public function testPublishPageLanguage()
     {
         $page = PageView::where( 'name', 'Home' )->first();
-        Resource::addVariant( $page->id, 'de', $this->user );
-        Resource::savePage( $page->id, ['name' => 'Startseite'], $this->user, lang: 'de' );
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
             'id' => [$page->id],

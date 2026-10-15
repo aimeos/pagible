@@ -11,7 +11,7 @@ use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -57,7 +57,7 @@ class BlogActionTest extends ThemeTestAbstract
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ]],
         ];
-        Resource::savePage( $article->id, ['type' => 'blog', 'content' => $content], $this->user );
+        Pages::save( $article->id, ['type' => 'blog', 'content' => $content], $this->user );
 
         $request = Request::create( '/blog' );
         $request->setUserResolver( fn() => $this->user );
@@ -80,7 +80,7 @@ class BlogActionTest extends ThemeTestAbstract
         $article = PageView::where( 'tag', 'article' )->firstOrFail();
         $article->variant->update( ['tag' => '', 'type' => 'blog'] );
 
-        Resource::savePage( $article->id, ['type' => 'news'], $this->user );
+        Pages::save( $article->id, ['type' => 'news'], $this->user );
 
         $request = Request::create( '/news' );
         $request->setUserResolver( fn() => $this->user );

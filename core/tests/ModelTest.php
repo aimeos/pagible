@@ -45,7 +45,7 @@ class ModelTest extends CoreTestAbstract
         $page = ( new PageView() )->newFromBuilder( ['id' => 'page-1', 'name' => 'Test'] );
 
         $this->expectException( \LogicException::class );
-        \Aimeos\Cms\Resource\Pages::saveVariant( $page, ['name' => 'Changed'] );
+        \Aimeos\Cms\Resource\Support\PageRows::save( $page, ['name' => 'Changed'] );
     }
 
 

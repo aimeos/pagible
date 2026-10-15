@@ -14,7 +14,7 @@ use Aimeos\Cms\CashierProvider;
 use Aimeos\Cms\CashierToken;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -140,7 +140,7 @@ class CashierControllerTest extends CashierTestAbstract
             'email' => 'editor@testbench',
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ] );
-        \Aimeos\Cms\Resource::addVariant( (string) $this->page->id, 'de', $editor );
+        Variants::add( (string) $this->page->id, 'de', $editor );
 
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         $content[0]['data']['items'][0]['prices'][0]['currency'] = 'CHF';
@@ -167,7 +167,7 @@ class CashierControllerTest extends CashierTestAbstract
             'email' => 'editor@testbench',
             'cmsperms' => \Aimeos\Cms\Permission::all(),
         ] );
-        \Aimeos\Cms\Resource::addVariant( (string) $this->page->id, 'de', $editor );
+        Variants::add( (string) $this->page->id, 'de', $editor );
         $content = json_decode( json_encode( $this->page->content, JSON_THROW_ON_ERROR ), true, flags: JSON_THROW_ON_ERROR );
         PageView::language( 'de' )->findOrFail( $this->page->id )->variant->update( ['content' => $content, 'domain' => 'example.ch', 'status' => 1] );
 

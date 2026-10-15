@@ -67,9 +67,9 @@ describe('action vocabularies', () => {
     expect(PATCH_ACTIONS).to.deep.equal(['saved', 'published', 'restored', 'dropped'])
   })
 
-  it('list actions extend patch actions with the bulk and structural ones', () => {
+  it('list actions extend patch actions with the structural and variant ones', () => {
     expect(LIST_ACTIONS).to.deep.equal([
-      'saved', 'published', 'restored', 'dropped', 'bulk', 'added', 'moved', 'purged',
+      'saved', 'published', 'restored', 'dropped', 'added', 'moved', 'purged', 'translated', 'source', 'ignored',
     ])
   })
 
@@ -150,13 +150,20 @@ describe('listEcho()', () => {
     expect(m.patched[0].id).to.equal('p1')
   })
 
-  it('patches every listed row on a bulk action', () => {
+  it('patches every listed row of an event with several ids', () => {
     const m = vm()
-    listEcho(m, { ids: ['p1', 'p2'], data: { lang: 'de' }, latest: { p1: 'v1', p2: 'v2' } }, 'bulk')
+    listEcho(m, { ids: ['p1', 'p2'], data: { lang: 'de' }, latest: { p1: 'v1', p2: 'v2' } }, 'saved')
     expect(m.outdated).to.be.false
     expect(m.patched.map((p) => p.id)).to.deep.equal(['p1', 'p2'])
     expect(m.patched[1].lang).to.equal('de')
     expect(m.patched[1].latest_id).to.equal('v2')
+  })
+
+  it('reloads the list for purged events with several ids', () => {
+    const m = vm()
+    listEcho(m, { ids: ['p1', 'p2'] }, 'purged')
+    expect(m.outdated).to.be.true
+    expect(m.patched).to.be.empty
   })
 })
 
@@ -295,7 +302,7 @@ describe('Echo lifecycle', () => {
 
     callback({ id: 'other' }, 'saved')
     callback({ id: 'page-1' }, 'saved')
-    callback({ ids: ['page-1'] }, 'bulk')
+    callback({ ids: ['page-1'] }, 'translated')
 
     return wait().then(() => {
       expect(reload).to.have.been.calledOnce

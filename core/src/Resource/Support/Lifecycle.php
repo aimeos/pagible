@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Concerns;
+namespace Aimeos\Cms\Resource\Support;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Events\Purged;
@@ -15,8 +15,8 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Resource\Pages;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -26,18 +26,21 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
 /**
- * Drops, restores and purges pages, elements and files of the resource methods.
+ * Drops, restores and purges pages, elements and files.
+ *
+ * @internal Use the drop(), purge() and restore() methods of the resource classes instead
  */
-trait Lifecycle
+final class Lifecycle
 {
     /**
      * Soft-deletes items by ID.
      *
-     * @param class-string<Base> $model
+     * @template T of Base
+     * @param class-string<T> $model
      * @param array<string> $ids
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $fields Requested response fields
-     * @return Collection<int, Base>
+     * @return Collection<int, T>
      */
     public static function drop( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
@@ -51,11 +54,12 @@ trait Lifecycle
      * Uses a cache-locked transaction for Page models to protect tree integrity.
      * Calls purge() on File models to clean up storage.
      *
-     * @param class-string<Base> $model
+     * @template T of Base
+     * @param class-string<T> $model
      * @param array<string> $ids
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $fields Requested response fields
-     * @return Collection<int, Base>
+     * @return Collection<int, T>
      */
     public static function purge( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
@@ -68,11 +72,12 @@ trait Lifecycle
      *
      * Uses a cache-locked transaction for Page models to protect tree integrity.
      *
-     * @param class-string<Base> $model
+     * @template T of Base
+     * @param class-string<T> $model
      * @param array<string> $ids
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $fields Requested response fields
-     * @return Collection<int, Base>
+     * @return Collection<int, T>
      */
     public static function restore( string $model, array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
@@ -83,23 +88,29 @@ trait Lifecycle
     /**
      * Applies and announces a lifecycle action while preserving Page tree semantics and route invalidation.
      *
-     * @param class-string<Base> $model
+     * @template T of Base
+     * @param class-string<T> $model
      * @param array<string> $ids
      * @param LifecycleAction $action
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param array<string> $fields Requested response fields
-     * @return Collection<int, Base>
+     * @return Collection<int, T>
      */
-    protected static function lifecycle( string $model, array $ids, LifecycleAction $action,
+    private static function lifecycle( string $model, array $ids, LifecycleAction $action,
         ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
+        Permission::check( $model::PERM . ':' . $action->verb(), $user );
+
         $ids = array_values( array_unique( $ids ) );
         $model::checkBulk( count( $ids ) );
         $editor = Utils::editor( $user );
 
-        return $model === PageView::class
+        /** @var Collection<int, T> $items */
+        $items = $model === PageView::class
             ? self::lifecyclePages( $ids, $action, $editor, $fields )
             : self::lifecycleItems( $model, $ids, $action, $editor, $fields );
+
+        return $items;
     }
 
 
@@ -114,88 +125,146 @@ trait Lifecycle
      */
     private static function lifecyclePages( array $ids, LifecycleAction $action, string $editor, array $fields ) : Collection
     {
-        $pages = [];
-        $routes = [];
-        $variants = [];
-
-        $apply = function() use ( $action, $editor, $fields, $ids, &$pages, &$routes, &$variants ) {
-            /** @var EloquentCollection<int, Base> $items */
-            $items = PageView::withTrashed()->whereIn( 'id', $ids )->select( $fields ? [
-                ...PageView::REQUIRED_COLUMNS,
-                ...array_intersect( PageView::RESPONSE_COLUMNS, $fields ),
-            ] : PageView::SELECT_COLUMNS )->get();
-
-            if( $items->isEmpty() ) {
-                return $items;
-            }
-
-            $subtrees = function( $query, string $column ) use ( $items ) {
-                foreach( PageView::topmost( $items ) as $root ) {
-                    $query->orWhereBetween( $column, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
-                }
-            };
-
-            if( $action !== LifecycleAction::Restored )
-            {
-                // the variants are collected to invalidate their URLs and to update their search index entries,
-                // they are locked together with their tree rows in one query without the page IDs
-                $variant = new PageVariant();
-                $query = Page::withTrashed();
-
-                $rows = $query->join( $variant->getTable(), $variant->qualifyColumn( 'page_id' ), '=', $query->qualifyColumn( 'id' ) )
-                    ->where( fn( $query ) => $subtrees( $query, $query->qualifyColumn( NestedSet::LFT ) ) )
-                    ->orderBy( $query->qualifyColumn( NestedSet::LFT ) )
-                    ->lockForUpdate()->toBase()
-                    ->get( $variant->qualifyColumns( ['id', 'page_id', 'domain', 'path'] ) );
-
-                $pages = $rows->pluck( 'page_id' )->map( strval( ... ) )->unique()->values()->all();
-            }
-            else
-            {
-                // subtrees can be large, so only plain values are kept
-                $pages = Scout::usesExternalSearch()
-                    ? Page::withTrashed()->where( fn( $query ) => $subtrees( $query, NestedSet::LFT ) )
-                        ->orderBy( NestedSet::LFT )->lockForUpdate()->toBase()->pluck( 'id' )->map( strval( ... ) )->all()
-                    : array_map( strval( ... ), $items->modelKeys() );
-
-                $rows = [];
-            }
-
-            // the URLs of all language variants are invalidated and pages are indexed per variant,
-            // so collect the variants before they are removed
-            foreach( $rows as $row ) {
-                $routes[(string) $row->domain][] = (string) $row->path;
-                $variants[] = (string) $row->id;
-            }
-
-            // The versions are removed together with the page variants, the route is in data but not the content in aux
-            if( $action === LifecycleAction::Purged && Base::announces( Purged::class ) ) {
-                $items->load( ['latest' => fn( $query ) => $query->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )] );
-            }
-
-            // the variants are removed by the foreign key when their pages are purged, the versions aren't
-            if( $action === LifecycleAction::Purged ) {
-                PageVariant::purgeVersions( $variants );
-            }
-
-            self::pageLifecycle( $items, $action, $editor );
-            return $items;
-        };
+        $apply = fn() => self::applyPages( $ids, $action, $editor, $fields );
 
         $run = $action !== LifecycleAction::Dropped
             ? fn() => DB::lockedTransaction( $apply )
             : fn() => DB::transaction( $apply );
 
-        $items = PageView::locked( fn() => Scout::mute( [PageView::class], $run ) );
+        [$items, $pages, $variants, $routes] = PageView::locked( fn() => Scout::mute( [PageView::class], $run ) );
 
         if( $action !== LifecycleAction::Restored ) {
             Invalidation::routes( $routes );
         }
 
         self::announceLifecycle( $items, $action, $editor, announce: true );
+        self::indexPages( $action, $pages, $variants );
 
+        return $items;
+    }
+
+
+    /**
+     * Applies a lifecycle action to the locked pages within a transaction.
+     *
+     * @param array<string> $ids Page IDs
+     * @param LifecycleAction $action
+     * @param string $editor Name of the editing user
+     * @param array<string> $fields Requested response fields
+     * @return array{EloquentCollection<int, Base>, array<string>, array<string>, array<string, array<string>>}
+     *  Changed pages, IDs of all pages and variants in their subtrees and the variant paths by domain
+     */
+    private static function applyPages( array $ids, LifecycleAction $action, string $editor, array $fields ) : array
+    {
+        /** @var EloquentCollection<int, Base> $items */
+        $items = PageView::withTrashed()->whereIn( 'id', $ids )->select( $fields ? [
+            ...PageView::REQUIRED_COLUMNS,
+            ...array_intersect( PageView::RESPONSE_COLUMNS, $fields ),
+        ] : PageView::SELECT_COLUMNS )->get();
+
+        if( $items->isEmpty() ) {
+            return [$items, [], [], []];
+        }
+
+        // the URLs of all language variants are invalidated and pages are indexed per variant,
+        // so collect the variants before they are removed
+        [$pages, $variants, $routes] = $action === LifecycleAction::Restored
+            ? [self::restoredPages( $items ), [], []]
+            : self::subtreeVariants( $items );
+
+        // The versions are removed together with the page variants, the route is in data but not the content in aux
+        if( $action === LifecycleAction::Purged && Base::announces( Purged::class ) ) {
+            $items->load( ['latest' => fn( $query ) => $query->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )] );
+        }
+
+        // the variants are removed by the foreign key when their pages are purged, the versions aren't
+        if( $action === LifecycleAction::Purged ) {
+            PageVariant::purgeVersions( $variants );
+        }
+
+        self::pageLifecycle( $items, $action, $editor );
+        return [$items, $pages, $variants, $routes];
+    }
+
+
+    /**
+     * Returns the IDs of the restored pages to index.
+     *
+     * @param EloquentCollection<int, Base> $items Restored pages
+     * @return array<string> IDs of the restored pages, including their subtrees for external search engines
+     */
+    private static function restoredPages( EloquentCollection $items ) : array
+    {
+        if( !Scout::usesExternalSearch() ) {
+            return array_map( strval( ... ), $items->modelKeys() );
+        }
+
+        // subtrees can be large, so only plain values are kept
+        return Page::withTrashed()->where( fn( $query ) => self::whereSubtrees( $query, $items, NestedSet::LFT ) )
+            ->orderBy( NestedSet::LFT )->lockForUpdate()->toBase()->pluck( 'id' )->map( strval( ... ) )->all();
+    }
+
+
+    /**
+     * Locks and returns the variants within the subtrees of the given pages.
+     *
+     * The variants are locked together with their tree rows in one query without the page IDs.
+     *
+     * @param EloquentCollection<int, Base> $items Pages
+     * @return array{array<string>, array<string>, array<string, array<string>>}
+     *  IDs of the pages and variants in the subtrees and the variant paths by domain
+     */
+    private static function subtreeVariants( EloquentCollection $items ) : array
+    {
+        $variant = new PageVariant();
+        $query = Page::withTrashed();
+
+        $rows = $query->join( $variant->getTable(), $variant->qualifyColumn( 'page_id' ), '=', $query->qualifyColumn( 'id' ) )
+            ->where( fn( $query ) => self::whereSubtrees( $query, $items, $query->qualifyColumn( NestedSet::LFT ) ) )
+            ->orderBy( $query->qualifyColumn( NestedSet::LFT ) )
+            ->lockForUpdate()->toBase()
+            ->get( $variant->qualifyColumns( ['id', 'page_id', 'domain', 'path'] ) );
+
+        $routes = [];
+        $variants = [];
+
+        foreach( $rows as $row ) {
+            $routes[(string) $row->domain][] = (string) $row->path;
+            $variants[] = (string) $row->id;
+        }
+
+        $pages = $rows->pluck( 'page_id' )->map( strval( ... ) )->unique()->values()->all();
+
+        return [$pages, $variants, $routes];
+    }
+
+
+    /**
+     * Adds the conditions matching the subtrees of the given pages to the query.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Page> $query Query to add the conditions to
+     * @param EloquentCollection<int, Base> $items Pages with their nested set bounds
+     * @param string $column Name of the left nested set column
+     */
+    private static function whereSubtrees( $query, EloquentCollection $items, string $column ) : void
+    {
+        foreach( PageView::topmost( $items ) as $root ) {
+            $query->orWhereBetween( $column, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
+        }
+    }
+
+
+    /**
+     * Updates the search index for the changed pages.
+     *
+     * @param LifecycleAction $action
+     * @param array<string> $pages IDs of the pages in the changed subtrees
+     * @param array<string> $variants IDs of the variants in the changed subtrees
+     */
+    private static function indexPages( LifecycleAction $action, array $pages, array $variants ) : void
+    {
         if( $action === LifecycleAction::Dropped && !Scout::usesExternalSearch() ) {
-            return $items;
+            return;
         }
 
         if( Scout::keeps( $action ) ) {
@@ -205,8 +274,6 @@ trait Lifecycle
             // pages are indexed per variant
             Scout::unindex( PageView::class, Scout::usesSearchIndex() ? $variants : [] );
         }
-
-        return $items;
     }
 
 
@@ -353,7 +420,7 @@ trait Lifecycle
      * @param LifecycleAction $action Lifecycle action
      * @param string $editor Name of the editing user
      */
-    protected static function pageLifecycle( EloquentCollection $items, LifecycleAction $action, string $editor ) : void
+    private static function pageLifecycle( EloquentCollection $items, LifecycleAction $action, string $editor ) : void
     {
         if( $action === LifecycleAction::Purged )
         {
@@ -386,7 +453,7 @@ trait Lifecycle
         {
             /** @var PageView $item */
             $item->forceFill( ['deleted_at' => null] )->syncOriginalAttribute( 'deleted_at' );
-            Pages::saveVariant( $item, ['editor' => $editor] );
+            PageRows::save( $item, ['editor' => $editor] );
         }
     }
 }

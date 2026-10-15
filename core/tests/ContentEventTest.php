@@ -90,9 +90,9 @@ class ContentEventTest extends CoreTestAbstract
         );
 
         $this->assertTrue( $event->published );
-        $this->assertEquals( '2026-06-14 12:00:00', $event->deleted_at );
-        $this->assertEquals( '2026-07-01 08:00:00', $event->publish_at );
-        $this->assertEquals( '2026-06-14 11:59:00', $event->updated_at );
+        $this->assertEquals( '2026-06-14 12:00:00', $event->deletedAt );
+        $this->assertEquals( '2026-07-01 08:00:00', $event->publishAt );
+        $this->assertEquals( '2026-06-14 11:59:00', $event->updatedAt );
     }
 
 
@@ -101,8 +101,8 @@ class ContentEventTest extends CoreTestAbstract
         $event = new Saved( 'file', '123', 'v1', 'editor@testbench', [] );
 
         $this->assertFalse( $event->published );
-        $this->assertNull( $event->deleted_at );
-        $this->assertNull( $event->publish_at );
-        $this->assertNull( $event->updated_at );
+        $this->assertNull( $event->deletedAt );
+        $this->assertNull( $event->publishAt );
+        $this->assertNull( $event->updatedAt );
     }
 }

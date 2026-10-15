@@ -7,7 +7,8 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\BulkResult;
+use Aimeos\Cms\Resource\Files;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -16,10 +17,10 @@ final class BulkFile
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
-     * @return array{ids: list<string>, latest: array<string, string>, data: array<string, mixed>, failed: int}
+     * @return BulkResult
      */
-    public function __invoke( $rootValue, array $args ) : array
+    public function __invoke( $rootValue, array $args ) : BulkResult
     {
-        return Resource::bulkFile( $args['id'], $args['input'] ?? [], Auth::user() );
+        return Files::bulk( $args['id'], $args['input'] ?? [], Auth::user() );
     }
 }

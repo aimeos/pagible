@@ -23,7 +23,7 @@ use Aimeos\Cms\DB;
 use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Publication;
 use Laravel\Scout\Searchable;
-use Aimeos\Cms\Exception;
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\SearchBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Builder;
@@ -102,7 +102,7 @@ abstract class Base extends Model
     public static function checkBulk( int $count ) : void
     {
         if( $count > static::MAX_BULK ) {
-            throw new Exception( sprintf(
+            throw new InvalidInputException( sprintf(
                 'No more than %d items may be changed at once.',
                 static::MAX_BULK,
             ) );

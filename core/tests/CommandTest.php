@@ -14,7 +14,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
@@ -245,7 +245,7 @@ class CoreCommandTest extends CoreTestAbstract
         $data = ['lang' => 'en', 'name' => 'Scheduled'];
         $pageVersion = $page->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
         $elementVersion = $element->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
-        $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
+        $file = Files::save( $file->id, ['name' => 'Scheduled'] );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
         $page->variant->update( ['latest_id' => $pageVersion->id] );

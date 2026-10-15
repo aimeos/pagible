@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Import;
 use Aimeos\Cms\Hashes;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Support\PageRows;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Sync;
 use Aimeos\Cms\Utils;
@@ -154,7 +154,7 @@ class Variants
         }
         else
         {
-            $variant = Resource::insertVariant( $source, $data + ['status' => 1], $hashes, $linked === null, $editor );
+            $variant = PageRows::insert( $source, $data + ['status' => 1], $hashes, $linked === null, $editor );
         }
 
         $aux = ['content' => $linked ?? $content['elements']];

@@ -5,10 +5,10 @@
  */
 
 
-namespace Aimeos\Cms\Resource;
+namespace Aimeos\Cms\Resource\Support;
 
 use Aimeos\Cms\DB;
-use Aimeos\Cms\Exception;
+use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
@@ -30,7 +30,7 @@ final class Refs
      * @param class-string<File>|class-string<Element> $model Model class to check the IDs against
      * @param array<string> $ids Referenced IDs to verify
      * @return array<string> Deduped IDs, all confirmed to exist
-     * @throws Exception If any referenced ID is no longer available
+     * @throws ConflictException If any referenced ID is no longer available
      */
     public static function available( string $model, array $ids ) : array
     {
@@ -42,7 +42,7 @@ final class Refs
         }
 
         if( $missing = array_filter( $ids, fn( $id ) => !isset( $existing[$id] ) ) ) {
-            throw new Exception( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
+            throw new ConflictException( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
         }
 
         return $ids;
@@ -55,7 +55,7 @@ final class Refs
      * @param array<string, mixed> $data Element version data (fields stored under "data")
      * @param Authenticatable|null $user Authenticated user accepting the references
      * @return array<string> File IDs confirmed to exist
-     * @throws Exception If any referenced file is no longer available
+     * @throws ConflictException If any referenced file is no longer available
      */
     public static function element( array $data, ?Authenticatable $user = null ) : array
     {

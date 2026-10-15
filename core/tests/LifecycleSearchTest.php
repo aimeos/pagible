@@ -12,8 +12,9 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Elements;
+use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Resource\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -71,7 +72,7 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( Element::class, [(string) $element->id], $this->user );
+        Elements::dropMany( [(string) $element->id], $this->user );
 
         $document = $this->engine->document( Element::class );
 
@@ -90,9 +91,9 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( File::class, [(string) $file->id], $this->user );
+        Files::dropMany( [(string) $file->id], $this->user );
         $this->engine->documents = [];
-        Resource::restore( File::class, [(string) $file->id], $this->user );
+        Files::restoreMany( [(string) $file->id], $this->user );
 
         $document = $this->engine->document( File::class );
 
@@ -106,18 +107,18 @@ class LifecycleSearchTest extends CoreTestAbstract
     public function testPublishIndexesPublishedVersionsSynchronously(): void
     {
         $file = File::query()->where( 'mime', 'image/jpeg' )->firstOrFail();
-        Publication::publish( File::class, [(string) $file->id], $this->user );
+        Files::publishMany( [(string) $file->id], $this->user );
 
         $this->assertTrue( $this->engine->document( File::class )['published'] ?? false );
 
         $element = Element::query()->firstOrFail();
-        Publication::publish( Element::class, [(string) $element->id], $this->user );
+        Elements::publishMany( [(string) $element->id], $this->user );
 
         $this->assertTrue( $this->engine->document( Element::class )['published'] ?? false );
 
         $page = PageView::query()->where( 'path', 'hidden' )->firstOrFail();
-        Resource::savePage( (string) $page->id, ['title' => 'Publish search test'], $this->user );
-        Publication::publish( PageView::class, [(string) $page->id], $this->user );
+        Pages::save( (string) $page->id, ['title' => 'Publish search test'], $this->user );
+        Pages::publishMany( [(string) $page->id], $this->user );
 
         $this->assertTrue( $this->engine->document( PageView::class )['published'] ?? false );
     }
@@ -146,7 +147,7 @@ class LifecycleSearchTest extends CoreTestAbstract
         ] );
         $this->engine->documents = [];
 
-        Resource::relocateFiles( [$file->id], 'private', $this->user );
+        Files::relocateMany( [$file->id], 'private', $this->user );
 
         $this->assertArrayNotHasKey( File::class, $this->engine->documents );
         $this->assertSame( 'private', $file->refresh()->disk );

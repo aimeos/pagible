@@ -13,7 +13,8 @@ use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Sync;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Prisma\Exceptions\OverloadedException;
@@ -237,7 +238,7 @@ class TranslatePageTest extends AiTestAbstract
         $page = $this->page();
         $fake = Prisma::fake( [] );
 
-        \Aimeos\Cms\Resource::drop( PageView::class, [$page->id], $this->user );
+        Pages::dropMany( [$page->id], $this->user );
 
         // pages moved to the trash after queuing are skipped without failing
         $job = $this->job( $page->id, 'de', $this->user );
@@ -599,7 +600,7 @@ class TranslatePageTest extends AiTestAbstract
         Queue::fake();
 
         $page = $this->page();
-        Resource::translatePage( $page->id, 'de', $this->user );
+        Variants::translate( $page->id, 'de', $this->user );
         PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->update( ['lang' => 'fr', 'stale' => true] );
 
         $batch = TranslatePage::dispatchPending( [$page->id], ['fr'], $this->user->id );
@@ -613,7 +614,7 @@ class TranslatePageTest extends AiTestAbstract
 
         $page = $this->page();
         $other = PageView::where( 'id', '!=', $page->id )->whereNull( 'deleted_at' )->firstOrFail();
-        Resource::translatePage( $page->id, 'de', $this->user );
+        Variants::translate( $page->id, 'de', $this->user );
         PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->update( ['lang' => 'fr', 'stale' => true] );
 
         // unconfigured languages of other pages mustn't become available for all pages
@@ -650,7 +651,7 @@ class TranslatePageTest extends AiTestAbstract
         $ids = array_map( fn( $page ) => (string) $page->id, $pages );
 
         foreach( array_slice( $ids, 1 ) as $id ) {
-            Resource::translatePage( $id, 'de', $this->user );
+            Variants::translate( $id, 'de', $this->user );
         }
 
         // up to date, stale and trashed variants in "de"
@@ -674,7 +675,7 @@ class TranslatePageTest extends AiTestAbstract
         $missing = $this->page();
         $stale = $this->page();
 
-        Resource::translatePage( $stale->id, 'de', $this->user );
+        Variants::translate( $stale->id, 'de', $this->user );
         PageVariant::where( 'page_id', $stale->id )->where( 'lang', 'de' )->update( ['stale' => true] );
 
         $batch = TranslatePage::dispatchPending( [$missing->id, $stale->id], ['de'], $this->user->id, false );
@@ -689,7 +690,7 @@ class TranslatePageTest extends AiTestAbstract
         Queue::fake();
 
         $page = $this->page();
-        Resource::drop( PageView::class, [$page->id], $this->user );
+        Pages::dropMany( [$page->id], $this->user );
 
         $this->assertSame( 0, TranslatePage::dispatchPending( [$page->id], ['de'], $this->user->id )['total'] );
     }
@@ -949,7 +950,7 @@ class TranslatePageTest extends AiTestAbstract
     {
         $page = $this->page();
         $trashed = $this->page();
-        Resource::drop( PageView::class, [$trashed->id], $this->user );
+        Pages::dropMany( [$trashed->id], $this->user );
 
         // source language and trashed pages aren't translated
         CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\TranslatePage::class, [
@@ -993,7 +994,7 @@ class TranslatePageTest extends AiTestAbstract
 
     protected function page( array $data = [] ) : PageView
     {
-        return Resource::addPage( $data + [
+        return Pages::add( $data + [
             'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'tr-' . substr( md5( uniqid() ), 0, 8 ),
             'content' => [
                 ['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']],

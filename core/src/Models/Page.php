@@ -12,6 +12,7 @@ use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\PrunesTrashed;
 use Aimeos\Cms\Concerns\SecondTimestamps;
 use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
+use Aimeos\Cms\ContentType;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Scout;
 use Aimeos\Nestedset\NestedSet;
@@ -58,7 +59,7 @@ class Page extends Model
     use SoftDeletes;
     use HasTenancy;
 
-    public const PERM = 'page';
+    public const PERM = ContentType::Page->value;
 
     /** @var list<string> Columns stored in the cms_pages table besides the timestamps */
     public const FIELDS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
@@ -111,9 +112,9 @@ class Page extends Model
     private array $removed = [];
 
     /**
-     * If the tree positions of loaded pages are up to date and don't need to be re-read.
+     * If the tree position of the page is up to date and doesn't need to be re-read.
      */
-    private static bool $trusted = false;
+    private bool $trusted = false;
 
     /**
      * Updates the search index and removes the variants of purged pages.
@@ -253,34 +254,51 @@ class Page extends Model
 
 
     /**
-     * Re-reads the tree position of the page unless the positions of loaded pages are trusted.
+     * Re-reads the tree position of the page unless it's trusted.
      */
     public function refreshNode() : void
     {
-        if( !self::$trusted ) {
+        if( !$this->trusted ) {
             $this->refreshNodeData();
         }
     }
 
 
     /**
-     * Runs the callback with the tree positions of loaded pages trusted.
+     * Saves the page before the reference page, as last child of the parent page or as root page.
      *
-     * Only for code that loads the pages within the locked transaction immediately before
-     * changing the tree and doesn't reuse them after the tree has been changed.
+     * The tree positions of the passed pages aren't re-read, so they must be loaded within
+     * the locked transaction immediately before and must not be reused afterwards.
      *
-     * @param \Closure $callback Callback changing the page tree
-     * @return mixed Result of the callback
+     * @param Page|null $ref Sibling page to insert before
+     * @param Page|null $parent Parent page to append to, as root page if both are NULL
+     * @return bool TRUE if the page was saved
      */
-    public static function trusted( \Closure $callback ) : mixed
+    public function saveAt( ?Page $ref = null, ?Page $parent = null ) : bool
     {
-        $prev = self::$trusted;
-        self::$trusted = true;
+        $pages = array_filter( [$this, $ref, $parent] );
 
-        try {
-            return $callback();
-        } finally {
-            self::$trusted = $prev;
+        foreach( $pages as $page ) {
+            $page->trusted = true;
+        }
+
+        try
+        {
+            if( $ref ) {
+                $this->beforeNode( $ref );
+            } elseif( $parent ) {
+                $this->appendToNode( $parent );
+            } elseif( $this->exists ) {
+                $this->makeRoot();
+            }
+
+            return $this->save();
+        }
+        finally
+        {
+            foreach( $pages as $page ) {
+                $page->trusted = false;
+            }
         }
     }
 

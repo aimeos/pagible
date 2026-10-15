@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,6 +20,6 @@ final class AddPageVariant
      */
     public function __invoke( $rootValue, array $args ) : PageView
     {
-        return Resource::addVariant( $args['id'], $args['lang'], Auth::user() );
+        return Variants::add( $args['id'], $args['lang'], Auth::user() );
     }
 }

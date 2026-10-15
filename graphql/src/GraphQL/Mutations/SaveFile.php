@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,7 +20,7 @@ final class SaveFile
      */
     public function __invoke( $rootValue, array $args ) : File
     {
-        return Resource::saveFile(
+        return Files::save(
             $args['id'],
             $args['input'] ?? [],
             Auth::user(),

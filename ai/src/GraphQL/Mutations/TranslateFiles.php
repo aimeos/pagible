@@ -12,7 +12,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Jobs\Throttled;
 use Aimeos\Cms\Jobs\TranslatePage;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Facades\Auth;
 
@@ -110,7 +110,7 @@ final class TranslateFiles
         $saved = [];
 
         foreach( $changed as $id => $latestId ) {
-            $saved[] = Resource::saveFile( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
+            $saved[] = Files::save( $id, ['description' => $descs[$id]], Auth::user(), $latestId );
         }
 
         return $saved;

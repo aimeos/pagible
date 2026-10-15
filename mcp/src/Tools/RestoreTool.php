@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 
@@ -36,8 +35,6 @@ abstract class RestoreTool extends LifecycleTool
             return ['error' => ucfirst( static::NOUN ) . ' is not deleted.'];
         }
 
-        $items = Resource::restore( static::MODEL, [$v['id']], $user );
-
-        return Presenter::item( $items->firstOrFail(), static::MODEL === PageView::class );
+        return Presenter::item( $this->resource()::restore( $v['id'], $user ), static::MODEL === PageView::class );
     }
 }

@@ -169,7 +169,7 @@ class Presenter
     /**
      * Returns the published and skipped items of a publish request.
      *
-     * @param Collection<int, Base> $items Items returned by Publication::publish()
+     * @param Collection<int, covariant Base> $items Items returned by the publishMany() methods of the resources
      * @param array<int, string> $ids Requested IDs
      * @param string|null $at Scheduled publish date or NULL for immediate publishing
      * @return array{published: array<int, array<string, mixed>>, skipped: array<int, array<string, mixed>>} Publish result

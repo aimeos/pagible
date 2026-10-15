@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -44,7 +44,7 @@ class CopyPage extends Tool
         }
 
         RateLimiter::hit( $key );
-        $page = Resource::copyPage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
+        $page = Pages::copy( $v['id'], $request->user(), ref: $v['before_id'] ?? null, parent: $v['parent_id'] ?? null );
 
         return Response::structured( Presenter::item( $page, true ) );
     }

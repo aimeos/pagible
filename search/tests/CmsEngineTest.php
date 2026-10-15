@@ -14,8 +14,10 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Filter;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Elements;
+use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Foundation\Testing\DatabaseTruncation;
@@ -347,26 +349,26 @@ class CmsEngineTest extends SearchTestAbstract
 
     public function testPublishIndexesLoadedModels(): void
     {
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en',
             'type' => 'text',
             'name' => 'publicationelementtoken',
             'data' => ['text' => 'publicationelementtoken'],
         ] );
-        Publication::publish( Element::class, [$element->id] );
+        Elements::publishMany( [$element->id] );
 
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        Resource::savePage( $page->id, ['content' => [[
+        Pages::save( $page->id, ['content' => [[
             'id' => Utils::uid(),
             'type' => 'reference',
             'refid' => $element->id,
             'group' => 'main',
         ]]] );
-        Publication::publish( PageView::class, [$page->id] );
+        Pages::publishMany( [$page->id] );
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        Resource::saveFile( $file->id, ['name' => 'publicationfiletoken'] );
-        Publication::publish( File::class, [$file->id] );
+        Files::save( $file->id, ['name' => 'publicationfiletoken'] );
+        Files::publishMany( [$file->id] );
         $this->waitIndex();
 
         $this->assertTrue( Element::search( 'publicationelementtoken' )
@@ -525,7 +527,7 @@ class CmsEngineTest extends SearchTestAbstract
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
 
         // bulk suppresses Scout's per-item sync and reindexes the saved pages once afterwards
-        Resource::bulkPage( [$page->id], ['name' => 'ztqbulkterm'], $user );
+        Pages::bulk( [$page->id], ['name' => 'ztqbulkterm'], $user );
 
         // the draft (latest=true) index row was refreshed with the new content
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
@@ -551,13 +553,13 @@ class CmsEngineTest extends SearchTestAbstract
         ] );
 
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
-        $page = Resource::addPage( [
+        $page = Pages::add( [
             'lang' => 'en', 'name' => 'zqvsourceterm', 'title' => 'Source', 'path' => 'zqv-source', 'status' => 1,
         ], $user, parent: $root->id );
 
-        $variant = Resource::addVariant( $page->id, 'de', $user );
-        Resource::savePage( $page->id, ['name' => 'zqvvariantterm', 'path' => 'zqv-variante'], $user, lang: 'de' );
-        Publication::publish( PageView::class, [$page->id], $user, lang: 'de' );
+        $variant = Variants::add( $page->id, 'de', $user );
+        Variants::save( $page->id, 'de', ['name' => 'zqvvariantterm', 'path' => 'zqv-variante'], $user );
+        Variants::publishMany( [$page->id], 'de', $user );
 
         $this->waitIndex();
 
@@ -592,14 +594,14 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertCount( 0, $search( 'zqvsourceterm', 'de' ) );
         $this->assertEquals( ['en'], $search( 'zqvsourceterm', 'fr' )->pluck( 'lang' )->all() );
 
-        Resource::variants( 'purge', [$page->id], 'de', $user );
+        Variants::purgeMany( [$page->id], 'de', $user );
         $this->assertFalse( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
 
-        Resource::addVariant( $page->id, 'de', $user );
+        Variants::add( $page->id, 'de', $user );
         $keys = \Aimeos\Cms\Models\PageVariant::where( 'page_id', $page->id )->pluck( 'id' )->all();
         $this->assertCount( 2, $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->distinct()->pluck( 'indexable_id' ) );
 
-        Resource::purge( PageView::class, [$page->id], $user );
+        Pages::purgeMany( [$page->id], $user );
         $this->assertFalse( $db->table( 'cms_index' )->whereIn( 'indexable_id', $keys )->exists() );
     }
 
@@ -657,7 +659,7 @@ class CmsEngineTest extends SearchTestAbstract
         $page->page->delete();
 
         // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
-        Resource::bulkPage( [$page->id], ['name' => 'zttrashterm'], $user );
+        Pages::bulk( [$page->id], ['name' => 'zttrashterm'], $user );
 
         $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_id', $page->variant_id )->where( 'latest', true )->value( 'content' );
@@ -674,16 +676,16 @@ class CmsEngineTest extends SearchTestAbstract
             'password' => 'secret', 'cmsperms' => Permission::all(),
         ] );
         $root = PageView::where( 'tag', 'root' )->firstOrFail();
-        $parent = Resource::addPage( [
+        $parent = Pages::add( [
             'lang' => 'en', 'name' => 'ztretainrows', 'title' => 'Parent',
             'path' => 'zt-retain-parent', 'content' => [],
         ], $user, parent: (string) $root->id );
-        $child = Resource::addPage( [
+        $child = Pages::add( [
             'lang' => 'en', 'name' => 'ztretainrows', 'title' => 'Child',
             'path' => 'zt-retain-child', 'content' => [],
         ], $user, parent: (string) $parent->id );
         $ids = [(string) $parent->id, (string) $child->id];
-        Publication::publish( PageView::class, $ids, $user );
+        Pages::publishMany( $ids, $user );
         $keys = [(string) $parent->variant_id => (string) $parent->id, (string) $child->variant_id => (string) $child->id];
         $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
             ->where( 'indexable_type', PageView::class )
@@ -694,22 +696,22 @@ class CmsEngineTest extends SearchTestAbstract
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
-        Resource::drop( PageView::class, [(string) $parent->id], $user );
+        Pages::dropMany( [(string) $parent->id], $user );
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
-        Resource::bulkPage( [(string) $parent->id], ['title' => 'Trashed edit'], $user );
+        Pages::bulk( [(string) $parent->id], ['title' => 'Trashed edit'], $user );
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertSame( [(string) $child->id], $indexed( false ) );
 
-        Resource::restore( PageView::class, [(string) $parent->id], $user );
+        Pages::restoreMany( [(string) $parent->id], $user );
 
         $this->assertEqualsCanonicalizing( $ids, $indexed( true ) );
         $this->assertEqualsCanonicalizing( $ids, $indexed( false ) );
 
-        Resource::purge( PageView::class, [(string) $parent->id], $user );
+        Pages::purgeMany( [(string) $parent->id], $user );
 
         $this->assertSame( [], $indexed( true ) );
         $this->assertSame( [], $indexed( false ) );

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -37,7 +37,7 @@ class MovePage extends Tool
             'id.required' => 'You must specify the ID of the page to move.',
         ] );
 
-        $page = Resource::movePage( $v['id'], $v['before_id'] ?? null, $v['parent_id'] ?? null, $request->user() );
+        $page = Pages::move( $v['id'], $request->user(), ref: $v['before_id'] ?? null, parent: $v['parent_id'] ?? null );
 
         return Response::structured( Presenter::item( $page, true ) );
     }

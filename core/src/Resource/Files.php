@@ -5,57 +5,72 @@
  */
 
 
-namespace Aimeos\Cms\Concerns;
+namespace Aimeos\Cms\Resource;
 
 use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\Exceptions\ConflictException;
+use Aimeos\Cms\Exceptions\InvalidInputException;
+use Aimeos\Cms\Files as FileUtils;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource\Bulk;
+use Aimeos\Cms\Resource\Support\Bulk;
 use Aimeos\Cms\Uploads;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Lifecycle;
+use Aimeos\Cms\Publication;
 
 
 /**
- * File writes of the resource methods.
+ * Operations on files.
  *
- * @phpstan-import-type BulkResult from Bulk
+ * Each method checks the permission of its action for the passed user, e.g. "file:save" for
+ * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
+ * trusted like in commands and jobs and no permissions are checked.
+ *
  * @phpstan-type StoredFile array{disk: string, path: string|null, mime: string|null, previews: array<int|string, mixed>|null, prepared: bool}
+ * @phpstan-type FileInput array{name?: string|null, lang?: string|null, description?: array<string, string>|object|null, transcription?: array<string, string>|object|null, path?: string|null, previews?: array<int|string, string>|null, ...}
  */
-trait ResourceFiles
+class Files
 {
+    public const MAX_RELOCATE = 100;
+
+
     /**
      * Ingests the source as new media item with its first version.
      *
      * @param UploadedFile|string $source Uploaded file or remote URL
-     * @param array<string, mixed> $values File values like name, lang and description
+     * @param FileInput $input File values like name, lang and description
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param string|null $disk Storage disk, "public" (default) or "private"
      * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
      * @return File New file
      */
-    public static function createFile( UploadedFile|string $source, array $values = [], ?Authenticatable $user = null,
+    public static function add( UploadedFile|string $source, array $input = [], ?Authenticatable $user = null,
         ?string $disk = null, ?UploadedFile $preview = null ) : File
     {
+        Permission::check( 'file:add', $user );
+
         $file = new File();
         $file->disk = $disk ?? 'public';
-        $file->fill( $values );
+        $file->fill( $input );
 
         // Store the file and generate previews outside the transaction to keep
         // slow network, disk and image work off the database connection.
         $file->ingest( $source, $preview );
 
-        return self::addFile( $file, $user );
+        return self::insert( $file, $user );
     }
 
 
@@ -64,13 +79,13 @@ trait ResourceFiles
      *
      * The caller fills the file's path, mime, previews, name, lang, description
      * and transcription; this method stores it, creates the initial version,
-     * indexes it and broadcasts the change.
+     * indexes it and broadcasts the change. The permission is checked by add().
      *
      * @param File $file Prepared file model (path/mime/previews/name set)
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @return File
      */
-    public static function addFile( File $file, ?Authenticatable $user = null ) : File
+    protected static function insert( File $file, ?Authenticatable $user = null ) : File
     {
         $editor = Utils::editor( $user );
         $file->setUniqueIds();
@@ -109,6 +124,21 @@ trait ResourceFiles
 
 
     /**
+     * Moves the managed paths of a file to another logical disk.
+     *
+     * @param string $id File UUID
+     * @param string $disk Target logical disk, either "public" or "private"
+     * @param Authenticatable|null $user Authenticated user authorizing and recording the relocation
+     * @return File Relocated file
+     * @throws ModelNotFoundException If the file doesn't exist
+     */
+    public static function relocate( string $id, string $disk, ?Authenticatable $user = null ) : File
+    {
+        return Items::one( File::class, self::relocateMany( [$id], $disk, $user ), $id );
+    }
+
+
+    /**
      * Moves the managed paths of several Files to another logical disk under tenant and File locks.
      *
      * @param array<string> $ids File UUIDs
@@ -117,14 +147,14 @@ trait ResourceFiles
      * @return Collection<int, File>
      * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
      */
-    public static function relocateFiles( array $ids, string $disk,
+    public static function relocateMany( array $ids, string $disk,
         ?Authenticatable $user = null ) : Collection
     {
-        Files::diskName( $disk );
+        FileUtils::diskName( $disk );
         $ids = array_values( array_unique( $ids ) );
 
         if( count( $ids ) > self::MAX_RELOCATE ) {
-            throw new Exception( sprintf(
+            throw new InvalidInputException( sprintf(
                 'No more than %d files may be relocated at once.',
                 self::MAX_RELOCATE,
             ) );
@@ -201,16 +231,18 @@ trait ResourceFiles
      * Storage work completes before the transaction; the File lock then verifies the prepared paths and logical disk.
      *
      * @param string $id File UUID
-     * @param array<string, mixed> $input File fields to update
+     * @param FileInput $input File fields to update
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @param UploadedFile|null $upload File upload to store
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
      * @return File
      */
-    public static function saveFile( string $id, array $input, ?Authenticatable $user = null,
+    public static function save( string $id, array $input, ?Authenticatable $user = null,
         ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
     {
+        Permission::check( 'file:save', $user );
+
         Validation::limits( File::class, $input );
         $editor = Utils::editor( $user );
         $stored = ['disk' => 'public', 'path' => null, 'mime' => null, 'previews' => null, 'prepared' => false];
@@ -241,23 +273,135 @@ trait ResourceFiles
      * Applies the same input to several files at once.
      *
      * @param array<string> $ids File IDs to update
-     * @param array<string, mixed> $input Fields applied to every file (e.g. ['lang' => 'de'])
+     * @param FileInput $input Fields applied to every file (e.g. ['lang' => 'de'])
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @return BulkResult
-     * @throws Exception If the input carries the file-specific "path" or "previews"
+     * @throws InvalidInputException If the input carries the file-specific "path" or "previews"
      */
-    public static function bulkFile( array $ids, array $input, ?Authenticatable $user = null ) : array
+    public static function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
     {
+        Permission::check( 'file:save', $user );
+
         if( isset( $input['path'] ) || isset( $input['previews'] ) ) {
-            throw new Exception( 'Bulk edits cannot change the path or previews of a file' );
+            throw new InvalidInputException( 'Bulk edits cannot change the path or previews of a file' );
         }
 
         Validation::limits( File::class, $input );
 
         return Bulk::save( File::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input ) : ?File {
             $file = self::file()->lockForUpdate()->find( $id );
-            return $file ? self::applyFile( $file, $input, $editor ) : null;
+            return $file ? self::apply( $file, $input, $editor ) : null;
         } );
+    }
+
+    /**
+     * Publishes or schedules the latest version of the file.
+     *
+     * @param string $id File ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $at Publication date or NULL to publish immediately
+     * @return File Published file
+     * @throws ModelNotFoundException If the file doesn't exist
+     */
+    public static function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : File
+    {
+        return Items::one( File::class, self::publishMany( [$id], $user, $at ), $id );
+    }
+
+
+    /**
+     * Publishes or schedules the latest versions of the files.
+     *
+     * @param array<string> $ids File IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param string|null $at Publication date or NULL to publish immediately
+     * @return Collection<int, File> Published files
+     */
+    public static function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    {
+        return Publication::publish( File::class, $ids, $user, $at );
+    }
+
+
+    /**
+     * Moves the file to the trash.
+     *
+     * @param string $id File ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File Trashed file
+     * @throws ModelNotFoundException If the file doesn't exist
+     */
+    public static function drop( string $id, ?Authenticatable $user = null ) : File
+    {
+        return Items::one( File::class, self::dropMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Permanently deletes the file.
+     *
+     * @param string $id File ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File Deleted file
+     * @throws ModelNotFoundException If the file doesn't exist
+     */
+    public static function purge( string $id, ?Authenticatable $user = null ) : File
+    {
+        return Items::one( File::class, self::purgeMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Restores the trashed file.
+     *
+     * @param string $id File ID
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @return File Restored file
+     * @throws ModelNotFoundException If the file doesn't exist
+     */
+    public static function restore( string $id, ?Authenticatable $user = null ) : File
+    {
+        return Items::one( File::class, self::restoreMany( [$id], $user ), $id );
+    }
+
+
+    /**
+     * Moves files to the trash.
+     *
+     * @param array<string> $ids File IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, File> Trashed files
+     */
+    public static function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::drop( File::class, $ids, $user, $fields );
+    }
+
+    /**
+     * Permanently deletes files.
+     *
+     * @param array<string> $ids File IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, File> Deleted files
+     */
+    public static function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::purge( File::class, $ids, $user, $fields );
+    }
+
+    /**
+     * Restores trashed files.
+     *
+     * @param array<string> $ids File IDs
+     * @param Authenticatable|null $user Authenticated user for editor tracking
+     * @param array<string> $fields Requested response fields
+     * @return Collection<int, File> Restored files
+     */
+    public static function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    {
+        return Lifecycle::restore( File::class, $ids, $user, $fields );
     }
 
 
@@ -281,16 +425,15 @@ trait ResourceFiles
      * @param array<string, mixed> $input File fields to update (merged with latest version)
      * @param string $editor Name of the editing user
      * @param string|null $latestId Version ID the editor was working on for conflict detection
-     * @param string|null $stored Path of an already stored upload, if any
-     * @param array<int|string, mixed>|null $storedPreviews Previews generated for the stored upload, if any
-     * @param UploadedFile|false|null $preview False to clear previews, otherwise null after preparation
-     * @param string|null $storedMime MIME type detected while preparing the new path
+     * @param StoredFile|null $stored Prepared storage data of an upload, if any
+     * @param bool $clearPreviews TRUE to remove the previews if no new ones were stored
      * @return File Updated file with the new version as "latest"
      */
-    protected static function applyFile( File $orig, array $input, string $editor, ?string $latestId = null,
-        ?string $stored = null, ?array $storedPreviews = null, UploadedFile|false|null $preview = null,
-        ?string $storedMime = null ) : File
+    protected static function apply( File $orig, array $input, string $editor, ?string $latestId = null,
+        ?array $stored = null, bool $clearPreviews = false ) : File
     {
+        $storedPath = $stored['path'] ?? null;
+        $storedPreviews = $stored['previews'] ?? null;
         $previews = $orig->latestValue( 'previews' );
         $path = $orig->latestValue( 'path' );
 
@@ -300,11 +443,11 @@ trait ResourceFiles
         [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
         $file->fill( $data + $aux );
 
-        $paths = array_map( Files::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
-        array_push( $paths, $stored, ...array_values( $storedPreviews ?? [] ) );
+        $paths = array_map( FileUtils::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
+        array_push( $paths, $storedPath, ...array_values( $storedPreviews ?? [] ) );
 
         $file->previews = $input['data']['previews'] ?? $previews;
-        $file->path = $stored ?? Files::checkPath( $input['data']['path'] ?? null ) ?? $path;
+        $file->path = $storedPath ?? FileUtils::checkPath( $input['data']['path'] ?? null ) ?? $path;
 
         if( isset( $input['data']['path'] ) ) {
             $paths[] = $file->path;
@@ -315,14 +458,14 @@ trait ResourceFiles
 
         if( $file->path !== $path )
         {
-            $file->mime = $storedMime ?? Uploads::mimetype( $file->path, (string) $file->disk );
+            $file->mime = ( $stored['mime'] ?? null ) ?? Uploads::mimetype( $file->path, (string) $file->disk );
 
             Uploads::checkMimetype( (string) $file->mime );
         }
 
         if( $storedPreviews !== null ) {
             $file->previews = $storedPreviews;
-        } elseif( $preview === false ) {
+        } elseif( $clearPreviews ) {
             $file->previews = [];
         }
 
@@ -370,7 +513,7 @@ trait ResourceFiles
         UploadedFile|false|null $preview ) : void
     {
         $tmp = ( new File() )->forceFill( ['id' => $id] );
-        $newPath = Files::checkPath( $input['path'] ?? null );
+        $newPath = FileUtils::checkPath( $input['path'] ?? null );
         $previewUpload = $preview instanceof UploadedFile ? $preview : null;
         $currentPath = null;
 
@@ -427,13 +570,13 @@ trait ResourceFiles
             $file = self::file()->findOrFail( $id );
 
             if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
-                throw new Exception( 'File disk changed while saving; retry the request' );
+                throw new ConflictException( 'File disk changed while saving; retry the request' );
             }
 
             $file->checkStored( [$stored['path'], ...( $stored['previews'] ?? [] )] );
 
             return DB::transaction( function() use ( $file, $input, $editor, $latestId, $preview, $stored ) {
-                self::applyFile( $file, $input, $editor, $latestId, $stored['path'], $stored['previews'], $preview, $stored['mime'] );
+                self::apply( $file, $input, $editor, $latestId, $stored, $preview === false );
                 PruneVersions::dispatchChunked( File::class, [$file->id] );
 
                 return $file;

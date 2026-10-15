@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Files;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
@@ -50,7 +50,7 @@ class AddFile extends Tool
         ] );
 
         $values = array_intersect_key( $v, array_flip( ['name', 'lang', 'description'] ) );
-        $file = $this->source( $v, fn( UploadedFile|string $source ) => Resource::createFile( $source, $values, $request->user(), $v['disk'] ?? null ) );
+        $file = $this->source( $v, fn( UploadedFile|string $source ) => Files::add( $source, $values, $request->user(), $v['disk'] ?? null ) );
 
         return Response::structured( Presenter::item( $file ) );
     }

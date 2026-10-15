@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Exceptions\InvalidInputException;
+use Aimeos\Cms\Exceptions\PermissionException;
 use \Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -163,7 +165,7 @@ class Permission
     public static function check( string $action, ?Authenticatable $user, bool $needed = true ) : void
     {
         if( $needed && $user && !self::can( $action, $user ) ) {
-            throw new Exception( 'Insufficient permissions' );
+            throw new PermissionException( 'Insufficient permissions' );
         }
     }
 
@@ -319,11 +321,11 @@ class Permission
         foreach( $entries as $entry )
         {
             if( !is_string( $entry ) || ( $entry = trim( $entry ) ) === '' ) {
-                throw new Exception( 'CMS permissions must be non-empty strings.' );
+                throw new InvalidInputException( 'CMS permissions must be non-empty strings.' );
             }
 
             if( mb_strlen( $entry ) > self::MAX_LENGTH ) {
-                throw new Exception( sprintf( 'CMS permissions may not be longer than %d characters.', self::MAX_LENGTH ) );
+                throw new InvalidInputException( sprintf( 'CMS permissions may not be longer than %d characters.', self::MAX_LENGTH ) );
             }
 
             if( !in_array( $entry, $result, true ) ) {
@@ -331,7 +333,7 @@ class Permission
             }
 
             if( count( $result ) > self::MAX_ASSIGNMENTS ) {
-                throw new Exception( sprintf( 'No more than %d CMS permissions may be assigned at once.', self::MAX_ASSIGNMENTS ) );
+                throw new InvalidInputException( sprintf( 'No more than %d CMS permissions may be assigned at once.', self::MAX_ASSIGNMENTS ) );
             }
         }
 
@@ -421,7 +423,7 @@ class Permission
         foreach( $entries as $entry )
         {
             if( !self::valid( $entry ) && !in_array( $entry, $existing, true ) ) {
-                throw new Exception( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
+                throw new InvalidInputException( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
             }
         }
     }

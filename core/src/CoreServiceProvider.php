@@ -17,6 +17,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Query\SearchQuery;
+use Aimeos\Cms\Resource\Support\Proxy;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -68,6 +69,11 @@ class CoreServiceProvider extends Provider
         } );
 
         $this->app->scoped( Access::class );
+
+        // instances behind the facades in Aimeos\Cms\Facades, replaced by mocks in tests
+        foreach( ['pages', 'elements', 'files', 'variants'] as $name ) {
+            $this->app->singleton( 'cms.' . $name, fn() => new Proxy( 'Aimeos\\Cms\\Resource\\' . ucfirst( $name ) ) );
+        }
     }
 
 

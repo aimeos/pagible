@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -16,7 +17,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Publication\References;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Support\PageRows;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Query\Builder;
@@ -84,7 +85,7 @@ final class Publication
         $moved = self::moved( $model );
 
         $model->stage( $version );
-        $model instanceof PageView ? Pages::saveVariant( $model ) : $model->save();
+        $model instanceof PageView ? PageRows::save( $model ) : $model->save();
 
         $version->published = true;
         $version->save();
@@ -109,7 +110,7 @@ final class Publication
         );
 
         // translations whose source changed need an update
-        Sync::markStale( Pages::views( $this->models[PageView::class] ?? [] ) );
+        Sync::markStale( PageRows::views( $this->models[PageView::class] ?? [] ) );
 
         foreach( $this->models as $model => $items ) {
             // only the published variants of pages change
@@ -193,12 +194,14 @@ final class Publication
     /**
      * Publishes or schedules the latest versions of the given models.
      *
-     * @param class-string<Base> $model
+     * @template T of Base
+     * @param class-string<T> $model
      * @param array<string> $ids
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param string|null $at Publication date or null to publish immediately
      * @param string|null $lang Language of the page variants or null for the source variants
-     * @return Collection<int, Base>
+     * @return Collection<int, T>
+     * @internal Use the publish() and publishMany() methods of the resource classes instead
      */
     public static function publish( string $model, array $ids, ?Authenticatable $user = null, ?string $at = null,
         ?string $lang = null ) : Collection
@@ -239,6 +242,7 @@ final class Publication
             ] );
         }
 
+        /** @var Collection<int, T> $items */
         return $items;
     }
 
@@ -376,7 +380,7 @@ final class Publication
 
         if( ( $elements && ( !$canElements || !$canFiles ) )
             || ( $files && !$canFiles ) ) {
-            throw new Exception( 'Insufficient permissions' );
+            throw new PermissionException( 'Insufficient permissions' );
         }
     }
 

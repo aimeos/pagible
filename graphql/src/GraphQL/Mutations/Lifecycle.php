@@ -8,8 +8,13 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Elements;
+use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 
@@ -42,15 +47,37 @@ abstract class Lifecycle
         $fields = array_keys( $info?->getFieldSelection( 1 ) ?? [] );
 
         if( static::MODEL === PageView::class && isset( $args['lang'] ) ) {
-            return Resource::variants( static::ACTION, $args['id'], $args['lang'], Auth::user(), $fields )->all();
+            $items = match( static::ACTION ) {
+                'restore' => Variants::restoreMany( $args['id'], $args['lang'], Auth::user(), $fields ),
+                'purge' => Variants::purgeMany( $args['id'], $args['lang'], Auth::user(), $fields ),
+                default => Variants::dropMany( $args['id'], $args['lang'], Auth::user(), $fields ),
+            };
+
+            return $items->all();
         }
 
         $items = match( static::ACTION ) {
-            'restore' => Resource::restore( static::MODEL, $args['id'], Auth::user(), $fields ),
-            'purge' => Resource::purge( static::MODEL, $args['id'], Auth::user(), $fields ),
-            default => Resource::drop( static::MODEL, $args['id'], Auth::user(), $fields ),
+            'restore' => $this->resource()::restoreMany( $args['id'], Auth::user(), $fields ),
+            'purge' => $this->resource()::purgeMany( $args['id'], Auth::user(), $fields ),
+            default => $this->resource()::dropMany( $args['id'], Auth::user(), $fields ),
         };
 
         return $items->all();
     }
+
+    /**
+     * Returns the resource class managing the items of the model.
+     *
+     * @return class-string<Pages|Elements|Files> Resource class
+     */
+    protected function resource() : string
+    {
+        return match( static::MODEL ) {
+            PageView::class => Pages::class,
+            Element::class => Elements::class,
+            File::class => Files::class,
+            default => throw new \LogicException( 'No resource for ' . static::MODEL ),
+        };
+    }
+
 }

@@ -7,9 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 /**
@@ -29,9 +27,6 @@ abstract class DropTool extends LifecycleTool
      */
     protected function apply( array $v, ?Authenticatable $user ) : array
     {
-        $item = Resource::drop( static::MODEL, [$v['id']], $user )->first()
-            ?? throw ( new ModelNotFoundException() )->setModel( static::MODEL );
-
-        return Presenter::item( $item );
+        return Presenter::item( $this->resource()::drop( $v['id'], $user ) );
     }
 }

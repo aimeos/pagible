@@ -8,7 +8,8 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -89,7 +90,9 @@ class SavePage extends Tool
         }
 
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id', 'lang'] ) );
-        $page = Resource::savePage( $v['id'], $input, $request->user(), $v['latest_id'], $v['lang'] ?? null );
+        $page = isset( $v['lang'] )
+            ? Variants::save( $v['id'], $v['lang'], $input, $request->user(), $v['latest_id'] )
+            : Pages::save( $v['id'], $input, $request->user(), $v['latest_id'] );
 
         return Response::structured( Presenter::saved( Presenter::page( $page ), $page ) );
     }

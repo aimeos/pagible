@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Referenced;
+use Aimeos\Cms\ContentType;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\LifecycleAction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -37,7 +38,7 @@ class Element extends Base
 {
     use Referenced;
 
-    public const PERM = 'element';
+    public const PERM = ContentType::Element->value;
     protected const REFS = ['files'];
 
     /** @var list<string> Columns for eager-loading element relations */

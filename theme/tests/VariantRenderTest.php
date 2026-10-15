@@ -11,8 +11,8 @@ use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Navigation;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Resource\Variants;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -63,8 +63,8 @@ class VariantRenderTest extends ThemeTestAbstract
     public function testUnpublishedVariantNotFound()
     {
         $blog = $this->blog();
-        Resource::addVariant( $blog->id, 'de', $this->user );
-        Resource::savePage( $blog->id, ['path' => 'blog-de'], $this->user, lang: 'de' );
+        Variants::add( $blog->id, 'de', $this->user );
+        Variants::save( $blog->id, 'de', ['path' => 'blog-de'], $this->user );
 
         $this->get( '/blog-de' )->assertNotFound();
     }
@@ -74,7 +74,7 @@ class VariantRenderTest extends ThemeTestAbstract
     {
         $blog = $this->blog();
         $this->variant( $blog, 'de', 'blog-de' );
-        Resource::dropVariant( $blog->id, 'de', $this->user );
+        Variants::drop( $blog->id, 'de', $this->user );
 
         $this->get( '/blog-de' )->assertNotFound();
         $this->get( '/blog' )->assertOk()->assertDontSee( 'hreflang="de"', false );
@@ -127,7 +127,7 @@ class VariantRenderTest extends ThemeTestAbstract
         $blog = $this->blog();
         $this->variant( $blog, 'de', 'blog-de' );
         config( ['cms.locales' => ['en', 'de', 'fr']] );
-        Resource::addVariant( $blog->id, 'fr', $this->user );
+        Variants::add( $blog->id, 'fr', $this->user );
 
         $response = $this->get( '/blog' );
         $response->assertSee( 'hreflang="de"', false );
@@ -200,8 +200,8 @@ class VariantRenderTest extends ThemeTestAbstract
         $this->variant( PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail(), 'de', 'artikel', ['name' => 'Artikel DE'] );
         $this->assertContains( 'Artikel DE', ( new Navigation( $deRoot, null ) )->items()->first( fn( $p ) => $p->name === 'Blog DE' )?->children->pluck( 'name' )->all() ?? [] );
 
-        Resource::savePage( $this->blog()->id, ['status' => 0], $this->user, lang: 'de' );
-        Publication::publish( PageView::class, [$this->blog()->id], $this->user, lang: 'de' );
+        Variants::save( $this->blog()->id, 'de', ['status' => 0], $this->user );
+        Variants::publishMany( [$this->blog()->id], 'de', $this->user );
         $this->assertNotContains( 'Blog DE', $names() );
         $this->assertNotContains( 'Blog', $names() );
         $this->assertNotContains( 'Artikel DE', $names() );
@@ -216,8 +216,8 @@ class VariantRenderTest extends ThemeTestAbstract
         $deBlog = $this->variant( $blog, 'de', 'blog-de' );
         $this->variant( $article, 'de', 'artikel', ['name' => 'Artikel DE'] );
 
-        Resource::savePage( $article->id, ['status' => 0], $this->user, lang: 'de' );
-        Publication::publish( PageView::class, [$article->id], $this->user, lang: 'de' );
+        Variants::save( $article->id, 'de', ['status' => 0], $this->user );
+        Variants::publishMany( [$article->id], 'de', $this->user );
 
         $names = fn() => PageView::language( 'de' )->findOrFail( $blog->id )->children->pluck( 'name' )->all();
 
@@ -248,7 +248,7 @@ class VariantRenderTest extends ThemeTestAbstract
     public function testSitemapListsVariants()
     {
         $this->variant( $this->blog(), 'de', 'blog-de' );
-        Resource::addVariant( $this->blog()->id, 'fr', $this->user );
+        Variants::add( $this->blog()->id, 'fr', $this->user );
 
         $content = $this->get( '/sitemap.xml' )->assertOk()->streamedContent();
 
@@ -275,9 +275,9 @@ class VariantRenderTest extends ThemeTestAbstract
 
     protected function variant( PageView $page, string $lang, string $path, array $input = [] ) : PageView
     {
-        Resource::addVariant( $page->id, $lang, $this->user );
-        Resource::savePage( $page->id, ['path' => $path, 'status' => 1] + $input, $this->user, lang: $lang );
-        Publication::publish( PageView::class, [$page->id], $this->user, lang: $lang );
+        Variants::add( $page->id, $lang, $this->user );
+        Variants::save( $page->id, $lang, ['path' => $path, 'status' => 1] + $input, $this->user );
+        Variants::publishMany( [$page->id], $lang, $this->user );
 
         return PageView::language( $lang )->findOrFail( $page->id );
     }

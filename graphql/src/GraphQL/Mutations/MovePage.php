@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\Pages;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,6 +20,6 @@ final class MovePage
      */
     public function __invoke( $rootValue, array $args ) : PageView
     {
-        return Resource::movePage( $args['id'], $args['ref'] ?? null, $args['parent'] ?? null, Auth::user() );
+        return Pages::move( $args['id'], Auth::user(), ref: $args['ref'] ?? null, parent: $args['parent'] ?? null );
     }
 }
