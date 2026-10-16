@@ -41,8 +41,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $expected = [
             'id' => $element->id,
             'data' => $element->data,
-            'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
-            'byversions' => $element->byversions->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'bypages' => $element->bypages->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
+            'byversions' => $element->byversions->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
             'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
@@ -75,6 +75,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
         $elementData = $response->json('data.element');
         $elementData['data'] = json_decode( $elementData['data'] );
+        $elementData['bypages'] = collect( $elementData['bypages'] )->sortBy( 'id' )->values()->all();
+        $elementData['byversions'] = collect( $elementData['byversions'] )->sortBy( 'id' )->values()->all();
 
         $this->assertEquals($expected, $elementData);
     }
