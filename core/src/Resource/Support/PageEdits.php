@@ -18,7 +18,7 @@ use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource\BulkResult;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NestedSet;

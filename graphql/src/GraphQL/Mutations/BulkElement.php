@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Resource\BulkResult;
-use Aimeos\Cms\Resource\Elements;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Support\Facades\Auth;
 
 

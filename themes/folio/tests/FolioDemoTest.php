@@ -24,8 +24,7 @@ class FolioDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new FolioDemo( 'folio', 'folio' ) )->seed();
-        Tenancy::$callback = fn() => 'folio';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'folio' );
     }
 
 

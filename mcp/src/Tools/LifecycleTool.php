@@ -7,13 +7,9 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Elements;
-use Aimeos\Cms\Resource\Files;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files;
+use Aimeos\Cms\Facades\Pages;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
@@ -27,11 +23,11 @@ use Laravel\Mcp\Request;
 abstract class LifecycleTool extends Tool
 {
     /**
-     * Model class of the item
+     * Resource class managing the item
      *
-     * @var class-string<Base>
+     * @var class-string<Pages|Elements|Files>
      */
-    protected const MODEL = Base::class;
+    protected const RESOURCE = Pages::class;
 
     /**
      * Name of the item type used in messages
@@ -94,20 +90,4 @@ abstract class LifecycleTool extends Tool
      * @return array<string, mixed> Changed item or error
      */
     abstract protected function apply( array $v, ?Authenticatable $user ) : array;
-
-    /**
-     * Returns the resource class managing the items of the model.
-     *
-     * @return class-string<Pages|Elements|Files> Resource class
-     */
-    protected function resource() : string
-    {
-        return match( static::MODEL ) {
-            PageView::class => Pages::class,
-            Element::class => Elements::class,
-            File::class => Files::class,
-            default => throw new \LogicException( 'No resource for ' . static::MODEL ),
-        };
-    }
-
 }

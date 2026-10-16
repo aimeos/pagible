@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;

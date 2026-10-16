@@ -14,7 +14,7 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
@@ -410,7 +410,7 @@ class CoreCommandTest extends CoreTestAbstract
 
     public function testUserWithoutTenancyConfiguration(): void
     {
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
         Tenancy::set( '' );
 
         $this->artisan('cms:user', [

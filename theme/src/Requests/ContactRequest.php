@@ -165,7 +165,7 @@ class ContactRequest extends FormRequest
                     {
                         try {
                             \Aimeos\Cms\Uploads::checkPixels( $value );
-                        } catch( \Aimeos\Cms\InvalidException ) {
+                        } catch( \Aimeos\Cms\Exceptions\InvalidInputException ) {
                             $fail( __( ':attribute: The file is too large.' ) );
                         }
                     }

@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\FilesRemoved;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Uploads;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
 use Aimeos\Cms\Models\File;
@@ -21,7 +21,7 @@ use Intervention\Image\Interfaces\DriverInterface;
 use Psr\Http\Message\StreamInterface;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\InvalidException;
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Aimeos\Cms\Tenancy;
 
@@ -31,7 +31,7 @@ use Aimeos\Cms\Tenancy;
  *
  * @phpstan-require-extends \Aimeos\Cms\Models\File
  */
-trait FileStorage
+trait StoresFiles
 {
     /**
      * Adds the uploaded file to the storage and returns the path to it
@@ -55,7 +55,7 @@ trait FileStorage
 
             if( !( $content = Uploads::cleanSvg( $content ) ) ) {
                 $msg = 'Invalid file "%s"';
-                throw new InvalidException( sprintf( $msg, $upload->getClientOriginalName() ) );
+                throw new InvalidInputException( sprintf( $msg, $upload->getClientOriginalName() ) );
             }
 
             $stored = $disk->put( $path, $content );
@@ -87,7 +87,7 @@ trait FileStorage
         $response = SafeHttp::request( $url, ['stream' => true], ['User-Agent' => 'Pagible/1.0 (+https://pagible.com)'] );
 
         if( !$response->successful() ) {
-            throw new InvalidException( sprintf( 'Failed to download "%s"', $url ) );
+            throw new InvalidInputException( sprintf( 'Failed to download "%s"', $url ) );
         }
 
         $limit = Uploads::maxMegabytes();
@@ -101,13 +101,13 @@ trait FileStorage
         try
         {
             if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
-                throw new InvalidException( $message );
+                throw new InvalidInputException( $message );
             }
 
             $bytes = $body->read( min( 4096, $max + 1 ) );
 
             if( strlen( $bytes ) > $max ) {
-                throw new InvalidException( $message );
+                throw new InvalidInputException( $message );
             }
 
             $this->mime = ( new \finfo( FILEINFO_MIME_TYPE ) )->buffer( $bytes ) ?: 'application/octet-stream';
@@ -136,7 +136,7 @@ trait FileStorage
      * @param int $max Maximum size in bytes
      * @param string $message Error message if the body exceeds the maximum size
      * @return resource Temporary file positioned at the beginning
-     * @throws InvalidException If the body exceeds the maximum size
+     * @throws InvalidInputException If the body exceeds the maximum size
      */
     protected static function spool( StreamInterface $body, string $bytes, int $max, string $message )
     {
@@ -154,7 +154,7 @@ trait FileStorage
 
             if( $size > $max ) {
                 fclose( $tmp );
-                throw new InvalidException( $message );
+                throw new InvalidInputException( $message );
             }
 
             fwrite( $tmp, $chunk );
@@ -224,7 +224,7 @@ trait FileStorage
         if( $source instanceof UploadedFile ) {
             Uploads::checkUpload( $source );
         } elseif( is_string( $source ) && str_starts_with( $source, 'http' ) && !Utils::isValidUrl( $source ) ) {
-            throw new InvalidException( sprintf( 'Invalid URL "%s"', $source ) );
+            throw new InvalidInputException( sprintf( 'Invalid URL "%s"', $source ) );
         }
 
         if( $preview ) {
@@ -350,7 +350,7 @@ trait FileStorage
     {
         $paths = $this->relocatable( $disk );
         $source = $this->storage();
-        $target = Files::disk( $disk );
+        $target = FileStorage::disk( $disk );
 
         foreach( $paths as $path )
         {
@@ -486,7 +486,7 @@ trait FileStorage
                 continue;
             }
 
-            if( !Files::owns( $tenant, (string) $this->id, $path ) ) {
+            if( !FileStorage::owns( $tenant, (string) $this->id, $path ) ) {
                 throw new Exception( sprintf( 'File path "%s" is outside its UUID directory', (string) $path ) );
             }
         }
@@ -509,7 +509,7 @@ trait FileStorage
                 continue;
             }
 
-            $value = Files::checkPath( (string) $path );
+            $value = FileStorage::checkPath( (string) $path );
 
             if( !str_starts_with( $value, 'http' ) && !$storage->exists( $value ) ) {
                 throw new Exception( sprintf( 'Prepared file "%s" is not available', (string) $path ) );
@@ -524,7 +524,7 @@ trait FileStorage
     public function dir() : string
     {
         $this->setUniqueIds();
-        return Files::prefix( Tenancy::value() ) . (string) $this->getAttribute( 'id' );
+        return FileStorage::prefix( Tenancy::value() ) . (string) $this->getAttribute( 'id' );
     }
 
 
@@ -533,7 +533,7 @@ trait FileStorage
      */
     protected function storage() : Filesystem
     {
-        return Files::disk( (string) $this->disk );
+        return FileStorage::disk( (string) $this->disk );
     }
 
 

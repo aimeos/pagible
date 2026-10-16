@@ -518,7 +518,7 @@ class Ai
             return $class::fromUrl( (string) $file->path, $file->mime, !(bool) config( 'cms.allow-internal' ) );
         }
 
-        return $class::fromStoragePath( (string) $file->path, Files::diskName( (string) $file->disk ), $file->mime );
+        return $class::fromStoragePath( (string) $file->path, FileStorage::diskName( (string) $file->disk ), $file->mime );
     }
 
 

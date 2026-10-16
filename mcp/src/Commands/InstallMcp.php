@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Concerns\PatchesFiles;
+use Aimeos\Cms\Commands\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 
 

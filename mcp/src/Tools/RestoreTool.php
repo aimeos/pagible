@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -16,6 +17,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
  */
 abstract class RestoreTool extends LifecycleTool
 {
+    /**
+     * Model class of the item to check if it's soft-deleted
+     *
+     * @var class-string<Base>
+     */
+    protected const MODEL = Base::class;
+
     protected const VERB = 'restore';
     protected const PREFIX = 'soft-deleted ';
 
@@ -35,6 +43,6 @@ abstract class RestoreTool extends LifecycleTool
             return ['error' => ucfirst( static::NOUN ) . ' is not deleted.'];
         }
 
-        return Presenter::item( $this->resource()::restore( $v['id'], $user ), static::MODEL === PageView::class );
+        return Presenter::item( ( static::RESOURCE )::restore( $v['id'], $user ), static::MODEL === PageView::class );
     }
 }

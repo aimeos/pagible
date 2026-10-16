@@ -609,6 +609,36 @@ class GraphqlElementTest extends GraphqlTestAbstract
     }
 
 
+    public function testPubElementOverride()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $published = [];
+
+        // resources bound by the application are used by the GraphQL mutations too
+        $this->app->singleton( \Aimeos\Cms\Resource\Elements::class, function() use ( &$published ) {
+            return new class( $published ) extends \Aimeos\Cms\Resource\Elements {
+                public function __construct( private array &$published ) {}
+
+                public function publishMany( array $ids, ?\Illuminate\Contracts\Auth\Authenticatable $user = null, ?string $at = null ) : \Illuminate\Support\Collection
+                {
+                    $this->published = $ids;
+                    return parent::publishMany( $ids, $user, $at );
+                }
+            };
+        } );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                pubElement(id: ["' . $element->id . '"]) {
+                    id
+                }
+            }
+        ' )->assertJson( ['data' => ['pubElement' => [['id' => (string) $element->id]]]] );
+
+        $this->assertSame( [(string) $element->id], $published );
+    }
+
+
     public function testPubElementAt()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();

@@ -14,7 +14,7 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Database\Seeders\TestSeeder;

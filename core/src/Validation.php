@@ -13,7 +13,6 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Aimeos\Cms\Resource\Variants;
 
 
 class Validation

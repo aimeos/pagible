@@ -10,7 +10,7 @@ namespace Aimeos\Cms\Jobs;
 use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,13 +35,13 @@ class DeleteFilePaths implements ShouldQueue
 
     public function handle(): void
     {
-        Files::storageLock( $this->tenant, function() {
+        FileStorage::storageLock( $this->tenant, function() {
             $owners = [];
 
             foreach( $this->paths as $path )
             {
-                if( ( $path = Files::normalizePath( $path, $this->tenant ) ) !== null
-                    && ( $owner = Files::owner( $this->tenant, $path ) ) !== null ) {
+                if( ( $path = FileStorage::normalizePath( $path, $this->tenant ) ) !== null
+                    && ( $owner = FileStorage::owner( $this->tenant, $path ) ) !== null ) {
                     $owners[$owner][$path] = true;
                 }
             }
@@ -95,7 +95,7 @@ class DeleteFilePaths implements ShouldQueue
         }
 
         foreach( ['public', 'private'] as $disk ) {
-            Files::disk( $disk )->delete( array_keys( $paths ) );
+            FileStorage::disk( $disk )->delete( array_keys( $paths ) );
         }
 
         FilesRemoved::dispatch( $this->tenant, array_keys( $paths ) );
@@ -110,7 +110,7 @@ class DeleteFilePaths implements ShouldQueue
      */
     private function forget( array &$paths, mixed $path ): void
     {
-        if( ( $path = Files::normalizePath( $path, $this->tenant ) ) !== null ) {
+        if( ( $path = FileStorage::normalizePath( $path, $this->tenant ) ) !== null ) {
             unset( $paths[$path] );
         }
     }

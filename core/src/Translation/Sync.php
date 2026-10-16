@@ -5,8 +5,12 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Translation;
 
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Schema;
+use Aimeos\Cms\Scout;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageVariant;

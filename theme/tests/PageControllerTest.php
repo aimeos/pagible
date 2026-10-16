@@ -15,7 +15,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Models\PageAccess;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Validation;
 use Database\Seeders\TestSeeder;
 use Illuminate\Contracts\Cache\LockProvider;

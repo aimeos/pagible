@@ -36,8 +36,7 @@ class DemoTest extends ThemeTestAbstract
     public function testSeedDefault(): void
     {
         config( ['cache.default' => 'array', 'cms.theme.cache' => 'file'] );
-        Tenancy::$callback = fn() => 'demo';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'demo' );
         PageCache::remember( fn() => ( new Response( 'cached page without logo' ) )
             ->header( 'Cache-Control', 'public' )
             ->setExpires( now()->addMinutes( 5 ) ),
@@ -46,7 +45,7 @@ class DemoTest extends ThemeTestAbstract
 
         ( new DefaultDemo( '', 'demo' ) )->seed();
 
-        Tenancy::$callback = fn() => 'demo';
+        Tenancy::valueUsing( fn() => 'demo' );
 
         $home = PageView::where( 'tag', 'root' )->firstOrFail();
 
@@ -100,7 +99,7 @@ class DemoTest extends ThemeTestAbstract
     {
         ( new DefaultDemo( 'luxury', 'luxury' ) )->seed();
 
-        Tenancy::$callback = fn() => 'luxury';
+        Tenancy::valueUsing( fn() => 'luxury' );
 
         $home = PageView::where( 'tag', 'root' )->firstOrFail();
 
@@ -128,7 +127,7 @@ class DemoTest extends ThemeTestAbstract
     {
         $this->artisan( 'cms:demo', ['--theme' => 'luxury', '--tenant' => 'showcase'] )->assertExitCode( 0 );
 
-        Tenancy::$callback = fn() => 'showcase';
+        Tenancy::valueUsing( fn() => 'showcase' );
 
         $this->assertSame( 'luxury', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
@@ -140,7 +139,7 @@ class DemoTest extends ThemeTestAbstract
 
         $this->artisan( 'cms:demo', ['--all' => true] )->assertExitCode( 0 );
 
-        Tenancy::$callback = fn() => 'luxury';
+        Tenancy::valueUsing( fn() => 'luxury' );
 
         $this->assertSame( 'luxury', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
@@ -157,8 +156,7 @@ class DemoTest extends ThemeTestAbstract
 
         ( new $seeder( $theme, $theme ) )->seed();
 
-        Tenancy::$callback = fn() => $theme;
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => $theme );
 
         $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $hero = collect( (array) $home->content )

@@ -65,7 +65,7 @@ class PulseGateTest extends PulseTestCase
 
     public function testDefaultPulseGateDeniesTenantlessRouteWhenTenancyIsConfigured() : void
     {
-        Tenancy::$callback = fn() => '';
+        Tenancy::valueUsing( fn() => '' );
         $this->application()->instance( Tenancy::class, new Tenancy( '' ) );
         Gate::define( 'viewPulse', $this->pulseDefaultGate() );
 

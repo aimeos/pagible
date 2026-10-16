@@ -16,11 +16,8 @@ use Illuminate\Support\Str;
 /**
  * Helpers for managed files, their storage paths, disks and locks.
  */
-class Files
+class FileStorage
 {
-    /** @var array<string, array{owner: object, callbacks: list<\Closure>}> */
-    private static array $storageCallbacks = [];
-
     /**
      * Returns the storage path prefix of managed files for the tenant.
      *
@@ -175,15 +172,15 @@ class Files
             return Cache::lock( 'cms_storage_' . $id, 86400 )->block( $wait, function() use (
                 $callback, $id, $owner
             ) {
-                self::$storageCallbacks[$id] = ['owner' => $owner, 'callbacks' => []];
+                Hooks::get()->storage[$id] = ['owner' => $owner, 'callbacks' => []];
                 return $callback();
             } );
         } finally {
-            $state = self::$storageCallbacks[$id] ?? null;
+            $state = Hooks::get()->storage[$id] ?? null;
 
             if( $state && $state['owner'] === $owner )
             {
-                unset( self::$storageCallbacks[$id] );
+                unset( Hooks::get()->storage[$id] );
 
                 foreach( $state['callbacks'] as $deferred ) {
                     try {
@@ -203,8 +200,8 @@ class Files
     {
         $key = hash( 'sha256', $tenant );
 
-        if( isset( self::$storageCallbacks[$key] ) ) {
-            self::$storageCallbacks[$key]['callbacks'][] = $callback;
+        if( isset( Hooks::get()->storage[$key] ) ) {
+            Hooks::get()->storage[$key]['callbacks'][] = $callback;
         } else {
             $callback();
         }

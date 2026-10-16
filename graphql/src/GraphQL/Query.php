@@ -7,14 +7,14 @@
 
 namespace Aimeos\Cms\GraphQL;
 
-use Aimeos\Cms\Filter;
+use Aimeos\Cms\Query\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Query\SearchQuery;
 use Aimeos\Cms\Scout;
-use Aimeos\Cms\Sync;
+use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

@@ -15,6 +15,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Str;
 
 
 /**
@@ -32,12 +33,13 @@ final class Refs
      * @return array<string> Deduped IDs, all confirmed to exist
      * @throws ConflictException If any referenced ID is no longer available
      */
-    public static function available( string $model, array $ids ) : array
+    private static function available( string $model, array $ids ) : array
     {
         $ids = array_values( array_unique( $ids ) );
         $existing = [];
 
-        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
+        // SQL Server rejects values which aren't UUIDs, they are reported as not available
+        foreach( array_chunk( array_filter( $ids, fn( $id ) => Str::isUuid( $id ) ), DB::IN_SIZE ) as $chunk ) {
             $existing += $model::whereIn( 'id', $chunk )->pluck( 'id', 'id' )->all();
         }
 

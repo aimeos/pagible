@@ -5,10 +5,11 @@
  */
 
 
-namespace Aimeos\Cms\Query;
+namespace Aimeos\Cms\Database;
 
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Query\PageBuilder;
 
 
 /**

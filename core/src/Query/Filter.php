@@ -5,8 +5,9 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Query;
 
+use Aimeos\Cms\Translation\Sync;
 use Laravel\Scout\Builder;
 use Aimeos\Cms\Models\Base;
 use Illuminate\Database\Eloquent\Model;
@@ -111,9 +112,9 @@ class Filter
         $base = $query->getQuery();
 
         // trashed variants of the language are included if the fallback includes them
-        $trashed = $base instanceof Query\PageBuilder && ( $base->variant()[2] ?? false );
+        $trashed = $base instanceof PageBuilder && ( $base->variant()[2] ?? false );
 
-        if( $query instanceof Query\PageQuery ) {
+        if( $query instanceof PageQuery ) {
             $state === 'missing' ? $query->language( null ) : $query->language( $lang, $trashed );
         }
 

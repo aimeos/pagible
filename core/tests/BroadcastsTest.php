@@ -22,10 +22,10 @@ use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Elements;
-use Aimeos\Cms\Resource\Files;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\VariantAction;
 use Database\Seeders\TestSeeder;
@@ -378,9 +378,14 @@ class BroadcastsTest extends CoreTestAbstract
         Pages::publishMany( [$page2->id, $page3->id], $this->user );
         Pages::save( $page1->id, ['title' => 'Not published'], $this->user );
 
-        $this->assertEquals( [$page1->id, $page2->id, $page3->id], array_map( fn( Change $c ) => $c->id, $changes ) );
+        // the bulk changes are in database order, which differs between the database engines
+        $bulk = collect( array_slice( $changes, 1 ) )->keyBy( 'id' );
+
+        $this->assertCount( 3, $changes );
+        $this->assertSame( $page1->id, $changes[0]->id );
+        $this->assertEqualsCanonicalizing( [$page2->id, $page3->id], $bulk->keys()->all() );
         $this->assertTrue( collect( $changes )->every( fn( Change $c ) => $c->action === 'published' && $c->published && $c->type() === ContentType::Page ) );
-        $this->assertSame( (string) PageView::findOrFail( $page2->id )->latest_id, $changes[1]->versionId );
+        $this->assertSame( (string) PageView::findOrFail( $page2->id )->latest_id, $bulk[$page2->id]->versionId );
         $this->assertSame( 'editor@testbench', $changes[0]->editor );
     }
 

@@ -24,8 +24,7 @@ class AuraDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new AuraDemo( 'aura', 'aura' ) )->seed();
-        Tenancy::$callback = fn() => 'aura';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'aura' );
     }
 
 

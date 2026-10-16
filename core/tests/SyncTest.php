@@ -9,11 +9,11 @@ namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Hashes;
-use Aimeos\Cms\Resource\Elements;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
-use Aimeos\Cms\Sync;
+use Aimeos\Cms\Translation\Hashes;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
+use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;

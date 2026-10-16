@@ -24,8 +24,7 @@ class TorqueDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new TorqueDemo( 'torque', 'torque' ) )->seed();
-        Tenancy::$callback = fn() => 'torque';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'torque' );
     }
 
 

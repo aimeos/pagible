@@ -15,8 +15,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
  *
  * The instance is bound to the application container, so the state lives as long as
  * the application and is reset together with it instead of leaking through static state.
- * Use the public configurators like Access::using(), Permission::register() or
- * Schema::source() instead of the methods of this class.
+ * Use the public configurators like Access::using(), Permission::register(), Schema::source()
+ * or Tenancy::valueUsing() instead of the methods of this class.
  *
  * @internal
  */
@@ -45,6 +45,15 @@ final class Hooks
 
     /** @var array<string, array<string, bool>> Page IDs per tenant whose source variants must be reindexed */
     public array $sources = [];
+
+    /** @var array<string, array{owner: object, callbacks: list<\Closure>}> Callbacks deferred until the storage lock is released */
+    public array $storage = [];
+
+    /** @var (\Closure(): string)|null Callback returning the ID of the current tenant */
+    public ?\Closure $tenant = null;
+
+    /** @var (\Closure(?Authenticatable, string): bool)|null Custom user-to-tenant access check */
+    public ?\Closure $tenantAccess = null;
 
     /** @var array<string, array<string, mixed>> Registered themes */
     public array $themes = [];

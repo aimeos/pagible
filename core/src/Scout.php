@@ -124,6 +124,9 @@ class Scout
     /**
      * Reindexes models after the surrounding transaction commits.
      *
+     * Use it instead of index() inside transactions, so the search index doesn't contain
+     * uncommitted changes and rolled back changes are never indexed.
+     *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Model IDs or search keys
      * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
@@ -164,7 +167,7 @@ class Scout
      *
      * @param \Closure(): mixed $callback Callback to execute
      */
-    public static function afterCommit( \Closure $callback ) : void
+    private static function afterCommit( \Closure $callback ) : void
     {
         $tenant = Tenancy::value();
         DB::connection()->afterCommit( fn() => Tenancy::run( $tenant, $callback ) );
@@ -200,20 +203,6 @@ class Scout
             }
 
             ( $keys ? $query->whereIn( $column, $chunk ) : $query->whereKey( $chunk ) )->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
-        }
-    }
-
-
-    /**
-     * Removes models from the search index after the surrounding transaction commits.
-     *
-     * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Search keys (variant IDs for pages)
-     */
-    public static function remove( string $model, array $ids ) : void
-    {
-        if( $ids && self::usesSearchIndex() ) {
-            self::afterCommit( fn() => self::unindex( $model, $ids ) );
         }
     }
 
@@ -257,15 +246,11 @@ class Scout
 
 
     /**
-     * Whether the items stay in the search index after the lifecycle action.
-     *
-     * Restored items are indexed again and dropped ones are kept as trashed if Scout soft deletes.
-     *
-     * @param LifecycleAction $action Lifecycle action
+     * Whether trashed items stay in the search index, which is the case if Scout soft deletes.
      */
-    public static function keeps( LifecycleAction $action ) : bool
+    public static function keepsTrashed() : bool
     {
-        return $action === LifecycleAction::Restored || $action === LifecycleAction::Dropped && config( 'scout.soft_delete' );
+        return (bool) config( 'scout.soft_delete' );
     }
 
 

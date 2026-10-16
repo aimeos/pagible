@@ -463,11 +463,11 @@ class T3Import extends Command
                 $file->path,
                 ...(array) $file->previews,
             ])->map(
-                fn ($path) => \Aimeos\Cms\Files::normalizePath($path, $tenant)
+                fn ($path) => \Aimeos\Cms\FileStorage::normalizePath($path, $tenant)
             )->filter()->values()->all();
 
             if ($paths) {
-                Storage::disk(\Aimeos\Cms\Files::diskName((string) $file->disk))->delete($paths);
+                Storage::disk(\Aimeos\Cms\FileStorage::diskName((string) $file->disk))->delete($paths);
             }
         });
     }
@@ -1186,7 +1186,7 @@ class T3Import extends Command
         $file = Files::create($mime, $name, $path, $this->editor, str_starts_with($path, 'http'));
         $id = $file->id ?? '';
         $this->createdFiles->put($path, $id);
-        $disk = \Aimeos\Cms\Files::diskName((string) $file->disk);
+        $disk = \Aimeos\Cms\FileStorage::diskName((string) $file->disk);
         $url = Storage::disk($disk)->url((string) $file->path);
 
         // Local managed files must remain portable across hosts and preview ports.

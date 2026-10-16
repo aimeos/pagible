@@ -105,30 +105,9 @@ class Page extends Model
     protected $table = 'cms_pages';
 
     /**
-     * Search keys of the variants removed together with the page.
-     *
-     * @var array<int, string>
-     */
-    private array $removed = [];
-
-    /**
      * If the tree position of the page is up to date and doesn't need to be re-read.
      */
     private bool $trusted = false;
-
-    /**
-     * Updates the search index and removes the variants of purged pages.
-     */
-    protected static function booted() : void
-    {
-        static::deleted( function( Page $page ) {
-            $page->isForceDeleting() ? $page->unindex() : $page->index( trashed: true );
-        } );
-
-        static::forceDeleting( fn( Page $page ) => $page->removeVariants() );
-        static::restored( fn( Page $page ) => $page->index( trashed: false ) );
-    }
-
 
     /**
      * Get the prunable model query.
@@ -158,8 +137,31 @@ class Page extends Model
     {
         // the nested set queries are tenant scoped, so they must run in the tenant of the page
         Tenancy::run( (string) $this->tenant_id, function() {
-            // pages removed together with an ancestor don't exist anymore and the positions may be outdated
-            static::withTrashed()->find( $this->id )?->forceDelete();
+
+            $variantIds = DB::transaction( function() {
+
+                // pages removed together with an ancestor don't exist anymore and the positions may be outdated
+                $page = static::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
+                    ->lockForUpdate()->find( $this->id );
+
+                if( !$page ) {
+                    return [];
+                }
+
+                $variantIds = [];
+
+                foreach( array_chunk( $page->subtreeIds(), DB::IN_SIZE ) as $chunk ) {
+                    array_push( $variantIds, ...PageVariant::withoutGlobalScopes()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all() );
+                }
+
+                PageVariant::purge( $variantIds );
+                static::purge( [$page] );
+
+                return $variantIds;
+            } );
+
+            // pages are indexed per variant
+            Scout::unindex( PageView::class, $variantIds );
         } );
 
         return true;
@@ -338,46 +340,6 @@ class Page extends Model
 
 
     /**
-     * Updates the search index entries of the variants in the subtree of the page after the transaction commits.
-     *
-     * @param bool $trashed TRUE if the page has been moved into the trash
-     */
-    protected function index( bool $trashed ) : void
-    {
-        if( !Scout::syncs( PageView::class ) || $trashed && !Scout::usesExternalSearch() ) {
-            return;
-        }
-
-        // the cms index keeps the entries of trashed descendants, so only the restored page changes
-        $ids = Scout::usesExternalSearch() ? $this->subtreeIds() : [(string) $this->id];
-
-        if( !$trashed || config( 'scout.soft_delete' ) ) {
-            Scout::reindex( PageView::class, $ids );
-            return;
-        }
-
-        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
-            Scout::remove( PageView::class, PageVariant::withTrashed()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all() );
-        }
-    }
-
-
-    /**
-     * Permanently deletes the variants and their versions of the page and its descendants.
-     */
-    protected function removeVariants() : void
-    {
-        foreach( array_chunk( $this->subtreeIds(), DB::IN_SIZE ) as $chunk )
-        {
-            $variantIds = PageVariant::withoutGlobalScopes()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all();
-
-            PageVariant::purge( $variantIds );
-            array_push( $this->removed, ...$variantIds );
-        }
-    }
-
-
-    /**
      * Don't fire model events for each descendant for performance reasons.
      *
      * @return bool FALSE to disable firing events for descendants
@@ -385,21 +347,6 @@ class Page extends Model
     protected function shouldFireDescendantEvents() : bool
     {
         return false;
-    }
-
-
-
-    /**
-     * Removes the search index entries of the variants removed together with the page after the transaction commits.
-     */
-    protected function unindex() : void
-    {
-        $ids = $this->removed;
-        $this->removed = [];
-
-        if( Scout::syncs( PageView::class ) ) {
-            Scout::remove( PageView::class, $ids );
-        }
     }
 
 

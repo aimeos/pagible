@@ -24,8 +24,7 @@ class CounselDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new CounselDemo( 'counsel', 'counsel' ) )->seed();
-        Tenancy::$callback = fn() => 'counsel';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'counsel' );
     }
 
 

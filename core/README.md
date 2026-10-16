@@ -59,7 +59,7 @@ clients download large protected media directly; local private files are streame
 
 ### Stancl tenancy mode
 
-Pagible remains usable without tenancy and with custom `Tenancy::$callback` integrations. Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
+Pagible remains usable without tenancy and with custom integrations that pass a callback returning the current tenant ID to `\Aimeos\Cms\Tenancy::valueUsing()` (the `Tenancy::$callback` property is deprecated). Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
 
 ```php
 \Aimeos\Cms\Tenancy::stancl();
@@ -169,7 +169,7 @@ Do not persist or delete `PageAccess` instances directly. Those low-level writes
 
 ## PHP API
 
-Pages, shared elements and files are created and changed by the static methods of the classes in `Aimeos\Cms\Resource`. They create the versions, update the search index, invalidate the caches and dispatch the events, so don't save the models directly.
+Pages, shared elements and files are created and changed by the facades in `Aimeos\Cms\Facades`. They create the versions, update the search index, invalidate the caches and dispatch the events, so don't save the models directly.
 
 | Class | Operations |
 |-------|------------|
@@ -179,8 +179,8 @@ Pages, shared elements and files are created and changed by the static methods o
 | `Variants` | `add`, `save`, `revert`, `bulk`, `publish`, `translate`, `setSource`, `ignore`, `drop`, `restore`, `purge` (language variants of pages) |
 
 ```php
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 
 $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'], $user, parent: $rootId );
 $page = Pages::save( $page->id, ['title' => 'About us'], $user );
@@ -192,6 +192,12 @@ Variants::publish( $page->id, 'de', $user );
 ```
 
 `Pages::save()`, `bulk()` and `publish()` change the variant in the source language of the pages, the methods with the same names in `Variants` change the variant in the passed language. `Variants::revert()` saves the content of an old version like `save()` and marks the translation as outdated.
+
+The facades resolve the instances of the classes in `Aimeos\Cms\Resource` from the container. To change the behavior everywhere (admin, GraphQL, MCP, AI, commands), bind your own subclass overriding the public or protected methods in your service provider:
+
+```php
+$this->app->singleton( \Aimeos\Cms\Resource\Pages::class, \App\Cms\MyPages::class );
+```
 
 ### Single and multiple items
 
@@ -291,14 +297,14 @@ It accepts one or more action names (`added`, `saved`, `moved`, `published`, `dr
 
 ### Testing
 
-The resource classes work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Pass `null` as user to skip the permission checks, or a user whose permissions are assigned by `Permission::set()` to test them:
+The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Pass `null` as user to skip the permission checks, or a user whose permissions are assigned by `Permission::set()` to test them:
 
 ```php
 use Aimeos\Cms\Events\Change;
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Illuminate\Support\Facades\Event;
 
 public function testPublish() : void
@@ -324,7 +330,7 @@ public function testPermission() : void
 
 Events are only dispatched if `cms.broadcast` is enabled, listeners for them are registered or `Event::fake()` is used. Alternatively, register a listener by `Change::listen()` and collect the passed `Change` objects. `Bulk` events are dispatched instead of the per-item events if several items are changed at once, e.g. by `publishMany()`.
 
-To replace the CMS operations by mocks in tests of your own code, call them in your application through the facades in `Aimeos\Cms\Facades` (`Pages`, `Elements`, `Files` and `Variants`). They offer the same methods as the resource classes and support `shouldReceive()` and `spy()` like all Laravel facades:
+The facades in `Aimeos\Cms\Facades` (`Pages`, `Elements`, `Files` and `Variants`) support `shouldReceive()` and `spy()` like all Laravel facades:
 
 ```php
 use Aimeos\Cms\Facades\Pages;
@@ -336,7 +342,7 @@ Pages::publish( $id, $request->user() );
 Pages::shouldReceive( 'publish' )->once()->with( 'page-id', $user )->andReturn( $page );
 ```
 
-Mocks only replace calls made through the facades. The built-in GraphQL and MCP APIs call the resource classes directly, so they always run the real operations.
+The built-in admin, GraphQL, MCP and AI APIs use the facades too, so mocks also replace the operations they call.
 
 ## Commands
 

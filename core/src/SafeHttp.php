@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
 use Illuminate\Http\Client\Response;
@@ -48,7 +49,7 @@ class SafeHttp
             $response->toPsrResponse()->getBody()->close();
 
             if( $location === '' || $redirects >= 2 ) {
-                throw new InvalidException( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
+                throw new InvalidInputException( sprintf( 'Too many or invalid redirects for "%s"', $url ) );
             }
 
             $url = (string) UriResolver::resolve( new Uri( $url ), new Uri( $location ) );
@@ -115,7 +116,7 @@ class SafeHttp
         // Syntactic validation only; the host is resolved once below and the
         // result reused for both the allow-check and the connection pin.
         if( !Utils::isValidUrl( $url, strict: false ) ) {
-            throw new InvalidException( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
+            throw new InvalidInputException( sprintf( 'Invalid or unsafe URL "%s"', $url ) );
         }
 
         $parsed = (array) parse_url( $url );
@@ -123,7 +124,7 @@ class SafeHttp
         $port = $parsed['port'] ?? ( ( $parsed['scheme'] ?? '' ) === 'https' ? 443 : 80 );
 
         if( !( $ip = static::resolve( $host ) ) ) {
-            throw new InvalidException( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
+            throw new InvalidInputException( sprintf( 'Host "%s" does not resolve to an allowed address', $host ) );
         }
 
         return [

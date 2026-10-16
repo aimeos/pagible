@@ -12,7 +12,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Prisma\Exceptions\OverloadedException;

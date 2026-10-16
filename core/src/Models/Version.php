@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Aimeos\Cms\Texts;
+use Aimeos\Cms\Translation\Texts;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 

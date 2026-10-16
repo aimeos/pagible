@@ -50,7 +50,7 @@ final class FileResponse
             : (string) ( $previews[$variant] ?? '' );
 
         if( !$path || str_starts_with( $path, 'http' )
-            || !Files::owns( (string) $file->tenant_id, (string) $file->id, $path ) ) {
+            || !FileStorage::owns( (string) $file->tenant_id, (string) $file->id, $path ) ) {
             abort( 404 );
         }
 
@@ -61,7 +61,7 @@ final class FileResponse
             ? ( (string) ( $data->mime ?? '' ) ?: (string) $file->mime ?: 'application/octet-stream' )
             : self::mime( $path );
 
-        $storage = Files::disk( (string) $file->disk );
+        $storage = FileStorage::disk( (string) $file->disk );
         return self::send( $storage, $path, self::headers( $name, $mime ), $expires );
     }
 

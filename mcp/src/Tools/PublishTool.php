@@ -7,15 +7,12 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Elements;
-use Aimeos\Cms\Resource\Files;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files;
+use Aimeos\Cms\Facades\Pages;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Collection;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Request;
@@ -27,11 +24,11 @@ use Laravel\Mcp\Request;
 abstract class PublishTool extends Tool
 {
     /**
-     * Model class of the items
+     * Resource class managing the items
      *
-     * @var class-string<Base>
+     * @var class-string<Pages|Elements|Files>
      */
-    protected const MODEL = Base::class;
+    protected const RESOURCE = Pages::class;
 
     /**
      * Name of the item type used in messages
@@ -59,17 +56,20 @@ abstract class PublishTool extends Tool
             'id.required' => 'You must specify an array of up to 50 IDs of the ' . static::NOUN . 's to publish.',
         ] );
 
-        $ids = $v['id'];
-        $items = match( static::MODEL ) {
-            PageView::class => isset( $v['lang'] )
-                ? Variants::publishMany( $ids, $v['lang'], $request->user(), $v['at'] ?? null )
-                : Pages::publishMany( $ids, $request->user(), $v['at'] ?? null ),
-            Element::class => Elements::publishMany( $ids, $request->user(), $v['at'] ?? null ),
-            File::class => Files::publishMany( $ids, $request->user(), $v['at'] ?? null ),
-            default => throw new \LogicException( 'No resource for ' . static::MODEL ),
-        };
+        return Response::structured( Presenter::published( $this->publish( $v, $request->user() ), $v['id'], $v['at'] ?? null ) );
+    }
 
-        return Response::structured( Presenter::published( $items, $ids, $v['at'] ?? null ) );
+
+    /**
+     * Publishes the items.
+     *
+     * @param array<string, mixed> $v Validated input
+     * @param Authenticatable|null $user Authenticated user
+     * @return Collection<int, covariant \Aimeos\Cms\Models\Base> Published items
+     */
+    protected function publish( array $v, ?Authenticatable $user ) : Collection
+    {
+        return ( static::RESOURCE )::publishMany( $v['id'], $user, $v['at'] ?? null );
     }
 
 

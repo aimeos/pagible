@@ -7,11 +7,25 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Facades\Files;
+use Illuminate\Support\Facades\Auth;
+use Nuwave\Lighthouse\Execution\ResolveInfo;
 
 
-final class KeepFile extends Lifecycle
+/**
+ * Restores files.
+ */
+final class KeepFile
 {
-    protected const MODEL = File::class;
-    protected const ACTION = 'restore';
+    /**
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
+     */
+    public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
+    {
+        $fields = array_keys( $info?->getFieldSelection( 1 ) ?? [] );
+
+        return Files::restoreMany( $args['id'], Auth::user(), $fields )->all();
+    }
 }

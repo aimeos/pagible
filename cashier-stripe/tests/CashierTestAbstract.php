@@ -23,7 +23,7 @@ abstract class CashierTestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set( 'auth.providers.users.model', 'App\\Models\\User' );
         $app['config']->set( 'cms.db', 'testing' );
 
-        \Aimeos\Cms\Tenancy::$callback = fn() => 'test';
+        \Aimeos\Cms\Tenancy::valueUsing( fn() => 'test' );
     }
 
 

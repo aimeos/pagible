@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\Channel;
+use Aimeos\Cms\Events\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;

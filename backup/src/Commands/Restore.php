@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Uploads;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
@@ -131,7 +131,7 @@ class Restore extends Command
 
         foreach( $values as $path )
         {
-            if( Files::normalizePath( $path, $sourceTenant ) === null ) {
+            if( FileStorage::normalizePath( $path, $sourceTenant ) === null ) {
                 continue;
             }
 
@@ -204,11 +204,11 @@ class Restore extends Command
             try
             {
                 if( !in_array( $logical, ['public', 'private'], true )
-                    || Files::owner( $tenant, $path ) === null ) {
+                    || FileStorage::owner( $tenant, $path ) === null ) {
                     throw new \RuntimeException( 'Invalid media rollback journal path' );
                 }
 
-                $storage = Files::disk( $logical );
+                $storage = FileStorage::disk( $logical );
 
                 if( is_string( $backup ) )
                 {
@@ -312,7 +312,7 @@ class Restore extends Command
             foreach( $files as $file )
             {
                 $other = self::other( $file['disk'] );
-                $storage = Files::disk( $other );
+                $storage = FileStorage::disk( $other );
 
                 foreach( $file['paths'] as $path )
                 {
@@ -648,10 +648,10 @@ class Restore extends Command
      */
     protected static function move( mixed $path, string $from, string $to ): mixed
     {
-        $prefix = Files::prefix( $from );
+        $prefix = FileStorage::prefix( $from );
 
         return is_string( $path ) && str_starts_with( $path, $prefix )
-            ? Files::prefix( $to ) . substr( $path, strlen( $prefix ) )
+            ? FileStorage::prefix( $to ) . substr( $path, strlen( $prefix ) )
             : $path;
     }
 
@@ -748,9 +748,9 @@ class Restore extends Command
                 ) );
             }
 
-            $target = Files::disk( $file['disk'] );
+            $target = FileStorage::disk( $file['disk'] );
             $other = self::other( $file['disk'] );
-            $source = Files::disk( $other );
+            $source = FileStorage::disk( $other );
 
             // validateMedia() already rejected paths which exist only on the other disk
             foreach( $file['paths'] as $path )
@@ -763,7 +763,7 @@ class Restore extends Command
                 $source->delete( $path );
 
                 // fetched again because PHPStan treats exists() on the same instance as pure
-                if( Files::disk( $other )->exists( $path ) ) {
+                if( FileStorage::disk( $other )->exists( $path ) ) {
                     throw new \RuntimeException( sprintf(
                         'Failed to remove media path "%s" from disk "%s"',
                         $path,
@@ -793,8 +793,8 @@ class Restore extends Command
             throw new \RuntimeException( sprintf( 'Unsafe media path detected: %s', $path ) );
         }
 
-        $sourcePrefix = Files::prefix( $sourceTenant );
-        $targetPrefix = Files::prefix( $tenant );
+        $sourcePrefix = FileStorage::prefix( $sourceTenant );
+        $targetPrefix = FileStorage::prefix( $tenant );
 
         $targetPath = str_starts_with( $path, $sourcePrefix )
             ? $targetPrefix . substr( $path, strlen( $sourcePrefix ) )
@@ -836,7 +836,7 @@ class Restore extends Command
 
         try
         {
-            $mediaOnly = Files::storageLock( $tenant, function() use (
+            $mediaOnly = FileStorage::storageLock( $tenant, function() use (
                 $manifest, $merge, $tenant, $zip
             ) {
                 $sourceTenant = $manifest['tenant_id'];
@@ -1024,7 +1024,7 @@ class Restore extends Command
                 ) );
             }
 
-            $storage = Files::disk( $logical );
+            $storage = FileStorage::disk( $logical );
 
             if( !( $stream = $zip->getStream( $stat['name'] ) ) ) {
                 throw new \RuntimeException( sprintf( 'Failed to read media entry "%s"', $stat['name'] ) );
@@ -1209,7 +1209,7 @@ class Restore extends Command
             return;
         }
 
-        $storage = Files::disk( $logical );
+        $storage = FileStorage::disk( $logical );
         $backup = null;
 
         if( $storage->exists( $path ) )
@@ -1264,9 +1264,9 @@ class Restore extends Command
     {
         foreach( $files as $file )
         {
-            $target = Files::disk( $file['disk'] );
+            $target = FileStorage::disk( $file['disk'] );
             $other = self::other( $file['disk'] );
-            $source = Files::disk( $other );
+            $source = FileStorage::disk( $other );
 
             foreach( $file['paths'] as $path )
             {
@@ -1320,7 +1320,7 @@ class Restore extends Command
             return;
         }
 
-        if( !Files::owns( $tenant, $id, $path ) ) {
+        if( !FileStorage::owns( $tenant, $id, $path ) ) {
             throw new \RuntimeException( sprintf( 'File path is outside UUID directory "%s"', $id ) );
         }
     }

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
@@ -31,7 +32,7 @@ class Uploads
             $response = SafeHttp::request( $path, ['stream' => true], ['Range' => 'bytes=0-299'] );
 
             if( !$response->successful() ) {
-                throw new InvalidException( 'URL not accessible' );
+                throw new InvalidInputException( 'URL not accessible' );
             }
 
             $body = $response->toPsrResponse()->getBody();
@@ -40,11 +41,11 @@ class Uploads
         }
         else
         {
-            if( ( $path = Files::normalizePath( $path ) ) === null ) {
+            if( ( $path = FileStorage::normalizePath( $path ) ) === null ) {
                 throw new Exception( 'Invalid file path' );
             }
 
-            $stream = Files::disk( $disk )->readStream( $path );
+            $stream = FileStorage::disk( $disk )->readStream( $path );
 
             if( !$stream ) {
                 throw new Exception( 'File not accessible' );
@@ -112,12 +113,12 @@ class Uploads
      * @param string $mime MIME type to check
      * @param string $label Name of the checked item used in the error message
      * @param string $prefix Additionally required MIME type prefix, e.g. "image/"
-     * @throws InvalidException If the MIME type isn't allowed
+     * @throws InvalidInputException If the MIME type isn't allowed
      */
     public static function checkMimetype( string $mime, string $label = 'File', string $prefix = '' ) : void
     {
         if( !str_starts_with( $mime, $prefix ) || !self::isValidMimetype( $mime ) ) {
-            throw new InvalidException( sprintf( '%s type "%s" not allowed, permitted types: %s',
+            throw new InvalidInputException( sprintf( '%s type "%s" not allowed, permitted types: %s',
                 $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
         }
     }
@@ -193,7 +194,7 @@ class Uploads
      *
      * @param string $content Raw or gzip-compressed content
      * @return string Decompressed content
-     * @throws InvalidException If the decompressed content exceeds the maximum upload size
+     * @throws InvalidInputException If the decompressed content exceeds the maximum upload size
      */
     public static function gunzip( string $content ) : string
     {
@@ -205,7 +206,7 @@ class Uploads
         $result = @gzdecode( $content, $max + 1 );
 
         if( $result === false || strlen( $result ) > $max ) {
-            throw new InvalidException( 'Decompressed SVG exceeds the maximum upload size' );
+            throw new InvalidInputException( 'Decompressed SVG exceeds the maximum upload size' );
         }
 
         return $result;
@@ -243,11 +244,11 @@ class Uploads
         $label = $preview ? 'Preview' : 'File';
 
         if( !$upload->isValid() ) {
-            throw new InvalidException( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
+            throw new InvalidInputException( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
         }
 
         if( !self::isValidUpload( $upload ) ) {
-            throw new InvalidException( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
+            throw new InvalidInputException( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
                 $label, round( $upload->getSize() / 1024 / 1024, 3 ), self::maxMegabytes() ) );
         }
 
@@ -271,7 +272,7 @@ class Uploads
         }
 
         if( !is_string( $path ) || !( $info = @getimagesize( $path ) ) ) {
-            throw new InvalidException( 'Invalid image' );
+            throw new InvalidInputException( 'Invalid image' );
         }
 
         $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
@@ -279,7 +280,7 @@ class Uploads
         $height = (int) $info[1];
 
         if( $height < 1 || $width < 1 || $width > intdiv( $max, $height ) ) {
-            throw new InvalidException( sprintf( 'Image exceeds the maximum size of %d pixels', $max ) );
+            throw new InvalidInputException( sprintf( 'Image exceeds the maximum size of %d pixels', $max ) );
         }
     }
 }

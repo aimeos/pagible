@@ -5,7 +5,7 @@
  */
 
 
-use Aimeos\Cms\Query\PageViewSchema;
+use Aimeos\Cms\Database\PageViewSchema;
 use Illuminate\Database\Migrations\Migration;
 
 

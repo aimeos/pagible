@@ -24,8 +24,7 @@ class FlowDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new FlowDemo( 'flow', 'flow' ) )->seed();
-        Tenancy::$callback = fn() => 'flow';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'flow' );
     }
 
 

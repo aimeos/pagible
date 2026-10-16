@@ -238,7 +238,7 @@ class PageAccessTest extends CoreTestAbstract
 
     public function testExternalPageIndexJobSupportsNoTenancy(): void
     {
-        \Aimeos\Cms\Tenancy::$callback = null;
+        \Aimeos\Cms\Tenancy::valueUsing( null );
         \Aimeos\Cms\Tenancy::set( '' );
         $node = new Page( ['source' => 'en'] );
         $node->save();

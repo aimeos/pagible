@@ -4,8 +4,9 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Query;
 
+use Aimeos\Cms\Tenancy;
 use Laravel\Scout\Builder;
 
 

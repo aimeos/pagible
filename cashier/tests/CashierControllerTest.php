@@ -14,7 +14,7 @@ use Aimeos\Cms\CashierProvider;
 use Aimeos\Cms\CashierToken;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -220,24 +220,17 @@ class CashierControllerTest extends CashierTestAbstract
     {
         DB::table( 'cms_pages' )->where( 'id', $this->page->id )->update( ['tenant_id' => ''] );
         DB::table( 'cms_page_variants' )->where( 'page_id', $this->page->id )->update( ['tenant_id' => ''] );
-        $previous = Tenancy::$callback;
-        Tenancy::$callback = null;
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( null );
 
-        try {
-            $product = app( CashierProduct::class )->find(
-                $this->storedUser(),
-                (string) $this->page->id,
-                'pricing',
-                'professional',
-                'once',
-            );
+        $product = app( CashierProduct::class )->find(
+            $this->storedUser(),
+            (string) $this->page->id,
+            'pricing',
+            'professional',
+            'once',
+        );
 
-            $this->assertSame( 'price_test123', $product['reference'] );
-        } finally {
-            Tenancy::$callback = $previous;
-            app()->forgetInstance( Tenancy::class );
-        }
+        $this->assertSame( 'price_test123', $product['reference'] );
     }
 
 
@@ -502,7 +495,7 @@ class CashierControllerTest extends CashierTestAbstract
     {
         $user = $this->storedUser();
         $user->setAttribute( 'tenant_id', 'other' );
-        Tenancy::$access = fn() => true;
+        Tenancy::allowsUsing( fn() => true );
 
         try {
             $this->actingAs( $user )->post(
@@ -510,7 +503,7 @@ class CashierControllerTest extends CashierTestAbstract
                 $this->checkout(),
             )->assertRedirect();
         } finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 

@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Facade;
 
 
 /**
- * Facade for the page operations of Aimeos\Cms\Resource\Pages, which can be replaced by mocks in tests.
+ * Facade for the page operations of Aimeos\Cms\Resource\Pages.
+ *
+ * Resolves the resource instance from the container, so overrides bound by the application
+ * and mocks in tests are used everywhere.
  *
  * @phpstan-import-type PageInput from \Aimeos\Cms\Resource\Pages
  *
@@ -39,6 +42,6 @@ class Pages extends Facade
 {
     protected static function getFacadeAccessor() : string
     {
-        return 'cms.pages';
+        return \Aimeos\Cms\Resource\Pages::class;
     }
 }

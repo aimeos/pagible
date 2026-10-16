@@ -6,7 +6,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;

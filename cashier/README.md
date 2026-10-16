@@ -67,7 +67,7 @@ customization required by the upstream Cashier package.
 Pagible's normal tenancy rule still applies. Without tenancy configuration, any
 authenticated user belongs to the default tenant. In a tenant-aware application,
 the user's `tenant_id` must match the active tenant unless the application
-deliberately overrides `Tenancy::$access`.
+deliberately overrides the check with `Tenancy::allowsUsing()`.
 
 Each provider package installs the shared Pagible integration and exactly one
 upstream Cashier package. Composer conflicts prevent another Pagible adapter or

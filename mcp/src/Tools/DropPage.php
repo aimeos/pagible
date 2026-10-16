@@ -7,8 +7,8 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -22,7 +22,7 @@ use Laravel\Mcp\Server\Attributes\Title;
 class DropPage extends DropTool
 {
     protected const PERMISSIONS = ['page:drop'];
-    protected const MODEL = PageView::class;
+    protected const RESOURCE = Pages::class;
     protected const NOUN = 'page';
     protected const RULES = parent::RULES + ['lang' => 'string|max:10'];
 

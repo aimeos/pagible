@@ -27,6 +27,6 @@ abstract class DropTool extends LifecycleTool
      */
     protected function apply( array $v, ?Authenticatable $user ) : array
     {
-        return Presenter::item( $this->resource()::drop( $v['id'], $user ) );
+        return Presenter::item( ( static::RESOURCE )::drop( $v['id'], $user ) );
     }
 }

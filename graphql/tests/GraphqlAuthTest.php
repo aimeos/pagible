@@ -145,7 +145,7 @@ class GraphqlAuthTest extends GraphqlTestAbstract
 
     public function testMePermissionsWithoutTenancyConfiguration(): void
     {
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
         Tenancy::set( '' );
 
         $response = $this->actingAs( $this->user )->graphQL( "{

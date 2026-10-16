@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,19 +20,19 @@ class FilesTest extends CoreTestAbstract
         $id = ( new \Aimeos\Cms\Models\File() )->newUniqueId();
         $path = 'cms/test/' . $id . '/image.jpg';
 
-        $this->assertSame( $path, Files::normalizePath( 'cms//test/./' . $id . '/image.jpg', 'test' ) );
-        $this->assertNull( Files::normalizePath( 'cms/test/' . $id . '/../other/image.jpg', 'test' ) );
-        $this->assertNull( Files::normalizePath( 'cms/other/' . $id . '/image.jpg', 'test' ) );
-        $this->assertNull( Files::normalizePath( 'cms/test/image.jpg', 'test' ) );
-        $this->assertNull( Files::normalizePath( 'cms/test/' . $id, 'test' ) );
+        $this->assertSame( $path, FileStorage::normalizePath( 'cms//test/./' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( FileStorage::normalizePath( 'cms/test/' . $id . '/../other/image.jpg', 'test' ) );
+        $this->assertNull( FileStorage::normalizePath( 'cms/other/' . $id . '/image.jpg', 'test' ) );
+        $this->assertNull( FileStorage::normalizePath( 'cms/test/image.jpg', 'test' ) );
+        $this->assertNull( FileStorage::normalizePath( 'cms/test/' . $id, 'test' ) );
         $this->assertSame(
             'cms/www.example.com/' . $id . '/image.jpg',
-            Files::normalizePath( 'cms/www.example.com/' . $id . '/image.jpg', 'www.example.com' ),
+            FileStorage::normalizePath( 'cms/www.example.com/' . $id . '/image.jpg', 'www.example.com' ),
         );
-        $this->assertNull( Files::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ) );
+        $this->assertNull( FileStorage::normalizePath( 'cms/www..example.com/' . $id . '/image.jpg', 'www..example.com' ) );
         $this->assertSame(
             'cms/' . $id . '/image.jpg',
-            Files::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
+            FileStorage::normalizePath( 'cms/' . $id . '/image.jpg', '' ),
         );
     }
 
@@ -42,14 +42,14 @@ class FilesTest extends CoreTestAbstract
         $upper = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
         $lower = '019f8abc-def0-7abc-8abc-abcdef123456';
 
-        $this->assertSame( $id, Files::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
-        $this->assertSame( $id, Files::owner( '', 'cms/' . $id . '/file.pdf' ) );
-        $this->assertSame( $upper, Files::owner( 'test', 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertTrue( Files::owns( 'test', $lower, 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertNull( Files::owner( 'test', 'cms/test/file.pdf' ) );
-        $this->assertNull( Files::owner( 'test', 'cms/test/' . $id ) );
-        $this->assertNull( Files::owner( 'test', 'https://example.com/file.pdf' ) );
-        $this->assertNull( Files::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
+        $this->assertSame( $id, FileStorage::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
+        $this->assertSame( $id, FileStorage::owner( '', 'cms/' . $id . '/file.pdf' ) );
+        $this->assertSame( $upper, FileStorage::owner( 'test', 'cms/test/' . $upper . '/file.pdf' ) );
+        $this->assertTrue( FileStorage::owns( 'test', $lower, 'cms/test/' . $upper . '/file.pdf' ) );
+        $this->assertNull( FileStorage::owner( 'test', 'cms/test/file.pdf' ) );
+        $this->assertNull( FileStorage::owner( 'test', 'cms/test/' . $id ) );
+        $this->assertNull( FileStorage::owner( 'test', 'https://example.com/file.pdf' ) );
+        $this->assertNull( FileStorage::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
     }
 
 
@@ -68,7 +68,7 @@ class FilesTest extends CoreTestAbstract
         foreach( $paths as $path )
         {
             try {
-                Files::checkPath( $path );
+                FileStorage::checkPath( $path );
                 $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
             } catch( Exception $e ) {
                 $this->assertStringContainsString( 'Invalid file path', $e->getMessage() );
@@ -82,11 +82,11 @@ class FilesTest extends CoreTestAbstract
         $id = ( new File() )->newUniqueId();
         $path = 'cms/test/' . $id . '/image_ab12.jpg';
 
-        $this->assertNull( Files::checkPath( null ) );
-        $this->assertEquals( $path, Files::checkPath( $path ) );
-        $this->assertEquals( $path, Files::checkPath( 'cms//test/./' . $id . '/image_ab12.jpg' ) );
+        $this->assertNull( FileStorage::checkPath( null ) );
+        $this->assertEquals( $path, FileStorage::checkPath( $path ) );
+        $this->assertEquals( $path, FileStorage::checkPath( 'cms//test/./' . $id . '/image_ab12.jpg' ) );
         // External URLs bypass the tenant prefix and never touch the tenant disk.
-        $this->assertEquals( 'https://example.com/a/b.jpg', Files::checkPath( 'https://example.com/a/b.jpg' ) );
+        $this->assertEquals( 'https://example.com/a/b.jpg', FileStorage::checkPath( 'https://example.com/a/b.jpg' ) );
     }
 
 
@@ -104,7 +104,7 @@ class FilesTest extends CoreTestAbstract
             ->with( $key, 86400 )
             ->andReturn( $lock );
 
-        $this->assertSame( 'result', Files::storageLock( 'test', fn() => 'result', 7 ) );
+        $this->assertSame( 'result', FileStorage::storageLock( 'test', fn() => 'result', 7 ) );
     }
 
 
@@ -124,9 +124,9 @@ class FilesTest extends CoreTestAbstract
 
         Cache::shouldReceive( 'lock' )->once()->andReturn( $lock );
 
-        $result = Files::storageLock( 'test', function() use ( &$inside, &$released ) {
+        $result = FileStorage::storageLock( 'test', function() use ( &$inside, &$released ) {
             $inside = true;
-            Files::deferStorage( 'test', function() use ( &$inside, &$released ) {
+            FileStorage::deferStorage( 'test', function() use ( &$inside, &$released ) {
                 $this->assertFalse( $inside );
                 $released = true;
             } );

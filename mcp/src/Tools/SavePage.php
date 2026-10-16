@@ -8,8 +8,8 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;

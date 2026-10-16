@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Hashes;
+use Aimeos\Cms\Translation\Hashes;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;

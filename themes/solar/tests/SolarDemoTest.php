@@ -24,8 +24,7 @@ class SolarDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new SolarDemo( 'solar', 'solar' ) )->seed();
-        Tenancy::$callback = fn() => 'solar';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'solar' );
     }
 
 

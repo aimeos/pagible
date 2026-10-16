@@ -7,8 +7,9 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -23,6 +24,7 @@ class RestorePage extends RestoreTool
 {
     protected const PERMISSIONS = ['page:keep'];
     protected const MODEL = PageView::class;
+    protected const RESOURCE = Pages::class;
     protected const NOUN = 'page';
     protected const RULES = parent::RULES + ['lang' => 'string|max:10'];
 

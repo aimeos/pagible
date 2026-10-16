@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Mcp\Server\Attributes\Description;

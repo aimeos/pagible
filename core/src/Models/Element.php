@@ -9,13 +9,11 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Concerns\Referenced;
 use Aimeos\Cms\ContentType;
-use Aimeos\Cms\Invalidation;
-use Aimeos\Cms\LifecycleAction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Aimeos\Cms\Texts;
+use Aimeos\Cms\Translation\Texts;
 
 /**
  * Element model
@@ -140,29 +138,6 @@ class Element extends Base
             : $this->load( 'files' )->getRelation( 'files' );
 
         return $files->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Invalidates the cached pages which reference the elements.
-     *
-     * @param array<int, string> $ids Element IDs
-     */
-    public static function invalidateRefs( array $ids ) : void
-    {
-        Invalidation::refs( $ids );
-    }
-
-
-    /**
-     * Returns the columns a lifecycle action needs in addition to the identifying ones.
-     *
-     * @param LifecycleAction $action Lifecycle action
-     * @return array<int, string> Column names
-     */
-    public static function lifecycleColumns( LifecycleAction $action ) : array
-    {
-        return $action === LifecycleAction::Restored ? self::SELECT_COLUMNS : [];
     }
 
 

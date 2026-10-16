@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\JsonSchema\JsonSchema;

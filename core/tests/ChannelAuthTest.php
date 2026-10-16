@@ -48,7 +48,7 @@ class ChannelAuthTest extends CoreTestAbstract
 
     protected function tearDown(): void
     {
-        Tenancy::$access = null;
+        Tenancy::allowsUsing( null );
 
         parent::tearDown();
     }
@@ -83,7 +83,7 @@ class ChannelAuthTest extends CoreTestAbstract
 
     public function testUnscopedChannelAllowedWhenNoTenant() : void
     {
-        Tenancy::$callback = null; // genuine single-tenant deployment (tenancy not configured)
+        Tenancy::valueUsing( null ); // genuine single-tenant deployment (tenancy not configured)
         $this->app->instance( Tenancy::class, new Tenancy( '' ) );
         $this->user->tenant_id = '';
 
@@ -95,7 +95,7 @@ class ChannelAuthTest extends CoreTestAbstract
 
     public function testUnscopedChannelDeniedWhenTenancyConfigured() : void
     {
-        // multi-tenant deployment (Tenancy::$callback set) whose auth route resolved no tenant -
+        // multi-tenant deployment (tenant callback set by Tenancy::valueUsing()) whose auth route resolved no tenant -
         // the tenant-less channel must stay closed rather than open to every tenant
         $this->app->instance( Tenancy::class, new Tenancy( '' ) );
 
@@ -107,7 +107,7 @@ class ChannelAuthTest extends CoreTestAbstract
 
     public function testAccessHookCanDenyTenant() : void
     {
-        Tenancy::$access = fn( $user, string $tenant ) => false;
+        Tenancy::allowsUsing( fn( $user, string $tenant ) => false );
 
         $auth = $this->channels()['cms.{tenant}.page'];
 

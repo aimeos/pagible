@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Models\File;
 use Illuminate\Console\Command;
@@ -68,7 +68,7 @@ class Backup extends Command
         {
             $tmpDir = $this->tmpDir();
 
-            [$zipPath, $counts] = Files::storageLock( $tenant, function() use ( $disk, $noMedia, $tenant, $tmpDir ) {
+            [$zipPath, $counts] = FileStorage::storageLock( $tenant, function() use ( $disk, $noMedia, $tenant, $tmpDir ) {
                 $db = DB::connection();
                 $allTables = $db->getSchemaBuilder()->getTables();
                 $cmsTables = array_filter(
@@ -196,7 +196,7 @@ class Backup extends Command
 
         foreach( $this->media( $tenant ) as [$logical, $file] )
         {
-            $storage = $storages[$logical] ??= Files::disk( $logical );
+            $storage = $storages[$logical] ??= FileStorage::disk( $logical );
             $size = $storage->size( $file );
             $target = $dir . '/media/' . $logical . '/' . $file;
 
@@ -416,9 +416,9 @@ class Backup extends Command
 
                 foreach( $paths as $path )
                 {
-                    $path = Files::normalizePath( $path, $tenant );
+                    $path = FileStorage::normalizePath( $path, $tenant );
 
-                    if( $path === null || !Files::owns( $tenant, (string) $file->id, $path )
+                    if( $path === null || !FileStorage::owns( $tenant, (string) $file->id, $path )
                         || isset( $seen[$path] ) ) {
                         continue;
                     }

@@ -24,8 +24,7 @@ class PawsDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new PawsDemo( 'paws', 'paws' ) )->seed();
-        Tenancy::$callback = fn() => 'paws';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'paws' );
     }
 
 

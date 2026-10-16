@@ -33,16 +33,16 @@ use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource\BulkResult;
-use Aimeos\Cms\Resource\Elements;
-use Aimeos\Cms\Resource\Files as FileResource;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files as FileResource;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageBuilder;
@@ -116,6 +116,19 @@ class ResourceTest extends CoreTestAbstract
         $this->assertNotContains( $file->id, $ids );
         $this->assertFalse( $file->prune() );
         $this->assertTrue( File::withTrashed()->whereKey( $file->id )->exists() );
+    }
+
+
+    public function testElementPruneDeletesVersions(): void
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Prune', 'data' => ['text' => 'Prune']], $this->user );
+        Elements::drop( $element->id, $this->user );
+
+        $this->travel( config( 'cms.prune', 30 ) + 1 )->days();
+        $this->artisan( 'model:prune', ['--model' => [Element::class]] )->assertSuccessful();
+
+        $this->assertFalse( Element::withTrashed()->whereKey( $element->id )->exists() );
+        $this->assertEquals( 0, Version::withoutTenancy()->where( 'versionable_id', $element->id )->count() );
     }
 
 
@@ -495,7 +508,7 @@ class ResourceTest extends CoreTestAbstract
             ['name' => 'document.pdf'], $this->user, 'private' );
 
         $this->assertSame( 'private', $file->disk );
-        $this->assertTrue( Files::owns( 'test', $file->id, $file->path ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $file->path ) );
         Storage::disk( 'private-upload' )->assertExists( $file->path );
     }
 
@@ -526,7 +539,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->assertFalse( str_starts_with( $stored, 'http' ) );
         $this->assertStringNotContainsString( 'token=secret', $stored );
-        $this->assertTrue( Files::owns( 'test', $file->id, $stored ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $stored ) );
         Storage::disk( 'private-remote-save' )->assertExists( $stored );
     }
 
@@ -566,7 +579,7 @@ class ResourceTest extends CoreTestAbstract
         $saved = FileResource::save( $file->id, [], $this->user, upload:
             UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
 
-        $this->assertTrue( Files::owns( 'test', $file->id, $saved->latest?->data->path ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $saved->latest?->data->path ) );
         Storage::disk( 'uuid-save' )->assertExists( $saved->latest?->data->path );
     }
 
@@ -1037,7 +1050,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectExceptionMessage( 'No more than 100 files may be relocated at once.' );
 
         FileResource::relocateMany(
-            array_map( strval(...), range( 1, FileResource::MAX_RELOCATE + 1 ) ),
+            array_map( strval(...), range( 1, \Aimeos\Cms\Resource\Files::MAX_RELOCATE + 1 ) ),
             'private',
             $this->user,
         );
@@ -1047,7 +1060,7 @@ class ResourceTest extends CoreTestAbstract
     public function testRelocateFilesCountsUniqueIdsAgainstOperationLimit()
     {
         $file = File::firstOrFail();
-        $ids = array_fill( 0, FileResource::MAX_RELOCATE + 1, $file->id );
+        $ids = array_fill( 0, \Aimeos\Cms\Resource\Files::MAX_RELOCATE + 1, $file->id );
 
         $moved = FileResource::relocateMany( $ids, (string) $file->disk, $this->user );
 
@@ -1617,6 +1630,25 @@ class ResourceTest extends CoreTestAbstract
 
         // without user, the call is trusted
         $this->assertEquals( 'Trusted', Pages::save( $page->id, ['title' => 'Trusted'] )->latest?->data->title );
+    }
+
+
+    public function testPageLifecycleChecksActionPermissions()
+    {
+        $page = $this->page( [] );
+        $dropper = new \App\Models\User( ['name' => 'Dropper', 'cmsperms' => ['page:drop']] );
+        $keeper = new \App\Models\User( ['name' => 'Keeper', 'cmsperms' => ['page:keep']] );
+        $purger = new \App\Models\User( ['name' => 'Purger', 'cmsperms' => ['page:purge']] );
+
+        $this->assertThrows( fn() => Pages::drop( $page->id, $keeper ), PermissionException::class );
+        $this->assertNotNull( Pages::drop( $page->id, $dropper )->deleted_at );
+
+        $this->assertThrows( fn() => Pages::restore( $page->id, $dropper ), PermissionException::class );
+        $this->assertNull( Pages::restore( $page->id, $keeper )->deleted_at );
+
+        $this->assertThrows( fn() => Pages::purge( $page->id, $keeper ), PermissionException::class );
+        Pages::purge( $page->id, $purger );
+        $this->assertNull( PageView::withTrashed()->find( $page->id ) );
     }
 
 
@@ -2314,7 +2346,7 @@ class ResourceTest extends CoreTestAbstract
 
         Queue::fake( [DeleteFilePaths::class] );
 
-        File::lifecycle( ( new File() )->newCollection( $files->all() ), LifecycleAction::Purged, 'test' );
+        File::forceDeleteMany( ( new File() )->newCollection( $files->all() ) );
 
         Queue::assertPushed( DeleteFilePaths::class, 2 );
     }

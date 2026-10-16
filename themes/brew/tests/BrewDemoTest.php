@@ -24,8 +24,7 @@ class BrewDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new BrewDemo( 'brew', 'brew' ) )->seed();
-        Tenancy::$callback = fn() => 'brew';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'brew' );
     }
 
 

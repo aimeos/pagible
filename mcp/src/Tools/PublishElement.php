@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Facades\Elements;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -19,6 +19,6 @@ use Laravel\Mcp\Server\Attributes\Title;
 class PublishElement extends PublishTool
 {
     protected const PERMISSIONS = ['element:publish'];
-    protected const MODEL = Element::class;
+    protected const RESOURCE = Elements::class;
     protected const NOUN = 'element';
 }

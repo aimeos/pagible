@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Facades\Elements;
 use Aimeos\Cms\Models\Element;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -20,5 +21,6 @@ class RestoreElement extends RestoreTool
 {
     protected const PERMISSIONS = ['element:keep'];
     protected const MODEL = Element::class;
+    protected const RESOURCE = Elements::class;
     protected const NOUN = 'element';
 }

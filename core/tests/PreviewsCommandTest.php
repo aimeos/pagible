@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Commands\Previews;
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

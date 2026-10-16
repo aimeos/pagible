@@ -11,7 +11,7 @@ use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Resource\Pages;
+use Aimeos\Cms\Facades\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;

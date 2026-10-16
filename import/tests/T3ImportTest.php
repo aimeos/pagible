@@ -7,10 +7,10 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Hashes;
+use Aimeos\Cms\Translation\Hashes;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;

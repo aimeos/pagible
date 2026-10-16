@@ -24,8 +24,7 @@ class ManualDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new ManualDemo( 'manual', 'manual' ) )->seed();
-        Tenancy::$callback = fn() => 'manual';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'manual' );
     }
 
 

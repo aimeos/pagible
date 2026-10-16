@@ -7,10 +7,22 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Facades\Files;
+use Illuminate\Support\Facades\Auth;
 
 
-final class PubFile extends Publish
+/**
+ * Publishes files.
+ */
+final class PubFile
 {
-    protected const MODEL = File::class;
+    /**
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
+     */
+    public function __invoke( $rootValue, array $args ) : array
+    {
+        return Files::publishMany( $args['id'], Auth::user(), $args['at'] ?? null )->all();
+    }
 }

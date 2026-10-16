@@ -9,7 +9,7 @@ namespace Aimeos\Cms\JsonApi\V1\Controllers;
 
 use LaravelJsonApi\Core\Responses\DataResponse;
 use LaravelJsonApi\Laravel\Http\Controllers\JsonApiController as Controller;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\JsonApi\V1\Pages\PageCollectionQuery;
 use Aimeos\Cms\JsonApi\V1\Pages\PageQuery;
 use Aimeos\Cms\Models\PageView;
@@ -30,7 +30,7 @@ class JsonapiController extends Controller
     public function read( ?PageView $page, PageQuery $query ) : DataResponse
     {
         return DataResponse::make( $page )
-            ->withMeta( ['baseurl' => Files::disk( 'public' )->url( '' )] )
+            ->withMeta( ['baseurl' => FileStorage::disk( 'public' )->url( '' )] )
             ->withQueryParameters( $query );
     }
 
@@ -45,7 +45,7 @@ class JsonapiController extends Controller
     public function searched( $data, PageCollectionQuery $query ) : DataResponse
     {
         return DataResponse::make( $data )
-            ->withMeta( ['baseurl' => Files::disk( 'public' )->url( '' )] )
+            ->withMeta( ['baseurl' => FileStorage::disk( 'public' )->url( '' )] )
             ->withQueryParameters( $query );
     }
 }

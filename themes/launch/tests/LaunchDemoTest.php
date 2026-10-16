@@ -24,8 +24,7 @@ class LaunchDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new LaunchDemo( 'launch', 'launch' ) )->seed();
-        Tenancy::$callback = fn() => 'launch';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'launch' );
     }
 
 

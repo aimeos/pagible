@@ -190,8 +190,6 @@ class PageVariant extends Model
         } );
 
         static::saved( fn( PageVariant $variant ) => $variant->index() );
-        static::restored( fn( PageVariant $variant ) => $variant->index() );
-        static::deleted( fn( PageVariant $variant ) => $variant->isForceDeleting() ? $variant->unindex() : $variant->index() );
     }
 
 
@@ -353,14 +351,4 @@ class PageVariant extends Model
         }
     }
 
-
-    /**
-     * Removes the search index entry of the variant after the transaction commits.
-     */
-    protected function unindex() : void
-    {
-        if( Scout::syncs( PageView::class ) ) {
-            Scout::remove( PageView::class, [(string) $this->id] );
-        }
-    }
 }

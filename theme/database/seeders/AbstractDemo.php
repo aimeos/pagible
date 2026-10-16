@@ -60,8 +60,7 @@ abstract class AbstractDemo
      */
     public function seed() : void
     {
-        Tenancy::$callback = fn() => $this->tenant;
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => $this->tenant );
 
         File::where( 'tenant_id', $this->tenant )->forceDelete();
         Version::where( 'tenant_id', $this->tenant )->forceDelete();

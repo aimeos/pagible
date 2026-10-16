@@ -8,8 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;

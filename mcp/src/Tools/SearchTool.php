@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Filter;
+use Aimeos\Cms\Query\Filter;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\JsonSchema\JsonSchema;

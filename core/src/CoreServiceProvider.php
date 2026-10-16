@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Channel;
 use Aimeos\Cms\Events\Added;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
@@ -17,7 +18,6 @@ use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Query\SearchQuery;
-use Aimeos\Cms\Resource\Support\Proxy;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider as Provider;
@@ -63,16 +63,27 @@ class CoreServiceProvider extends Provider
         $cfgdir = dirname( __DIR__ ) . '/config';
         $this->mergeConfigFrom( $cfgdir . '/cms.php', 'cms' );
 
-        $this->app->scoped( Tenancy::class, function() {
-            $callback = Tenancy::$callback;
-            return new Tenancy( $callback ? $callback() : '' );
-        } );
+        // deprecated 0.13 class names, removed in 1.0
+        // registered eagerly because catch blocks don't trigger the autoloader
+        foreach( [
+            'Aimeos\Cms\Channel' => Events\Channel::class,
+            'Aimeos\Cms\Filter' => Query\Filter::class,
+            'Aimeos\Cms\InvalidException' => Exceptions\InvalidInputException::class,
+            'Aimeos\Cms\SearchBuilder' => Query\SearchBuilder::class,
+        ] as $alias => $class )
+        {
+            if( !class_exists( $alias, false ) ) {
+                class_alias( $class, $alias );
+            }
+        }
+
+        $this->app->scoped( Tenancy::class, fn() => new Tenancy( Tenancy::resolve() ) );
 
         $this->app->scoped( Access::class );
 
-        // instances behind the facades in Aimeos\Cms\Facades, replaced by mocks in tests
-        foreach( ['pages', 'elements', 'files', 'variants'] as $name ) {
-            $this->app->singleton( 'cms.' . $name, fn() => new Proxy( 'Aimeos\\Cms\\Resource\\' . ucfirst( $name ) ) );
+        // instances behind the facades in Aimeos\Cms\Facades, applications can bind their own subclasses
+        foreach( [Resource\Pages::class, Resource\Elements::class, Resource\Files::class, Resource\Variants::class] as $class ) {
+            $this->app->singletonIf( $class );
         }
     }
 
@@ -88,12 +99,12 @@ class CoreServiceProvider extends Provider
         foreach( ['page', 'element', 'file'] as $type )
         {
             // Single-tenant only: the tenant-less channel is authorized solely when no tenancy is
-            // configured at all. Requiring Tenancy::$callback === null fails closed - in a
+            // configured at all. Requiring !Tenancy::configured() fails closed - in a
             // multi-tenant deployment whose /broadcasting/auth route lacks the tenancy-init
             // middleware, Tenancy::value() would be '' and would otherwise open this channel to
             // every tenant.
             Broadcast::channel( Channel::type( '', $type ), fn( $user ) =>
-                Tenancy::value() === '' && Tenancy::$callback === null && Permission::can( "{$type}:view", $user )
+                Tenancy::value() === '' && !Tenancy::configured() && Permission::can( "{$type}:view", $user )
             );
 
             // Multi-tenant: the channel's tenant segment must match the request's tenant; the

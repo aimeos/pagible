@@ -8,8 +8,10 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -48,9 +50,11 @@ class GenerateImage extends Tool
 
         $base64 = Ai::imagine( $v['prompt'], Ai::files( $v['files'] ?? [], Image::class ), $v['context'] ?? null );
 
-        return Response::structured( $this->store(
-            $base64, $v['name'] ?? 'generated-image', $v['lang'] ?? null, $v['description'] ?? null, $request->user()
-        ) );
+        $data = array_filter( ['lang' => $v['lang'] ?? null, 'description' => $v['description'] ?? null] );
+
+        return Response::structured( $this->upload( $base64, $v['name'] ?? 'generated-image', fn( UploadedFile $upload ) => Presenter::item(
+            Files::add( $upload, $data, $request->user() )
+        ) ) );
     }
 
 

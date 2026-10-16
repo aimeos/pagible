@@ -9,13 +9,11 @@ namespace Aimeos\Cms\Models;
 
 use Aimeos\Cms\Casts\AsString;
 use Aimeos\Cms\Concerns\FilePreviews;
-use Aimeos\Cms\Concerns\FileStorage;
+use Aimeos\Cms\Concerns\StoresFiles;
 use Aimeos\Cms\Concerns\Referenced;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
 use Aimeos\Cms\ContentType;
-use Aimeos\Cms\Files;
-use Aimeos\Cms\Invalidation;
-use Aimeos\Cms\LifecycleAction;
+use Aimeos\Cms\FileStorage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
@@ -50,7 +48,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 class File extends Base
 {
     use FilePreviews;
-    use FileStorage;
+    use StoresFiles;
     use Referenced;
 
     public const PERM = ContentType::File->value;
@@ -198,59 +196,28 @@ class File extends Base
      */
     public function prune() : ?bool
     {
-        return Files::storageLock( (string) $this->tenant_id, function() {
+        return FileStorage::storageLock( (string) $this->tenant_id, function() {
             // the file may have been referenced again since it has been selected
             if( !$this->prunable()->withTrashed()->whereKey( $this->id )->exists() ) {
                 return false;
             }
 
-            $this->pruning();
+            // versions and stored paths of the file
+            self::purgeMany( (string) $this->tenant_id, $this->newCollection( [$this] ) );
             return $this->forceDelete();
         } );
     }
 
 
     /**
-     * Applies a lifecycle action to the locked files and removes the stored files when purging.
+     * Permanently deletes the locked files including their versions and queues the storage cleanup.
      *
-     * @param EloquentCollection<int, Base> $items Files
-     * @param LifecycleAction $action Lifecycle action
-     * @param string $editor Name of the editing user
+     * @param EloquentCollection<int, covariant Base> $items Files
      */
-    public static function lifecycle( EloquentCollection $items, LifecycleAction $action, string $editor ) : void
+    public static function forceDeleteMany( EloquentCollection $items ) : void
     {
-        if( $action === LifecycleAction::Purged ) {
-            self::purgeMany( Tenancy::value(), $items );
-        }
-
-        parent::lifecycle( $items, $action, $editor );
-    }
-
-
-    /**
-     * Invalidates the cached pages which reference the files.
-     *
-     * @param array<int, string> $ids File IDs
-     */
-    public static function invalidateRefs( array $ids ) : void
-    {
-        Invalidation::refs( [], $ids );
-    }
-
-
-    /**
-     * Returns the columns a lifecycle action needs in addition to the identifying ones.
-     *
-     * @param LifecycleAction $action Lifecycle action
-     * @return array<int, string> Column names
-     */
-    public static function lifecycleColumns( LifecycleAction $action ) : array
-    {
-        return match( $action ) {
-            LifecycleAction::Purged => ['path', 'previews'],
-            LifecycleAction::Restored => self::SELECT_COLUMNS,
-            default => [],
-        };
+        self::purgeMany( Tenancy::value(), $items );
+        parent::forceDeleteMany( $items );
     }
 
 
@@ -263,16 +230,7 @@ class File extends Base
      */
     public static function locked( \Closure $fcn ) : mixed
     {
-        return Files::storageLock( Tenancy::value(), $fcn );
-    }
-
-
-    /**
-     * Tests if purging removes stored data which can fail per item, so failed batches are purged item by item.
-     */
-    public static function purgesStorage() : bool
-    {
-        return true;
+        return FileStorage::storageLock( Tenancy::value(), $fcn );
     }
 
 
@@ -364,7 +322,7 @@ class File extends Base
         }
 
         foreach( $paths->chunk( 100 ) as $chunk ) {
-            DB::connection()->afterCommit( fn() => Files::deferStorage( $tenant,
+            DB::connection()->afterCommit( fn() => FileStorage::deferStorage( $tenant,
                 fn() => DeleteFilePaths::dispatch( $tenant, $chunk->all() ),
             ) );
         }
@@ -414,15 +372,6 @@ class File extends Base
                 ->whereIn( 'id', $drop->modelKeys() )->forceDelete();
             self::deletePaths( self::paths( $drop->pluck( 'data' ) )->diff( $paths ), $tenant );
         };
-    }
-
-
-    /**
-     * Prepare the model for pruning.
-     */
-    protected function pruning() : void
-    {
-        self::purgeMany( (string) $this->tenant_id, $this->newCollection( [$this] ) );
     }
 
 

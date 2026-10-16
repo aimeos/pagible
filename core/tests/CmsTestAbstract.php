@@ -40,9 +40,9 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set('pulse.enabled', false);
         $app['config']->set('cms.db', 'testing');
 
-        \Aimeos\Cms\Tenancy::$callback = function() {
+        \Aimeos\Cms\Tenancy::valueUsing( function() {
             return 'test';
-        };
+        } );
     }
 
 

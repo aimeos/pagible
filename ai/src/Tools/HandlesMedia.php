@@ -8,10 +8,9 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Uploads;
 use Aimeos\Prisma\Files\Image;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Request;
@@ -22,8 +21,8 @@ use Laravel\Mcp\ResponseFactory;
 /**
  * Shared helpers for the AI media MCP tools.
  *
- * Loads stored media files as Prisma file objects, persists generated images
- * as new media files and stores edited images as new versions of the source file.
+ * Loads stored media files as Prisma file objects, decodes generated images
+ * into temporary uploads and stores edited images as new versions of the source file.
  */
 trait HandlesMedia
 {
@@ -79,24 +78,6 @@ trait HandlesMedia
     {
         return Ai::files( [$id], Image::class )[0]
             ?? throw new \Aimeos\Cms\Exception( "$label file not found or not an image." );
-    }
-
-
-    /**
-     * Ingests and stores a base64 encoded image as a new draft media file.
-     *
-     * @param string $base64 Base64 encoded image data
-     * @param string $name Display name for the new file (without extension)
-     * @param string|null $lang ISO language code, e.g. "en"
-     * @param array<string, string>|null $description Multilingual alt text, e.g. ['en' => 'A sunset']
-     * @param Authenticatable|null $user Authenticated user creating the file
-     * @return array<string, mixed> The created file as array
-     */
-    protected function store( string $base64, string $name, ?string $lang, ?array $description, ?Authenticatable $user ) : array
-    {
-        return $this->upload( $base64, $name, fn( UploadedFile $upload ) => Presenter::item(
-            Files::add( $upload, array_filter( ['lang' => $lang, 'description' => $description] ), $user )
-        ) );
     }
 
 

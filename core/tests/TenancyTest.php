@@ -14,7 +14,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\SearchBuilder;
+use Aimeos\Cms\Query\SearchBuilder;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
@@ -34,8 +34,8 @@ class TenancyTest extends CoreTestAbstract
 
     protected function tearDown(): void
     {
-        Tenancy::$callback = fn() => 'test';
-        Tenancy::$access = null;
+        Tenancy::valueUsing( fn() => 'test' );
+        Tenancy::allowsUsing( null );
         app()->forgetScopedInstances();
 
         Permission::canUsing( null );
@@ -49,11 +49,11 @@ class TenancyTest extends CoreTestAbstract
         $called = false;
         $user = new \App\Models\User();
         $user->tenant_id = '';
-        Tenancy::$callback = fn() => '';
-        Tenancy::$access = function() use ( &$called ) {
+        Tenancy::valueUsing( fn() => '' );
+        Tenancy::allowsUsing( function() use ( &$called ) {
             $called = true;
             return true;
-        };
+        } );
 
         $this->assertFalse( Tenancy::allows( null, '' ) );
         $this->assertFalse( Tenancy::allows( $user, '' ) );
@@ -64,7 +64,7 @@ class TenancyTest extends CoreTestAbstract
     public function testAllowsEmptyTenantWithoutTenancyConfiguration(): void
     {
         $user = new GenericUser( ['id' => 1] );
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
 
         $this->assertTrue( Tenancy::allows( $user, '' ) );
     }
@@ -90,7 +90,7 @@ class TenancyTest extends CoreTestAbstract
         $countBefore = PageView::withoutTenancy()->count();
         $this->assertGreaterThan( 0, $countBefore );
 
-        Tenancy::$callback = fn() => 'other';
+        Tenancy::valueUsing( fn() => 'other' );
         app()->forgetScopedInstances();
 
         $pages = PageView::all();
@@ -257,7 +257,7 @@ class TenancyTest extends CoreTestAbstract
     public function testWithoutTenancyMacro()
     {
 
-        Tenancy::$callback = fn() => 'other';
+        Tenancy::valueUsing( fn() => 'other' );
         app()->forgetScopedInstances();
 
         $pages = PageView::withoutTenancy()->get();

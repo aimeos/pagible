@@ -17,7 +17,7 @@ use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Events\RestoreCompleted;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 
 
 class BackupTest extends BackupTestAbstract
@@ -118,7 +118,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupRejectsConcurrentMediaOperation(): void
     {
-        $status = Files::storageLock( $this->tenant, fn() =>
+        $status = FileStorage::storageLock( $this->tenant, fn() =>
             \Illuminate\Support\Facades\Artisan::call( 'cms:backup', [
                 '--tenant' => $this->tenant,
                 '--disk' => 'backup',

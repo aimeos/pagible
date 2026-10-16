@@ -12,7 +12,7 @@ use Aimeos\Cms\ContentType;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Exceptions\InvalidInputException;
-use Aimeos\Cms\Hashes;
+use Aimeos\Cms\Translation\Hashes;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\LifecycleAction;
@@ -27,7 +27,7 @@ use Aimeos\Cms\Resource\Support\PageRows;
 use Aimeos\Cms\Resource\Support\Paths;
 use Aimeos\Cms\Resource\Support\Refs;
 use Aimeos\Cms\Scout;
-use Aimeos\Cms\Sync;
+use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -45,6 +45,10 @@ use Illuminate\Support\Collection;
  * setSource(), and throws a PermissionException if it's missing. Without user (NULL), the call is
  * trusted like in commands and jobs and no permissions are checked.
  *
+ * Use it via the Aimeos\Cms\Facades\Variants facade, which resolves the instance from the container.
+ * Applications can replace it by a subclass overriding the public or protected methods, e.g. with
+ * `$this->app->singleton( \Aimeos\Cms\Resource\Variants::class, MyVariants::class )` in their service provider.
+ *
  * @phpstan-import-type PageInput from Pages
  */
 class Variants
@@ -58,10 +62,10 @@ class Variants
      * @return PageView Page with the new variant
      * @throws InvalidInputException|ConflictException If the language is invalid or the page already has a variant in that language
      */
-    public static function add( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function add( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
         Permission::check( 'page:add', $user );
-        return self::translateVariant( $id, $lang, $user, add: true );
+        return $this->translateVariant( $id, $lang, $user, add: true );
     }
 
 
@@ -77,7 +81,7 @@ class Variants
      * @throws InvalidInputException|ConflictException If the input is invalid or the new language already exists
      * @throws ModelNotFoundException If the page has no variant in that language
      */
-    public static function save( string $id, string $lang, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : PageView
+    public function save( string $id, string $lang, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : PageView
     {
         return PageEdits::save( $id, $input, $user, $latestId, $lang );
     }
@@ -98,7 +102,7 @@ class Variants
      * @throws InvalidInputException|ConflictException If the input is invalid or the new language already exists
      * @throws ModelNotFoundException If the page has no variant in that language
      */
-    public static function revert( string $id, string $lang, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : PageView
+    public function revert( string $id, string $lang, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : PageView
     {
         return PageEdits::save( $id, $input, $user, $latestId, $lang, restore: true );
     }
@@ -116,7 +120,7 @@ class Variants
      * @param bool $descendants TRUE to also update all sub-pages of the given pages
      * @return BulkResult
      */
-    public static function bulk( array $ids, string $lang, array $input, ?Authenticatable $user = null, bool $descendants = false ) : BulkResult
+    public function bulk( array $ids, string $lang, array $input, ?Authenticatable $user = null, bool $descendants = false ) : BulkResult
     {
         return PageEdits::bulk( $ids, $input, $user, $descendants, $lang );
     }
@@ -132,9 +136,9 @@ class Variants
      * @return PageView Page with the published variant
      * @throws ModelNotFoundException If the page has no variant in that language
      */
-    public static function publish( string $id, string $lang, ?Authenticatable $user = null, ?string $at = null ) : PageView
+    public function publish( string $id, string $lang, ?Authenticatable $user = null, ?string $at = null ) : PageView
     {
-        return Items::one( PageView::class, self::publishMany( [$id], $lang, $user, $at ), $id );
+        return Items::one( PageView::class, $this->publishMany( [$id], $lang, $user, $at ), $id );
     }
 
 
@@ -147,7 +151,7 @@ class Variants
      * @param string|null $at Publication date or NULL to publish immediately
      * @return Collection<int, PageView> Pages with the published variants
      */
-    public static function publishMany( array $ids, string $lang, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    public function publishMany( array $ids, string $lang, ?Authenticatable $user = null, ?string $at = null ) : Collection
     {
         return Publication::publish( PageView::class, $ids, $user, $at, $lang );
     }
@@ -162,9 +166,9 @@ class Variants
      * @return PageView Trashed page variant
      * @throws ConflictException If the variant is the source variant of the page
      */
-    public static function drop( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function drop( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        return self::variantLifecycle( LifecycleAction::Dropped, [$id], $lang, $user, strict: true )->firstOrFail();
+        return $this->trashVariants( [$id], $lang, $user, strict: true )->firstOrFail();
     }
 
 
@@ -176,9 +180,9 @@ class Variants
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @return PageView Restored page variant
      */
-    public static function restore( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function restore( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        return self::variantLifecycle( LifecycleAction::Restored, [$id], $lang, $user, strict: true )->firstOrFail();
+        return $this->untrashVariants( [$id], $lang, $user, strict: true )->firstOrFail();
     }
 
 
@@ -191,9 +195,9 @@ class Variants
      * @return PageView Deleted page variant
      * @throws ConflictException If the variant is the source variant of the page
      */
-    public static function purge( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function purge( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        return self::variantLifecycle( LifecycleAction::Purged, [$id], $lang, $user, strict: true )->firstOrFail();
+        return $this->deleteVariants( [$id], $lang, $user, strict: true )->firstOrFail();
     }
 
 
@@ -209,7 +213,7 @@ class Variants
      * @return PageView Page in the new source language
      * @throws ModelNotFoundException If the page has no variant in that language
      */
-    public static function setSource( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function setSource( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
         Permission::check( 'page:save', $user );
 
@@ -243,7 +247,7 @@ class Variants
                 Scout::reindex( PageView::class, [(string) $page->id] );
             }
 
-            self::watch( VariantAction::Source, collect( [$page] ), $lang, $editor );
+            $this->watch( VariantAction::Source, collect( [$page] ), $lang, $editor );
         }
 
         return $page;
@@ -259,9 +263,9 @@ class Variants
      * @return PageView Page with the variant
      * @throws ConflictException If the variant is the source variant
      */
-    public static function ignore( string $id, string $lang, ?Authenticatable $user = null ) : PageView
+    public function ignore( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        return Items::one( PageView::class, self::ignoreMany( [$id], $lang, $user ), $id );
+        return Items::one( PageView::class, $this->ignoreMany( [$id], $lang, $user ), $id );
     }
 
 
@@ -275,20 +279,19 @@ class Variants
      * @return Collection<int, PageView> Pages with the variants
      * @throws ConflictException If a variant is the source variant
      */
-    public static function ignoreMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function ignoreMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
         Permission::check( 'page:save', $user );
 
         $editor = Utils::editor( $user );
-        $ids = array_values( array_unique( $ids ) );
-        PageView::checkBulk( count( $ids ) );
+        $ids = PageView::bulkIds( $ids );
 
         // hashed before locking the variants to keep the transaction short
         $hashes = Sync::sources( $ids );
 
         DB::transaction( function() use ( $ids, $lang, $hashes ) {
 
-            $pages = self::lockVariants( $ids, $lang, trashed: false, strict: true,
+            $pages = $this->lockVariants( $ids, $lang, trashed: false, strict: true,
                 error: 'The source language can\'t be marked as up to date' );
 
             foreach( $pages as $page ) {
@@ -296,9 +299,9 @@ class Variants
             }
         } );
 
-        $pages = self::variantPages( $ids, $lang, self::variantColumns( $fields ) );
+        $pages = $this->variantPages( $ids, $lang, $this->variantColumns( $fields ) );
 
-        self::watch( VariantAction::Ignored, $pages, $lang, $editor );
+        $this->watch( VariantAction::Ignored, $pages, $lang, $editor );
 
         return $pages;
     }
@@ -318,10 +321,10 @@ class Variants
      * @return PageView Page with the variant and its new draft
      * @throws InvalidInputException|ConflictException If the language is the source language or its variant is in the trash
      */
-    public static function translate( string $id, string $lang, ?Authenticatable $user = null, ?callable $translate = null ) : PageView
+    public function translate( string $id, string $lang, ?Authenticatable $user = null, ?callable $translate = null ) : PageView
     {
         Permission::check( 'page:save', $user );
-        return self::translateVariant( $id, $lang, $user, $translate );
+        return $this->translateVariant( $id, $lang, $user, $translate );
     }
 
 
@@ -336,7 +339,7 @@ class Variants
      * @return PageView Page with the variant and its new draft
      * @throws InvalidInputException|ConflictException If the language is the source language, its variant is in the trash or exists when adding
      */
-    protected static function translateVariant( string $id, string $lang, ?Authenticatable $user = null,
+    protected function translateVariant( string $id, string $lang, ?Authenticatable $user = null,
         ?callable $translate = null, bool $add = false ) : PageView
     {
         // existing variants in unconfigured languages (e.g. imported ones) can still be translated
@@ -344,7 +347,7 @@ class Variants
             throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', $lang ) );
         }
 
-        [$source, $variant] = self::translatable( $id, $lang );
+        [$source, $variant] = $this->translatable( $id, $lang );
         Permission::check( 'page:add', $user, !$variant );
 
         // trashed variants are already rejected by translatable()
@@ -374,7 +377,7 @@ class Variants
                 }
 
                 $path = $result['slug'] !== '' ? $result['slug'] : (string) ( $result['data']['path'] ?? '' );
-                [$domain, $path] = self::variantPath( $source, $lang, $path );
+                [$domain, $path] = $this->variantPath( $source, $lang, $path );
                 $data = array_replace( $result['data'], ['domain' => $domain, 'path' => $path] );
 
                 $refs = Refs::page( $result['aux'], $user );
@@ -400,7 +403,7 @@ class Variants
             ? PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] )
             : Scout::sources( [(string) $page->id] );
 
-        self::watch( $variant ? VariantAction::Translated : ContentAction::Added, collect( [$page] ), $lang, Utils::editor( $user ) );
+        $this->watch( $variant ? VariantAction::Translated : ContentAction::Added, collect( [$page] ), $lang, Utils::editor( $user ) );
 
         return $page;
     }
@@ -417,9 +420,11 @@ class Variants
      * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Trashed page variants
      */
-    public static function dropMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function dropMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return self::many( LifecycleAction::Dropped, $ids, $lang, $user, $fields );
+        $ids = PageView::bulkIds( $ids );
+
+        return $this->trashVariants( $ids, $lang, $user, strict: false, fields: $fields );
     }
 
 
@@ -434,9 +439,11 @@ class Variants
      * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Restored page variants
      */
-    public static function restoreMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function restoreMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return self::many( LifecycleAction::Restored, $ids, $lang, $user, $fields );
+        $ids = PageView::bulkIds( $ids );
+
+        return $this->untrashVariants( $ids, $lang, $user, strict: false, fields: $fields );
     }
 
 
@@ -451,76 +458,11 @@ class Variants
      * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Deleted page variants
      */
-    public static function purgeMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function purgeMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return self::many( LifecycleAction::Purged, $ids, $lang, $user, $fields );
-    }
+        $ids = PageView::bulkIds( $ids );
 
-
-    /**
-     * Changes the lifecycle state of the language variants of several pages, skipping the ones not applicable.
-     *
-     * @param LifecycleAction $action Lifecycle action to apply
-     * @param array<string> $ids Page UUIDs
-     * @param string $lang Language code of the variants
-     * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param array<string> $fields Requested response fields
-     * @return Collection<int, PageView> Changed page variants
-     */
-    protected static function many( LifecycleAction $action, array $ids, string $lang, ?Authenticatable $user, array $fields ) : Collection
-    {
-        $ids = array_values( array_unique( $ids ) );
-        PageView::checkBulk( count( $ids ) );
-
-        return self::variantLifecycle( $action, $ids, $lang, $user, strict: false, fields: $fields );
-    }
-
-
-    /**
-     * Trashes, restores or deletes the language variants of the pages.
-     *
-     * The variants are changed in a transaction, the search index, the caches of the pages
-     * and the event listeners are updated after commit.
-     *
-     * @param LifecycleAction $action Lifecycle action
-     * @param array<string> $ids Page UUIDs
-     * @param string $lang Language code of the variants
-     * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @param bool $strict TRUE to throw if a page has no matching variant in the language or it's the source variant
-     * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
-     * @return Collection<int, PageView> Changed page variants
-     */
-    protected static function variantLifecycle( LifecycleAction $action, array $ids, string $lang, ?Authenticatable $user,
-        bool $strict, array $fields = [] ) : Collection
-    {
-        Permission::check( 'page:' . $action->verb(), $user );
-        $editor = Utils::editor( $user );
-        $columns = self::variantColumns( $fields );
-
-        $pages = match( $action ) {
-            LifecycleAction::Dropped => self::trashVariants( $ids, $lang, $editor, $strict, $columns ),
-            LifecycleAction::Purged => self::deleteVariants( $ids, $lang, $strict, $columns ),
-            LifecycleAction::Restored => self::untrashVariants( $ids, $lang, $editor, $strict, $columns ),
-        };
-
-        $keys = $pages->pluck( 'variant_id' )->map( strval( ... ) )->all();
-
-        // after commit to keep the index if the transaction fails, the database index keeps trashed variants
-        if( $action !== LifecycleAction::Dropped || Scout::usesExternalSearch() )
-        {
-            Scout::keeps( $action )
-                ? Scout::index( PageView::class, $keys, keys: true )
-                : Scout::unindex( PageView::class, $keys );
-        }
-
-        // pages in the source language are found by the languages of their variants
-        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
-
-        // trashed variants were invalidated when they were dropped
-        Invalidation::pages( $pages->filter( fn( PageView $page ) => $action !== LifecycleAction::Purged || $page->getAttribute( 'variant_deleted_at' ) === null ) );
-        self::watch( $action, $pages, $lang, $editor );
-
-        return $pages;
+        return $this->deleteVariants( $ids, $lang, $user, strict: false, fields: $fields );
     }
 
 
@@ -529,16 +471,19 @@ class Variants
      *
      * @param array<string> $ids Page UUIDs
      * @param string $lang Language code of the variants
-     * @param string $editor Name of the editing user
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $strict TRUE to throw if a page has no variant in the language or it's the source variant
-     * @param array<string> $columns Columns of the returned pages
+     * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Trashed page variants
      */
-    protected static function trashVariants( array $ids, string $lang, string $editor, bool $strict, array $columns ) : Collection
+    protected function trashVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
+        Permission::check( 'page:drop', $user );
+        $editor = Utils::editor( $user );
+
         $dropped = DB::transaction( function() use ( $ids, $lang, $editor, $strict ) {
 
-            $pages = self::lockVariants( $ids, $lang, trashed: false, strict: $strict );
+            $pages = $this->lockVariants( $ids, $lang, trashed: false, strict: $strict );
             $time = ( new PageVariant() )->freshTimestamp();
 
             foreach( $pages->pluck( 'variant_id' )->chunk( DB::IN_SIZE ) as $chunk ) {
@@ -549,7 +494,25 @@ class Variants
         } );
 
         // the complete pages are loaded after commit to keep the locks short
-        return self::variantPages( $dropped, $lang, $columns, trashed: true );
+        $pages = $this->variantPages( $dropped, $lang, $this->variantColumns( $fields ), trashed: true );
+        $keys = $pages->pluck( 'variant_id' )->map( strval( ... ) )->all();
+
+        // the CMS search ignores trashed variants, external search engines keep them if soft deletes are enabled
+        if( Scout::usesExternalSearch() )
+        {
+            if( Scout::keepsTrashed() ) {
+                Scout::index( PageView::class, $keys, keys: true );
+            } else {
+                Scout::unindex( PageView::class, $keys );
+            }
+        }
+
+        // pages in the source language are found by the languages of their variants
+        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+        Invalidation::pages( $pages );
+        $this->watch( LifecycleAction::Dropped, $pages, $lang, $editor );
+
+        return $pages;
     }
 
 
@@ -558,22 +521,27 @@ class Variants
      *
      * @param array<string> $ids Page UUIDs
      * @param string $lang Language code of the variants
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $strict TRUE to throw if a page has no variant in the language or it's the source variant
-     * @param array<string> $columns Columns of the returned pages
+     * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Purged page variants
      */
-    protected static function deleteVariants( array $ids, string $lang, bool $strict, array $columns ) : Collection
+    protected function deleteVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
+        Permission::check( 'page:purge', $user );
+        $editor = Utils::editor( $user );
+        $columns = $this->variantColumns( $fields );
+
         // the complete pages are required after the variants are deleted, but not locked
-        $all = self::variantPages( $ids, $lang, $columns, trashed: true )->keyBy( 'variant_id' );
+        $all = $this->variantPages( $ids, $lang, $columns, trashed: true )->keyBy( 'variant_id' );
 
-        return DB::transaction( function() use ( $ids, $lang, $strict, $all, $columns ) {
+        $pages = DB::transaction( function() use ( $ids, $lang, $strict, $all, $columns ) {
 
-            $pages = self::lockVariants( $ids, $lang, trashed: true, strict: $strict );
+            $pages = $this->lockVariants( $ids, $lang, trashed: true, strict: $strict );
 
             // variants added after the pages were fetched need their domain and path for cache invalidation
             $missing = $pages->reject( fn( PageView $page ) => $all->has( $page->variant_id ) )->pluck( 'id' )->all();
-            $added = self::variantPages( $missing, $lang, $columns, trashed: true )->keyBy( 'variant_id' );
+            $added = $this->variantPages( $missing, $lang, $columns, trashed: true )->keyBy( 'variant_id' );
 
             $pages = $pages->map( fn( PageView $page ) : PageView => $all->get( $page->variant_id ) ?? $added->get( $page->variant_id ) ?? $page );
 
@@ -581,6 +549,16 @@ class Variants
 
             return $pages->each( fn( PageView $page ) => $page->exists = false );
         } );
+
+        // after commit to keep the index if the transaction fails
+        Scout::unindex( PageView::class, $pages->pluck( 'variant_id' )->map( strval( ... ) )->all() );
+        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+
+        // trashed variants were invalidated when they were dropped
+        Invalidation::pages( $pages->filter( fn( PageView $page ) => $page->getAttribute( 'variant_deleted_at' ) === null ) );
+        $this->watch( LifecycleAction::Purged, $pages, $lang, $editor );
+
+        return $pages;
     }
 
 
@@ -589,13 +567,16 @@ class Variants
      *
      * @param array<string> $ids Page UUIDs
      * @param string $lang Language code of the variants
-     * @param string $editor Name of the editing user
+     * @param Authenticatable|null $user Authenticated user for editor tracking
      * @param bool $strict TRUE to throw if a page has no trashed variant in the language
-     * @param array<string> $columns Columns of the returned pages
+     * @param array<string> $fields Requested response fields to load only the required columns, all columns if empty
      * @return Collection<int, PageView> Restored page variants
      */
-    protected static function untrashVariants( array $ids, string $lang, string $editor, bool $strict, array $columns ) : Collection
+    protected function untrashVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
+        Permission::check( 'page:keep', $user );
+        $editor = Utils::editor( $user );
+
         // hashed before locking the variants to keep the transaction short
         $hashes = Sync::sources( $ids );
 
@@ -628,7 +609,15 @@ class Variants
             return $pages->pluck( 'id' )->map( strval( ... ) )->all();
         } );
 
-        return self::variantPages( $restored, $lang, $columns );
+        $pages = $this->variantPages( $restored, $lang, $this->variantColumns( $fields ) );
+
+        // after commit to keep the index if the transaction fails
+        Scout::index( PageView::class, $pages->pluck( 'variant_id' )->map( strval( ... ) )->all(), keys: true );
+        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+        Invalidation::pages( $pages );
+        $this->watch( LifecycleAction::Restored, $pages, $lang, $editor );
+
+        return $pages;
     }
 
 
@@ -641,7 +630,7 @@ class Variants
      * @param bool $trashed TRUE to include trashed variants
      * @return Collection<int, PageView> Pages with their variants in the language
      */
-    protected static function variantPages( array $ids, string $lang, array $columns, bool $trashed = false ) : Collection
+    protected function variantPages( array $ids, string $lang, array $columns, bool $trashed = false ) : Collection
     {
         return PageRows::views( $ids ? PageView::withTrashed()->language( $lang, $trashed )->whereKey( $ids )->get( $columns ) : [] );
     }
@@ -660,7 +649,7 @@ class Variants
      * @return Collection<int, PageView> Pages with the variant of the language
      * @throws ConflictException If strict and the variant is the source variant of a page
      */
-    protected static function lockVariants( array $ids, string $lang, bool $trashed, bool $strict,
+    protected function lockVariants( array $ids, string $lang, bool $trashed, bool $strict,
         string $error = 'The source language can not be deleted, change the source language first' ) : Collection
     {
         // only the columns required to check the variants to keep the locked rows small
@@ -687,7 +676,7 @@ class Variants
      * @return array{0: PageView, 1: PageView|null} Page with the source variant and with the variant if it exists
      * @throws InvalidInputException|ConflictException If the language is the source language or its variant is in the trash
      */
-    protected static function translatable( string $id, string $lang ) : array
+    protected function translatable( string $id, string $lang ) : array
     {
         $source = PageView::with( 'latest' )->findOrFail( $id );
 
@@ -717,7 +706,7 @@ class Variants
      * @param string $path Path of the source variant
      * @return array{0: string, 1: string} Domain and path
      */
-    protected static function variantPath( PageView $page, string $lang, string $path ) : array
+    protected function variantPath( PageView $page, string $lang, string $path ) : array
     {
         $db = DB::connection();
 
@@ -765,7 +754,7 @@ class Variants
      * @param array<string> $fields Requested response fields, all columns if empty
      * @return array<int, string> Column names
      */
-    protected static function variantColumns( array $fields ) : array
+    protected function variantColumns( array $fields ) : array
     {
         return $fields ? array_values( array_unique( [
             ...PageView::REQUIRED_COLUMNS,
@@ -783,7 +772,7 @@ class Variants
      * @param string $lang Language code of the affected variants
      * @param string $editor Name of the editing user
      */
-    protected static function watch( ContentAction|LifecycleAction|VariantAction $action, Collection $pages, string $lang, string $editor ) : void
+    protected function watch( ContentAction|LifecycleAction|VariantAction $action, Collection $pages, string $lang, string $editor ) : void
     {
         $ids = array_values( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
         $latest = $pages->mapWithKeys( fn( PageView $page ) => [(string) $page->id => (string) $page->latest_id] )->all();

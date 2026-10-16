@@ -17,7 +17,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\BenchmarkSeeder;

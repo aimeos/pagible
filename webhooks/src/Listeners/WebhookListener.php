@@ -33,7 +33,7 @@ class WebhookListener
     public function handle( Event|Bulk $event ) : void
     {
         if( !( $name = $this->name( $event ) )
-            || !( $tenant = $event->tenant ) && \Aimeos\Cms\Tenancy::$callback !== null
+            || !( $tenant = $event->tenant ) && \Aimeos\Cms\Tenancy::configured()
         ) {
             return;
         }

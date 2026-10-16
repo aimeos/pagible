@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Models\File;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -20,5 +21,6 @@ class RestoreFile extends RestoreTool
 {
     protected const PERMISSIONS = ['file:keep'];
     protected const MODEL = File::class;
+    protected const RESOURCE = Files::class;
     protected const NOUN = 'file';
 }

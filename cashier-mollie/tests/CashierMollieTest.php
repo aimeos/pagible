@@ -390,40 +390,32 @@ class CashierMollieTest extends CashierTestAbstract
 
     public function testSubscriptionProjectsForDefaultTenantWithoutTenantColumn(): void
     {
-        $previous = Tenancy::$callback;
-        Tenancy::$callback = null;
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( null );
 
-        try
-        {
-            $user = CashierMollieDefaultUser::forceCreate( [
-                'name' => 'Default tenant',
-                'email' => 'default@example.com',
-                'password' => 'password',
-            ] );
-            $name = CashierAccess::subscription( '', 'frontend.pro' );
-            $plan = app( CashierMolliePlan::class )->create( [
-                'reference' => '19.00',
-                'currency' => 'EUR',
-                'interval' => 30,
-                'description' => 'Professional',
-            ], $name );
+        $user = CashierMollieDefaultUser::forceCreate( [
+            'name' => 'Default tenant',
+            'email' => 'default@example.com',
+            'password' => 'password',
+        ] );
+        $name = CashierAccess::subscription( '', 'frontend.pro' );
+        $plan = app( CashierMolliePlan::class )->create( [
+            'reference' => '19.00',
+            'currency' => 'EUR',
+            'interval' => 30,
+            'description' => 'Professional',
+        ], $name );
 
-            app( CashierMollie::class )->subscription( (object) [
-                'id' => 321,
-                'name' => $name,
-                'plan' => $plan,
-                'owner' => $user,
-                'cycle_ends_at' => now()->addMonth(),
-            ] );
+        app( CashierMollie::class )->subscription( (object) [
+            'id' => 321,
+            'name' => $name,
+            'plan' => $plan,
+            'owner' => $user,
+            'cycle_ends_at' => now()->addMonth(),
+        ] );
 
-            $access = $user->refresh()->getAttribute( 'access' );
-            $this->assertIsArray( $access );
-            $this->assertSame( 'frontend.pro', $access['|mollie|321']['role'] ?? null );
-        } finally {
-            Tenancy::$callback = $previous;
-            app()->forgetInstance( Tenancy::class );
-        }
+        $access = $user->refresh()->getAttribute( 'access' );
+        $this->assertIsArray( $access );
+        $this->assertSame( 'frontend.pro', $access['|mollie|321']['role'] ?? null );
     }
 
 

@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Concerns;
+namespace Aimeos\Cms\Commands\Concerns;
 
 use Closure;
 

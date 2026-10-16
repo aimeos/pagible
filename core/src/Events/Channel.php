@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Events;
 
 
 /**

@@ -20,14 +20,16 @@ class Tenancy
 {
     /**
      * Anonymous callback which provides the value of the current tenant.
+     *
+     * @deprecated Use Tenancy::valueUsing() instead, the property will be removed in a future release
      */
     public static ?\Closure $callback = null;
 
     /**
-     * Optional override for the user-to-tenant access check. When null, allows() compares the
-     * user's tenant_id with the channel's tenant. Receives the authenticated user and tenant ID.
+     * Optional override for the user-to-tenant access check.
      *
      * @var (\Closure(?Authenticatable, string): bool)|null
+     * @deprecated Use Tenancy::allowsUsing() instead, the property will be removed in a future release
      */
     public static ?\Closure $access = null;
 
@@ -85,19 +87,19 @@ class Tenancy
      * Returns whether the user may access the given tenant.
      *
      * Without tenancy configuration, any authenticated user belongs to the single CMS tenant.
-     * Otherwise, the user's tenant_id must equal the current tenant by default. Override
-     * Tenancy::$access for custom binding logic.
+     * Otherwise, the user's tenant_id must equal the current tenant by default. Use
+     * Tenancy::allowsUsing() for custom binding logic.
      *
      * @param ?Authenticatable $user Authenticated user (must expose a tenant_id when tenancy is configured)
      * @param string $tenant Tenant ID
      */
     public static function allows( ?Authenticatable $user, string $tenant ) : bool
     {
-        if( !$user || ( $tenant === '' && self::$callback !== null ) ) {
+        if( !$user || ( $tenant === '' && self::configured() ) ) {
             return false;
         }
 
-        if( ( $access = self::$access ) !== null ) {
+        if( ( $access = Hooks::get()->tenantAccess ?? self::$access ) !== null ) {
             return $access( $user, $tenant );
         }
 
@@ -108,6 +110,43 @@ class Tenancy
         $id = data_get( $user, 'tenant_id' );
 
         return is_string( $id ) && $id === $tenant;
+    }
+
+
+    /**
+     * Sets the custom user-to-tenant access check used by allows().
+     *
+     * The callback receives the authenticated user and the tenant ID and returns whether the user
+     * may access the tenant. NULL restores the default check comparing the user's tenant_id.
+     *
+     * @param (\Closure(?Authenticatable, string): bool)|null $callback Access check or NULL for the default
+     */
+    public static function allowsUsing( ?\Closure $callback ) : void
+    {
+        Hooks::get()->tenantAccess = $callback;
+    }
+
+
+    /**
+     * Returns whether a callback providing the current tenant is configured.
+     *
+     * @return bool TRUE for multi-tenant setups, FALSE if tenancy isn't configured at all
+     */
+    public static function configured() : bool
+    {
+        return self::callback() !== null;
+    }
+
+
+    /**
+     * Returns the tenant ID provided by the configured callback.
+     *
+     * @return string Tenant ID or an empty string if no tenancy is configured
+     * @internal Use value() to get the ID of the current tenant
+     */
+    public static function resolve() : string
+    {
+        return ( $callback = self::callback() ) ? $callback() : '';
     }
 
 
@@ -157,10 +196,10 @@ class Tenancy
         $hooks->managed = true;
 
         // same as the tenant() helper of stancl/tenancy
-        self::$callback = function() use ( $contract ) : string {
+        self::valueUsing( function() use ( $contract ) : string {
             $tenant = app()->bound( $contract ) ? app( $contract ) : null;
             return is_object( $tenant ) && method_exists( $tenant, 'getTenantKey' ) ? (string) $tenant->getTenantKey() : '';
-        };
+        } );
 
         Event::listen( $initializing, function( object $event ) {
             $tenant = data_get( $event, 'tenancy.tenant' );
@@ -236,5 +275,31 @@ class Tenancy
     public static function value() : string
     {
         return app( self::class )->id();
+    }
+
+
+    /**
+     * Sets the callback which provides the ID of the current tenant.
+     *
+     * The current tenant is resolved again from the new callback. NULL disables tenancy, so
+     * all content belongs to the single default tenant.
+     *
+     * @param (\Closure(): string)|null $callback Callback returning the tenant ID or NULL to disable tenancy
+     */
+    public static function valueUsing( ?\Closure $callback ) : void
+    {
+        Hooks::get()->tenant = $callback;
+        app()->forgetInstance( self::class );
+    }
+
+
+    /**
+     * Returns the configured callback which provides the ID of the current tenant.
+     *
+     * @return (\Closure(): string)|null Tenant callback or NULL if tenancy isn't configured
+     */
+    private static function callback() : ?\Closure
+    {
+        return Hooks::get()->tenant ?? self::$callback;
     }
 }

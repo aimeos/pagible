@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Facade;
 
 
 /**
- * Facade for the shared element operations of Aimeos\Cms\Resource\Elements, which can be replaced by mocks in tests.
+ * Facade for the shared element operations of Aimeos\Cms\Resource\Elements.
+ *
+ * Resolves the resource instance from the container, so overrides bound by the application
+ * and mocks in tests are used everywhere.
  *
  * @phpstan-import-type ElementInput from \Aimeos\Cms\Resource\Elements
  *
@@ -37,6 +40,6 @@ class Elements extends Facade
 {
     protected static function getFacadeAccessor() : string
     {
-        return 'cms.elements';
+        return \Aimeos\Cms\Resource\Elements::class;
     }
 }

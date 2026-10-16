@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Concerns\PatchesFiles;
+use Aimeos\Cms\Commands\Concerns\PatchesFiles;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArrayInput;

@@ -7,11 +7,25 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Facades\Elements;
+use Illuminate\Support\Facades\Auth;
+use Nuwave\Lighthouse\Execution\ResolveInfo;
 
 
-final class PurgeElement extends Lifecycle
+/**
+ * Permanently deletes elements.
+ */
+final class PurgeElement
 {
-    protected const MODEL = Element::class;
-    protected const ACTION = 'purge';
+    /**
+     * @param  null  $rootValue
+     * @param  array<string, mixed>  $args
+     * @return array<int, mixed>
+     */
+    public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
+    {
+        $fields = array_keys( $info?->getFieldSelection( 1 ) ?? [] );
+
+        return Elements::purgeMany( $args['id'], Auth::user(), $fields )->all();
+    }
 }

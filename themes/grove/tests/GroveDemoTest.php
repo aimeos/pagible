@@ -24,8 +24,7 @@ class GroveDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new GroveDemo( 'grove', 'grove' ) )->seed();
-        Tenancy::$callback = fn() => 'grove';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'grove' );
     }
 
 

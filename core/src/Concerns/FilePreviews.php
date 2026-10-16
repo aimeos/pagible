@@ -14,7 +14,7 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\Interfaces\ImageInterface;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\InvalidException;
+use Aimeos\Cms\Exceptions\InvalidInputException;
 
 
 /**
@@ -62,7 +62,7 @@ trait FilePreviews
         }
 
         if( is_string( $resource ) ) {
-            throw new InvalidException( 'Invalid image URL' );
+            throw new InvalidInputException( 'Invalid image URL' );
         }
 
         // previews of the previous image must not remain if creating the new ones fails

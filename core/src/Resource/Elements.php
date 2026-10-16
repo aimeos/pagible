@@ -11,6 +11,10 @@ use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\LifecycleAction;
+use Aimeos\Cms\Invalidation;
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Permission;
@@ -21,7 +25,7 @@ use Aimeos\Cms\Validation;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Aimeos\Cms\Resource\Support\Items;
-use Aimeos\Cms\Resource\Support\Lifecycle;
+use Aimeos\Cms\Resource\Concerns\ChangesInChunks;
 use Aimeos\Cms\Publication;
 use Illuminate\Support\Collection;
 
@@ -33,10 +37,17 @@ use Illuminate\Support\Collection;
  * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
  * trusted like in commands and jobs and no permissions are checked.
  *
+ * Use it via the Aimeos\Cms\Facades\Elements facade, which resolves the instance from the container.
+ * Applications can replace it by a subclass overriding the public or protected methods, e.g. with
+ * `$this->app->singleton( \Aimeos\Cms\Resource\Elements::class, MyElements::class )` in their service provider.
+ *
  * @phpstan-type ElementInput array{type?: string, name?: string|null, lang?: string|null, data?: array<string, mixed>|object|null, ...}
  */
 class Elements
 {
+    use ChangesInChunks;
+
+
     /**
      * Creates a new element with version and attached files.
      *
@@ -47,7 +58,7 @@ class Elements
      * @return Element
      * @throws InvalidInputException If the input is invalid
      */
-    public static function add( array $input, ?Authenticatable $user = null ) : Element
+    public function add( array $input, ?Authenticatable $user = null ) : Element
     {
         Permission::check( 'element:add', $user );
 
@@ -91,7 +102,7 @@ class Elements
      * @throws InvalidInputException If the input is invalid
      * @throws ModelNotFoundException If element not found
      */
-    public static function save( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Element
+    public function save( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Element
     {
         Permission::check( 'element:save', $user );
 
@@ -109,7 +120,7 @@ class Elements
 
         return DB::transaction( function() use ( $element, $input, $editor, $latestId, $user ) {
 
-            self::apply( $element, $input, $editor, $latestId, $user );
+            $this->apply( $element, $input, $editor, $latestId, $user );
             $element->announce( ContentAction::Saved, $editor );
             PruneVersions::dispatchChunked( Element::class, [$element->id] );
 
@@ -127,7 +138,7 @@ class Elements
      * @return BulkResult
      * @throws InvalidInputException If the input carries the element-specific "type" or "data"
      */
-    public static function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
+    public function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
     {
         Permission::check( 'element:save', $user );
 
@@ -139,7 +150,7 @@ class Elements
 
         return Bulk::save( Element::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?Element {
             $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id );
-            return $element ? self::apply( $element, $input, $editor, null, $user, $refs[$element->latest_id ?? ''] ?? null ) : null;
+            return $element ? $this->apply( $element, $input, $editor, null, $user, $refs[$element->latest_id ?? ''] ?? null ) : null;
         } );
     }
 
@@ -152,9 +163,9 @@ class Elements
      * @return Element Published element
      * @throws ModelNotFoundException If the element doesn't exist
      */
-    public static function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : Element
+    public function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : Element
     {
-        return Items::one( Element::class, self::publishMany( [$id], $user, $at ), $id );
+        return Items::one( Element::class, $this->publishMany( [$id], $user, $at ), $id );
     }
 
 
@@ -166,7 +177,7 @@ class Elements
      * @param string|null $at Publication date or NULL to publish immediately
      * @return Collection<int, Element> Published elements
      */
-    public static function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    public function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
     {
         return Publication::publish( Element::class, $ids, $user, $at );
     }
@@ -180,9 +191,9 @@ class Elements
      * @return Element Trashed element
      * @throws ModelNotFoundException If the element doesn't exist
      */
-    public static function drop( string $id, ?Authenticatable $user = null ) : Element
+    public function drop( string $id, ?Authenticatable $user = null ) : Element
     {
-        return Items::one( Element::class, self::dropMany( [$id], $user ), $id );
+        return Items::one( Element::class, $this->dropMany( [$id], $user ), $id );
     }
 
 
@@ -194,9 +205,9 @@ class Elements
      * @return Element Deleted element
      * @throws ModelNotFoundException If the element doesn't exist
      */
-    public static function purge( string $id, ?Authenticatable $user = null ) : Element
+    public function purge( string $id, ?Authenticatable $user = null ) : Element
     {
-        return Items::one( Element::class, self::purgeMany( [$id], $user ), $id );
+        return Items::one( Element::class, $this->purgeMany( [$id], $user ), $id );
     }
 
 
@@ -208,9 +219,9 @@ class Elements
      * @return Element Restored element
      * @throws ModelNotFoundException If the element doesn't exist
      */
-    public static function restore( string $id, ?Authenticatable $user = null ) : Element
+    public function restore( string $id, ?Authenticatable $user = null ) : Element
     {
-        return Items::one( Element::class, self::restoreMany( [$id], $user ), $id );
+        return Items::one( Element::class, $this->restoreMany( [$id], $user ), $id );
     }
 
 
@@ -222,10 +233,31 @@ class Elements
      * @param array<string> $fields Requested response fields
      * @return Collection<int, Element> Trashed elements
      */
-    public static function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::drop( Element::class, $ids, $user, $fields );
+        Permission::check( 'element:drop', $user );
+
+        $ids = Element::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, [], function( $items ) use ( $editor ) {
+            // dispatched after commit
+            Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
+            Element::trashMany( $items, $editor );
+        } ) );
+
+        Element::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+
+        // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
+        if( Scout::keepsTrashed() ) {
+            Scout::index( Element::class, $this->ids( $items ) );
+        } else {
+            Scout::unindex( Element::class, $this->ids( $items ) );
+        }
+
+        return $items;
     }
+
 
     /**
      * Permanently deletes elements.
@@ -235,10 +267,25 @@ class Elements
      * @param array<string> $fields Requested response fields
      * @return Collection<int, Element> Deleted elements
      */
-    public static function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::purge( Element::class, $ids, $user, $fields );
+        Permission::check( 'element:purge', $user );
+
+        $ids = Element::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, [], function( $items ) {
+            // the references are removed with the elements, pages using trashed elements were invalidated when they were trashed
+            Invalidation::refs( array_map( strval( ... ), $items->reject( fn( Element $item ) => $item->trashed() )->modelKeys() ) );
+            Element::forceDeleteMany( $items );
+        } ) );
+
+        Element::announceMany( $items, LifecycleAction::Purged, $editor );
+        Scout::unindex( Element::class, $this->ids( $items ) );
+
+        return $items;
     }
+
 
     /**
      * Restores trashed elements.
@@ -248,9 +295,24 @@ class Elements
      * @param array<string> $fields Requested response fields
      * @return Collection<int, Element> Restored elements
      */
-    public static function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::restore( Element::class, $ids, $user, $fields );
+        Permission::check( 'element:keep', $user );
+
+        $ids = Element::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        // all columns are required to update the search index
+        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, Element::SELECT_COLUMNS, function( $items ) use ( $editor ) {
+            // dispatched after commit
+            Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
+            Element::restoreMany( $items, $editor );
+        } ) );
+
+        Element::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        Scout::index( Element::class, $this->ids( $items ) );
+
+        return $items;
     }
 
 
@@ -267,7 +329,7 @@ class Elements
      * @param array<string, array<string>>|null $refs Prefetched references of the latest version to copy
      * @return Element Updated element with the new version as "latest"
      */
-    protected static function apply( Element $element, array $input, string $editor,
+    protected function apply( Element $element, array $input, string $editor,
         ?string $latestId, ?Authenticatable $user, ?array $refs = null ) : Element
     {
         [$data, $dd] = Merge::model( $element, $input, $latestId );
@@ -280,5 +342,17 @@ class Elements
         ], array_key_exists( 'data', $input ) ? ['files' => Refs::element( $data, $user )] : $refs, $dd ? ['data' => $dd] : null );
 
         return $element;
+    }
+
+
+    /**
+     * Returns the IDs of the changed items.
+     *
+     * @param Collection<int, covariant Base> $items Changed items
+     * @return array<string> Item IDs
+     */
+    protected function ids( Collection $items ) : array
+    {
+        return $items->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

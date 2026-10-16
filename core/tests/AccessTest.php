@@ -129,7 +129,7 @@ class AccessTest extends CoreTestAbstract
     {
         $changed = false;
         $user = new \App\Models\User();
-        Tenancy::$access = fn() => false;
+        Tenancy::allowsUsing( fn() => false );
 
         Access::using(
             list: fn() => ['member'],
@@ -149,7 +149,7 @@ class AccessTest extends CoreTestAbstract
             );
             $this->assertFalse( $changed );
         } finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 
@@ -164,9 +164,9 @@ class AccessTest extends CoreTestAbstract
             'password' => 'secret',
             'cmsperms' => [],
         ] );
-        Tenancy::$access = function() use ( &$checks ) {
+        Tenancy::allowsUsing( function() use ( &$checks ) {
             return ++$checks === 1;
-        };
+        } );
 
         Access::using(
             list: fn() => ['member'],
@@ -187,7 +187,7 @@ class AccessTest extends CoreTestAbstract
             $this->assertSame( 2, $checks );
             $this->assertFalse( $changed );
         } finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 

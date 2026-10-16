@@ -6,7 +6,7 @@
 
 
 use Aimeos\Cms\Events\PageInvalidated;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Database\Connection;
@@ -61,7 +61,7 @@ return new class extends Migration
     private function copy( Connection $db, string $tenant ): void
     {
         $this->files( $db, $tenant, function( object $file, iterable $versions ) use ( $tenant ) {
-            $storage = Storage::disk( Files::diskName( (string) $file->disk ) );
+            $storage = Storage::disk( FileStorage::diskName( (string) $file->disk ) );
 
             foreach( $this->paths( $file, $versions, $tenant ) as $source )
             {
@@ -237,7 +237,7 @@ return new class extends Migration
      */
     private function target( string $tenant, string $id, string $path ): string
     {
-        if( Files::owns( $tenant, $id, $path ) ) {
+        if( FileStorage::owns( $tenant, $id, $path ) ) {
             return $path;
         }
 
@@ -278,12 +278,12 @@ return new class extends Migration
         $changed = false;
 
         $this->files( $db, $tenant, function( object $file, iterable $versions ) use ( &$changed, $db, $tenant ) {
-            $storage = Storage::disk( Files::diskName( (string) $file->disk ) );
+            $storage = Storage::disk( FileStorage::diskName( (string) $file->disk ) );
             $id = (string) $file->id;
 
             foreach( $this->paths( $file, $versions, $tenant ) as $source )
             {
-                if( Files::owner( $tenant, $source ) !== null ) {
+                if( FileStorage::owner( $tenant, $source ) !== null ) {
                     continue;
                 }
 

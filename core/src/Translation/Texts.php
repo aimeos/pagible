@@ -5,7 +5,9 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Translation;
+
+use Aimeos\Cms\Schema;
 
 
 /**
@@ -154,7 +156,7 @@ class Texts
         $result = array_values( $translate( array_map( fn( $ref ) => (string) $ref, $this->refs ), $to, $from, $context ) );
 
         if( count( $result ) !== count( $this->refs ) ) {
-            throw new Exception( sprintf( 'Expected %1$d translated texts, got %2$d', count( $this->refs ), count( $result ) ) );
+            throw new \Exception( sprintf( 'Expected %1$d translated texts, got %2$d', count( $this->refs ), count( $result ) ) );
         }
 
         // translations are hardly longer than their source, so excessive AI output is cut off

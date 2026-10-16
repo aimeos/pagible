@@ -12,9 +12,9 @@ use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Hashes;
-use Aimeos\Cms\Resource\Pages;
-use Aimeos\Cms\Resource\Variants;
+use Aimeos\Cms\Translation\Hashes;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Aimeos\Cms\Models\File;
@@ -636,14 +636,14 @@ class VariantTest extends CoreTestAbstract
 
     public function testPurgeKeepsOtherTenants()
     {
-        \Aimeos\Cms\Tenancy::$callback = fn() => 'other';
+        \Aimeos\Cms\Tenancy::valueUsing( fn() => 'other' );
         app()->forgetScopedInstances();
 
         try {
             $root = Pages::add( ['lang' => 'en', 'name' => 'Other', 'title' => 'Other', 'path' => 'other'] );
             $child = Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'other-child'], parent: $root->id );
         } finally {
-            \Aimeos\Cms\Tenancy::$callback = fn() => 'test';
+            \Aimeos\Cms\Tenancy::valueUsing( fn() => 'test' );
             app()->forgetScopedInstances();
         }
 
@@ -1224,7 +1224,7 @@ class VariantTest extends CoreTestAbstract
     protected function page( ?array $content = null ) : PageView
     {
         return Pages::add( [
-            'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'var-' . Utils::uid(),
+            'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'var-' . \Illuminate\Support\Str::random( 12 ),
             'content' => $content ?? [['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']]],
         ], $this->user, parent: $this->root()->id );
     }

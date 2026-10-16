@@ -24,8 +24,7 @@ class SolidDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new SolidDemo( 'solid', 'solid' ) )->seed();
-        Tenancy::$callback = fn() => 'solid';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'solid' );
     }
 
 

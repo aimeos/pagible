@@ -370,7 +370,7 @@ if( !function_exists( 'cmsurl' ) )
             return $path ?? '';
         }
 
-        return \Aimeos\Cms\Files::disk( 'public' )->url( $path );
+        return \Aimeos\Cms\FileStorage::disk( 'public' )->url( $path );
     }
 }
 

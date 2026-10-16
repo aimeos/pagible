@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 

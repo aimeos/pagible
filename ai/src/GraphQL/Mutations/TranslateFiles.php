@@ -12,7 +12,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\Jobs\Throttled;
 use Aimeos\Cms\Jobs\TranslatePage;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource\Files;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Support\Facades\Auth;
 

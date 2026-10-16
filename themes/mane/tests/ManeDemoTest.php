@@ -24,8 +24,7 @@ class ManeDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new ManeDemo( 'mane', 'mane' ) )->seed();
-        Tenancy::$callback = fn() => 'mane';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'mane' );
     }
 
 

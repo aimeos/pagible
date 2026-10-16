@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Events\Event;
 use Aimeos\Cms\Models\Base;

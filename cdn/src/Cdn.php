@@ -57,7 +57,7 @@ class Cdn
      */
     public static function file( string $path ) : string
     {
-        $url = Files::disk( 'public' )->url( $path );
+        $url = FileStorage::disk( 'public' )->url( $path );
 
         // Local disks without an "url" setting return URLs relative to the application URL
         return str_starts_with( $url, 'http' ) ? $url : self::base() . '/' . ltrim( $url, '/' );

@@ -12,9 +12,13 @@ use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Exceptions\InvalidInputException;
-use Aimeos\Cms\Files as FileUtils;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\LifecycleAction;
+use Aimeos\Cms\Events\Purged;
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Permission;
@@ -28,7 +32,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Aimeos\Cms\Resource\Support\Items;
-use Aimeos\Cms\Resource\Support\Lifecycle;
+use Aimeos\Cms\Resource\Concerns\ChangesInChunks;
 use Aimeos\Cms\Publication;
 
 
@@ -39,11 +43,18 @@ use Aimeos\Cms\Publication;
  * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
  * trusted like in commands and jobs and no permissions are checked.
  *
+ * Use it via the Aimeos\Cms\Facades\Files facade, which resolves the instance from the container.
+ * Applications can replace it by a subclass overriding the public or protected methods, e.g. with
+ * `$this->app->singleton( \Aimeos\Cms\Resource\Files::class, MyFiles::class )` in their service provider.
+ *
  * @phpstan-type StoredFile array{disk: string, path: string|null, mime: string|null, previews: array<int|string, mixed>|null, prepared: bool}
  * @phpstan-type FileInput array{name?: string|null, lang?: string|null, description?: array<string, string>|object|null, transcription?: array<string, string>|object|null, path?: string|null, previews?: array<int|string, string>|null, ...}
  */
 class Files
 {
+    use ChangesInChunks;
+
+
     public const MAX_RELOCATE = 100;
 
 
@@ -57,7 +68,7 @@ class Files
      * @param UploadedFile|null $preview Uploaded preview or null for automatic previews
      * @return File New file
      */
-    public static function add( UploadedFile|string $source, array $input = [], ?Authenticatable $user = null,
+    public function add( UploadedFile|string $source, array $input = [], ?Authenticatable $user = null,
         ?string $disk = null, ?UploadedFile $preview = null ) : File
     {
         Permission::check( 'file:add', $user );
@@ -70,7 +81,7 @@ class Files
         // slow network, disk and image work off the database connection.
         $file->ingest( $source, $preview );
 
-        return self::insert( $file, $user );
+        return $this->insert( $file, $user );
     }
 
 
@@ -85,7 +96,7 @@ class Files
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @return File
      */
-    protected static function insert( File $file, ?Authenticatable $user = null ) : File
+    protected function insert( File $file, ?Authenticatable $user = null ) : File
     {
         $editor = Utils::editor( $user );
         $file->setUniqueIds();
@@ -114,7 +125,7 @@ class Files
         }
         catch( \Throwable $t )
         {
-            self::discardFile( $file );
+            $this->discardFile( $file );
             throw $t;
         }
 
@@ -132,9 +143,9 @@ class Files
      * @return File Relocated file
      * @throws ModelNotFoundException If the file doesn't exist
      */
-    public static function relocate( string $id, string $disk, ?Authenticatable $user = null ) : File
+    public function relocate( string $id, string $disk, ?Authenticatable $user = null ) : File
     {
-        return Items::one( File::class, self::relocateMany( [$id], $disk, $user ), $id );
+        return Items::one( File::class, $this->relocateMany( [$id], $disk, $user ), $id );
     }
 
 
@@ -147,10 +158,10 @@ class Files
      * @return Collection<int, File>
      * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
      */
-    public static function relocateMany( array $ids, string $disk,
+    public function relocateMany( array $ids, string $disk,
         ?Authenticatable $user = null ) : Collection
     {
-        FileUtils::diskName( $disk );
+        FileStorage::diskName( $disk );
         $ids = array_values( array_unique( $ids ) );
 
         if( count( $ids ) > self::MAX_RELOCATE ) {
@@ -159,6 +170,8 @@ class Files
                 self::MAX_RELOCATE,
             ) );
         }
+
+        $ids = File::bulkIds( $ids );
 
         if( !$ids ) {
             return ( new File() )->newCollection();
@@ -183,7 +196,7 @@ class Files
                 $result = [];
 
                 foreach( $ids as $id ) {
-                    $result[] = self::relocateFile( $id, $disk, $editor, $changed );
+                    $result[] = $this->relocateFile( $id, $disk, $editor, $changed );
                 }
 
                 return ( new File() )->newCollection( $result );
@@ -211,7 +224,7 @@ class Files
      * @param array<string, File> $changed Relocated files by ID, the file is added if it was moved
      * @return File File on the target disk
      */
-    private static function relocateFile( string $id, string $disk, string $editor, array &$changed ) : File
+    protected function relocateFile( string $id, string $disk, string $editor, array &$changed ) : File
     {
         $file = File::findOrFail( $id );
 
@@ -238,7 +251,7 @@ class Files
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
      * @return File
      */
-    public static function save( string $id, array $input, ?Authenticatable $user = null,
+    public function save( string $id, array $input, ?Authenticatable $user = null,
         ?string $latestId = null, ?UploadedFile $upload = null, UploadedFile|false|null $preview = null ) : File
     {
         Permission::check( 'file:save', $user );
@@ -250,12 +263,12 @@ class Files
         try
         {
             // Prepare storage and remote image work before opening the transaction.
-            self::prepareFile( $stored, $id, $input, $upload, $preview );
-            $file = self::writeFile( $id, $input, $editor, $latestId, $preview, $stored );
+            $this->prepareFile( $stored, $id, $input, $upload, $preview );
+            $file = $this->writeFile( $id, $input, $editor, $latestId, $preview, $stored );
         }
         catch( \Throwable $t )
         {
-            self::discardFile( ( new File() )->forceFill( [
+            $this->discardFile( ( new File() )->forceFill( [
                 'id' => $id,
                 'disk' => $stored['disk'],
                 'path' => $stored['path'],
@@ -278,7 +291,7 @@ class Files
      * @return BulkResult
      * @throws InvalidInputException If the input carries the file-specific "path" or "previews"
      */
-    public static function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
+    public function bulk( array $ids, array $input, ?Authenticatable $user = null ) : BulkResult
     {
         Permission::check( 'file:save', $user );
 
@@ -289,8 +302,8 @@ class Files
         Validation::limits( File::class, $input );
 
         return Bulk::save( File::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input ) : ?File {
-            $file = self::file()->lockForUpdate()->find( $id );
-            return $file ? self::apply( $file, $input, $editor ) : null;
+            $file = $this->file()->lockForUpdate()->find( $id );
+            return $file ? $this->apply( $file, $input, $editor ) : null;
         } );
     }
 
@@ -303,9 +316,9 @@ class Files
      * @return File Published file
      * @throws ModelNotFoundException If the file doesn't exist
      */
-    public static function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : File
+    public function publish( string $id, ?Authenticatable $user = null, ?string $at = null ) : File
     {
-        return Items::one( File::class, self::publishMany( [$id], $user, $at ), $id );
+        return Items::one( File::class, $this->publishMany( [$id], $user, $at ), $id );
     }
 
 
@@ -317,7 +330,7 @@ class Files
      * @param string|null $at Publication date or NULL to publish immediately
      * @return Collection<int, File> Published files
      */
-    public static function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
+    public function publishMany( array $ids, ?Authenticatable $user = null, ?string $at = null ) : Collection
     {
         return Publication::publish( File::class, $ids, $user, $at );
     }
@@ -331,9 +344,9 @@ class Files
      * @return File Trashed file
      * @throws ModelNotFoundException If the file doesn't exist
      */
-    public static function drop( string $id, ?Authenticatable $user = null ) : File
+    public function drop( string $id, ?Authenticatable $user = null ) : File
     {
-        return Items::one( File::class, self::dropMany( [$id], $user ), $id );
+        return Items::one( File::class, $this->dropMany( [$id], $user ), $id );
     }
 
 
@@ -345,9 +358,9 @@ class Files
      * @return File Deleted file
      * @throws ModelNotFoundException If the file doesn't exist
      */
-    public static function purge( string $id, ?Authenticatable $user = null ) : File
+    public function purge( string $id, ?Authenticatable $user = null ) : File
     {
-        return Items::one( File::class, self::purgeMany( [$id], $user ), $id );
+        return Items::one( File::class, $this->purgeMany( [$id], $user ), $id );
     }
 
 
@@ -359,9 +372,9 @@ class Files
      * @return File Restored file
      * @throws ModelNotFoundException If the file doesn't exist
      */
-    public static function restore( string $id, ?Authenticatable $user = null ) : File
+    public function restore( string $id, ?Authenticatable $user = null ) : File
     {
-        return Items::one( File::class, self::restoreMany( [$id], $user ), $id );
+        return Items::one( File::class, $this->restoreMany( [$id], $user ), $id );
     }
 
 
@@ -373,10 +386,31 @@ class Files
      * @param array<string> $fields Requested response fields
      * @return Collection<int, File> Trashed files
      */
-    public static function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function dropMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::drop( File::class, $ids, $user, $fields );
+        Permission::check( 'file:drop', $user );
+
+        $ids = File::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->changeInChunks( File::class, $ids, $fields, [], function( $items ) use ( $editor ) {
+            // dispatched after commit
+            Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
+            File::trashMany( $items, $editor );
+        } ) ) );
+
+        File::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+
+        // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
+        if( Scout::keepsTrashed() ) {
+            Scout::index( File::class, $this->ids( $items ) );
+        } else {
+            Scout::unindex( File::class, $this->ids( $items ) );
+        }
+
+        return $items;
     }
+
 
     /**
      * Permanently deletes files.
@@ -386,10 +420,53 @@ class Files
      * @param array<string> $fields Requested response fields
      * @return Collection<int, File> Deleted files
      */
-    public static function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function purgeMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::purge( File::class, $ids, $user, $fields );
+        Permission::check( 'file:purge', $user );
+
+        $ids = File::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        // a single file is announced with its publication state, which is removed with its versions
+        $states = count( $ids ) === 1 && Base::announces( Purged::class );
+
+        $purge = fn( array $ids ) => $this->changeInChunks( File::class, $ids, $fields, ['path', 'previews'], function( $items ) use ( $states ) {
+            // the references are removed with the files, pages using trashed files were invalidated when they were trashed
+            Invalidation::refs( [], array_map( strval( ... ), $items->reject( fn( File $item ) => $item->trashed() )->modelKeys() ) );
+
+            if( $states ) {
+                $items->load( ['latest' => fn( $query ) => $query->select( 'id', 'published', 'publish_at', 'created_at' )] );
+            }
+
+            File::forceDeleteMany( $items );
+        } );
+
+        $items = File::locked( fn() => Scout::mute( [File::class], function() use ( $purge, $ids ) {
+            try {
+                return $purge( $ids );
+            } catch( \Exception $e ) {
+                // files whose storage can't be cleaned up must not prevent purging the others
+                $items = collect();
+
+                foreach( $ids as $id ) {
+                    try {
+                        $items->push( ...$purge( [$id] ) );
+                    } catch( \Exception $e ) {
+                        report( $e );
+                    }
+                }
+
+                return $items;
+            }
+        } ) );
+
+        // many files are announced as one bulk event because they may be purged in several transactions
+        File::announceMany( $items, LifecycleAction::Purged, $editor, bulk: count( $ids ) !== 1 );
+        Scout::unindex( File::class, $this->ids( $items ) );
+
+        return $items;
     }
+
 
     /**
      * Restores trashed files.
@@ -399,9 +476,24 @@ class Files
      * @param array<string> $fields Requested response fields
      * @return Collection<int, File> Restored files
      */
-    public static function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
+    public function restoreMany( array $ids, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
-        return Lifecycle::restore( File::class, $ids, $user, $fields );
+        Permission::check( 'file:keep', $user );
+
+        $ids = File::bulkIds( $ids );
+        $editor = Utils::editor( $user );
+
+        // all columns are required to update the search index
+        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->changeInChunks( File::class, $ids, $fields, File::SELECT_COLUMNS, function( $items ) use ( $editor ) {
+            // dispatched after commit
+            Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
+            File::restoreMany( $items, $editor );
+        } ) ) );
+
+        File::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        Scout::index( File::class, $this->ids( $items ) );
+
+        return $items;
     }
 
 
@@ -410,7 +502,7 @@ class Files
      *
      * @return Builder<File> File query including trashed files
      */
-    protected static function file() : Builder
+    protected function file() : Builder
     {
         return File::withTrashed()->with( ['latest' => fn( $q ) => $q->select( 'id', 'versionable_id', 'data', 'aux', 'lang', 'editor' )] );
     }
@@ -429,7 +521,7 @@ class Files
      * @param bool $clearPreviews TRUE to remove the previews if no new ones were stored
      * @return File Updated file with the new version as "latest"
      */
-    protected static function apply( File $orig, array $input, string $editor, ?string $latestId = null,
+    protected function apply( File $orig, array $input, string $editor, ?string $latestId = null,
         ?array $stored = null, bool $clearPreviews = false ) : File
     {
         $storedPath = $stored['path'] ?? null;
@@ -443,11 +535,11 @@ class Files
         [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
         $file->fill( $data + $aux );
 
-        $paths = array_map( FileUtils::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
+        $paths = array_map( FileStorage::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
         array_push( $paths, $storedPath, ...array_values( $storedPreviews ?? [] ) );
 
         $file->previews = $input['data']['previews'] ?? $previews;
-        $file->path = $storedPath ?? FileUtils::checkPath( $input['data']['path'] ?? null ) ?? $path;
+        $file->path = $storedPath ?? FileStorage::checkPath( $input['data']['path'] ?? null ) ?? $path;
 
         if( isset( $input['data']['path'] ) ) {
             $paths[] = $file->path;
@@ -489,7 +581,7 @@ class Files
      *
      * @param File $file File with the stored path and previews
      */
-    private static function discardFile( File $file ) : void
+    protected function discardFile( File $file ) : void
     {
         try {
             $file->removePreviews()->removeFile();
@@ -509,17 +601,17 @@ class Files
      * @param UploadedFile|null $upload File upload to store
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
      */
-    private static function prepareFile( array &$stored, string $id, array $input, ?UploadedFile $upload,
+    protected function prepareFile( array &$stored, string $id, array $input, ?UploadedFile $upload,
         UploadedFile|false|null $preview ) : void
     {
         $tmp = ( new File() )->forceFill( ['id' => $id] );
-        $newPath = FileUtils::checkPath( $input['path'] ?? null );
+        $newPath = FileStorage::checkPath( $input['path'] ?? null );
         $previewUpload = $preview instanceof UploadedFile ? $preview : null;
         $currentPath = null;
 
         if( $upload || $previewUpload || $newPath !== null )
         {
-            $current = self::file()->findOrFail( $id );
+            $current = $this->file()->findOrFail( $id );
             $currentPath = (string) $current->latestValue( 'path' );
             $stored['disk'] = $tmp->disk = (string) $current->getAttribute( 'disk' );
             $tmp->name = (string) ( $input['name'] ?? $current->latestValue( 'name' ) );
@@ -562,12 +654,12 @@ class Files
      * @param StoredFile $stored Prepared storage data
      * @return File Saved file
      */
-    private static function writeFile( string $id, array $input, string $editor, ?string $latestId,
+    protected function writeFile( string $id, array $input, string $editor, ?string $latestId,
         UploadedFile|false|null $preview, array $stored ) : File
     {
 
         return File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored ) {
-            $file = self::file()->findOrFail( $id );
+            $file = $this->file()->findOrFail( $id );
 
             if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
                 throw new ConflictException( 'File disk changed while saving; retry the request' );
@@ -576,11 +668,23 @@ class Files
             $file->checkStored( [$stored['path'], ...( $stored['previews'] ?? [] )] );
 
             return DB::transaction( function() use ( $file, $input, $editor, $latestId, $preview, $stored ) {
-                self::apply( $file, $input, $editor, $latestId, $stored, $preview === false );
+                $this->apply( $file, $input, $editor, $latestId, $stored, $preview === false );
                 PruneVersions::dispatchChunked( File::class, [$file->id] );
 
                 return $file;
             } );
         } );
+    }
+
+
+    /**
+     * Returns the IDs of the changed items.
+     *
+     * @param Collection<int, covariant Base> $items Changed items
+     * @return array<string> Item IDs
+     */
+    protected function ids( Collection $items ) : array
+    {
+        return $items->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

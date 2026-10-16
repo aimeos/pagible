@@ -24,8 +24,7 @@ class GlowDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new GlowDemo( 'glow', 'glow' ) )->seed();
-        Tenancy::$callback = fn() => 'glow';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'glow' );
     }
 
 

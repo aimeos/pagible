@@ -24,8 +24,7 @@ class MedicalDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new MedicalDemo( 'medical', 'medical' ) )->seed();
-        Tenancy::$callback = fn() => 'medical';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'medical' );
     }
 
 

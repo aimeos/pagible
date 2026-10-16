@@ -25,10 +25,10 @@ class FacadeTest extends CoreTestAbstract
     protected function tearDown() : void
     {
         // the mocks replace the shared instances, the next tests must use the real resources again
-        foreach( ['pages', 'elements', 'files', 'variants'] as $name )
+        foreach( ['Pages', 'Elements', 'Files', 'Variants'] as $name )
         {
-            $this->app?->forgetInstance( 'cms.' . $name );
-            Facades\Pages::clearResolvedInstance( 'cms.' . $name );
+            $this->app?->forgetInstance( 'Aimeos\\Cms\\Resource\\' . $name );
+            Facades\Pages::clearResolvedInstance( 'Aimeos\\Cms\\Resource\\' . $name );
         }
 
         parent::tearDown();
@@ -69,6 +69,42 @@ class FacadeTest extends CoreTestAbstract
     }
 
 
+    public function testOverride() : void
+    {
+        $this->app->singleton( \Aimeos\Cms\Resource\Elements::class, function() {
+            return new class extends \Aimeos\Cms\Resource\Elements {
+                public array $dropped = [];
+
+                public function dropMany( array $ids, ?\Illuminate\Contracts\Auth\Authenticatable $user = null, array $fields = [] ) : \Illuminate\Support\Collection
+                {
+                    $this->dropped = $ids;
+                    return parent::dropMany( $ids, $user, $fields );
+                }
+            };
+        } );
+
+        $element = Facades\Elements::add( ['type' => 'text', 'name' => 'Override', 'data' => ['type' => 'text', 'text' => 'Test']] );
+
+        // drop() calls dropMany() on the bound instance, so overriding one method changes all callers
+        $this->assertNotNull( Facades\Elements::drop( $element->id )->deleted_at );
+        $this->assertSame( [$element->id], app( \Aimeos\Cms\Resource\Elements::class )->dropped );
+    }
+
+
+    public function testDeprecatedClassAliases() : void
+    {
+        $this->assertSame( \Aimeos\Cms\Events\Channel::class, ( new \ReflectionClass( 'Aimeos\Cms\Channel' ) )->getName() );
+        $this->assertSame( \Aimeos\Cms\Query\Filter::class, ( new \ReflectionClass( 'Aimeos\Cms\Filter' ) )->getName() );
+        $this->assertSame( \Aimeos\Cms\Query\SearchBuilder::class, ( new \ReflectionClass( 'Aimeos\Cms\SearchBuilder' ) )->getName() );
+
+        try {
+            throw new \Aimeos\Cms\Exceptions\InvalidInputException( 'test' );
+        } catch( \Aimeos\Cms\InvalidException $e ) {
+            $this->assertSame( 'test', $e->getMessage() );
+        }
+    }
+
+
     /**
      * The @method tags of the facades are written by hand and must match the resource classes.
      */
@@ -81,7 +117,7 @@ class FacadeTest extends CoreTestAbstract
 
             foreach( $resource->getMethods( \ReflectionMethod::IS_PUBLIC ) as $method )
             {
-                if( $method->isStatic() && $method->getDeclaringClass()->getName() === $resource->getName()
+                if( !$method->isStatic() && $method->getDeclaringClass()->getName() === $resource->getName()
                     && !str_contains( (string) $method->getDocComment(), '@internal' )
                 ) {
                     $expected[$method->getName()] = array_map( fn( $param ) => $param->getName(), $method->getParameters() );

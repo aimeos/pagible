@@ -26,21 +26,6 @@ enum LifecycleAction : string
 
 
     /**
-     * Returns the permission verb of the action, e.g. "drop" for "page:drop".
-     *
-     * @return string Permission verb
-     */
-    public function verb() : string
-    {
-        return match( $this ) {
-            self::Dropped => 'drop',
-            self::Purged => 'purge',
-            self::Restored => 'keep',
-        };
-    }
-
-
-    /**
      * Returns the event class broadcast for the action.
      *
      * @return class-string<Event> Event class

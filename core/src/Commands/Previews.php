@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Concerns\FilePreviews;
 use Aimeos\Cms\ContentAction;
-use Aimeos\Cms\Files;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Invalidation;
@@ -450,7 +450,7 @@ class Previews extends Command
             return ['updated' => false, 'skipped' => false];
         }
 
-        $disk = Files::disk( (string) $item['file']->getAttribute( 'disk' ) );
+        $disk = FileStorage::disk( (string) $item['file']->getAttribute( 'disk' ) );
         $created = [];
 
         try

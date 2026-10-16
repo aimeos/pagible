@@ -20,11 +20,11 @@ use Aimeos\Cms\Concerns\PrunesVersions;
 use Aimeos\Cms\Concerns\SecondTimestamps;
 use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
 use Aimeos\Cms\DB;
-use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Publication;
 use Laravel\Scout\Searchable;
+use Illuminate\Support\Str;
 use Aimeos\Cms\Exceptions\InvalidInputException;
-use Aimeos\Cms\SearchBuilder;
+use Aimeos\Cms\Query\SearchBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Laravel\Scout\Builder;
 use Aimeos\Cms\Tenancy;
@@ -84,15 +84,18 @@ abstract class Base extends Model
     /**
      * Returns the unique IDs and rejects them if they exceed the synchronous bulk limit.
      *
+     * Values which aren't UUIDs are skipped because no item can have them as ID and
+     * SQL Server rejects them in queries on its uniqueidentifier columns.
+     *
      * @param iterable<string> $ids Item IDs
      * @return list<string> Unique item IDs
      */
     public static function bulkIds( iterable $ids ) : array
     {
-        $ids = array_values( array_unique( [...$ids] ) );
+        $ids = array_unique( [...$ids] );
         static::checkBulk( count( $ids ) );
 
-        return $ids;
+        return array_values( array_filter( $ids, fn( $id ) => is_string( $id ) && Str::isUuid( $id ) ) );
     }
 
 
@@ -411,62 +414,60 @@ abstract class Base extends Model
 
 
     /**
-     * Applies a lifecycle action to the locked items using set-based writes.
+     * Moves the locked items to the trash using set-based writes.
      *
-     * @param Collection<int, Base> $items Items of the model
-     * @param LifecycleAction $action Lifecycle action
+     * @param Collection<int, covariant Base> $items Items of the model
      * @param string $editor Name of the editing user
      */
-    public static function lifecycle( Collection $items, LifecycleAction $action, string $editor ) : void
+    public static function trashMany( Collection $items, string $editor ) : void
     {
-        $ids = $items->modelKeys();
-
-        if( $action === LifecycleAction::Purged )
-        {
-            static::withTrashed()->whereIn( 'id', $ids )->forceDelete();
-
-            foreach( $items as $item ) {
-                $item->exists = false;
-                $item->wasRecentlyCreated = false;
-            }
-
-            return;
-        }
-
         $time = static::query()->getModel()->freshTimestamp();
-        $attributes = [
-            'deleted_at' => $action === LifecycleAction::Dropped ? $time : null,
-            'editor' => $editor,
-            'updated_at' => $time,
-        ];
+        static::updateMany( $items, ['deleted_at' => $time, 'editor' => $editor, 'updated_at' => $time] );
+    }
 
-        static::withTrashed()->whereIn( 'id', $ids )->update( $attributes );
+
+    /**
+     * Restores the locked items from the trash using set-based writes.
+     *
+     * @param Collection<int, covariant Base> $items Items of the model
+     * @param string $editor Name of the editing user
+     */
+    public static function restoreMany( Collection $items, string $editor ) : void
+    {
+        static::updateMany( $items, ['deleted_at' => null, 'editor' => $editor] );
+    }
+
+
+    /**
+     * Permanently deletes the locked items using set-based writes.
+     *
+     * @param Collection<int, covariant Base> $items Items of the model
+     */
+    public static function forceDeleteMany( Collection $items ) : void
+    {
+        static::withTrashed()->whereIn( 'id', $items->modelKeys() )->forceDelete();
+
+        foreach( $items as $item ) {
+            $item->exists = false;
+            $item->wasRecentlyCreated = false;
+        }
+    }
+
+
+    /**
+     * Updates the locked items and their models using set-based writes.
+     *
+     * @param Collection<int, covariant Base> $items Items of the model
+     * @param array<string, mixed> $attributes Changed attributes, the update time is added if missing
+     */
+    protected static function updateMany( Collection $items, array $attributes ) : void
+    {
+        $attributes += ['updated_at' => static::query()->getModel()->freshTimestamp()];
+        static::withTrashed()->whereIn( 'id', $items->modelKeys() )->update( $attributes );
 
         foreach( $items as $item ) {
             $item->forceFill( $attributes )->syncOriginalAttributes( array_keys( $attributes ) );
         }
-    }
-
-
-    /**
-     * Invalidates the cached pages which reference the items.
-     *
-     * @param array<int, string> $ids Item IDs
-     */
-    public static function invalidateRefs( array $ids ) : void
-    {
-    }
-
-
-    /**
-     * Returns the columns a lifecycle action needs in addition to the identifying ones.
-     *
-     * @param LifecycleAction $action Lifecycle action
-     * @return array<int, string> Column names
-     */
-    public static function lifecycleColumns( LifecycleAction $action ) : array
-    {
-        return [];
     }
 
 
@@ -480,15 +481,6 @@ abstract class Base extends Model
     public static function locked( \Closure $fcn ) : mixed
     {
         return $fcn();
-    }
-
-
-    /**
-     * Tests if purging removes stored data which can fail per item, so failed batches are purged item by item.
-     */
-    public static function purgesStorage() : bool
-    {
-        return false;
     }
 
 
@@ -629,15 +621,19 @@ abstract class Base extends Model
 
 
     /**
-     * Deletes versions before pruning a CMS model.
+     * Permanently deletes the expired item including its versions.
+     *
+     * @return bool|null TRUE if the item has been deleted
      */
-    protected function pruning() : void
+    public function prune()
     {
         // pruning runs outside the tenant context of the item
         Version::withoutTenancy()->where( 'tenant_id', (string) $this->tenant_id )
             ->where( 'versionable_id', $this->getVersionKey() )
             ->where( 'versionable_type', $this->getMorphClass() )
             ->delete();
+
+        return $this->forceDelete();
     }
 
 

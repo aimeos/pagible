@@ -86,8 +86,7 @@ class PropertiesActionTest extends ThemeTestAbstract
     public function testDemoGroupsHiddenPagesAndUsesNewsRedirect(): void
     {
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
         $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $properties = PageView::where( 'path', 'properties' )->firstOrFail();
@@ -137,8 +136,7 @@ class PropertiesActionTest extends ThemeTestAbstract
     public function testPropertyListUsesNativeListSemantics(): void
     {
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
         $response = $this->get( '/properties' );
 
@@ -157,8 +155,7 @@ class PropertiesActionTest extends ThemeTestAbstract
         config( ['app.name' => 'Laravel'] );
 
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
         $maps = PageView::where( 'type', 'property' )->defaultOrder()->get()
             ->map( fn( $page ) => collect( (array) $page->content )

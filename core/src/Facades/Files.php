@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Facade;
 
 
 /**
- * Facade for the file operations of Aimeos\Cms\Resource\Files, which can be replaced by mocks in tests.
+ * Facade for the file operations of Aimeos\Cms\Resource\Files.
+ *
+ * Resolves the resource instance from the container, so overrides bound by the application
+ * and mocks in tests are used everywhere.
  *
  * @phpstan-import-type FileInput from \Aimeos\Cms\Resource\Files
  *
@@ -40,6 +43,6 @@ class Files extends Facade
 {
     protected static function getFacadeAccessor() : string
     {
-        return 'cms.files';
+        return \Aimeos\Cms\Resource\Files::class;
     }
 }

@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms;
+namespace Aimeos\Cms\Translation;
 
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
