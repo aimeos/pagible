@@ -244,9 +244,15 @@ return new class extends Migration
      */
     private function create( Builder $schema, string $tmp, string $name, string $column, string $target ): void
     {
-        $schema->create( $tmp, function( Blueprint $table ) use ( $name, $column, $target ) {
+        // MariaDB tables created by the MySQL driver use char(36) instead of the native uuid type
+        $id = collect( $schema->getColumns( $target ) )->firstWhere( 'name', 'id' );
+
+        $schema->create( $tmp, function( Blueprint $table ) use ( $name, $column, $target, $id ) {
             $table->uuid( 'variant_id' );
-            $table->uuid( $column );
+
+            ( $id['type_name'] ?? null ) === 'char'
+                ? $table->char( $column, 36 )->collation( $id['collation'] ?? null )
+                : $table->uuid( $column );
 
             $table->foreign( 'variant_id', $name . '_variant_fk' )->references( 'id' )->on( 'cms_page_variants' )
                 ->cascadeOnUpdate()->cascadeOnDelete();
