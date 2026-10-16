@@ -319,7 +319,8 @@ describe('Page Detail', () => {
 
   it('shows translate button when user has text:translate permission', () => {
     visitTranslationDetail()
-    detailView().find('.v-btn.btn-translate-page').should('exist')
+    detailView().find('.btn-lang-switch .v-btn').click()
+    cy.get('.v-btn.btn-translate-page').should('exist')
   })
 
   it('opens AI chat and executes the page review question', () => {
@@ -366,7 +367,9 @@ describe('Page Detail', () => {
     }
     visitTranslationDetail(me)
     detailView().find('.v-btn.btn-history').should('exist')
-    detailView().find('.btn-translate-page').should('not.exist')
+    detailView().find('.btn-lang-switch .v-btn').click()
+    cy.get('.v-btn[data-lang="en"]').should('exist')
+    cy.get('.btn-translate-page').should('not.exist')
   })
 
   it('shows aside toggle button', () => {

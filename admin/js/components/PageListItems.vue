@@ -1908,18 +1908,8 @@ export default {
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>
         </a>
-        <div v-if="missing(node) && !node.deleted_at && !embed && user.can('page:add')" class="item-create">
-          <v-btn
-            @click="createLang(stat)"
-            :prepend-icon="mdiPlus"
-            class="btn-create-lang"
-            variant="tonal"
-            size="small"
-          >
-            {{ $gettext('Create') }}
-          </v-btn>
-        </div>
         <a
+          v-if="!missing(node)"
           class="item-aux"
           :href="url(node)"
           target="_blank"
@@ -1932,6 +1922,17 @@ export default {
             ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span
           >
         </a>
+        <div v-else-if="!node.deleted_at && !embed && user.can('page:add')" class="item-create">
+          <v-btn
+            @click="createLang(stat)"
+            :prepend-icon="mdiPlus"
+            class="btn-create-lang"
+            variant="tonal"
+            size="small"
+          >
+            {{ $gettext('Create') }}
+          </v-btn>
+        </div>
       </div>
     </template>
   </Draggable>
@@ -2097,13 +2098,13 @@ export default {
   opacity: 0.7;
 }
 
-.tree-node-inner .item-content.missing .item-text,
-.tree-node-inner .item-content.missing .item-aux {
+.tree-node-inner .item-content.missing .item-text {
   opacity: 0.5;
 }
 
 .tree-node-inner .item-create {
   align-self: center;
+  margin-inline-start: auto;
   padding: 0 8px;
 }
 

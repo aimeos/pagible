@@ -3,6 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import AsideCount from '../components/AsideCount.vue'
+import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
 import ChatDialog from '../components/ChatDialog.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
@@ -125,6 +126,7 @@ export default {
 
   components: {
     ...detailBase.components,
+    ActionItem,
     ActionMenu,
     AsideCount,
     ChatDialog,
@@ -746,7 +748,12 @@ export default {
       <span class="btn-lang-switch" v-if="langs.length > 1">
         <ActionMenu :title="$gettext('Language')">
           <template #activator="{ props, label }">
-            <v-btn v-bind="props" :title="label" :loading="switching">
+            <v-btn
+              v-bind="props"
+              :title="label"
+              :loading="switching || isTranslating"
+              :append-icon="isTranslation && item.stale ? mdiSync : undefined"
+            >
               {{ variantLang || item.lang }}
             </v-btn>
           </template>
@@ -773,6 +780,20 @@ export default {
               }}</span>
             </v-btn>
           </v-list-item>
+          <template v-if="isTranslation && user.can('page:save')">
+            <v-divider />
+            <ActionItem
+              v-if="user.can('text:translate')"
+              @click="translate()"
+              :prepend-icon="mdiTranslate"
+              class="btn-translate-page"
+            >
+              {{ $gettext('Translate') }}
+            </ActionItem>
+            <ActionItem v-if="item.stale" @click="ignoreChanges()" :prepend-icon="mdiCheckAll" class="btn-ignore-changes">
+              {{ $gettext('Ignore changes') }}
+            </ActionItem>
+          </template>
         </ActionMenu>
       </span>
       <v-btn
@@ -781,21 +802,6 @@ export default {
         :title="$gettext('Rate this page and suggest improvements')"
         :icon="mdiCreation"
         class="btn-review-page"
-      />
-      <v-btn
-        v-if="isTranslation && user.can('page:save') && user.can('text:translate')"
-        @click="translate()"
-        :loading="isTranslating"
-        :title="$gettext('Translate changes of the source language')"
-        :icon="mdiTranslate"
-        class="btn-translate-page"
-      />
-      <v-btn
-        v-if="isTranslation && item.stale && user.can('page:save')"
-        @click="ignoreChanges()"
-        :title="$gettext('Ignore changes of the source language')"
-        :icon="mdiCheckAll"
-        class="btn-ignore-changes"
       />
     </template>
   </DetailAppBar>

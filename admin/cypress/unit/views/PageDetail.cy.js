@@ -267,17 +267,20 @@ describe('PageDetail', () => {
   })
 
   it('shows the translate button for variants with text:translate permission', () => {
-    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en' })
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en', variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
+    cy.get('.btn-lang-switch button').click()
     cy.get('button.btn-translate-page').should('exist')
   })
 
   it('hides the translate button without text:translate permission', () => {
-    mountDetail({ 'page:save': true }, { lang: 'de', source: 'en' })
+    mountDetail({ 'page:save': true }, { lang: 'de', source: 'en', variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
+    cy.get('.btn-lang-switch button').click()
     cy.get('button.btn-translate-page').should('not.exist')
   })
 
   it('hides the translate button for source variants', () => {
-    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'en', source: 'en' })
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'en', source: 'en', variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
+    cy.get('.btn-lang-switch button').click()
     cy.get('button.btn-translate-page').should('not.exist')
   })
 
@@ -833,7 +836,7 @@ describe('PageDetail', () => {
           // the store keeps the state after the mutation returned
           cy.wrap(vm).its('translating').should('equal', false)
           cy.wrap(vm).its('isTranslating').should('equal', true)
-          cy.get('button.btn-translate-page').should('have.class', 'v-btn--loading')
+          cy.get('.btn-lang-switch button').should('have.class', 'v-btn--loading')
         })
       })
 
@@ -862,6 +865,7 @@ describe('PageDetail', () => {
         const mutate = cy.stub().resolves({ data: { ignoreChanges: [{ id: '1', stale: false }] } })
 
         mountVariant({ 'page:save': true }, { mutate }).then((vm) => {
+          cy.get('.btn-lang-switch button').click()
           cy.get('button.btn-ignore-changes').should('exist')
 
           return cy.then(() => vm.ignoreChanges()).then(() => {
