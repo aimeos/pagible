@@ -438,9 +438,12 @@ class BroadcastsTest extends CoreTestAbstract
         Pages::save( $page1->id, ['title' => 'Not published'], $this->user );
 
         Queue::assertPushed( HandleChanges::class, 1 );
+        // the bulk changes are in database order, which differs between the database engines
         Queue::assertPushedOn( 'changes', HandleChanges::class, function( HandleChanges $job ) use ( $page1, $page2 ) {
-            return $job->listener === QueuedChangeRecorder::class
-                && array_map( fn( Change $c ) => $c->id, $job->changes ) === [$page1->id, $page2->id];
+            $ids = array_map( fn( Change $c ) => $c->id, $job->changes );
+            sort( $ids );
+
+            return $job->listener === QueuedChangeRecorder::class && $ids === collect( [$page1->id, $page2->id] )->sort()->values()->all();
         } );
         $this->assertSame( [], QueuedChangeRecorder::$changes );
 
