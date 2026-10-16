@@ -34,9 +34,9 @@ class BenchmarkTest extends CmsTestAbstract
     {
         parent::defineEnvironment( $app );
 
-        \Aimeos\Cms\Tenancy::$callback = function() {
+        \Aimeos\Cms\Tenancy::valueUsing( function() {
             return 'benchmark';
-        };
+        } );
     }
 
 

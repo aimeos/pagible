@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use GraphQL\Error\Error;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,11 +34,6 @@ final class AddFile
             throw new Error( sprintf( 'Invalid URL "%s"', $source ) );
         }
 
-        $file = new File();
-        $file->disk = $args['disk'] ?? 'public';
-        $file->fill( $args['input'] ?? [] );
-        $file->ingest( $source, $args['preview'] ?? null );
-
-        return Resource::addFile( $file, Auth::user() );
+        return Files::add( $source, $args['input'] ?? [], Auth::user(), $args['disk'] ?? null, $args['preview'] ?? null );
     }
 }

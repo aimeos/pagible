@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools\Concerns;
 
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\Uploads;
 
 
 /**
@@ -23,7 +23,7 @@ trait Upload
      * @param array<string, mixed> $input Validated input with optional "content", "url" and "name"
      * @param \Closure $fn Callback receiving the UploadedFile, URL or NULL if no source is given
      * @return mixed Result of the callback
-     * @throws \Aimeos\Cms\InvalidException If the content isn't valid base64
+     * @throws \Aimeos\Cms\Exceptions\InvalidInputException If the content isn't valid base64
      * @throws \Throwable Exceptions thrown by the callback
      */
     protected function source( array $input, \Closure $fn ) : mixed
@@ -35,9 +35,9 @@ trait Upload
         $data = base64_decode( (string) preg_replace( '/^data:[^,]*;base64,/', '', $input['content'], 1 ), true );
 
         if( !$data ) {
-            throw new \Aimeos\Cms\InvalidException( 'Invalid file content, must be base64 encoded' );
+            throw new \Aimeos\Cms\Exceptions\InvalidInputException( 'Invalid file content, must be base64 encoded' );
         }
 
-        return Utils::upload( $data, basename( $input['name'] ?? '' ) ?: 'file', null, $fn );
+        return Uploads::upload( $data, basename( $input['name'] ?? '' ) ?: 'file', null, $fn );
     }
 }

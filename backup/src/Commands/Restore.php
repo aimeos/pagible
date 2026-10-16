@@ -7,7 +7,10 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\FileStorage;
+use Aimeos\Cms\Uploads;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -19,7 +22,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 
@@ -129,7 +131,7 @@ class Restore extends Command
 
         foreach( $values as $path )
         {
-            if( Utils::normalizePath( $path, $sourceTenant ) === null ) {
+            if( FileStorage::normalizePath( $path, $sourceTenant ) === null ) {
                 continue;
             }
 
@@ -202,11 +204,11 @@ class Restore extends Command
             try
             {
                 if( !in_array( $logical, ['public', 'private'], true )
-                    || File::owner( $tenant, $path ) === null ) {
+                    || FileStorage::owner( $tenant, $path ) === null ) {
                     throw new \RuntimeException( 'Invalid media rollback journal path' );
                 }
 
-                $storage = Storage::disk( File::diskName( $logical ) );
+                $storage = FileStorage::disk( $logical );
 
                 if( is_string( $backup ) )
                 {
@@ -264,7 +266,7 @@ class Restore extends Command
      */
     protected function confirmDisks( string $tenant, array $files, bool $required, bool $media ): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
         $current = [];
 
         foreach( array_chunk( array_keys( $files ), 500 ) as $ids )
@@ -310,7 +312,7 @@ class Restore extends Command
             foreach( $files as $file )
             {
                 $other = self::other( $file['disk'] );
-                $storage = Storage::disk( File::diskName( $other ) );
+                $storage = FileStorage::disk( $other );
 
                 foreach( $file['paths'] as $path )
                 {
@@ -347,7 +349,8 @@ class Restore extends Command
             {
                 $name = substr( $stat['name'], 0, -7 );
 
-                if( isset( $tables[$name] ) ) {
+                // search index tables aren't backed up and are rebuilt after restoring
+                if( isset( $tables[$name] ) && !str_starts_with( $name, 'cms_index' ) ) {
                     $list[] = $name;
                 }
             }
@@ -406,8 +409,22 @@ class Restore extends Command
     }
 
 
+    /** @var array<string, string> Columns referencing tenant scoped rows and their tables */
+    protected const REFERENCES = [
+        'page_id' => 'cms_pages',
+        'variant_id' => 'cms_page_variants',
+        'element_id' => 'cms_elements',
+        'file_id' => 'cms_files',
+        'version_id' => 'cms_versions',
+        'parent_id' => 'cms_pages',
+        'latest_id' => 'cms_versions',
+    ];
+
+
     /**
-     * Rejects cross-tenant restores whose globally unique IDs belong to another tenant.
+     * Rejects restores whose globally unique IDs belong to another tenant.
+     *
+     * Also applies to restores into the source tenant because archives may be crafted.
      *
      * @param \ZipArchive $zip ZIP archive
      * @param Connection $db Database connection
@@ -417,10 +434,6 @@ class Restore extends Command
      */
     protected function guardIds( \ZipArchive $zip, Connection $db, array $columns, string $tenant, string $sourceTenant ): void
     {
-        if( $tenant === $sourceTenant ) {
-            return;
-        }
-
         foreach( $columns as $table => $cols )
         {
             if( !in_array( 'id', $cols, true ) || !in_array( 'tenant_id', $cols, true ) ) {
@@ -440,6 +453,31 @@ class Restore extends Command
                         ) );
                     }
                 } );
+        }
+    }
+
+
+    /**
+     * Rejects rows referencing rows of another tenant, e.g. pivot rows linking elements to pages of other tenants.
+     *
+     * The referenced tables are imported before, so only the references to existing rows are checked.
+     *
+     * @param Connection $db Database connection
+     * @param string $table Database table name
+     * @param list<array<string, mixed>> $rows Rows to import
+     * @param string $tenant Target tenant ID
+     */
+    protected function guardRefs( Connection $db, string $table, array $rows, string $tenant ): void
+    {
+        foreach( self::REFERENCES as $col => $ref )
+        {
+            if( !( $ids = array_filter( array_column( $rows, $col ), fn( $id ) => is_string( $id ) && $id !== '' ) ) ) {
+                continue;
+            }
+
+            if( $db->table( $ref )->whereIn( 'id', array_values( array_unique( $ids ) ) )->where( 'tenant_id', '<>', $tenant )->exists() ) {
+                throw new \RuntimeException( sprintf( 'Rows in table "%1$s" reference rows of another tenant in table "%2$s"', $table, $ref ) );
+            }
         }
     }
 
@@ -470,8 +508,9 @@ class Restore extends Command
                 array_intersect_key( $row, $allowed ), $table, $tenant, $sourceTenant, $hasTenant, $files
             ) )
             ->chunk( 50 )
-            ->each( function( LazyCollection $rows ) use ( $db, $table, $merge, $hasTenant, &$count ) {
+            ->each( function( LazyCollection $rows ) use ( $db, $table, $tenant, $merge, $hasTenant, &$count ) {
                 $rows = array_values( $rows->all() );
+                $this->guardRefs( $db, $table, $rows, $tenant );
 
                 if( $merge )
                 {
@@ -609,10 +648,10 @@ class Restore extends Command
      */
     protected static function move( mixed $path, string $from, string $to ): mixed
     {
-        $prefix = self::prefix( $from );
+        $prefix = FileStorage::prefix( $from );
 
         return is_string( $path ) && str_starts_with( $path, $prefix )
-            ? self::prefix( $to ) . substr( $path, strlen( $prefix ) )
+            ? FileStorage::prefix( $to ) . substr( $path, strlen( $prefix ) )
             : $path;
     }
 
@@ -683,22 +722,13 @@ class Restore extends Command
 
 
     /**
-     * Returns the storage path prefix of the tenant.
-     */
-    protected static function prefix( string $tenant ): string
-    {
-        return 'cms/' . ( $tenant !== '' ? $tenant . '/' : '' );
-    }
-
-
-    /**
      * Removes stale same-path copies from the opposite logical disk.
      *
      * @param array<string, array{disk: string, paths: list<string>}> $files
      */
     protected function reconcileMedia( string $tenant, array $files, string $trackingFile ): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
 
         foreach( $files as $id => $file )
         {
@@ -706,43 +736,41 @@ class Restore extends Command
                 continue;
             }
 
-            Utils::fileLock( $tenant, $id, function() use ( $db, $file, $id, $tenant, $trackingFile ) {
-                $disk = $db->table( 'cms_files' )->where( 'tenant_id', $tenant )
-                    ->where( 'id', $id )->value( 'disk' );
+            $disk = $db->table( 'cms_files' )->where( 'tenant_id', $tenant )
+                ->where( 'id', $id )->value( 'disk' );
 
-                if( $disk !== $file['disk'] ) {
+            if( $disk !== $file['disk'] ) {
+                throw new \RuntimeException( sprintf(
+                    'File "%s" uses disk "%s", backup expects "%s"',
+                    $id,
+                    $disk ?? 'missing',
+                    $file['disk'],
+                ) );
+            }
+
+            $target = FileStorage::disk( $file['disk'] );
+            $other = self::other( $file['disk'] );
+            $source = FileStorage::disk( $other );
+
+            // validateMedia() already rejected paths which exist only on the other disk
+            foreach( $file['paths'] as $path )
+            {
+                if( !$target->exists( $path ) || !$source->exists( $path ) ) {
+                    continue;
+                }
+
+                $this->trackMedia( $trackingFile, $other, $path );
+                $source->delete( $path );
+
+                // fetched again because PHPStan treats exists() on the same instance as pure
+                if( FileStorage::disk( $other )->exists( $path ) ) {
                     throw new \RuntimeException( sprintf(
-                        'File "%s" uses disk "%s", backup expects "%s"',
-                        $id,
-                        $disk ?? 'missing',
-                        $file['disk'],
+                        'Failed to remove media path "%s" from disk "%s"',
+                        $path,
+                        $other,
                     ) );
                 }
-
-                $target = Storage::disk( File::diskName( $file['disk'] ) );
-                $other = self::other( $file['disk'] );
-                $source = Storage::disk( File::diskName( $other ) );
-
-                // validateMedia() already rejected paths which exist only on the other disk
-                foreach( $file['paths'] as $path )
-                {
-                    if( !$target->exists( $path ) || !$source->exists( $path ) ) {
-                        continue;
-                    }
-
-                    $this->trackMedia( $trackingFile, $other, $path );
-                    $source->delete( $path );
-
-                    // fetched again because PHPStan treats exists() on the same instance as pure
-                    if( Storage::disk( File::diskName( $other ) )->exists( $path ) ) {
-                        throw new \RuntimeException( sprintf(
-                            'Failed to remove media path "%s" from disk "%s"',
-                            $path,
-                            $other,
-                        ) );
-                    }
-                }
-            } );
+            }
         }
     }
 
@@ -765,8 +793,8 @@ class Restore extends Command
             throw new \RuntimeException( sprintf( 'Unsafe media path detected: %s', $path ) );
         }
 
-        $sourcePrefix = self::prefix( $sourceTenant );
-        $targetPrefix = self::prefix( $tenant );
+        $sourcePrefix = FileStorage::prefix( $sourceTenant );
+        $targetPrefix = FileStorage::prefix( $tenant );
 
         $targetPath = str_starts_with( $path, $sourcePrefix )
             ? $targetPrefix . substr( $path, strlen( $sourcePrefix ) )
@@ -778,7 +806,7 @@ class Restore extends Command
 
         // The archive is untrusted: neutralize executable/active-content extensions the same way
         // uploads do (File::filename), so a crafted backup can't drop e.g. .php/.html into the disk.
-        if( Utils::extension( pathinfo( $targetPath, PATHINFO_EXTENSION ) ) === 'bin' ) {
+        if( Uploads::extension( pathinfo( $targetPath, PATHINFO_EXTENSION ) ) === 'bin' ) {
             $targetPath .= '.bin';
         }
 
@@ -808,14 +836,14 @@ class Restore extends Command
 
         try
         {
-            $mediaOnly = Utils::storageLock( $tenant, function() use (
+            $mediaOnly = FileStorage::storageLock( $tenant, function() use (
                 $manifest, $merge, $tenant, $zip
             ) {
                 $sourceTenant = $manifest['tenant_id'];
                 $trackingFile = $this->tempdir() . '/cms-restore-' . ( $tenant !== '' ? $tenant : 'default' )
                     . '-' . bin2hex( random_bytes( 8 ) ) . '.log';
                 $files = $this->mediaFiles( $zip, $tenant, $sourceTenant );
-                $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+                $db = DB::connection();
                 $columns = [];
                 $keepMedia = false;
                 $removeTracking = false;
@@ -917,12 +945,14 @@ class Restore extends Command
     {
         $this->info( 'Restoring database...' );
 
-        // Sort entity tables (with id) before pivot tables, shorter names first (parents before children)
+        // Sort referenced tables first, then entity tables (with id) before pivot tables
         uksort( $columns, function( string $a, string $b ) use ( $columns ) {
+            $aParent = $a === 'cms_pages';
+            $bParent = $b === 'cms_pages';
             $aHasId = in_array( 'id', $columns[$a] );
             $bHasId = in_array( 'id', $columns[$b] );
 
-            return $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId );
+            return ( $bParent <=> $aParent ) ?: ( $aHasId === $bHasId ? ( strlen( $b ) <=> strlen( $a ) ?: strcmp( $a, $b ) ) : ( $bHasId <=> $aHasId ) );
         } );
 
         $db->transaction( function() use ( $zip, $db, $tenant, $sourceTenant, $merge, $columns, $files, $after ) {
@@ -994,7 +1024,7 @@ class Restore extends Command
                 ) );
             }
 
-            $storage = Storage::disk( File::diskName( $logical ) );
+            $storage = FileStorage::disk( $logical );
 
             if( !( $stream = $zip->getStream( $stat['name'] ) ) ) {
                 throw new \RuntimeException( sprintf( 'Failed to read media entry "%s"', $stat['name'] ) );
@@ -1009,7 +1039,7 @@ class Restore extends Command
                 if( str_starts_with( strtolower( pathinfo( $targetPath, PATHINFO_EXTENSION ) ), 'svg' ) )
                 {
                     $content = stream_get_contents( $stream );
-                    $clean = $content === false ? null : Utils::cleanSvg( $content );
+                    $clean = $content === false ? null : Uploads::cleanSvg( $content );
                     $written = $clean !== null && $storage->put( $targetPath, $clean );
                     $size = $clean === null ? null : strlen( $clean );
                 }
@@ -1179,7 +1209,7 @@ class Restore extends Command
             return;
         }
 
-        $storage = Storage::disk( File::diskName( $logical ) );
+        $storage = FileStorage::disk( $logical );
         $backup = null;
 
         if( $storage->exists( $path ) )
@@ -1234,9 +1264,9 @@ class Restore extends Command
     {
         foreach( $files as $file )
         {
-            $target = Storage::disk( File::diskName( $file['disk'] ) );
+            $target = FileStorage::disk( $file['disk'] );
             $other = self::other( $file['disk'] );
-            $source = Storage::disk( File::diskName( $other ) );
+            $source = FileStorage::disk( $other );
 
             foreach( $file['paths'] as $path )
             {
@@ -1290,7 +1320,7 @@ class Restore extends Command
             return;
         }
 
-        if( !File::owns( $tenant, $id, $path ) ) {
+        if( !FileStorage::owns( $tenant, $id, $path ) ) {
             throw new \RuntimeException( sprintf( 'File path is outside UUID directory "%s"', $id ) );
         }
     }
@@ -1402,7 +1432,7 @@ class Restore extends Command
      */
     protected function verifyCounts( string $tenant, array $counts ): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
         $schema = $db->getSchemaBuilder();
 
         foreach( $counts as $table => $expected )

@@ -7,22 +7,31 @@
 
 namespace Database\Seeders;
 
+use Aimeos\Cms\Translation\Hashes;
 use Illuminate\Support\Facades\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Utils;
 
 
 class BenchmarkSeeder
 {
+    /** @var string Language of the translated page variants */
+    public const TRANSLATION = 'de';
+
     private string $tenantId;
     private string $editor;
     private string $domain;
     /** @var int<1, max> */
     private int $chunk;
     private ?\Closure $onProgress = null;
+    private int $translated = 0;
+    private int $pageCount = 0;
 
 
     /**
@@ -44,7 +53,7 @@ class BenchmarkSeeder
 
         $conn = config( 'cms.db', 'sqlite' );
 
-        Page::withoutSyncingToSearch( function() use ( $pages, $conn ) {
+        PageView::withoutSyncingToSearch( function() use ( $pages, $conn ) {
             Element::withoutSyncingToSearch( function() use ( $pages, $conn ) {
                 File::withoutSyncingToSearch( function() use ( $pages, $conn ) {
                     DB::connection( $conn )->transaction( function() use ( $pages ) {
@@ -53,6 +62,38 @@ class BenchmarkSeeder
                 } );
             } );
         } );
+
+        // outside of the transaction because MySQL commits implicitly
+        $this->analyze();
+    }
+
+
+    /**
+     * Updates the table statistics like in databases which are in use for some time.
+     *
+     * Without statistics, bulk inserted data can lead to execution plans no live database
+     * uses, e.g. SQLite then sorts all page variants instead of reading the pages in tree order.
+     */
+    protected function analyze(): void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $grammar = $db->getQueryGrammar();
+
+        $tables = [
+            'cms_pages', 'cms_page_variants', 'cms_versions', 'cms_elements', 'cms_files',
+            'cms_page_file', 'cms_page_element', 'cms_version_file', 'cms_version_element',
+        ];
+
+        foreach( $tables as $table )
+        {
+            $name = $grammar->wrapTable( $table );
+
+            match( $db->getDriverName() ) {
+                'mysql', 'mariadb' => $db->select( 'ANALYZE TABLE ' . $name ),
+                'sqlsrv' => $db->statement( 'UPDATE STATISTICS ' . $name ),
+                default => $db->statement( 'ANALYZE ' . $name ),
+            };
+        }
     }
 
 
@@ -105,7 +146,7 @@ class BenchmarkSeeder
         };
 
         // Root page
-        $rootId = ( new Page )->newUniqueId();
+        $rootId = ( new PageView )->newUniqueId();
         $rootVersionId = ( new Version )->newUniqueId();
         $rootContent = $this->pageContent( $fileIds[$fileIndex % $fileCount], $elementIds[$pageIndex % $elementCount], 0 );
         $rootMeta = $this->metaDescription( 0 );
@@ -123,9 +164,9 @@ class BenchmarkSeeder
         $rootRgt = $lft + ( $actualTotal * 2 ) - 1;
 
         $pages[] = $this->pageRow( $rootId, null, $rootVersionId, $rootData, $rootContent, $rootMeta, $lft, $rootRgt, 0, $now );
-        $versions[] = $this->versionRow( $rootVersionId, $rootId, Page::class, $rootData, $rootContent, $rootMeta, $nowMs );
-        $pivotPageFile[] = ['page_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
-        $pivotPageElement[] = ['page_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+        $versions[] = $this->versionRow( $rootVersionId, $rootId, PageVariant::class, $rootData, $rootContent, $rootMeta, $nowMs );
+        $pivotPageFile[] = ['variant_id' => $rootId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
+        $pivotPageElement[] = ['variant_id' => $rootId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
         $pivotVersionFile[] = ['version_id' => $rootVersionId, 'file_id' => $fileIds[$fileIndex % $fileCount]];
         $pivotVersionElement[] = ['version_id' => $rootVersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -136,7 +177,7 @@ class BenchmarkSeeder
         // Level 1–3 pages
         for( $i = 0; $i < 10; $i++ )
         {
-            $l1Id = ( new Page )->newUniqueId();
+            $l1Id = ( new PageView )->newUniqueId();
             $l1VersionId = ( new Version )->newUniqueId();
             $l1Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -158,9 +199,9 @@ class BenchmarkSeeder
             }
 
             $pages[] = $l1Row;
-            $versions[] = $this->versionRow( $l1VersionId, $l1Id, Page::class, $l1Data, $l1Content, $l1Meta, $nowMs );
-            $pivotPageFile[] = ['page_id' => $l1Id, 'file_id' => $l1Fid];
-            $pivotPageElement[] = ['page_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+            $versions[] = $this->versionRow( $l1VersionId, $l1Id, PageVariant::class, $l1Data, $l1Content, $l1Meta, $nowMs );
+            $pivotPageFile[] = ['variant_id' => $l1Id, 'file_id' => $l1Fid];
+            $pivotPageElement[] = ['variant_id' => $l1Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
             $pivotVersionFile[] = ['version_id' => $l1VersionId, 'file_id' => $l1Fid];
             $pivotVersionElement[] = ['version_id' => $l1VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -170,7 +211,7 @@ class BenchmarkSeeder
 
             for( $j = 0; $j < 10; $j++ )
             {
-                $l2Id = ( new Page )->newUniqueId();
+                $l2Id = ( new PageView )->newUniqueId();
                 $l2VersionId = ( new Version )->newUniqueId();
                 $l2Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -191,9 +232,9 @@ class BenchmarkSeeder
                 }
 
                 $pages[] = $l2Row;
-                $versions[] = $this->versionRow( $l2VersionId, $l2Id, Page::class, $l2Data, $l2Content, $l2Meta, $nowMs );
-                $pivotPageFile[] = ['page_id' => $l2Id, 'file_id' => $l2Fid];
-                $pivotPageElement[] = ['page_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+                $versions[] = $this->versionRow( $l2VersionId, $l2Id, PageVariant::class, $l2Data, $l2Content, $l2Meta, $nowMs );
+                $pivotPageFile[] = ['variant_id' => $l2Id, 'file_id' => $l2Fid];
+                $pivotPageElement[] = ['variant_id' => $l2Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                 $pivotVersionFile[] = ['version_id' => $l2VersionId, 'file_id' => $l2Fid];
                 $pivotVersionElement[] = ['version_id' => $l2VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -203,7 +244,7 @@ class BenchmarkSeeder
 
                 for( $k = 0; $k < $level3PerL2; $k++ )
                 {
-                    $l3Id = ( new Page )->newUniqueId();
+                    $l3Id = ( new PageView )->newUniqueId();
                     $l3VersionId = ( new Version )->newUniqueId();
                     $l3Fid = $fileIds[$fileIndex % $fileCount];
 
@@ -221,9 +262,9 @@ class BenchmarkSeeder
                     }
 
                     $pages[] = $l3Row;
-                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, Page::class, $l3Data, $l3Content, $l3Meta, $nowMs );
-                    $pivotPageFile[] = ['page_id' => $l3Id, 'file_id' => $l3Fid];
-                    $pivotPageElement[] = ['page_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
+                    $versions[] = $this->versionRow( $l3VersionId, $l3Id, PageVariant::class, $l3Data, $l3Content, $l3Meta, $nowMs );
+                    $pivotPageFile[] = ['variant_id' => $l3Id, 'file_id' => $l3Fid];
+                    $pivotPageElement[] = ['variant_id' => $l3Id, 'element_id' => $elementIds[$pageIndex % $elementCount]];
                     $pivotVersionFile[] = ['version_id' => $l3VersionId, 'file_id' => $l3Fid];
                     $pivotVersionElement[] = ['version_id' => $l3VersionId, 'element_id' => $elementIds[$pageIndex % $elementCount]];
 
@@ -255,8 +296,22 @@ class BenchmarkSeeder
     {
         $conn = config( 'cms.db', 'sqlite' );
 
+        // pages are split into the page structure and the source language variant
+        if( !empty( $rows['pages'] ) )
+        {
+            $split = array_map( fn( $page ) => $this->split( $page ), $rows['pages'] );
+
+            Page::withoutGlobalScopes()->toBase()->insert( array_column( $split, 0 ) );
+            PageVariant::withoutGlobalScopes()->toBase()->insert( array_column( $split, 1 ) );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $rows['pages'] ) );
+            }
+        }
+
+        $rows = $this->translations( $rows );
+
         $tables = [
-            'cms_pages' => $rows['pages'],
             'cms_versions' => $rows['versions'],
             'cms_page_file' => $rows['pivotPageFile'],
             'cms_page_element' => $rows['pivotPageElement'],
@@ -275,6 +330,88 @@ class BenchmarkSeeder
                 }
             }
         }
+    }
+
+
+    /**
+     * Adds translated variants, their versions and references for every second page.
+     *
+     * One of four translations is disabled, so visitors see the source variant of these
+     * pages and of all pages without translation while editors see all translations.
+     *
+     * @param array<string, array<int, array<string, mixed>>> $rows Rows of the source variants
+     * @return array<string, array<int, array<string, mixed>>> Rows including the translations
+     */
+    protected function translations( array $rows ): array
+    {
+        $lang = self::TRANSLATION;
+        $variants = [];
+        $versions = array_column( $rows['versions'], null, 'versionable_id' );
+
+        foreach( $rows['pages'] as $page )
+        {
+            if( $this->pageCount++ % 2 ) {
+                continue;
+            }
+
+            [, $variant] = $this->split( $page );
+
+            $sourceId = $page['variant_id'];
+            $variantId = ( new PageVariant )->newUniqueId();
+            $versionId = ( new Version )->newUniqueId();
+            $path = trim( $lang . '/' . $page['path'], '/' );
+            $version = $versions[$sourceId];
+
+            $data = array_replace( (array) json_decode( $version['data'], true ), ['lang' => $lang, 'path' => $path] );
+            $aux = (array) json_decode( $version['aux'], true );
+
+            $variants[] = array_replace( $variant, [
+                'id' => $variantId,
+                'page_id' => $page['id'],
+                'tenant_id' => $this->tenantId,
+                'lang' => $lang,
+                'path' => $path,
+                'status' => $this->translated++ % 4 === 3 ? 0 : 1,
+                'latest_id' => $versionId,
+                // up to date translations, so publishing the source checks if they are stale
+                'hashes' => json_encode( Hashes::page( $data, $aux['content'] ?? [], $aux['meta'] ?? [], $aux['config'] ?? [] ) ),
+            ] );
+
+            $rows['versions'][] = array_replace( $version, [
+                'id' => $versionId, 'versionable_id' => $variantId, 'lang' => $lang, 'data' => json_encode( $data ),
+            ] );
+
+            foreach( ['pivotPageFile', 'pivotPageElement'] as $key )
+            {
+                foreach( $rows[$key] as $pivot )
+                {
+                    if( $pivot['variant_id'] === $sourceId ) {
+                        $rows[$key][] = array_replace( $pivot, ['variant_id' => $variantId] );
+                    }
+                }
+            }
+
+            foreach( ['pivotVersionFile', 'pivotVersionElement'] as $key )
+            {
+                foreach( $rows[$key] as $pivot )
+                {
+                    if( $pivot['version_id'] === $version['id'] ) {
+                        $rows[$key][] = array_replace( $pivot, ['version_id' => $versionId] );
+                    }
+                }
+            }
+        }
+
+        foreach( array_chunk( $variants, $this->chunk ) as $chunk )
+        {
+            PageVariant::withoutGlobalScopes()->toBase()->insert( $chunk );
+
+            if( $this->onProgress ) {
+                ( $this->onProgress )( count( $chunk ) );
+            }
+        }
+
+        return $rows;
     }
 
 
@@ -450,8 +587,8 @@ class BenchmarkSeeder
     {
         return [
             'id' => $id,
+            'variant_id' => $id, // versions and pivots reference the variant by the page ID
             'tenant_id' => $this->tenantId,
-            'related_id' => null,
             'tag' => $data['tag'] ?? '',
             'lang' => 'en',
             'path' => $data['path'],
@@ -478,6 +615,20 @@ class BenchmarkSeeder
         ];
     }
 
+
+    /**
+     * Splits a page row in the format of the page view into the page and the variant row.
+     *
+     * @param array<string, mixed> $row Page row including the variant columns
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>} Page and variant row
+     */
+    protected function split( array $row ): array
+    {
+        $page = ['source' => $row['lang']] + PageBuilder::pageValues( $row );
+        $variant = PageBuilder::variantValues( $row, true ) + ['page_id' => $row['id'], 'tenant_id' => $row['tenant_id']];
+
+        return [$page, $variant + PageVariant::DEFAULTS];
+    }
 
     /**
      * Build a version row for bulk insert.

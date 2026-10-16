@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +26,7 @@ class FileVersionMigrationTest extends CoreTestAbstract
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $file = File::firstOrFail();
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $fileVersion = $file->latest()->firstOrFail();
         $pageVersion = $page->latest()->firstOrFail();
 

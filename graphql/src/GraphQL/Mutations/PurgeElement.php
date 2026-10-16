@@ -7,12 +7,14 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 
 
+/**
+ * Permanently deletes elements.
+ */
 final class PurgeElement
 {
     /**
@@ -22,11 +24,8 @@ final class PurgeElement
      */
     public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
     {
-        return Resource::purge(
-            Element::class,
-            $args['id'],
-            Auth::user(),
-            array_keys( $info?->getFieldSelection( 1 ) ?? [] ),
-        )->all();
+        $fields = array_keys( $info?->getFieldSelection( 1 ) ?? [] );
+
+        return Elements::purgeMany( $args['id'], Auth::user(), $fields )->all();
     }
 }

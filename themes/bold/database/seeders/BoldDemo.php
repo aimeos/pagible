@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -64,11 +64,11 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the training journal and its articles below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @param string $journalId Journal page ID referenced by listing elements
      * @return static Same object for fluent calls
      */
-    protected function addBlog( Page $home, string $journalId ) : static
+    protected function addBlog( PageView $home, string $journalId ) : static
     {
         $journal = $this->page( [
             'id' => $journalId,
@@ -278,10 +278,10 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the coaching team page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCoaches( Page $home ) : static
+    protected function addCoaches( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -348,10 +348,10 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the practical studio guide below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addDocs( Page $home ) : static
+    protected function addDocs( PageView $home ) : static
     {
         $guide = $this->page( [
             'lang' => 'en',
@@ -499,10 +499,10 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the membership page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addMembership( Page $home ) : static
+    protected function addMembership( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -596,10 +596,10 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the first-session booking page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addStart( Page $home ) : static
+    protected function addStart( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -650,10 +650,10 @@ class BoldDemo extends AbstractDemo
     /**
      * Creates the class and timetable page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTraining( Page $home ) : static
+    protected function addTraining( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -816,9 +816,9 @@ class BoldDemo extends AbstractDemo
      * Creates the RALLY home page and returns it.
      *
      * @param string $journalId Journal page ID referenced by listing elements
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home( string $journalId ) : Page
+    protected function home( string $journalId ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -955,12 +955,12 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param array<int, string> $fileIds Additional file IDs to attach
      * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();

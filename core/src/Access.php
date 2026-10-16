@@ -6,10 +6,10 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Access\Adapter;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-
 
 /**
  * Owns the access catalog independently from CMS editor permissions and consumers.
@@ -20,53 +20,20 @@ class Access
     private const MAX_VALUE_LENGTH = 100;
     private const PERMISSIONS = ['access:view', 'access:add', 'access:delete', 'user:access'];
 
-    /** @var \Closure(): iterable<mixed>|null */
-    private static ?\Closure $listCallback = null;
-
-    /** @var \Closure(string): void|null */
-    private static ?\Closure $addCallback = null;
-
-    /** @var \Closure(array<int, string>): void|null */
-    private static ?\Closure $deleteCallback = null;
-
-    /** @var (\Closure(Authenticatable, ?array<int, string>): iterable<mixed>)|null */
-    private static ?\Closure $userAccessCallback = null;
-
-    /** @var \Closure(string): void|null */
-    private static ?\Closure $activateCallback = null;
-
-    /** @var \Closure(Authenticatable): void|null */
-    private static ?\Closure $prepareCallback = null;
-
-    /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null */
-    private static ?\Closure $grantsCallback = null;
-
-    /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null */
-    private static ?\Closure $extendCallback = null;
-
     /** @var array<string, true>|null */
     private ?array $catalog = null;
 
     /** @var \WeakMap<object, array<int, string>> */
     private \WeakMap $allowed;
 
-    /** @var \WeakMap<object, array<string, bool>> */
-    private \WeakMap $grants;
-
-    /** @var \WeakMap<object, bool> */
-    private \WeakMap $resolved;
-
     private ?string $tenant = null;
 
-
     /**
-     * Initializes request-local access and grant caches.
+     * Initializes the request-local access cache.
      */
     public function __construct()
     {
         $this->allowed = new \WeakMap();
-        $this->grants = new \WeakMap();
-        $this->resolved = new \WeakMap();
     }
 
 
@@ -82,13 +49,13 @@ class Access
     public static function using( ?\Closure $list, ?\Closure $add = null, ?\Closure $delete = null,
         ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
     {
-        self::configure(
+        self::configure( new Adapter(
             list: $list,
             add: $add,
             delete: $delete,
             grants: $grants,
             userAccess: $userAccess,
-        );
+        ) );
     }
 
 
@@ -99,7 +66,7 @@ class Access
      */
     public static function extend( ?\Closure $grants ) : void
     {
-        self::$extendCallback = $grants;
+        Hooks::get()->extend = $grants;
         app()->forgetInstance( self::class );
     }
 
@@ -175,7 +142,7 @@ class Access
      */
     public function add( string $value ) : array
     {
-        if( !self::$addCallback ) {
+        if( !( $callback = Hooks::get()->access->add ) ) {
             throw new Exception( 'Adding access values is not available.' );
         }
 
@@ -187,7 +154,7 @@ class Access
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
         }
 
-        (self::$addCallback)( $value );
+        $callback( $value );
         $this->refresh();
 
         return $this->list();
@@ -204,7 +171,7 @@ class Access
      */
     public function delete( iterable $values ) : array
     {
-        if( !self::$deleteCallback ) {
+        if( !( $callback = Hooks::get()->access->delete ) ) {
             throw new Exception( 'Deleting access values is not available.' );
         }
 
@@ -218,7 +185,7 @@ class Access
             return $this->list();
         }
 
-        (self::$deleteCallback)( $values );
+        $callback( $values );
         $this->refresh();
 
         return $this->list();
@@ -270,79 +237,45 @@ class Access
 
 
     /**
-     * Returns candidate access values granted to the user.
+     * Returns the access values granted to the user.
      *
-     * @param iterable<mixed>|null $values Candidate values or NULL for all available values
      * @return array<int, string>
      */
-    public function allowed( Authenticatable $user, ?iterable $values = null ) : array
+    public function allowed( Authenticatable $user ) : array
     {
         $this->context();
         $catalog = $this->catalog();
 
-        if( $values && !is_array( $values ) ) {
-            $values = iterator_to_array( $values, false );
-        }
-
-        if( $values === null && isset( $this->allowed[$user] ) ) {
+        if( isset( $this->allowed[$user] ) ) {
             return $this->allowed[$user];
         }
 
-        $prepared = isset( $this->grants[$user] );
+        $hooks = Hooks::get();
+        $adapter = $hooks->access;
+        $extra = ( $extend = $hooks->extend ) ? $extend( $user ) : [];
+        $granted = array_intersect_key( array_fill_keys( self::normalize( $extra ?? [] ), true ), $catalog );
 
-        if( !$prepared )
+        if( $adapter->prepare ) {
+            ( $adapter->prepare )( $user );
+        }
+
+        $resolved = $adapter->grants ? ( $adapter->grants )( $user ) : null;
+
+        if( $resolved !== null )
         {
-            $extra = self::$extendCallback ? ( self::$extendCallback )( $user ) : [];
-            $granted = array_fill_keys( self::normalize( $extra ?? [] ), true );
-            $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
+            // the grants callback returns the complete set of granted values
+            $granted = array_intersect_key( $granted + array_fill_keys( self::normalize( $resolved ), true ), $catalog );
         }
         else
         {
-            $granted = $this->grants[$user];
-        }
-
-        if( !$prepared && self::$prepareCallback ) {
-            (self::$prepareCallback)( $user );
-        }
-
-        if( !isset( $this->resolved[$user] ) && self::$grantsCallback )
-        {
-            if( ( $resolved = ( self::$grantsCallback )( $user ) ) !== null )
-            {
-                $granted += array_fill_keys( self::normalize( $resolved ), true );
-                $this->grants[$user] = $granted = array_intersect_key( $granted, $catalog );
-                $this->resolved[$user] = true;
-            }
-            else
-            {
-                $this->resolved[$user] = false;
-            }
-        }
-
-        $all = $values === null;
-        $values ??= $this->list();
-
-        if( ( $this->resolved[$user] ?? false ) !== true )
-        {
             $gate = Gate::forUser( $user );
 
-            foreach( $values as $value )
-            {
-                if( is_string( $value ) && isset( $catalog[$value] ) ) {
-                    $granted[$value] ??= $gate->allows( $value );
-                }
+            foreach( $catalog as $value => $_ ) {
+                $granted[$value] ??= $gate->allows( (string) $value );
             }
-
-            $this->grants[$user] = $granted;
         }
 
-        $result = $this->filter( $values, $granted );
-
-        if( $all ) {
-            $this->allowed[$user] = $result;
-        }
-
-        return $result;
+        return $this->allowed[$user] = array_values( array_filter( $this->list(), fn( string $value ) => !empty( $granted[$value] ) ) );
     }
 
 
@@ -355,48 +288,7 @@ class Access
      */
     public static function bouncer( ?\Closure $grants = null ) : void
     {
-        $class = 'Silber\\Bouncer\\Bouncer';
-
-        self::configure(
-            list: fn() => self::modelNames(
-                self::call( $class, 'ability' ),
-                ['entity_type' => null],
-            ),
-            activate: fn( string $tenant ) => self::call( self::call( $class, 'scope' ), 'to', $tenant ),
-            add: function( string $value ) use ( $class ) {
-                self::modelAdd( self::call( $class, 'ability' ), $value );
-                self::call( $class, 'refresh' );
-            },
-            delete: function( array $values ) use ( $class ) {
-                self::modelDelete( self::call( $class, 'ability' ), $values, ['entity_type' => null] );
-                self::call( $class, 'refresh' );
-            },
-            grants: $grants,
-            userAccess: function( Authenticatable $user, ?array $values ) use ( $class ) {
-                $current = self::bouncerAssigned( $user );
-
-                if( $values === null ) {
-                    return $current;
-                }
-
-                $assign = array_values( array_diff( $values, $current ) );
-                $remove = array_values( array_diff( $current, $values ) );
-
-                if( $assign ) {
-                    self::call( self::call( $class, 'allow', $user ), 'to', $assign );
-                }
-
-                if( $remove ) {
-                    self::call( self::call( $class, 'disallow', $user ), 'to', $remove );
-                }
-
-                if( $assign || $remove ) {
-                    self::call( $class, 'refreshFor', $user );
-                }
-
-                return self::bouncerAssigned( $user );
-            },
-        );
+        self::configure( Access\Bouncer::adapter( $grants ) );
     }
 
 
@@ -409,35 +301,7 @@ class Access
      */
     public static function laratrust( ?\Closure $grants = null ) : void
     {
-        $model = config( 'laratrust.models.permission' );
-
-        self::configure(
-            list: fn() => self::laratrustGates( self::modelNames( $model ) ),
-            add: fn( string $value ) => self::modelAdd( $model, $value ),
-            delete: fn( array $values ) => self::modelDelete( $model, $values ),
-            grants: $grants,
-            userAccess: function( Authenticatable $user, ?array $values ) {
-                $current = self::laratrustAssigned( $user );
-
-                if( $values === null ) {
-                    return $current;
-                }
-
-                $assign = array_values( array_diff( $values, $current ) );
-                $remove = array_values( array_diff( $current, $values ) );
-                $team = config( 'laratrust.teams.enabled', false ) ? Tenancy::value() : null;
-
-                if( $assign ) {
-                    self::call( $user, 'givePermissions', $assign, $team );
-                }
-
-                if( $remove ) {
-                    self::call( $user, 'removePermissions', $remove, $team );
-                }
-
-                return self::laratrustAssigned( $user );
-            },
-        );
+        self::configure( Access\Laratrust::adapter( $grants ) );
     }
 
 
@@ -450,35 +314,7 @@ class Access
      */
     public static function spatie( ?\Closure $grants = null ) : void
     {
-        $registrar = 'Spatie\\Permission\\PermissionRegistrar';
-        $model = config(
-            'permission.models.permission',
-            'Spatie\\Permission\\Models\\Permission',
-        );
-        $guard = config( 'auth.defaults.guard', 'web' );
-
-        self::configure(
-            list: fn() => self::modelNames( $model, ['guard_name' => $guard] ),
-            activate: fn( string $tenant ) => self::call( $registrar, 'setPermissionsTeamId', $tenant ),
-            prepare: fn( Authenticatable $user ) => self::prepareSpatie( $user ),
-            add: function( string $value ) use ( $model, $guard ) {
-                self::call( self::model( $model ), 'findOrCreate', $value, $guard );
-            },
-            delete: function( array $values ) use ( $model, $guard ) {
-                self::modelDelete( $model, $values, ['guard_name' => $guard] );
-            },
-            grants: $grants,
-            userAccess: function( Authenticatable $user, ?array $values ) {
-                self::prepareSpatie( $user );
-
-                if( $values !== null ) {
-                    self::call( $user, 'syncPermissions', $values );
-                    self::prepareSpatie( $user );
-                }
-
-                return self::itemNames( self::call( $user, 'getDirectPermissions' ) );
-            },
-        );
+        self::configure( Access\Spatie::adapter( $grants ) );
     }
 
 
@@ -495,19 +331,10 @@ class Access
             return $catalog;
         }
 
-        $values = self::$listCallback ? ( self::$listCallback )() : [];
+        $list = Hooks::get()->access->list;
+        $values = $list ? $list() : [];
 
         return $this->catalog = array_fill_keys( self::normalize( $values ), true );
-    }
-
-
-    /**
-     * Invokes a method on a service instance or object.
-     */
-    private static function call( object|string $target, string $method, mixed ...$args ) : mixed
-    {
-        $target = is_string( $target ) ? app( $target ) : $target;
-        return $target->{$method}( ...$args );
     }
 
 
@@ -546,149 +373,11 @@ class Access
 
         $this->refresh();
 
-        if( self::$activateCallback ) {
-            (self::$activateCallback)( $tenant );
+        if( $activate = Hooks::get()->access->activate ) {
+            $activate( $tenant );
         }
 
         $this->tenant = $tenant;
-    }
-
-
-    /**
-     * Filters candidate values by a grant map, keeping the first occurrence of each granted value.
-     *
-     * @param iterable<mixed> $values
-     * @param array<string, bool> $granted
-     * @return array<int, string>
-     */
-    private function filter( iterable $values, array $granted ) : array
-    {
-        $result = $seen = [];
-
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) || empty( $granted[$value] ) || isset( $seen[$value] ) ) {
-                continue;
-            }
-
-            $seen[$value] = true;
-            $result[] = $value;
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Returns names from provider model collections.
-     *
-     * @return array<int, mixed>
-     */
-    private static function itemNames( mixed $items ) : array
-    {
-        if( !is_iterable( $items ) ) {
-            throw new Exception( 'Access provider returned an invalid assignment list.' );
-        }
-
-        $result = [];
-
-        foreach( $items as $item ) {
-            $result[] = data_get( $item, 'name' );
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Returns Bouncer abilities assigned directly in the active scope.
-     *
-     * @return array<int, mixed>
-     */
-    private static function bouncerAssigned( Authenticatable $user ) : array
-    {
-        $relation = self::call( $user, 'abilities' );
-
-        if( !is_object( $relation ) ) {
-            throw new Exception( 'Bouncer user abilities relation is not available.' );
-        }
-
-        $related = self::call( $relation, 'getRelated' );
-
-        if( !$related instanceof Model ) {
-            throw new Exception( 'Bouncer ability model is not available.' );
-        }
-
-        self::call( $relation, 'whereNull', $related->qualifyColumn( 'entity_type' ) );
-        self::call( $relation, 'wherePivot', 'forbidden', false );
-
-        return self::itemNames( self::call( $relation, 'get', [$related->qualifyColumn( 'name' )] ) );
-    }
-
-
-    /**
-     * Registers tenant-aware Laratrust gates for catalog values loaded on demand.
-     *
-     * @param array<int, mixed> $values
-     * @return array<int, mixed>
-     */
-    private static function laratrustGates( array $values ) : array
-    {
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) || trim( $value ) === ''
-                || ( Gate::has( $value ) && !config( 'laratrust.permissions_as_gates', false ) )
-            ) {
-                continue;
-            }
-
-            Gate::define( $value, function( Authenticatable $user ) use ( $value ) {
-                $team = config( 'laratrust.teams.enabled', false ) ? Tenancy::value() : null;
-                return (bool) self::call( $user, 'isAbleTo', $value, $team );
-            } );
-        }
-
-        return $values;
-    }
-
-
-    /**
-     * Returns Laratrust permissions assigned directly in the active team.
-     *
-     * @return array<int, mixed>
-     */
-    private static function laratrustAssigned( Authenticatable $user ) : array
-    {
-        $relation = self::call( $user, 'permissions' );
-
-        if( !is_object( $relation ) ) {
-            throw new Exception( 'Laratrust user permissions relation is not available.' );
-        }
-
-        if( config( 'laratrust.teams.enabled', false ) )
-        {
-            $helper = 'Laratrust\\Helper';
-            $key = (string) config( 'laratrust.foreign_keys.team', 'team_id' );
-            $team = $helper::getIdFor( Tenancy::value(), 'team' );
-
-            self::call( $relation, 'wherePivot', $key, $team );
-        }
-
-        return self::itemNames( self::call( $relation, 'get', ['name'] ) );
-    }
-
-
-    /**
-     * Clears Spatie relations which vary by active team.
-     */
-    private static function prepareSpatie( Authenticatable $user ) : void
-    {
-        if( !$user instanceof Model ) {
-            throw new Exception( 'Spatie access requires an Eloquent user model.' );
-        }
-
-        $user->unsetRelation( 'roles' );
-        $user->unsetRelation( 'permissions' );
     }
 
 
@@ -699,19 +388,21 @@ class Access
     {
         Permission::unregister( self::PERMISSIONS );
 
-        if( self::$listCallback )
+        $adapter = Hooks::get()->access;
+
+        if( $adapter->list )
         {
             Permission::register( 'access:view' );
 
-            if( self::$addCallback ) {
+            if( $adapter->add ) {
                 Permission::register( 'access:add' );
             }
 
-            if( self::$deleteCallback ) {
+            if( $adapter->delete ) {
                 Permission::register( 'access:delete' );
             }
 
-            if( self::$userAccessCallback ) {
+            if( $adapter->userAccess ) {
                 Permission::register( 'user:access' );
             }
         }
@@ -719,19 +410,11 @@ class Access
 
 
     /**
-     * Stores access-adapter callbacks and resets the resolved service.
+     * Stores the access adapter and resets the resolved service.
      */
-    private static function configure( ?\Closure $list, ?\Closure $activate = null,
-        ?\Closure $prepare = null, ?\Closure $add = null, ?\Closure $delete = null,
-        ?\Closure $grants = null, ?\Closure $userAccess = null ) : void
+    private static function configure( Adapter $adapter ) : void
     {
-        self::$listCallback = $list;
-        self::$activateCallback = $activate;
-        self::$prepareCallback = $prepare;
-        self::$addCallback = $add;
-        self::$deleteCallback = $delete;
-        self::$grantsCallback = $grants;
-        self::$userAccessCallback = $userAccess;
+        Hooks::get()->access = $adapter;
         self::syncPermissions();
 
         app()->forgetInstance( self::class );
@@ -767,13 +450,11 @@ class Access
 
 
     /**
-     * Clears the request-local grant caches of all users.
+     * Clears the request-local access cache of all users.
      */
     private function reset() : void
     {
         $this->allowed = new \WeakMap();
-        $this->grants = new \WeakMap();
-        $this->resolved = new \WeakMap();
     }
 
 
@@ -785,7 +466,7 @@ class Access
      */
     private function userAccess( Authenticatable $user, ?array $values = null ) : array
     {
-        if( !( $callback = self::$userAccessCallback ) ) {
+        if( !( $callback = Hooks::get()->access->userAccess ) ) {
             throw new Exception( 'User access assignments are not available.' );
         }
 
@@ -797,63 +478,6 @@ class Access
         }
 
         return $this->known( $result );
-    }
-
-
-    /**
-     * Resolves and validates a configured permission model.
-     */
-    private static function model( mixed $model ) : Model
-    {
-        if( is_string( $model ) ) {
-            $model = new $model();
-        }
-
-        if( !$model instanceof Model ) {
-            throw new Exception( 'Configured permission model must be an Eloquent model.' );
-        }
-
-        return $model;
-    }
-
-
-    /**
-     * Adds a value through the configured permission model.
-     */
-    private static function modelAdd( mixed $model, string $value ) : void
-    {
-        self::model( $model )->newQuery()->create( ['name' => $value] );
-    }
-
-
-    /**
-     * Deletes named values through the configured permission model.
-     *
-     * @param array<int, string> $values
-     * @param array<string, mixed> $where
-     */
-    private static function modelDelete( mixed $model, array $values, array $where = [] ) : void
-    {
-        $model = self::model( $model );
-
-        $model->getConnection()->transaction( function() use ( $model, $values, $where ) {
-            $model->newQuery()->where( $where )->whereIn( 'name', $values )->get()->each->delete();
-        } );
-    }
-
-
-    /**
-     * Returns an ordered list of configured permission names.
-     *
-     * @param array<string, mixed> $where
-     * @return array<int, mixed>
-     */
-    private static function modelNames( mixed $model, array $where = [] ) : array
-    {
-        return self::model( $model )->newQuery()->where( $where )
-            ->distinct()->orderBy( 'name' )
-            ->pluck( 'name' )
-            ->all();
     }
 
 

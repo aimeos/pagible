@@ -11,9 +11,10 @@ use Aimeos\Cms\Events\Dropped;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files;
+use Aimeos\Cms\Facades\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -71,7 +72,7 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( Element::class, [(string) $element->id], $this->user );
+        Elements::dropMany( [(string) $element->id], $this->user );
 
         $document = $this->engine->document( Element::class );
 
@@ -90,9 +91,9 @@ class LifecycleSearchTest extends CoreTestAbstract
         $this->assertNotNull( $latest );
         $expected = mb_strtolower( (string) $latest );
 
-        Resource::drop( File::class, [(string) $file->id], $this->user );
+        Files::dropMany( [(string) $file->id], $this->user );
         $this->engine->documents = [];
-        Resource::restore( File::class, [(string) $file->id], $this->user );
+        Files::restoreMany( [(string) $file->id], $this->user );
 
         $document = $this->engine->document( File::class );
 
@@ -106,20 +107,20 @@ class LifecycleSearchTest extends CoreTestAbstract
     public function testPublishIndexesPublishedVersionsSynchronously(): void
     {
         $file = File::query()->where( 'mime', 'image/jpeg' )->firstOrFail();
-        Publication::publish( File::class, [(string) $file->id], $this->user );
+        Files::publishMany( [(string) $file->id], $this->user );
 
         $this->assertTrue( $this->engine->document( File::class )['published'] ?? false );
 
         $element = Element::query()->firstOrFail();
-        Publication::publish( Element::class, [(string) $element->id], $this->user );
+        Elements::publishMany( [(string) $element->id], $this->user );
 
         $this->assertTrue( $this->engine->document( Element::class )['published'] ?? false );
 
-        $page = Page::query()->where( 'path', 'hidden' )->firstOrFail();
-        Resource::savePage( (string) $page->id, ['title' => 'Publish search test'], $this->user );
-        Publication::publish( Page::class, [(string) $page->id], $this->user );
+        $page = PageView::query()->where( 'path', 'hidden' )->firstOrFail();
+        Pages::save( (string) $page->id, ['title' => 'Publish search test'], $this->user );
+        Pages::publishMany( [(string) $page->id], $this->user );
 
-        $this->assertTrue( $this->engine->document( Page::class )['published'] ?? false );
+        $this->assertTrue( $this->engine->document( PageView::class )['published'] ?? false );
     }
 
 
@@ -146,7 +147,7 @@ class LifecycleSearchTest extends CoreTestAbstract
         ] );
         $this->engine->documents = [];
 
-        Resource::relocateFiles( [$file->id], 'private', $this->user );
+        Files::relocateMany( [$file->id], 'private', $this->user );
 
         $this->assertArrayNotHasKey( File::class, $this->engine->documents );
         $this->assertSame( 'private', $file->refresh()->disk );
@@ -156,12 +157,12 @@ class LifecycleSearchTest extends CoreTestAbstract
 
 class LifecycleSearchEngineSpy extends NullEngine
 {
-    /** @var array<class-string<Element|File|Page>, array<string, mixed>> */
+    /** @var array<class-string<Element|File|PageView>, array<string, mixed>> */
     public array $documents = [];
 
 
     /**
-     * @param class-string<Element|File|Page> $model
+     * @param class-string<Element|File|PageView> $model
      * @return array<string, mixed>|null
      */
     public function document( string $model ) : ?array
@@ -170,7 +171,7 @@ class LifecycleSearchEngineSpy extends NullEngine
     }
 
 
-    /** @param \Illuminate\Database\Eloquent\Collection<int, Element|File|Page> $models */
+    /** @param \Illuminate\Database\Eloquent\Collection<int, Element|File|PageView> $models */
     public function update( $models ) : void
     {
         foreach( $models as $model ) {

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -32,13 +32,13 @@ class MultiDomainPageControllerTest extends ThemeTestAbstract
 
     public function testDottedDomainServesRobotsTxt() : void
     {
-        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+        PageView::where( 'tag', 'root' )->firstOrFail()->variant->update( ['config' => [
             'robots-txt' => [
                 'type' => 'robots-txt',
                 'data' => ['text' => "User-agent: *\nDisallow: /private"],
                 'files' => [],
             ],
-        ]] )->saveQuietly();
+        ]] );
 
         $this->get( 'https://mydomain.tld/robots.txt' )
             ->assertOk()

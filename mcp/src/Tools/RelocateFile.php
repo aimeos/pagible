@@ -6,7 +6,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -36,7 +36,7 @@ class RelocateFile extends Tool
             'disk.required' => 'You must specify "public" or "private" storage.',
         ] );
 
-        $file = Resource::relocateFiles( [$v['id']], $v['disk'], $request->user() )->firstOrFail();
+        $file = Files::relocateMany( [$v['id']], $v['disk'], $request->user() )->firstOrFail();
 
         return Response::structured( [
             'id' => $file->id,

@@ -204,7 +204,7 @@ export const detailBase = {
     },
 
     // fetches the versions of the item and converts each snapshot by convert(version)
-    loadVersions(query, id, convert) {
+    loadVersions(query, id, convert, variables = {}) {
       if (!this.user.can(this.type + ':view')) {
         this.messages.denied()
         return Promise.resolve([])
@@ -212,7 +212,7 @@ export const detailBase = {
 
       if (!id) return Promise.resolve([])
 
-      return this.$apollo.query({ query, variables: { id }, fetchPolicy: 'no-cache' }).then((result) => {
+      return this.$apollo.query({ query, variables: { ...variables, id }, fetchPolicy: 'no-cache' }).then((result) => {
         if (!result.data?.[this.type]) throw result
         return (result.data[this.type].versions || []).map(convert)
       })
@@ -229,6 +229,8 @@ export const detailBase = {
 
       const msgs = publishTexts(this, at)
       const model = this.type[0].toUpperCase() + this.type.slice(1)
+      // language of the page variant to publish, the source variant if none
+      const lang = this.variantLang ?? null
       this.publishing = true
 
       this.save(true)
@@ -237,10 +239,13 @@ export const detailBase = {
 
           return this.$apollo
             .mutate({
-              mutation: gql`mutation ($id: [ID!]!, $at: DateTime) { pub${model}(id: $id, at: $at) { id } }`,
+              mutation: lang
+                ? gql`mutation ($id: [ID!]!, $at: DateTime, $lang: String) { pub${model}(id: $id, at: $at, lang: $lang) { id } }`
+                : gql`mutation ($id: [ID!]!, $at: DateTime) { pub${model}(id: $id, at: $at) { id } }`,
               variables: {
                 id: [this.item.id],
-                at: at?.toISOString()?.substring(0, 19)?.replace('T', ' ')
+                at: at?.toISOString()?.substring(0, 19)?.replace('T', ' '),
+                ...(lang && { lang })
               }
             })
             .then(() => {

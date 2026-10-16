@@ -42,6 +42,7 @@
       data-urlfile="{{ \Illuminate\Support\Facades\Storage::disk( config( 'cms.disks.public.name', 'public' ) )->url( '' ) }}"
       data-theme="{{ json_encode( config( 'cms.admin.colors', [] ) ) }}"
       data-locales="{{ json_encode( config( 'cms.locales', ['en'] ) ) }}"
+      data-locale="{{ config( 'app.locale', 'en' ) }}"
       data-multidomain="{{ (int) config('cms.multidomain', false) }}"
       data-urllogin="{{ config('cms.admin.login', '') }}"
       data-sessionlifetime="{{ config('session.expire_on_close') ? 0 : (int) config('session.lifetime', 120) }}"

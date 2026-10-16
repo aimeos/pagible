@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -20,6 +20,6 @@ final class AddElement
      */
     public function __invoke( $rootValue, array $args ) : Element
     {
-        return Resource::addElement( $args['input'] ?? [], Auth::user() );
+        return Elements::add( $args['input'] ?? [], Auth::user() );
     }
 }

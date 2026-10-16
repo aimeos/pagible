@@ -11,6 +11,7 @@ use Aimeos\Cms\Permission;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 
 
 class User extends Command
@@ -50,7 +51,7 @@ class User extends Command
             $this->error( 'E-Mail address is required!' );
             return;
         }
-        $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
+        $model = $this->model();
         $user = $model::where( 'email', $email )->first();
 
         if( $this->option( 'list' ) ) {
@@ -68,7 +69,32 @@ class User extends Command
         // Permission::set() — a single locked transaction and a single audit entry for
         // the intended end state, instead of one misleading intermediate audit line
         // per flag.
-        $assigned = Permission::assigned( $user );
+        if( ( $assigned = $this->assigned( Permission::assigned( $user ) ) ) !== null ) {
+            Permission::set( $user, $assigned );
+        }
+
+        // Only save when the password actually changed; an unconditional save() would
+        // re-issue an UPDATE (bumping updated_at / firing saved hooks) even for
+        // pure-permission invocations, on top of set()'s own locked write.
+        if( !$created && $this->input->hasParameterOption( '--password' ) ) {
+            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
+            $user->save();
+        }
+
+        if( !$this->option( 'quiet' ) ) {
+            $this->list( $user );
+        }
+    }
+
+
+    /**
+     * Returns the permissions and roles resulting from the command options.
+     *
+     * @param array<string> $assigned Currently assigned permissions and roles
+     * @return array<string>|null New permissions and roles or NULL if no option changes them
+     */
+    protected function assigned( array $assigned ) : ?array
+    {
         $changed = false;
 
         if( $this->option( 'enable' ) ) {
@@ -96,21 +122,7 @@ class User extends Command
             $changed = true;
         }
 
-        if( $changed ) {
-            Permission::set( $user, array_values( array_unique( $assigned ) ) );
-        }
-
-        // Only save when the password actually changed; an unconditional save() would
-        // re-issue an UPDATE (bumping updated_at / firing saved hooks) even for
-        // pure-permission invocations, on top of set()'s own locked write.
-        if( !$created && $this->input->hasParameterOption( '--password' ) ) {
-            $user->password = Hash::make( $this->option( 'password' ) ?: $this->secret( 'Password' ) );
-            $user->save();
-        }
-
-        if( !$this->option( 'quiet' ) ) {
-            $this->list( $user );
-        }
+        return $changed ? array_values( array_unique( $assigned ) ) : null;
     }
 
 
@@ -123,16 +135,17 @@ class User extends Command
     protected function create( string $email ) : Authenticatable
     {
         $password = $this->option( 'password' ) ?: $this->secret( 'Password' );
-        $model = config( 'auth.providers.users.model', 'App\\Models\\User' );
+        $model = $this->model();
 
-        /** @var Authenticatable $user */
+        /** @var Model&Authenticatable $user */
         $user = new $model;
-        $user->password = Hash::make( $password ); // @phpstan-ignore-line property.notFound
-        $user->cmsperms = []; // @phpstan-ignore-line property.notFound
-        $user->email = $email; // @phpstan-ignore-line property.notFound
-        $user->name = $email; // @phpstan-ignore-line property.notFound
 
-        return $user;
+        return $user->forceFill( [
+            'password' => Hash::make( $password ),
+            'cmsperms' => [],
+            'email' => $email,
+            'name' => $email,
+        ] );
     }
 
 
@@ -148,7 +161,8 @@ class User extends Command
             return;
         }
 
-        $roles = array_filter( $user->cmsperms ?? [], fn( $entry ) => !str_contains( $entry, ':' ) );
+        // same as the roles of the GraphQL user resolver, denied roles ("!role") are no roles of the user
+        $roles = array_filter( Permission::assigned( $user ), fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) );
 
         if( $roles ) {
             $this->info( 'roles:' );
@@ -224,5 +238,14 @@ class User extends Command
         }
 
         return $list;
+    }
+
+
+    /**
+     * Returns the class name of the user model.
+     */
+    protected function model() : mixed
+    {
+        return config( 'auth.providers.users.model', 'App\\Models\\User' );
     }
 }

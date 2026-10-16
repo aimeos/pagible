@@ -8,147 +8,46 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\IndexModels;
+use Aimeos\Cms\Query\PageQuery;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Collection;
 use Laravel\Scout\ModelObserver;
-use Laravel\Scout\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 
 /**
- * Scout search builder support.
+ * Search index maintenance of the CMS models.
  */
 class Scout
 {
     /**
-     * Builder fields handled out-of-band; never translated to SQL columns.
-     */
-    public const SKIP_FIELDS = ['latest', '__soft_deleted', 'tenant_id'];
-
-
-    /**
-     * Apply draft-mode filters for the collection engine via callback.
+     * Reindexes models by ID in bounded batches, queued if Scout uses a queue.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
-     * @param array<string> $fields The fields passed to searchFields(); only 'draft' triggers this path
-     * @return \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>
-     */
-    public static function collection( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, array $fields ) : Builder
-    {
-        $isDraft = in_array( 'draft', $fields );
-        static::apply( $query, $builder, $isDraft );
-
-        if( $builder->query === '' && $builder->queryCallback ) {
-            call_user_func( $builder->queryCallback, $query );
-        }
-
-        return $builder;
-    }
-
-
-    /**
-     * Apply Scout builder where/whereIn/whereNotIn filters and order qualification
-     * to an Eloquent query, joining cms_versions when any referenced column lives
-     * on the version table.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $query
-     * @param \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model> $builder
-     */
-    public static function apply( \Illuminate\Database\Eloquent\Builder $query, Builder $builder, bool $isDraft ) : void
-    {
-        $table = $query->getModel()->getTable();
-        $driver = $query->getModel()->getConnection()->getDriverName();
-        $joined = false;
-
-        $join = function() use ( $query, $table, &$joined ) {
-            if( $joined ) {
-                return;
-            }
-            $query->select( "{$table}.*" )
-                ->join( 'cms_versions', "{$table}.latest_id", '=', 'cms_versions.id' )
-                ->where( 'cms_versions.tenant_id', Tenancy::value() );
-            $joined = true;
-        };
-
-        $qualify = function( string $field ) use ( $driver, $isDraft, $join, $table ) : ?string {
-            $col = DB::qualify( $field, $table, $isDraft, $driver );
-
-            if( $col && $isDraft && str_starts_with( $col, 'cms_versions.' ) ) {
-                $join();
-            }
-
-            return $col;
-        };
-
-        foreach( $builder->wheres as $key => $where )
-        {
-            $field = is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
-
-            if( in_array( $field, self::SKIP_FIELDS ) ) {
-                continue;
-            }
-
-            if( !( $col = $qualify( $field ) ) ) {
-                continue;
-            }
-
-            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
-            $operator = is_array( $where ) ? ( $where['operator'] ?? '=' ) : '=';
-
-            if( is_null( $value ) ) {
-                $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-            } else {
-                $query->where( $col, $operator, $value );
-            }
-        }
-
-        foreach( ['whereIn' => $builder->whereIns, 'whereNotIn' => $builder->whereNotIns] as $method => $list )
-        {
-            foreach( $list as $field => $values )
-            {
-                if( $col = $qualify( $field ) ) {
-                    $query->{$method}( $col, $values );
-                }
-            }
-        }
-
-        foreach( $builder->orders as &$order ) {
-            $order['column'] = $qualify( $order['column'] ) ?? $table . '.' . $order['column'];
-        }
-    }
-
-
-    /**
-     * Reindexes models by ID in bounded native Scout batches.
+     * All variants of the pages are reindexed unless the search keys of the changed variants
+     * are passed instead of the page IDs.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
-     * @param Collection<int, Models\Base>|null $loaded Already loaded current models
+     * @param array<string> $ids Model IDs (page IDs for pages) or search keys (variant IDs for pages)
+     * @param bool $sources TRUE to reindex only the source variants of the pages
+     * @param bool $keys TRUE if the IDs are search keys
      */
-    public static function index( string $model, array $ids, ?Collection $loaded = null ) : void
+    public static function index( string $model, array $ids, bool $sources = false, bool $keys = false ) : void
     {
-        $instance = new $model();
-        $models = [];
-
-        foreach( $loaded ?? [] as $item ) {
-            if( $item instanceof $model && $item->id !== null ) {
-                $models[$item->id] = $item;
-            }
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
         }
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        if( !config( 'scout.queue' ) ) {
+            self::sync( $model, $ids, $sources, $keys );
+            return;
+        }
+
+        $instance = new $model();
+
+        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
         {
-            if( config( 'scout.queue' ) ) {
-                dispatch( ( new IndexModels( $model, $chunk, Tenancy::value() ) )
-                    ->onQueue( $instance->syncWithSearchUsingQueue() )
-                    ->onConnection( $instance->syncWithSearchUsing() ) );
-            } elseif( count( $items = array_intersect_key( $models, array_flip( $chunk ) ) ) === count( $chunk ) ) {
-                $loaded = $instance->newCollection( array_values( $items ) );
-                $loaded->loadMissing( $model::makeAllSearchableQuery()->getEagerLoads() );
-                $instance->syncMakeSearchable( $loaded );
-            } else {
-                self::sync( $model, $chunk );
-            }
+            dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $sources, $keys ) )
+                ->onQueue( $instance->syncWithSearchUsingQueue() )
+                ->onConnection( $instance->syncWithSearchUsing() ) );
         }
     }
 
@@ -187,12 +86,52 @@ class Scout
 
 
     /**
+     * Reindexes the source variants of the pages, which are listed for the languages without variant.
+     *
+     * Required after language variants are added or removed, only for external search engines.
+     * The pages are collected and reindexed once after the surrounding transaction commits.
+     *
+     * @param array<string> $ids Page IDs
+     */
+    public static function sources( array $ids ) : void
+    {
+        if( !$ids || !self::usesExternalSearch() ) {
+            return;
+        }
+
+        $hooks = Hooks::get();
+        $tenant = Tenancy::value();
+
+        foreach( $ids as $id ) {
+            $hooks->sources[$tenant][(string) $id] = true;
+        }
+
+        // Registered per call because callbacks of rolled back transactions are discarded while
+        // their pages stay pending; the first callback flushes all pages, so later ones are no-ops
+        // and pages of rolled back transactions are reindexed with the next commit, which is harmless
+        DB::connection()->afterCommit( function() {
+            $hooks = Hooks::get();
+            $sources = $hooks->sources;
+            $hooks->sources = [];
+
+            foreach( $sources as $tenant => $ids ) {
+                Tenancy::run( (string) $tenant, fn() => self::index( Models\PageView::class, array_map( strval( ... ), array_keys( $ids ) ), sources: true ) );
+            }
+        } );
+    }
+
+
+    /**
      * Reindexes models after the surrounding transaction commits.
      *
+     * Use it instead of index() inside transactions, so the search index doesn't contain
+     * uncommitted changes and rolled back changes are never indexed.
+     *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Model IDs or search keys
+     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public static function reindex( string $model, array $ids ) : void
+    public static function reindex( string $model, array $ids, bool $keys = false ) : void
     {
         $ids = array_values( array_unique( $ids ) );
 
@@ -200,12 +139,38 @@ class Scout
             return;
         }
 
-        $instance = new $model();
-        $tenant = Tenancy::value();
+        self::afterCommit( fn() => self::index( $model, $ids, keys: $keys ) );
+    }
 
-        $instance->getConnection()->afterCommit(
-            fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids ) ),
-        );
+
+    /**
+     * Adds all pages, elements and files including the trashed ones to the search index.
+     */
+    public static function rebuild() : void
+    {
+        // queued Scout jobs restore pages by their page ID, which loses all variants except one
+        Models\Page::withTrashed()->toBase()->select( 'id' )->chunkById( Models\Base::CHUNK, function( $rows ) {
+            self::index( Models\PageView::class, $rows->pluck( 'id' )->map( strval( ... ) )->all() );
+        } );
+
+        foreach( [Models\Element::class, Models\File::class] as $model ) {
+            $model::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class )->searchable( 50 ); // @phpstan-ignore method.notFound
+        }
+    }
+
+
+    /**
+     * Executes the callback for the current tenant after the surrounding transaction commits.
+     *
+     * Without a transaction, the callback is executed immediately and it's discarded if the
+     * transaction is rolled back, so the search index doesn't contain uncommitted changes.
+     *
+     * @param \Closure(): mixed $callback Callback to execute
+     */
+    private static function afterCommit( \Closure $callback ) : void
+    {
+        $tenant = Tenancy::value();
+        DB::connection()->afterCommit( fn() => Tenancy::run( $tenant, $callback ) );
     }
 
 
@@ -213,51 +178,32 @@ class Scout
      * Reindexes models immediately after loading their searchable relations.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Model IDs or search keys
+     * @param bool $sources TRUE to reindex only the source variants of the pages
+     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public static function sync( string $model, array $ids ) : void
+    public static function sync( string $model, array $ids, bool $sources = false, bool $keys = false ) : void
     {
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
         $instance = new $model();
+        $key = $instance->getScoutKeyName();
+        $column = $instance->qualifyColumn( $key );
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk ) {
-            $items = $instance::makeAllSearchableQuery()
-                ->withoutGlobalScope( SoftDeletingScope::class )
-                ->whereKey( $chunk )
-                ->get();
-
-            $instance->syncMakeSearchable( $items );
-        }
-    }
-
-
-    /**
-     * Returns the searchable text values from content elements.
-     *
-     * @param iterable<array<string, mixed>|object> $items Content elements
-     * @return array<int, string> Searchable text values
-     */
-    public static function text( iterable $items ) : array
-    {
-        $schemas = Schema::schemas( section: 'content' );
-        $result = [];
-
-        foreach( $items as $item )
+        // batches by search key to limit the number of page variants for many languages,
+        // larger than the ID batches to load pages with only one language in one query
+        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
         {
-            $item = (object) $item;
-            $fields = (array) ( $schemas[$item->type ?? '']['fields'] ?? [] );
+            $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
 
-            foreach( (array) ( $item->data ?? [] ) as $name => $value )
-            {
-                if( is_string( $value ) && isset( $fields[$name] )
-                    && ( $fields[$name]['searchable'] ?? true )
-                    && in_array( $fields[$name]['type'], ['markdown', 'plaintext', 'string', 'text'], true )
-                ) {
-                    $result[] = $value;
-                }
+            if( $sources && $query instanceof PageQuery ) {
+                $query->language( null );
             }
-        }
 
-        return $result;
+            ( $keys ? $query->whereIn( $column, $chunk ) : $query->whereKey( $chunk ) )->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
+        }
     }
 
 
@@ -265,14 +211,18 @@ class Scout
      * Removes models from Scout by ID in bounded native batches.
      *
      * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs
+     * @param array<string> $ids Search keys (variant IDs for pages)
      */
     public static function unindex( string $model, array $ids ) : void
     {
+        if( !$ids || !self::usesSearchIndex() ) {
+            return;
+        }
+
         $instance = new $model();
         $key = $instance->getScoutKeyName();
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), 50 ) as $chunk )
+        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
         {
             $items = $instance->newCollection( array_map(
                 fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
@@ -280,6 +230,27 @@ class Scout
             ) );
             $instance->queueRemoveFromSearch( $items );
         }
+    }
+
+
+    /**
+     * Whether changes of the model are synced to the search index.
+     *
+     * @param class-string<Model> $model Searchable model class
+     * @return bool TRUE if the search index is updated, FALSE if syncing is disabled
+     */
+    public static function syncs( string $model ) : bool
+    {
+        return self::usesSearchIndex() && !ModelObserver::syncingDisabledFor( new $model() );
+    }
+
+
+    /**
+     * Whether trashed items stay in the search index, which is the case if Scout soft deletes.
+     */
+    public static function keepsTrashed() : bool
+    {
+        return (bool) config( 'scout.soft_delete' );
     }
 
 

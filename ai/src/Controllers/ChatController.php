@@ -9,7 +9,6 @@ namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Tools as CmsTools;
@@ -79,11 +78,7 @@ class ChatController extends Controller
         $history = $this->history( $request->input( 'messages' ) );
         $system = view( 'cms::prompts.chat' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
 
-        $prisma = Prisma::text()->observe( Ai::observer( $editor, 'chat' ) )
-            ->using( config( 'cms.ai.write.provider' ), $config )
-            ->model( config( 'cms.ai.write.model' ) )
-            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' )] )
-            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+        $prisma = Ai::text( 'write', $editor, 'chat' )
             ->withSystemPrompt( $system . "\n" . (string) $request->input( 'context', '' ) )
             ->withTools( [
                 Tools::laravel( CmsTools\GetLocales::class )->max( 1 ),
@@ -152,12 +147,6 @@ class ChatController extends Controller
      */
     protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : void
     {
-        // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
-        // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
-        // still trips the provider's own read timeout first (a catchable PrismaException).
-        $limit = (int) ini_get( 'max_execution_time' );
-        set_time_limit( (int) config( 'cms.ai.timeout' ) );
-
         $send = function( ?string $text ) {
             // text() is null when the model ended on tool calls with no prose - nothing to send
             if( $text === null ) {
@@ -182,83 +171,83 @@ class ChatController extends Controller
             }
         };
 
-        try
-        {
-            if( $prisma->has( 'stream' ) )
+        // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
+        // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
+        // still trips the provider's own read timeout first (a catchable PrismaException).
+        Ai::lifted( function() use ( $prisma, $prompt, $config, $send ) {
+            try
             {
-                $buffer = '';
-                $prose = false;
-                $response = $prisma->ensure( 'stream' )->stream( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
-
-                // Coalesce deltas into ~40 char chunks (or one chunk per tool call) instead of flushing
-                // per token, then send whatever is left once the stream ends.
-                foreach( $response->stream() as $chunk )
+                if( $prisma->has( 'stream' ) )
                 {
-                    if( $chunk instanceof Step )
+                    $buffer = '';
+                    $prose = false;
+                    $response = $prisma->ensure( 'stream' )->stream( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
+
+                    // Coalesce deltas into ~40 char chunks (or one chunk per tool call) instead of flushing
+                    // per token, then send whatever is left once the stream ends.
+                    foreach( $response->stream() as $chunk )
                     {
-                        $path = $chunk->arguments()['path'] ?? null;
+                        if( $chunk instanceof Step )
+                        {
+                            $path = $chunk->arguments()['path'] ?? null;
 
-                        if( !$chunk->done() ) {
-                            // surface tool activity as a bold list item, with the page path in parentheses when known
-                            $send( "\n* **" . $chunk->name() . "**" . ( $path ? ' (/' . $path . ')' : '' ) . "\n" );
+                            if( !$chunk->done() ) {
+                                // surface tool activity as a bold list item, with the page path in parentheses when known
+                                $send( "\n* **" . $chunk->name() . "**" . ( $path ? ' (/' . $path . ')' : '' ) . "\n" );
+                            }
+                            continue;
                         }
-                        continue;
+
+                        $buffer .= (string) $chunk;
+                        $prose = true; // a real prose token streamed (tool steps alone don't count)
+
+                        // byte length is a fine "buffered enough?" gate and avoids multibyte scanning per token
+                        if( strlen( $buffer ) >= 40 ) {
+                            $send( $buffer );
+                            $buffer = '';
+                        }
                     }
 
-                    $buffer .= (string) $chunk;
-                    $prose = true; // a real prose token streamed (tool steps alone don't count)
-
-                    // byte length is a fine "buffered enough?" gate and avoids multibyte scanning per token
-                    if( strlen( $buffer ) >= 40 ) {
+                    if( $buffer !== '' ) {
                         $send( $buffer );
-                        $buffer = '';
+                    }
+
+                    // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
+                    // fake): send the assembled answer text. text() drains any unconsumed stream first; it's
+                    // null when the model ended on tool calls with no prose, which send() skips.
+                    if( !$prose ) {
+                        $send( $response->text() );
                     }
                 }
-
-                if( $buffer !== '' ) {
-                    $send( $buffer );
-                }
-
-                // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
-                // fake): send the assembled answer text. text() drains any unconsumed stream first; it's
-                // null when the model ended on tool calls with no prose, which send() skips.
-                if( !$prose ) {
+                else
+                {
+                    $response = $prisma->ensure( 'write' )->write( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
                     $send( $response->text() );
                 }
             }
-            else
+            catch( \Throwable $e )
             {
-                $response = $prisma->ensure( 'write' )->write( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
-                $send( $response->text() );
+                if( connection_aborted() ) {
+                    return; // client gone (or the disconnect we threw above) - just stop, nothing to report
+                }
+
+                // The response is already streaming (HTTP 200 sent), so surface the failure inline;
+                // Prisma errors expose their message, anything else stays generic.
+                $msg = $e instanceof PrismaException
+                    ? $e->getMessage()
+                    : 'An unexpected error occurred';
+
+                Log::error( 'Chat stream error', ['controller' => 'Chat', 'message' => $e->getMessage()] );
+
+                echo "\n\n**" . $msg . "**";
+
+                if( ob_get_level() > 0 ) {
+                    ob_flush();
+                }
+
+                flush();
             }
-
-        }
-        catch( \Throwable $e )
-        {
-            if( connection_aborted() ) {
-                return; // client gone (or the disconnect we threw above) - just stop, nothing to report
-            }
-
-            // The response is already streaming (HTTP 200 sent), so surface the failure inline;
-            // Prisma errors expose their message, anything else stays generic.
-            $msg = $e instanceof PrismaException
-                ? $e->getMessage()
-                : 'An unexpected error occurred';
-
-            Log::error( 'Chat stream error', ['controller' => 'Chat', 'message' => $e->getMessage()] );
-
-            echo "\n\n**" . $msg . "**";
-
-            if( ob_get_level() > 0 ) {
-                ob_flush();
-            }
-
-            flush();
-        }
-        finally
-        {
-            set_time_limit( $limit );
-        }
+        } );
     }
 
 

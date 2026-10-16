@@ -7,12 +7,14 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Illuminate\Support\Facades\Auth;
 use Nuwave\Lighthouse\Execution\ResolveInfo;
 
 
+/**
+ * Permanently deletes files.
+ */
 final class PurgeFile
 {
     /**
@@ -22,11 +24,8 @@ final class PurgeFile
      */
     public function __invoke( $rootValue, array $args, mixed $context = null, ?ResolveInfo $info = null ) : array
     {
-        return Resource::purge(
-            File::class,
-            $args['id'],
-            Auth::user(),
-            array_keys( $info?->getFieldSelection( 1 ) ?? [] ),
-        )->all();
+        $fields = array_keys( $info?->getFieldSelection( 1 ) ?? [] );
+
+        return Files::purgeMany( $args['id'], Auth::user(), $fields )->all();
     }
 }

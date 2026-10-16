@@ -20,7 +20,7 @@ use Monolog\Formatter\JsonFormatter;
  */
 class Watch
 {
-    public static function channel() : ?string
+    private static function channel() : ?string
     {
         $channel = config( 'cms.watch.channel' );
 
@@ -48,14 +48,29 @@ class Watch
         try {
             event( $factory() );
         } catch( \Throwable $e ) {
-            error_log( 'CMS watch event error: ' . $e->getMessage() );
+            self::failed( 'event', $e );
         }
     }
 
 
-    public static function duration( int|float|null $start ) : float
+    /**
+     * Writes a failure of the watch logging to the PHP error log.
+     *
+     * The PHP error log is used because the failure can originate from the log channel itself.
+     *
+     * @param string $context Failed part of the watch logging
+     * @param \Throwable $e Exception thrown while logging
+     */
+    private static function failed( string $context, \Throwable $e ) : void
     {
-        return $start !== null ? ( hrtime( true ) - $start ) / 1e6 : 0.0;
+        error_log( sprintf( "CMS watch %s error: %s (%s in %s:%d)\n%s", $context, $e->getMessage(),
+            get_class( $e ), $e->getFile(), $e->getLine(), $e->getTraceAsString() ) );
+    }
+
+
+    public static function duration( int|float $start ) : float
+    {
+        return ( hrtime( true ) - $start ) / 1e6;
     }
 
 
@@ -68,7 +83,7 @@ class Watch
     /**
      * Subscribes the log listener to several events when watch logging (and the optional feature flag) is enabled.
      *
-     * @param array<int|class-string, class-string> $events Loggable event classes or event class => listener class
+     * @param array<int, class-string> $events Loggable event classes
      * @param string|null $flag Feature flag config key gating the listeners, in addition to the channel
      */
     public static function listen( array $events, ?string $flag = null ) : void
@@ -77,11 +92,8 @@ class Watch
             return;
         }
 
-        foreach( $events as $event => $listener )
-        {
-            is_int( $event )
-                ? Event::listen( $listener, [LogListener::class, 'handle'] )
-                : Event::listen( $event, [$listener, 'handle'] );
+        foreach( $events as $event ) {
+            Event::listen( $event, [LogListener::class, 'handle'] );
         }
     }
 
@@ -101,7 +113,7 @@ class Watch
         try {
             Log::channel( $channel )->info( $message, self::fields( $fields ) );
         } catch( \Throwable $e ) {
-            error_log( 'CMS watch listener error: ' . $e->getMessage() );
+            self::failed( 'listener', $e );
         }
     }
 
@@ -119,8 +131,8 @@ class Watch
             ( $channel = self::channel() )
                 ? Log::channel( $channel )->warning( $message, $fields )
                 : Log::warning( $message, $fields );
-        } catch( \Throwable ) {
-            error_log( 'CMS watch warning error' );
+        } catch( \Throwable $e ) {
+            self::failed( 'warning', $e );
         }
     }
 
@@ -169,6 +181,30 @@ class Watch
         }
 
         return config( 'cms.watch.anonymize', true ) ? hash_hmac( 'sha256', $value, (string) config( 'app.key' ) ) : $value;
+    }
+
+
+    /**
+     * Gets or sets the originating interface for content changes in the current request.
+     *
+     * Used to tag audit events with their origin: the GraphQL and MCP entry points set 'graphql'
+     * resp. 'mcp', everything else (console commands, scheduled jobs) defaults to 'cli'. Stored on
+     * the request instance rather than a static, so it neither leaks between requests under Octane
+     * nor needs a reset.
+     *
+     * @param string|null $source Origin to set for this request, or null to only read it
+     * @return string The current origin, defaulting to 'cli'
+     */
+    public static function source( ?string $source = null ) : string
+    {
+        $request = request();
+
+        if( $source !== null ) {
+            $request->attributes->set( 'cms-source', $source );
+        }
+
+        $value = $request->attributes->get( 'cms-source', 'cli' );
+        return is_string( $value ) ? $value : 'cli';
     }
 
 

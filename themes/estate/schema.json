@@ -57,6 +57,7 @@
                 },
                 "reference": {
                     "type": "string",
+                    "translate": false,
                     "label": "Reference",
                     "hint": "Internal reference number of the property"
                 },
@@ -131,11 +132,13 @@
                 },
                 "address": {
                     "type": "string",
+                    "translate": false,
                     "label": "Address",
                     "hint": "Street and house number"
                 },
                 "zip_code": {
                     "type": "string",
+                    "translate": false,
                     "label": "Post code",
                     "hint": "Postal code of the property"
                 },
@@ -148,6 +151,7 @@
                 },
                 "currency": {
                     "type": "string",
+                    "translate": false,
                     "default": "EUR",
                     "min": 3,
                     "max": 3,
@@ -231,6 +235,7 @@
                 },
                 "area_unit": {
                     "type": "string",
+                    "translate": false,
                     "default": "m²",
                     "max": 16,
                     "required": true,

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\JsonApi\V1\Navs;
 
-use Aimeos\Cms\Concerns\ResolvesFiles;
+use Aimeos\Cms\JsonApi\V1\CmsSchema;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Permission;
@@ -20,26 +20,10 @@ use LaravelJsonApi\Eloquent\Fields\DateTime;
 use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\ID;
-use LaravelJsonApi\Eloquent\Schema;
 
 
-class NavSchema extends Schema
+class NavSchema extends CmsSchema
 {
-    use ResolvesFiles;
-    /**
-     * Default page value if no pagination was sent by the client.
-     *
-     * @var array<string, mixed>|null
-     */
-    protected ?array $defaultPagination = ['number' => 1];
-
-    /**
-     * The maximum depth of include paths.
-     *
-     * @var int
-     */
-    protected int $maxDepth = 1;
-
     /**
      * The model the schema corresponds to.
      *
@@ -53,29 +37,6 @@ class NavSchema extends Schema
      * @var string|null
      */
     protected ?string $uriType = 'pages';
-
-
-    /**
-     * Schema constructor.
-     *
-     * @param \LaravelJsonApi\Contracts\Server\Server $server
-     */
-    public function __construct( \LaravelJsonApi\Contracts\Server\Server $server )
-    {
-        parent::__construct( $server );
-        $this->maxDepth = config( 'cms.jsonapi.maxdepth', 1 );
-    }
-
-
-    /**
-     * Determine if the resource is authorizable.
-     *
-     * @return bool
-     */
-    public function authorizable(): bool
-    {
-        return false;
-    }
 
 
     /**
@@ -98,8 +59,7 @@ class NavSchema extends Schema
             DateTime::make( 'createdAt' )->readOnly(),
             DateTime::make( 'updatedAt' )->readOnly(),
             ArrayHash::make( 'config' )->readOnly()->extractUsing( function( $model, $column, $items ) {
-                $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
-                return $this->resolveFiles( $model, $version ? $version->aux->config : $items );
+                return $this->resolveFiles( $model, $this->aux( $model, 'config', $items ) );
             } ),
             HasMany::make( 'children' )->type( 'navs' )->readOnly()->serializeUsing(
                 static fn($relation) => $relation->withoutLinks()

@@ -67,7 +67,7 @@ customization required by the upstream Cashier package.
 Pagible's normal tenancy rule still applies. Without tenancy configuration, any
 authenticated user belongs to the default tenant. In a tenant-aware application,
 the user's `tenant_id` must match the active tenant unless the application
-deliberately overrides `Tenancy::$access`.
+deliberately overrides the check with `Tenancy::allowsUsing()`.
 
 Each provider package installs the shared Pagible integration and exactly one
 upstream Cashier package. Composer conflicts prevent another Pagible adapter or
@@ -240,6 +240,13 @@ webhook fails for retry instead of substituting local receipt time.
 Source lookup indexes keep webhook resolution bounded.
 The Mollie adapter adds its required customer and mandate columns to `users`;
 the shared integration knows nothing about them.
+
+With `cms.multidomain` enabled, checkout only accepts pricing content
+published for the request's domain or for all domains. The domain is taken
+from the `Host` header, so configure Laravel's trusted hosts (the `TrustHosts`
+middleware, e.g. `$middleware->trustHosts()` in `bootstrap/app.php`) or
+restrict the accepted host names in your web server. Otherwise, a buyer could
+send another domain's host name and pay that domain's price.
 
 Stripe redirects to its hosted checkout. Paddle creates the transaction and
 binds the signed CMS metadata on the server, then exposes only the transaction

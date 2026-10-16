@@ -41,6 +41,7 @@ class AiServiceProvider extends Provider
             \Aimeos\Cms\Mcp\CmsServer::register( [
                 \Aimeos\Cms\Tools\RefineContent::class,
                 \Aimeos\Cms\Tools\TranslateContent::class,
+                \Aimeos\Cms\Tools\TranslatePage::class,
                 \Aimeos\Cms\Tools\DescribeFile::class,
                 \Aimeos\Cms\Tools\TranscribeAudio::class,
                 \Aimeos\Cms\Tools\GenerateImage::class,

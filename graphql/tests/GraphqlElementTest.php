@@ -41,8 +41,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $expected = [
             'id' => $element->id,
             'data' => $element->data,
-            'bypages' => $element->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
-            'byversions' => $element->byversions->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'bypages' => $element->bypages->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
+            'byversions' => $element->byversions->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
             'versions' => $element->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $element->created_at,
             'updated_at' => (string) $element->updated_at,
@@ -75,6 +75,8 @@ class GraphqlElementTest extends GraphqlTestAbstract
 
         $elementData = $response->json('data.element');
         $elementData['data'] = json_decode( $elementData['data'] );
+        $elementData['bypages'] = collect( $elementData['bypages'] )->sortBy( 'id' )->values()->all();
+        $elementData['byversions'] = collect( $elementData['byversions'] )->sortBy( 'id' )->values()->all();
 
         $this->assertEquals($expected, $elementData);
     }
@@ -561,7 +563,7 @@ class GraphqlElementTest extends GraphqlTestAbstract
         $element = Element::where( 'type', 'footer' )->firstOrFail();
         $element->delete();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepElement(id: ["' . $element->id . '"]) {
@@ -606,6 +608,36 @@ class GraphqlElementTest extends GraphqlTestAbstract
                 ]],
             ]
         ] );
+    }
+
+
+    public function testPubElementOverride()
+    {
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+        $published = [];
+
+        // resources bound by the application are used by the GraphQL mutations too
+        $this->app->singleton( \Aimeos\Cms\Resource\Elements::class, function() use ( &$published ) {
+            return new class( $published ) extends \Aimeos\Cms\Resource\Elements {
+                public function __construct( private array &$published ) {}
+
+                public function publishMany( array $ids, ?\Illuminate\Contracts\Auth\Authenticatable $user = null, ?string $at = null ) : \Illuminate\Support\Collection
+                {
+                    $this->published = $ids;
+                    return parent::publishMany( $ids, $user, $at );
+                }
+            };
+        } );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                pubElement(id: ["' . $element->id . '"]) {
+                    id
+                }
+            }
+        ' )->assertJson( ['data' => ['pubElement' => [['id' => (string) $element->id]]]] );
+
+        $this->assertSame( [(string) $element->id], $published );
     }
 
 

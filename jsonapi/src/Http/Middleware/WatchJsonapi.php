@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Http\Middleware;
 
 use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Closure;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class WatchJsonapi
         $response = $next( $request );
 
         $action = $this->action( $request );
-        $domain = $this->domain( $request );
+        $domain = Utils::domain();
         $duration = Watch::duration( $start );
         $tenant = Tenancy::value();
 
@@ -71,18 +72,6 @@ class WatchJsonapi
         $uri = $route instanceof Route ? $route->uri() : '';
 
         return str_contains( $uri, '{' ) ? 'jsonapi:read' : 'jsonapi:search';
-    }
-
-
-    /**
-     * Returns the requested domain (the host) when multi-domain routing is enabled.
-     *
-     * The JSON:API routes are not bound to a "{domain}" parameter, so the domain is taken from
-     * the request host the same way the page cache and sitemap resolve it.
-     */
-    protected function domain( Request $request ) : string
-    {
-        return config( 'cms.multidomain' ) ? $request->getHost() : '';
     }
 
 

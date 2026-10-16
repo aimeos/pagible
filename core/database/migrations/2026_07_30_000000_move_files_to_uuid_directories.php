@@ -6,6 +6,7 @@
 
 
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Database\Connection;
@@ -33,6 +34,12 @@ return new class extends Migration
     public function up(): void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+
+        // only for the table structure before the page variants were introduced
+        if( $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ) {
+            return;
+        }
+
         $tenants = $db->table( 'cms_files' )->distinct()->pluck( 'tenant_id' )
             ->map( strval(...) )->sortBy( fn( string $tenant ) => $tenant === '' ? 1 : 0 );
 
@@ -54,7 +61,7 @@ return new class extends Migration
     private function copy( Connection $db, string $tenant ): void
     {
         $this->files( $db, $tenant, function( object $file, iterable $versions ) use ( $tenant ) {
-            $storage = Storage::disk( File::diskName( (string) $file->disk ) );
+            $storage = Storage::disk( FileStorage::diskName( (string) $file->disk ) );
 
             foreach( $this->paths( $file, $versions, $tenant ) as $source )
             {
@@ -230,7 +237,7 @@ return new class extends Migration
      */
     private function target( string $tenant, string $id, string $path ): string
     {
-        if( File::owns( $tenant, $id, $path ) ) {
+        if( FileStorage::owns( $tenant, $id, $path ) ) {
             return $path;
         }
 
@@ -271,12 +278,12 @@ return new class extends Migration
         $changed = false;
 
         $this->files( $db, $tenant, function( object $file, iterable $versions ) use ( &$changed, $db, $tenant ) {
-            $storage = Storage::disk( File::diskName( (string) $file->disk ) );
+            $storage = Storage::disk( FileStorage::diskName( (string) $file->disk ) );
             $id = (string) $file->id;
 
             foreach( $this->paths( $file, $versions, $tenant ) as $source )
             {
-                if( File::owner( $tenant, $source ) !== null ) {
+                if( FileStorage::owner( $tenant, $source ) !== null ) {
                     continue;
                 }
 

@@ -82,7 +82,7 @@ class PulseServiceProvider extends Provider
     {
         if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
             Gate::define( 'viewPulse', fn( $user ) => Permission::can( self::VIEW_PERMISSION, $user )
-                && ( Tenancy::value() !== '' || Tenancy::$callback === null ) );
+                && ( Tenancy::value() !== '' || !Tenancy::configured() ) );
         }
     }
 }

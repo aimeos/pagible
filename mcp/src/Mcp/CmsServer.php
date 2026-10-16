@@ -55,6 +55,7 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\DropPage::class,
         \Aimeos\Cms\Tools\RestorePage::class,
         \Aimeos\Cms\Tools\MovePage::class,
+        \Aimeos\Cms\Tools\CopyPage::class,
 
         // Write tools - Elements
         \Aimeos\Cms\Tools\AddElement::class,
@@ -99,7 +100,7 @@ class CmsServer extends Server
         $this->tools = array_merge( $this->tools, static::$registered );
 
         // Tag content changes made through MCP tools as 'mcp' for the audit log.
-        Utils::source( 'mcp' );
+        Watch::source( 'mcp' );
     }
 
 
@@ -132,7 +133,7 @@ class CmsServer extends Server
             action: $action,
             durationMs: Watch::duration( $start ),
             dimensions: [
-                'domain' => config( 'cms.multidomain' ) ? request()->getHost() : '',
+                'domain' => Utils::domain(),
                 'success' => $success,
             ],
         );

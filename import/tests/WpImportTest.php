@@ -7,9 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -76,11 +77,11 @@ class WpImportTest extends ImportTestAbstract
             'data' => ['text' => 'Shared footer'],
             'editor' => 'test',
         ] );
-        $blog->forceFill( ['content' => [[
+        $blog->variant->update( ['content' => [[
             'type' => 'reference',
             'refid' => $footer->id,
             'group' => 'footer',
-        ]]] )->saveQuietly();
+        ]]] );
         $blog->elements()->attach( $footer->id );
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->insert( [
@@ -106,15 +107,15 @@ class WpImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->firstOrFail();
+        $article = PageView::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->firstOrFail();
 
         $this->assertSame( $blog->id, $article->parent_id );
         $this->assertSame( 'pagible', $article->theme );
-        $this->assertSame( 'pagible', Page::whereKey( $blog->id )->firstOrFail()->theme );
-        $this->assertSame( 0, Page::where( 'parent_id', $oldBlog->id )->count() );
+        $this->assertSame( 'pagible', PageView::whereKey( $blog->id )->firstOrFail()->theme );
+        $this->assertSame( 0, PageView::where( 'parent_id', $oldBlog->id )->count() );
         $this->assertSame( 1, $article->versions()->count() );
 
-        $article->appendToNode( Page::whereKey( $root->id )->firstOrFail() )->save();
+        $article->page->appendToNode( Page::findOrFail( $root->id ) )->save();
 
         DB::connection( 'wordpress' )->table( 'wp_posts' )->where( 'ID', 1 )->update( [
             'post_date' => '2026-02-03 04:05:06',
@@ -133,7 +134,7 @@ class WpImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $updated = Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->firstOrFail();
+        $updated = PageView::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->firstOrFail();
         $content = (array) $updated->content;
 
         $this->assertSame( $article->id, $updated->id );
@@ -145,7 +146,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( $footer->id, $content[2]->refid ?? null );
         $this->assertSame( 'footer', $content[2]->group ?? null );
         $this->assertSame( [$footer->id], $updated->elements()->pluck( 'cms_elements.id' )->all() );
-        $this->assertSame( 1, Page::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->count() );
+        $this->assertSame( 1, PageView::where( 'domain', 'new.example' )->where( 'path', 'example-post' )->count() );
         $this->assertSame( 2, $updated->versions()->count() );
     }
 
@@ -212,9 +213,9 @@ class WpImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'media-post' )->first();
-        $this->assertInstanceOf( Page::class, $article, Artisan::output() );
-        $blog = Page::where( 'domain', 'new.example' )->where( 'path', 'tips' )->firstOrFail();
+        $article = PageView::where( 'domain', 'new.example' )->where( 'path', 'media-post' )->first();
+        $this->assertInstanceOf( PageView::class, $article, Artisan::output() );
+        $blog = PageView::where( 'domain', 'new.example' )->where( 'path', 'tips' )->firstOrFail();
         $local = File::where( 'path', 'not like', 'http%' )->get();
         $external = File::where( 'path', 'https://cdn.example/external.png' )->firstOrFail();
         $cover = File::where( 'name', 'Cover' )->firstOrFail();
@@ -273,7 +274,7 @@ class WpImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'columns' )->firstOrFail();
+        $article = PageView::where( 'domain', 'new.example' )->where( 'path', 'columns' )->firstOrFail();
         $content = array_values( (array) $article->content );
 
         $this->assertSame( 'heading', $content[1]->type ?? null );
@@ -310,7 +311,7 @@ class WpImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $result );
 
-        $article = Page::where( 'domain', 'new.example' )->where( 'path', 'inline-cover' )->firstOrFail();
+        $article = PageView::where( 'domain', 'new.example' )->where( 'path', 'inline-cover' )->firstOrFail();
         $content = array_values( (array) $article->content );
         $lead = $content[0];
         $firstImage = $content[1];
@@ -321,9 +322,12 @@ class WpImportTest extends ImportTestAbstract
     }
 
 
-    protected function page( string $name, string $path, string $domain, string $tag, ?Page $parent = null ): Page
+    protected function page( string $name, string $path, string $domain, string $tag, ?PageView $parent = null ): PageView
     {
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $parent ? $node->appendToNode( Page::findOrFail( $parent->id ) )->save() : $node->save();
+
+        $page = $node->variants()->create( [
             'name' => $name,
             'title' => $name,
             'path' => $path,
@@ -332,11 +336,7 @@ class WpImportTest extends ImportTestAbstract
             'tag' => $tag,
             'status' => 1,
             'editor' => 'test',
-        ] );
-
-        if( $parent ) {
-            $page->appendToNode( $parent )->save();
-        }
+        ] )->view;
 
         return $page;
     }

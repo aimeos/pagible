@@ -10,7 +10,8 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Utils;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
@@ -102,9 +103,9 @@ class Presenter
      */
     public static function item( Base $item, bool $link = false ) : array
     {
-        if( $link && $item instanceof Page ) {
+        if( $link && $item instanceof PageView ) {
             return ['id' => $item->id, 'latest_id' => $item->latest_id, 'parent_id' => $item->parent_id]
-                + $item->toArray() + ['url' => self::url( $item->path, $item->domain )];
+                + $item->toArray() + ['url' => Utils::pageUrl( $item->path, $item->domain )];
         }
 
         return ['id' => $item->id, 'latest_id' => $item->latest_id] + $item->toArray();
@@ -114,11 +115,11 @@ class Presenter
     /**
      * Returns the draft state of a page.
      *
-     * @param Page $item Page with its "latest" version relation loaded
+     * @param PageView $item Page with its "latest" version relation loaded
      * @param bool $full TRUE to include all version data, content, meta, config and publication state, FALSE for list entries
      * @return array<string, mixed> Page data
      */
-    public static function page( Page $item, bool $full = true ) : array
+    public static function page( PageView $item, bool $full = true ) : array
     {
         $version = $item->latest;
         $data = (array) ( $version->data ?? [] );
@@ -151,14 +152,24 @@ class Presenter
             ] );
         }
 
-        return $result + self::meta( $item ) + ['url' => self::url( $data['path'] ?? '', $data['domain'] ?? null )];
+        // language variant state, only if the columns are selected
+        $attr = $item->getAttributes();
+
+        foreach( ['source', 'stale'] as $name )
+        {
+            if( array_key_exists( $name, $attr ) ) {
+                $result[$name] = $item->getAttribute( $name );
+            }
+        }
+
+        return $result + self::meta( $item ) + ['url' => Utils::pageUrl( $data['path'] ?? '', $data['domain'] ?? null )];
     }
 
 
     /**
      * Returns the published and skipped items of a publish request.
      *
-     * @param Collection<int, Base> $items Items returned by Publication::publish()
+     * @param Collection<int, covariant Base> $items Items returned by the publishMany() methods of the resources
      * @param array<int, string> $ids Requested IDs
      * @param string|null $at Scheduled publish date or NULL for immediate publishing
      * @return array{published: array<int, array<string, mixed>>, skipped: array<int, array<string, mixed>>} Publish result
@@ -176,7 +187,7 @@ class Presenter
             } elseif( $at ) {
                 $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' ), 'scheduled_at' => $at];
             } else {
-                $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' )] + ( $item instanceof Page ? ['path' => $item->path] : [] );
+                $published[] = ['id' => $item->id, 'name' => $item->getAttribute( 'name' )] + ( $item instanceof PageView ? ['path' => $item->path] : [] );
             }
         }
 
@@ -192,7 +203,7 @@ class Presenter
      * Returns the selected columns of the related records as plain arrays.
      *
      * @param Relation<*, *, *> $relation Relation of the model, e.g. $file->bypages()
-     * @param string ...$cols Columns to select, e.g. "cms_pages.id"
+     * @param string ...$cols Columns to select, e.g. "cms_page_view.id"
      * @return array<int, array<string, mixed>> List of records
      */
     public static function rows( Relation $relation, string ...$cols ) : array
@@ -218,34 +229,19 @@ class Presenter
     /**
      * Returns the version and timestamp fields shared by all draft structures.
      *
-     * @param Element|File|Page $item Model with its "latest" version relation loaded
+     * @param Element|File|PageView $item Model with its "latest" version relation loaded
      * @return array<string, mixed> Language, editor, deletion state and timestamps
      */
-    protected static function meta( Element|File|Page $item ) : array
+    protected static function meta( Element|File|PageView $item ) : array
     {
         $version = $item->latest;
 
         return [
             'lang' => $version->lang ?? '',
             'editor' => $version->editor ?? '',
-            'deleted' => $item->trashed(),
+            'deleted' => $item->trashed() || ( $item->getAttributes()['variant_deleted_at'] ?? null ) !== null,
             'created_at' => $item->created_at?->format( 'Y-m-d H:i:s' ),
             'updated_at' => ( $version->created_at ?? $item->updated_at )?->format( 'Y-m-d H:i:s' ),
         ];
-    }
-
-
-    /**
-     * Returns the frontend URL of a page.
-     *
-     * @param string|null $path Page URL path
-     * @param string|null $domain Page domain, the current host is used if empty
-     * @return string Absolute page URL
-     */
-    protected static function url( ?string $path, ?string $domain = null ) : string
-    {
-        return route( 'cms.page', ( config( 'cms.multidomain' ) ? [
-            'domain' => $domain ?: request()->getHost(),
-        ] : [] ) + ['path' => (string) $path] );
     }
 }

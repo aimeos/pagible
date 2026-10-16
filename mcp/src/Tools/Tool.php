@@ -44,13 +44,14 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
     final public function handle( Request $request ) : ResponseFactory
     {
         if( !$this->allowed( $request->user() ) ) {
-            throw new \Aimeos\Cms\Exception( 'Insufficient permissions' );
+            throw new \Aimeos\Cms\Exceptions\PermissionException( 'Insufficient permissions' );
         }
 
         try {
             return $this->run( $request );
         } catch( ModelNotFoundException $e ) {
-            return Response::structured( ['error' => class_basename( $e->getModel() ) . ' not found.'] );
+            $name = $e->getModel() === \Aimeos\Cms\Models\PageView::class ? 'Page' : class_basename( $e->getModel() );
+            return Response::structured( ['error' => $name . ' not found.'] );
         } catch( \Aimeos\Cms\Exception $e ) {
             return Response::structured( ['error' => $e->getMessage()] );
         }

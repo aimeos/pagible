@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\PageInvalidated;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,16 +40,15 @@ class GraphqlCacheTest extends GraphqlTestAbstract
 
     public function testClearsPageSubtree(): void
     {
-        $root = Page::where( 'tag', 'disabled' )->firstOrFail();
-        $root2 = Page::where( 'tag', 'hidden' )->firstOrFail();
-        Page::query()
+        $root = PageView::where( 'tag', 'disabled' )->firstOrFail();
+        $root2 = PageView::where( 'tag', 'hidden' )->firstOrFail();
+        PageView::query()
             ->where( NestedSet::LFT, '>', $root->getLft() )
             ->where( NestedSet::RGT, '<', $root->getRgt() )
-            ->firstOrFail()
-            ->update( ['domain' => 'other.example'] );
-        $root2->update( ['domain' => 'another.example'] );
+            ->firstOrFail()->variant->update( ['domain' => 'other.example'] );
+        $root2->variant->update( ['domain' => 'another.example'] );
         $ids = [$root->id, $root2->id];
-        $roots = Page::query()
+        $roots = PageView::query()
             ->withTrashed()
             ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
             ->whereIn( 'id', $ids )
@@ -57,7 +56,7 @@ class GraphqlCacheTest extends GraphqlTestAbstract
 
         $pages = collect();
         foreach( $roots as $node ) {
-            $pages = $pages->merge( Page::query()
+            $pages = $pages->merge( PageView::query()
                 ->withTrashed()
                 ->whereBetween( NestedSet::LFT, [(int) $node->getAttribute( NestedSet::LFT ), (int) $node->getAttribute( NestedSet::RGT )] )
                 ->get( ['domain', 'path'] )
@@ -100,7 +99,7 @@ class GraphqlCacheTest extends GraphqlTestAbstract
 
     public function testRequiresClearPermission(): void
     {
-        $page = Page::where( 'tag', 'disabled' )->firstOrFail();
+        $page = PageView::where( 'tag', 'disabled' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
 
         $this->actingAs( $user )->graphQL( '

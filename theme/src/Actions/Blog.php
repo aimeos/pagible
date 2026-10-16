@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Actions;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Http\Request;
 
@@ -23,13 +23,14 @@ class Blog
      * Returns the blog articles
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Aimeos\Cms\Models\Page $page
+     * @param \Aimeos\Cms\Models\PageView $page
      * @param object $item
-     * @return \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page>
+     * @return \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\PageView>
      */
-    public function __invoke( Request $request, Page $page, object $item ): \Illuminate\Pagination\LengthAwarePaginator
+    public function __invoke( Request $request, PageView $page, object $item ): \Illuminate\Pagination\LengthAwarePaginator
     {
-        $sort = $item->data->order ?? '-id';
+        // newest first by default, sorting by the creation date of the variants uses their index
+        $sort = $item->data->order ?? '-created_at';
         $order = $sort[0] === '-' ? substr( $sort, 1 ) : $sort;
         $dir = $sort[0] === '-' ? 'desc' : 'asc';
 
@@ -37,19 +38,33 @@ class Blog
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
 
-        $builder = Page::whereIn( 'status', [1, 2] )->with( $with )->orderBy( $order, $dir );
-
-        if( $pid = $item->data->{'parent-page'}->value ?? null ) {
-            $builder->where( 'parent_id', $pid );
-        }
-
-        if( $editor ) {
-            $builder->whereLatest( ['type' => $this->type] );
-        } else {
-            $builder->where( 'type', $this->type );
-        }
-
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
+
+        $filter = function( $builder ) use ( $item, $page, $editor ) {
+            $builder->whereIn( 'status', [1, 2] );
+
+            if( $pid = $item->data->{'parent-page'}->value ?? null ) {
+                $builder->where( 'parent_id', $pid );
+            } else {
+                $builder->where( 'domain', (string) $page->domain );
+            }
+
+            $editor ? $builder->whereLatest( ['type' => $this->type] ) : $builder->where( 'type', $this->type );
+            return $builder;
+        };
+
+        // list the articles in the language of the current page, see "cms.translate.fallback"
+        if( is_string( $page->lang ) && $page->lang !== '' && PageView::fallbackToSource() ) {
+            // only the listed columns and those used by the scopes and the order are copied
+            $cols = array_values( array_unique( [...$attr, 'variant_id', 'tenant_id', 'deleted_at', 'status', $order] ) );
+            $builder = $this->fallback( $filter, $page->lang, $editor, $cols );
+        } else {
+            $page->localize( $builder = PageView::query() );
+            $filter( $builder );
+        }
+
+        $builder->with( $with )->orderBy( $order, $dir );
+
         $pages = $builder->paginate( $item->data->limit ?? 10, $attr, 'p' );
         $request->attributes->set( 'cms.pagination', $pages->currentPage() );
 
@@ -79,5 +94,35 @@ class Blog
         } );
 
         return $pages;
+    }
+
+
+    /**
+     * Returns the query for the articles in the language or in the source language if they aren't translated.
+     *
+     * The fallback condition of the page view can't use an index, so the articles in the language and the
+     * untranslated ones in the source language are read by two indexed queries combined by UNION ALL.
+     * Editors see the source variants of pages without a variant in the language, visitors also of pages
+     * whose variant isn't enabled, like PageQuery::localized() does.
+     *
+     * @param \Closure $filter Adds the conditions for the articles to the passed query
+     * @param string $lang Language code
+     * @param bool $editor TRUE for editors, FALSE for visitors
+     * @param list<string> $cols Columns of the combined rows
+     * @return \Aimeos\Cms\Query\PageQuery<PageView> Query for the articles
+     */
+    protected function fallback( \Closure $filter, string $lang, bool $editor, array $cols ) : \Aimeos\Cms\Query\PageQuery
+    {
+        $translated = $filter( PageView::select( $cols )->language( $lang )->when( !$editor, fn( $q ) => $q->where( 'status', '<>', 0 ) ) );
+
+        $source = $filter( PageView::select( $cols )->language( null )->where( 'lang', '<>', $lang )
+            ->whereNotExists( fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants as m' )
+                ->whereColumn( 'm.page_id', 'cms_page_view.id' )
+                ->where( 'm.lang', $lang )
+                ->whereNull( 'm.deleted_at' )
+                ->when( !$editor, fn( $q ) => $q->where( 'm.status', '<>', 0 ) ) ) );
+
+        // the scopes are applied to both parts, from() also removes the variant condition of the outer query
+        return PageView::query()->from( $translated->toBase()->unionAll( $source->toBase() ), 'cms_page_view' );
     }
 }

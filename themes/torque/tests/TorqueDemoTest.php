@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TorqueDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,18 +24,16 @@ class TorqueDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new TorqueDemo( 'torque', 'torque' ) )->seed();
-        Tenancy::$callback = fn() => 'torque';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'torque' );
     }
 
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'torque::garage'}->data->{'action-bar'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -43,12 +41,12 @@ class TorqueDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $tips = Page::where( 'path', 'tips' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $tips = PageView::where( 'path', 'tips' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $tips->id ) );
-        $this->assertSame( 'torque', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'torque', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

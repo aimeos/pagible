@@ -7,11 +7,13 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Publication;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Support\Facades\Auth;
 
 
+/**
+ * Publishes elements.
+ */
 final class PubElement
 {
     /**
@@ -21,6 +23,6 @@ final class PubElement
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return Publication::publish( Element::class, $args['id'], Auth::user(), $args['at'] ?? null )->all();
+        return Elements::publishMany( $args['id'], Auth::user(), $args['at'] ?? null )->all();
     }
 }

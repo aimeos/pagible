@@ -8,8 +8,8 @@
 namespace Aimeos\Cms\Listeners;
 
 use Aimeos\Cms\Events\Bulk;
+use Aimeos\Cms\Events\Change;
 use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Jobs\BaseDelivery;
 use Aimeos\Cms\Jobs\DeliverEndpoint;
 use Aimeos\Cms\Jobs\DeliverWebhook;
@@ -33,7 +33,7 @@ class WebhookListener
     public function handle( Event|Bulk $event ) : void
     {
         if( !( $name = $this->name( $event ) )
-            || !( $tenant = $event->tenant ) && \Aimeos\Cms\Tenancy::$callback !== null
+            || !( $tenant = $event->tenant ) && \Aimeos\Cms\Tenancy::configured()
         ) {
             return;
         }
@@ -124,26 +124,15 @@ class WebhookListener
      */
     private function data( Event|Bulk $event ) : array
     {
-        if( $event instanceof Bulk ) {
-            return array_map( fn( string $id ) => [
-                'id' => $id,
-                'version_id' => $event->projected[$id] ?? $event->latest[$id] ?? '',
-            ], $event->ids );
-        }
+        $refs = array_map( fn( Change $change ) => array_filter( [
+            'id' => $change->id,
+            'version_id' => $change->versionId,
+            'path' => $change->path,
+            'domain' => $change->domain,
+            'lang' => $change->lang,
+        ], fn( $value ) => $value !== null ), $event->changes() );
 
-        $projection = $event instanceof Published ? $event->projection : [];
-        $versionId = $projection['version_id'] ?? $event->latest_id;
-        $data = ['id' => $event->id, 'version_id' => $versionId];
-
-        if( $event->contentType === 'page' ) {
-            foreach( ['path', 'domain'] as $field ) {
-                if( is_string( $value = ( $projection ?: $event->data )[$field] ?? null ) ) {
-                    $data[$field] = $value;
-                }
-            }
-        }
-
-        return $data;
+        return $event instanceof Bulk ? $refs : $refs[0];
     }
 
 
@@ -151,10 +140,8 @@ class WebhookListener
     {
         $action = $event instanceof Bulk ? $event->action : strtolower( class_basename( $event ) );
 
-        if( $action === 'published' && ( $event instanceof Bulk
-            ? ( $event->data['published'] ?? false ) !== true
-            : !( $event instanceof Published && ( $event->published || $event->projection !== [] ) )
-        ) ) {
+        // only versions which became public are publications for webhooks, scheduled ones aren't
+        if( $action === 'published' && !( $event->changes()[0]->published ?? false ) ) {
             return null;
         }
 

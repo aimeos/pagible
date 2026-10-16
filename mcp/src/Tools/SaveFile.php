@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -35,7 +35,7 @@ class SaveFile extends Tool
         $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:255',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'description' => 'array',
             'latest_id' => 'required|string|max:36',
             'content' => 'string|max:8388608',
@@ -48,7 +48,7 @@ class SaveFile extends Tool
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id', 'content'] ) );
 
         $file = $this->source( $v, fn( ?UploadedFile $upload ) =>
-            Resource::saveFile( $v['id'], $input, $request->user(), $v['latest_id'], $upload )
+            Files::save( $v['id'], $input, $request->user(), $v['latest_id'], $upload )
         );
 
         return Response::structured( Presenter::saved( Presenter::file( $file ), $file ) );

@@ -12,8 +12,9 @@ use Aimeos\Cms\Events\Moved;
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Saved;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 use Database\Seeders\TestSeeder;
@@ -58,7 +59,7 @@ class WatchTest extends CoreTestAbstract
 
         $id = $this->id( $page );
 
-        Resource::savePage( $id, ['title' => 'Renamed'], $this->user );
+        Pages::save( $id, ['title' => 'Renamed'], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( 'page', $captured[0]->contentType );
@@ -78,7 +79,7 @@ class WatchTest extends CoreTestAbstract
             $captured = $e;
         } );
 
-        Resource::savePage( $this->id( $page ), ['title' => 'X'], $this->user );
+        Pages::save( $this->id( $page ), ['title' => 'X'], $this->user );
 
         $this->assertNotNull( $captured );
         $this->assertFalse( $captured->broadcasting );
@@ -168,7 +169,7 @@ class WatchTest extends CoreTestAbstract
         $id1 = $this->id( $page1 );
         $id2 = $this->id( $page2 );
 
-        Resource::bulkPage( [$id1, $id2], ['title' => 'Renamed'], $this->user );
+        Pages::bulk( [$id1, $id2], ['title' => 'Renamed'], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( 'page', $captured[0]->contentType );
@@ -190,41 +191,44 @@ class WatchTest extends CoreTestAbstract
 
         $id = $this->id( $page );
 
-        Resource::purge( Page::class, [$id], $this->user );
+        Pages::purgeMany( [$id], $this->user );
 
         $this->assertCount( 1, $captured );
         $this->assertSame( $id, $captured[0]->id );
     }
 
 
-    public function testNoEventWhenNothingListensAndBroadcastOff() : void
+    public function testEventOnlyAnnouncedWhenListenedOrFaked() : void
     {
         $page = $this->page();
         config( ['cms.broadcast' => false] );
+        $this->assertFalse( Base::announces( Moved::class ) );
+
         Event::fake( [Moved::class] );
+        $this->assertTrue( Base::announces( Moved::class ) );
 
-        Resource::movePage( $this->id( $page ), parent: $this->id( $this->root() ), user: $this->user );
+        Pages::move( $this->id( $page ), $this->user, parent: $this->id( $this->root() ) );
 
-        Event::assertNotDispatched( Moved::class );
+        Event::assertDispatched( Moved::class, fn( Moved $e ) => !$e->broadcastWhen() );
     }
 
 
-    protected function page() : Page
+    protected function page() : PageView
     {
-        return Resource::addPage( [
+        return Pages::add( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'watch-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: $this->id( $this->root() ) );
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 
-    private function id( Page $page ) : string
+    private function id( PageView $page ) : string
     {
         if( !is_string( $page->id ) ) {
             throw new \RuntimeException( 'Page ID is missing.' );

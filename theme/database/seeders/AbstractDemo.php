@@ -7,10 +7,12 @@
 
 namespace Database\Seeders;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
@@ -58,15 +60,14 @@ abstract class AbstractDemo
      */
     public function seed() : void
     {
-        Tenancy::$callback = fn() => $this->tenant;
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => $this->tenant );
 
         File::where( 'tenant_id', $this->tenant )->forceDelete();
         Version::where( 'tenant_id', $this->tenant )->forceDelete();
         Element::where( 'tenant_id', $this->tenant )->forceDelete();
-        Page::where( 'tenant_id', $this->tenant )->forceDelete();
+        Page::withTrashed()->where( 'tenant_id', $this->tenant )->whereIsRoot()->get()->each->forceDelete();
 
-        Page::withoutSyncingToSearch( function() {
+        PageView::withoutSyncingToSearch( function() {
             Element::withoutSyncingToSearch( function() {
                 File::withoutSyncingToSearch( function() {
                     $this->pages();
@@ -74,9 +75,7 @@ abstract class AbstractDemo
             } );
         } );
 
-        Page::makeAllSearchable();
-        Element::makeAllSearchable();
-        File::makeAllSearchable();
+        Scout::rebuild();
     }
 
 
@@ -311,17 +310,17 @@ abstract class AbstractDemo
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param string $elementId Shared footer element ID
      * @param string $fileId Default social media file ID
      * @param array<int, array<string, mixed>> $footer Footer content elements
      * @param string $keywords Meta keywords
      * @param array<int, string> $fileIds Additional file IDs to attach
      * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function savePage( array $data, array $content, Page $parent, string $elementId, string $fileId,
-        array $footer, string $keywords, array $fileIds = [], array $meta = [] ) : Page
+    protected function savePage( array $data, array $content, PageView $parent, string $elementId, string $fileId,
+        array $footer, string $keywords, array $fileIds = [], array $meta = [] ) : PageView
     {
         $description = static::DESCRIPTIONS[$data['path'] ?? ''] ?? $data['title'] ?? '';
 
@@ -339,30 +338,23 @@ abstract class AbstractDemo
 
         $content = array_merge( $content, $footer );
 
-        $page = Page::forceCreate( $data + [
+        $node = new Page( ['source' => $data['lang'] ?? 'en'] );
+        $node->id = $data['id'] ?? null; // pages referenced before they exist
+        $node->appendToNode( Page::findOrFail( $parent->id ) )->save();
+
+        $page = $node->variants()->create( array_diff_key( $data, ['id' => 1] ) + [
             'theme' => $this->theme,
             'editor' => 'demo',
             'meta' => $meta,
             'content' => $content,
-        ] );
-        $page->appendToNode( $parent )->save();
+        ] )->view;
 
-        $version = $page->versions()->forceCreate( [
-            'lang' => $data['lang'] ?? 'en',
-            'data' => array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
-                'domain' => '',
-                'theme' => $this->theme,
-            ],
-            'aux' => ['meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
+        $data = array_diff_key( $data, ['content' => 1, 'meta' => 1, 'id' => 1] ) + [
+            'domain' => '',
+            'theme' => $this->theme,
+        ];
 
-        $version->elements()->attach( $elementId );
-        $version->files()->attach( array_unique( array_merge( [$fileId], $fileIds, $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->publishPage( $page, $data, ['meta' => $meta, 'content' => $content], $elementId, [$fileId, ...$fileIds] );
     }
 
 
@@ -375,12 +367,15 @@ abstract class AbstractDemo
      * @param array<int, array<string, mixed>> $content Content elements
      * @param string $elementId Shared footer element ID
      * @param string $fileId Default file ID
-     * @return Page Root page
+     * @return PageView Root page
      */
     protected function saveRoot( string $title, array $config, array $meta, array $content, string $elementId,
-        string $fileId ) : Page
+        string $fileId ) : PageView
     {
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Home',
             'title' => $title,
@@ -393,31 +388,46 @@ abstract class AbstractDemo
             'config' => $config,
             'meta' => $meta,
             'content' => $content,
-        ] );
+        ] )->view;
 
+        $data = [
+            'name' => 'Home',
+            'title' => $title,
+            'path' => '',
+            'tag' => 'root',
+            'domain' => '',
+            'theme' => $this->theme,
+            'status' => 1,
+            'cache' => 5,
+        ];
+
+        return $this->publishPage( $page, $data, ['config' => $config, 'meta' => $meta, 'content' => $content], $elementId, [$fileId] );
+    }
+
+
+    /**
+     * Creates the initial version of a demo page including its references and publishes it.
+     *
+     * @param PageView $page Created page
+     * @param array<string, mixed> $data Version data
+     * @param array<string, mixed> $aux Config, meta and content of the version
+     * @param string $elementId Shared footer element ID
+     * @param array<int, string> $fileIds File IDs referenced besides the ones in the config, meta and content
+     * @return PageView Published page
+     */
+    protected function publishPage( PageView $page, array $data, array $aux, string $elementId, array $fileIds = [] ) : PageView
+    {
         $version = $page->versions()->forceCreate( [
-            'lang' => 'en',
-            'data' => [
-                'name' => 'Home',
-                'title' => $title,
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => [
-                'config' => $config,
-                'meta' => $meta,
-                'content' => $content,
-            ],
+            'lang' => $page->lang,
+            'data' => $data,
+            'aux' => $aux,
             'editor' => 'demo',
         ] );
 
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
         $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+        $version->files()->attach( array_unique( array_merge( $fileIds, $this->ids( $aux ) ) ) );
+        $page->variant->update( ['latest_id' => $version->id] );
+        $page->latest_id = $version->id;
         $page->publish( $version );
 
         return $page;

@@ -1,0 +1,1 @@
+import e from"./File-Sy9gvsPD.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`image`}};export{t as default};

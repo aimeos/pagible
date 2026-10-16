@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\FolioDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,8 +24,7 @@ class FolioDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new FolioDemo( 'folio', 'folio' ) )->seed();
-        Tenancy::$callback = fn() => 'folio';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'folio' );
     }
 
 
@@ -42,10 +41,10 @@ class FolioDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $writing = Page::where( 'path', 'writing' )->firstOrFail();
-        $posts = Page::where( 'parent_id', $writing->id )->get();
+        $writing = PageView::where( 'path', 'writing' )->firstOrFail();
+        $posts = PageView::where( 'parent_id', $writing->id )->get();
 
-        $this->assertSame( 'folio', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'folio', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
         $this->assertCount( 6, $posts );
         $this->assertSame( ['blog'], $posts->pluck( 'type' )->unique()->values()->all() );
         $this->assertSame( '2026-10-02', $posts->firstWhere( 'path', 'zero-downtime-migrations' )->created_at->toDateString() );

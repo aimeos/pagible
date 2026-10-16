@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 
 
@@ -47,13 +47,11 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testIndexExcludesNoindex()
     {
-        \Aimeos\Cms\Models\Page::where( 'path', 'hidden' )->firstOrFail()
-            ->forceFill( ['meta' => ['robots' => [
+        \Aimeos\Cms\Models\PageView::where( 'path', 'hidden' )->firstOrFail()->variant->update( ['meta' => ['robots' => [
                 'type' => 'robots',
                 'data' => ['index' => 'noindex'],
                 'files' => [],
-            ]]] )
-            ->saveQuietly();
+            ]]] );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();
 
@@ -70,7 +68,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     public function testIndexMultidomain()
     {
         config( ['cms.multidomain' => true] );
-        Page::where( 'path', 'hidden' )->firstOrFail()->forceFill( ['domain' => 'other.test'] )->saveQuietly();
+        PageView::where( 'path', 'hidden' )->firstOrFail()->variant->update( ['domain' => 'other.test'] );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();
 
@@ -84,40 +82,91 @@ class SitemapControllerTest extends ThemeTestAbstract
     }
 
 
+    public function testIndexUnknownDomainNotCached()
+    {
+        config( ['cms.multidomain' => true] );
+
+        $route = new \Illuminate\Routing\Route( 'GET', 'sitemap.xml', [] );
+        $route->bind( request() );
+        $route->setParameter( 'domain', 'unknown.test' );
+        request()->setRouteResolver( fn() => $route );
+
+        $key = 'cms-sitemap:' . \Aimeos\Cms\Tenancy::value() . ':unknown.test:50000';
+        $response = ( new \Aimeos\Cms\Controllers\SitemapController() )->index();
+
+        config( ['cms.multidomain' => false] );
+
+        $this->assertEquals( 200, $response->getStatusCode() );
+        $this->assertFalse( \Illuminate\Support\Facades\Cache::has( $key ) );
+    }
+
+
+    public function testIndexCached()
+    {
+        \Illuminate\Support\Facades\Cache::flush();
+        ( new \Aimeos\Cms\Controllers\SitemapController() )->index();
+
+        $this->assertTrue( \Illuminate\Support\Facades\Cache::has( 'cms-sitemap:' . \Aimeos\Cms\Tenancy::value() . '::50000' ) );
+    }
+
+
+    public function testIndexLocked()
+    {
+        \Illuminate\Support\Facades\Cache::flush();
+        $lock = \Illuminate\Support\Facades\Cache::lock( 'cms-sitemap:' . \Aimeos\Cms\Tenancy::value() . '::50000:lock', 120 );
+        $lock->get();
+
+        $controller = new class extends \Aimeos\Cms\Controllers\SitemapController {
+            protected const LOCK_WAIT = 0;
+        };
+
+        // requests don't wait long while another request builds the statistics
+        try {
+            $controller->index();
+            $this->fail( 'Expected 503 response' );
+        } catch( \Symfony\Component\HttpKernel\Exception\HttpException $e ) {
+            $this->assertSame( 503, $e->getStatusCode() );
+            $this->assertSame( '60', (string) $e->getHeaders()['Retry-After'] );
+        } finally {
+            $lock->release();
+        }
+    }
+
+
     public function testNews()
     {
         config( ['app.name' => 'Application name', 'app.locale' => 'de_DE'] );
 
-        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+        PageView::where( 'tag', 'root' )->firstOrFail()->variant->update( ['config' => [
             'website' => [
                 'type' => 'website',
                 'data' => ['title' => 'CMS & News'],
                 'files' => [],
             ],
-        ]] )->saveQuietly();
+        ]] );
 
-        Page::where( 'tag', 'article' )->firstOrFail()->forceFill( [
+        PageView::where( 'tag', 'article' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHour(),
             'lang' => '',
             'path' => 'current & news',
             'tag' => '',
             'title' => 'Current & News',
             'type' => 'news',
-        ] )->saveQuietly();
-        Page::where( 'path', 'hidden' )->firstOrFail()->forceFill( [
+        ] )->save();
+        PageView::where( 'path', 'hidden' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHours( 2 ),
             'lang' => 'en_US',
             'title' => 'Hidden News',
             'type' => 'news',
-        ] )->saveQuietly();
-        Page::where( 'path', 'dev' )->firstOrFail()->forceFill( [
+        ] )->save();
+        PageView::where( 'path', 'dev' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subDays( 3 ),
             'type' => 'news',
-        ] )->saveQuietly();
-        Page::where( 'path', 'disabled' )->firstOrFail()->forceFill( [
+        ] )->save();
+        PageView::where( 'path', 'disabled' )->firstOrFail()->variant->forceFill( [
             'created_at' => now()->subHour(),
             'type' => 'news',
-        ] )->saveQuietly();
+        ] )->save();
 
         $response = $this->get( '/sitemap-news.xml' );
         $content = $response->streamedContent();
@@ -181,7 +230,7 @@ class SitemapControllerTest extends ThemeTestAbstract
 
     public function testIndexExcludesRestrictedPages()
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         Access::using( fn() => [] );
         PageAccess::set( [$page->id], [] );
 
@@ -243,6 +292,35 @@ class SitemapControllerTest extends ThemeTestAbstract
         $this->assertStringContainsString('<urlset', $content);
         $this->assertStringContainsString('</urlset>', $content);
         $this->assertStringContainsString('<loc><![CDATA[http://localhost/', $content);
+    }
+
+
+    public function testChunksListAllUrlsOnce()
+    {
+        $content = fn( $response ) => ( function() use ( $response ) {
+            ob_start();
+            $response->getCallback()();
+            return ob_get_clean();
+        } )();
+        $locs = fn( string $xml ) => preg_match_all( '#<loc><!\[CDATA\[(.*?)\]\]></loc>#', $xml, $m ) ? $m[1] : [];
+
+        $all = $locs( $content( ( new \Aimeos\Cms\Controllers\SitemapController() )->index() ) );
+        $controller = new SitemapControllerLowThreshold();
+        $chunks = [];
+
+        for( $n = 1; $n <= (int) ceil( count( $all ) / 2 ) + 1; $n++ )
+        {
+            try {
+                $chunks = array_merge( $chunks, $locs( $content( $controller->chunk( $n ) ) ) );
+            } catch( \Symfony\Component\HttpKernel\Exception\NotFoundHttpException ) {
+                break;
+            }
+        }
+
+        sort( $all );
+        sort( $chunks );
+        $this->assertNotEmpty( $all );
+        $this->assertSame( $all, $chunks );
     }
 
 

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -32,7 +32,7 @@ class SaveElement extends Tool
         $v = $request->validate([
             'id' => 'required|string|max:36',
             'name' => 'string|max:100',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'data' => 'array',
             'latest_id' => 'required|string|max:36',
         ], [
@@ -41,7 +41,7 @@ class SaveElement extends Tool
         ] );
 
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
-        $element = Resource::saveElement( $v['id'], $input, $request->user(), $v['latest_id'] );
+        $element = Elements::save( $v['id'], $input, $request->user(), $v['latest_id'] );
 
         return Response::structured( Presenter::saved( Presenter::element( $element ), $element ) );
     }

@@ -7,9 +7,8 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Facades\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -137,7 +136,7 @@ class RobotsControllerTest extends ThemeTestAbstract
 
     public function testUnpublishedDraftDoesNotLeakIntoPublicResponse() : void
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = fn( string $text ) => ['robots-txt' => [
             'type' => 'robots-txt',
             'data' => ['text' => $text],
@@ -148,9 +147,9 @@ class RobotsControllerTest extends ThemeTestAbstract
             'cmsperms' => ['admin'],
         ] );
 
-        Resource::savePage( $root->id, ['config' => $config( 'Disallow: /published' )], $user );
-        Publication::publish( Page::class, [$root->id], $user );
-        Resource::savePage( $root->id, ['config' => $config( 'Disallow: /draft' )], $user );
+        Pages::save( $root->id, ['config' => $config( 'Disallow: /published' )], $user );
+        Pages::publishMany( [$root->id], $user );
+        Pages::save( $root->id, ['config' => $config( 'Disallow: /draft' )], $user );
 
         $root->refresh()->load( 'latest' );
         $this->assertSame( 'Disallow: /published', $root->config->{'robots-txt'}->data->text );
@@ -188,8 +187,8 @@ class RobotsControllerTest extends ThemeTestAbstract
      */
     protected function robots( string $text ) : void
     {
-        Page::where( 'tag', 'root' )->firstOrFail()->forceFill( ['config' => [
+        PageView::where( 'tag', 'root' )->firstOrFail()->variant->update( ['config' => [
             'robots-txt' => ['type' => 'robots-txt', 'data' => ['text' => $text], 'files' => []],
-        ]] )->saveQuietly();
+        ]] );
     }
 }

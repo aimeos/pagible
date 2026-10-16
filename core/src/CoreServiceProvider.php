@@ -2,6 +2,7 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Channel;
 use Aimeos\Cms\Events\Added;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Dropped;
@@ -12,15 +13,24 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\PermissionChanged;
 use Aimeos\Cms\Listeners\LogListener;
-use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Query\SearchQuery;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider as Provider;
+use Aimeos\Cms\Commands\InstallCore;
+use Aimeos\Cms\Commands\Previews;
+use Aimeos\Cms\Commands\Publish;
+use Aimeos\Cms\Commands\User;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Validator;
+use Laravel\Scout\Builder;
 
 class CoreServiceProvider extends Provider
 {
-    protected bool $defer = false;
-
     public function boot(): void
     {
         $basedir = dirname( __DIR__ );
@@ -31,10 +41,15 @@ class CoreServiceProvider extends Provider
             $basedir . '/config/cms.php' => config_path( 'cms.php' ),
         ], 'cms-config' );
 
+        // valid language codes and the ones from "cms.locales" (or any valid one if none are configured)
+        Validator::extend( 'cms_lang', fn( $attribute, $value ) => is_string( $value ) && Utils::isValidLang( $value ),
+            'The :attribute must be a valid language code.' );
+        Validator::extend( 'cms_locale', fn( $attribute, $value ) => is_string( $value ) && Utils::isLocale( $value ),
+            'The :attribute must be a configured language.' );
+
         Watch::registerChannel();
         $this->broadcast();
         $this->watch();
-        $this->flush();
         Utils::limit( 'cms-asset', 300 );
         Utils::limit( 'cms-broadcast', 120 );
         $this->userCasts();
@@ -48,31 +63,30 @@ class CoreServiceProvider extends Provider
         $cfgdir = dirname( __DIR__ ) . '/config';
         $this->mergeConfigFrom( $cfgdir . '/cms.php', 'cms' );
 
-        $this->app->scoped( \Aimeos\Cms\Tenancy::class, function() {
-            $callback = \Aimeos\Cms\Tenancy::$callback;
-            return new \Aimeos\Cms\Tenancy( $callback ? $callback() : '' );
-        } );
+        // deprecated 0.13 class names, removed in 1.0
+        // registered eagerly because catch blocks don't trigger the autoloader
+        foreach( [
+            'Aimeos\Cms\Channel' => Events\Channel::class,
+            'Aimeos\Cms\Filter' => Query\Filter::class,
+            'Aimeos\Cms\InvalidException' => Exceptions\InvalidInputException::class,
+            'Aimeos\Cms\SearchBuilder' => Query\SearchBuilder::class,
+        ] as $alias => $class )
+        {
+            if( !class_exists( $alias, false ) ) {
+                class_alias( $class, $alias );
+            }
+        }
 
-        $this->app->scoped( \Aimeos\Cms\Access::class );
-    }
+        $this->app->scoped( Tenancy::class, fn() => new Tenancy( Tenancy::resolve() ) );
 
+        $this->app->scoped( Access::class );
 
-    /**
-     * Flushes Permission state after each queued job and each Octane request,
-     * so long-running workers never honor stale in-memory permission caches.
-     */
-    protected function flush() : void
-    {
-        \Illuminate\Support\Facades\Queue::after( fn() => \Aimeos\Cms\Permission::flush() );
-        \Illuminate\Support\Facades\Queue::failing( fn() => \Aimeos\Cms\Permission::flush() );
-
-        if( class_exists( \Laravel\Octane\Events\RequestTerminated::class ) ) {
-            \Illuminate\Support\Facades\Event::listen(
-                \Laravel\Octane\Events\RequestTerminated::class,
-                fn() => \Aimeos\Cms\Permission::flush(),
-            );
+        // instances behind the facades in Aimeos\Cms\Facades, applications can bind their own subclasses
+        foreach( [Resource\Pages::class, Resource\Elements::class, Resource\Files::class, Resource\Variants::class] as $class ) {
+            $this->app->singletonIf( $class );
         }
     }
+
 
     protected function broadcast() : void
     {
@@ -85,12 +99,12 @@ class CoreServiceProvider extends Provider
         foreach( ['page', 'element', 'file'] as $type )
         {
             // Single-tenant only: the tenant-less channel is authorized solely when no tenancy is
-            // configured at all. Requiring Tenancy::$callback === null fails closed - in a
+            // configured at all. Requiring !Tenancy::configured() fails closed - in a
             // multi-tenant deployment whose /broadcasting/auth route lacks the tenancy-init
             // middleware, Tenancy::value() would be '' and would otherwise open this channel to
             // every tenant.
             Broadcast::channel( Channel::type( '', $type ), fn( $user ) =>
-                Tenancy::value() === '' && Tenancy::$callback === null && Permission::can( "{$type}:view", $user )
+                Tenancy::value() === '' && !Tenancy::configured() && Permission::can( "{$type}:view", $user )
             );
 
             // Multi-tenant: the channel's tenant segment must match the request's tenant; the
@@ -125,7 +139,7 @@ class CoreServiceProvider extends Provider
         // listener is registered unconditionally — NOT through the watch-channel-gated
         // Watch::listen() above. Warnings fall back to the default log channel when
         // no cms.watch.channel is configured.
-        \Illuminate\Support\Facades\Event::listen( PermissionChanged::class, [LogListener::class, 'handle'] );
+        Event::listen( PermissionChanged::class, [LogListener::class, 'handle'] );
     }
 
 
@@ -134,21 +148,21 @@ class CoreServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
-                \Aimeos\Cms\Commands\InstallCore::class,
-                \Aimeos\Cms\Commands\Previews::class,
-                \Aimeos\Cms\Commands\Publish::class,
-                \Aimeos\Cms\Commands\User::class,
+                InstallCore::class,
+                Previews::class,
+                Publish::class,
+                User::class,
             ] );
         }
     }
 
     protected function scout() : void
     {
-        if( !\Laravel\Scout\Builder::hasMacro( 'searchFields' ) )
+        if( !Builder::hasMacro( 'searchFields' ) )
         {
-            \Laravel\Scout\Builder::macro( 'searchFields', function( string ...$fields ) {
+            Builder::macro( 'searchFields', function( string ...$fields ) {
                 match( config( 'scout.driver' ) ) {
-                    'collection' => $this->callback = fn( $query, $builder ) => Scout::collection( $query, $builder, $fields ),
+                    'collection' => $this->callback = fn( $query, $builder ) => SearchQuery::collection( $query, $builder, $fields ),
                     'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
                     'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
                     'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
@@ -191,7 +205,7 @@ class CoreServiceProvider extends Provider
         $this->app->afterResolving( Schedule::class, function( Schedule $schedule ) {
             $schedule->command( 'cms:publish' )->everyThirtyMinutes()
                 ->withoutOverlapping()->onOneServer();
-            $schedule->command( 'model:prune', ['--model' => Version::TYPES] )->daily();
+            $schedule->command( 'model:prune', ['--model' => [Page::class, PageVariant::class, Element::class, File::class]] )->daily();
         } );
     }
 }

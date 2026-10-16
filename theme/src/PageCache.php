@@ -49,6 +49,17 @@ class PageCache
 
 
     /**
+     * Returns the Cache-Control header value of public pages shared caches may store.
+     *
+     * @param int $maxage Seconds shared caches may serve the page
+     */
+    public static function policy( int $maxage ) : string
+    {
+        return "public, s-maxage={$maxage}, max-age=0, must-revalidate";
+    }
+
+
+    /**
      * Returns a cached response or renders and stores it on a cache miss.
      *
      * A contending request receives a stale entry when available. On a cold miss,
@@ -56,7 +67,7 @@ class PageCache
      *
      * @param Closure(): mixed $renderFn
      */
-    public static function remember( Closure $renderFn, Models\Page|string $page, string $domain = '' ) : mixed
+    public static function remember( Closure $renderFn, Models\PageView|string $page, string $domain = '' ) : mixed
     {
         $key = self::key( $page, $domain );
         $lock = self::renderLock( $key );
@@ -85,9 +96,9 @@ class PageCache
     /**
      * Returns a cached complete-page response.
      *
-     * @param Models\Page|string $page Page model or route path
+     * @param Models\PageView|string $page Page model or route path
      */
-    public static function response( Models\Page|string $page, string $domain = '', bool $fresh = false ) : ?Response
+    public static function response( Models\PageView|string $page, string $domain = '', bool $fresh = false ) : ?Response
     {
         return self::cachedResponse( self::key( $page, $domain ), $fresh );
     }
@@ -121,9 +132,13 @@ class PageCache
 
         $response = ( new Response( $content, 200 ) )
             ->header( 'Content-Type', 'text/html' )
-            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Cache-Control', self::policy( $maxage ) )
             ->header( 'Expires', $expires )
             ->header( 'Vary', 'Accept-Encoding' );
+
+        if( is_string( $entry['lang'] ?? null ) && $entry['lang'] !== '' ) {
+            $response->header( 'Content-Language', $entry['lang'] );
+        }
 
         return $gzip ? $response->header( 'Content-Encoding', 'gzip' ) : $response;
     }
@@ -132,9 +147,9 @@ class PageCache
     /**
      * Returns the complete-page cache key for a page or route.
      */
-    private static function key( Models\Page|string $page, string $domain = '' ) : string
+    private static function key( Models\PageView|string $page, string $domain = '' ) : string
     {
-        if( $page instanceof Models\Page ) {
+        if( $page instanceof Models\PageView ) {
             $domain = $page->domain;
             $page = $page->path;
         }
@@ -224,10 +239,11 @@ class PageCache
         }
 
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
+        $lang = (string) $response->headers->get( 'Content-Language' );
 
         self::store()->put(
             $key,
-            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil],
+            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil, 'lang' => $lang],
             max( 1, $freshUntil + $grace - time() ),
         );
     }

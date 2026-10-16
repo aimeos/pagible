@@ -116,10 +116,6 @@ class CashierAccessTest extends CashierTestAbstract
             ['frontend.once', 'frontend.pro', 'member'],
             app( Access::class )->allowed( $this->stored ),
         );
-        $this->assertSame(
-            ['frontend.pro'],
-            app( Access::class )->allowed( $this->stored, ['frontend.pro', 'frontend.expired'] ),
-        );
     }
 
 

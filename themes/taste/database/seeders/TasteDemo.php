@@ -8,6 +8,7 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 
@@ -79,10 +80,10 @@ class TasteDemo extends AbstractDemo
     /**
      * Creates the story page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addKitchen( Page $home ) : static
+    protected function addKitchen( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -133,10 +134,10 @@ class TasteDemo extends AbstractDemo
     /**
      * Creates the menu page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addMenu( Page $home ) : static
+    protected function addMenu( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -198,10 +199,10 @@ class TasteDemo extends AbstractDemo
     /**
      * Creates the visit page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addVisit( Page $home ) : static
+    protected function addVisit( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -324,9 +325,9 @@ class TasteDemo extends AbstractDemo
     /**
      * Creates the Sumi home page and returns it.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -427,7 +428,10 @@ class TasteDemo extends AbstractDemo
             ], 'meta' ),
         ];
 
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Home',
             'title' => 'Sumi Noodle Bar | Prenzlauer Berg, Berlin',
@@ -440,31 +444,21 @@ class TasteDemo extends AbstractDemo
             'config' => $config,
             'meta' => $meta,
             'content' => $content,
-        ] );
+        ] )->view;
 
-        $version = $page->versions()->forceCreate( [
+        $data = [
             'lang' => 'en',
-            'data' => [
-                'lang' => 'en',
-                'name' => 'Home',
-                'title' => 'Sumi Noodle Bar | Prenzlauer Berg, Berlin',
-                'path' => '',
-                'tag' => 'root',
-                'domain' => '',
-                'theme' => $this->theme,
-                'status' => 1,
-                'cache' => 5,
-            ],
-            'aux' => ['config' => $config, 'meta' => $meta, 'content' => $content],
-            'editor' => 'demo',
-        ] );
+            'name' => 'Home',
+            'title' => 'Sumi Noodle Bar | Prenzlauer Berg, Berlin',
+            'path' => '',
+            'tag' => 'root',
+            'domain' => '',
+            'theme' => $this->theme,
+            'status' => 1,
+            'cache' => 5,
+        ];
 
-        $version->files()->attach( array_unique( array_merge( [$fileId], $this->ids( $config ), $this->ids( $content ), $this->ids( $meta ) ) ) );
-        $version->elements()->attach( $elementId );
-        $page->forceFill( ['latest_id' => $version->id] )->saveQuietly();
-        $page->publish( $version );
-
-        return $page;
+        return $this->publishPage( $page, $data, ['config' => $config, 'meta' => $meta, 'content' => $content], $elementId, [$fileId] );
     }
 
 
@@ -507,10 +501,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();

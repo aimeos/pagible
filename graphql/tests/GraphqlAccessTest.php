@@ -207,8 +207,8 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     {
         $foreign = $this->frontend( 'foreign@example.com' );
         $this->user->cmsperms = ['user:access', 'user:permission'];
-        Tenancy::$access = fn( ?Authenticatable $user, string $tenant ) =>
-            data_get( $user, 'email' ) !== 'foreign@example.com';
+        Tenancy::allowsUsing( fn( ?Authenticatable $user, string $tenant ) =>
+            data_get( $user, 'email' ) !== 'foreign@example.com' );
 
         try
         {
@@ -243,7 +243,7 @@ class GraphqlAccessTest extends GraphqlTestAbstract
             $this->assertArrayNotHasKey( 'foreign@example.com', $this->assignments );
         }
         finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 

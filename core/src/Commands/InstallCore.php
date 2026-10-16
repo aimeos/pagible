@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Concerns\PatchesFiles;
+use Aimeos\Cms\DB;
 use Illuminate\Console\Command;
 
 
@@ -128,7 +129,7 @@ class InstallCore extends Command
      */
     protected function db() : int
     {
-        $name = config( 'cms.db', 'sqlite' );
+        $name = DB::name();
         $path = (string) config( "database.connections.{$name}.database", database_path( 'database.sqlite' ) );
 
         if( config( "database.connections.{$name}.driver" ) !== 'sqlite' || $path === ':memory:' || file_exists( $path ) )

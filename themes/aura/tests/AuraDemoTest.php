@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\AuraDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,8 +24,7 @@ class AuraDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new AuraDemo( 'aura', 'aura' ) )->seed();
-        Tenancy::$callback = fn() => 'aura';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'aura' );
     }
 
 
@@ -42,10 +41,10 @@ class AuraDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $writing = Page::where( 'path', 'writing' )->firstOrFail();
-        $posts = Page::where( 'parent_id', $writing->id )->get();
+        $writing = PageView::where( 'path', 'writing' )->firstOrFail();
+        $posts = PageView::where( 'parent_id', $writing->id )->get();
 
-        $this->assertSame( 'aura', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'aura', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
         $this->assertCount( 5, $posts );
         $this->assertSame( ['blog'], $posts->pluck( 'type' )->unique()->values()->all() );
         $this->assertSame( '2026-09-24', $posts->firstWhere( 'path', 'animating-gradients-with-property' )->created_at->toDateString() );

@@ -26,8 +26,8 @@ class CashierTokenTest extends CashierTestAbstract
             'email' => 'member@example.com',
             'password' => 'password',
         ] );
-        Tenancy::$access = fn( $candidate, string $tenant ) =>
-            $candidate->getAuthIdentifier() === $user->getAuthIdentifier() && $tenant === 'member';
+        Tenancy::allowsUsing( fn( $candidate, string $tenant ) =>
+            $candidate->getAuthIdentifier() === $user->getAuthIdentifier() && $tenant === 'member' );
 
         try
         {
@@ -58,7 +58,7 @@ class CashierTokenTest extends CashierTestAbstract
             );
         }
         finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 

@@ -44,7 +44,7 @@ class GetElement extends Tool
         ] )->findOrFail( $v['id'] );
 
         $data = Presenter::element( $element ) + [
-            'used_by_pages' => Presenter::rows( $element->bypages(), 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' ),
+            'used_by_pages' => Presenter::rows( $element->bypages(), 'cms_page_view.id', 'cms_page_view.name', 'cms_page_view.path' ),
         ];
 
         return Response::structured( $data );

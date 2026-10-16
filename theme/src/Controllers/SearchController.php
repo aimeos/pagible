@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Events\CmsSearch;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
@@ -33,15 +33,15 @@ class SearchController extends Controller
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.theme.min-search' ) . '|max:200',
             'size' => 'integer|between:5,100',
-            'locale' => 'nullable|string|max:16',
+            'locale' => ['nullable', 'string', 'max:16', 'regex:/^[a-z]{2,3}([_-][A-Za-z0-9]{2,8})*$/'],
         ] );
 
         $lang = (string) ( $vals['locale'] ?? app()->getLocale() );
 
         $external = Scout::usesExternalSearch();
-        $builder = Page::search( $vals['q'] )
+        $builder = PageView::search( $vals['q'] )
             ->query( function( $q ) use ( $domain, $lang ) {
-                $q->select( 'cms_pages.id', 'cms_pages.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
+                $q->select( 'cms_page_view.id', 'cms_page_view.variant_id', 'cms_page_view.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
                     ->withGlobalScope( 'status', new Status )
                     ->where( 'domain', $domain )
                     ->where( 'lang', $lang )
@@ -55,7 +55,7 @@ class SearchController extends Controller
             $builder->where( 'restricted', false );
         }
 
-        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\Page> $paginator */
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, \Aimeos\Cms\Models\PageView> $paginator */
         $paginator = $builder
             ->paginate( $vals['size'] ?? 25 )
             ->appends( $request->query() );

@@ -7,9 +7,10 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Actions\Properties;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\Tenancy;
 use Carbon\CarbonImmutable;
@@ -29,7 +30,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testArticleRendersJsonLd(): void
     {
-        $page = ( new Page() )->forceFill( [
+        $page = ( new PageView() )->forceFill( [
             'created_at' => CarbonImmutable::parse( '2026-08-23 12:00:00' ),
             'lang' => 'en',
             'title' => 'Article',
@@ -85,14 +86,13 @@ class PropertiesActionTest extends ThemeTestAbstract
     public function testDemoGroupsHiddenPagesAndUsesNewsRedirect(): void
     {
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
-        $properties = Page::where( 'path', 'properties' )->firstOrFail();
-        $exposes = Page::where( 'path', 'exposes' )->firstOrFail();
-        $news = Page::where( 'path', 'news' )->firstOrFail();
-        $items = Page::where( 'type', 'property' )->defaultOrder()->get();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
+        $properties = PageView::where( 'path', 'properties' )->firstOrFail();
+        $exposes = PageView::where( 'path', 'exposes' )->firstOrFail();
+        $news = PageView::where( 'path', 'news' )->firstOrFail();
+        $items = PageView::where( 'type', 'property' )->defaultOrder()->get();
 
         $this->assertTrue( $properties->parent()->firstOrFail()->is( $home ) );
         $this->assertTrue( $exposes->parent()->firstOrFail()->is( $home ) );
@@ -136,8 +136,7 @@ class PropertiesActionTest extends ThemeTestAbstract
     public function testPropertyListUsesNativeListSemantics(): void
     {
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
         $response = $this->get( '/properties' );
 
@@ -156,10 +155,9 @@ class PropertiesActionTest extends ThemeTestAbstract
         config( ['app.name' => 'Laravel'] );
 
         ( new EstateDemo( 'estate', 'estate' ) )->seed();
-        Tenancy::$callback = fn() => 'estate';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'estate' );
 
-        $maps = Page::where( 'type', 'property' )->defaultOrder()->get()
+        $maps = PageView::where( 'type', 'property' )->defaultOrder()->get()
             ->map( fn( $page ) => collect( (array) $page->content )
                 ->first( fn( $item ) => ( $item->type ?? null ) === 'estate::property' )?->data?->map
             );
@@ -191,7 +189,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testFiltersByRequestedTypeAndCity()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'seaside-loft',
@@ -230,7 +228,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testFiltersByMinimumRooms()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'three-room-property',
@@ -261,7 +259,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testIgnoresOutOfRangeMinimumRooms()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $item = (object) [
             'data' => (object) [
@@ -284,7 +282,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testIncludesPropertiesFromNestedCategories()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $category = $this->addCategory( $list );
         $this->addProperty( $category, [
@@ -312,7 +310,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testKeepsPrivateDiskForAttachedFiles()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $file = File::firstOrFail();
         $file->forceFill( ['disk' => 'private'] )->saveQuietly();
@@ -338,7 +336,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testIgnoresRemovedStatusFilter()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'available-property',
@@ -370,7 +368,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testIgnoresFiltersWhenDisabled()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'apartment',
@@ -401,7 +399,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testFiltersByAvailability()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'available-later',
@@ -435,7 +433,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testSortsByUpdatedDate()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $older = $this->addProperty( $list, [
             'path' => 'older-update',
@@ -446,10 +444,8 @@ class PropertiesActionTest extends ThemeTestAbstract
             'title' => 'Newer Update',
         ] );
 
-        $older->timestamps = false;
-        $older->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-01-01' )] )->saveQuietly();
-        $newer->timestamps = false;
-        $newer->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-02-01' )] )->saveQuietly();
+        $older->variant->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-01-01' )] )->save();
+        $newer->variant->forceFill( ['updated_at' => CarbonImmutable::parse( '2026-02-01' )] )->save();
 
         $request = Request::create( '/properties', 'GET', ['sort' => 'updated_desc'] );
         $request->setUserResolver( fn() => null );
@@ -467,7 +463,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testUsesSixItemDefaultLimit()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
 
         foreach( range( 1, 7 ) as $idx ) {
@@ -494,7 +490,7 @@ class PropertiesActionTest extends ThemeTestAbstract
 
     public function testStoresCurrentPaginationPageOnRequest()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
         $list = $this->addListPage( $root );
         $this->addProperty( $list, [
             'path' => 'first-property',
@@ -520,9 +516,12 @@ class PropertiesActionTest extends ThemeTestAbstract
     }
 
 
-    protected function addCategory( Page $parent ) : Page
+    protected function addCategory( PageView $parent ) : PageView
     {
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( Page::findOrFail( $parent->id ) )->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Residential',
             'title' => 'Residential',
@@ -531,16 +530,18 @@ class PropertiesActionTest extends ThemeTestAbstract
             'type' => 'page',
             'status' => 1,
             'editor' => 'seeder',
-        ] );
-        $page->appendToNode( $parent )->save();
+        ] )->view;
 
         return $page;
     }
 
 
-    protected function addListPage( Page $root ) : Page
+    protected function addListPage( PageView $root ) : PageView
     {
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( Page::findOrFail( $root->id ) )->save();
+
+        $page = $node->variants()->create( [
             'lang' => 'en',
             'name' => 'Properties',
             'title' => 'Properties',
@@ -549,14 +550,13 @@ class PropertiesActionTest extends ThemeTestAbstract
             'type' => 'properties',
             'status' => 1,
             'editor' => 'seeder',
-        ] );
-        $page->appendToNode( $root )->save();
+        ] )->view;
 
         return $page;
     }
 
 
-    protected function addProperty( Page $parent, array $data ) : Page
+    protected function addProperty( PageView $parent, array $data ) : PageView
     {
         $property = array_merge( [
             'lang' => 'en',
@@ -578,10 +578,10 @@ class PropertiesActionTest extends ThemeTestAbstract
             'path' => $data['path'],
         ] );
 
-        $property = Page::forceCreate( $property );
-        $property->appendToNode( $parent )->save();
+        $node = new Page( ['source' => 'en'] );
+        $node->appendToNode( Page::findOrFail( $parent->id ) )->save();
 
-        return $property;
+        return $node->variants()->create( $property )->view;
     }
 
 

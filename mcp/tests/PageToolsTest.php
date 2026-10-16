@@ -8,9 +8,12 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Models\PageVariant;
 use Database\Seeders\TestSeeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,7 +65,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPage()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
@@ -74,7 +77,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageIncludesImmediateAccess()
     {
-        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $page = PageView::where( 'name', 'Home' )->firstOrFail();
         PageAccess::set( [$page->id], [] );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
@@ -91,7 +94,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageProtectsImmediateAccessValues()
     {
-        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $page = PageView::where( 'name', 'Home' )->firstOrFail();
         PageAccess::set( [$page->id], ['member'] );
         $this->user->cmsperms = ['access:view', 'page:view'];
 
@@ -167,7 +170,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageTreeReflectsSavedDraft()
     {
-        $page = Page::where( 'name', 'Home' )->firstOrFail();
+        $page = PageView::where( 'name', 'Home' )->firstOrFail();
         $previous = $page->latest_id;
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -195,7 +198,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testGetPageHistory()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageHistory::class, [
             'id' => $page->id,
@@ -296,7 +299,7 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         // the created page's id must be part of the response (Page::$visible omits it)
-        $page = Page::where( 'name', 'Test page' )->first();
+        $page = PageView::where( 'name', 'Test page' )->first();
         $this->assertNotNull( $page );
         $response->assertSee( [$page->id] );
 
@@ -325,7 +328,7 @@ class PageToolsTest extends McpTestAbstract
             'meta' => $this->meta( 'An ordered page for testing' ),
         ] );
 
-        $page = Page::where( 'name', 'Ordered page' )->with( 'latest' )->first();
+        $page = PageView::where( 'name', 'Ordered page' )->with( 'latest' )->first();
         $content = (array) ( $page->latest->aux->content ?? [] );
         $labels = array_map( fn( $el ) => $el->data->title ?? $el->data->text ?? null, $content );
 
@@ -335,7 +338,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testAddPageWithParent()
     {
-        $parent = Page::where( 'name', 'Home' )->first();
+        $parent = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
             'lang' => 'en',
@@ -404,7 +407,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSavePage()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
@@ -419,7 +422,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSavePageWithReference()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
         $element = \Aimeos\Cms\Models\Element::first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -438,7 +441,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSavePagePreservesContentOrderWithoutIds()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
@@ -451,7 +454,7 @@ class PageToolsTest extends McpTestAbstract
             ],
         ] );
 
-        $page = Page::where( 'name', 'Home' )->with( 'latest' )->first();
+        $page = PageView::where( 'name', 'Home' )->with( 'latest' )->first();
         $content = (array) ( $page->latest->aux->content ?? [] );
         $labels = array_map( fn( $el ) => $el->data->title ?? $el->data->text ?? null, $content );
 
@@ -473,7 +476,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSavePageRequiresLatestId()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
             'id' => $page->id,
@@ -486,7 +489,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSetPageAccess()
     {
-        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $page = PageView::where( 'name', 'Hidden' )->firstOrFail();
         $this->user = new \App\Models\User( ['cmsperms' => ['page:access']] );
         $tool = fn( ?array $access ) => CmsServer::actingAs($this->user)->tool(
             \Aimeos\Cms\Tools\SetPageAccess::class,
@@ -506,7 +509,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSetPageAccessRequiresPageAccessPermission()
     {
-        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $page = PageView::where( 'name', 'Hidden' )->firstOrFail();
         $this->user->cmsperms = ['page:publish', 'access:view'];
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SetPageAccess::class, [
@@ -521,7 +524,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSetPageAccessRequiresExplicitAccess()
     {
-        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $page = PageView::where( 'name', 'Hidden' )->firstOrFail();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SetPageAccess::class, [
             'id' => [$page->id],
@@ -533,7 +536,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testPublishPage()
     {
-        $page = Page::where( 'name', 'Hidden' )->first();
+        $page = PageView::where( 'name', 'Hidden' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
             'id' => [$page->id],
@@ -545,7 +548,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testPublishPageMultiple()
     {
-        $pages = Page::whereIn( 'name', ['Home', 'Blog'] )->pluck( 'id' )->all();
+        $pages = PageView::whereIn( 'name', ['Home', 'Blog'] )->pluck( 'id' )->all();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
             'id' => $pages,
@@ -557,7 +560,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testPublishPageScheduled()
     {
-        $page = Page::where( 'name', 'Hidden' )->first();
+        $page = PageView::where( 'name', 'Hidden' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
             'id' => [$page->id],
@@ -570,7 +573,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testPublishPageSkipsPublishedSchedule()
     {
-        $page = Page::where( 'name', 'Hidden' )->firstOrFail();
+        $page = PageView::where( 'name', 'Hidden' )->firstOrFail();
         $page->latest()->update( ['published' => true] );
         $publishAt = $page->latest()->value( 'publish_at' );
 
@@ -588,7 +591,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testDropPage()
     {
-        $page = Page::where( 'name', 'Dev' )->first();
+        $page = PageView::where( 'name', 'Dev' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
             'id' => $page->id,
@@ -611,21 +614,21 @@ class PageToolsTest extends McpTestAbstract
 
     public function testRestorePage()
     {
-        $page = Page::where( 'name', 'Dev' )->first();
-        $page->delete();
+        $page = PageView::where( 'name', 'Dev' )->first();
+        $page->page->delete();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
             'id' => $page->id,
         ] );
 
         $response->assertOk()->assertSee( ['Dev'] );
-        $this->assertNull( Page::find( $page->id )->deleted_at );
+        $this->assertNull( PageView::find( $page->id )->deleted_at );
     }
 
 
     public function testRestorePageNotDeleted()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
             'id' => $page->id,
@@ -637,8 +640,8 @@ class PageToolsTest extends McpTestAbstract
 
     public function testMovePage()
     {
-        $page = Page::where( 'name', 'Dev' )->first();
-        $parent = Page::where( 'name', 'Blog' )->first();
+        $page = PageView::where( 'name', 'Dev' )->first();
+        $parent = PageView::where( 'name', 'Blog' )->first();
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\MovePage::class, [
             'id' => $page->id,
@@ -664,6 +667,216 @@ class PageToolsTest extends McpTestAbstract
      *
      * @return array<string, array<string, mixed>>
      */
+    public function testGetPageLanguage()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( ['Startseite', 'variants', 'stale'] );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
+            'id' => $page->id,
+            'lang' => 'fr',
+        ] );
+
+        $response->assertSee( ['not found'] );
+    }
+
+
+    public function testGetPageHistoryLanguage()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageHistory::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( ['versions', 'Startseite'] );
+    }
+
+
+    public function testSearchPagesLanguage()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+    }
+
+
+    public function testAddPageDefaultLanguage()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+            'name' => 'No language',
+            'title' => 'No language',
+            'content' => [['type' => 'text', 'data' => ['text' => 'Default language']]],
+            'meta' => $this->meta( 'A page without language' ),
+        ] );
+
+        $response->assertOk();
+
+        $page = PageView::where( 'name', 'No language' )->firstOrFail();
+        $this->assertEquals( config( 'app.locale' ), $page->lang );
+        $this->assertEquals( config( 'app.locale' ), $page->source );
+    }
+
+
+    public function testCopyPage()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\CopyPage::class, [
+            'id' => $page->id,
+            'parent_id' => $page->parent_id,
+        ] );
+
+        $response->assertOk();
+
+        $copy = PageView::where( 'name', 'Dev' )->where( 'id', '!=', $page->id )->firstOrFail();
+        $response->assertSee( [$copy->id] );
+
+        $this->assertEquals( $page->parent_id, $copy->parent_id );
+        $this->assertEquals(
+            PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'hashes' ),
+            PageVariant::where( 'page_id', $copy->id )->where( 'lang', 'de' )->value( 'hashes' )
+        );
+    }
+
+
+    public function testCopyPageThrottled()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        \Illuminate\Support\Facades\RateLimiter::increment( 'cms-copy:' . $this->user->id, 60, 10 );
+
+        try {
+            CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\CopyPage::class, ['id' => $page->id] )
+                ->assertHasErrors();
+        } finally {
+            \Illuminate\Support\Facades\RateLimiter::clear( 'cms-copy:' . $this->user->id );
+        }
+
+        $this->assertSame( 1, PageView::where( 'name', 'Dev' )->count() );
+    }
+
+
+    public function testCopyPageRequiresAddPermission()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view', 'page:save']] );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\CopyPage::class, ['id' => $page->id] )
+            ->assertHasErrors();
+    }
+
+
+    public function testSavePageLanguage()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+            'latest_id' => $de->latest_id,
+            'name' => 'Startseite',
+        ] );
+
+        $response->assertOk()->assertSee( ['Startseite'] );
+        $this->assertEquals( 'Startseite', PageView::language( 'de' )->findOrFail( $page->id )->latest->data->name );
+        $this->assertNotEquals( 'Startseite', PageView::findOrFail( $page->id )->latest->data->name );
+    }
+
+
+    public function testSavePageSource()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SavePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+            'latest_id' => $de->latest_id,
+            'source' => 'de',
+        ] );
+
+        $response->assertOk();
+        $this->assertEquals( 'de', PageView::findOrFail( $page->id )->source );
+        $this->assertEquals( 'de', PageView::findOrFail( $page->id )->lang );
+    }
+
+
+    public function testDropRestorePageLanguage()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+        $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
+        $this->assertNotNull( PageView::find( $page->id ) );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
+            'id' => $page->id,
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id] );
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+    }
+
+
+    public function testDropPageSourceLanguage()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+            'id' => $page->id,
+            'lang' => $page->lang,
+        ] )->assertOk()->assertSee( ['source language'] );
+
+        $this->assertNotNull( PageView::find( $page->id ) );
+    }
+
+
+    public function testPublishPageLanguage()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::save( $page->id, 'de', ['name' => 'Startseite'], $this->user );
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\PublishPage::class, [
+            'id' => [$page->id],
+            'lang' => 'de',
+        ] );
+
+        $response->assertOk();
+        $this->assertEquals( 'Startseite', PageView::language( 'de' )->findOrFail( $page->id )->name );
+        $this->assertEquals( 'Home', PageView::findOrFail( $page->id )->name );
+    }
+
+
     protected function meta( string $description ) : array
     {
         return [

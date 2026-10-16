@@ -6,7 +6,7 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,9 +29,15 @@ class CashierProduct
     /**
      * Resolves one unambiguous price from trusted published page content.
      *
+     * Prices and currencies may differ per language, so the price is read from the
+     * published content of the page variant in that language (source variant if NULL).
+     * If a domain is passed, only variants served on that domain are used, so prices of
+     * other domains can't be chosen.
+     *
      * @return ProductData
      */
-    public function find( Authenticatable $user, string $pageId, string $elementId, string $packageId, string $priceId ) : array
+    public function find( Authenticatable $user, string $pageId, string $elementId, string $packageId, string $priceId,
+        ?string $lang = null, ?string $domain = null ) : array
     {
         $tenant = Tenancy::value();
 
@@ -39,7 +45,9 @@ class CashierProduct
             abort( 403 );
         }
 
-        $page = Page::query()
+        $page = PageView::query()
+            ->when( $lang, fn( $query ) => $query->language( (string) $lang ) )
+            ->when( $domain !== null, fn( $query ) => $query->whereIn( $query->qualifyColumn( 'domain' ), ['', mb_strtolower( (string) $domain )] ) )
             ->whereIn( 'status', [1, 2] )
             ->access( $user )
             ->findOrFail( $pageId );
@@ -85,7 +93,7 @@ class CashierProduct
     /**
      * Returns pricing data from an inline or referenced published element.
      */
-    private function pricing( Page $page, string $elementId ) : object
+    private function pricing( PageView $page, string $elementId ) : object
     {
         foreach( (array) $page->content as $item )
         {

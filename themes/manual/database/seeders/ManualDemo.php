@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 
@@ -45,10 +45,10 @@ class ManualDemo extends AbstractDemo
     /**
      * Creates the API reference section below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addApi( Page $home ) : static
+    protected function addApi( PageView $home ) : static
     {
         $api = $this->page( [
             'name' => 'API reference',
@@ -197,10 +197,10 @@ SH ),
     /**
      * Creates the changelog below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addChangelog( Page $home ) : static
+    protected function addChangelog( PageView $home ) : static
     {
         $this->page( [
             'name' => 'Changelog',
@@ -226,10 +226,10 @@ SH ),
     /**
      * Creates the documentation section below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addDocs( Page $home ) : static
+    protected function addDocs( PageView $home ) : static
     {
         $docs = $this->page( [
             'name' => 'Docs',
@@ -495,9 +495,9 @@ PHP ),
     /**
      * Returns the Waypoint home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->logoFile();
@@ -664,10 +664,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->logoFile();

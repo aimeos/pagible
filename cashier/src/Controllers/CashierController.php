@@ -40,6 +40,7 @@ class CashierController extends Controller
         {
             $checkout = $request->validate( [
                 'page' => ['required', 'string', 'max:36'],
+                'lang' => ['nullable', 'string', 'cms_lang'],
                 'element' => ['required', 'string', 'max:255'],
                 'package' => ['required', 'string', 'max:100'],
                 'price' => ['required', 'string', 'max:100'],
@@ -72,6 +73,8 @@ class CashierController extends Controller
             (string) ( $checkout['element'] ?? '' ),
             (string) ( $checkout['package'] ?? '' ),
             (string) ( $checkout['price'] ?? '' ),
+            isset( $checkout['lang'] ) ? (string) $checkout['lang'] : null,
+            config( 'cms.multidomain' ) ? $request->getHost() : null,
         );
 
         return $provider->checkout( $user, $product );

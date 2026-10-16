@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use PHPUnit\Framework\Attributes\Group;
 
 
@@ -48,8 +48,8 @@ class GraphqlFileTest extends GraphqlTestAbstract
             'previews' => (array) $file->previews,
             'description' => (array) $file->description,
             'transcription' => (array) $file->transcription,
-            'byelements' => $file->byelements->map( fn( $item ) => ['id' => $item->id] )->all(),
-            'bypages' => $file->bypages->map( fn( $item ) => ['id' => $item->id] )->all(),
+            'byelements' => $file->byelements->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
+            'bypages' => $file->bypages->sortBy( 'id' )->map( fn( $item ) => ['id' => $item->id] )->values()->all(),
             'byversions' => $file->byversions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'versions' => $file->versions->map( fn( $item ) => ['published' => $item->published] )->all(),
             'created_at' => (string) $file->created_at,
@@ -92,6 +92,8 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $fileData['previews'] = json_decode( $fileData['previews'], true );
         $fileData['description'] = json_decode( $fileData['description'], true );
         $fileData['transcription'] = json_decode( $fileData['transcription'], true );
+        $fileData['byelements'] = collect( $fileData['byelements'] )->sortBy( 'id' )->values()->all();
+        $fileData['bypages'] = collect( $fileData['bypages'] )->sortBy( 'id' )->values()->all();
 
         $this->assertEquals($expected, $fileData);
     }
@@ -229,7 +231,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
 
     public function testRelocateFileRejectsOversizedLists()
     {
-        $ids = array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) );
+        $ids = array_map( strval(...), range( 1, \Aimeos\Cms\Resource\Files::MAX_RELOCATE + 1 ) );
 
         $relocator = new \App\Models\User( ['cmsperms' => ['file:relocate']] );
         $response = $this->actingAs( $relocator )->graphQL( '
@@ -696,7 +698,7 @@ class GraphqlFileTest extends GraphqlTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->delete();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepFile(id: ["' . $file->id . '"]) {

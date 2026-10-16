@@ -7,81 +7,62 @@
 
 namespace Aimeos\Cms\Models;
 
-use Aimeos\Cms\Validation;
-use Aimeos\Nestedset\NodeTrait;
+use Aimeos\Cms\Concerns\Connection;
+use Aimeos\Cms\Concerns\HasUuids;
+use Aimeos\Cms\Concerns\PrunesTrashed;
+use Aimeos\Cms\Concerns\SecondTimestamps;
+use Aimeos\Cms\Concerns\Tenancy as HasTenancy;
+use Aimeos\Cms\ContentType;
+use Aimeos\Cms\DB;
+use Aimeos\Cms\Scout;
 use Aimeos\Nestedset\NestedSet;
-use Aimeos\Nestedset\AncestorsRelation;
-use Aimeos\Nestedset\DescendantsRelation;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Aimeos\Nestedset\NodeTrait;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Date;
+use Aimeos\Cms\Tenancy;
 
 
 /**
  * Page model
  *
+ * Owns the page tree (cms_pages) without the language specific data, which is
+ * stored in the language variants (PageVariant). Use the PageView model to read
+ * pages joined with one of their variants.
+ *
  * @property string $id
- * @property string|null $related_id
  * @property string $tenant_id
- * @property string $tag
- * @property string $lang
- * @property string $path
- * @property string $domain
- * @property string $to
- * @property string $name
- * @property string $title
- * @property string $type
- * @property string $theme
- * @property \stdClass $meta
- * @property \stdClass $config
- * @property \stdClass $content
- * @property int $status
- * @property int $cache
- * @property string $editor
  * @property string|null $parent_id
- * @property string|null $latest_id
+ * @property string $source
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property \Aimeos\Nestedset\Collection<int, Nav>|null $subtree
- * @property bool $access_allowed
- * @property bool $access_exists
- * @property-read Collection<int, Page> $ancestors
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PageAccess> $access
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PageVariant> $variants
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
+ * @method static \Aimeos\Nestedset\QueryBuilder<static> withTrashed()
+ * @method static \Aimeos\Nestedset\QueryBuilder<static> onlyTrashed()
  */
-class Page extends Base
+class Page extends Model
 {
-    use NodeTrait;
+    use Connection;
+    use HasUuids;
+    use NodeTrait {
+        deleteDescendants as protected deleteNodeDescendants;
+        refreshNode as protected refreshNodeData;
+    }
+    use Prunable;
+    use PrunesTrashed;
+    use SecondTimestamps;
+    use SoftDeletes;
+    use HasTenancy;
 
-    public const PERM = 'page';
-    protected const REFS = ['files', 'elements'];
+    public const PERM = ContentType::Page->value;
 
-    /** @var list<string> Columns required for Page lifecycle operations */
-    public const REQUIRED_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'path', 'domain', 'editor', 'latest_id', 'deleted_at',
-        NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
-    ];
-
-    /** @var list<string> Optional columns available for selective Page responses */
-    public const RESPONSE_COLUMNS = [
-        'related_id', 'name', 'title', 'tag', 'lang', 'to', 'type', 'theme', 'meta', 'config',
-        'content', 'status', 'cache', 'created_at', 'updated_at',
-    ];
-
-    /** @var list<string> Columns needed for memory-efficient Page queries */
-    public const SELECT_COLUMNS = [
-        'id', 'tenant_id', 'parent_id', 'related_id', 'path', 'domain', 'name', 'title',
-        'tag', 'lang', 'to', 'type', 'theme', 'meta', 'content', 'status', 'cache',
-        'editor', 'latest_id', 'created_at', 'updated_at', 'deleted_at',
-        NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH
-    ];
+    /** @var list<string> Columns stored in the cms_pages table besides the timestamps */
+    public const FIELDS = ['id', 'tenant_id', 'parent_id', '_lft', '_rgt', 'depth', 'source', 'deleted_at'];
 
     /**
      * The model's default values for attributes.
@@ -89,45 +70,8 @@ class Page extends Base
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'related_id' => null,
         'tenant_id' => '',
-        'tag' => '',
-        'lang' => '',
-        'path' => '',
-        'domain' => '',
-        'to' => '',
-        'name' => '',
-        'title' => '',
-        'type' => '',
-        'theme' => '',
-        'meta' => '{}',
-        'config' => '{}',
-        'content' => '[]',
-        'status' => 0,
-        'cache' => 5,
-        'editor' => '',
-    ];
-
-    /**
-     * The automatic casts for the attributes.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'tag' => 'string',
-        'lang' => 'string',
-        'path' => 'string',
-        'domain' => 'string',
-        'to' => 'string',
-        'name' => 'string',
-        'title' => 'string',
-        'type' => 'string',
-        'theme' => 'string',
-        'status' => 'integer',
-        'cache' => 'integer',
-        'meta' => 'object',
-        'config' => 'object',
-        'content' => 'object', // for object access in templates
+        'source' => '',
     ];
 
     /**
@@ -136,38 +80,22 @@ class Page extends Base
      * @var list<string>
      */
     protected $fillable = [
-        'related_id',
-        'tag',
-        'lang',
-        'path',
-        'domain',
-        'to',
-        'name',
-        'title',
-        'type',
-        'theme',
-        'status',
-        'cache',
+        'source',
     ];
 
     /**
-     * The attributes that are returned by toArray()
+     * The data type of the primary key.
      *
-     * @var list<string>
+     * @var string
      */
-    protected $visible = [
-        'tag',
-        'lang',
-        'path',
-        'domain',
-        'to',
-        'name',
-        'title',
-        'type',
-        'theme',
-        'status',
-        'cache',
-    ];
+    protected $keyType = 'string';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * The table associated with the model.
@@ -177,429 +105,237 @@ class Page extends Base
     protected $table = 'cms_pages';
 
     /**
-     * Ancestors and self collection cache for performance reasons.
-     *
-     * @var Collection<int, Page>|null
+     * If the tree position of the page is up to date and doesn't need to be re-read.
      */
-    protected ?Collection $cachedAncestorsAndSelf = null;
-
-
-    /**
-     * Returns a query builder for the full page tree including disabled and trashed pages.
-     *
-     * @param string|null $id Root page ID or null for all root pages
-     * @return \Aimeos\Nestedset\QueryBuilder<Nav> Query builder for further chaining, call ->get()->toTree() to execute
-     */
-    public static function tree( ?string $id = null ) : \Aimeos\Nestedset\QueryBuilder
-    {
-        $root = $id ? static::withTrashed()->findOrFail( $id ) : null;
-        $maxDepth = ( $root?->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
-
-        $lft = NestedSet::LFT;
-        $rgt = NestedSet::RGT;
-        $depth = NestedSet::DEPTH;
-
-        $builder = Nav::withTrashed()
-            ->select( 'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'type', 'path', 'domain', 'lang', 'to', 'status', 'latest_id', $lft, $rgt, $depth )
-            ->orderBy( $lft );
-
-        if( $root ) {
-            $builder->where( $lft, '>=', $root->getLft() )
-                ->where( $rgt, '<=', $root->getRgt() )
-                ->whereIn( $depth, range( (int) $root->getDepth(), $maxDepth ) );
-        } else {
-            $builder->whereIn( $depth, range( 0, $maxDepth ) );
-        }
-
-        return $builder;
-    }
-
-
-    /**
-     * Returns the text content of the page.
-     *
-     * @return string Text content
-     */
-    public function __toString() : string
-    {
-        $items = collect( (array) $this->content )->merge( $this->elements );
-
-        return trim( implode( "\n", [
-            $this->tag ?? '',
-            $this->name ?? '',
-            $this->title ?? '',
-            $this->meta->{'meta-tags'}->data->description ?? '',
-            ...\Aimeos\Cms\Scout::text( $items ),
-        ] ) );
-    }
-
-
-    /**
-     * Get query ancestors of the node.
-     *
-     * @return  AncestorsRelation
-     */
-    public function ancestors() : AncestorsRelation
-    {
-        $builder = $this->newScopedQuery()
-            ->select( Nav::SELECT_COLUMNS )
-            ->setModel( new Nav() )
-            ->defaultOrder();
-
-        return new AncestorsRelation( $builder, $this );
-    }
-
-
-    /**
-     * Relation to children.
-     *
-     * @return HasMany<Nav, $this>
-     */
-    public function children() : HasMany
-    {
-        return $this->hasMany( Nav::class, $this->getParentIdName() )
-            ->select( Nav::SELECT_COLUMNS )
-            ->setModel( new Nav() )
-            ->defaultOrder();
-    }
-
-
-    /**
-     * Explicit frontend access rules for this page.
-     *
-     * @return HasMany<PageAccess, $this>
-     */
-    public function access() : HasMany
-    {
-        return $this->hasMany( PageAccess::class, 'page_id' );
-    }
-
-
-    /**
-     * Returns the canonical immediate frontend access state.
-     *
-     * @return list<string>|null
-     */
-    public function accessValues() : ?array
-    {
-        return PageAccess::values( $this->access );
-    }
-
-
-    /**
-     * Returns whether the page has explicit frontend access rules.
-     */
-    public function restricted() : bool
-    {
-        if( $this->relationLoaded( 'access' ) ) {
-            return $this->getRelation( 'access' )->isNotEmpty();
-        }
-
-        $count = $this->getAttribute( 'access_count' );
-
-        return $count !== null
-            ? (int) $count > 0
-            : $this->access()->exists();
-    }
-
-
-    /**
-     * Get the shared element for the page.
-     *
-     * @return BelongsToMany<Element, $this> Eloquent relationship to the elements attached to the page
-     */
-    public function elements() : BelongsToMany
-    {
-        return $this->belongsToMany( Element::class, 'cms_page_element', 'page_id' );
-    }
-
-
-    /**
-     * Get all files referenced by the versioned data.
-     *
-     * @return BelongsToMany<File, $this> Eloquent relationship to the files
-     */
-    public function files() : BelongsToMany
-    {
-        return $this->belongsToMany( File::class, 'cms_page_file', 'page_id' );
-    }
-
-
-    /**
-     * Maps the elements by ID automatically.
-     *
-     * @return Collection<string, Element> List elements with ID as keys and element models as values
-     */
-    public function getElementsAttribute() : Collection
-    {
-        $this->relationLoaded( 'elements' ) ?: $this->load( 'elements' );
-        return $this->getRelation( 'elements' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Maps the files by ID automatically.
-     *
-     * @return Collection<string, File> List files with ID as keys and file models as values
-     */
-    public function getFilesAttribute() : Collection
-    {
-        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
-        return $this->getRelation( 'files' )->pluck( null, 'id' );
-    }
-
-
-    /**
-     * Returns ancestors including self (root→self), cached per instance.
-     *
-     * @return Collection<int, Page>
-     */
-    public function getAncestorsAndSelfAttribute() : Collection
-    {
-        return $this->cachedAncestorsAndSelf ??= collect( $this->ancestors )->push( $this );
-    }
-
-
-    /**
-     * Returns the number of descendants below this node.
-     *
-     * Derived from the nested set bounds without a query: the range [lft, rgt] spans the node
-     * and all its descendants at two slots each, so the count excludes the node itself. Zero for
-     * a leaf, so it still reads as "no children" where a boolean was expected, while a recursive
-     * bulk edit can size itself ("apply to N pages") from it. An unsaved node (null bounds) has no
-     * descendants - the ?? 0 keeps that case from doing null arithmetic.
-     *
-     * @return int Number of descendant pages
-     */
-    public function getHasAttribute() : int
-    {
-        return intdiv( ( $this->getRgt() ?? 0 ) - ( $this->getLft() ?? 0 ) - 1, 2 );
-    }
-
-
-    /**
-     * Get the menu for the page.
-     *
-     * @return DescendantsRelation Eloquent relationship to the descendants of the page
-     */
-    public function menu() : DescendantsRelation
-    {
-        return ( $this->ancestors->first() ?? $this )->subtree();
-    }
-
-
-    /**
-     * Relation to the parent.
-     *
-     * @return BelongsTo<Nav, $this>
-     */
-    public function parent() : BelongsTo
-    {
-        return $this->belongsTo( Nav::class, $this->getParentIdName() )
-            ->select( Nav::SELECT_COLUMNS )->setModel( new Nav() );
-    }
-
-
-    /**
-     * Limits a query to pages visible to the frontend user.
-     *
-     * @param Builder<static> $query
-     */
-    public function scopeAccess( Builder $query, ?Authenticatable $user ) : void
-    {
-        PageAccess::apply( $query, $user );
-    }
-
-
-    /**
-     * Adds frontend access decisions to the page query without loading rule rows.
-     *
-     * @param Builder<static> $query
-     */
-    public function scopeWithAccess( Builder $query, ?Authenticatable $user ) : void
-    {
-        PageAccess::flags( $query, $user );
-    }
-
-
-    /**
-     * Limits a query to pages without an explicit frontend access rule.
-     *
-     * @param Builder<static> $query
-     */
-    public function scopeWherePublic( Builder $query ) : void
-    {
-        $query->whereDoesntHave( 'access' );
-    }
-
-
-    /**
-     * Applies a lifecycle action to each locked page to keep the nested set consistent.
-     *
-     * @param \Illuminate\Database\Eloquent\Collection<int, Base> $items Pages
-     * @param 'dropped'|'purged'|'restored' $action Lifecycle action
-     * @param string $editor Name of the editing user
-     */
-    public static function lifecycle( \Illuminate\Database\Eloquent\Collection $items, string $action, string $editor ) : void
-    {
-        foreach( $items as $item )
-        {
-            if( $action === 'purged' ) {
-                $item->forceDelete();
-                continue;
-            }
-
-            $item->editor = $editor;
-            $action === 'dropped' ? $item->delete() : $item->restore();
-        }
-    }
-
-
-    /**
-     * Positions the page relative to a sibling or parent.
-     */
-    public function position( ?string $beforeId = null, ?string $parentId = null ) : void
-    {
-        $columns = ['id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH];
-
-        if( $beforeId !== null ) {
-            $this->beforeNode( static::withTrashed()->select( $columns )->findOrFail( $beforeId ) );
-        } elseif( $parentId !== null ) {
-            $this->appendToNode( static::withTrashed()->select( $columns )->findOrFail( $parentId ) );
-        } elseif( $this->exists ) {
-            $this->makeRoot();
-        }
-    }
-
+    private bool $trusted = false;
 
     /**
      * Get the prunable model query.
      *
-     * @return Builder<static> Eloquent query builder for pruning models
+     * @return Builder<static> Eloquent query builder for pruning trashed pages
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
-            ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
-    }
-
-
-    /**
-     * Returns the page route of the given version, falling back to the current values.
-     *
-     * @param Version $version Page version
-     * @return array{path: string, domain: string} Path and domain of the page
-     */
-    public function route( Version $version ) : array
-    {
-        return [
-            'path' => (string) ( $version->data->path ?? $this->path ),
-            'domain' => (string) ( $version->data->domain ?? $this->domain ),
-        ];
-    }
-
-
-    /**
-     * Get query for the complete sub-tree up to three levels.
-     *
-     * @return DescendantsRelation Eloquent relationship to the descendants of the page
-     */
-    public function subtree() : DescendantsRelation
-    {
         $table = $this->getTable();
-        $lft = $this->getLftName();
-        $rgt = $this->getRgtName();
-        $depth = $this->getDepthName();
+        $date = now()->subDays( config( 'cms.prune', 30 ) );
 
-        // restrict maximum depth to three levels for performance reasons
-        $maxDepth = ( $this->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
-
-        $builder = $this->newScopedQuery()
-            ->select( Nav::SELECT_COLUMNS )
-            ->whereIn( $depth, range( 0, $maxDepth ) )
-            ->whereNotExists( function( $query ) use ( $table, $lft, $rgt ) {
-                $query->select( DB::raw( 1 ) )
-                    ->from( $table . ' as disabled' )
-                    ->where( 'disabled.tenant_id', '=', \Aimeos\Cms\Tenancy::value() )
-                    ->where( 'disabled.status', 0 )
-                    ->whereNull( 'disabled.deleted_at' )
-                    ->whereColumn( "disabled.$lft", '<=', "$table.$lft" )
-                    ->whereColumn( "disabled.$rgt", '>=', "$table.$rgt" );
-            })
-            ->defaultOrder();
-
-        if( \Aimeos\Cms\Permission::can( 'page:view', Auth::user() ) ) {
-            $builder->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
-        }
-
-        return new DescendantsRelation( $builder->setModel( new Nav() ), $this );
+        // descendants are pruned together with their topmost expired ancestor
+        return static::expired()
+            ->whereNotExists( fn( $query ) => $query->selectRaw( '1' )->from( $table . ' as parent' )
+                ->whereColumn( 'parent.id', $table . '.parent_id' )
+                ->where( 'parent.deleted_at', '<=', $date ) )
+            ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH );
     }
 
 
     /**
-     * Returns the searchable data for the page.
+     * Prunes the trashed page including its descendants, variants and versions.
      *
-     * @return array<string, mixed>
+     * @return bool TRUE on success
      */
-    public function toSearchableArray(): array
+    public function prune()
     {
-        $attrs = ['domain', 'lang', 'path', 'to', 'tag', 'name', 'title', 'meta', 'content', 'deleted_at', 'latest_id'];
+        // the nested set queries are tenant scoped, so they must run in the tenant of the page
+        Tenancy::run( (string) $this->tenant_id, function() {
 
-        // bulk index + changed content check for performance reasons
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
+            $variantIds = DB::transaction( function() {
 
-        $draft = '';
-        $version = $this->latest;
-        $data = $version?->data;
+                // pages removed together with an ancestor don't exist anymore and the positions may be outdated
+                $page = static::withTrashed()->select( 'id', 'tenant_id', 'parent_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH )
+                    ->lockForUpdate()->find( $this->id );
 
-        if( $version )
+                if( !$page ) {
+                    return [];
+                }
+
+                $variantIds = [];
+
+                foreach( array_chunk( $page->subtreeIds(), DB::IN_SIZE ) as $chunk ) {
+                    array_push( $variantIds, ...PageVariant::withoutGlobalScopes()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all() );
+                }
+
+                PageVariant::purge( $variantIds );
+                static::purge( [$page] );
+
+                return $variantIds;
+            } );
+
+            // pages are indexed per variant
+            Scout::unindex( PageView::class, $variantIds );
+        } );
+
+        return true;
+    }
+
+
+    /**
+     * Permanently deletes the passed pages and their descendants whose variants have been removed by the caller.
+     *
+     * Doesn't fire model events because the caller updates the search index. Removes the rightmost
+     * subtree first because closing its gap doesn't shift the positions of the subtrees left of it,
+     * so the positions of the passed pages stay valid without reloading them.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
+     */
+    public static function purge( iterable $pages ) : void
+    {
+        $model = new self();
+
+        foreach( PageView::topmost( $pages )->reverse() as $page )
         {
-            $draft = mb_strtolower( trim(
-                ( $data->path ?? '' ) . "\n"
-                . ( $data->to ?? '' ) . "\n"
-                . (string) $version
-            ) );
+            $lft = (int) $page->getAttribute( NestedSet::LFT );
+            $rgt = (int) $page->getAttribute( NestedSet::RGT );
+
+            $model->newNestedSetQuery()->whereBetween( NestedSet::LFT, [$lft, $rgt] )->toBase()->delete();
+            $model->newNestedSetQuery()->makeGap( $rgt + 1, $lft - $rgt - 1 );
+        }
+    }
+
+
+    /**
+     * Restores the passed pages and their descendants which have been trashed together with them.
+     *
+     * Doesn't fire model events because the caller updates the search index. Each page restores
+     * the descendants trashed at the same time or later, so descendants trashed before stay in the trash.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
+     * @param \DateTimeInterface $at Time of the change
+     */
+    public static function restoreSubtrees( iterable $pages, \DateTimeInterface $at ) : void
+    {
+        $model = new self();
+        $pages = collect( $pages )->filter( fn( Model $page ) => $page->getAttribute( 'deleted_at' ) !== null );
+
+        if( $pages->isEmpty() ) {
+            return;
         }
 
-        $content = '';
+        $model->newNestedSetQuery()->where( function( $query ) use ( $model, $pages ) {
+            foreach( $pages as $page )
+            {
+                $deleted = Date::make( $page->getAttribute( 'deleted_at' ) )?->startOfSecond();
+                $bounds = [$page->getAttribute( NestedSet::LFT ), $page->getAttribute( NestedSet::RGT )];
 
-        if( !$this->trashed() )
+                $query->orWhere( fn( $query ) => $query->whereBetween( NestedSet::LFT, $bounds )
+                    ->where( 'deleted_at', '>=', $model->fromDateTime( $deleted ) ) );
+            }
+        } )->toBase()->update( ['deleted_at' => null, 'updated_at' => $model->fromDateTime( $at )] );
+    }
+
+
+    /**
+     * Moves the passed pages and their descendants into the trash.
+     *
+     * Doesn't fire model events because the caller updates the search index. Descendants which are
+     * already in the trash keep their deletion time, so they aren't restored together with the pages.
+     *
+     * @param iterable<Model> $pages Pages with current tree positions
+     * @param \DateTimeInterface $at Time of the change
+     */
+    public static function trashSubtrees( iterable $pages, \DateTimeInterface $at ) : void
+    {
+        $model = new self();
+        $roots = PageView::topmost( $pages );
+
+        if( $roots->isEmpty() ) {
+            return;
+        }
+
+        $ids = collect( $pages )->map( fn( Model $page ) => (string) $page->getKey() )->all();
+        $time = $model->fromDateTime( $at );
+
+        $model->newNestedSetQuery()
+            ->where( function( $query ) use ( $roots ) {
+                foreach( $roots as $root ) {
+                    $query->orWhereBetween( NestedSet::LFT, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
+                }
+            } )
+            ->where( fn( $query ) => $query->whereNull( 'deleted_at' )->orWhereIn( 'id', $ids ) )
+            ->toBase()->update( ['deleted_at' => $time, 'updated_at' => $time] );
+    }
+
+
+    /**
+     * Re-reads the tree position of the page unless it's trusted.
+     */
+    public function refreshNode() : void
+    {
+        if( !$this->trusted ) {
+            $this->refreshNodeData();
+        }
+    }
+
+
+    /**
+     * Saves the page before the reference page, as last child of the parent page or as root page.
+     *
+     * The tree positions of the passed pages aren't re-read, so they must be loaded within
+     * the locked transaction immediately before and must not be reused afterwards.
+     *
+     * @param Page|null $ref Sibling page to insert before
+     * @param Page|null $parent Parent page to append to, as root page if both are NULL
+     * @return bool TRUE if the page was saved
+     */
+    public function saveAt( ?Page $ref = null, ?Page $parent = null ) : bool
+    {
+        $pages = array_filter( [$this, $ref, $parent] );
+
+        foreach( $pages as $page ) {
+            $page->trusted = true;
+        }
+
+        try
         {
-            $content = mb_strtolower( trim(
-                $this->path . "\n"
-                . $this->to . "\n"
-                . (string) $this
-            ) );
+            if( $ref ) {
+                $this->beforeNode( $ref );
+            } elseif( $parent ) {
+                $this->appendToNode( $parent );
+            } elseif( $this->exists ) {
+                $this->makeRoot();
+            }
+
+            return $this->save();
+        }
+        finally
+        {
+            foreach( $pages as $page ) {
+                $page->trusted = false;
+            }
+        }
+    }
+
+
+    /**
+     * Relation to the language variants of the page.
+     *
+     * @return HasMany<PageVariant, $this>
+     */
+    public function variants() : HasMany
+    {
+        return $this->hasMany( PageVariant::class, 'page_id' );
+    }
+
+
+    /**
+     * Deletes the descendants of the node.
+     *
+     * The nested set purges descendants without the global scopes, so the
+     * descendants of a purged page would be deleted in all tenants. Applies the
+     * scopes except the soft delete scope to purge the trashed descendants too.
+     */
+    protected function deleteDescendants() : void
+    {
+        if( !$this->forceDeleting )
+        {
+            $this->deleteNodeDescendants();
+            return;
         }
 
-        return [
-            'draft' => $draft,
-            'content' => $content,
-            'tenant_id' => $this->tenant_id ?? '',
-            'parent_id' => $this->parent_id,
+        $this->newNestedSetQuery()->whereDescendantOf( $this )->toBase()->delete();
+        $this->newNestedSetQuery()->makeGap( $this->getRgt() + 1, -( $this->getRgt() - $this->getLft() + 1 ) );
+        $this->makeRoot();
 
-            // published values for frontend search
-            'lang' => $this->lang ?? '',
-            'path' => $this->path ?? '',
-            'domain' => $this->domain ?? '',
-
-            // draft values for backend search
-            'editor' => $version->editor ?? '',
-            'status' => (int) ( $data->status ?? 0 ),
-            'cache' => (int) ( $data->cache ?? 0 ),
-            'to' => $data->to ?? '',
-            'tag' => $data->tag ?? '',
-            'theme' => $data->theme ?? '',
-            'type' => $data->type ?? '',
-            'published' => (bool) ( $version->published ?? false ),
-            'scheduled' => (int) ( $data->scheduled ?? 0 ),
-
-            // frontend access hint for fast filtering
-            'restricted' => $this->restricted(),
-        ];
+        static::$actionsPerformed++;
     }
 
 
@@ -608,217 +344,19 @@ class Page extends Base
      *
      * @return bool FALSE to disable firing events for descendants
      */
-    protected function shouldFireDescendantEvents(): bool
+    protected function shouldFireDescendantEvents() : bool
     {
         return false;
     }
 
 
     /**
-     * Modify the query used to retrieve models when making all of the models searchable.
+     * Returns the IDs of the page and its descendants.
      *
-     * @param \Illuminate\Database\Eloquent\Builder<static> $query
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @return array<int, string> Page IDs
      */
-    protected function makeAllSearchableUsing( $query )
+    protected function subtreeIds() : array
     {
-        return $query->select( self::SELECT_COLUMNS )->withCount( 'access' )->with( [
-            'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
-            'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-        ] );
-    }
-
-
-    /**
-     * Whether one explicit frontend access rule allows the current user.
-     *
-     * @return Attribute<bool, never>
-     */
-    protected function accessAllowed() : Attribute
-    {
-        return Attribute::get( fn( $value ) => (bool) $value );
-    }
-
-
-    /**
-     * Whether the page has explicit frontend access rules.
-     *
-     * @return Attribute<bool, never>
-     */
-    protected function accessExists() : Attribute
-    {
-        return Attribute::get( fn( $value ) => (bool) $value );
-    }
-
-
-    /**
-     * Interact with the "cache" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "cache" property
-     */
-    protected function cache(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => $value === null ? 5 : (int) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "config" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "config" property
-     */
-    protected function config(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => json_encode( Validation::structured( $value, 'config' ) ),
-        );
-    }
-
-
-    /**
-     * Interact with the "content" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "content" property
-     */
-    protected function content(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => json_encode( $value ?? [] ),
-        );
-    }
-
-
-    /**
-     * Interact with the "domain" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "domain" property
-     */
-    protected function domain(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "name" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "name" property
-     */
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "meta" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "meta" property
-     */
-    protected function meta(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => json_encode( Validation::structured( $value, 'meta' ) ),
-        );
-    }
-
-
-    /**
-     * Interact with the "path" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "path" property
-     */
-    protected function path(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "status" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "status" property
-     */
-    protected function status(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (int) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "tag" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "tag" property
-     */
-    protected function tag(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "theme" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "theme" property
-     */
-    protected function theme(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "to" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "to" property
-     */
-    protected function to(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Interact with the "type" property.
-     *
-     * @return Attribute<mixed, mixed> Eloquent attribute for the "type" property
-     */
-    protected function type(): Attribute
-    {
-        return Attribute::make(
-            set: fn( $value ) => (string) $value,
-        );
-    }
-
-
-    /**
-     * Returns page-specific publication values.
-     *
-     * @return array<string, mixed>
-     */
-    protected function values( Version $version ) : array
-    {
-        return [
-            'content' => $version->aux->content ?? [],
-            'config' => $version->aux->config ?? new \stdClass(),
-            'meta' => $version->aux->meta ?? new \stdClass(),
-        ];
+        return $this->newNestedSetQuery()->whereDescendantOrSelf( $this )->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

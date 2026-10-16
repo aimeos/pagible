@@ -7,9 +7,10 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -18,10 +19,10 @@ class Validation
 {
     /** @var array<class-string, array<string, int>> Maximum string lengths or integer values of scalar fields */
     private const LIMITS = [
-        Element::class => ['lang' => 5, 'name' => 255, 'type' => 50],
-        File::class => ['lang' => 5, 'mime' => 100, 'name' => 255, 'path' => 255],
-        Page::class => [
-            'cache' => 32767, 'domain' => 255, 'lang' => 5, 'name' => 255, 'path' => 255, 'related_id' => 36,
+        Element::class => ['lang' => 10, 'name' => 255, 'type' => 50],
+        File::class => ['lang' => 10, 'mime' => 100, 'name' => 255, 'path' => 255],
+        PageView::class => [
+            'cache' => 32767, 'domain' => 255, 'lang' => 10, 'name' => 255, 'path' => 255,
             'status' => 32767, 'tag' => 30, 'theme' => 30, 'title' => 255, 'to' => 255, 'type' => 30,
         ],
     ];
@@ -33,7 +34,7 @@ class Validation
     /**
      * Validates the scalar fields of the input against the storage limits of the model.
      *
-     * @param class-string<Element|File|Page> $model Model class the input is stored in
+     * @param class-string<Element|File|PageView> $model Model class the input is stored in
      * @param array<string, mixed> $input Input data
      * @throws Exception If a value isn't scalar or exceeds its limit
      */
@@ -48,13 +49,35 @@ class Validation
             if( isset( self::NUMBERS[$key] ) )
             {
                 if( filter_var( $value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $max]] ) === false ) {
-                    throw new Exception( sprintf( 'Invalid value for "%s", expected an integer between 0 and %d', $key, $max ) );
+                    throw new InvalidInputException( sprintf( 'Invalid value for "%s", expected an integer between 0 and %d', $key, $max ) );
                 }
             }
             elseif( !is_scalar( $value ) || mb_strlen( (string) $value ) > $max ) {
-                throw new Exception( sprintf( 'Invalid value for "%s", expected up to %d characters', $key, $max ) );
+                throw new InvalidInputException( sprintf( 'Invalid value for "%s", expected up to %d characters', $key, $max ) );
             }
         }
+    }
+
+
+    /**
+     * Shortens the strings of the scalar fields to the storage limits of the model.
+     *
+     * Used for generated values like translations which shouldn't fail because of their length.
+     *
+     * @param class-string<Element|File|PageView> $model Model class the input is stored in
+     * @param array<string, mixed> $input Input data
+     * @return array<string, mixed> Input data with shortened strings
+     */
+    public static function truncate( string $model, array $input ) : array
+    {
+        foreach( self::LIMITS[$model] as $key => $max )
+        {
+            if( !isset( self::NUMBERS[$key] ) && is_string( $input[$key] ?? null ) ) {
+                $input[$key] = mb_substr( $input[$key], 0, $max );
+            }
+        }
+
+        return $input;
     }
 
 
@@ -70,14 +93,26 @@ class Validation
      */
     public static function page( array $input, ?Authenticatable $user = null ) : array
     {
-        self::limits( Page::class, $input );
+        self::limits( PageView::class, $input );
 
-        if( !Utils::isValidUrl( $input['to'] ?? null, false ) ) {
-            throw new Exception( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
+        if( !Utils::isValidUrl( $input['to'] ?? null, strict: false ) ) {
+            throw new InvalidInputException( sprintf( 'Invalid URL "%s" in "to" field', $input['to'] ?? '' ) );
+        }
+
+        if( isset( $input['lang'] ) && !Utils::isValidLang( (string) $input['lang'] ) ) {
+            throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
         }
 
         if( !Permission::can( 'page:config', $user ) ) {
             unset( $input['config'] );
+        }
+
+        // the source language is changed by Variants::setSource() only
+        unset( $input['source'] );
+
+        // host names are case insensitive and requests use lower case hosts
+        if( is_string( $input['domain'] ?? null ) ) {
+            $input['domain'] = mb_strtolower( $input['domain'] );
         }
 
         if( isset( $input['content'] ) )
@@ -238,20 +273,20 @@ class Validation
         $schemas = Schema::schemas( section: $section );
 
         if( is_null( $items ) ) {
-            throw new Exception( sprintf( 'Invalid %s structure: expected an object keyed by type', $section ) );
+            throw new InvalidInputException( sprintf( 'Invalid %s structure: expected an object keyed by type', $section ) );
         }
 
         $result = new \stdClass();
         $items = (array) $items;
 
         if( $items && array_is_list( $items ) ) {
-            throw new Exception( sprintf( 'Invalid %s structure: entries must be keyed by type', $section ) );
+            throw new InvalidInputException( sprintf( 'Invalid %s structure: entries must be keyed by type', $section ) );
         }
 
         foreach( $items as $key => $value )
         {
             if( !is_array( $value ) && !is_object( $value ) ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": entry must be an object', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": entry must be an object', $section, $key ) );
             }
 
             $value = (array) $value;
@@ -259,30 +294,30 @@ class Validation
             sort( $keys );
 
             if( $keys !== ['data', 'files', 'type'] ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": expected type, data and files', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": expected type, data and files', $section, $key ) );
             }
 
             $entryType = $value['type'];
 
             if( !is_string( $key ) || $key === '' || !is_string( $entryType ) || $entryType !== $key ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
             }
 
             if( !is_array( $value['data'] ) && !is_object( $value['data'] ) ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": data must be an object', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": data must be an object', $section, $key ) );
             }
 
             if( !is_array( $value['files'] ) || !array_is_list( $value['files'] )
                 || array_filter( $value['files'], fn( $id ) => !is_string( $id ) )
             ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": files must be a list of strings', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must be a list of strings', $section, $key ) );
             }
 
             $data = self::defaults( $entryType, $value['data'], $section, $schemas );
             $files = self::files( $data );
 
             if( $files !== $value['files'] ) {
-                throw new Exception( sprintf( 'Invalid %s entry "%s": files must match data references', $section, $key ) );
+                throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must match data references', $section, $key ) );
             }
 
             $result->{$entryType} = (object) [
@@ -302,7 +337,7 @@ class Validation
      * @param string $type Element type
      * @param object|array<string, mixed> &$data Element data (modified in place)
      */
-    public static function html( string $type, object|array &$data ) : void
+    private static function html( string $type, object|array &$data ) : void
     {
         if( $type !== 'html' ) {
             return;
@@ -411,14 +446,14 @@ class Validation
 
             if( $type === 'reference' ) {
                 if( !is_string( $item->refid ?? null ) || $item->refid === '' ) {
-                    throw new Exception( 'Invalid content reference ID' );
+                    throw new InvalidInputException( 'Invalid content reference ID' );
                 }
 
                 continue;
             }
 
             if( !$type || !isset( $schemas[$type] ) ) {
-                throw new Exception( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
+                throw new InvalidInputException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
             }
         }
     }
@@ -438,7 +473,7 @@ class Validation
         $schemas = Schema::schemas( section: 'content' );
 
         if( $strict && !isset( $schemas[$type] ) ) {
-            throw new Exception( sprintf( 'Unknown element type "%s"', $type ) );
+            throw new InvalidInputException( sprintf( 'Unknown element type "%s"', $type ) );
         }
 
         if( $data === null ) {
@@ -465,11 +500,11 @@ class Validation
         try {
             $date = Carbon::parse( $at );
         } catch( \Exception $e ) {
-            throw new Exception( sprintf( 'Invalid publish date "%s"', $at ) );
+            throw new InvalidInputException( sprintf( 'Invalid publish date "%s"', $at ), 0, $e );
         }
 
         if( $date->isPast() ) {
-            throw new Exception( 'Publish date must be in the future' );
+            throw new InvalidInputException( 'Publish date must be in the future' );
         }
     }
 }

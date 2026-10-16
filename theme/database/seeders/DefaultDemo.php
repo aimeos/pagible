@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -59,11 +59,11 @@ class DefaultDemo extends AbstractDemo
     /**
      * Creates the field-notes section below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @param string $blogId Field-notes page ID referenced by listing elements
      * @return static Same object for fluent calls
      */
-    protected function addBlog( Page $home, string $blogId ) : static
+    protected function addBlog( PageView $home, string $blogId ) : static
     {
         $blog = $this->page( [
             'id' => $blogId,
@@ -250,10 +250,10 @@ class DefaultDemo extends AbstractDemo
     /**
      * Creates the two-page client handbook below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addDocs( Page $home ) : static
+    protected function addDocs( PageView $home ) : static
     {
         $docs = $this->page( [
             'lang' => 'en',
@@ -462,9 +462,9 @@ class DefaultDemo extends AbstractDemo
      * Creates the Meridian Works home page and returns it.
      *
      * @param string $blogId Field-notes page ID referenced by listing elements
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home( string $blogId ) : Page
+    protected function home( string $blogId ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -632,12 +632,12 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param array<int, string> $fileIds Additional file IDs to attach
      * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();

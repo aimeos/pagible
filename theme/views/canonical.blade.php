@@ -3,3 +3,5 @@
 @else
 <link rel="canonical" href="{{ $url }}" />
 @endif
+
+@include('cms::hreflang')

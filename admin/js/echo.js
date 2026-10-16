@@ -18,10 +18,12 @@ const subscriptions = new Set()
 export const RECONNECT = 'reconnect'
 
 // Actions broadcast on the per-type channel, named '{type}.{action}'. Lists patch the row in
-// place for PATCH_ACTIONS and reload for the structural ones. 'bulk' carries many ids at once
-// and patches every listed row (see listEcho).
+// place for PATCH_ACTIONS and reload for the structural ones. Events changing several items at
+// once carry "ids" instead of "id" and patch every listed row (see listEcho). VARIANT_ACTIONS are
+// only sent for several pages at once, e.g. after translating or ignoring language variants.
 export const PATCH_ACTIONS = ['saved', 'published', 'restored', 'dropped']
-export const LIST_ACTIONS = [...PATCH_ACTIONS, 'bulk', 'added', 'moved', 'purged']
+export const VARIANT_ACTIONS = ['translated', 'source', 'ignored']
+export const LIST_ACTIONS = [...PATCH_ACTIONS, 'added', 'moved', 'purged', ...VARIANT_ACTIONS]
 
 function resetIdleTimer() {
   clearTimeout(idleTimer)
@@ -243,15 +245,15 @@ export function bulkPatch(data, event, id) {
 
 /**
  * Routes a per-type channel event for a list/tree view: a reconnect or a structural change flags
- * the list for reload, a single-item patch action updates the row in place, and a bulk event
- * patches every row it lists via patchItems() in a single pass over the loaded rows (O(rows), not
- * O(ids x rows)). The originating tab is already excluded server-side via toOthers(), so other tabs
+ * the list for reload, a single-item patch action updates the row in place, and an event with
+ * several ids (except purged ones) patches every row it lists via patchItems() in a single pass
+ * over the loaded rows (O(rows), not O(ids x rows)). The originating tab is already excluded server-side via toOthers(), so other tabs
  * (even of the same user) still update. Reaches into vm.{outdated,patch,patchItems}, the shared
  * contract of the list components.
  */
 export function listEcho(vm, event, name) {
   if (name === RECONNECT) { vm.outdated = true; return }
-  if (name === 'bulk') {
+  if (event?.ids && name !== 'purged') {
     const data = sanitize(event.data)
     vm.patchItems((event.ids || []).map((id) => bulkPatch(data, event, id)))
     return
@@ -267,12 +269,12 @@ export function listEcho(vm, event, name) {
  */
 export function setupReload(type, id, reload, enabled, connect = subscribe) {
   const reloadd = debounce(reload, 300)
-  // a detail view reloads its own item on any patch action, a bulk edit including its id, or reconnect
+  // a detail view reloads its own item on any patch action, a bulk change including its id, or reconnect
   const dispose = setupEcho(type, (event, name) => {
     if ((name === RECONNECT || event?.id === id || event?.ids?.includes(id)) && enabled()) {
       reloadd()
     }
-  }, [...PATCH_ACTIONS, 'bulk'], connect)
+  }, [...PATCH_ACTIONS, 'added', ...VARIANT_ACTIONS], connect)
 
   return () => {
     reloadd.cancel()

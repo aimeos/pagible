@@ -60,6 +60,6 @@ class TestingCmsCard extends CmsMetricCard
     {
         $this->aggregateCalls[] = compact( 'type', 'aggregates', 'orderBy', 'direction', 'limit' );
 
-        return $this->aggregateRows;
+        return $this->aggregateRows->take( $limit );
     }
 }

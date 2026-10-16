@@ -8,18 +8,18 @@
 namespace Aimeos\Cms\Jobs;
 
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Tenancy;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 
 
 class PruneVersions implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable;
     use Queueable;
-    use SerializesModels;
+    use RoutesQueue;
 
 
     /**
@@ -30,7 +30,21 @@ class PruneVersions implements ShouldBeUnique, ShouldQueue
     public function __construct( public string $model, public string $tenant, public array $ids )
     {
         sort( $this->ids );
-        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->routeQueue();
+    }
+
+
+    /**
+     * Queues version pruning in bounded batches after the current transaction commits.
+     *
+     * @param class-string<Base> $model Model class
+     * @param array<string|null> $ids Model IDs, NULL values are skipped
+     */
+    public static function dispatchChunked( string $model, array $ids ) : void
+    {
+        foreach( array_chunk( array_unique( array_filter( $ids, is_string(...) ) ), Base::CHUNK ) as $chunk ) {
+            static::dispatch( $model, Tenancy::value(), $chunk )->afterCommit();
+        }
     }
 
 

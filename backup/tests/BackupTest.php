@@ -17,7 +17,7 @@ use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Events\RestoreCompleted;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\FileStorage;
 
 
 class BackupTest extends BackupTestAbstract
@@ -118,7 +118,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupRejectsConcurrentMediaOperation(): void
     {
-        $status = Utils::storageLock( $this->tenant, fn() =>
+        $status = FileStorage::storageLock( $this->tenant, fn() =>
             \Illuminate\Support\Facades\Artisan::call( 'cms:backup', [
                 '--tenant' => $this->tenant,
                 '--disk' => 'backup',
@@ -219,6 +219,7 @@ class BackupTest extends BackupTestAbstract
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $page = (array) $db->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->first();
+        $variant = (array) $db->table( 'cms_page_variants' )->where( 'page_id', $page['id'] )->first();
         $file = (array) $db->table( 'cms_files' )->where( 'tenant_id', $this->tenant )->first();
         $pageId = (string) \Illuminate\Support\Str::uuid7();
         $fileId = (string) \Illuminate\Support\Str::uuid7();
@@ -226,18 +227,21 @@ class BackupTest extends BackupTestAbstract
         $page['id'] = $pageId;
         $page['tenant_id'] = 'other';
         $page['parent_id'] = null;
-        $page['related_id'] = null;
-        $page['latest_id'] = null;
-        $page['domain'] = 'other.example';
-        $page['path'] = 'foreign-' . substr( $pageId, 0, 8 );
+        $variant['id'] = $pageId;
+        $variant['page_id'] = $pageId;
+        $variant['tenant_id'] = 'other';
+        $variant['latest_id'] = null;
+        $variant['domain'] = 'other.example';
+        $variant['path'] = 'foreign-' . substr( $pageId, 0, 8 );
         $file['id'] = $fileId;
         $file['tenant_id'] = 'other';
         $file['latest_id'] = null;
         $file['path'] = 'cms/other/' . $fileId . '/foreign.txt';
 
         $db->table( 'cms_pages' )->insert( $page );
+        $db->table( 'cms_page_variants' )->insert( $variant );
         $db->table( 'cms_files' )->insert( $file );
-        $db->table( 'cms_page_file' )->insert( ['page_id' => $pageId, 'file_id' => $fileId] );
+        $db->table( 'cms_page_file' )->insert( ['variant_id' => $pageId, 'file_id' => $fileId] );
 
         $backup = $this->backup( $this->tenant );
         $zip = new \ZipArchive();
@@ -776,12 +780,112 @@ class BackupTest extends BackupTestAbstract
     }
 
 
+    public function testRestoreRejectsForeignReferences(): void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $variant = (string) $db->table( 'cms_page_variants' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+        $element = (string) $db->table( 'cms_elements' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+
+        $command = new class extends RestoreCommand {
+            public function refs( \Illuminate\Database\Connection $db, array $rows, string $tenant ): void
+            {
+                $this->guardRefs( $db, 'cms_page_element', $rows, $tenant );
+            }
+        };
+
+        $command->refs( $db, [['variant_id' => $variant, 'element_id' => $element]], $this->tenant );
+
+        // crafted archives must not link rows to rows of other tenants
+        $this->expectException( \RuntimeException::class );
+        $command->refs( $db, [['variant_id' => $variant, 'element_id' => $element]], 'other' );
+    }
+
+
+    public function testRestoreRejectsForeignParentAndVersion(): void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $page = (string) $db->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+        $version = (string) $db->table( 'cms_versions' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+
+        $command = new class extends RestoreCommand {
+            public function refs( \Illuminate\Database\Connection $db, string $table, array $rows, string $tenant ): void
+            {
+                $this->guardRefs( $db, $table, $rows, $tenant );
+            }
+        };
+
+        // references within the same tenant and table are allowed
+        $command->refs( $db, 'cms_pages', [['parent_id' => $page, 'latest_id' => $version]], $this->tenant );
+
+        try {
+            $command->refs( $db, 'cms_pages', [['parent_id' => $page]], 'other' );
+            $this->fail( 'Foreign parent must be rejected' );
+        } catch( \RuntimeException $e ) {
+            $this->assertStringContainsString( 'cms_pages', $e->getMessage() );
+        }
+
+        $this->expectException( \RuntimeException::class );
+        $command->refs( $db, 'cms_elements', [['latest_id' => $version]], 'other' );
+    }
+
+
+    public function testRestoreSkipsSearchIndex(): void
+    {
+        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $file = tempnam( sys_get_temp_dir(), 'cms' );
+
+        $zip = new \ZipArchive();
+        $zip->open( $file, \ZipArchive::OVERWRITE );
+        $zip->addFromString( 'cms_pages.ndjson', '' );
+        $zip->addFromString( 'cms_index.ndjson', '' );
+        $zip->close();
+
+        $command = new class extends RestoreCommand {
+            public function tables( \ZipArchive $zip, \Illuminate\Database\Connection $db ): array
+            {
+                return $this->discover( $zip, $db );
+            }
+        };
+
+        try {
+            $zip->open( $file );
+            // search index rows are rebuilt and must not be injected by crafted archives
+            $this->assertSame( ['cms_pages'], $command->tables( $zip, $db ) );
+        } finally {
+            $zip->close();
+            unlink( $file );
+        }
+    }
+
+
+    public function testRestoreSameTenantRejectsForeignIdCollision(): void
+    {
+        $conn = config( 'cms.db', 'sqlite' );
+        $backupFile = $this->backup( $this->tenant );
+
+        // IDs of the archive already used by another tenant
+        // by ID because SQL Server ignores limits in updates
+        $id = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->value( 'id' );
+        DB::connection( $conn )->table( 'cms_pages' )->where( 'id', $id )->update( ['tenant_id' => 'other'] );
+
+        $status = \Illuminate\Support\Facades\Artisan::call( 'cms:restore', [
+            'file' => $backupFile,
+            '--disk' => 'backup',
+            '--no-media' => true,
+            '--merge' => true,
+            '--force' => true,
+        ] );
+
+        $this->assertSame( 1, $status );
+        $this->assertSame( 1, DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', 'other' )->count() );
+    }
+
+
     public function testRestoreManagedTenantMismatchFailsBeforeWriting(): void
     {
         $conn = config( 'cms.db', 'sqlite' );
         $backupFile = $this->backup( $this->tenant );
-        $managed = new \ReflectionProperty( Tenancy::class, 'managed' );
-        $managed->setValue( null, true );
+        \Aimeos\Cms\Hooks::get()->managed = true;
 
         try
         {
@@ -796,7 +900,7 @@ class BackupTest extends BackupTestAbstract
                 ->assertExitCode( 1 );
         }
         finally {
-            $managed->setValue( null, false );
+            \Aimeos\Cms\Hooks::get()->managed = false;
         }
 
         $this->assertSame( 0, DB::connection( $conn )->table( 'cms_pages' )
@@ -868,7 +972,7 @@ class BackupTest extends BackupTestAbstract
             'data' => json_encode( ['path' => 'cms/test/' . $id . '/file.pdf', 'description' => ['en' => 'see cms/test/'] ] ),
         ], 'cms_versions', [$id => ['disk' => 'public', 'paths' => []]] );
         $page = $command->row( [
-            'versionable_type' => \Aimeos\Cms\Models\Page::class,
+            'versionable_type' => \Aimeos\Cms\Models\PageVariant::class,
             'data' => json_encode( ['title' => 'cms/test/ docs'] ),
         ], 'cms_versions' );
 

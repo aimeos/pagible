@@ -10,9 +10,10 @@ namespace Aimeos\Cms\Commands;
 use Illuminate\Console\Command;
 
 use Aimeos\Cms\Concerns\Benchmarks;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -35,26 +36,21 @@ class BenchmarkSearch extends Command
 
     public function handle(): int
     {
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-        $unseed = (bool) $this->option( 'unseed' );
-
-        if( !$this->checks( $tenant, $tries, $force, !$unseed ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        if( $unseed )
+        $tries = $options['tries'];
+
+        if( $options['unseed'] )
         {
             $this->output->write( '  Flushing search index... ' );
-            Page::removeAllFromSearch();
+            PageView::removeAllFromSearch();
             Element::removeAllFromSearch();
             File::removeAllFromSearch();
             $this->line( 'done' );
             $this->output->write( '  Rebuilding search index... ' );
-            Page::makeAllSearchable();
-            Element::makeAllSearchable();
-            File::makeAllSearchable();
+            Scout::rebuild();
             $this->line( 'done' );
             return self::SUCCESS;
         }
@@ -63,22 +59,20 @@ class BenchmarkSearch extends Command
         if( $this->option( 'seed' ) )
         {
             $this->output->write( '  Indexing pages, elements, and files for search... ' );
-            Page::makeAllSearchable();
-            Element::makeAllSearchable();
-            File::makeAllSearchable();
+            Scout::rebuild();
             $this->line( 'done' );
         }
 
-        $page = Page::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
+        $page = PageView::where( 'tag', '!=', 'root' )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
 
         $this->header();
 
         $this->benchmark( 'Search pages (pub)', function() {
-            Page::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
+            PageView::search( 'lorem' )->searchFields( 'content' )->take( 100 )->get();
         }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search pages (adm)', function() {
-            Page::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
+            PageView::search( 'lorem' )->searchFields( 'draft' )->take( 100 )->get();
         }, readOnly: true, tries: $tries, searchSync: true );
 
         $this->benchmark( 'Search elements', function() {

@@ -358,29 +358,18 @@ class GraphqlAiTest extends AiTestAbstract
         $variant = $ai['properties']['contents']['items']['anyOf'][0];
         $this->assertSame( ['main'], $variant['properties']['group']['enum'] );
 
-        // a theme with page-type sections constrains the element groups
-        $ref = new \ReflectionClass( \Aimeos\Cms\Schema::class );
-        $themes = $ref->getProperty( 'themes' );
-        $snapshot = $themes->getValue();
+        // a theme with page-type sections constrains the element groups,
+        // registered themes are reset with the application after the test
+        \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
 
-        try
-        {
-            \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
+        $this->assertSame( ['main', 'footer'], \Aimeos\Cms\Schema::sections( 'page' ) );
 
-            $this->assertSame( ['main', 'footer'], \Aimeos\Cms\Schema::sections( 'page' ) );
+        $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
+        $variant = $ai['properties']['contents']['items']['anyOf'][0];
+        $reference = end( $ai['properties']['contents']['items']['anyOf'] );
 
-            $ai = \Aimeos\Cms\JsonSchema::build( 'content', 'page' );
-            $variant = $ai['properties']['contents']['items']['anyOf'][0];
-            $reference = end( $ai['properties']['contents']['items']['anyOf'] );
-
-            $this->assertSame( ['main', 'footer'], $variant['properties']['group']['enum'] );
-            $this->assertSame( ['main', 'footer'], $reference['properties']['group']['enum'] );
-        }
-        finally
-        {
-            $themes->setValue( null, $snapshot );
-            $ref->getProperty( 'schemas' )->setValue( null, [] );
-        }
+        $this->assertSame( ['main', 'footer'], $variant['properties']['group']['enum'] );
+        $this->assertSame( ['main', 'footer'], $reference['properties']['group']['enum'] );
     }
 
 
@@ -396,29 +385,18 @@ class GraphqlAiTest extends AiTestAbstract
 
     public function testContentGroupCoercion()
     {
-        $ref = new \ReflectionClass( \Aimeos\Cms\Schema::class );
-        $themes = $ref->getProperty( 'themes' );
-        $snapshot = $themes->getValue();
+        // registered themes are reset with the application after the test
+        \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
 
-        try
-        {
-            \Aimeos\Cms\Schema::register( dirname( __DIR__, 2 ) . '/themes/pagible', 'pg' );
+        $result = \Aimeos\Cms\Validation::content( [
+            ['type' => 'heading', 'group' => 'footer', 'data' => ['title' => 'A', 'level' => '2']],
+            ['type' => 'heading', 'group' => 'bogus', 'data' => ['title' => 'B', 'level' => '2']],
+            ['type' => 'heading', 'data' => ['title' => 'C', 'level' => '2']],
+        ], 'page' );
 
-            $result = \Aimeos\Cms\Validation::content( [
-                ['type' => 'heading', 'group' => 'footer', 'data' => ['title' => 'A', 'level' => '2']],
-                ['type' => 'heading', 'group' => 'bogus', 'data' => ['title' => 'B', 'level' => '2']],
-                ['type' => 'heading', 'data' => ['title' => 'C', 'level' => '2']],
-            ], 'page' );
-
-            $this->assertSame( 'footer', $result[0]->group ); // valid section kept
-            $this->assertSame( 'main', $result[1]->group );   // invalid group coerced
-            $this->assertSame( 'main', $result[2]->group );   // missing group defaulted
-        }
-        finally
-        {
-            $themes->setValue( null, $snapshot );
-            $ref->getProperty( 'schemas' )->setValue( null, [] );
-        }
+        $this->assertSame( 'footer', $result[0]->group ); // valid section kept
+        $this->assertSame( 'main', $result[1]->group );   // invalid group coerced
+        $this->assertSame( 'main', $result[2]->group );   // missing group defaulted
     }
 
 

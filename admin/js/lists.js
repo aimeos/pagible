@@ -98,18 +98,22 @@ const mutations = new Map()
 
 /**
  * Returns the cached mutation document for an action like "drop" or "bulk" of the given type
+ * "lang" adds a $lang variable for actions applied to the page variants of one language
  */
-export function mutation(action, type) {
+export function mutation(action, type, lang = false) {
   const model = type[0].toUpperCase() + type.slice(1)
   const name = action + model
+  const key = name + (lang ? ':lang' : '')
 
-  if (!mutations.has(name)) {
-    mutations.set(name, action === 'bulk'
+  if (!mutations.has(key)) {
+    mutations.set(key, action === 'bulk'
       ? gql`mutation ($id: [ID!]!, $input: ${model}Input!) { ${name}(id: $id, input: $input) { ids } }`
-      : gql`mutation ($id: [ID!]!) { ${name}(id: $id) { id } }`)
+      : lang
+        ? gql`mutation ($id: [ID!]!, $lang: String) { ${name}(id: $id, lang: $lang) { id } }`
+        : gql`mutation ($id: [ID!]!) { ${name}(id: $id) { id } }`)
   }
 
-  return mutations.get(name)
+  return mutations.get(key)
 }
 
 /**

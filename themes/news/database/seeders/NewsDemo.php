@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -65,7 +65,7 @@ class NewsDemo extends AbstractDemo
     /**
      * Creates the publication page below the home page.
      */
-    protected function addAbout( Page $home ) : static
+    protected function addAbout( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -121,7 +121,7 @@ class NewsDemo extends AbstractDemo
     /**
      * Creates an editorial section and its stories below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @param string $id Section page ID
      * @param string $name Section name
      * @param string $path Section path
@@ -132,7 +132,7 @@ class NewsDemo extends AbstractDemo
      * @return static Same object for fluent calls
      */
     protected function addSection(
-        Page $home,
+        PageView $home,
         string $id,
         string $name,
         string $path,
@@ -209,7 +209,7 @@ class NewsDemo extends AbstractDemo
     /**
      * Creates the subscription page below the home page.
      */
-    protected function addSubscribe( Page $home ) : static
+    protected function addSubscribe( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -325,9 +325,9 @@ class NewsDemo extends AbstractDemo
      * Creates the The Ledger home page and returns it.
      *
      * @param array<string, string> $sections Section IDs keyed by path
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home( array $sections ) : Page
+    protected function home( array $sections ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -444,12 +444,12 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param array<int, string> $fileIds Additional file IDs to attach
      * @param array<string, array<string, mixed>|object> $meta Meta entries keyed by type
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();

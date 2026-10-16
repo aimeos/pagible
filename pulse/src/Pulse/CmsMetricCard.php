@@ -102,7 +102,6 @@ class CmsMetricCard extends Card
         return $this->aggregate(
             Metric::type( $type ), self::AGGREGATES, 'count', 'desc', self::AGGREGATE_ROW_LIMIT
         )
-            ->take( self::AGGREGATE_ROW_LIMIT )
             ->map( fn( object $row ) => $this->row( $row ) )
             ->values();
     }

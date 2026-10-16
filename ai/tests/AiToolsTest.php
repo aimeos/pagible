@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Mcp\CmsServer;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
 use Aimeos\Prisma\Responses\TextResponse;
@@ -51,7 +51,7 @@ class AiToolsTest extends AiTestAbstract
 
     public function testRefineContent()
     {
-        $page = Page::where( 'name', 'Home' )->first();
+        $page = PageView::where( 'name', 'Home' )->first();
 
         Prisma::fake( [
             TextResponse::fromText( '' )->withStructured( [

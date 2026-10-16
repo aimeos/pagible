@@ -27,6 +27,7 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
+    use RoutesQueue;
 
     public int $tries = 5;
 
@@ -40,7 +41,7 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
      */
     public function __construct( public string $client, public array $urls )
     {
-        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->routeQueue();
     }
 
 

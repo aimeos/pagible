@@ -15,7 +15,7 @@ class ValidationTest extends CoreTestAbstract
 {
     public function testLimits()
     {
-        Validation::limits( \Aimeos\Cms\Models\Page::class, [
+        Validation::limits( \Aimeos\Cms\Models\PageView::class, [
             'title' => str_repeat( 'ä', 255 ), 'status' => 2, 'cache' => '5', 'tag' => null,
         ] );
         Validation::limits( \Aimeos\Cms\Models\Element::class, ['type' => 'heading', 'name' => 'Test'] );
@@ -41,21 +41,21 @@ class ValidationTest extends CoreTestAbstract
     public function testLimitsNumberRange()
     {
         $this->expectException( Exception::class );
-        Validation::limits( \Aimeos\Cms\Models\Page::class, ['status' => 32768] );
+        Validation::limits( \Aimeos\Cms\Models\PageView::class, ['status' => 32768] );
     }
 
 
     public function testLimitsNegativeNumber()
     {
         $this->expectException( Exception::class );
-        Validation::limits( \Aimeos\Cms\Models\Page::class, ['cache' => -1] );
+        Validation::limits( \Aimeos\Cms\Models\PageView::class, ['cache' => -1] );
     }
 
 
     public function testPageLimits()
     {
         $this->expectException( Exception::class );
-        Validation::page( ['lang' => 'en-GB-x'] );
+        Validation::page( ['lang' => 'zh-Hant-TW-x'] );
     }
 
 

@@ -23,7 +23,7 @@ After installation, the configuration is available in `config/cms.php`:
 | `image.driver` | `gd` | Intervention Image driver used for image processing (`CMS_IMAGE_DRIVER`) |
 | `image.quality` | `75` | Quality (1-100) of the WebP/JPEG preview images |
 | `image.preview-sizes` | `[480, 720, 960, 1920]` | Preview image widths in pixels for uploaded images |
-| `locales` | `en,ar,zh,fr,de,es,pt,pt-BR,ru` | Comma-separated ISO language codes. First locale is the default for new content |
+| `locales` | `APP_LOCALE` (`en`) | Comma-separated ISO language codes (env `CMS_LOCALES`), e.g. `en,de,fr`. First locale is the default for new content. With only one locale, the admin hides all translation features |
 | `lock` | `30` | Page-tree write-lock lifetime and maximum acquisition wait in seconds (`CMS_LOCK`) |
 | `multidomain` | `false` | Enable domain-based page routing |
 | `navdepth` | `2` | Maximum depth of the navigation tree menu |
@@ -59,7 +59,7 @@ clients download large protected media directly; local private files are streame
 
 ### Stancl tenancy mode
 
-Pagible remains usable without tenancy and with custom `Tenancy::$callback` integrations. Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
+Pagible remains usable without tenancy and with custom integrations that pass a callback returning the current tenant ID to `\Aimeos\Cms\Tenancy::valueUsing()` (the `Tenancy::$callback` property is deprecated). Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
 
 ```php
 \Aimeos\Cms\Tenancy::stancl();
@@ -155,6 +155,8 @@ Access-value lists are trimmed, must contain only registered non-empty strings, 
 
 After access records have been committed, indexed Laravel Scout drivers are refreshed by queued jobs from the current page state. Bulk page, element, and file publication, deletion, restoration, and edits use the same queued reconciliation for the Pagible `cms` engine and external Scout engines. The `collection` and Laravel `database` drivers query model tables directly and need no index job. Jobs carry only the tenant, model class, and bounded ID list, then hydrate current state when handled. File-version pruning and purging also queue physical storage cleanup after commit. Run a queue worker with an asynchronous queue connection in production; the `sync` connection executes these jobs inline.
 
+Pages are indexed once per language variant. For page searches with language fallback, external Scout engines (Meilisearch, Typesense, Algolia) filter by the `langs` field, or by `langs_trashed` when trashed items are included. These fields list the languages a variant is shown for: its own language and, for the source variant, the languages from `cms.locales` without a variant. Add both fields to the filterable attributes of the engine's page index and reindex the pages after changing `cms.locales`. Page lists filtered by translation state also need the `lang`, `stale` and `editor` fields as filterable attributes.
+
 Access changes don't modify page-tree coordinates, so they acquire neither the tenant page-tree lock nor page row locks. They load the target pages and current canonical access values once, then update only pages whose values changed in one database transaction. SQL writes remain bounded, while cache invalidation and index synchronization dispatch afterward. Rolled-back changes dispatch nothing. Core emits a lightweight `PageInvalidated` event with affected paths grouped by domain without depending on a rendered-page cache; the theme package invalidates those rendered routes synchronously after commit. Redis, database, and Memcached stores use bounded native batch deletion, while other stores use Laravel's per-key fallback. Redis page keys use bounded tenant-specific cluster hash slots and asynchronous `UNLINK` calls, avoiding one hot tenant slot without issuing cross-slot commands. Keep `scout.queue` enabled with an asynchronous queue connection in production so external search indexing doesn't extend the write request.
 
 Page bulk operations are limited to 1,000 unique pages. Recursive calls also fail before writing if the resolved subtree exceeds 1,000 pages. Larger queued operations must split explicit page IDs into batches of at most 1,000.
@@ -164,6 +166,183 @@ Subtree operations require exactly one root ID belonging to the current tenant a
 Operations compare canonical values and skip unchanged pages. Only changed page routes are invalidated, and search documents are refreshed only when access switches between public and restricted.
 
 Do not persist or delete `PageAccess` instances directly. Those low-level writes deliberately have no cache or search side effects; use `PageAccess::set()` instead.
+
+## PHP API
+
+Pages, shared elements and files are created and changed by the facades in `Aimeos\Cms\Facades`. They create the versions, update the search index, invalidate the caches and dispatch the events, so don't save the models directly.
+
+| Class | Operations |
+|-------|------------|
+| `Pages` | `add`, `save`, `bulk`, `move`, `copy`, `publish`, `drop`, `restore`, `purge` |
+| `Elements` | `add`, `save`, `bulk`, `publish`, `drop`, `restore`, `purge` |
+| `Files` | `add`, `save`, `bulk`, `relocate`, `publish`, `drop`, `restore`, `purge` |
+| `Variants` | `add`, `save`, `revert`, `bulk`, `publish`, `translate`, `setSource`, `ignore`, `drop`, `restore`, `purge` (language variants of pages) |
+
+```php
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
+
+$page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'], $user, parent: $rootId );
+$page = Pages::save( $page->id, ['title' => 'About us'], $user );
+$page = Pages::publish( $page->id, $user );
+
+Variants::add( $page->id, 'de', $user );
+Variants::save( $page->id, 'de', ['title' => 'Über uns'], $user );
+Variants::publish( $page->id, 'de', $user );
+```
+
+`Pages::save()`, `bulk()` and `publish()` change the variant in the source language of the pages, the methods with the same names in `Variants` change the variant in the passed language. `Variants::revert()` saves the content of an old version like `save()` and marks the translation as outdated.
+
+The facades resolve the instances of the classes in `Aimeos\Cms\Resource` from the container. To change the behavior everywhere (admin, GraphQL, MCP, AI, commands), bind your own subclass overriding the public or protected methods in your service provider:
+
+```php
+$this->app->singleton( \Aimeos\Cms\Resource\Pages::class, \App\Cms\MyPages::class );
+```
+
+### Single and multiple items
+
+- `x( string $id, ... )` changes one item and returns its model. It throws a `ModelNotFoundException` if the item doesn't exist.
+- `xMany( array $ids, ... )` (e.g. `publishMany`, `dropMany`, `relocateMany`) changes several items and returns a `Collection` of the changed ones; IDs which don't exist are skipped. Up to 1,000 items (100 for `relocateMany`) can be changed at once.
+- `bulk( array $ids, array $input, ... )` saves the same input to several items and returns a `BulkResult` object with the saved `ids`, their new `latest` version IDs, the applied `data` and the number of `failed` items.
+
+The user is passed directly after the required arguments. Optional arguments like `at`, `ref` or `parent` are best passed as named arguments.
+
+### Permissions
+
+Each method checks the permission of its action for the passed user, e.g. `page:save` for `Pages::save()` or `file:relocate` for `Files::relocate()`, and throws a `PermissionException` if the user lacks it. If no user is passed (`null`), the call is trusted and no permissions are checked, which is meant for commands, jobs and seeders only. Always pass the authenticated user when handling requests.
+
+### Exceptions
+
+All exceptions extend `Aimeos\Cms\Exception`, so catching it handles every CMS error:
+
+| Exception | Thrown if |
+|-----------|-----------|
+| `Aimeos\Cms\Exceptions\InvalidInputException` | The input is invalid, unknown or exceeds the limits |
+| `Aimeos\Cms\Exceptions\ConflictException` | The stored data doesn't allow the operation, e.g. the language variant already exists or is the source variant |
+| `Aimeos\Cms\Exceptions\PermissionException` | The user lacks the permission for the operation |
+
+Missing items throw Laravel's `Illuminate\Database\Eloquent\ModelNotFoundException`.
+
+The classes in `Aimeos\Cms\Resource\Support` and methods marked `@internal` aren't part of the public API and may change without notice.
+
+### Events
+
+The resource methods dispatch these events from `Aimeos\Cms\Events` after the database transaction is committed, so rolled back changes are never announced. The content events are only built if broadcasting is enabled (`cms.broadcast`) or a listener is registered for them, which includes `Event::fake()` in tests:
+
+Operations on one item dispatch the event of the action, e.g. `Published`, while operations on several items dispatch a single `Bulk` event instead. To handle every changed item regardless of how it was changed, use `Change::listen()`, which calls the listener once per item for both kinds of events:
+
+```php
+use Aimeos\Cms\ContentType;
+use Aimeos\Cms\Events\Change;
+
+$stop = Change::listen( 'published', function( Change $change ) {
+    if( $change->type() === ContentType::Page && $change->published ) {
+        // $change->id, $change->versionId, $change->lang, $change->path, $change->editor, ...
+    }
+} );
+
+$stop(); // removes the listener again
+```
+
+Instead of a closure, the name of a listener class with a `handle( Change $change )` method can be passed, which is resolved from the service container. If the class implements `ShouldQueue`, the changed items of each event are passed to it in one queued `Aimeos\Cms\Jobs\HandleChanges` job. It uses the `cms.queue` connection and queue name unless the listener class defines its own `$connection` or `$queue` property:
+
+```php
+use Aimeos\Cms\Events\Change;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class NotifySearchIndex implements ShouldQueue
+{
+    public string $queue = 'search';
+
+    public function handle( Change $change ) : void
+    {
+        // called once per changed item in the queue worker
+    }
+}
+
+Change::listen( ['published', 'dropped'], NotifySearchIndex::class );
+```
+
+It accepts one or more action names (`added`, `saved`, `moved`, `published`, `dropped`, `restored`, `purged` and `translated`, `source`, `ignored` for page variants), the cases of the `ContentAction`, `LifecycleAction` and `VariantAction` enums, or `*` for all actions. Unknown action names throw an `InvalidArgumentException`. A `Change` contains the `contentType` (also available as `ContentType` enum case by `type()`), `action`, `id`, `versionId` (the published version for publish actions), `published` (TRUE if the version became public, FALSE if it's only scheduled), `lang`, `path` and `domain` of pages if known, `editor`, `tenant` and `source`. The `changes()` method of the `Event` and `Bulk` classes returns the same objects.
+
+| Event | Dispatched when |
+|-------|-----------------|
+| `Added` | A page, element or file (or a page copy) was created |
+| `Saved` | A new draft version was saved |
+| `Moved` | A page was moved in the page tree |
+| `Published` | The latest version was published or scheduled |
+| `Dropped` | An item was moved to the trash |
+| `Restored` | A trashed item was restored |
+| `Purged` | An item was permanently deleted |
+| `Bulk` | Several items were changed by one call (e.g. `bulk()` or `publishMany()`), instead of one event per item |
+| `PageInvalidated` | Rendered pages must be removed from caches, e.g. after publishing, moving or trashing them |
+| `FilesRemoved` | Stored files aren't served from the public disk any more, e.g. to remove them from a CDN |
+| `PermissionChanged` | The CMS permissions of a user were changed by `Permission::set()` |
+| `Observed` | A timing or metric value was recorded for monitoring |
+
+`Added`, `Saved`, `Moved`, `Published`, `Dropped`, `Restored` and `Purged` share the properties of `Aimeos\Cms\Events\Event`:
+
+| Property | Content |
+|----------|---------|
+| `contentType` | `page`, `element` or `file`, the `type()` method returns the case of the `Aimeos\Cms\ContentType` enum |
+| `id` | ID of the item |
+| `latestId` | ID of the latest version |
+| `data` | Version data (without content, meta and config), the page route for lifecycle events of pages |
+| `editor` | Name of the editor |
+| `published`, `publishAt`, `updatedAt`, `deletedAt` | State of the item |
+| `tenant` | Tenant ID |
+| `source` | Interface which caused the change: `graphql`, `mcp` or `cli` |
+
+`Bulk` contains the `contentType` (`type()` returns the enum case), the changed `ids`, the new `latest` version IDs by item ID, the shared `data`, the `editor`, the `action` (`saved` for `bulk()` calls, otherwise `published`, `dropped`, `translated`, etc.) and the page variant languages by page ID in `langs`. Single item events and `Bulk` events are broadcast as `{contentType}.{action}`, e.g. `page.saved`, and `Bulk` payloads contain `ids` instead of `id`. `PageInvalidated` contains the `tenant`, `domain` and the URL `paths`, and `FilesRemoved` contains the `tenant` and the storage `paths`.
+
+### Testing
+
+The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Pass `null` as user to skip the permission checks, or a user whose permissions are assigned by `Permission::set()` to test them:
+
+```php
+use Aimeos\Cms\Events\Change;
+use Aimeos\Cms\Events\Published;
+use Aimeos\Cms\Exceptions\PermissionException;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Facades\Pages;
+use Illuminate\Support\Facades\Event;
+
+public function testPublish() : void
+{
+    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
+
+    Event::fake( [Published::class] );
+
+    Pages::publish( $page->id );
+
+    Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $page->id );
+}
+
+public function testPermission() : void
+{
+    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
+    Permission::set( $user = User::factory()->create(), ['editor'] );
+
+    $this->expectException( PermissionException::class );
+    Pages::publish( $page->id, $user );
+}
+```
+
+Events are only dispatched if `cms.broadcast` is enabled, listeners for them are registered or `Event::fake()` is used. Alternatively, register a listener by `Change::listen()` and collect the passed `Change` objects. `Bulk` events are dispatched instead of the per-item events if several items are changed at once, e.g. by `publishMany()`.
+
+The facades in `Aimeos\Cms\Facades` (`Pages`, `Elements`, `Files` and `Variants`) support `shouldReceive()` and `spy()` like all Laravel facades:
+
+```php
+use Aimeos\Cms\Facades\Pages;
+
+// application code
+Pages::publish( $id, $request->user() );
+
+// test
+Pages::shouldReceive( 'publish' )->once()->with( 'page-id', $user )->andReturn( $page );
+```
+
+The built-in admin, GraphQL, MCP and AI APIs use the facades too, so mocks also replace the operations they call.
 
 ## Commands
 

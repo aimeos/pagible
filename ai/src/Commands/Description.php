@@ -10,9 +10,8 @@ namespace Aimeos\Cms\Commands;
 use Aimeos\Cms\Ai;
 use Illuminate\Console\Command;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Validation;
-use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Tools;
 use Aimeos\Prisma\Exceptions\PrismaException;
 
@@ -45,17 +44,15 @@ class Description extends Command
      */
     protected function pages() : void
     {
-        $provider = config( 'cms.ai.write.provider' );
-        $model = config( 'cms.ai.write.model' );
         $config = config( 'cms.ai.write', [] );
 
-        Page::select( Page::SELECT_COLUMNS )
+        PageView::select( PageView::SELECT_COLUMNS )
             ->where( 'status', '>', 0 )
-            ->chunk( 50, function( $pages ) use ( $provider, $model, $config ) {
+            ->chunk( 50, function( $pages ) use ( $config ) {
 
                 foreach( $pages as $page )
                 {
-                    /** @var Page $page */
+                    /** @var PageView $page */
                     if( !empty( $page->meta->{'meta-tags'}->data->description ?? '' ) ) {
                         continue;
                     }
@@ -68,9 +65,7 @@ class Description extends Command
 
                     try
                     {
-                        $text = Prisma::text()
-                            ->using( $provider, $config )
-                            ->model( $model )
+                        $text = Ai::text( 'write' )
                             ->withSystemPrompt( 'You are an SEO expert. Generate a concise meta description of max. 160 characters for the given page content. Return only the meta description text, nothing else.' )
                             ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
                             ->ensure( 'write' )
@@ -81,15 +76,12 @@ class Description extends Command
                         $data = (array) ( $page->meta->{'meta-tags'}->data ?? [] );
                         $data['description'] = $text;
                         $meta['meta-tags'] = Validation::entry( 'meta-tags', $data, 'meta' );
-                        $page->meta = Validation::structured( $meta, 'meta' );
-                        $page->save();
+                        $page->variant?->update( ['meta' => $meta] );
                     }
                     catch( PrismaException $e )
                     {
                         $this->error( $page->title . ': ' . $e->getMessage() );
                     }
-
-                    unset( $page );
                 }
             } );
     }
@@ -125,8 +117,6 @@ class Description extends Command
                     {
                         $this->error( $file->name . ': ' . $e->getMessage() );
                     }
-
-                    unset( $file );
                 }
             } );
     }

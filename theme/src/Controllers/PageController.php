@@ -15,13 +15,15 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
-use Aimeos\Cms\Models\Element;
-use Aimeos\Cms\Models\File;
+use Illuminate\Support\Facades\Cache;
 use Aimeos\Cms\Models\Nav;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
+use Aimeos\Cms\PageCache;
 use Aimeos\Cms\Scopes\Status;
+use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Theme;
 
 
@@ -72,7 +74,7 @@ class PageController extends Controller
         $route = $request->attributes->get( 'cms.page' );
 
         if( !$route instanceof Nav && !$user ) {
-            $route = Nav::page( $path, $domain );
+            $route = Nav::lookup( $path, $domain );
         }
 
         if( !$route && !$user ) {
@@ -106,7 +108,7 @@ class PageController extends Controller
 
         // Database-first transition safety: re-read the rule after rendering so a
         // concurrent insert or permission change cannot expose or cache the response.
-        $access = Page::query()
+        $access = PageView::query()
             ->select( 'id' )
             ->withAccess( $user )
             ->findOrFail( $page->id );
@@ -115,7 +117,7 @@ class PageController extends Controller
             $this->deny( $user );
         }
 
-        $response = new Response( $html, 200, ['Content-Type' => 'text/html'] );
+        $response = new Response( $html, 200, array_filter( ['Content-Type' => 'text/html', 'Content-Language' => $page->lang] ) );
 
         if( $user || $access->access_exists || !$page->cache ) {
             return $response->header( 'Cache-Control', 'no-store, private' );
@@ -124,7 +126,7 @@ class PageController extends Controller
         $maxage = (int) $page->cache * 60;
 
         return $response
-            ->header( 'Cache-Control', "public, s-maxage={$maxage}, max-age=0, must-revalidate" )
+            ->header( 'Cache-Control', PageCache::policy( $maxage ) )
             ->setExpires( now()->addSeconds( $maxage ) );
     }
 
@@ -144,18 +146,29 @@ class PageController extends Controller
     {
         $with = [
             'latest',
-            'latest.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
+            ...PageView::contentRelations( 'latest.' ),
             'latest.files.latest',
-            'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
             'latest.elements.latest',
-            'latest.elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
             'latest.elements.files.latest',
         ];
 
-        $page = Page::with( $with )
-            ->whereLatest( ['path' => $path] + ( $domain !== '' ? ['domain' => $domain] : [] ) )
+        // the domain is required to use the version index on domain and path,
+        // without domain in the route, the few domains of the site are used instead
+        $domains = $domain !== '' ? $domain : Cache::remember( 'cms-domains:' . Tenancy::value(), 60,
+            fn() => PageVariant::distinct()->pluck( 'domain' )->map( strval( ... ) )->all()
+        );
+
+        // every variant has its own URL, so look up the variant and not only the source variant
+        // drafts can use domains which aren't used by any variant yet or aren't in the cached list,
+        // then the path is looked up in all domains which is slower but only required for editors,
+        // it's done before the published page because a draft may have moved away from the path
+        $page = PageView::with( $with )
+            ->allVariants()
+            ->whereLatest( ['domain' => $domains ?: '', 'path' => $path], true )
             ->first()
-            ?? Page::with( $with )->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+            ?? ( $domain === '' ? PageView::with( $with )->allVariants()->whereLatest( ['path' => $path], true )->first() : null )
+            ?? PageView::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->first()
+            ?? throw ( new \Illuminate\Database\Eloquent\ModelNotFoundException() )->setModel( PageView::class, [$path] );
 
         $version = $page->latest;
 
@@ -187,29 +200,26 @@ class PageController extends Controller
 
 
     /**
-     * Loads the published page and its access decision in the same query.
+     * Loads the published page and its access decision in the same query and its ancestors.
      *
      * @param string $path Page URL segment
      * @param string $domain Requested domain
      * @param Authenticatable|null $user Frontend user
      * @param Nav|null $route Preloaded anonymous route projection
-     * @return Page Published page with access decision attributes
+     * @return PageView Published page with access decision attributes
      */
-    protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : Page
+    protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : PageView
     {
-        $query = Page::with( [
-            'files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-            'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-            'elements.files' => fn( $q ) => $q->select( File::SELECT_COLUMNS ),
-        ] )
+        $query = PageView::with( PageView::contentRelations() )
             ->withGlobalScope( 'status', new Status() )
             ->withAccess( $user );
 
-        if( $route ) {
-            return $query->findOrFail( $route->id );
-        }
+        $page = $route && $route->variant_id
+            ? $query->variant( (string) $route->variant_id )->findOrFail( $route->id )
+            : $query->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
-        return $query->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
+        // the ancestors are loaded with their access decisions, so the navigation doesn't load them again
+        return $page->setRelation( 'ancestors', $page->ancestors()->getQuery()->scopes( ['withAccess' => [$user]] )->get() );
     }
 
 
@@ -220,7 +230,7 @@ class PageController extends Controller
      * @param Authenticatable|null $user Frontend user
      * @return string Rendered HTML
      */
-    protected function render( Page $page, mixed $value, string $locale, ?Authenticatable $user ) : string
+    protected function render( PageView $page, mixed $value, string $locale, ?Authenticatable $user ) : string
     {
         Theme::locale( $locale );
         Paginator::defaultView( 'cms::pagination' );

@@ -177,12 +177,12 @@ export default {
       </div>
 
       <div class="prop" :class="{ on: enabled.lang }">
-        <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change language')" />
+        <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change source language')" />
         <v-select
           :items="locales()"
           :modelValue="values.lang"
           @update:modelValue="set('lang', $event)"
-          :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the page content')"
+          :label="$gettext('Source language') + ' ‒ ' + $gettext('Language of the source page content')"
           variant="underlined"
           hide-details="auto"
         />

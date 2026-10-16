@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -84,10 +84,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the appointment page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAppointment( Page $home ) : static
+    protected function addAppointment( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -119,10 +119,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the careers page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCareers( Page $home ) : static
+    protected function addCareers( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -173,10 +173,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the patient guides page and its articles below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addGuides( Page $home ) : static
+    protected function addGuides( PageView $home ) : static
     {
         $guides = $this->guides( $home );
 
@@ -263,10 +263,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -287,10 +287,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the patient information page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPatientInfo( Page $home ) : static
+    protected function addPatientInfo( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -349,10 +349,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the privacy policy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -374,10 +374,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the team page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTeam( Page $home ) : static
+    protected function addTeam( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -438,10 +438,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the treatments page and the treatment pages below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addTreatments( Page $home ) : static
+    protected function addTreatments( PageView $home ) : static
     {
         $treatments = $this->page( [
             'lang' => 'en',
@@ -531,7 +531,7 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates a patient guide below the guides page.
      *
-     * @param Page $parent Guides page
+     * @param PageView $parent Guides page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $text Article text
@@ -539,10 +539,10 @@ class MedicalDemo extends AbstractDemo
      * @param array<int, array<string, string>> $facts Key facts as figure cards
      * @param array<int, array<string, string>> $steps Treatment steps
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function guide( Page $parent, array $data, string $title, string $text, string $cover,
-        array $facts, array $steps, array $questions ) : Page
+    protected function guide( PageView $parent, array $data, string $title, string $text, string $cover,
+        array $facts, array $steps, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',
@@ -579,10 +579,10 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the patient guides overview page and returns it.
      *
-     * @param Page $home Home page
-     * @return Page Guides page
+     * @param PageView $home Home page
+     * @return PageView Guides page
      */
-    protected function guides( Page $home ) : Page
+    protected function guides( PageView $home ) : PageView
     {
         return $this->page( [
             'id' => $this->guidesId,
@@ -640,9 +640,9 @@ class MedicalDemo extends AbstractDemo
     /**
      * Creates the Lindenhof home page and returns it.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -949,10 +949,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -1064,7 +1064,7 @@ SVG;
     /**
      * Creates a treatment page below the treatments page.
      *
-     * @param Page $parent Treatments page
+     * @param PageView $parent Treatments page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Hero headline
      * @param string $hero PHOTOS key of the hero image
@@ -1072,10 +1072,10 @@ SVG;
      * @param string $text Treatment description
      * @param array<int, array<string, string>> $items What is included
      * @param array<int, array<string, string>> $questions Frequently asked questions
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function treatment( Page $parent, array $data, string $title, string $hero, string $image,
-        string $text, array $items, array $questions ) : Page
+    protected function treatment( PageView $parent, array $data, string $title, string $hero, string $image,
+        string $text, array $items, array $questions ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',

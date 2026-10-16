@@ -32,15 +32,17 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
             'foreign_key_constraints' => true,
         ]);
 
+        $app['config']->set('queue.batching.database', 'testing');
+        $app['config']->set('queue.failed.database', 'testing');
         $app['config']->set('auth.providers.users.model', 'App\\Models\\User');
         $app['config']->set('scout.driver', 'collection');
         // Pulse rescues missing-storage errors, which leaves PostgreSQL test transactions aborted.
         $app['config']->set('pulse.enabled', false);
         $app['config']->set('cms.db', 'testing');
 
-        \Aimeos\Cms\Tenancy::$callback = function() {
+        \Aimeos\Cms\Tenancy::valueUsing( function() {
             return 'test';
-        };
+        } );
     }
 
 
@@ -49,7 +51,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
      */
     protected function manageTenancy( bool $managed = true ) : void
     {
-        ( new \ReflectionProperty( \Aimeos\Cms\Tenancy::class, 'managed' ) )->setValue( null, $managed );
+        \Aimeos\Cms\Hooks::get()->managed = $managed;
     }
 
 
@@ -58,8 +60,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
         \Aimeos\Cms\Access::extend( null );
         \Aimeos\Cms\Access::using( null );
         $this->manageTenancy( false );
-        ( new \ReflectionProperty( \Aimeos\Cms\Schema::class, 'themes' ) )->setValue( null, [] );
-        \Aimeos\Cms\Schema::source( null );
+        $this->app?->forgetInstance( \Aimeos\Cms\Hooks::class );
         parent::tearDown();
     }
 

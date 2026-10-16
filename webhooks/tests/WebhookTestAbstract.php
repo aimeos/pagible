@@ -54,6 +54,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
         ] );
         $app['config']->set( 'auth.providers.users.model', 'App\\Models\\User' );
         $app['config']->set( 'cache.default', 'array' );
+        $app['config']->set( 'cms.locales', ['en', 'de'] );
         $app['config']->set( 'queue.default', 'database' );
         $app['config']->set( 'cms.db', 'testing' );
         $app['config']->set( 'cms.webhooks.enabled', true );
@@ -68,7 +69,7 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set( 'lighthouse.namespaces.mutations', ['Aimeos\\Cms\\GraphQL\\Mutations'] );
         $app['config']->set( 'lighthouse.namespaces.directives', ['Aimeos\\Cms\\GraphQL\\Directives'] );
 
-        \Aimeos\Cms\Tenancy::$callback = fn() => 'test';
+        \Aimeos\Cms\Tenancy::valueUsing( fn() => 'test' );
     }
 
 
@@ -107,8 +108,6 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     protected function tearDown() : void
     {
         \Aimeos\Cms\Permission::canUsing( null );
-        \Aimeos\Cms\Tenancy::$access = null;
-        \Aimeos\Cms\Tenancy::$callback = null;
         parent::tearDown();
     }
 

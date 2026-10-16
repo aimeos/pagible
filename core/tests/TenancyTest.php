@@ -8,10 +8,13 @@
 namespace Tests;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Access\Adapter;
+use Aimeos\Cms\Hooks;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\SearchBuilder;
+use Aimeos\Cms\Query\SearchBuilder;
 use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
@@ -31,8 +34,8 @@ class TenancyTest extends CoreTestAbstract
 
     protected function tearDown(): void
     {
-        Tenancy::$callback = fn() => 'test';
-        Tenancy::$access = null;
+        Tenancy::valueUsing( fn() => 'test' );
+        Tenancy::allowsUsing( null );
         app()->forgetScopedInstances();
 
         Permission::canUsing( null );
@@ -46,11 +49,11 @@ class TenancyTest extends CoreTestAbstract
         $called = false;
         $user = new \App\Models\User();
         $user->tenant_id = '';
-        Tenancy::$callback = fn() => '';
-        Tenancy::$access = function() use ( &$called ) {
+        Tenancy::valueUsing( fn() => '' );
+        Tenancy::allowsUsing( function() use ( &$called ) {
             $called = true;
             return true;
-        };
+        } );
 
         $this->assertFalse( Tenancy::allows( null, '' ) );
         $this->assertFalse( Tenancy::allows( $user, '' ) );
@@ -61,7 +64,7 @@ class TenancyTest extends CoreTestAbstract
     public function testAllowsEmptyTenantWithoutTenancyConfiguration(): void
     {
         $user = new GenericUser( ['id' => 1] );
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
 
         $this->assertTrue( Tenancy::allows( $user, '' ) );
     }
@@ -71,7 +74,7 @@ class TenancyTest extends CoreTestAbstract
     {
         app()->forgetInstance( Tenancy::class );
 
-        $pages = Page::all();
+        $pages = PageView::all();
 
         $this->assertGreaterThan( 0, $pages->count() );
 
@@ -84,13 +87,13 @@ class TenancyTest extends CoreTestAbstract
     public function testCrossTenantIsolation()
     {
 
-        $countBefore = Page::withoutTenancy()->count();
+        $countBefore = PageView::withoutTenancy()->count();
         $this->assertGreaterThan( 0, $countBefore );
 
-        Tenancy::$callback = fn() => 'other';
+        Tenancy::valueUsing( fn() => 'other' );
         app()->forgetScopedInstances();
 
-        $pages = Page::all();
+        $pages = PageView::all();
         $this->assertEquals( 0, $pages->count() );
     }
 
@@ -107,7 +110,7 @@ class TenancyTest extends CoreTestAbstract
                 return $this;
             } );
 
-            $builder = Page::search()->searchFields( 'draft' )->take( 1 );
+            $builder = PageView::search()->searchFields( 'draft' )->take( 1 );
 
             $this->assertInstanceOf( SearchBuilder::class, $builder );
             $this->assertSame( [], $builder->wheres );
@@ -228,8 +231,7 @@ class TenancyTest extends CoreTestAbstract
     {
         $access = app( Access::class );
         $calls = 0;
-        $property = new \ReflectionProperty( Access::class, 'activateCallback' );
-        $property->setValue( null, function( string $tenant ) use ( &$calls ) {
+        Hooks::get()->access = new Adapter( activate: function( string $tenant ) use ( &$calls ) {
             $calls++;
             throw new \RuntimeException( "Failed to activate {$tenant}" );
         } );
@@ -255,17 +257,20 @@ class TenancyTest extends CoreTestAbstract
     public function testWithoutTenancyMacro()
     {
 
-        Tenancy::$callback = fn() => 'other';
+        Tenancy::valueUsing( fn() => 'other' );
         app()->forgetScopedInstances();
 
-        $pages = Page::withoutTenancy()->get();
+        $pages = PageView::withoutTenancy()->get();
         $this->assertGreaterThan( 0, $pages->count() );
     }
 
 
     public function testTenancyAutoSetsOnCreate()
     {
-        $page = Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        $page = $node->variants()->create( [
             'name' => 'Tenant Test Page',
             'title' => 'Tenant Test',
             'path' => 'tenant-test',
@@ -281,7 +286,7 @@ class TenancyTest extends CoreTestAbstract
             'meta' => [],
             'config' => [],
             'content' => [],
-        ] );
+        ] )->view;
 
         $this->assertEquals( 'test', $page->tenant_id );
     }
@@ -289,8 +294,8 @@ class TenancyTest extends CoreTestAbstract
 
     public function testPublishRejectsVersionOwnedByAnotherModel(): void
     {
-        $page = Page::with( 'latest' )->whereNotNull( 'latest_id' )->firstOrFail();
-        $other = Page::with( 'latest' )->whereNotNull( 'latest_id' )
+        $page = PageView::with( 'latest' )->whereNotNull( 'latest_id' )->firstOrFail();
+        $other = PageView::with( 'latest' )->whereNotNull( 'latest_id' )
             ->whereKeyNot( $page->getKey() )->firstOrFail();
         $version = $other->latest ?? throw new \RuntimeException( 'Missing other page version.' );
         $name = $page->name;
@@ -302,13 +307,13 @@ class TenancyTest extends CoreTestAbstract
             $this->assertSame( 'CMS version does not belong to the model.', $e->getMessage() );
         }
 
-        $this->assertSame( $name, Page::findOrFail( $page->id )->name );
+        $this->assertSame( $name, PageView::findOrFail( $page->id )->name );
     }
 
 
     public function testVersionTenancyAutoSetsOnCreate()
     {
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $version = $page->versions()->forceCreate( [
             'editor' => 'test',
             'data' => (object) [],
@@ -327,7 +332,7 @@ class TenancyTest extends CoreTestAbstract
         $this->createPage( 'Published', 'published', 1 );
         $this->createPage( 'Review', 'review', 2 );
 
-        $pages = Page::withGlobalScope( 'status', new Status )->get();
+        $pages = PageView::withGlobalScope( 'status', new Status )->get();
         $statuses = $pages->pluck( 'status' )->unique()->sort()->values()->toArray();
 
         $this->assertNotContains( 0, $statuses );
@@ -352,7 +357,7 @@ class TenancyTest extends CoreTestAbstract
         $this->createPage( 'Published', 'published2', 1 );
         $this->createPage( 'Review', 'review2', 2 );
 
-        $pages = Page::withGlobalScope( 'status', new Status )->get();
+        $pages = PageView::withGlobalScope( 'status', new Status )->get();
         $statuses = $pages->pluck( 'status' )->unique()->sort()->values()->toArray();
 
         $this->assertContains( 0, $statuses );
@@ -376,7 +381,7 @@ class TenancyTest extends CoreTestAbstract
         $this->createPage( 'Draft', 'draft-other-tenant', 0 );
         $this->createPage( 'Published', 'published-other-tenant', 1 );
 
-        $statuses = Page::withGlobalScope( 'status', new Status )
+        $statuses = PageView::withGlobalScope( 'status', new Status )
             ->whereIn( 'path', ['draft-other-tenant', 'published-other-tenant'] )
             ->pluck( 'status' );
 
@@ -393,7 +398,7 @@ class TenancyTest extends CoreTestAbstract
         $this->createPage( 'Published', 'published3', 1 );
 
         // Without the status scope, all pages are visible regardless of status
-        $pages = Page::all();
+        $pages = PageView::all();
         $statuses = $pages->pluck( 'status' )->unique()->sort()->values()->toArray();
 
         $this->assertContains( 0, $statuses );
@@ -401,9 +406,12 @@ class TenancyTest extends CoreTestAbstract
     }
 
 
-    protected function createPage( string $name, string $path, int $status ): Page
+    protected function createPage( string $name, string $path, int $status ): PageView
     {
-        return Page::forceCreate( [
+        $node = new Page( ['source' => 'en'] );
+        $node->save();
+
+        return $node->variants()->create( [
             'name' => $name,
             'title' => $name,
             'path' => $path,
@@ -419,7 +427,7 @@ class TenancyTest extends CoreTestAbstract
             'meta' => [],
             'config' => [],
             'content' => [],
-        ] );
+        ] )->view;
     }
 
 

@@ -92,7 +92,7 @@ class AdminController extends Controller
         try
         {
             // Resolves and pins every host to its public IP and rejects private targets
-            $response = \Aimeos\Cms\Utils::http( $url, ['stream' => true, 'timeout' => 10], array_filter( [
+            $response = \Aimeos\Cms\SafeHttp::request( $url, ['stream' => true, 'timeout' => 10], array_filter( [
                 'User-Agent' => 'Pagible-Proxy/1.0',
                 'Accept-Encoding' => 'identity',
                 'Range' => $range,

@@ -8,10 +8,10 @@
 namespace Tests;
 
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Scout;
+use Aimeos\Cms\Translation\Texts;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Http\UploadedFile;
@@ -23,27 +23,35 @@ class ModelTest extends CoreTestAbstract
 {
     public function testPageChangedDefaultsToNull(): void
     {
-        $this->assertNull( ( new Page() )->changed );
+        $this->assertNull( ( new PageView() )->changed );
     }
 
 
-    public function testPageStoresChangedInformation(): void
+    public function testPageSearchIndexKeepsPagesName(): void
     {
-        $info = [
-            'editor' => 'test@example.com',
-            'data' => ['title' => ['previous' => 'a', 'current' => 'b']],
-        ];
-        $page = new Page();
+        $prefix = config( 'scout.prefix' );
+        config( ['scout.prefix' => 'app_'] );
 
-        $page->setChanged( $info );
+        try {
+            $this->assertSame( 'app_cms_pages', ( new PageView() )->searchableAs() );
+        } finally {
+            config( ['scout.prefix' => $prefix] );
+        }
+    }
 
-        $this->assertEquals( $info, $page->changed );
+
+    public function testPageSaveVariantRequiresVariantId(): void
+    {
+        $page = ( new PageView() )->newFromBuilder( ['id' => 'page-1', 'name' => 'Test'] );
+
+        $this->expectException( \LogicException::class );
+        \Aimeos\Cms\Resource\Support\PageRows::save( $page, ['name' => 'Changed'] );
     }
 
 
     public function testPageToString(): void
     {
-        $page = new Page( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );
+        $page = new PageView( ['name' => 'Home', 'title' => 'Home | Laravel CMS'] );
         $page->content = [(object) ['type' => 'heading', 'data' => (object) ['title' => 'Welcome to Laravel CMS']]];
         $page->setRelation( 'elements', collect( [] ) );
 
@@ -55,7 +63,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testPageToStringEmpty(): void
     {
-        $page = new Page( ['name' => 'Disabled'] );
+        $page = new PageView( ['name' => 'Disabled'] );
         $page->setRelation( 'elements', collect( [] ) );
 
         $this->assertStringContainsString( 'Disabled', (string) $page );
@@ -70,7 +78,7 @@ class ModelTest extends CoreTestAbstract
             'data' => (object) ['title' => 'Heading', 'level' => '2'],
         ]];
 
-        $this->assertSame( ['Heading'], Scout::text( $items ) );
+        $this->assertSame( ['Heading'], Texts::searchable( $items ) );
     }
 
 
@@ -78,7 +86,7 @@ class ModelTest extends CoreTestAbstract
     {
         foreach( ['domain' => 'other.example', 'lang' => 'de'] as $attribute => $value )
         {
-            $page = new Page();
+            $page = new PageView();
             $page->setRawAttributes( ['domain' => 'example.com', 'lang' => 'en'], true );
             $page->setRelation( 'latest', null );
             $page->setRelation( 'elements', collect() );
@@ -93,7 +101,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testPageAcceptsCanonicalStructuredAttributes(): void
     {
-        $page = new Page();
+        $page = new PageView();
         $page->meta = ['meta-tags' => [
             'type' => 'meta-tags',
             'data' => ['description' => 'Test'], 'files' => [],
@@ -111,7 +119,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testJsonKeyOrderDoesNotMarkModelDirty(): void
     {
-        $page = new Page();
+        $page = new PageView();
         $page->setRawAttributes( [
             'meta' => '{"meta-tags":{"data":{"keywords":"cms","description":"Test"},"type":"meta-tags","files":[]}}',
             'content' => '[{"type":"heading"},{"type":"text"}]',
@@ -137,14 +145,14 @@ class ModelTest extends CoreTestAbstract
     {
         $this->expectException( \Aimeos\Cms\Exception::class );
 
-        $page = new Page();
+        $page = new PageView();
         $page->meta = [['type' => 'meta-tags', 'data' => ['description' => 'Test']]];
     }
 
 
     public function testPageHasDescendantCount(): void
     {
-        $page = new Page();
+        $page = new PageView();
 
         // leaf: rgt = lft + 1, no descendants
         $page->setAttribute( NestedSet::LFT, 2 );
@@ -157,18 +165,9 @@ class ModelTest extends CoreTestAbstract
     }
 
 
-    public function testPageKeepsRelatedIdAsIs(): void
-    {
-        $page = new Page();
-        $page->related_id = ' ID-with-original-case ';
-
-        $this->assertSame( ' ID-with-original-case ', $page->related_id );
-    }
-
-
     public function testSqlServerUppercasesUuids(): void
     {
-        $model = new class extends Page {
+        $model = new class extends PageView {
             public function getConnection()
             {
                 return new class {
@@ -203,7 +202,7 @@ class ModelTest extends CoreTestAbstract
 
     public function testUnsavedModelsHaveNullIds(): void
     {
-        $this->assertNull( ( new Page() )->id );
+        $this->assertNull( ( new PageView() )->id );
     }
 
 
@@ -223,29 +222,12 @@ class ModelTest extends CoreTestAbstract
     }
 
 
-    public function testFileOwnerRecognizesOnlyItsUuidDirectory(): void
-    {
-        $id = ( new File() )->newUniqueId();
-        $upper = '019F8ABC-DEF0-7ABC-8ABC-ABCDEF123456';
-        $lower = '019f8abc-def0-7abc-8abc-abcdef123456';
-
-        $this->assertSame( $id, File::owner( 'test', 'cms/test/' . $id . '/file.pdf' ) );
-        $this->assertSame( $id, File::owner( '', 'cms/' . $id . '/file.pdf' ) );
-        $this->assertSame( $upper, File::owner( 'test', 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertTrue( File::owns( 'test', $lower, 'cms/test/' . $upper . '/file.pdf' ) );
-        $this->assertNull( File::owner( 'test', 'cms/test/file.pdf' ) );
-        $this->assertNull( File::owner( 'test', 'cms/test/' . $id ) );
-        $this->assertNull( File::owner( 'test', 'https://example.com/file.pdf' ) );
-        $this->assertNull( File::owner( '', 'cms/other/' . $id . '/file.pdf' ) );
-    }
-
-
     public function testRemotePreviewHonorsUploadLimit(): void
     {
         config( ['cms.allow-internal' => true, 'cms.upload.filesize' => 0.001] );
         Http::fake( ['*' => Http::response( str_repeat( 'x', 4097 ), 200 )] );
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum size of 0.001 MB' );
 
         ( new File( ['name' => 'remote.png'] ) )->addPreviews( 'http://127.0.0.1/remote.png' );
@@ -260,7 +242,7 @@ class ModelTest extends CoreTestAbstract
         $file = new File( ['name' => 'remote.txt'] );
         $file->disk = 'private';
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
         $file->ingest( 'http://127.0.0.1/remote.txt' );
@@ -275,7 +257,7 @@ class ModelTest extends CoreTestAbstract
         $file = new File( ['name' => 'remote.txt'] );
         $file->disk = 'private';
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Remote file exceeds the maximum upload size' );
 
         $file->ingest( 'http://127.0.0.1/remote.txt' );
@@ -289,7 +271,7 @@ class ModelTest extends CoreTestAbstract
         $png = "\x89PNG\r\n\x1a\n" . pack( 'N', strlen( $header ) ) . $chunk . pack( 'N', crc32( $chunk ) );
         $upload = UploadedFile::fake()->createWithContent( 'large.png', $png );
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Image exceeds the maximum size of 16777216 pixels' );
 
         ( new File( ['name' => 'large.png'] ) )->addPreviews( $upload );
@@ -304,7 +286,7 @@ class ModelTest extends CoreTestAbstract
         $png = "\x89PNG\r\n\x1a\n" . pack( 'N', strlen( $header ) ) . $chunk . pack( 'N', crc32( $chunk ) );
         Http::fake( ['*' => Http::response( $png, 200, ['Content-Type' => 'image/png'] )] );
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Image exceeds the maximum size of 10000000 pixels' );
 
         ( new File( ['name' => 'remote.png'] ) )->addPreviews( 'http://127.0.0.1/remote.png' );
@@ -318,7 +300,7 @@ class ModelTest extends CoreTestAbstract
             . str_repeat( 'x', 4096 ) . '--><rect width="1" height="1"/></svg>';
         Http::fake( ['*' => Http::response( gzencode( $svg ), 200 )] );
 
-        $this->expectException( \Aimeos\Cms\InvalidException::class );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
         $this->expectExceptionMessage( 'Decompressed SVG exceeds the maximum upload size' );
 
         ( new File( ['name' => 'remote.svgz'] ) )->addPreviews( 'http://127.0.0.1/remote.svgz' );

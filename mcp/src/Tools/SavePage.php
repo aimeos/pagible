@@ -8,7 +8,8 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -20,7 +21,7 @@ use Laravel\Mcp\Request;
 
 #[Name('save-page')]
 #[Title('Save an existing page')]
-#[Description('Updates an existing page by ID. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Meta and config must be canonical entries containing type, data, and files. Use get-schemas for field definitions. Returns the updated page as JSON.')]
+#[Description('Updates an existing page by ID, in the language variant given by lang or in the source language. Only send fields you want to change — unsent fields are preserved from the latest version. Content, meta, and config are fully replaced when provided. Meta and config must be canonical entries containing type, data, and files. Pass source to make another existing language variant the source language. Use get-schemas for field definitions. Returns the updated page as JSON.')]
 class SavePage extends Tool
 {
     protected const PERMISSIONS = ['page:save'];
@@ -31,7 +32,7 @@ class SavePage extends Tool
     public const RULES = [
         'name' => 'string|max:50',
         'title' => 'string|max:100',
-        'lang' => 'string|max:5',
+        'lang' => 'string|max:10',
         'content' => 'array',
         'content.*.id' => 'string|max:10',
         'content.*.type' => 'required|string|max:50',
@@ -55,7 +56,6 @@ class SavePage extends Tool
         'domain' => 'string|max:255',
         'path' => 'string|max:255',
         'cache' => 'integer|min:0',
-        'related_id' => 'string|max:36',
     ];
 
 
@@ -67,6 +67,7 @@ class SavePage extends Tool
         $v = $request->validate( [
             'id' => 'required|string|max:36',
             ...self::RULES,
+            'source' => 'string|max:10',
             'content.*.data' => 'required_without:content.*.refid|array',
             'content.*.refid' => 'required_without:content.*.data|string|max:36',
             'status' => 'integer|in:0,1,2',
@@ -76,12 +77,11 @@ class SavePage extends Tool
             'latest_id.required' => 'You must pass the latest_id returned by get-page, add-page, or a previous save-page so concurrent edits are detected.',
         ] );
 
+        // Uses the raw request input, not the validated copy: validate() rebuilds wildcard arrays
+        // via rule expansion, which materializes elements matched by content.*.id first and appends
+        // id-less elements at the end, scrambling the author's order. The raw input preserves it;
+        // Validation::content() still whitelists each element's keys.
         if( isset( $v['content'] ) ) {
-            // Use the raw request input, not the validated copy: validate() rebuilds
-            // wildcard arrays via rule expansion, which materializes elements matched
-            // by content.*.id first and appends id-less elements at the end, scrambling
-            // the author's order. The raw input preserves it; Validation::content()
-            // still whitelists each element's keys.
             $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] ?? null );
         }
 
@@ -89,8 +89,10 @@ class SavePage extends Tool
             $v['path'] = Utils::slugify( $v['title'] );
         }
 
-        $input = array_diff_key( $v, array_flip( ['id', 'latest_id'] ) );
-        $page = Resource::savePage( $v['id'], $input, $request->user(), $v['latest_id'] );
+        $input = array_diff_key( $v, array_flip( ['id', 'latest_id', 'lang'] ) );
+        $page = isset( $v['lang'] )
+            ? Variants::save( $v['id'], $v['lang'], $input, $request->user(), $v['latest_id'] )
+            : Pages::save( $v['id'], $input, $request->user(), $v['latest_id'] );
 
         return Response::structured( Presenter::saved( Presenter::page( $page ), $page ) );
     }
@@ -112,7 +114,9 @@ class SavePage extends Tool
             'title' => $schema->string()
                 ->description( 'New page title (max 100 characters). Also updates the URL path slug unless path is explicitly set.' ),
             'lang' => $schema->string()
-                ->description( 'ISO language code for the version, e.g., "en" or "de".' ),
+                ->description( 'ISO language code of the language variant to save, e.g., "en" or "de". Omit to save the source language variant. Use the latest_id of that variant from get-page with the same lang.' ),
+            'source' => $schema->string()
+                ->description( 'ISO language code of an existing language variant that becomes the source language the other variants are translated from.' ),
             'content' => $schema->array()
                 ->items( $schema->object( [
                     'id' => $schema->string()
@@ -148,8 +152,6 @@ class SavePage extends Tool
                 ->description( 'Visibility: 0=inactive, 1=visible, 2=hidden in navigation.' ),
             'cache' => $schema->integer()
                 ->description( 'Cache lifetime in minutes.' ),
-            'related_id' => $schema->string()
-                ->description( 'Translation ID linking pages with the same content in different languages.' ),
             'latest_id' => $schema->string()
                 ->description( 'Required. The latest_id value returned by get-page, add-page, or your previous save-page for this page. Ensures edits made by another editor in the meantime are merged instead of overwritten.' )
                 ->required(),

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\ManualDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,8 +24,7 @@ class ManualDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new ManualDemo( 'manual', 'manual' ) )->seed();
-        Tenancy::$callback = fn() => 'manual';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'manual' );
     }
 
 
@@ -56,11 +55,11 @@ class ManualDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $docs = Page::where( 'path', 'docs' )->firstOrFail();
+        $docs = PageView::where( 'path', 'docs' )->firstOrFail();
 
-        $this->assertSame( 'manual', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'manual', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
         $this->assertSame( 'docs', $docs->type );
-        $this->assertCount( 2, Page::where( 'parent_id', $docs->id )->get() );
+        $this->assertCount( 2, PageView::where( 'parent_id', $docs->id )->get() );
     }
 
 

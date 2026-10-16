@@ -9,7 +9,7 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\TestSeeder;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\NestedSet;
 
 
@@ -38,11 +38,11 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPage()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected = [
@@ -60,7 +60,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $response = $this->actingAs($this->user)->graphQL("{
             page(id: \"{$page->id}\") {
                 id
-                related_id
                 parent_id
                 lang
                 path
@@ -96,11 +95,11 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testPages()
     {
         $expected = [];
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
 
         // Prepare expected attributes
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected[] = [
@@ -129,7 +128,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }, first: 10, page: 1, trashed: WITH, publish: PUBLISHED) {
                 data {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -175,7 +173,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageRelationsRequireTheirViewPermissions()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
 
         $response = $this->actingAs( $user )->graphQL( '{
@@ -200,7 +198,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageMutationPermissionsDiscloseResultsWithoutViewPermission()
     {
-        $page = Page::where( 'tag', 'root' )->firstOrFail();
+        $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $user = new \App\Models\User( ['cmsperms' => [
             'page:move', 'page:save', 'page:drop', 'page:keep', 'page:purge', 'page:publish',
             'element:publish', 'file:publish',
@@ -223,7 +221,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesDraft()
     {
-        $page = Page::where('tag', 'hidden')->firstOrFail();
+        $page = PageView::where('tag', 'hidden')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
@@ -254,7 +252,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesScheduled()
     {
-        $page = Page::where('tag', 'hidden')->firstOrFail();
+        $page = PageView::where('tag', 'hidden')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( '{
@@ -285,7 +283,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesSort()
     {
-        $pages = Page::orderBy('id', 'desc')->take(2)->get();
+        $pages = PageView::orderBy('id', 'desc')->take(2)->get();
 
         $response = $this->actingAs($this->user)->graphQL('{
             pages(sort: [{column: ID, order: DESC}], first: 2, page: 1) {
@@ -304,8 +302,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesSortModified()
     {
-        $first = Page::orderBy( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
-        $last = Page::orderByDesc( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+        $first = PageView::orderBy( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
+        $last = PageView::orderByDesc( 'latest_id' )->take( 2 )->pluck( 'id' )->map( strval(...) )->all();
 
         $this->expectsDatabaseQueryCount( 4 );
 
@@ -329,8 +327,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPagesWithParentid()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
-        $pages = Page::where('parent_id', $root->id)->defaultOrder()->get();
+        $root = PageView::where('tag', 'root')->firstOrFail();
+        $pages = PageView::where('parent_id', $root->id)->defaultOrder()->get();
         $expected = [];
 
         foreach ($pages as $page) {
@@ -340,7 +338,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'created_at' => (string) $page->created_at,
                 'updated_at' => (string) $page->updated_at,
             ] + collect($page->getAttributes())
-                ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+                ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
                 ->all();
         }
 
@@ -352,7 +350,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }, first: 10, page: 1) {
                 data {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -385,7 +382,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         foreach ($pagesData as $i => $actual) {
             // Assert scalar fields
-            foreach (['id','related_id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
+            foreach (['id','parent_id','lang','path','name','title','domain','to','tag','type','theme','status','cache','editor','created_at','updated_at','deleted_at'] as $key) {
                 $this->assertEquals($expected[$i][$key], $actual[$key]);
             }
 
@@ -404,7 +401,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageParent()
     {
-        $page = Page::where('tag', 'article')->firstOrFail();
+        $page = PageView::where('tag', 'article')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
         $response = $this->actingAs( $this->user )->graphQL( "{
@@ -431,7 +428,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageChildren()
     {
-        $page = Page::where('tag', 'blog')->firstOrFail();
+        $page = PageView::where('tag', 'blog')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 3 );
 
@@ -469,7 +466,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageAncestors()
     {
-        $page = Page::where('tag', 'article')->firstOrFail();
+        $page = PageView::where('tag', 'article')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 2 );
         $response = $this->actingAs( $this->user )->graphQL( "{
@@ -495,7 +492,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageVersions()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
         $element = $page->elements()->firstOrFail();
 
         $this->expectsDatabaseQueryCount(2);
@@ -561,7 +558,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageSimple()
     {
-        $page = Page::where('tag', 'disabled')->firstOrFail();
+        $page = PageView::where('tag', 'disabled')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( "{
@@ -598,7 +595,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPageElements()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
 
         $this->expectsDatabaseQueryCount(2);
 
@@ -636,7 +633,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPage()
     {
-        $this->expectsDatabaseQueryCount( 5 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -654,7 +651,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
                     cache: 0
                 }) {
                     id
-                    related_id
                     parent_id
                     lang
                     path
@@ -683,10 +679,10 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'test')->where('lang', 'en')->firstOrFail();
+        $page = PageView::where('tag', 'test')->where('lang', 'en')->firstOrFail();
 
         $attr = collect($page->getAttributes())
-            ->except(['tenant_id', 'latest_id', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
+            ->except(['tenant_id', 'latest_id', 'source', 'variant_id', 'hashes', 'stale', 'variant_deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH])
             ->all();
 
         $expected = [
@@ -708,9 +704,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChild()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -733,7 +729,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'test')->firstOrFail();
+        $page = PageView::where('tag', 'test')->firstOrFail();
 
         $response->assertJson( [
             'data' => [
@@ -745,8 +741,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testAddPageChildRef()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
-        $ref = Page::where('tag', 'blog')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
+        $ref = PageView::where('tag', 'blog')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -771,7 +767,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'test')->firstOrFail();
+        $page = PageView::where('tag', 'test')->firstOrFail();
 
         $response->assertJson( [
             'data' => [
@@ -785,7 +781,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePage()
     {
-        $blog = Page::where('tag', 'blog')->firstOrFail();
+        $blog = PageView::where('tag', 'blog')->firstOrFail();
 
         $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -798,7 +794,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'blog')->firstOrFail();
+        $page = PageView::where('tag', 'blog')->firstOrFail();
 
         $response->assertJson( [
             'data' => [
@@ -814,10 +810,10 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParent()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
-        $article = Page::where('tag', 'article')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
+        $article = PageView::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '") {
@@ -827,7 +823,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'article')->firstOrFail();
+        $page = PageView::where('tag', 'article')->firstOrFail();
 
         $response->assertJson( [
             'data' => [
@@ -842,11 +838,11 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testMovePageParentRef()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
-        $blog = Page::where('tag', 'blog')->firstOrFail();
-        $article = Page::where('tag', 'article')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
+        $blog = PageView::where('tag', 'blog')->firstOrFail();
+        $article = PageView::where('tag', 'article')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 movePage(id: "' . $article->id . '", parent: "' . $root->id . '", ref: "' . $blog->id . '") {
@@ -856,7 +852,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::where('tag', 'article')->firstOrFail();
+        $page = PageView::where('tag', 'article')->firstOrFail();
 
         $response->assertJson( [
             'data' => [
@@ -873,9 +869,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testSavePage()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 8 );
+        $this->expectsDatabaseQueryCount( 9 );
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
@@ -984,7 +980,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testBulkPage()
     {
-        $pages = Page::whereNull( 'parent_id' )->take( 2 )->get();
+        $pages = PageView::whereNull( 'parent_id' )->take( 2 )->get();
         $ids = $pages->map( fn( $page ) => '"' . $page->id . '"' )->implode( ', ' );
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -1009,7 +1005,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         foreach( $pages as $page )
         {
-            $fresh = Page::findOrFail( $page->id );
+            $fresh = PageView::findOrFail( $page->id );
             $data = (array) $fresh->latest->data;
 
             $this->assertEquals( 0, $data['status'] );
@@ -1022,8 +1018,8 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testBulkPageDescendants()
     {
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
-        $expected = Page::withTrashed()
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $expected = PageView::withTrashed()
             ->whereBetween( NestedSet::LFT, [$root->getLft(), $root->getRgt()] )
             ->count();
 
@@ -1041,7 +1037,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         foreach( $root->children as $child )
         {
-            $data = (array) Page::findOrFail( $child->id )->latest->data;
+            $data = (array) PageView::findOrFail( $child->id )->latest->data;
             $this->assertEquals( 30, $data['cache'] );
         }
     }
@@ -1050,7 +1046,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     public function testBulkPageDenied()
     {
         $this->user->cmsperms = [];
-        $root = Page::where( 'tag', 'root' )->firstOrFail();
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1067,9 +1063,9 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testDropPage()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 dropPage(id: ["' . $root->id . '"]) {
@@ -1082,7 +1078,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::withTrashed()->findOrFail( $root->id );
+        $page = PageView::withTrashed()->findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1104,10 +1100,10 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testKeepPage()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
-        $root->delete();
+        $root = PageView::where('tag', 'root')->firstOrFail();
+        $root->page->delete();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 5 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 keepPage(id: ["' . $root->id . '"]) {
@@ -1118,7 +1114,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::findOrFail( $root->id );
+        $page = PageView::findOrFail( $root->id );
 
         $response->assertJson( [
             'data' => [
@@ -1138,11 +1134,11 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPage()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
-        $page->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->saveQuietly();
+        $page->variant->forceFill( ['updated_at' => '2000-01-01 00:00:00'] )->save();
 
-        $this->expectsDatabaseQueryCount( 9 );
+        $this->expectsDatabaseQueryCount( 10 );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
@@ -1152,7 +1148,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::findOrFail( $page->id );
+        $page = PageView::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [
@@ -1167,7 +1163,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAt()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
 
         $this->expectsDatabaseQueryCount( 3 );
@@ -1179,7 +1175,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $page = Page::findOrFail( $page->id );
+        $page = PageView::findOrFail( $page->id );
 
         $response->assertJson( [
             'data' => [
@@ -1193,7 +1189,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
     public function testPubPageAtWithTime()
     {
-        $page = Page::where('tag', 'root')->firstOrFail();
+        $page = PageView::where('tag', 'root')->firstOrFail();
         $page->latest()->update( ['published' => false] );
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -1212,16 +1208,16 @@ class GraphqlPageTest extends GraphqlTestAbstract
             ]
         ] );
 
-        $page = Page::with( 'latest' )->findOrFail( $page->id );
+        $page = PageView::with( 'latest' )->findOrFail( $page->id );
         $this->assertStringContainsString( '14:30:00', $page->latest->publish_at );
     }
 
 
     public function testPurgePage()
     {
-        $root = Page::where('tag', 'root')->firstOrFail();
+        $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 6 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 purgePage(id: ["' . $root->id . '"]) {
@@ -1230,6 +1226,6 @@ class GraphqlPageTest extends GraphqlTestAbstract
             }
         ' );
 
-        $this->assertNull( Page::where('tag', 'root')->first() );
+        $this->assertNull( PageView::where('tag', 'root')->first() );
     }
 }

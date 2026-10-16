@@ -9,16 +9,15 @@ namespace Tests;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Published;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Permission;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
@@ -33,11 +32,20 @@ class CoreCommandTest extends CoreTestAbstract
 
     protected $seeder = TestSeeder::class;
 
+    protected function tearDown(): void
+    {
+        // the collection driver doesn't index, so queue tests use the cms driver
+        config( ['scout.driver' => 'collection', 'scout.queue' => false, 'scout.soft_delete' => false] );
+
+        parent::tearDown();
+    }
+
+
     public function testPublish(): void
     {
         $this->artisan('cms:publish')->assertExitCode( 0 );
 
-        $this->assertEquals( 1, Page::where( 'path', 'hidden' )->firstOrFail()?->status );
+        $this->assertEquals( 1, PageView::where( 'path', 'hidden' )->firstOrFail()?->status );
         $this->assertEquals( 'Powered by Laravel CMS!', Element::where( 'name', 'Shared footer' )->firstOrFail()?->data->text );
         $this->assertEquals( (object) [
             'en' => 'Test file description',
@@ -231,16 +239,16 @@ class CoreCommandTest extends CoreTestAbstract
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
 
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $element = Element::firstOrFail();
         $file = File::firstOrFail();
         $data = ['lang' => 'en', 'name' => 'Scheduled'];
         $pageVersion = $page->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
         $elementVersion = $element->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
-        $file = Resource::saveFile( $file->id, ['name' => 'Scheduled'] );
+        $file = Files::save( $file->id, ['name' => 'Scheduled'] );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
-        $page->forceFill( ['latest_id' => $pageVersion->id] )->saveQuietly();
+        $page->variant->update( ['latest_id' => $pageVersion->id] );
         $element->forceFill( ['latest_id' => $elementVersion->id] )->saveQuietly();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
@@ -254,7 +262,7 @@ class CoreCommandTest extends CoreTestAbstract
     public function testPublishQueuesOneSearchBatch(): void
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
         $ids = [];
 
@@ -289,7 +297,7 @@ class CoreCommandTest extends CoreTestAbstract
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
 
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         $element = Element::firstOrFail();
         $element->latest->forceFill( ['published' => true] )->saveQuietly();
         $version = $page->versions()->forceCreate( [
@@ -299,13 +307,13 @@ class CoreCommandTest extends CoreTestAbstract
         ] );
         $version->elements()->attach( $element->id );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class );
     }
 
 
@@ -367,6 +375,22 @@ class CoreCommandTest extends CoreTestAbstract
     }
 
 
+    public function testUserListSkipsDeniedRoles(): void
+    {
+        User::create( [
+            'name' => 'Role user',
+            'email' => 'roles@example.com',
+            'password' => 'secret',
+            'cmsperms' => ['editor', '!viewer', 'page:view'],
+        ] );
+
+        $this->artisan( 'cms:user', ['-l' => true, 'email' => 'roles@example.com'] )
+            ->expectsOutput( '  editor' )
+            ->doesntExpectOutput( '  !viewer' )
+            ->assertExitCode( 0 );
+    }
+
+
     public function testUserPasswordPrompt(): void
     {
         $this->artisan( 'cms:user', ['--password' => null, '-q' => true, 'email' => 'prompt@example.com'] )
@@ -386,7 +410,7 @@ class CoreCommandTest extends CoreTestAbstract
 
     public function testUserWithoutTenancyConfiguration(): void
     {
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
         Tenancy::set( '' );
 
         $this->artisan('cms:user', [

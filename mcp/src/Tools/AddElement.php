@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Elements;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -32,7 +32,7 @@ class AddElement extends Tool
         $v = $request->validate([
             'type' => 'required|string|max:50',
             'name' => 'required|string|max:100',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'data' => 'required|array',
         ], [
             'type.required' => 'You must specify the element type, e.g., "heading", "text", "image", "contact". Use get-schemas to see available types.',
@@ -40,7 +40,7 @@ class AddElement extends Tool
             'data.required' => 'You must provide the element data as a JSON object with field values.',
         ] );
 
-        $element = Resource::addElement( $v, $request->user() );
+        $element = Elements::add( $v, $request->user() );
 
         return Response::structured( Presenter::item( $element ) );
     }

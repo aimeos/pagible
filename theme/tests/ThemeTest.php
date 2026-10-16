@@ -13,7 +13,7 @@ use Aimeos\Cms\Theme;
 use Aimeos\Cms\Validation;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Blade;
@@ -25,7 +25,7 @@ class ThemeTest extends ThemeTestAbstract
 {
 	public function testAudioAndVideoUseLazyLoading() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
 			'lang' => 'en',
 			'title' => 'Page title',
@@ -52,7 +52,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testBeforeAfter() : void
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
 		$files = collect( ['before' => (object) [
 			'id' => 'before',
 			'name' => 'Old roof',
@@ -195,7 +195,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testImageSizes() : void
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en', 'title' => 'Page title'] );
 		$files = collect( ['image' => (object) [
 			'id' => 'image',
 			'name' => 'Image',
@@ -422,7 +422,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testVideoJsonLdContainsGoogleProperties() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
 			'lang' => 'en',
 			'meta' => ['meta-tags' => [
@@ -463,7 +463,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testVideoJsonLdRequiresThumbnail() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'created_at' => Carbon::parse( '2026-08-01T09:00:00+02:00' ),
 			'lang' => 'en',
 			'title' => 'Page title',
@@ -488,7 +488,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testMapRendersOpenStreetMap()
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en'] );
 		$data = (object) [
 			'title' => 'Find us',
 			'text' => 'Kastanienallee 48',
@@ -518,7 +518,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testMapRejectsInvalidCoordinates()
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en'] );
 		$data = (object) [
 			'location' => (object) ['latitude' => 91, 'longitude' => 13.409564, 'zoom' => 16],
 		];
@@ -532,7 +532,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersConfiguredFields()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) [
 			'id' => 'contact-id',
 			'title' => 'Contact us',
@@ -562,7 +562,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersInputsInOrder()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) ['id' => 'contact-id', 'inputs' => [
 			(object) ['field' => 'name', 'required' => true],
 			(object) ['field' => (object) ['value' => 'company', 'label' => 'Company'], 'required' => false],
@@ -588,7 +588,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersInputTypesAndAttachments()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) ['id' => 'contact-id', 'attachments' => 3, 'inputs' => [
 			(object) ['field' => 'Service', 'required' => true, 'input' => 'select', 'options' => " Repair \n\nInstallation\r\n"],
 			(object) ['field' => 'Details', 'input' => 'textarea'],
@@ -614,7 +614,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersDefaultFields()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) ['id' => 'contact-id'];
 
 		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
@@ -628,7 +628,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersLegacyFieldsAsMandatory()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) ['id' => 'contact-id', 'fields' => ['subject']];
 
 		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
@@ -639,7 +639,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testContactRendersDescription()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id', 'lang' => 'en'] );
 		$data = (object) ['id' => 'contact-id', 'title' => 'Contact', 'description' => 'Reach **us**'];
 
 		$html = view( 'cms::contact', compact( 'data', 'page' ) )->render();
@@ -650,7 +650,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCardsImagesLinkToOptionalUrl()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['lang' => 'en'] );
 		$file = (object) [
 			'id' => 'image',
 			'name' => 'Card image',
@@ -673,7 +673,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCardsLayout()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['lang' => 'en'] );
 		$cards = [(object) ['title' => '25', 'text' => 'Years in business']];
 
 		$html = view( 'cms::cards', ['data' => (object) ['cards' => $cards], 'files' => collect(), 'page' => $page] )->render();
@@ -690,7 +690,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testTimeline()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['lang' => 'en'] );
 		$items = [
 			(object) ['label' => 'Week 1', 'title' => 'Planning', 'text' => 'Site visit and **quote**'],
 			(object) ['title' => 'Handover'],
@@ -716,7 +716,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCtaRendersOptionalTextAndThreeButtons()
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en'] );
 		$data = (object) [
 			'title' => 'Ready to start?',
 			'text' => 'Choose the path that **fits you**.',
@@ -745,7 +745,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCtaRendersOneButtonWithoutOptionalText()
 	{
-		$page = ( new Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new PageView() )->forceFill( ['lang' => 'en'] );
 		$data = (object) [
 			'title' => 'Continue',
 			'buttons' => [
@@ -787,7 +787,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCmsDataIncludesSharedElementFiles() : void
 	{
-		$page = ( new Page() )->forceFill( ['id' => 'page'] );
+		$page = ( new PageView() )->forceFill( ['id' => 'page'] );
 		$pageFile = ( new File() )->forceFill( ['id' => 'page-file'] );
 		$elementFile = ( new File() )->forceFill( ['id' => 'element-file'] );
 		$element = ( new Element() )->forceFill( [
@@ -809,7 +809,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testCardsWithoutTitleDoNotRenderEmptyHeading()
 	{
-		$page = ( new \Aimeos\Cms\Models\Page() )->forceFill( ['lang' => 'en'] );
+		$page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['lang' => 'en'] );
 		$data = (object) ['cards' => [(object) ['text' => '- [Contact](/contact)']]];
 
 		$html = view( 'cms::cards', ['data' => $data, 'files' => collect(), 'page' => $page] )->render();
@@ -821,7 +821,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testListItemUsesIndexedArticleImage() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'content' => [[
 				'type' => 'article',
 				'files' => ['image'],
@@ -850,7 +850,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testArticleRendersGalleryAndLegacyImageFields() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'created_at' => Carbon::parse( '2026-08-23 12:00:00' ),
 			'updated_at' => Carbon::parse( '2026-08-24 12:00:00' ),
 			'id' => 'page',
@@ -929,7 +929,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testArticleRendersOptionalAuthorJsonLdFields() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'created_at' => Carbon::parse( '2026-08-23 12:00:00' ),
 			'lang' => 'en',
 			'title' => 'Article',
@@ -970,7 +970,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testSocialMediaUsesLocalizedImageDescriptionForAltText() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'domain' => '',
 			'id' => 'page',
 			'lang' => 'de',
@@ -1013,7 +1013,7 @@ class ThemeTest extends ThemeTestAbstract
 
 		foreach( $expected as $lang => $locale )
 		{
-			$page = ( new Page() )->forceFill( ['domain' => '', 'id' => 'page', 'lang' => $lang, 'name' => 'Website', 'path' => 'page'] );
+			$page = ( new PageView() )->forceFill( ['domain' => '', 'id' => 'page', 'lang' => $lang, 'name' => 'Website', 'path' => 'page'] );
 			$page->setRelation( 'ancestors', collect() );
 
 			$html = view( 'cms::social-media', compact( 'data', 'files', 'page' ) )->render();
@@ -1025,7 +1025,7 @@ class ThemeTest extends ThemeTestAbstract
 
 	public function testSocialMediaUsesImageNameWhenLocalizedDescriptionIsMissing() : void
 	{
-		$page = ( new Page() )->forceFill( [
+		$page = ( new PageView() )->forceFill( [
 			'domain' => '',
 			'id' => 'page',
 			'lang' => 'en',
@@ -1160,7 +1160,7 @@ class ThemeTest extends ThemeTestAbstract
         $this->assertNotNull( $theme['preview'] ?? null );
         $this->assertArrayHasKey( 'custom::first', $theme['content'] ?? [] );
 
-        $this->assertArrayHasKey( 'custom::first', Schema::schemas( 'custom', 'content' ) );
+        $this->assertArrayHasKey( 'custom::first', Schema::schemas( 'content' ) );
 
         $disk->put( 'custom/schema.json', json_encode( [
             'label' => 'Changed',
@@ -1168,7 +1168,7 @@ class ThemeTest extends ThemeTestAbstract
         ] ) );
         Cache::forget( 'cms-themes_test' );
 
-        $schemas = Schema::schemas( 'custom', 'content' );
+        $schemas = Schema::schemas( 'content' );
 
         $this->assertArrayHasKey( 'custom::second', $schemas );
         $this->assertArrayNotHasKey( 'custom::first', $schemas );
@@ -1313,25 +1313,16 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testSchemasAllSections()
+	public function testSchemasSections()
 	{
-		$schemas = Schema::schemas();
+		$content = Schema::schemas( 'content' );
+		$meta = Schema::schemas( 'meta' );
 
-		$this->assertArrayHasKey( 'content', $schemas );
-		$this->assertArrayHasKey( 'meta', $schemas );
-		$this->assertArrayHasKey( 'heading', $schemas['content'] );
-		$this->assertArrayHasKey( 'meta-tags', $schemas['meta'] );
-		$this->assertArrayHasKey( 'description', $schemas['meta']['meta-tags']['fields'] );
-		$this->assertArrayHasKey( 'description', $schemas['meta']['social-media']['fields'] );
-	}
-
-
-	public function testSchemasFilterByTheme()
-	{
-		$schemas = Schema::schemas( name: 'cms', section: 'content' );
-
-		$this->assertArrayHasKey( 'heading', $schemas );
-		$this->assertArrayHasKey( 'text', $schemas );
+		$this->assertArrayHasKey( 'heading', $content );
+		$this->assertArrayHasKey( 'text', $content );
+		$this->assertArrayHasKey( 'meta-tags', $meta );
+		$this->assertArrayHasKey( 'description', $meta['meta-tags']['fields'] );
+		$this->assertArrayHasKey( 'description', $meta['social-media']['fields'] );
 	}
 
 

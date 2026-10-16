@@ -33,6 +33,7 @@ return new class extends Migration
                 indexable_type UNINDEXED,
                 tenant_id UNINDEXED,
                 latest UNINDEXED,
+                indexable_lang UNINDEXED,
                 content
             )");
         }
@@ -48,9 +49,11 @@ return new class extends Migration
                 $table->string('indexable_type', 50);
                 $table->string('tenant_id');
                 $table->boolean('latest')->default(false);
+                $table->string('indexable_lang', 10)->nullable();
                 $table->text('content');
 
                 $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_id']);
+                $table->index(['tenant_id', 'indexable_type', 'latest', 'indexable_lang']);
 
                 if( in_array($driver, ['mariadb', 'mysql']) ) {
                     $table->fullText('content');
@@ -72,8 +75,8 @@ return new class extends Migration
 
         $schema->dropIfExists('cms_page_search');
 
-        // indexing pages needs the frontend access table created by a later core migration
-        if( $schema->hasTable('cms_page_access') ) {
+        // indexing pages needs the access and variants tables created by later core migrations
+        if( $schema->hasTable('cms_page_access') && $schema->hasTable('cms_page_variants') ) {
             Artisan::call('cms:index');
         }
     }

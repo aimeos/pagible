@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\LaunchDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,18 +24,16 @@ class LaunchDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new LaunchDemo( 'launch', 'launch' ) )->seed();
-        Tenancy::$callback = fn() => 'launch';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'launch' );
     }
 
 
     public function testAnnouncementDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'launch::product'}->data->announcement = '';
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="topbar"', false );
     }
@@ -78,12 +76,12 @@ class LaunchDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $blog = Page::where( 'path', 'blog' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $blog = PageView::where( 'path', 'blog' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $blog->id ) );
-        $this->assertSame( 'launch', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'launch', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

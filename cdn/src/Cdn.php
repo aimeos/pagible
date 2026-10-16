@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\PurgeCdn;
-use Aimeos\Cms\Models\File;
 use FOS\HttpCache\CacheInvalidator;
 use FOS\HttpCache\ProxyClient\Cloudflare;
 use FOS\HttpCache\ProxyClient\Fastly;
@@ -18,7 +17,6 @@ use Http\Adapter\Guzzle7\Client;
 use Http\Client\Common\Plugin\ErrorPlugin;
 use Http\Client\Common\PluginClient;
 use Http\Client\HttpAsyncClient;
-use Illuminate\Support\Facades\Storage;
 
 
 /**
@@ -59,7 +57,7 @@ class Cdn
      */
     public static function file( string $path ) : string
     {
-        $url = Storage::disk( File::diskName( 'public' ) )->url( $path );
+        $url = FileStorage::disk( 'public' )->url( $path );
 
         // Local disks without an "url" setting return URLs relative to the application URL
         return str_starts_with( $url, 'http' ) ? $url : self::base() . '/' . ltrim( $url, '/' );

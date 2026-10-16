@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Str;
@@ -52,10 +52,10 @@ class AuraDemo extends AbstractDemo
     /**
      * Creates the about page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAbout( Page $home ) : static
+    protected function addAbout( PageView $home ) : static
     {
         $this->page( ['name' => 'About', 'title' => 'About Noa Lindqvist', 'path' => 'about'], [
             $this->heading( 'Designer who ships code', '1' ),
@@ -86,10 +86,10 @@ MD ),
     /**
      * Creates the work page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addWork( Page $home ) : static
+    protected function addWork( PageView $home ) : static
     {
         $this->page( ['name' => 'Work', 'title' => 'Selected Work', 'path' => 'work'], [
             $this->heading( 'Selected work', '1' ),
@@ -115,10 +115,10 @@ MD ),
     /**
      * Creates the writing page with the blog posts below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addWriting( Page $home ) : static
+    protected function addWriting( PageView $home ) : static
     {
         $id = (string) Str::uuid7();
         $writing = $this->page( ['id' => $id, 'name' => 'Writing', 'title' => 'Writing', 'path' => 'writing'], [
@@ -133,7 +133,7 @@ MD ),
             $article = $this->article( $data['title'], $intro, $fileId );
             $post = $this->page( $data + ['type' => 'blog'], array_merge( [$article], $content ), $writing, [$fileId] );
 
-            $post->forceFill( ['created_at' => $date] )->saveQuietly();
+            $post->variant->forceFill( ['created_at' => $date] )->saveQuietly();
         }
 
         return $this;
@@ -257,9 +257,9 @@ SVG;
     /**
      * Returns the home page of Noa Lindqvist.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->avatar();
@@ -344,11 +344,11 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
+     * @param PageView $parent Parent page
      * @param array<int, string> $fileIds Additional file IDs
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [] ) : PageView
     {
         $elementId = $this->element();
         $footer = [

@@ -8,7 +8,7 @@ namespace Tests;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Exception;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
@@ -129,7 +129,7 @@ class AccessTest extends CoreTestAbstract
     {
         $changed = false;
         $user = new \App\Models\User();
-        Tenancy::$access = fn() => false;
+        Tenancy::allowsUsing( fn() => false );
 
         Access::using(
             list: fn() => ['member'],
@@ -149,7 +149,7 @@ class AccessTest extends CoreTestAbstract
             );
             $this->assertFalse( $changed );
         } finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 
@@ -164,9 +164,9 @@ class AccessTest extends CoreTestAbstract
             'password' => 'secret',
             'cmsperms' => [],
         ] );
-        Tenancy::$access = function() use ( &$checks ) {
+        Tenancy::allowsUsing( function() use ( &$checks ) {
             return ++$checks === 1;
-        };
+        } );
 
         Access::using(
             list: fn() => ['member'],
@@ -187,7 +187,7 @@ class AccessTest extends CoreTestAbstract
             $this->assertSame( 2, $checks );
             $this->assertFalse( $changed );
         } finally {
-            Tenancy::$access = null;
+            Tenancy::allowsUsing( null );
         }
     }
 
@@ -342,7 +342,6 @@ class AccessTest extends CoreTestAbstract
         $this->assertSame( ['123'], $access->search( '12' ) );
         $this->assertSame( ['123'], $access->known( ['123', '999'] ) );
         $this->assertSame( ['123'], $access->allowed( $user ) );
-        $this->assertSame( ['123'], $access->allowed( $user, ['123', 'alpha', '123'] ) );
     }
 
 
@@ -465,7 +464,7 @@ class AccessTest extends CoreTestAbstract
         $access = app( Access::class );
 
         $this->assertSame( ['alpha', 'beta'], $access->allowed( $user ) );
-        $this->assertSame( ['beta'], $access->allowed( $user, ['beta', 'missing', 'beta'] ) );
+        $this->assertSame( ['alpha', 'beta'], $access->allowed( $user ) );
         $this->assertSame( 1, $grantCalls );
         $this->assertSame( 1, $catalogCalls );
         $this->assertSame( 0, $gateCalls );
@@ -490,7 +489,7 @@ class AccessTest extends CoreTestAbstract
         $this->assertTrue( $access->has( 'member' ) );
         $this->assertFalse( $access->has( 'missing' ) );
         $this->assertSame( ['member'], $access->search( 'm', 1 ) );
-        $this->assertSame( ['member'], $access->allowed( $user, ['member', 'missing'] ) );
+        $this->assertSame( ['member'], $access->allowed( $user ) );
         $this->assertSame( 1, $catalogCalls );
     }
 
@@ -547,10 +546,6 @@ class AccessTest extends CoreTestAbstract
         $this->assertSame(
             ['frontend.once', 'frontend.pro', 'member'],
             app( Access::class )->allowed( $user ),
-        );
-        $this->assertSame(
-            ['frontend.pro'],
-            app( Access::class )->allowed( $user, ['frontend.pro', 'frontend.expired'] ),
         );
     }
 
@@ -623,7 +618,7 @@ class AccessTest extends CoreTestAbstract
 
     public function testPageAccessScopeUsesBoundedEffectiveGrants(): void
     {
-        $page = Page::where( 'path', 'hidden' )->firstOrFail();
+        $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         PageAccess::forceCreate( [
             'page_id' => $page->id,
             'tenant_id' => 'test',
@@ -642,7 +637,7 @@ class AccessTest extends CoreTestAbstract
         $user = new \App\Models\User();
         $user->id = 42;
 
-        $this->assertNotNull( Page::query()->access( $user )->find( $page->id ) );
+        $this->assertNotNull( PageView::query()->access( $user )->find( $page->id ) );
         $this->assertSame( 1, $catalogCalls );
     }
 
@@ -750,7 +745,7 @@ class AccessTest extends CoreTestAbstract
                 return true;
             } );
 
-            $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
+            $this->assertSame( ['member'], $access->allowed( $user ) );
             $this->assertSame( 1, $registrar->calls );
 
             $this->assertSame( [], $access->assigned( $user ) );
@@ -760,14 +755,14 @@ class AccessTest extends CoreTestAbstract
             $user->setRelation( 'roles', collect() );
             $user->setRelation( 'permissions', collect() );
 
-            $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
+            $this->assertSame( ['member'], $access->allowed( $user ) );
             $this->assertFalse( $user->relationLoaded( 'roles' ) );
             $this->assertFalse( $user->relationLoaded( 'permissions' ) );
 
             Tenancy::set( 'other' );
 
             $this->assertSame( $access, app( Access::class ) );
-            $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
+            $this->assertSame( ['member'], $access->allowed( $user ) );
             $this->assertFalse( $user->relationLoaded( 'roles' ) );
             $this->assertFalse( $user->relationLoaded( 'permissions' ) );
             $this->assertSame( 'other', $registrar->tenant );
@@ -836,7 +831,7 @@ class AccessTest extends CoreTestAbstract
 
             Gate::define( 'member', fn() => true );
             $user = new BouncerUserFake();
-            $this->assertSame( ['member'], $access->allowed( $user, ['member'] ) );
+            $this->assertSame( ['member'], $access->allowed( $user ) );
             $this->assertSame( [], $access->assigned( $user ) );
             $this->assertSame( ['member'], $access->set( $user, ['member'] ) );
             $this->assertSame( [], $access->set( $user, [] ) );
@@ -861,15 +856,15 @@ class AccessTest extends CoreTestAbstract
             'laratrust.models.permission' => AccessPackageModel::class,
             'laratrust.teams.enabled' => true,
         ] );
-        $value = Page::query()->value( 'name' );
+        $value = PageView::query()->value( 'name' );
         $user = new LaratrustUserFake();
 
         Access::laratrust();
 
         $this->assertIsString( $value );
-        $this->assertSame( [$value], app( Access::class )->allowed( $user, [$value] ) );
+        $this->assertSame( app( Access::class )->list(), app( Access::class )->allowed( $user ) );
         $this->assertContains( $value, app( Access::class )->list() );
-        $this->assertSame( [[$value, 'test']], $user->checks );
+        $this->assertContains( [$value, 'test'], $user->checks );
         $this->assertSame( [], app( Access::class )->assigned( $user ) );
         $this->assertSame( [$value], app( Access::class )->set( $user, [$value] ) );
         $this->assertSame( [], app( Access::class )->set( $user, [] ) );
@@ -894,7 +889,7 @@ class AccessTest extends CoreTestAbstract
             Access::bouncer();
             $access = app( Access::class );
 
-            AccessWriteModel::query()->create( ['name' => 'model.edit', 'entity_type' => Page::class] );
+            AccessWriteModel::query()->create( ['name' => 'model.edit', 'entity_type' => PageView::class] );
             $this->assertSame( [], $access->delete( ['model.edit'] ) );
             $this->assertTrue( AccessWriteModel::query()->where( 'name', 'model.edit' )->exists() );
             $this->assertSame( ['bouncer.member'], $access->add( 'bouncer.member' ) );
@@ -979,7 +974,7 @@ class AccessTest extends CoreTestAbstract
 
 class AccessPackageModel extends \Illuminate\Database\Eloquent\Model
 {
-    protected $table = 'cms_pages';
+    protected $table = 'cms_page_variants';
     public $timestamps = false;
 
 

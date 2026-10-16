@@ -154,6 +154,9 @@ function setupIntercept({
       if (query.includes('schemas')) {
         return { data: { schemas } }
       }
+      if (query.includes('pageTranslationStates')) {
+        return { data: { pageTranslationStates: [] } }
+      }
       if (query.includes('pages')) {
         const data = typeof pages === 'function' ? pages(op.variables || {}) : pages
         return { data: pagesResponse(data) }
@@ -177,13 +180,14 @@ function setupIntercept({
   }).as('gql')
 }
 
-function waitForSetPageAccess() {
+/** Waits until a GQL request contains the named operation, skipping other requests like background queries. */
+function waitForOp(name) {
   return cy.wait('@gql').then((interception) => {
     const body = interception.request.body
     const ops = Array.isArray(body) ? body : [body]
-    const accessOp = ops.find((op) => (op.query || '').includes('setPageAccess'))
+    const found = ops.find((op) => (op.query || '').includes(name))
 
-    return accessOp || waitForSetPageAccess()
+    return found || waitForOp(name)
   })
 }
 
@@ -251,7 +255,7 @@ describe('Page List', () => {
     // Search triggers a server query only in list view
     cy.get('.v-navigation-drawer--right').contains('List').click()
     cy.wait('@gql') // list view pages query
-    cy.get('.search input').type('test')
+    cy.get('.search .v-text-field:not(.v-select) input').type('test')
     cy.wait('@gql') // search query with filter
   })
 
@@ -275,10 +279,7 @@ describe('Page List', () => {
   it('clicking add page sends addPage mutation', () => {
     visitPages()
     cy.get('.v-btn.btn-add').first().click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('addPage'))).to.be.true
-    })
+    waitForOp('addPage').should('exist')
   })
 
   // ---- Reload ----
@@ -301,10 +302,7 @@ describe('Page List', () => {
     }))
 
     cy.get('.v-btn.btn-reload').should('exist').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('pages'))).to.be.true
-    })
+    waitForOp('pages').should('exist')
     cy.get('.item-title').should('contain', 'New page')
   })
 
@@ -507,7 +505,7 @@ describe('Page List', () => {
       .should('contain', 'Apply recursively (4)')
       .click()
 
-    waitForSetPageAccess().should((accessOp) => {
+    waitForOp('setPageAccess').should((accessOp) => {
       expect(accessOp.variables.id).to.deep.equal(['1'])
       expect(accessOp.variables.access).to.equal(null)
       expect(accessOp.variables.descendants).to.equal(true)
@@ -574,10 +572,7 @@ describe('Page List', () => {
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Publish').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('pubPage'))).to.be.true
-    })
+    waitForOp('pubPage').should('exist')
   })
 
   it('clicking Clear cache sends clearCache mutation for the page', () => {
@@ -585,10 +580,7 @@ describe('Page List', () => {
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Clear cache').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const clearOp = ops.find((op) => (op.query || '').includes('clearCache'))
-      expect(clearOp).to.exist
+    waitForOp('clearCache').should((clearOp) => {
       expect(clearOp.variables.ids).to.deep.equal(['1'])
     })
   })
@@ -598,10 +590,7 @@ describe('Page List', () => {
     visitPages([page])
     cy.get('.tree-node-inner .btn-actions .v-btn').first().click()
     cy.contains('.v-card .v-list .v-btn', 'Delete').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      expect(ops.some((op) => (op.query || '').includes('dropPage'))).to.be.true
-    })
+    waitForOp('dropPage').should('exist')
   })
 
   // ---- Bulk actions ----
@@ -667,7 +656,7 @@ describe('Page List', () => {
     cy.contains('.v-card .v-list .v-btn', 'Access').click()
     cy.contains('.page-access .v-radio', 'Public').find('input').check({ force: true })
     cy.get('.page-access .btn-apply-access').click()
-    waitForSetPageAccess().should((accessOp) => {
+    waitForOp('setPageAccess').should((accessOp) => {
       expect(accessOp.variables.id).to.deep.equal(['1'])
       expect(accessOp.variables.access).to.equal(null)
       expect(accessOp.variables.descendants).to.equal(false)
@@ -689,10 +678,7 @@ describe('Page List', () => {
     cy.get('.prop').first().find('.v-field').realClick()
     cy.get('.v-overlay-container [role="option"]').contains('Disabled').should('be.visible').click()
     cy.get('.btn-apply').should('not.be.disabled').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(saveOp).to.exist
+    waitForOp('bulkPage').should((saveOp) => {
       expect(saveOp.variables.input.status).to.equal(0)
     })
   })
@@ -748,10 +734,7 @@ describe('Page List', () => {
     // enable the first property (status), then apply
     cy.get('.prop').first().find('.v-checkbox-btn').click()
     cy.get('.btn-apply').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(saveOp).to.exist
+    waitForOp('bulkPage').should((saveOp) => {
       expect(saveOp.variables.input.status).to.equal(1)
       expect(saveOp.variables.descendants).to.equal(false)
       expect(saveOp.variables.id).to.have.length(1)
@@ -766,10 +749,7 @@ describe('Page List', () => {
     cy.contains('.v-card .v-list .v-btn', 'Edit properties').click()
     cy.get('.prop').first().find('.v-checkbox-btn').click()
     cy.get('.btn-apply-recursive').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(saveOp).to.exist
+    waitForOp('bulkPage').should((saveOp) => {
       expect(saveOp.variables.descendants).to.equal(true)
     })
   })
@@ -794,10 +774,7 @@ describe('Page List', () => {
     cy.get('.prop').first().find('.v-select').click()
     cy.get('.v-overlay-container .v-list-item').contains('Disabled').click()
     cy.get('.btn-apply').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const saveOp = ops.find((op) => (op.query || '').includes('bulkPage'))
-      expect(saveOp).to.exist
+    waitForOp('bulkPage').should((saveOp) => {
       expect(saveOp.variables.input.status).to.equal(0)
     })
   })

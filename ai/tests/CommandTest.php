@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\File;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\TextResponse;
@@ -40,7 +40,7 @@ class AiCommandTest extends AiTestAbstract
 
         $this->artisan( 'cms:description' )->assertExitCode( 0 );
 
-        $page = Page::where( 'path', '' )->firstOrFail();
+        $page = PageView::where( 'path', '' )->firstOrFail();
         $this->assertEquals( 'Generated meta description', $page->meta->{'meta-tags'}->data->description ?? '' );
 
         $file = File::where( 'name', 'No description' )->firstOrFail();

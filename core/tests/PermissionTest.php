@@ -120,7 +120,7 @@ class PermissionTest extends CoreTestAbstract
     public function testCanWithoutTenantConfiguration(): void
     {
         $user = new GenericUser( ['id' => 1, 'cmsperms' => ['page:view']] );
-        Tenancy::$callback = null;
+        Tenancy::valueUsing( null );
         Tenancy::set( '' );
 
         $this->assertTrue( Permission::can( 'page:view', $user ) );

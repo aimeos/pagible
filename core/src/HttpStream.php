@@ -19,7 +19,7 @@ use Psr\Http\Message\RequestInterface;
  * Guzzle handler for streamed responses using cURL.
  *
  * Guzzle's stream handler uses PHP's HTTP wrapper, which ignores "curl" options like the
- * CURLOPT_RESOLVE pin added by Utils::safeHttp() and resolves the host again, while its cURL
+ * CURLOPT_RESOLVE pin added by SafeHttp::options() and resolves the host again, while its cURL
  * handlers download the complete body first. This handler applies all "curl" options, returns
  * once the headers are received and transfers the body while it's read.
  *
@@ -120,61 +120,31 @@ final class HttpStream
         $mh = curl_multi_init();
 
         curl_setopt_array( $ch, $this->conf( $request, $options ) + [
-            CURLOPT_HEADERFUNCTION => function( $ch, string $line ) use ( &$status, &$reason, &$version, &$headers, &$done ) : int {
-                $value = trim( $line );
-
-                if( preg_match( '#^HTTP/(\S+)\s+(\d{3})\s*(.*)$#', $value, $m ) ) {
-                    [$version, $status, $reason, $headers] = [$m[1], (int) $m[2], $m[3], []];
-                } elseif( $value === '' ) {
-                    $done = $status >= 200;
-                } elseif( str_contains( $value, ':' ) ) {
-                    [$name, $val] = explode( ':', $value, 2 );
-                    $headers[trim( $name )][] = trim( $val );
-                }
-
-                return strlen( $line );
-            },
+            CURLOPT_HEADERFUNCTION => self::header( $status, $reason, $version, $headers, $done ),
             CURLOPT_WRITEFUNCTION => function( $ch, string $data ) use ( &$buffer ) : int {
                 $buffer .= $data;
                 return strlen( $data );
             },
         ] );
         curl_multi_add_handle( $mh, $ch );
-
-        $step = function() use ( $mh, &$running ) : void {
-            if( curl_multi_select( $mh, 1.0 ) === -1 ) {
-                usleep( 1000 );
-            }
-
-            do {
-                $code = curl_multi_exec( $mh, $running );
-            } while( $code === CURLM_CALL_MULTI_PERFORM );
-        };
-        $error = function() use ( $mh, $ch ) : ?string {
-            $info = curl_multi_info_read( $mh );
-            $code = is_array( $info ) ? $info['result'] : CURLE_OK;
-
-            return $code !== CURLE_OK ? ( curl_error( $ch ) ?: curl_strerror( $code ) ) : null;
-        };
-
         curl_multi_exec( $mh, $running );
 
         while( !$done && $running ) {
-            $step();
+            self::step( $mh, $running );
         }
 
         if( !$done ) {
-            throw new ConnectException( sprintf( 'Request to "%s" failed: %s', $request->getUri(), $error() ?? 'Incomplete response' ), $request );
+            throw new ConnectException( sprintf( 'Request to "%s" failed: %s', $request->getUri(), self::error( $mh, $ch ) ?? 'Incomplete response' ), $request );
         }
 
-        $body = new PumpStream( function( int $length ) use ( &$buffer, &$running, $step, $error ) {
+        $body = new PumpStream( function( int $length ) use ( &$buffer, &$running, $mh, $ch ) {
             while( $buffer === '' && $running ) {
-                $step();
+                self::step( $mh, $running );
             }
 
             if( $buffer === '' )
             {
-                if( $msg = $error() ) {
+                if( $msg = self::error( $mh, $ch ) ) {
                     throw new \RuntimeException( sprintf( 'Response transfer failed: %s', $msg ) );
                 }
 
@@ -188,5 +158,68 @@ final class HttpStream
         } );
 
         return new Response( $status, $headers, $body, $version, $reason );
+    }
+
+
+    /**
+     * Returns the error of the finished transfer.
+     *
+     * @param \CurlMultiHandle $mh Multi handle running the transfer
+     * @param \CurlHandle $ch Handle of the transfer
+     * @return string|null Error message or NULL if the transfer succeeded or is still running
+     */
+    private static function error( \CurlMultiHandle $mh, \CurlHandle $ch ) : ?string
+    {
+        $info = curl_multi_info_read( $mh );
+        $code = is_array( $info ) ? $info['result'] : CURLE_OK;
+
+        return $code !== CURLE_OK ? ( curl_error( $ch ) ?: curl_strerror( $code ) ) : null;
+    }
+
+
+    /**
+     * Returns the callback parsing the response headers into the referenced variables.
+     *
+     * @param int $status HTTP status code, updated by the callback
+     * @param string $reason HTTP reason phrase, updated by the callback
+     * @param string $version HTTP protocol version, updated by the callback
+     * @param array<string, array<int, string>> $headers Response headers, updated by the callback
+     * @param bool $done Set to TRUE by the callback when the final response header is complete
+     * @return \Closure(mixed, string): int Header callback for cURL
+     */
+    private static function header( int &$status, string &$reason, string &$version, array &$headers, bool &$done ) : \Closure
+    {
+        return function( $ch, string $line ) use ( &$status, &$reason, &$version, &$headers, &$done ) : int {
+            $value = trim( $line );
+
+            if( preg_match( '#^HTTP/(\S+)\s+(\d{3})\s*(.*)$#', $value, $m ) ) {
+                [$version, $status, $reason, $headers] = [$m[1], (int) $m[2], $m[3], []];
+            } elseif( $value === '' ) {
+                $done = $status >= 200;
+            } elseif( str_contains( $value, ':' ) ) {
+                [$name, $val] = explode( ':', $value, 2 );
+                $headers[trim( $name )][] = trim( $val );
+            }
+
+            return strlen( $line );
+        };
+    }
+
+
+    /**
+     * Waits for activity and continues the transfer.
+     *
+     * @param \CurlMultiHandle $mh Multi handle running the transfer
+     * @param int $running Number of running transfers, updated by cURL
+     */
+    private static function step( \CurlMultiHandle $mh, int &$running ) : void
+    {
+        if( curl_multi_select( $mh, 1.0 ) === -1 ) {
+            usleep( 1000 );
+        }
+
+        do {
+            $code = curl_multi_exec( $mh, $running );
+        } while( $code === CURLM_CALL_MULTI_PERFORM );
     }
 }

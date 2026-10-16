@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\GlowDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,18 +24,16 @@ class GlowDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new GlowDemo( 'glow', 'glow' ) )->seed();
-        Tenancy::$callback = fn() => 'glow';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'glow' );
     }
 
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'glow::salon'}->data->{'action-bar'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -43,12 +41,12 @@ class GlowDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $journal = Page::where( 'path', 'journal' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $journal = PageView::where( 'path', 'journal' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $journal->id ) );
-        $this->assertSame( 'glow', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'glow', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

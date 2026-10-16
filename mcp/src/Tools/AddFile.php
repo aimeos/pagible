@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Models\File;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
@@ -41,7 +41,7 @@ class AddFile extends Tool
             'content' => 'string|max:8388608',
             'disk' => 'sometimes|string|in:public,private',
             'name' => 'string|max:255',
-            'lang' => 'nullable|string|max:5',
+            'lang' => 'nullable|string|max:10',
             'description' => 'array',
         ], [
             'url.required_without' => 'You must specify the URL of the file to add, e.g., "https://example.com/image.jpg", or its base64 encoded content.',
@@ -49,19 +49,8 @@ class AddFile extends Tool
             'url.url' => 'The URL must be a valid "http" or "https" URL.',
         ] );
 
-        $file = new File();
-        $file->disk = $v['disk'] ?? 'public';
-        $file->fill( array_intersect_key( $v, array_flip( ['name', 'lang'] ) ) );
-
-        if( isset( $v['description'] ) ) {
-            $file->description = $v['description'];
-        }
-
-        // Fetch the file and generate previews outside the transaction to keep
-        // slow network and image work off the database connection.
-        $this->source( $v, fn( UploadedFile|string $source ) => $file->ingest( $source ) );
-
-        $file = Resource::addFile( $file, $request->user() );
+        $values = array_intersect_key( $v, array_flip( ['name', 'lang', 'description'] ) );
+        $file = $this->source( $v, fn( UploadedFile|string $source ) => Files::add( $source, $values, $request->user(), $v['disk'] ?? null ) );
 
         return Response::structured( Presenter::item( $file ) );
     }

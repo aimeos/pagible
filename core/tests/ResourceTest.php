@@ -21,20 +21,33 @@ use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Jobs\InvalidatePages;
+use Aimeos\Cms\LifecycleAction;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
+use Aimeos\Cms\Exceptions\ConflictException;
+use Aimeos\Cms\Exceptions\InvalidInputException;
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Jobs\DeleteFilePaths;
 use Aimeos\Cms\Jobs\PruneVersions;
+use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Publication;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Resource\BulkResult;
+use Aimeos\Cms\Facades\Elements;
+use Aimeos\Cms\Facades\Files as FileResource;
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 
 
@@ -44,6 +57,15 @@ class ResourceTest extends CoreTestAbstract
     use RefreshDatabase;
 
     protected $seeder = TestSeeder::class;
+
+
+    protected function tearDown(): void
+    {
+        // the collection driver doesn't index, so queue tests use the cms driver
+        config( ['scout.driver' => 'collection', 'scout.queue' => false, 'scout.soft_delete' => false] );
+
+        parent::tearDown();
+    }
 
 
     protected function setUp(): void
@@ -97,6 +119,19 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testElementPruneDeletesVersions(): void
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Prune', 'data' => ['text' => 'Prune']], $this->user );
+        Elements::drop( $element->id, $this->user );
+
+        $this->travel( config( 'cms.prune', 30 ) + 1 )->days();
+        $this->artisan( 'model:prune', ['--model' => [Element::class]] )->assertSuccessful();
+
+        $this->assertFalse( Element::withTrashed()->whereKey( $element->id )->exists() );
+        $this->assertEquals( 0, Version::withoutTenancy()->where( 'versionable_id', $element->id )->count() );
+    }
+
+
     public function testSavePageKeepsFilesWhenSectionOmitted()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -105,7 +140,7 @@ class ResourceTest extends CoreTestAbstract
         $this->assertContains( $file->id, $page->latest->files()->pluck( 'cms_files.id' )->all() );
 
         // change only the title; content/files are not sent
-        $page = Resource::savePage( $page->id, ['title' => 'Renamed'], $this->user );
+        $page = Pages::save( $page->id, ['title' => 'Renamed'], $this->user );
 
         $this->assertContains( $file->id, $page->latest->files()->pluck( 'cms_files.id' )->all() );
     }
@@ -120,7 +155,7 @@ class ResourceTest extends CoreTestAbstract
             'cmsperms' => ['page:view', 'page:save'],
         ] );
 
-        $page = Resource::savePage( $page->id, ['title' => 'Renamed'], $user );
+        $page = Pages::save( $page->id, ['title' => 'Renamed'], $user );
 
         $this->assertContains( $file->id, $page->latest->files()->pluck( 'cms_files.id' )->all() );
     }
@@ -138,7 +173,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Insufficient permissions' );
 
-        Resource::savePage( $page->id, [
+        Pages::save( $page->id, [
             'content' => [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]],
         ], $user );
     }
@@ -149,8 +184,8 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [] );
         $base = $page->latest_id;
 
-        Resource::savePage( $page->id, ['title' => 'Changed elsewhere'], $this->user );
-        $page = Resource::savePage( $page->id, ['name' => 'My change'], $this->user, $base );
+        Pages::save( $page->id, ['title' => 'Changed elsewhere'], $this->user );
+        $page = Pages::save( $page->id, ['name' => 'My change'], $this->user, $base );
 
         $this->assertSame( 'Changed elsewhere', $page->latest->data->title );
         $this->assertSame( 'My change', $page->latest->data->name );
@@ -162,7 +197,7 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $page = $this->page( [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]] );
 
-        $page = Resource::savePage( $page->id, [
+        $page = Pages::save( $page->id, [
             'content' => [['type' => 'heading', 'data' => ['title' => 'No image any more']]],
         ], $this->user );
 
@@ -175,7 +210,7 @@ class ResourceTest extends CoreTestAbstract
         $jpeg = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $tiff = File::where( 'mime', 'image/tiff' )->firstOrFail();
 
-        $page = Resource::addPage( [
+        $page = Pages::add( [
             'lang' => 'en', 'name' => 'Nested', 'title' => 'Nested', 'path' => 'nested-test',
             'content' => [['type' => 'hero', 'data' => ['background' => ['id' => $jpeg->id, 'type' => 'file']]]],
             'meta' => ['social-media' => [
@@ -201,7 +236,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'expected type, data and files' );
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en', 'name' => 'Invalid', 'title' => 'Invalid', 'path' => 'invalid-meta',
             'meta' => ['meta-tags' => ['description' => 'Invalid']],
         ], $this->user, parent: $this->root()->id );
@@ -211,7 +246,7 @@ class ResourceTest extends CoreTestAbstract
     public function testSavePageAttachesReferencedElement()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
-        $page = Resource::addPage( [
+        $page = Pages::add( [
             'lang' => 'en', 'name' => 'Ref', 'title' => 'Ref', 'path' => 'ref-test',
             'content' => [['type' => 'reference', 'refid' => $element->id, 'group' => 'main']],
         ], $this->user, parent: $this->root()->id );
@@ -231,7 +266,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Insufficient permissions' );
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en', 'name' => 'Ref', 'title' => 'Ref', 'path' => 'restricted-ref-test',
             'content' => [['type' => 'reference', 'refid' => $element->id, 'group' => 'main']],
         ], $user, parent: $this->root()->id );
@@ -244,7 +279,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->expectException( Exception::class );
 
-        Resource::savePage( $page->id, [
+        Pages::save( $page->id, [
             'content' => [['type' => 'image', 'data' => ['file' => ['id' => \Illuminate\Support\Str::uuid7()->toString(), 'type' => 'file']]]],
         ], $this->user );
     }
@@ -254,7 +289,7 @@ class ResourceTest extends CoreTestAbstract
     {
         $this->expectException( Exception::class );
 
-        Resource::addPage( [
+        Pages::add( [
             'lang' => 'en', 'name' => 'Bad', 'title' => 'Bad', 'path' => 'bad-test',
             'content' => [['type' => 'reference', 'refid' => \Illuminate\Support\Str::uuid7()->toString(), 'group' => 'main']],
         ], $this->user, parent: $this->root()->id );
@@ -264,7 +299,7 @@ class ResourceTest extends CoreTestAbstract
     public function testSaveElementKeepsFilesWhenDataOmitted()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
@@ -272,7 +307,7 @@ class ResourceTest extends CoreTestAbstract
         $this->assertContains( $file->id, $element->latest->files()->pluck( 'cms_files.id' )->all() );
 
         // change only the name; data/files are not sent
-        $element = Resource::saveElement( $element->id, ['name' => 'Renamed'], $this->user );
+        $element = Elements::save( $element->id, ['name' => 'Renamed'], $this->user );
 
         $this->assertContains( $file->id, $element->latest->files()->pluck( 'cms_files.id' )->all() );
     }
@@ -281,7 +316,7 @@ class ResourceTest extends CoreTestAbstract
     public function testSaveElementKeepsExistingFilesWithoutFileView()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
@@ -290,7 +325,7 @@ class ResourceTest extends CoreTestAbstract
             'cmsperms' => ['element:view', 'element:save'],
         ] );
 
-        $element = Resource::saveElement( $element->id, ['name' => 'Renamed'], $user );
+        $element = Elements::save( $element->id, ['name' => 'Renamed'], $user );
 
         $this->assertContains( $file->id, $element->latest->files()->pluck( 'cms_files.id' )->all() );
     }
@@ -299,7 +334,7 @@ class ResourceTest extends CoreTestAbstract
     public function testSaveElementRejectsFileReferencesWithoutFileView()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
             'data' => [],
         ], $this->user );
@@ -311,7 +346,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Insufficient permissions' );
 
-        Resource::saveElement( $element->id, [
+        Elements::save( $element->id, [
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $user );
     }
@@ -328,47 +363,10 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Insufficient permissions' );
 
-        Resource::addElement( [
+        Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $user );
-    }
-
-
-    public function testCheckPathRejectsTraversal()
-    {
-        // Tenancy::value() is "test" here, so the prefix is "cms/test/". Each of these
-        // begins with the prefix yet resolves into another tenant's directory.
-        $paths = [
-            'cms/test/../other/secret.jpg',
-            'cms/test/..\\other\\secret.jpg',
-            'cms/test/sub/../../other/secret.jpg',
-            'cms/other/secret.jpg',
-            "cms/test/secret.jpg\0.png",
-        ];
-
-        foreach( $paths as $path )
-        {
-            try {
-                File::checkPath( $path );
-                $this->fail( sprintf( 'Expected exception for path "%s"', $path ) );
-            } catch( Exception $e ) {
-                $this->assertStringContainsString( 'Invalid file path', $e->getMessage() );
-            }
-        }
-    }
-
-
-    public function testCheckPathAllowsValidPaths()
-    {
-        $id = ( new File() )->newUniqueId();
-        $path = 'cms/test/' . $id . '/image_ab12.jpg';
-
-        $this->assertNull( File::checkPath( null ) );
-        $this->assertEquals( $path, File::checkPath( $path ) );
-        $this->assertEquals( $path, File::checkPath( 'cms//test/./' . $id . '/image_ab12.jpg' ) );
-        // External URLs bypass the tenant prefix and never touch the tenant disk.
-        $this->assertEquals( 'https://example.com/a/b.jpg', File::checkPath( 'https://example.com/a/b.jpg' ) );
     }
 
 
@@ -378,7 +376,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->expectException( Exception::class );
 
-        Resource::saveFile( $file->id, ['path' => 'cms/test/../other/secret.jpg'], $this->user );
+        FileResource::save( $file->id, ['path' => 'cms/test/../other/secret.jpg'], $this->user );
     }
 
 
@@ -388,7 +386,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->expectException( Exception::class );
 
-        Resource::saveFile( $file->id, ['previews' => ['cms/test/../other/secret.jpg']], $this->user );
+        FileResource::save( $file->id, ['previews' => ['cms/test/../other/secret.jpg']], $this->user );
     }
 
 
@@ -403,7 +401,7 @@ class ResourceTest extends CoreTestAbstract
         } );
 
         try {
-            Resource::saveFile( $file->id, ['name' => 'Failed'], $this->user, upload:
+            FileResource::save( $file->id, ['name' => 'Failed'], $this->user, upload:
                 UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
             $this->fail( 'Expected the version write to fail' );
         } catch( \RuntimeException $e ) {
@@ -427,7 +425,7 @@ class ResourceTest extends CoreTestAbstract
         } );
 
         try {
-            Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            FileResource::save( $file->id, ['path' => $path], $this->user );
             $this->fail( 'Expected the version write to fail' );
         } catch( \RuntimeException $e ) {
             $this->assertSame( 'Forced version failure', $e->getMessage() );
@@ -443,7 +441,7 @@ class ResourceTest extends CoreTestAbstract
 
         $this->expectsDatabaseQueryCount( 5 );
 
-        $file = Resource::saveFile( $file->id, ['name' => 'Metadata only'], $this->user );
+        $file = FileResource::save( $file->id, ['name' => 'Metadata only'], $this->user );
 
         $this->assertSame( 'Metadata only', $file->latest?->data->name );
     }
@@ -476,7 +474,7 @@ class ResourceTest extends CoreTestAbstract
         Storage::shouldReceive( 'disk' )->once()->with( 'race-public' )->andReturn( $storage );
 
         try {
-            Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            FileResource::save( $file->id, ['path' => $path], $this->user );
             $this->fail( 'Expected a concurrent disk change to be rejected' );
         } catch( Exception $e ) {
             $this->assertSame( 'File disk changed while saving; retry the request', $e->getMessage() );
@@ -492,7 +490,7 @@ class ResourceTest extends CoreTestAbstract
         Storage::fake( 'missing-save' );
 
         try {
-            Resource::saveFile( \Illuminate\Support\Str::uuid7()->toString(), [], $this->user, upload:
+            FileResource::save( \Illuminate\Support\Str::uuid7()->toString(), [], $this->user, upload:
                 UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
             $this->fail( 'Expected the missing model to be rejected' );
         } catch( \Illuminate\Database\Eloquent\ModelNotFoundException ) {
@@ -506,13 +504,11 @@ class ResourceTest extends CoreTestAbstract
         config( ['cms.disks.private.name' => 'private-upload'] );
         Storage::fake( 'private-upload' );
 
-        $file = new File( ['name' => 'document.pdf'] );
-        $file->disk = 'private';
-        $file->ingest( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ) );
-        $file = Resource::addFile( $file, $this->user );
+        $file = FileResource::add( UploadedFile::fake()->createWithContent( 'document.pdf', '%PDF-1.4 private' ),
+            ['name' => 'document.pdf'], $this->user, 'private' );
 
         $this->assertSame( 'private', $file->disk );
-        $this->assertTrue( File::owns( 'test', $file->id, $file->path ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $file->path ) );
         Storage::disk( 'private-upload' )->assertExists( $file->path );
     }
 
@@ -536,14 +532,14 @@ class ResourceTest extends CoreTestAbstract
             'editor' => 'test',
         ] );
 
-        $saved = Resource::saveFile( $file->id, [
+        $saved = FileResource::save( $file->id, [
             'path' => 'https://example.com/private.pdf?token=secret',
         ], $this->user );
         $stored = (string) $saved->latest?->data->path;
 
         $this->assertFalse( str_starts_with( $stored, 'http' ) );
         $this->assertStringNotContainsString( 'token=secret', $stored );
-        $this->assertTrue( File::owns( 'test', $file->id, $stored ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $stored ) );
         Storage::disk( 'private-remote-save' )->assertExists( $stored );
     }
 
@@ -556,7 +552,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Private files cannot use remote paths' );
 
-        Resource::saveFile( $file->id, [
+        FileResource::save( $file->id, [
             'previews' => [500 => 'https://example.com/preview.jpg?token=secret'],
         ], $this->user );
     }
@@ -570,7 +566,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'is outside its UUID directory' );
 
-        Resource::saveFile( $file->id, ['path' => 'cms/test/' . $other . '/other.jpg'], $this->user );
+        FileResource::save( $file->id, ['path' => 'cms/test/' . $other . '/other.jpg'], $this->user );
     }
 
 
@@ -580,10 +576,10 @@ class ResourceTest extends CoreTestAbstract
         Storage::fake( 'uuid-save' );
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
 
-        $saved = Resource::saveFile( $file->id, [], $this->user, upload:
+        $saved = FileResource::save( $file->id, [], $this->user, upload:
             UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
 
-        $this->assertTrue( File::owns( 'test', $file->id, $saved->latest?->data->path ) );
+        $this->assertTrue( FileStorage::owns( 'test', $file->id, $saved->latest?->data->path ) );
         Storage::disk( 'uuid-save' )->assertExists( $saved->latest?->data->path );
     }
 
@@ -595,7 +591,7 @@ class ResourceTest extends CoreTestAbstract
             Storage::disk( 'previews-save' )->put( $path, UploadedFile::fake()->image( 'other.jpg', 800, 400 )->getContent() );
 
             // an API client changing only the path mustn't keep the previews of the old image
-            $saved = Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            $saved = FileResource::save( $file->id, ['path' => $path], $this->user );
             $previews = (array) $saved->latest?->data->previews;
 
             $this->assertEquals( $path, $saved->latest?->data->path );
@@ -612,7 +608,7 @@ class ResourceTest extends CoreTestAbstract
             $path = $file->dir() . '/other.pdf';
             Storage::disk( 'previews-save' )->put( $path, '%PDF-1.4 document' );
 
-            $saved = Resource::saveFile( $file->id, ['path' => $path], $this->user );
+            $saved = FileResource::save( $file->id, ['path' => $path], $this->user );
 
             $this->assertEquals( [], (array) $saved->latest?->data->previews );
         } );
@@ -670,22 +666,22 @@ class ResourceTest extends CoreTestAbstract
             'data' => ['path' => $paths[2], 'previews' => [500 => $paths[3]]],
         ] );
 
-        $pages = Page::orderBy( 'id' )->limit( 2 )->get();
+        $pages = PageView::orderBy( 'id' )->limit( 2 )->get();
         $element = Element::firstOrFail();
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $pages[0]->id, 'file_id' => $file->id,
+            'variant_id' => $pages[0]->variant_id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_element_file' )->updateOrInsert( [
             'element_id' => $element->id, 'file_id' => $file->id,
         ] );
         $db->table( 'cms_page_element' )->updateOrInsert( [
-            'page_id' => $pages[1]->id, 'element_id' => $element->id,
+            'variant_id' => $pages[1]->variant_id, 'element_id' => $element->id,
         ] );
 
         Event::fake( [PageInvalidated::class, FilesRemoved::class] );
 
-        $moved = Resource::relocateFiles( [$file->id], 'private', $this->user )->firstOrFail();
+        $moved = FileResource::relocateMany( [$file->id], 'private', $this->user )->firstOrFail();
 
         Event::assertDispatched( FilesRemoved::class, fn( FilesRemoved $event ) =>
             $event->tenant === 'test' && !array_diff( $paths, $event->paths )
@@ -703,7 +699,7 @@ class ResourceTest extends CoreTestAbstract
         }
 
         Event::fake( [PageInvalidated::class, FilesRemoved::class] );
-        $moved = Resource::relocateFiles( [$file->id], 'public', $this->user )->firstOrFail();
+        $moved = FileResource::relocateMany( [$file->id], 'public', $this->user )->firstOrFail();
 
         Event::assertNotDispatched( FilesRemoved::class );
 
@@ -715,7 +711,7 @@ class ResourceTest extends CoreTestAbstract
         Event::assertDispatched( PageInvalidated::class );
 
         Event::fake( [PageInvalidated::class] );
-        Resource::relocateFiles( [$file->id], 'public', $this->user );
+        FileResource::relocateMany( [$file->id], 'public', $this->user );
         Event::assertNotDispatched( PageInvalidated::class );
     }
 
@@ -744,7 +740,7 @@ class ResourceTest extends CoreTestAbstract
         $writer = new \App\Models\User( ['cmsperms' => ['file:view', 'file:save', 'file:publish']] );
 
         try {
-            Resource::relocateFiles( [$file->id], 'private', $writer );
+            FileResource::relocateMany( [$file->id], 'private', $writer );
             $this->fail( 'Expected file relocation to require file:relocate' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -752,11 +748,11 @@ class ResourceTest extends CoreTestAbstract
 
         $this->assertSame(
             'private',
-            Resource::relocateFiles( [$file->id], 'private', $relocator )->firstOrFail()->disk,
+            FileResource::relocateMany( [$file->id], 'private', $relocator )->firstOrFail()->disk,
         );
         $this->assertSame(
             'public',
-            Resource::relocateFiles( [$file->id], 'public', $relocator )->firstOrFail()->disk,
+            FileResource::relocateMany( [$file->id], 'public', $relocator )->firstOrFail()->disk,
         );
 
         $this->assertSame( 'public', $file->refresh()->disk );
@@ -786,7 +782,7 @@ class ResourceTest extends CoreTestAbstract
             'editor' => 'test',
         ] );
 
-        Resource::relocateFiles( [$file->id], 'private', $this->user );
+        FileResource::relocateMany( [$file->id], 'private', $this->user );
 
         Storage::disk( 'overwrite-public' )->assertMissing( $path );
         $this->assertSame( 'fresh', Storage::disk( 'overwrite-private' )->get( $path ) );
@@ -810,7 +806,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Remote files cannot be relocated' );
 
-        Resource::relocateFiles( [$file->id], 'private', $this->user );
+        FileResource::relocateMany( [$file->id], 'private', $this->user );
     }
 
 
@@ -842,7 +838,7 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'Remote files cannot be relocated' );
 
-        Resource::relocateFiles( [$file->id], 'private', $this->user );
+        FileResource::relocateMany( [$file->id], 'private', $this->user );
     }
 
 
@@ -872,7 +868,7 @@ class ResourceTest extends CoreTestAbstract
         Event::fake( [PageInvalidated::class] );
 
         try {
-            Resource::relocateFiles( [$file->id], 'private', $this->user );
+            FileResource::relocateMany( [$file->id], 'private', $this->user );
             $this->fail( 'Expected a path owned by another File to be rejected' );
         } catch( Exception $e ) {
             $this->assertStringContainsString( 'is outside its UUID directory', $e->getMessage() );
@@ -903,7 +899,7 @@ class ResourceTest extends CoreTestAbstract
             'path' => $path, 'editor' => 'test',
         ] );
 
-        $moved = Resource::relocateFiles( [$file->id], 'private', $this->user )->firstOrFail();
+        $moved = FileResource::relocateMany( [$file->id], 'private', $this->user )->firstOrFail();
 
         $this->assertSame( 'private', $moved->disk );
         Storage::disk( 'retry-public' )->assertMissing( $path );
@@ -936,7 +932,7 @@ class ResourceTest extends CoreTestAbstract
             ] ) );
         }
 
-        $moved = Resource::relocateFiles( $files->pluck( 'id' )->all(), 'private', $this->user );
+        $moved = FileResource::relocateMany( $files->pluck( 'id' )->all(), 'private', $this->user );
 
         $this->assertSame( $files->pluck( 'id' )->all(), $moved->pluck( 'id' )->all() );
         $this->assertSame( ['private', 'private'], $moved->pluck( 'disk' )->all() );
@@ -979,14 +975,14 @@ class ResourceTest extends CoreTestAbstract
         }
 
         Storage::disk( 'partial-public' )->put( $files[0]->path, 'stored' );
-        $page = Page::firstOrFail();
+        $page = PageView::firstOrFail();
         DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
-            'page_id' => $page->id, 'file_id' => $files[0]->id,
+            'variant_id' => $page->variant_id, 'file_id' => $files[0]->id,
         ] );
         Event::fake( [Bulk::class, PageInvalidated::class, Saved::class] );
 
         try {
-            Resource::relocateFiles( $files->pluck( 'id' )->all(), 'private', $this->user );
+            FileResource::relocateMany( $files->pluck( 'id' )->all(), 'private', $this->user );
             $this->fail( 'Expected the missing second file to stop relocation' );
         } catch( Exception $e ) {
             $this->assertStringContainsString( 'is missing from both storage disks', $e->getMessage() );
@@ -1033,7 +1029,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Resource::relocateFiles(
+            FileResource::relocateMany(
                 [$file->id, \Illuminate\Support\Str::uuid7()->toString()],
                 'private',
                 $this->user,
@@ -1053,8 +1049,8 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'No more than 100 files may be relocated at once.' );
 
-        Resource::relocateFiles(
-            array_map( strval(...), range( 1, Resource::MAX_RELOCATE + 1 ) ),
+        FileResource::relocateMany(
+            array_map( strval(...), range( 1, \Aimeos\Cms\Resource\Files::MAX_RELOCATE + 1 ) ),
             'private',
             $this->user,
         );
@@ -1064,9 +1060,9 @@ class ResourceTest extends CoreTestAbstract
     public function testRelocateFilesCountsUniqueIdsAgainstOperationLimit()
     {
         $file = File::firstOrFail();
-        $ids = array_fill( 0, Resource::MAX_RELOCATE + 1, $file->id );
+        $ids = array_fill( 0, \Aimeos\Cms\Resource\Files::MAX_RELOCATE + 1, $file->id );
 
-        $moved = Resource::relocateFiles( $ids, (string) $file->disk, $this->user );
+        $moved = FileResource::relocateMany( $ids, (string) $file->disk, $this->user );
 
         $this->assertSame( [$file->id], $moved->modelKeys() );
     }
@@ -1101,7 +1097,7 @@ class ResourceTest extends CoreTestAbstract
         $file->latest->aux = (array) $file->latest->aux + ['keep' => 'value'];
         $file->latest->saveQuietly();
 
-        $file = Resource::saveFile( $file->id, compact( 'description', 'transcription' ), $this->user );
+        $file = FileResource::save( $file->id, compact( 'description', 'transcription' ), $this->user );
 
         $this->assertObjectNotHasProperty( 'description', $file->latest->data );
         $this->assertObjectNotHasProperty( 'transcription', $file->latest->data );
@@ -1121,8 +1117,8 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $baseId = $file->latest_id;
 
-        Resource::saveFile( $file->id, ['description' => ['en' => 'Other editor']], $this->user, $baseId );
-        $file = Resource::saveFile( $file->id, ['description' => ['en' => 'My edit']], $this->user, $baseId );
+        FileResource::save( $file->id, ['description' => ['en' => 'Other editor']], $this->user, $baseId );
+        $file = FileResource::save( $file->id, ['description' => ['en' => 'My edit']], $this->user, $baseId );
 
         $this->assertEquals( ['en' => 'My edit'], (array) $file->latest->aux->description );
         $this->assertEquals( ['en' => 'Other editor'], (array) $file->changed['aux']['description']['overwritten'] );
@@ -1136,19 +1132,19 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );
 
         // a non-existent id is silently skipped, the existing page is still saved
-        $saved = Resource::bulkPage(
+        $saved = Pages::bulk(
             [$page->id, \Illuminate\Support\Str::uuid7()->toString()],
             ['title' => 'Renamed'],
             $this->user
         );
 
-        $this->assertCount( 1, $saved['ids'] );
-        $this->assertEquals( $page->id, $saved['ids'][0] );
-        $this->assertArrayHasKey( $page->id, $saved['latest'] );
-        $this->assertEquals( 'Renamed', $saved['data']['title'] );
+        $this->assertCount( 1, $saved->ids );
+        $this->assertEquals( $page->id, $saved->ids[0] );
+        $this->assertArrayHasKey( $page->id, $saved->latest );
+        $this->assertEquals( 'Renamed', $saved->data['title'] );
         // the missing id was attempted but not saved, so it is counted as failed
-        $this->assertSame( 1, $saved['failed'] );
-        $this->assertEquals( 'Renamed', ( (array) Page::findOrFail( $page->id )->latest->data )['title'] );
+        $this->assertSame( 1, $saved->failed );
+        $this->assertEquals( 'Renamed', ( (array) PageView::findOrFail( $page->id )->latest->data )['title'] );
     }
 
 
@@ -1159,12 +1155,12 @@ class ResourceTest extends CoreTestAbstract
         $bad = $this->page( [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]] );
         $file->delete();
 
-        $saved = Resource::bulkPage( [$good->id, $bad->id], ['title' => 'Renamed'], $this->user );
+        $saved = Pages::bulk( [$good->id, $bad->id], ['title' => 'Renamed'], $this->user );
 
-        $this->assertSame( [$good->id, $bad->id], $saved['ids'] );
-        $this->assertSame( 0, $saved['failed'] );
-        $this->assertSame( 'Renamed', Page::findOrFail( $good->id )->latest->data->title );
-        $bad = Page::findOrFail( $bad->id );
+        $this->assertSame( [$good->id, $bad->id], $saved->ids );
+        $this->assertSame( 0, $saved->failed );
+        $this->assertSame( 'Renamed', PageView::findOrFail( $good->id )->latest->data->title );
+        $bad = PageView::findOrFail( $bad->id );
         $this->assertSame( 'Renamed', $bad->latest->data->title );
         $this->assertTrue( DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_version_file' )
             ->where( 'version_id', $bad->latest_id )->where( 'file_id', $file->id )->exists() );
@@ -1181,10 +1177,10 @@ class ResourceTest extends CoreTestAbstract
             'cmsperms' => ['page:view', 'page:save'],
         ] );
 
-        $saved = Resource::bulkPage( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $user );
+        $saved = Pages::bulk( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $user );
 
-        $this->assertSame( collect( $pages )->pluck( 'id' )->all(), $saved['ids'] );
-        $this->assertSame( 0, $saved['failed'] );
+        $this->assertSame( collect( $pages )->pluck( 'id' )->all(), $saved->ids );
+        $this->assertSame( 0, $saved->failed );
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->latest->files()->pluck( 'cms_files.id' )->all() );
         }
@@ -1196,11 +1192,11 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $page = $this->page( [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]] );
 
-        Resource::bulkPage( [$page->id], [
+        Pages::bulk( [$page->id], [
             'content' => [['type' => 'heading', 'data' => ['title' => 'No image']]],
         ], $this->user );
 
-        $this->assertNotContains( $file->id, Page::findOrFail( $page->id )->latest->files()->pluck( 'cms_files.id' )->all() );
+        $this->assertNotContains( $file->id, PageView::findOrFail( $page->id )->latest->files()->pluck( 'cms_files.id' )->all() );
     }
 
 
@@ -1209,24 +1205,24 @@ class ResourceTest extends CoreTestAbstract
         $ids = [];
 
         foreach( range( 1, 51 ) as $num ) {
-            $ids[] = Resource::addPage( [
+            $ids[] = Pages::add( [
                 'lang' => 'en', 'name' => 'Root ' . $num, 'title' => 'Root ' . $num,
                 'path' => 'res-' . $num . '-' . Utils::uid(), 'content' => [],
             ], $this->user, parent: $this->root()->id )->id;
         }
 
         // per 50 roots: subtree query; per 50 pages: prefetch latest refs; per page: load page and latest version, create version, update page
-        $this->expectsDatabaseQueryCount( 223 );
+        $this->expectsDatabaseQueryCount( 215 );
 
-        $saved = Resource::bulkPage( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
+        $saved = Pages::bulk( $ids, ['title' => 'Renamed'], $this->user, descendants: true );
 
-        $this->assertSame( $ids, $saved['ids'] );
+        $this->assertSame( $ids, $saved->ids );
     }
 
 
     public function testBulkPageProcessesInDepthFirstTreeOrder()
     {
-        $mk = fn( string $name, string $parent ) => Resource::addPage(
+        $mk = fn( string $name, string $parent ) => Pages::add(
             ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => 'res-' . Utils::uid(), 'content' => []],
             $this->user, parent: $parent
         );
@@ -1237,10 +1233,10 @@ class ResourceTest extends CoreTestAbstract
         $b = $mk( 'B', $p->id );
         $a1 = $mk( 'A1', $a->id );
 
-        $saved = Resource::bulkPage( [$p->id, $a->id], ['title' => 'Renamed'], $this->user, descendants: true );
+        $saved = Pages::bulk( [$p->id, $a->id], ['title' => 'Renamed'], $this->user, descendants: true );
 
         // depth-first pre-order: a whole subtree before the next sibling, parents before children
-        $this->assertSame( [$p->id, $a->id, $a1->id, $b->id], $saved['ids'] );
+        $this->assertSame( [$p->id, $a->id, $a1->id, $b->id], $saved->ids );
     }
 
 
@@ -1250,19 +1246,17 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [] );
         $element = Element::firstOrFail();
         $file = File::firstOrFail();
-        $upload = new File();
-        $upload->forceFill( ['name' => $long, 'mime' => 'image/jpeg', 'lang' => 'en', 'path' => 'https://example.com/a.jpg'] );
 
         $calls = [
-            fn() => Resource::addElement( ['lang' => 'en', 'type' => 'heading', 'name' => $long, 'data' => []], $this->user ),
-            fn() => Resource::saveElement( $element->id, ['name' => $long], $this->user ),
-            fn() => Resource::bulkElement( [$element->id], ['lang' => 'en-GB-x'], $this->user ),
-            fn() => Resource::addFile( $upload, $this->user ),
-            fn() => Resource::saveFile( $file->id, ['name' => ['a']], $this->user ),
-            fn() => Resource::bulkFile( [$file->id], ['lang' => 'en-GB-x'], $this->user ),
-            fn() => Resource::addPage( ['lang' => 'en', 'name' => 'A', 'title' => $long, 'path' => 'res-' . Utils::uid()], $this->user ),
-            fn() => Resource::savePage( $page->id, ['status' => 32768], $this->user ),
-            fn() => Resource::bulkPage( [$page->id], ['tag' => str_repeat( 'a', 31 )], $this->user ),
+            fn() => Elements::add( ['lang' => 'en', 'type' => 'heading', 'name' => $long, 'data' => []], $this->user ),
+            fn() => Elements::save( $element->id, ['name' => $long], $this->user ),
+            fn() => Elements::bulk( [$element->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
+            fn() => FileResource::add( UploadedFile::fake()->image( 'a.jpg' ), ['name' => $long, 'lang' => 'en'], $this->user ),
+            fn() => FileResource::save( $file->id, ['name' => ['a']], $this->user ),
+            fn() => FileResource::bulk( [$file->id], ['lang' => 'zh-Hant-TW-x'], $this->user ),
+            fn() => Pages::add( ['lang' => 'en', 'name' => 'A', 'title' => $long, 'path' => 'res-' . Utils::uid()], $this->user ),
+            fn() => Pages::save( $page->id, ['status' => 32768], $this->user ),
+            fn() => Pages::bulk( [$page->id], ['tag' => str_repeat( 'a', 31 )], $this->user ),
         ];
 
         foreach( $calls as $idx => $call )
@@ -1280,17 +1274,17 @@ class ResourceTest extends CoreTestAbstract
     public function testBulkElementCopiesUnchangedReferences()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Shared image',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
         $previous = $element->latest_id;
         $file->delete();
 
-        $saved = Resource::bulkElement( [$element->id], ['name' => 'Renamed'], $this->user );
+        $saved = Elements::bulk( [$element->id], ['name' => 'Renamed'], $this->user );
         $element = Element::findOrFail( $element->id );
 
-        $this->assertSame( 0, $saved['failed'] );
+        $this->assertSame( 0, $saved->failed );
         $this->assertNotSame( $previous, $element->latest_id );
         $this->assertSame( [$file->id], $element->latest->files()->withTrashed()->pluck( 'cms_files.id' )->all() );
     }
@@ -1298,7 +1292,7 @@ class ResourceTest extends CoreTestAbstract
 
     public function testBulkPageDescendantsOfOverlappingRoots()
     {
-        $mk = fn( string $name, string $parent ) => Resource::addPage(
+        $mk = fn( string $name, string $parent ) => Pages::add(
             ['lang' => 'en', 'name' => $name, 'title' => $name, 'path' => 'res-' . Utils::uid(), 'content' => []],
             $this->user, parent: $parent
         );
@@ -1309,10 +1303,10 @@ class ResourceTest extends CoreTestAbstract
         $q = $mk( 'Q', $this->root()->id );
 
         // a child listed before its parent and a separate root are each saved once in tree order
-        $saved = Resource::bulkPage( [$a1->id, $p->id, $q->id], ['title' => 'Renamed'], $this->user, descendants: true );
+        $saved = Pages::bulk( [$a1->id, $p->id, $q->id], ['title' => 'Renamed'], $this->user, descendants: true );
 
-        $this->assertSame( [$p->id, $a->id, $a1->id, $q->id], $saved['ids'] );
-        $this->assertSame( 2, Page::findOrFail( $a1->id )->versions()->count() );
+        $this->assertSame( [$p->id, $a->id, $a1->id, $q->id], $saved->ids );
+        $this->assertSame( 2, PageView::findOrFail( $a1->id )->versions()->count() );
     }
 
 
@@ -1320,13 +1314,14 @@ class ResourceTest extends CoreTestAbstract
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Hi']]] );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
-        Resource::bulkPage( [$page->id], ['title' => 'Renamed'], $this->user );
+        Pages::bulk( [$page->id], ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( IndexModels::class, 1 );
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class
+            && $job->ids === [$page->variant_id] && $job->keys );
     }
 
 
@@ -1336,11 +1331,11 @@ class ResourceTest extends CoreTestAbstract
         config( ['scout.queue' => true] );
         Queue::fake();
 
-        Resource::bulkPage( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $this->user );
+        Pages::bulk( collect( $pages )->pluck( 'id' )->all(), ['title' => 'Renamed'], $this->user );
 
         Queue::assertPushed( PruneVersions::class, 1 );
-        Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === Page::class
-            && $job->ids === collect( $pages )->pluck( 'id' )->sort()->values()->all() );
+        Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === PageView::class
+            && $job->ids === collect( $pages )->pluck( 'variant_id' )->sort()->values()->all() );
     }
 
 
@@ -1350,7 +1345,7 @@ class ResourceTest extends CoreTestAbstract
         config( ['scout.queue' => true] );
         Queue::fake();
 
-        Resource::bulkFile( $files->modelKeys(), ['lang' => 'de'], $this->user );
+        FileResource::bulk( $files->modelKeys(), ['lang' => 'de'], $this->user );
 
         Queue::assertPushed( PruneVersions::class, 1 );
         Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === File::class
@@ -1360,15 +1355,15 @@ class ResourceTest extends CoreTestAbstract
 
     public function testScoutQueueDefersModelLoading()
     {
-        $page = Page::firstOrFail();
-        config( ['scout.queue' => true] );
+        $page = PageView::firstOrFail();
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
         $this->expectsDatabaseQueryCount( 0 );
 
-        Scout::index( Page::class, [$page->id] );
+        Scout::index( PageView::class, [$page->id] );
 
-        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === Page::class && $job->ids === [$page->id] );
+        Queue::assertPushed( IndexModels::class, fn( $job ) => $job->model === PageView::class && $job->ids === [$page->id] );
     }
 
 
@@ -1377,12 +1372,13 @@ class ResourceTest extends CoreTestAbstract
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Indexed']]] );
         $tenant = Tenancy::value();
         $loaded = [];
-        Page::retrieved( function( Page $page ) use ( &$loaded ) {
+        PageView::retrieved( function( PageView $page ) use ( &$loaded ) {
             $loaded[] = $page->tenant_id;
         } );
         $this->app->instance( Tenancy::class, new Tenancy( 'other' ) );
+        config( ['scout.driver' => 'cms'] );
 
-        ( new IndexModels( Page::class, [$page->id], $tenant ) )->handle();
+        ( new IndexModels( PageView::class, [$page->id], $tenant ) )->handle();
 
         $this->assertSame( 'other', Tenancy::value() );
         $this->assertContains( $tenant, $loaded );
@@ -1396,7 +1392,7 @@ class ResourceTest extends CoreTestAbstract
 
         Element::withoutSyncingToSearch( function() use ( &$ids ) {
             foreach( range( 1, 2 ) as $num ) {
-                $element = Resource::addElement( [
+                $element = Elements::add( [
                     'lang' => 'en', 'type' => 'text', 'name' => 'Lifecycle ' . $num,
                     'data' => ['text' => 'Lifecycle'],
                 ], $this->user );
@@ -1404,48 +1400,79 @@ class ResourceTest extends CoreTestAbstract
             }
         } );
 
-        config( ['scout.queue' => true, 'scout.soft_delete' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true, 'scout.soft_delete' => true] );
 
         Queue::fake();
-        Publication::publish( Element::class, $ids, $this->user );
+        Elements::publishMany( $ids, $this->user );
         Queue::assertPushed( IndexModels::class, 1 );
 
         Queue::fake();
-        Resource::drop( Element::class, $ids, $this->user );
+        Elements::dropMany( $ids, $this->user );
         Queue::assertPushed( IndexModels::class, 1 );
 
         Queue::fake();
-        Resource::restore( Element::class, $ids, $this->user );
+        Elements::restoreMany( $ids, $this->user );
         Queue::assertPushed( IndexModels::class, 1 );
 
         Queue::fake();
-        Resource::purge( Element::class, $ids, $this->user );
+        Elements::purgeMany( $ids, $this->user );
         Queue::assertPushed( RemoveFromSearch::class, 1 );
     }
 
 
     public function testFlatLifecycleUsesOneModelWritePerChunk()
     {
-        Resource::addElement( [
+        Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Second lifecycle element',
             'data' => ['text' => 'Lifecycle'],
         ], $this->user );
         Queue::fake();
         $ids = [];
 
-        foreach( [Element::class, File::class] as $model )
+        foreach( [Element::class => Elements::class, File::class => FileResource::class] as $model => $resource )
         {
-            $ids[$model] = $model::limit( 2 )->pluck( 'id' )->all();
-            $this->assertCount( 2, $ids[$model] );
+            $ids[$resource] = $model::limit( 2 )->pluck( 'id' )->all();
+            $this->assertCount( 2, $ids[$resource] );
         }
 
-        $this->expectsDatabaseQueryCount( 22 );
+        $this->expectsDatabaseQueryCount( 20 );
 
-        foreach( $ids as $model => $modelIds ) {
-            Resource::drop( $model, $modelIds, $this->user );
-            Resource::restore( $model, $modelIds, $this->user );
-            Resource::purge( $model, $modelIds, $this->user );
+        foreach( $ids as $resource => $modelIds ) {
+            $resource::dropMany( $modelIds, $this->user );
+            $resource::restoreMany( $modelIds, $this->user );
+            $resource::purgeMany( $modelIds, $this->user );
         }
+    }
+
+
+    public function testSingleLifecycle()
+    {
+        Queue::fake();
+
+        $element = Element::where( 'type', 'footer' )->firstOrFail();
+
+        $dropped = Elements::drop( $element->id, $this->user );
+        $this->assertEquals( $element->id, $dropped->id );
+        $this->assertNotNull( $dropped->deleted_at );
+
+        $restored = Elements::restore( $element->id, $this->user );
+        $this->assertEquals( $element->id, $restored->id );
+        $this->assertNull( $restored->deleted_at );
+
+        $page = PageView::whereNotNull( 'parent_id' )->firstOrFail();
+
+        $this->assertEquals( $page->id, Pages::drop( $page->id, $this->user )->id );
+        $this->assertEquals( $page->id, Pages::purge( $page->id, $this->user )->id );
+        $this->assertNull( PageView::withTrashed()->find( $page->id ) );
+    }
+
+
+    public function testSingleLifecycleNotFound()
+    {
+        Queue::fake();
+
+        $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
+        FileResource::drop( Str::uuid7()->toString(), $this->user );
     }
 
 
@@ -1454,15 +1481,15 @@ class ResourceTest extends CoreTestAbstract
         Queue::fake();
 
         $element = Element::where( 'type', 'footer' )->firstOrFail();
-        $dropped = Resource::drop(
-            Element::class, [$element->id], $this->user, ['id', 'deleted_at'],
+        $dropped = Elements::dropMany(
+            [$element->id], $this->user, ['id', 'deleted_at'],
         )->firstOrFail();
 
         $this->assertArrayNotHasKey( 'data', $dropped->getAttributes() );
         $this->assertArrayNotHasKey( 'name', $dropped->getAttributes() );
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        $purged = Resource::purge( File::class, [$file->id], $this->user, ['id'] )->firstOrFail();
+        $purged = FileResource::purgeMany( [$file->id], $this->user, ['id'] )->firstOrFail();
 
         $this->assertArrayHasKey( 'path', $purged->getAttributes() );
         $this->assertArrayHasKey( 'previews', $purged->getAttributes() );
@@ -1496,7 +1523,7 @@ class ResourceTest extends CoreTestAbstract
         );
         Queue::fake();
 
-        $items = Resource::drop( Element::class, array_reverse( $ids ), $this->user );
+        $items = Elements::dropMany( array_reverse( $ids ), $this->user );
 
         $this->assertSame( $ids, $items->pluck( 'id' )->all() );
     }
@@ -1507,11 +1534,11 @@ class ResourceTest extends CoreTestAbstract
         $ids = [];
 
         foreach( range( 1, 2 ) as $num ) {
-            $element = Resource::addElement( [
+            $element = Elements::add( [
                 'lang' => 'en', 'type' => 'text', 'name' => 'Before ' . $num,
                 'data' => ['text' => 'Before'],
             ], $this->user );
-            Resource::saveElement( $element->id, ['name' => 'After ' . $num], $this->user );
+            Elements::save( $element->id, ['name' => 'After ' . $num], $this->user );
             $ids[] = $element->id;
         }
 
@@ -1519,9 +1546,109 @@ class ResourceTest extends CoreTestAbstract
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
         $this->expectsDatabaseQueryCount( 4 );
 
-        $items = Publication::publish( Element::class, $ids, $this->user );
+        $items = Elements::publishMany( $ids, $this->user );
 
         $this->assertSame( ['After 1', 'After 2'], $items->sortBy( 'name' )->pluck( 'name' )->all() );
+    }
+
+
+    public function testPublishSingleItems()
+    {
+        $page = $this->page( [] );
+        Pages::save( $page->id, ['title' => 'Published'], $this->user );
+
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Single', 'data' => ['text' => 'Text']], $this->user );
+        $file = File::firstOrFail();
+        FileResource::save( $file->id, ['name' => 'Published file'], $this->user );
+
+        $this->assertEquals( 'Published', Pages::publish( $page->id, $this->user )->title );
+        $this->assertEquals( 'Single', Elements::publish( $element->id, $this->user )->name );
+        $this->assertEquals( 'Published file', FileResource::publish( $file->id, $this->user )->name );
+        $this->assertTrue( (bool) PageView::findOrFail( $page->id )->latest?->published );
+    }
+
+
+    public function testPublishSingleMissing()
+    {
+        $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
+        Pages::publish( 'missing', $this->user );
+    }
+
+
+    public function testRelocateSingleMissing()
+    {
+        $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
+        FileResource::relocate( 'missing', 'private', $this->user );
+    }
+
+
+    public function testBulkReturnsResult()
+    {
+        $page = $this->page( [] );
+
+        $result = Pages::bulk( [$page->id], ['title' => 'Renamed'], $this->user );
+
+        $this->assertInstanceOf( BulkResult::class, $result );
+        $this->assertSame( [$page->id], $result->ids );
+        $this->assertSame( 0, $result->failed );
+    }
+
+
+    public function testExceptionTypes()
+    {
+        $page = $this->page( [] );
+
+        $this->assertThrows( fn() => Pages::save( $page->id, ['lang' => 'zh-Hant-TW-x'], $this->user ), InvalidInputException::class );
+        $this->assertThrows( fn() => Elements::bulk( [], ['type' => 'text'], $this->user ), InvalidInputException::class );
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
+        $user = new \App\Models\User( ['name' => 'Restricted', 'cmsperms' => ['page:view', 'page:save']] );
+        $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
+        $this->assertThrows( fn() => Pages::save( $page->id, ['content' => $content], $user ), PermissionException::class );
+        Variants::add( $page->id, 'de', $this->user );
+        $this->assertThrows( fn() => Variants::add( $page->id, 'de', $this->user ), ConflictException::class );
+    }
+
+
+    public function testMethodsCheckPermissions()
+    {
+        $page = $this->page( [] );
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Perm', 'data' => ['text' => 'Text']], $this->user );
+        $user = new \App\Models\User( ['name' => 'Viewer', 'cmsperms' => ['page:view', 'element:view', 'file:view']] );
+
+        $this->assertThrows( fn() => Pages::add( ['name' => 'New', 'path' => 'perm-new'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Pages::save( $page->id, ['title' => 'Changed'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Pages::move( $page->id, $user ), PermissionException::class );
+        $this->assertThrows( fn() => Pages::drop( $page->id, $user ), PermissionException::class );
+        $this->assertThrows( fn() => Elements::save( $element->id, ['name' => 'Changed'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Elements::purge( $element->id, $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::add( $page->id, 'de', $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::dropMany( [$page->id], 'de', $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::save( $page->id, 'en', ['title' => 'Changed'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::revert( $page->id, 'en', ['title' => 'Changed'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::bulk( [$page->id], 'en', ['title' => 'Changed'], $user ), PermissionException::class );
+        $this->assertThrows( fn() => Variants::publish( $page->id, 'en', $user ), PermissionException::class );
+
+        // without user, the call is trusted
+        $this->assertEquals( 'Trusted', Pages::save( $page->id, ['title' => 'Trusted'] )->latest?->data->title );
+    }
+
+
+    public function testPageLifecycleChecksActionPermissions()
+    {
+        $page = $this->page( [] );
+        $dropper = new \App\Models\User( ['name' => 'Dropper', 'cmsperms' => ['page:drop']] );
+        $keeper = new \App\Models\User( ['name' => 'Keeper', 'cmsperms' => ['page:keep']] );
+        $purger = new \App\Models\User( ['name' => 'Purger', 'cmsperms' => ['page:purge']] );
+
+        $this->assertThrows( fn() => Pages::drop( $page->id, $keeper ), PermissionException::class );
+        $this->assertNotNull( Pages::drop( $page->id, $dropper )->deleted_at );
+
+        $this->assertThrows( fn() => Pages::restore( $page->id, $dropper ), PermissionException::class );
+        $this->assertNull( Pages::restore( $page->id, $keeper )->deleted_at );
+
+        $this->assertThrows( fn() => Pages::purge( $page->id, $keeper ), PermissionException::class );
+        Pages::purge( $page->id, $purger );
+        $this->assertNull( PageView::withTrashed()->find( $page->id ) );
     }
 
 
@@ -1529,16 +1656,16 @@ class ResourceTest extends CoreTestAbstract
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->latest()->update( ['published' => false] );
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Dependency',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Pages::publishMany( [$page->id], $this->user );
 
         $versionIds = [$file->latest_id, $element->latest_id, $page->latest_id];
 
@@ -1548,23 +1675,23 @@ class ResourceTest extends CoreTestAbstract
 
     public function testPublishSkipsPublishedLatestVersions()
     {
-        $published = Resource::addElement( [
+        $published = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Published',
             'data' => ['text' => 'Published'],
         ], $this->user );
-        $draft = Resource::addElement( [
+        $draft = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Draft',
             'data' => ['text' => 'Draft'],
         ], $this->user );
 
-        Publication::publish( Element::class, [$published->id], $this->user );
+        Elements::publishMany( [$published->id], $this->user );
         Element::withoutSyncingToSearch( fn() => Element::whereKey( $published->id )
             ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
 
-        config( ['scout.queue' => true] );
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
         Queue::fake();
 
-        Publication::publish( Element::class, [$published->id, $draft->id], $this->user );
+        Elements::publishMany( [$published->id, $draft->id], $this->user );
 
         $this->assertSame( '2000-01-01 00:00:00', (string) $published->fresh()->updated_at );
         $this->assertTrue( (bool) $draft->latest->fresh()->published );
@@ -1574,13 +1701,13 @@ class ResourceTest extends CoreTestAbstract
 
     public function testPublishDoesNotSchedulePublishedLatestVersion()
     {
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Published',
             'data' => ['text' => 'Published'],
         ], $this->user );
 
-        Publication::publish( Element::class, [$element->id], $this->user );
-        Publication::publish( Element::class, [$element->id], $this->user, '2030-01-01 00:00:00' );
+        Elements::publishMany( [$element->id], $this->user );
+        Elements::publishMany( [$element->id], $this->user, '2030-01-01 00:00:00' );
 
         $latest = $element->latest->fresh();
         $this->assertNull( $latest->publish_at );
@@ -1590,14 +1717,14 @@ class ResourceTest extends CoreTestAbstract
 
     public function testPublishBatchesScheduleWrites()
     {
-        Resource::addElement( [
+        Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Scheduled second',
             'data' => ['text' => 'Scheduled'],
         ], $this->user );
         $ids = Element::limit( 2 )->pluck( 'id' )->all();
         $this->expectsDatabaseQueryCount( 2 );
 
-        $items = Publication::publish( Element::class, $ids, $this->user, '2030-01-01 00:00:00' );
+        $items = Elements::publishMany( $ids, $this->user, '2030-01-01 00:00:00' );
 
         $this->assertCount( 2, $items );
         $this->assertTrue( $items->every(
@@ -1610,11 +1737,11 @@ class ResourceTest extends CoreTestAbstract
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->latest()->update( ['published' => false] );
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Published dependency',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
-        Publication::publish( Element::class, [$element->id], $this->user );
+        Elements::publishMany( [$element->id], $this->user );
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
@@ -1623,7 +1750,7 @@ class ResourceTest extends CoreTestAbstract
             'cmsperms' => ['publisher', '!element:publish', '!file:publish'],
         ] );
 
-        Publication::publish( Page::class, [$page->id], $user );
+        Pages::publishMany( [$page->id], $user );
 
         $this->assertTrue( (bool) $page->latest->fresh()->published );
     }
@@ -1631,7 +1758,7 @@ class ResourceTest extends CoreTestAbstract
 
     public function testPublishRejectsDeniedElementDependency()
     {
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Denied dependency',
             'data' => ['text' => 'Draft'],
         ], $this->user );
@@ -1644,7 +1771,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user );
+            Pages::publishMany( [$page->id], $user );
             $this->fail( 'Expected the unpublished element dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1659,7 +1786,7 @@ class ResourceTest extends CoreTestAbstract
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $file->latest()->update( ['published' => false] );
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'File dependency',
             'data' => ['file' => ['id' => $file->id, 'type' => 'file']],
         ], $this->user );
@@ -1672,7 +1799,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user );
+            Pages::publishMany( [$page->id], $user );
             $this->fail( 'Expected the unpublished file dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1686,11 +1813,11 @@ class ResourceTest extends CoreTestAbstract
 
     public function testScheduleRejectsDeniedPublishedElementDependency()
     {
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Published dependency',
             'data' => ['text' => 'Published'],
         ], $this->user );
-        Publication::publish( Element::class, [$element->id], $this->user );
+        Elements::publishMany( [$element->id], $this->user );
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
@@ -1700,7 +1827,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Pages::publishMany( [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected the scheduled published element dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1713,11 +1840,11 @@ class ResourceTest extends CoreTestAbstract
 
     public function testScheduleRequiresFilePublishForElementDependencies()
     {
-        $element = Resource::addElement( [
+        $element = Elements::add( [
             'lang' => 'en', 'type' => 'text', 'name' => 'Mutable dependency',
             'data' => ['text' => 'No file yet'],
         ], $this->user );
-        Publication::publish( Element::class, [$element->id], $this->user );
+        Elements::publishMany( [$element->id], $this->user );
         $page = $this->page( [[
             'type' => 'reference', 'refid' => $element->id, 'group' => 'main',
         ]] );
@@ -1727,7 +1854,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Pages::publishMany( [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected a mutable element dependency to require file publication rights' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1750,7 +1877,7 @@ class ResourceTest extends CoreTestAbstract
         ] );
 
         try {
-            Publication::publish( Page::class, [$page->id], $user, '2030-01-01 00:00:00' );
+            Pages::publishMany( [$page->id], $user, '2030-01-01 00:00:00' );
             $this->fail( 'Expected the scheduled file dependency to be denied' );
         } catch( Exception $e ) {
             $this->assertSame( 'Insufficient permissions', $e->getMessage() );
@@ -1766,12 +1893,11 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $file->id, 'type' => 'file']]]];
         $pages = [$this->page( $content ), $this->page( $content )];
-        Page::withoutSyncingToSearch( fn() => Page::whereKey( $pages[0]->id )
-            ->update( ['updated_at' => '2000-01-01 00:00:00'] ) );
+        PageVariant::whereKey( $pages[0]->variant_id )->toBase()->update( ['updated_at' => '2000-01-01 00:00:00'] );
         Event::fake( [PageInvalidated::class] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, collect( $pages )->pluck( 'id' )->all(), $this->user );
+        Pages::publishMany( collect( $pages )->pluck( 'id' )->all(), $this->user );
 
         foreach( $pages as $page ) {
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
@@ -1793,13 +1919,13 @@ class ResourceTest extends CoreTestAbstract
         $content = [['type' => 'image', 'data' => ['file' => ['id' => $target->id, 'type' => 'file']]]];
         $page = $this->page( $content );
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $db->table( 'cms_page_file' )->where( 'page_id', $page->id )->delete();
-        $db->table( 'cms_page_file' )->insert( ['page_id' => $page->id, 'file_id' => $other->id] );
-        $this->expectsDatabaseQueryCount( 13 );
+        $db->table( 'cms_page_file' )->where( 'variant_id', $page->variant_id )->delete();
+        $db->table( 'cms_page_file' )->insert( ['variant_id' => $page->variant_id, 'file_id' => $other->id] );
+        $this->expectsDatabaseQueryCount( 14 );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Pages::publishMany( [$page->id], $this->user );
 
-        $this->assertSame( [$target->id], Page::findOrFail( $page->id )->files()->pluck( 'cms_files.id' )->all() );
+        $this->assertSame( [$target->id], PageView::findOrFail( $page->id )->files()->pluck( 'cms_files.id' )->all() );
     }
 
 
@@ -1807,10 +1933,10 @@ class ResourceTest extends CoreTestAbstract
     {
         $page = $this->page( [] );
         $previous = ['domain' => (string) $page->domain, 'path' => (string) $page->path];
-        $page = Resource::savePage( $page->id, ['path' => 'changed-route'], $this->user );
+        $page = Pages::save( $page->id, ['path' => 'changed-route'], $this->user );
         Event::fake( [PageInvalidated::class] );
 
-        Publication::publish( Page::class, [$page->id], $this->user );
+        Pages::publishMany( [$page->id], $this->user );
 
         Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
             $event->domain === $previous['domain']
@@ -1848,7 +1974,7 @@ class ResourceTest extends CoreTestAbstract
         $paths = $element->bypages()->pluck( 'path' )->all();
         $this->assertNotEmpty( $paths );
 
-        $element = Resource::saveElement( $element->id, ['data' => ['type' => 'footer', 'text' => 'Changed']], $this->user );
+        $element = Elements::save( $element->id, ['data' => ['type' => 'footer', 'text' => 'Changed']], $this->user );
         Event::fake( [PageInvalidated::class] );
 
         $element->publish( $element->latest()->firstOrFail() );
@@ -1863,7 +1989,7 @@ class ResourceTest extends CoreTestAbstract
         $paths = $element->bypages()->pluck( 'path' )->all();
         Event::fake( [PageInvalidated::class] );
 
-        Resource::drop( Element::class, [$element->id], $this->user );
+        Elements::dropMany( [$element->id], $this->user );
 
         $this->assertEqualsCanonicalizing( $paths, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->all() );
     }
@@ -1875,7 +2001,7 @@ class ResourceTest extends CoreTestAbstract
         $paths = $element->bypages()->pluck( 'path' )->all();
         Event::fake( [PageInvalidated::class] );
 
-        Resource::purge( Element::class, [$element->id], $this->user );
+        Elements::purgeMany( [$element->id], $this->user );
 
         $this->assertEqualsCanonicalizing( $paths, Event::dispatched( PageInvalidated::class )->flatMap( fn( $args ) => $args[0]->paths )->all() );
     }
@@ -1884,10 +2010,10 @@ class ResourceTest extends CoreTestAbstract
     public function testPurgeDroppedElementSkipsPages()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
-        Resource::drop( Element::class, [$element->id], $this->user );
+        Elements::dropMany( [$element->id], $this->user );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::purge( Element::class, [$element->id], $this->user );
+        Elements::purgeMany( [$element->id], $this->user );
 
         Event::assertNotDispatched( PageInvalidated::class );
     }
@@ -1902,7 +2028,7 @@ class ResourceTest extends CoreTestAbstract
         Queue::fake( [InvalidatePages::class] );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::purge( Element::class, [$element->id], $this->user );
+        Elements::purgeMany( [$element->id], $this->user );
 
         Event::assertNotDispatched( PageInvalidated::class );
         Queue::assertPushed( InvalidatePages::class, function( InvalidatePages $job ) {
@@ -1922,7 +2048,7 @@ class ResourceTest extends CoreTestAbstract
         Queue::fake( [InvalidatePages::class] );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::invalidateRefs( [$element->id] );
+        Invalidation::refs( [$element->id] );
 
         Event::assertNotDispatched( PageInvalidated::class );
         Queue::assertPushed( InvalidatePages::class, function( InvalidatePages $job ) {
@@ -1972,13 +2098,13 @@ class ResourceTest extends CoreTestAbstract
     public function testDropInvalidatesPageRoutes()
     {
         $pages = [$this->page( [] ), $this->page( [] )];
-        $pages[] = Resource::addPage( [
+        $pages[] = Pages::add( [
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $pages[0]->id );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::drop( Page::class, collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
+        Pages::dropMany( collect( $pages )->take( 2 )->pluck( 'id' )->all(), $this->user );
 
         foreach( collect( $pages )->groupBy( 'domain' ) as $domain => $items ) {
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
@@ -1998,13 +2124,13 @@ class ResourceTest extends CoreTestAbstract
     public function testPurgeInvalidatesPageRoutes()
     {
         $page = $this->page( [] );
-        $child = Resource::addPage( [
+        $child = Pages::add( [
             'lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'res-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: (string) $page->id );
         Event::fake( [PageInvalidated::class] );
 
-        Resource::purge( Page::class, [$page->id], $this->user );
+        Pages::purgeMany( [$page->id], $this->user );
 
         $pages = collect( [$page, $child] );
 
@@ -2023,11 +2149,11 @@ class ResourceTest extends CoreTestAbstract
     public function testPageLifecycleSkipsLargeColumns()
     {
         $actions = [
-            'drop' => fn( Page $page ) => Resource::drop( Page::class, [$page->id], $this->user, ['id'] ),
-            'purge' => fn( Page $page ) => Resource::purge( Page::class, [$page->id], $this->user, ['id'] ),
-            'restore' => function( Page $page ) {
-                $page->delete();
-                return Resource::restore( Page::class, [$page->id], $this->user, ['id'] );
+            'drop' => fn( PageView $page ) => Pages::dropMany( [$page->id], $this->user, ['id'] ),
+            'purge' => fn( PageView $page ) => Pages::purgeMany( [$page->id], $this->user, ['id'] ),
+            'restore' => function( PageView $page ) {
+                $page->page->delete();
+                return Pages::restoreMany( [$page->id], $this->user, ['id'] );
             },
         ];
 
@@ -2050,8 +2176,8 @@ class ResourceTest extends CoreTestAbstract
             'file' => ['id' => $file->id, 'type' => 'file'],
         ]]] );
         $publication = new Publication();
-        $property = new \ReflectionProperty( Publication::class, 'work' );
-        $property->setValue( $publication, Page::MAX_BULK );
+        $references = ( new \ReflectionProperty( Publication::class, 'references' ) )->getValue( $publication );
+        ( new \ReflectionProperty( \Aimeos\Cms\PublishReferences::class, 'work' ) )->setValue( $references, PageView::MAX_BULK );
         $version = $page->latest()->firstOrFail();
         $this->expectsDatabaseQueryCount( 1 );
 
@@ -2070,12 +2196,12 @@ class ResourceTest extends CoreTestAbstract
         $keep = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $drop = File::where( 'mime', 'image/tiff' )->firstOrFail();
 
-        $good = Resource::addElement( [
+        $good = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Good',
             'data' => ['file' => ['id' => $keep->id, 'type' => 'file']],
         ], $this->user );
 
-        $bad = Resource::addElement( [
+        $bad = Elements::add( [
             'lang' => 'en', 'type' => 'image', 'name' => 'Bad',
             'data' => ['file' => ['id' => $drop->id, 'type' => 'file']],
         ], $this->user );
@@ -2087,15 +2213,15 @@ class ResourceTest extends CoreTestAbstract
             }
         } );
 
-        $saved = Resource::bulkElement( [$good->id, $bad->id], ['lang' => 'de'], $this->user );
+        $saved = Elements::bulk( [$good->id, $bad->id], ['lang' => 'de'], $this->user );
 
         // best effort: the good element is committed and returned, the failing one is rolled back
-        $this->assertCount( 1, $saved['ids'] );
-        $this->assertEquals( $good->id, $saved['ids'][0] );
-        $this->assertArrayHasKey( $good->id, $saved['latest'] );
-        $this->assertArrayNotHasKey( $bad->id, $saved['latest'] );
+        $this->assertCount( 1, $saved->ids );
+        $this->assertEquals( $good->id, $saved->ids[0] );
+        $this->assertArrayHasKey( $good->id, $saved->latest );
+        $this->assertArrayNotHasKey( $bad->id, $saved->latest );
         // the element whose save threw is counted as failed, not silently dropped
-        $this->assertSame( 1, $saved['failed'] );
+        $this->assertSame( 1, $saved->failed );
         $this->assertEquals( 'de', Element::findOrFail( $good->id )->latest->lang );
         $this->assertEquals( 'en', Element::findOrFail( $bad->id )->latest->lang );
     }
@@ -2106,8 +2232,8 @@ class ResourceTest extends CoreTestAbstract
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'No more than 1000 items' );
 
-        Resource::bulkPage(
-            array_map( strval(...), range( 1, Page::MAX_BULK + 1 ) ),
+        Pages::bulk(
+            array_map( strval(...), range( 1, PageView::MAX_BULK + 1 ) ),
             ['title' => 'Renamed'],
             $this->user,
         );
@@ -2220,7 +2346,7 @@ class ResourceTest extends CoreTestAbstract
 
         Queue::fake( [DeleteFilePaths::class] );
 
-        File::purgeMany( 'test', $files );
+        File::forceDeleteMany( ( new File() )->newCollection( $files->all() ) );
 
         Queue::assertPushed( DeleteFilePaths::class, 2 );
     }
@@ -2364,7 +2490,7 @@ class ResourceTest extends CoreTestAbstract
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         Queue::fake( [PruneVersions::class] );
 
-        Resource::saveFile( $file->id, ['name' => 'Cleanup queued'], $this->user );
+        FileResource::save( $file->id, ['name' => 'Cleanup queued'], $this->user );
 
         Queue::assertPushed( PruneVersions::class, 1 );
         Queue::assertPushed( PruneVersions::class, fn( $job ) => $job->model === File::class
@@ -2418,13 +2544,12 @@ class ResourceTest extends CoreTestAbstract
 
     public function testReferenceLimit()
     {
-        $method = new \ReflectionMethod( Resource::class, 'refs' );
-        $content = array_map( fn( $num ) => ['type' => 'reference', 'refid' => 'ref-' . $num], range( 1, Page::MAX_BULK + 1 ) );
+        $content = array_map( fn( $num ) => ['type' => 'reference', 'refid' => 'ref-' . $num], range( 1, PageView::MAX_BULK + 1 ) );
 
         $this->expectException( Exception::class );
         $this->expectExceptionMessage( 'No more than 1000 items' );
 
-        $method->invoke( null, ['content' => $content] );
+        \Aimeos\Cms\Resource\Support\Refs::page( ['content' => $content] );
     }
 
 
@@ -2432,11 +2557,11 @@ class ResourceTest extends CoreTestAbstract
      * Creates a draft page below the root node with the given content.
      *
      * @param array<int, array<string, mixed>> $content Content blocks
-     * @return Page
+     * @return PageView
      */
-    protected function page( array $content ) : Page
+    protected function page( array $content ) : PageView
     {
-        return Resource::addPage( [
+        return Pages::add( [
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
             'content' => $content,
         ], $this->user, parent: $this->root()->id );
@@ -2453,9 +2578,7 @@ class ResourceTest extends CoreTestAbstract
 
         try
         {
-            $file = new File();
-            $file->ingest( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) );
-            $file = Resource::addFile( $file, $this->user );
+            $file = FileResource::add( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ), [], $this->user );
 
             config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720]]] );
 
@@ -2476,9 +2599,9 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
-    protected function root() : Page
+    protected function root() : PageView
     {
-        return Page::where( 'tag', 'root' )->firstOrFail();
+        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 
@@ -2488,18 +2611,48 @@ class ResourceTest extends CoreTestAbstract
     protected function sharedPages( Element $element ) : void
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
-        $row = (array) $db->table( 'cms_pages' )->where( 'id', $element->bypages()->value( 'id' ) )->first();
+        $row = (array) PageView::where( 'id', $element->bypages()->value( 'id' ) )->toBase()->first();
         $rows = [];
 
         for( $i = 0; $i < 251; $i++ ) {
-            $rows[] = ['id' => (string) Str::uuid7(), 'path' => 'shared-' . $i] + $row;
+            $id = (string) Str::uuid7();
+            $rows[] = ['id' => $id, 'variant_id' => $id, 'path' => 'shared-' . $i] + $row;
         }
 
         // SQL Server allows max. 2100 bound parameters per statement
         foreach( array_chunk( $rows, 50 ) as $chunk )
         {
-            $db->table( 'cms_pages' )->insert( $chunk );
-            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['page_id' => $row['id'], 'element_id' => $element->id], $chunk ) );
+            $this->insertViewRows( $chunk );
+            $db->table( 'cms_page_element' )->insert( array_map( fn( $row ) => ['variant_id' => $row['variant_id'], 'element_id' => $element->id], $chunk ) );
         }
+    }
+
+
+    /**
+     * Inserts page rows in the format of the page view into the page and variant tables.
+     *
+     * @param array<int, array<string, mixed>> $rows Raw rows of the page view
+     */
+    protected function insertViewRows( array $rows ) : void
+    {
+        Page::query()->insert( array_map( fn( $row ) => PageBuilder::pageValues( $row ), $rows ) );
+        PageVariant::query()->insert( array_map( fn( $row ) => PageBuilder::variantValues( $row, true )
+            + ['page_id' => $row['id'], 'tenant_id' => $row['tenant_id']], $rows ) );
+    }
+
+
+    public function testPageSaveAtTrustsPassedPagesOnlyWhileSaving() : void
+    {
+        $parent = Page::findOrFail( PageView::where( 'tag', 'root' )->firstOrFail()->id );
+        $rgt = $parent->getRgt();
+
+        $node = new Page( ['source' => 'en'] );
+        $this->assertTrue( $node->saveAt( parent: $parent ) );
+
+        // the position of the parent isn't re-read while saving but afterwards again
+        $this->assertSame( $rgt, $parent->getRgt() );
+        $parent->refreshNode();
+        $this->assertSame( $rgt + 2, $parent->getRgt() );
+        $this->assertSame( $parent->id, $node->parent_id );
     }
 }

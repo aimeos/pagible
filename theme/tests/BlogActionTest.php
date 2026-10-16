@@ -10,8 +10,8 @@ namespace Tests;
 use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Facades\Pages;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -38,15 +38,15 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testEditorPreviewLoadsImageFromDraft()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
-        $article = Page::where( 'tag', 'article' )->firstOrFail();
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
 
         $fileId = $article->files()->pluck( 'cms_files.id' )->first();
         File::whereKey( $fileId )->update( ['disk' => 'private'] );
 
         // The article is an already-published blog page (page columns reflect the published
         // state; a draft save only writes a new version, not the page row).
-        $article->forceFill( ['type' => 'blog'] )->saveQuietly();
+        $article->variant->update( ['type' => 'blog'] );
 
         // Re-save the article as an unpublished draft. Validation::page populates the
         // per-element "files" list, which lands in the new latest version's aux.content.
@@ -57,7 +57,7 @@ class BlogActionTest extends ThemeTestAbstract
                 'file' => ['id' => $fileId, 'type' => 'file'],
             ]],
         ];
-        Resource::savePage( $article->id, ['type' => 'blog', 'content' => $content], $this->user );
+        Pages::save( $article->id, ['type' => 'blog', 'content' => $content], $this->user );
 
         $request = Request::create( '/blog' );
         $request->setUserResolver( fn() => $this->user );
@@ -76,11 +76,11 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testNewsLoadsDraftPagesByTypeWithoutArticleTag()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
-        $article = Page::where( 'tag', 'article' )->firstOrFail();
-        $article->forceFill( ['tag' => '', 'type' => 'blog'] )->saveQuietly();
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
+        $article->variant->update( ['tag' => '', 'type' => 'blog'] );
 
-        Resource::savePage( $article->id, ['type' => 'news'], $this->user );
+        Pages::save( $article->id, ['type' => 'news'], $this->user );
 
         $request = Request::create( '/news' );
         $request->setUserResolver( fn() => $this->user );
@@ -101,7 +101,7 @@ class BlogActionTest extends ThemeTestAbstract
 
     public function testStoresCurrentPaginationPageOnRequest()
     {
-        $blog = Page::where( 'tag', 'blog' )->firstOrFail();
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
         $request = Request::create( '/blog', 'GET', ['p' => 2] );
         $request->setUserResolver( fn() => null );
         $this->app->instance( 'request', $request );
@@ -113,7 +113,7 @@ class BlogActionTest extends ThemeTestAbstract
     }
 
 
-    protected function item( Page $page ) : object
+    protected function item( PageView $page ) : object
     {
         return (object) ['data' => (object) [
             'order' => '-id',

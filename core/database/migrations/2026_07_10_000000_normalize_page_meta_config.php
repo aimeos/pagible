@@ -19,6 +19,11 @@ return new class extends Migration
     {
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
 
+        // only for the table structure before the page variants were introduced
+        if( $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ) {
+            return;
+        }
+
         $this->pages( $db );
         $this->versions( $db );
     }

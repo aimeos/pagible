@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\Log;
  */
 class Ai
 {
+    /** @var string|null Tenant whose rate limit is used by translations within limited() */
+    private static ?string $limit = null;
+
+
     /**
      * Ensures that the JSON encoded input doesn't exceed the "cms.ai.maxinput" size and "cms.ai.maxdepth" nesting depth.
      *
@@ -91,9 +95,7 @@ class Ai
      */
     public static function erase( Image $image, Image $mask ) : string
     {
-        return (string) self::provider( 'image', 'erase' )
-            ->erase( $image, $mask, config( 'cms.ai.erase', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'erase', [$image, $mask] );
     }
 
 
@@ -141,9 +143,7 @@ class Ai
         $config = config( 'cms.ai.imagine', [] ) + ['size' => ['1536x1024', '1792x1024', '1024x1024']];
         $prompt .= $context ? "\n\n" . $context : '';
 
-        return (string) self::provider( 'image', 'imagine' )
-            ->imagine( $prompt, $images, $config ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'imagine', [$prompt, $images], $config );
     }
 
 
@@ -157,9 +157,7 @@ class Ai
      */
     public static function inpaint( Image $image, Image $mask, string $prompt ) : string
     {
-        return (string) self::provider( 'image', 'inpaint' )
-            ->inpaint( $image, $mask, $prompt, config( 'cms.ai.inpaint', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'inpaint', [$image, $mask, $prompt] );
     }
 
 
@@ -171,9 +169,7 @@ class Ai
      */
     public static function isolate( Image $image ) : string
     {
-        return (string) self::provider( 'image', 'isolate' )
-            ->isolate( $image, config( 'cms.ai.isolate', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'isolate', [$image] );
     }
 
 
@@ -227,9 +223,7 @@ class Ai
         $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $pagetype ) );
         $system = view( 'cms::prompts.refine' )->render() . "\n" . $context . ( $lang ? "\nWrite the content in language: " . $lang : '' );
 
-        $structured = self::lifted( fn() => self::provider( 'text', 'refine', 'structure' )
-            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' ), 'connect_timeout' => 10] )
-            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+        $structured = self::lifted( fn() => self::text( 'refine' )->ensure( 'structure' )
             ->withSystemPrompt( $system )
             // read-only tools: stored content in the prompt must not be able to change or leak data
             ->withTools( [
@@ -277,9 +271,7 @@ class Ai
      */
     public static function repaint( Image $image, string $prompt ) : string
     {
-        return (string) self::provider( 'image', 'repaint' )
-            ->repaint( $image, $prompt, config( 'cms.ai.repaint', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'repaint', [$image, $prompt] );
     }
 
 
@@ -296,8 +288,8 @@ class Ai
             ->structured();
 
         return array_map( fn( $entry ) => [
-            'start' => Utils::formatSeconds( $entry['start'] ),
-            'end' => Utils::formatSeconds( $entry['end'] ),
+            'start' => self::timestamp( $entry['start'] ),
+            'end' => self::timestamp( $entry['end'] ),
             'text' => $entry['text'],
         ], $data );
     }
@@ -305,6 +297,8 @@ class Ai
 
     /**
      * Translates texts into another language.
+     *
+     * Within limited(), the provider requests are reserved from the rate limit of the tenant first.
      *
      * @param array<int, string> $texts Texts to translate
      * @param string $to Target language code
@@ -321,9 +315,103 @@ class Ai
             'model_type' => 'prefer_quality_optimized',
         ];
 
-        return self::provider( 'text', 'translate', null, $config )
-            ->translate( $texts, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-            ->texts();
+        $chunks = self::chunks( $texts );
+
+        if( !$chunks ) {
+            return [];
+        }
+
+        // reserve the requests for all chunks at once before sending the first one
+        if( self::$limit !== null ) {
+            Jobs\TranslatePage::reserve( self::$limit, count( $chunks ) );
+        }
+
+        $provider = self::provider( 'text', 'translate', $config );
+        $result = [];
+
+        foreach( $chunks as $chunk )
+        {
+            array_push( $result, ...array_values( $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
+                ->texts() ) );
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Executes translations whose provider requests count against the rate limit of the tenant.
+     *
+     * The requests of each translate() call are reserved from the rate limit of the tenant
+     * before the first one is sent.
+     *
+     * @template T
+     * @param \Closure(): T $callback Callback translating the texts
+     * @param string|null $tenant Tenant ID whose rate limit is used or NULL for no limit
+     * @return T Callback return value
+     * @throws Jobs\Throttled If the rate limit of the tenant would be exceeded
+     */
+    public static function limited( \Closure $callback, ?string $tenant = null ) : mixed
+    {
+        $outer = self::$limit;
+        self::$limit = $tenant;
+
+        try {
+            return $callback();
+        } finally {
+            self::$limit = $outer;
+        }
+    }
+
+
+    /**
+     * Splits texts into chunks which can be sent to the translation provider in one request.
+     *
+     * @param array<int, string> $texts Texts to translate
+     * @param int $max Maximum number of texts per chunk
+     * @param int $size Maximum number of bytes per chunk, larger texts get a chunk of their own
+     * @return array<int, array<int, string>> List of chunks with their texts
+     */
+    public static function chunks( array $texts, int $max = 50, int $size = 50000 ) : array
+    {
+        $chunks = [];
+        $chunk = [];
+        $bytes = 0;
+
+        foreach( array_values( $texts ) as $text )
+        {
+            if( $chunk && ( count( $chunk ) >= $max || $bytes + strlen( $text ) > $size ) )
+            {
+                $chunks[] = $chunk;
+                $chunk = [];
+                $bytes = 0;
+            }
+
+            $chunk[] = $text;
+            $bytes += strlen( $text );
+        }
+
+        if( $chunk ) {
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
+    }
+
+
+    /**
+     * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
+     *
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
+     * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
+     */
+    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user ) : ?\Closure
+    {
+        if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
+            return null;
+        }
+
+        return fn( array $texts, string $to, ?string $from, string $context ) : array => self::translate( $texts, $to, $from, $context ?: null );
     }
 
 
@@ -339,9 +427,7 @@ class Ai
      */
     public static function uncrop( Image $image, int $top, int $right, int $bottom, int $left ) : string
     {
-        return (string) self::provider( 'image', 'uncrop' )
-            ->uncrop( $image, $top, $right, $bottom, $left, config( 'cms.ai.uncrop', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'uncrop', [$image, $top, $right, $bottom, $left] );
     }
 
 
@@ -354,9 +440,7 @@ class Ai
      */
     public static function upscale( Image $image, int $factor ) : string
     {
-        return (string) self::provider( 'image', 'upscale' )
-            ->upscale( $image, $factor, config( 'cms.ai.upscale', [] ) ) // @phpstan-ignore-line method.notFound
-            ->base64();
+        return self::image( 'upscale', [$image, $factor] );
     }
 
 
@@ -372,13 +456,32 @@ class Ai
     {
         $system = view( 'cms::prompts.write' )->render() . "\n" . $context;
 
-        return self::lifted( fn() => self::provider( 'text', 'write' )
-            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' ), 'connect_timeout' => 10] )
-            ->withMaxTokens( config( 'cms.ai.maxtoken' ) )
+        return self::lifted( fn() => self::text( 'write' )->ensure( 'write' )
             ->withSystemPrompt( $system )
             ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
             ->write( $prompt, $files, config( 'cms.ai.write', [] ) ) // @phpstan-ignore-line method.notFound
             ->text() );
+    }
+
+
+    /**
+     * Returns the configured Prisma text provider for the given AI operation.
+     *
+     * The supported methods aren't checked so callers can choose between alternatives.
+     *
+     * @param string $op Operation name used as "cms.ai.<op>" configuration key, e.g. "write"
+     * @param string|null $editor Name of the editor the usage is logged for
+     * @param string|null $mutation Name of the operation the usage is logged for
+     * @return Provider Text provider with the configured timeout and token limit
+     * @throws \Aimeos\Prisma\Exceptions\PrismaException If no provider is configured
+     */
+    public static function text( string $op, ?string $editor = null, ?string $mutation = null ) : Provider
+    {
+        return Prisma::text()->observe( self::observer( $editor, $mutation ) )
+            ->using( config( "cms.ai.$op.provider" ), config( "cms.ai.$op", [] ) )
+            ->model( config( "cms.ai.$op.model" ) )
+            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' ), 'connect_timeout' => 10] )
+            ->withMaxTokens( config( 'cms.ai.maxtoken' ) );
     }
 
 
@@ -388,7 +491,7 @@ class Ai
      * @param \Closure $fn Function calling the provider
      * @return mixed Return value of the function
      */
-    protected static function lifted( \Closure $fn ) : mixed
+    public static function lifted( \Closure $fn ) : mixed
     {
         $limit = (int) ini_get( 'max_execution_time' );
         set_time_limit( (int) config( 'cms.ai.timeout' ) );
@@ -415,7 +518,7 @@ class Ai
             return $class::fromUrl( (string) $file->path, $file->mime, !(bool) config( 'cms.allow-internal' ) );
         }
 
-        return $class::fromStoragePath( (string) $file->path, File::diskName( (string) $file->disk ), $file->mime );
+        return $class::fromStoragePath( (string) $file->path, FileStorage::diskName( (string) $file->disk ), $file->mime );
     }
 
 
@@ -424,16 +527,48 @@ class Ai
      *
      * @param string $type Media type, e.g. "text", "image" or "audio"
      * @param string $op Operation name used as "cms.ai.<op>" configuration key
-     * @param string|null $method Provider method if it differs from the operation name
      * @param array<string, mixed>|null $config Provider configuration, "cms.ai.<op>" if NULL
      * @return Provider Provider instance supporting the operation
      * @throws \Aimeos\Prisma\Exceptions\PrismaException If no provider is configured or the operation isn't supported
      */
-    protected static function provider( string $type, string $op, ?string $method = null, ?array $config = null ) : Provider
+    protected static function provider( string $type, string $op, ?array $config = null ) : Provider
     {
         return Prisma::type( $type )->observe( self::observer() )
             ->using( config( "cms.ai.$op.provider" ), $config ?? config( "cms.ai.$op", [] ) )
             ->model( config( "cms.ai.$op.model" ) )
-            ->ensure( $method ?? $op );
+            ->ensure( $op );
+    }
+
+
+    /**
+     * Executes an image operation and returns the resulting image.
+     *
+     * @param string $op Operation and Prisma method name, e.g. "erase"
+     * @param array<int, mixed> $args Operation arguments without the configuration
+     * @param array<string, mixed>|null $config Provider configuration, defaults to "cms.ai.<op>"
+     * @return string Base64 encoded image
+     */
+    private static function image( string $op, array $args, ?array $config = null ) : string
+    {
+        return (string) self::provider( 'image', $op )
+            ->{$op}( ...$args, ...[$config ?? config( "cms.ai.$op", [] )] )
+            ->base64();
+    }
+
+
+    /**
+     * Formats a number of seconds as a "HH:MM:SS.mmm" timestamp.
+     *
+     * @param float $seconds Time in seconds
+     * @return string Formatted timestamp, e.g. "00:01:23.500"
+     */
+    protected static function timestamp( float $seconds ) : string
+    {
+        $hours = floor( $seconds / 3600 );
+        $minutes = floor( ( $seconds % 3600 ) / 60 );
+        $secs = floor( $seconds % 60 );
+        $millis = ( $seconds - floor( $seconds ) ) * 1000;
+
+        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
     }
 }

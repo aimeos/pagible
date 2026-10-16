@@ -71,7 +71,7 @@ class ContactController extends Controller
     protected function files( ContactRequest $request ): array
     {
         $result = [];
-        $files = $request->files() ? $request->file( 'files', [] ) : [];
+        $files = $request->file( 'files', [] );
 
         foreach( is_array( $files ) ? array_values( $files ) : [] as $idx => $file )
         {

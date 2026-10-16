@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Tenancy;
 use Database\Seeders\TonicDemo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,18 +24,16 @@ class TonicDemoTest extends ThemeTestAbstract
         parent::setUp();
 
         ( new TonicDemo( 'tonic', 'tonic' ) )->seed();
-        Tenancy::$callback = fn() => 'tonic';
-        app()->forgetInstance( Tenancy::class );
+        Tenancy::valueUsing( fn() => 'tonic' );
     }
 
 
     public function testActionBarDisabled() : void
     {
-        $home = Page::where( 'tag', 'root' )->firstOrFail();
+        $home = PageView::where( 'tag', 'root' )->firstOrFail();
         $config = $home->config;
         $config->{'tonic::bar'}->data->{'action-bar'} = false;
-        $home->config = $config;
-        $home->saveQuietly();
+        $home->variant->update( ['config' => $config] );
 
         $this->get( '/' )->assertDontSee( 'class="action-bar"', false );
     }
@@ -43,12 +41,12 @@ class TonicDemoTest extends ThemeTestAbstract
 
     public function testDemo() : void
     {
-        $notes = Page::where( 'path', 'bar-notes' )->firstOrFail();
-        $items = Page::where( 'type', 'blog' )->get();
+        $notes = PageView::where( 'path', 'bar-notes' )->firstOrFail();
+        $items = PageView::where( 'type', 'blog' )->get();
 
         $this->assertCount( 3, $items );
         $this->assertTrue( $items->every( fn( $item ) => $item->parent_id === $notes->id ) );
-        $this->assertSame( 'tonic', Page::where( 'tag', 'root' )->firstOrFail()->theme );
+        $this->assertSame( 'tonic', PageView::where( 'tag', 'root' )->firstOrFail()->theme );
     }
 
 

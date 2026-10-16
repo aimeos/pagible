@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Translation rate limit
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of AI provider calls per minute and tenant made by queued
+    | page translations and file description translations. Large pages are
+    | split into several calls, so a page can use more than one. Jobs exceeding
+    | the limit are delayed, file translations are rejected.
+    |
+    */
+    'ratelimit' => (int) env( 'CMS_AI_RATELIMIT', 60 ),
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Maximum tool steps
     |--------------------------------------------------------------------------
     |

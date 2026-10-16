@@ -90,9 +90,9 @@ export default {
           :key="idx"
           rounded="lg"
         >
-          <v-btn @click="toggle(item)" :prepend-icon="item.icon" variant="text">{{
-            item.title
-          }}</v-btn>
+          <v-btn @click="toggle(item)" :prepend-icon="item.icon" variant="text"
+            >{{ item.title }}<span v-if="item.count != null" class="count">{{ item.count }}</span></v-btn
+          >
         </v-list-item>
       </v-list-group>
     </v-list>
@@ -102,6 +102,11 @@ export default {
 <style scoped>
 .v-navigation-drawer {
   border-start-start-radius: 8px;
+}
+
+.count {
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  margin-inline-start: 8px;
 }
 
 .v-btn.reset {

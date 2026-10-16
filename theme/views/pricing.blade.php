@@ -55,6 +55,7 @@
 				<form method="POST" action="{{ route('cms.cashier') }}">
 					<input type="hidden" name="_token" value="">
 					<input type="hidden" name="page" value="{{ $page->id }}">
+					<input type="hidden" name="lang" value="{{ $page->lang }}">
 					<input type="hidden" name="element" value="{{ $id }}">
 					<input type="hidden" name="package" value="{{ $item->id }}">
 					<input type="hidden" name="price" value="{{ ($item->prices[0] ?? null)?->id ?? '' }}">

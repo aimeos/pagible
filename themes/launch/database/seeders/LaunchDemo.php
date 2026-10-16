@@ -7,7 +7,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Illuminate\Support\Facades\Route;
@@ -75,10 +75,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the about page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addAbout( Page $home ) : static
+    protected function addAbout( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -134,10 +134,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the blog page and its posts below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addBlog( Page $home ) : static
+    protected function addBlog( PageView $home ) : static
     {
         $blog = $this->page( [
             'id' => $this->blogId,
@@ -347,10 +347,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the changelog page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addChangelog( Page $home ) : static
+    protected function addChangelog( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -388,10 +388,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the contact page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addContact( Page $home ) : static
+    protected function addContact( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -433,10 +433,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the customers page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addCustomers( Page $home ) : static
+    protected function addCustomers( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -488,10 +488,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the features page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addFeatures( Page $home ) : static
+    protected function addFeatures( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -550,10 +550,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the imprint page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addImprint( Page $home ) : static
+    protected function addImprint( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -575,10 +575,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the pricing page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPricing( Page $home ) : static
+    protected function addPricing( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -618,10 +618,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the privacy page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addPrivacy( Page $home ) : static
+    protected function addPrivacy( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -643,10 +643,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the sign up page below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addSignup( Page $home ) : static
+    protected function addSignup( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -683,10 +683,10 @@ class LaunchDemo extends AbstractDemo
     /**
      * Creates the page shown after a successful checkout below the home page.
      *
-     * @param Page $home Home page
+     * @param PageView $home Home page
      * @return static Same object for fluent calls
      */
-    protected function addWelcome( Page $home ) : static
+    protected function addWelcome( PageView $home ) : static
     {
         $this->page( [
             'lang' => 'en',
@@ -790,9 +790,9 @@ class LaunchDemo extends AbstractDemo
     /**
      * Returns the Relay home page.
      *
-     * @return Page Home page
+     * @return PageView Home page
      */
-    protected function home() : Page
+    protected function home() : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -990,10 +990,10 @@ SVG;
      *
      * @param array<string, mixed> $data Page attributes
      * @param array<int, array<string, mixed>> $content Content elements
-     * @param Page $parent Parent page
-     * @return Page Created page
+     * @param PageView $parent Parent page
+     * @return PageView Created page
      */
-    protected function page( array $data, array $content, Page $parent ) : Page
+    protected function page( array $data, array $content, PageView $parent ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->ids( $content )[0] ?? $this->file();
@@ -1104,15 +1104,15 @@ SVG;
     /**
      * Creates a post below the blog page.
      *
-     * @param Page $parent Blog page
+     * @param PageView $parent Blog page
      * @param array<string, string> $data Page name, title and path
      * @param string $title Article headline
      * @param string $intro Article introduction
      * @param string $cover PHOTOS key of the cover image
      * @param array<int, array<string, mixed>> $content Content elements of the article body
-     * @return Page Created page
+     * @return PageView Created page
      */
-    protected function post( Page $parent, array $data, string $title, string $intro, string $cover, array $content ) : Page
+    protected function post( PageView $parent, array $data, string $title, string $intro, string $cover, array $content ) : PageView
     {
         return $this->page( $data + [
             'lang' => 'en',

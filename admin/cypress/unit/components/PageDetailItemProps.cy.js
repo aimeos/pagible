@@ -1,5 +1,5 @@
 import PageDetailItemProps from '../../../js/components/PageDetailItemProps.vue'
-import { useAppStore, useUserStore, useSchemaStore } from '../../../js/stores'
+import { useAppStore, useLanguageStore, useUserStore, useSchemaStore } from '../../../js/stores'
 
 const stubs = {
 }
@@ -49,7 +49,59 @@ function mountProps(props = {}, perms = {}, apollo = {}) {
   })
 }
 
+// mounts the component with the permissions and languages already set when it's created
+function mountLangs(available, props = {}, perms = { 'page:save': true }) {
+  return cy.mount(PageDetailItemProps, {
+    props: { item: { ...item }, ...props },
+    global: {
+      mocks: { $apollo: { query: () => Promise.resolve({ data: { pages: { data: [] } } }) } },
+      provide: { debounce: (fn) => fn },
+      plugins: [{
+        install() {
+          useUserStore().me = { permission: perms }
+          useLanguageStore().available = available
+          useSchemaStore().themes = { cms: { types: { page: {} } } }
+          useAppStore().multidomain = false
+        }
+      }],
+    },
+  }).then(({ wrapper }) => wrapper.findComponent(PageDetailItemProps))
+}
+
 describe('PageDetailItemProps', () => {
+  describe('language', () => {
+    it('fills in the only language automatically and hides the selector', () => {
+      mountLangs(['de'], { item: { ...item, lang: '' } }).then((comp) => {
+        expect(comp.vm.item.lang).to.equal('de')
+        expect(comp.emitted('change')).to.have.length(1)
+      })
+      cy.get('.v-select').contains('Language').should('not.exist')
+    })
+
+    it('does not fill in the language without permission', () => {
+      mountLangs(['de'], { item: { ...item, lang: '' } }, {}).then((comp) => {
+        expect(comp.vm.item.lang).to.equal('')
+        expect(comp.emitted('change')).to.equal(undefined)
+      })
+      cy.get('.v-select').contains('Language').should('exist')
+    })
+
+    it('shows the selector if the page uses a language which is not configured', () => {
+      mountLangs(['de'], { item: { ...item, lang: 'en' } }).then((comp) => {
+        expect(comp.vm.item.lang).to.equal('en')
+        expect(comp.emitted('change')).to.equal(undefined)
+      })
+      cy.get('.v-select').contains('Language').should('exist')
+    })
+
+    it('asks for the language if several are available', () => {
+      mountLangs(['en', 'de'], { item: { ...item, lang: '' } }).then((comp) => {
+        expect(comp.vm.item.lang).to.equal('')
+      })
+      cy.get('.v-select').contains('Language').should('exist')
+    })
+  })
+
   it('renders the component', () => {
     mountProps()
     cy.get('.v-container').should('exist')

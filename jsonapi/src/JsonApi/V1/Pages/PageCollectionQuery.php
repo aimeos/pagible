@@ -8,10 +8,9 @@
 namespace Aimeos\Cms\JsonApi\V1\Pages;
 
 use LaravelJsonApi\Validation\Rule as JsonApiRule;
-use LaravelJsonApi\Laravel\Http\Requests\ResourceQuery;
 
 
-class PageCollectionQuery extends ResourceQuery
+class PageCollectionQuery extends PageQuery
 {
     /**
      * Get the validation rules that apply to the request.
@@ -20,22 +19,7 @@ class PageCollectionQuery extends ResourceQuery
      */
     public function rules(): array
     {
-        return [
-            'fields' => [
-                'nullable',
-                'array',
-                JsonApiRule::fieldSets(),
-            ],
-            'filter' => [
-                'nullable',
-                'array',
-                JsonApiRule::filter(),
-            ],
-            'include' => [
-                'nullable',
-                'string',
-                JsonApiRule::includePaths(),
-            ],
+        return array_merge( parent::rules(), [
             'page' => [
                 'nullable',
                 'array',
@@ -49,7 +33,6 @@ class PageCollectionQuery extends ResourceQuery
                 'integer',
                 'between:1,100',
             ],
-            'sort' => JsonApiRule::notSupported(),
-        ];
+        ] );
     }
 }

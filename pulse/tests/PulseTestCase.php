@@ -9,7 +9,6 @@ namespace Tests {
 
 use Aimeos\Cms\CoreServiceProvider;
 use Aimeos\Cms\PulseServiceProvider;
-use Aimeos\Cms\Tenancy;
 use Illuminate\Contracts\Foundation\Application;
 use Laravel\Pulse\PulseServiceProvider as LaravelPulseServiceProvider;
 use Livewire\LivewireServiceProvider;
@@ -43,24 +42,6 @@ abstract class PulseTestCase extends TestCase
             LaravelPulseServiceProvider::class,
             PulseServiceProvider::class,
         ];
-    }
-
-
-    protected function setUp() : void
-    {
-        Tenancy::$access = null;
-        Tenancy::$callback = null;
-
-        parent::setUp();
-    }
-
-
-    protected function tearDown() : void
-    {
-        Tenancy::$access = null;
-        Tenancy::$callback = null;
-
-        parent::tearDown();
     }
 }
 

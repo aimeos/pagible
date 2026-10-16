@@ -7,10 +7,13 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Referenced;
+use Aimeos\Cms\ContentType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Aimeos\Cms\Translation\Texts;
 
 /**
  * Element model
@@ -26,12 +29,14 @@ use Illuminate\Support\Collection;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $latest_id
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Page> $bypages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PageView> $bypages
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
  */
 class Element extends Base
 {
-    public const PERM = 'element';
+    use Referenced;
+
+    public const PERM = ContentType::Element->value;
     protected const REFS = ['files'];
 
     /** @var list<string> Columns for eager-loading element relations */
@@ -105,32 +110,8 @@ class Element extends Base
     {
         return trim( implode( "\n", [
             $this->name ?? '',
-            ...\Aimeos\Cms\Scout::text( [$this->data] ),
+            ...Texts::searchable( [$this->data] ),
         ] ) );
-    }
-
-
-    /**
-     * Get the pages the element is referenced by.
-     *
-     * @return BelongsToMany<Page, $this> Eloquent relationship to the pages
-     */
-    public function bypages() : BelongsToMany
-    {
-        return $this->belongsToMany( Page::class, 'cms_page_element' )
-            ->select('id', 'path', 'name' );
-    }
-
-
-    /**
-     * Get the versions the element is referenced by.
-     *
-     * @return BelongsToMany<Version, $this> Eloquent relationship to the versions referencing the element
-     */
-    public function byversions() : BelongsToMany
-    {
-        return $this->belongsToMany( Version::class, 'cms_version_element' )
-            ->select('id', 'versionable_id', 'versionable_type', 'published', 'publish_at' );
     }
 
 
@@ -167,9 +148,7 @@ class Element extends Base
      */
     public function prunable() : Builder
     {
-        return static::withoutTenancy()
-            ->select( 'id', 'tenant_id', 'deleted_at' )
-            ->where( 'deleted_at', '<=', now()->subDays( config( 'cms.prune', 30 ) ) );
+        return static::expired()->select( 'id', 'tenant_id', 'deleted_at' );
     }
 
 
@@ -180,22 +159,7 @@ class Element extends Base
      */
     public function toSearchableArray(): array
     {
-        $attrs = ['name', 'type', 'data', 'deleted_at', 'latest_id'];
-
-        if( !empty( $this->getChanges() ) && !$this->wasChanged( $attrs ) ) {
-            return [];
-        }
-
-        return [
-            'content' => $this->trashed() ? '' : mb_strtolower( (string) $this ),
-            'draft' => mb_strtolower( (string) $this->latest ),
-            'tenant_id' => $this->tenant_id ?? '',
-            'lang' => $this->latest?->lang,
-            'editor' => $this->latest->editor ?? '',
-            'type' => $this->latest?->data->type ?? '',
-            'published' => (bool) ( $this->latest->published ?? false ),
-            'scheduled' => (int) ( $this->latest?->data->scheduled ?? 0 ),
-        ];
+        return $this->searchableVersion( ['name', 'type', 'data', 'deleted_at', 'latest_id'], 'type' );
     }
 
 

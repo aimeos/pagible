@@ -105,6 +105,13 @@ function graphqlResult() {
 let _restorePrevious = null
 
 beforeEach(() => {
+  // translation batches tracked by the previous test mustn't show up in the next one
+  try {
+    sessionStorage.removeItem('cms-translations')
+  } catch {
+    // storage isn't available
+  }
+
   cy.intercept({ method: 'POST', url: '**/graphql' }, (req) => {
     req.reply({
       statusCode: 200,

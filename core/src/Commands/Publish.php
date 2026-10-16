@@ -9,12 +9,11 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Scout;
-use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 
 
@@ -81,7 +80,7 @@ class Publish extends Command
     {
         $changed = new Publication();
 
-        Utils::storageLock( Tenancy::value(), function() use ( $at, $changed, &$failed, $versions ) {
+        File::locked( function() use ( $at, $changed, &$failed, $versions ) {
             Scout::mute( Version::TYPES, function() use ( $at, $changed, &$failed, $versions ) {
 
                 foreach( $versions as $version )
@@ -104,7 +103,7 @@ class Publish extends Command
      */
     protected function publishVersion( Version $version, \DateTimeInterface $at, array &$failed ) : ?Publication
     {
-        $model = $version->versionable;
+        $model = $version->owner();
         $id = $version->versionable_id;
         $type = (string) $version->versionable_type;
         $key = self::key( $version );
@@ -121,7 +120,7 @@ class Publish extends Command
         try
         {
             // no retries: apply() marks the version as published in memory
-            DB::connection( config( 'cms.db', 'sqlite' ) )->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
+            DB::connection()->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
                 $publication->prepare( collect( [$version] ) );
                 $publication->apply( $model, $version );
 
@@ -157,7 +156,7 @@ class Publish extends Command
         {
             $type = (string) $candidate->versionable_type;
 
-            if( !in_array( $type, Version::TYPES, true ) ) {
+            if( !isset( Version::OWNERS[$type] ) ) {
                 throw new \InvalidArgumentException( 'Invalid scheduled CMS model: ' . $type );
             }
 
@@ -168,9 +167,6 @@ class Publish extends Command
             }
         }
 
-        $versions = Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get();
-        $versions->load( 'versionable' );
-
-        return $versions;
+        return Version::loadOwners( Version::due( $at )->whereIn( 'id', array_values( $ids ) )->get() );
     }
 }

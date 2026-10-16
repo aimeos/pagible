@@ -9,18 +9,21 @@ namespace Aimeos\Cms\Commands;
 
 use Illuminate\Console\Command;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Route;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Controllers\PageController;
 use Aimeos\Cms\Controllers\SearchController;
 use Aimeos\Cms\Controllers\SitemapController;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Http\Middleware\ServeCachedPage;
 use Aimeos\Nestedset\NestedSet;
+use Database\Seeders\BenchmarkSeeder;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 
@@ -46,15 +49,12 @@ class BenchmarkTheme extends Command
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-
-        if( !$this->checks( $tenant, $tries, $force ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        ['domain' => $domain, 'tries' => $tries] = $options;
+
         $multidomain = config( 'cms.multidomain' );
 
         // Benchmark data is scoped by --domain. Make the synthetic request use the
@@ -80,37 +80,45 @@ class BenchmarkTheme extends Command
         config( ['scout.driver' => 'cms'] );
 
         // Get a page with cache=0 for uncached rendering
-        $uncachedPage = Page::where( 'tag', '!=', 'root' )
+        $uncachedPage = PageView::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        $uncachedPage->forceFill( ['cache' => 0] )->saveQuietly();
+        PageView::withoutSyncingToSearch( fn() => $uncachedPage->variant->update( ['cache' => 0] ) );
 
         // Get a page with cache=5 for cached rendering
-        $cachedPage = Page::where( 'tag', '!=', 'root' )
+        $cachedPage = PageView::where( 'tag', '!=', 'root' )
             ->wherePublic()
             ->where( 'domain', $domain )->where( 'id', '!=', $uncachedPage->id )
             ->orderByDesc( NestedSet::DEPTH )->firstOrFail();
-        $cachedPage->forceFill( ['cache' => 5] )->saveQuietly();
+        PageView::withoutSyncingToSearch( fn() => $cachedPage->variant->update( ['cache' => 5] ) );
 
         $this->header();
         $middleware = new ServeCachedPage();
 
         // Page render (uncached)
-        $this->benchmark( 'Page render', function() use ( $uncachedPage, $domain, $baseurl, $middleware ) {
-            $request = Request::create( $baseurl . '/' . $uncachedPage->path, 'GET' );
-            $response = $middleware->handle( $request, fn( $request ) =>
-                ( new PageController )->index( $request, $uncachedPage->path, $domain )
+        $this->benchmark( 'Page render', fn() =>
+            $this->render( $middleware, $baseurl, $uncachedPage->path, $domain ),
+            readOnly: true, tries: $tries,
+        );
+
+        // Translated page whose navigation falls back to the source language of untranslated pages
+        $variantPage = PageView::visible( BenchmarkSeeder::TRANSLATION )->where( 'lang', BenchmarkSeeder::TRANSLATION )
+            ->where( 'tag', '!=', 'root' )->wherePublic()->where( 'domain', $domain )
+            ->orderByDesc( NestedSet::DEPTH )->first();
+
+        if( $variantPage )
+        {
+            PageView::withoutSyncingToSearch( fn() => $variantPage->variant->update( ['cache' => 0] ) );
+
+            $this->benchmark( 'Variant render', fn() =>
+                $this->render( $middleware, $baseurl, $variantPage->path, $domain ),
+                readOnly: true, tries: $tries,
             );
-            $this->expectStatus( $response, Response::HTTP_OK );
-        }, readOnly: true, tries: $tries );
+        }
 
         // Complete-page caching belongs to the pre-session middleware. Warm it by
         // running the controller through that boundary once.
-        $warmRequest = Request::create( $baseurl . '/' . $cachedPage->path, 'GET' );
-        $warmResponse = $middleware->handle( $warmRequest, fn( $request ) =>
-            ( new PageController )->index( $request, $cachedPage->path, $domain )
-        );
-        $this->expectStatus( $warmResponse, Response::HTTP_OK );
+        $this->render( $middleware, $baseurl, $cachedPage->path, $domain );
 
         // True anonymous hot path: middleware returns the complete-page cache before
         // the session middleware and controller are invoked.
@@ -139,21 +147,16 @@ class BenchmarkTheme extends Command
         $viewer = new $userClass();
 
         if( !$viewer instanceof \Illuminate\Database\Eloquent\Model
-            || !$viewer instanceof \Illuminate\Contracts\Auth\Authenticatable
+            || !$viewer instanceof Authenticatable
         ) {
             throw new \RuntimeException( 'User model must be an authenticatable Eloquent model' );
         }
 
         $viewer->forceFill( ['cmsperms' => []] );
-        $this->benchmark( 'Page authenticated', function() use ( $cachedPage, $domain, $baseurl, $middleware, $viewer ) {
-            $request = Request::create( $baseurl . '/' . $cachedPage->path, 'GET' );
-            $request->headers->set( 'Authorization', 'Bearer benchmark' );
-            $request->setUserResolver( fn() => $viewer );
-            $response = $middleware->handle( $request, fn( $request ) =>
-                ( new PageController() )->index( $request, $cachedPage->path, $domain )
-            );
-            $this->expectStatus( $response, Response::HTTP_OK );
-        }, readOnly: true, tries: $tries );
+        $this->benchmark( 'Page authenticated', fn() =>
+            $this->render( $middleware, $baseurl, $cachedPage->path, $domain, $viewer ),
+            readOnly: true, tries: $tries,
+        );
 
         $this->benchmarkAccess( $uncachedPage, $domain, $baseurl, $middleware, $tries );
 
@@ -172,12 +175,23 @@ class BenchmarkTheme extends Command
             ( new SearchController )->index( $request, $domain );
         }, readOnly: true, tries: $tries );
 
-        // Sitemap
-        $this->benchmark( 'Sitemap', function() {
-            ob_start();
-            ( new SitemapController )->index()->sendContent();
-            ob_end_clean();
-        }, readOnly: true, tries: (int) ceil( $tries / 10 ) );
+        // Sitemap, the controller reads the domain from the route of the current request
+        $sitemapRequest = Request::create( $baseurl . '/sitemap.xml', 'GET' );
+        $sitemapRoute = ( new Route( 'GET', 'sitemap.xml', [] ) )->bind( $sitemapRequest );
+        $sitemapRoute->setParameter( 'domain', $domain );
+        $sitemapRequest->setRouteResolver( fn() => $sitemapRoute );
+        $request = app( 'request' );
+        app()->instance( 'request', $sitemapRequest );
+
+        try {
+            $this->benchmark( 'Sitemap', function() {
+                ob_start();
+                ( new SitemapController )->index()->sendContent();
+                ob_end_clean();
+            }, readOnly: true, tries: (int) ceil( $tries / 10 ) );
+        } finally {
+            app()->instance( 'request', $request );
+        }
 
         $this->line( '' );
 
@@ -185,7 +199,7 @@ class BenchmarkTheme extends Command
     }
 
 
-    private function benchmarkAccess( Page $page, string $domain, string $baseurl,
+    private function benchmarkAccess( PageView $page, string $domain, string $baseurl,
         ServeCachedPage $middleware, int $tries ) : void
     {
         $temporaryAccess = !Permission::has( 'access:view' );
@@ -224,7 +238,7 @@ class BenchmarkTheme extends Command
             $values = isset( $available[0] ) ? [$available[0]] : null;
             // The complete benchmark tree exceeds the synchronous bulk limit.
             // Use one generated top-level branch (991 pages for the default data).
-            $branch = Page::where( NestedSet::DEPTH, 1 )
+            $branch = PageView::where( NestedSet::DEPTH, 1 )
                 ->where( 'domain', $domain )->orderBy( NestedSet::LFT )->firstOrFail();
             $branchId = $branch->getKey();
             $accessTries = max( 1, (int) ceil( $tries / 10 ) );
@@ -255,6 +269,27 @@ class BenchmarkTheme extends Command
                 Access::using( null );
             }
         }
+    }
+
+
+    /**
+     * Renders the page through the complete-page cache middleware and expects a successful response.
+     */
+    private function render( ServeCachedPage $middleware, string $baseurl, string $path, string $domain,
+        ?Authenticatable $user = null ) : void
+    {
+        $request = Request::create( $baseurl . '/' . $path, 'GET' );
+
+        if( $user )
+        {
+            $request->headers->set( 'Authorization', 'Bearer benchmark' );
+            $request->setUserResolver( fn() => $user );
+        }
+
+        $response = $middleware->handle( $request, fn( $request ) =>
+            ( new PageController )->index( $request, $path, $domain )
+        );
+        $this->expectStatus( $response, Response::HTTP_OK );
     }
 
 

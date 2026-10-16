@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Resource;
+use Aimeos\Cms\Facades\Files;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,6 +21,6 @@ final class RelocateFile
      */
     public function __invoke( $rootValue, array $args ) : Collection
     {
-        return Resource::relocateFiles( $args['id'], $args['disk'], Auth::user() );
+        return Files::relocateMany( $args['id'], $args['disk'], Auth::user() );
     }
 }

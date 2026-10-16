@@ -7,7 +7,7 @@
 namespace Aimeos\Cms\Actions;
 
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Schema;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +22,7 @@ class Properties
     protected array $propertyCache = [];
 
 
-    public function __invoke( Request $request, Page $page, object $item ) : object
+    public function __invoke( Request $request, PageView $page, object $item ) : object
     {
         $this->propertyCache = [];
 
@@ -79,6 +79,13 @@ class Properties
         $columns = ['id', 'tenant_id', 'type', 'path', 'name', 'title', 'content', 'created_at', 'updated_at', 'latest_id', '_lft', 'status'];
         $builder = $this->query( $item, $editor, $sortBy, $sortDir );
 
+        // list the properties in the language of the current page, see "cms.translate.fallback"
+        $page->localize( $builder );
+
+        if( !( $item->data->{'parent-page'}->value ?? null ) ) {
+            $builder->where( 'domain', (string) $page->domain );
+        }
+
         if( !$filtersActive )
         {
             $result = $builder->paginate( $perPage, $columns, 'p', $pageNo );
@@ -120,13 +127,13 @@ class Properties
 
 
     /**
-     * @param LengthAwarePaginator<int, Page>|LengthAwarePaginator<int, Model> $pages
+     * @param LengthAwarePaginator<int, PageView>|LengthAwarePaginator<int, Model> $pages
      */
     protected function attachFiles( LengthAwarePaginator $pages, bool $editor ) : void
     {
         /** @return list<string> */
         $fileIds = function( Model $pageItem ) use ( $editor ) : array {
-            if( !$pageItem instanceof Page ) {
+            if( !$pageItem instanceof PageView ) {
                 return [];
             }
 
@@ -148,7 +155,7 @@ class Properties
             : collect();
 
         $pages->getCollection()->each( function( Model $pageItem ) use ( $files, $fileIds, $editor ) {
-            if( !$pageItem instanceof Page ) {
+            if( !$pageItem instanceof PageView ) {
                 return;
             }
 
@@ -170,7 +177,7 @@ class Properties
     protected function filter( Collection $pages, array $filters, bool $editor ) : Collection
     {
         return $pages->filter( function( Model $pageItem ) use ( $editor, $filters ) {
-            if( !$pageItem instanceof Page ) {
+            if( !$pageItem instanceof PageView ) {
                 return false;
             }
 
@@ -207,7 +214,7 @@ class Properties
     }
 
 
-    protected function property( Page $item, bool $editor ) : ?\stdClass
+    protected function property( PageView $item, bool $editor ) : ?\stdClass
     {
         $cache = $item->getKey();
 
@@ -232,14 +239,14 @@ class Properties
 
     /**
      * @param 'asc'|'desc' $direction
-     * @return Builder<Page>
+     * @return Builder<PageView>
      */
     protected function query( object $item, bool $editor, string $sort, string $direction ) : Builder
     {
         $with = $editor
             ? ['latest' => fn( $query ) => $query->select( 'id', 'tenant_id', 'versionable_id', 'aux' )]
             : [];
-        $builder = Page::where( 'type', 'property' )->with( $with )->orderBy( $sort, $direction );
+        $builder = PageView::where( 'type', 'property' )->with( $with )->orderBy( $sort, $direction );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->whereDescendantOf( $pid );

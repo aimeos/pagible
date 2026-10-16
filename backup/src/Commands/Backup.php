@@ -7,8 +7,9 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Models\File;
 use Illuminate\Console\Command;
@@ -16,7 +17,6 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -31,8 +31,8 @@ class Backup extends Command
      */
     private const OWNERS = [
         'cms_element_file' => ['element_id', 'cms_elements'],
-        'cms_page_element' => ['page_id', 'cms_pages'],
-        'cms_page_file' => ['page_id', 'cms_pages'],
+        'cms_page_element' => ['variant_id', 'cms_page_variants'],
+        'cms_page_file' => ['variant_id', 'cms_page_variants'],
         'cms_version_element' => ['version_id', 'cms_versions'],
         'cms_version_file' => ['version_id', 'cms_versions'],
     ];
@@ -68,8 +68,8 @@ class Backup extends Command
         {
             $tmpDir = $this->tmpDir();
 
-            [$zipPath, $counts] = Utils::storageLock( $tenant, function() use ( $disk, $noMedia, $tenant, $tmpDir ) {
-                $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+            [$zipPath, $counts] = FileStorage::storageLock( $tenant, function() use ( $disk, $noMedia, $tenant, $tmpDir ) {
+                $db = DB::connection();
                 $allTables = $db->getSchemaBuilder()->getTables();
                 $cmsTables = array_filter(
                     array_column( $allTables, 'name' ),
@@ -196,7 +196,7 @@ class Backup extends Command
 
         foreach( $this->media( $tenant ) as [$logical, $file] )
         {
-            $storage = $storages[$logical] ??= Storage::disk( File::diskName( $logical ) );
+            $storage = $storages[$logical] ??= FileStorage::disk( $logical );
             $size = $storage->size( $file );
             $target = $dir . '/media/' . $logical . '/' . $file;
 
@@ -378,7 +378,7 @@ class Backup extends Command
      */
     protected function media( string $tenant ): \Generator
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
         $last = null;
 
         do
@@ -416,9 +416,9 @@ class Backup extends Command
 
                 foreach( $paths as $path )
                 {
-                    $path = Utils::normalizePath( $path, $tenant );
+                    $path = FileStorage::normalizePath( $path, $tenant );
 
-                    if( $path === null || !File::owns( $tenant, (string) $file->id, $path )
+                    if( $path === null || !FileStorage::owns( $tenant, (string) $file->id, $path )
                         || isset( $seen[$path] ) ) {
                         continue;
                     }

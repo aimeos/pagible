@@ -14,7 +14,7 @@ use Aimeos\Cms\GraphQL\Mutations;
 use Aimeos\Cms\GraphQL\Query;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 
 
@@ -40,15 +40,11 @@ class BenchmarkGraphql extends Command
             return self::SUCCESS;
         }
 
-        $tenant = (string) $this->option( 'tenant' );
-        $tries = (int) $this->option( 'tries' );
-        $force = (bool) $this->option( 'force' );
-
-        if( !$this->checks( $tenant, $tries, $force ) ) {
+        if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }
 
-        $domain = (string) ( $this->option( 'domain' ) ?: '' );
+        ['domain' => $domain, 'tries' => $tries] = $options;
 
         config( ['scout.driver' => 'cms'] );
 
@@ -111,7 +107,7 @@ class BenchmarkGraphql extends Command
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page get', function() use ( $page ) {
-                Page::with( 'latest.files', 'latest.elements' )->find( $page->id );
+                PageView::with( 'latest.files', 'latest.elements' )->find( $page->id );
             }, readOnly: true, tries: $tries );
 
             $this->benchmark( 'Page lang', function() {

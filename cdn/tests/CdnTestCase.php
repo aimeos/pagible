@@ -9,7 +9,6 @@ namespace Tests;
 
 use Aimeos\Cms\CdnServiceProvider;
 use Aimeos\Cms\CoreServiceProvider;
-use Aimeos\Cms\Tenancy;
 use Orchestra\Testbench\TestCase;
 
 
@@ -32,12 +31,5 @@ abstract class CdnTestCase extends TestCase
             CoreServiceProvider::class,
             CdnServiceProvider::class,
         ];
-    }
-
-
-    protected function setUp() : void
-    {
-        Tenancy::$callback = null;
-        parent::setUp();
     }
 }

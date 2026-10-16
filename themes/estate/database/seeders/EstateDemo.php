@@ -6,7 +6,7 @@
 
 namespace Database\Seeders;
 
-use Aimeos\Cms\Models\Page;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 
@@ -52,7 +52,7 @@ class EstateDemo extends AbstractDemo
     private string $logoFile;
 
 
-    protected function addProperties( Page $home, string $exposesId, string $propertiesId ) : static
+    protected function addProperties( PageView $home, string $exposesId, string $propertiesId ) : static
     {
         $properties = $this->page( [
             'id' => $propertiesId,
@@ -272,7 +272,7 @@ class EstateDemo extends AbstractDemo
     }
 
 
-    protected function addNews( Page $home, string $newsId ) : static
+    protected function addNews( PageView $home, string $newsId ) : static
     {
         $news = $this->page( [
             'id' => $newsId,
@@ -500,7 +500,7 @@ class EstateDemo extends AbstractDemo
     }
 
 
-    protected function home( string $exposesId, string $newsId, string $propertiesId ) : Page
+    protected function home( string $exposesId, string $newsId, string $propertiesId ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -631,7 +631,7 @@ SVG;
      * @param list<string> $fileIds
      * @param array<string, mixed> $meta
      */
-    protected function page( array $data, array $content, Page $parent, array $fileIds = [], array $meta = [] ) : Page
+    protected function page( array $data, array $content, PageView $parent, array $fileIds = [], array $meta = [] ) : PageView
     {
         $elementId = $this->element();
         $fileId = $this->file();
@@ -644,7 +644,7 @@ SVG;
 
     protected function pages() : void
     {
-        $page = new Page();
+        $page = new PageView();
         $exposesId = $page->newUniqueId();
         $newsId = $page->newUniqueId();
         $propertiesId = $page->newUniqueId();

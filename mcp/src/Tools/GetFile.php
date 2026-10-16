@@ -45,7 +45,7 @@ class GetFile extends Tool
 
         $data = Presenter::file( $file ) + [
             'used_by_elements' => Presenter::rows( $file->byelements(), 'cms_elements.id', 'cms_elements.type', 'cms_elements.name' ),
-            'used_by_pages' => Presenter::rows( $file->bypages(), 'cms_pages.id', 'cms_pages.name', 'cms_pages.path' ),
+            'used_by_pages' => Presenter::rows( $file->bypages(), 'cms_page_view.id', 'cms_page_view.name', 'cms_page_view.path' ),
         ];
 
         return Response::structured( $data );
