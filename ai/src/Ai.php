@@ -320,7 +320,7 @@ class Ai
             ];
         }
 
-        // texts are parsed as XML, so "&" and "<" must be escaped except for the ignored tags
+        // texts and context are parsed as XML, so "&" and "<" must be escaped except for the ignored tags
         if( $xml = ( $config['tag_handling'] ?? null ) === 'xml' )
         {
             $tags = [];
@@ -331,6 +331,7 @@ class Ai
             }
 
             $texts = array_map( fn( $text ) => strtr( htmlspecialchars( (string) $text, ENT_XML1 | ENT_NOQUOTES, 'UTF-8' ), $tags ), $texts );
+            $context = $context !== null ? htmlspecialchars( $context, ENT_XML1 | ENT_NOQUOTES, 'UTF-8' ) : null;
         }
 
         $chunks = self::chunks( $texts );

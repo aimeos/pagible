@@ -116,9 +116,10 @@ class TranslatePageTest extends AiTestAbstract
     {
         $fake = Prisma::fake( [TextResponse::fromTexts( ['Rollen &amp; Rechte &lt;b&gt;', '<x>00:01 --&gt; 00:02</x> Hallo'] )] );
 
-        $result = Ai::translate( ['Roles & permissions <b>', '<x>00:01 --> 00:02</x> Hello'], 'de', 'en' );
+        $result = Ai::translate( ['Roles & permissions <b>', '<x>00:01 --> 00:02</x> Hello'], 'de', 'en', 'Page: AI & CMS' );
 
         $this->assertSame( ['Roles &amp; permissions &lt;b&gt;', '<x>00:01 --&gt; 00:02</x> Hello'], $fake->calls()[0]['arguments'][0] );
+        $this->assertSame( 'Page: AI &amp; CMS', $fake->calls()[0]['arguments'][3] );
         $this->assertSame( 'xml', $fake->calls()[0]['arguments'][4]['tag_handling'] );
         $this->assertSame( ['Rollen & Rechte <b>', '<x>00:01 --> 00:02</x> Hallo'], $result );
     }
