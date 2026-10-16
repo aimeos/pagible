@@ -112,6 +112,31 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testTranslateEscaped()
+    {
+        $fake = Prisma::fake( [TextResponse::fromTexts( ['Rollen &amp; Rechte &lt;b&gt;', '<x>00:01 --&gt; 00:02</x> Hallo'] )] );
+
+        $result = Ai::translate( ['Roles & permissions <b>', '<x>00:01 --> 00:02</x> Hello'], 'de', 'en' );
+
+        $this->assertSame( ['Roles &amp; permissions &lt;b&gt;', '<x>00:01 --&gt; 00:02</x> Hello'], $fake->calls()[0]['arguments'][0] );
+        $this->assertSame( 'xml', $fake->calls()[0]['arguments'][4]['tag_handling'] );
+        $this->assertSame( ['Rollen & Rechte <b>', '<x>00:01 --> 00:02</x> Hallo'], $result );
+    }
+
+
+    public function testTranslateNotEscaped()
+    {
+        config( ['cms.ai.translate.provider' => 'google'] );
+        $fake = Prisma::fake( [TextResponse::fromTexts( ['Rollen & Rechte'] )] );
+
+        $result = Ai::translate( ['Roles & permissions'], 'de', 'en' );
+
+        $this->assertSame( ['Roles & permissions'], $fake->calls()[0]['arguments'][0] );
+        $this->assertArrayNotHasKey( 'tag_handling', $fake->calls()[0]['arguments'][4] );
+        $this->assertSame( ['Rollen & Rechte'], $result );
+    }
+
+
     public function testTranslateLimited()
     {
         $texts = array_map( fn( $i ) => 'retry ' . $i, range( 1, 120 ) );

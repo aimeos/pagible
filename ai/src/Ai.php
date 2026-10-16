@@ -308,12 +308,30 @@ class Ai
      */
     public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null ) : array
     {
-        $config = config( 'cms.ai.translate', [] ) + [
-            'ignore_tags' => ['x'],
-            'tag_handling' => 'xml',
-            'preserve_formatting' => true,
-            'model_type' => 'prefer_quality_optimized',
-        ];
+        $config = config( 'cms.ai.translate', [] );
+
+        if( strtolower( (string) ( $config['provider'] ?? '' ) ) === 'deepl' )
+        {
+            $config += [
+                'ignore_tags' => ['x'],
+                'tag_handling' => 'xml',
+                'preserve_formatting' => true,
+                'model_type' => 'prefer_quality_optimized',
+            ];
+        }
+
+        // texts are parsed as XML, so "&" and "<" must be escaped except for the ignored tags
+        if( $xml = ( $config['tag_handling'] ?? null ) === 'xml' )
+        {
+            $tags = [];
+
+            foreach( (array) ( $config['ignore_tags'] ?? [] ) as $tag ) {
+                $tags['&lt;' . $tag . '&gt;'] = '<' . $tag . '>';
+                $tags['&lt;/' . $tag . '&gt;'] = '</' . $tag . '>';
+            }
+
+            $texts = array_map( fn( $text ) => strtr( htmlspecialchars( (string) $text, ENT_XML1 | ENT_NOQUOTES, 'UTF-8' ), $tags ), $texts );
+        }
 
         $chunks = self::chunks( $texts );
 
@@ -333,6 +351,10 @@ class Ai
         {
             array_push( $result, ...array_values( $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
                 ->texts() ) );
+        }
+
+        if( $xml ) {
+            $result = array_map( fn( $text ) => htmlspecialchars_decode( (string) $text, ENT_XML1 | ENT_QUOTES ), $result );
         }
 
         return $result;
