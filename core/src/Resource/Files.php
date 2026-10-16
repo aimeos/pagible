@@ -32,7 +32,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Aimeos\Cms\Resource\Support\Items;
-use Aimeos\Cms\Resource\Concerns\ChangesInChunks;
+use Aimeos\Cms\Concerns\ChangeChunks;
 use Aimeos\Cms\Publication;
 
 
@@ -52,7 +52,7 @@ use Aimeos\Cms\Publication;
  */
 class Files
 {
-    use ChangesInChunks;
+    use ChangeChunks;
 
 
     public const MAX_RELOCATE = 100;
@@ -393,7 +393,7 @@ class Files
         $ids = File::bulkIds( $ids );
         $editor = Utils::editor( $user );
 
-        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->changeInChunks( File::class, $ids, $fields, [], function( $items ) use ( $editor ) {
+        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->change( File::class, $ids, $fields, [], function( $items ) use ( $editor ) {
             // dispatched after commit
             Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
             File::trashMany( $items, $editor );
@@ -430,7 +430,7 @@ class Files
         // a single file is announced with its publication state, which is removed with its versions
         $states = count( $ids ) === 1 && Base::announces( Purged::class );
 
-        $purge = fn( array $ids ) => $this->changeInChunks( File::class, $ids, $fields, ['path', 'previews'], function( $items ) use ( $states ) {
+        $purge = fn( array $ids ) => $this->change( File::class, $ids, $fields, ['path', 'previews'], function( $items ) use ( $states ) {
             // the references are removed with the files, pages using trashed files were invalidated when they were trashed
             Invalidation::refs( [], array_map( strval( ... ), $items->reject( fn( File $item ) => $item->trashed() )->modelKeys() ) );
 
@@ -484,7 +484,7 @@ class Files
         $editor = Utils::editor( $user );
 
         // all columns are required to update the search index
-        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->changeInChunks( File::class, $ids, $fields, File::SELECT_COLUMNS, function( $items ) use ( $editor ) {
+        $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->change( File::class, $ids, $fields, File::SELECT_COLUMNS, function( $items ) use ( $editor ) {
             // dispatched after commit
             Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
             File::restoreMany( $items, $editor );

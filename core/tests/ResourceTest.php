@@ -2177,7 +2177,7 @@ class ResourceTest extends CoreTestAbstract
         ]]] );
         $publication = new Publication();
         $references = ( new \ReflectionProperty( Publication::class, 'references' ) )->getValue( $publication );
-        ( new \ReflectionProperty( \Aimeos\Cms\Publication\References::class, 'work' ) )->setValue( $references, PageView::MAX_BULK );
+        ( new \ReflectionProperty( \Aimeos\Cms\PublishReferences::class, 'work' ) )->setValue( $references, PageView::MAX_BULK );
         $version = $page->latest()->firstOrFail();
         $this->expectsDatabaseQueryCount( 1 );
 

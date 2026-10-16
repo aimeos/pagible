@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Resource\Concerns;
+namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 /**
  * Locks and changes elements or files in chunks.
  */
-trait ChangesInChunks
+trait ChangeChunks
 {
     /**
      * Locks and changes the items in chunks of 100 within one transaction.
@@ -31,7 +31,7 @@ trait ChangesInChunks
      * @param \Closure(EloquentCollection<int, T>): void $change Changes the locked items of one chunk
      * @return Collection<int, T> Changed items
      */
-    protected function changeInChunks( string $model, array $ids, array $fields, array $columns, \Closure $change ) : Collection
+    protected function change( string $model, array $ids, array $fields, array $columns, \Closure $change ) : Collection
     {
         sort( $ids, SORT_STRING );
 

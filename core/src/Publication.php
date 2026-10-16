@@ -17,7 +17,6 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Models\Version;
-use Aimeos\Cms\Publication\References;
 use Aimeos\Cms\Resource\Support\PageRows;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -58,7 +57,7 @@ final class Publication
     /** @var array<class-string<Base>, array<string, Projection>> */
     private array $projected = [];
 
-    private References $references;
+    private PublishReferences $references;
 
     /** @var array<string, Version> */
     private array $versions = [];
@@ -70,7 +69,7 @@ final class Publication
      */
     public function __construct()
     {
-        $this->references = new References();
+        $this->references = new PublishReferences();
     }
 
 
@@ -434,32 +433,17 @@ final class Publication
      */
     private static function flags( Base $instance, bool $compact ) : array
     {
-        $db = DB::connection();
-        $table = $instance->getTable();
-        $first = fn( string $from, string $col, string $ref ) => $db->table( $from )->select( $col )->whereColumn( $col, $ref )->limit( 1 );
         $selects = [];
 
         if( !$compact && $instance instanceof PageView )
         {
-            $selects['access_count'] = $db->table( 'cms_page_access' )
+            $selects['access_count'] = DB::connection()->table( 'cms_page_access' )
                 ->selectRaw( 'count(*)' )
-                ->whereColumn( 'page_id', "{$table}.id" )
+                ->whereColumn( 'page_id', "{$instance->getTable()}.id" )
                 ->where( 'tenant_id', Tenancy::value() );
         }
 
-        $version = new Version();
-
-        foreach( References::pivots( $instance ) as $name => $relation )
-        {
-            if( !$compact ) {
-                $selects["pub_active_{$name}"] = $first( $relation->getTable(), $relation->getForeignPivotKeyName(), $relation->getQualifiedParentKeyName() );
-            }
-
-            $target = $version->{$name}();
-            $selects["pub_target_{$name}"] = $first( $target->getTable(), $target->getForeignPivotKeyName(), 'cms_latest.id' );
-        }
-
-        return $selects;
+        return $selects + PublishReferences::projections( $instance, $compact, 'cms_latest.id' );
     }
 
 
@@ -484,7 +468,7 @@ final class Publication
 
         $version = ( new Version() )->newFromBuilder( $attributes, $item->getConnectionName() );
 
-        foreach( ['active_files', 'active_elements', 'target_files', 'target_elements'] as $name )
+        foreach( PublishReferences::FLAGS as $name )
         {
             $attribute = "pub_{$name}";
 

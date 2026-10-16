@@ -5,14 +5,14 @@
  */
 
 
-namespace Aimeos\Cms\Publication;
+namespace Aimeos\Cms;
 
-use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
 
@@ -21,8 +21,13 @@ use Illuminate\Support\Collection;
  *
  * @internal
  */
-final class References
+final class PublishReferences
 {
+    /**
+     * Version attributes indicating whether active and target pivot rows exist.
+     */
+    public const FLAGS = ['active_files', 'active_elements', 'target_files', 'target_elements'];
+
     /**
      * @var array<string, array{
      *     files: array<string>,
@@ -148,6 +153,38 @@ final class References
         }
 
         return $result;
+    }
+
+
+    /**
+     * Returns the subqueries projecting the presence of active and target pivot rows.
+     *
+     * The aliases are the FLAGS prefixed by "pub_" and must be moved to the version
+     * attributes without the prefix before the versions are passed to load().
+     *
+     * @param Base $instance Model whose pivot rows are checked
+     * @param bool $compact TRUE to project the target pivots only
+     * @param string $versionKey Qualified column of the latest version ID
+     * @return array<string, Builder> Subqueries by alias
+     */
+    public static function projections( Base $instance, bool $compact, string $versionKey ) : array
+    {
+        $db = DB::connection();
+        $first = fn( string $from, string $col, string $ref ) => $db->table( $from )->select( $col )->whereColumn( $col, $ref )->limit( 1 );
+        $version = new Version();
+        $selects = [];
+
+        foreach( self::pivots( $instance ) as $name => $relation )
+        {
+            if( !$compact ) {
+                $selects["pub_active_{$name}"] = $first( $relation->getTable(), $relation->getForeignPivotKeyName(), $relation->getQualifiedParentKeyName() );
+            }
+
+            $target = $version->{$name}();
+            $selects["pub_target_{$name}"] = $first( $target->getTable(), $target->getForeignPivotKeyName(), $versionKey );
+        }
+
+        return $selects;
     }
 
 

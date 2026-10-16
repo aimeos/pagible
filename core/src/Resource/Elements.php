@@ -25,7 +25,7 @@ use Aimeos\Cms\Validation;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Aimeos\Cms\Resource\Support\Items;
-use Aimeos\Cms\Resource\Concerns\ChangesInChunks;
+use Aimeos\Cms\Concerns\ChangeChunks;
 use Aimeos\Cms\Publication;
 use Illuminate\Support\Collection;
 
@@ -45,7 +45,7 @@ use Illuminate\Support\Collection;
  */
 class Elements
 {
-    use ChangesInChunks;
+    use ChangeChunks;
 
 
     /**
@@ -240,7 +240,7 @@ class Elements
         $ids = Element::bulkIds( $ids );
         $editor = Utils::editor( $user );
 
-        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, [], function( $items ) use ( $editor ) {
+        $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, [], function( $items ) use ( $editor ) {
             // dispatched after commit
             Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
             Element::trashMany( $items, $editor );
@@ -274,7 +274,7 @@ class Elements
         $ids = Element::bulkIds( $ids );
         $editor = Utils::editor( $user );
 
-        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, [], function( $items ) {
+        $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, [], function( $items ) {
             // the references are removed with the elements, pages using trashed elements were invalidated when they were trashed
             Invalidation::refs( array_map( strval( ... ), $items->reject( fn( Element $item ) => $item->trashed() )->modelKeys() ) );
             Element::forceDeleteMany( $items );
@@ -303,7 +303,7 @@ class Elements
         $editor = Utils::editor( $user );
 
         // all columns are required to update the search index
-        $items = Scout::mute( [Element::class], fn() => $this->changeInChunks( Element::class, $ids, $fields, Element::SELECT_COLUMNS, function( $items ) use ( $editor ) {
+        $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, Element::SELECT_COLUMNS, function( $items ) use ( $editor ) {
             // dispatched after commit
             Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
             Element::restoreMany( $items, $editor );
