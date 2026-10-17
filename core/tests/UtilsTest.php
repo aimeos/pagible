@@ -181,6 +181,35 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testChain()
+    {
+        config( ['cms.locales' => []] );
+
+        $this->assertEquals( ['de'], Utils::chain( 'de' ) );
+        $this->assertEquals( ['de-CH', 'de'], Utils::chain( 'de-CH' ) );
+        $this->assertEquals( ['zh-Hant-TW', 'zh-Hant', 'zh'], Utils::chain( 'zh-Hant-TW' ) );
+        $this->assertEquals( [], Utils::chain( '' ) );
+
+        config( ['cms.translate.chains' => ['lb' => ['de', 'fr', "x'y"], 'de-CH' => []]] );
+
+        $this->assertEquals( ['lb', 'de', 'fr'], Utils::chain( 'lb' ) );
+        $this->assertEquals( ['de-CH'], Utils::chain( 'de-CH' ) );
+    }
+
+
+    public function testChainLocales()
+    {
+        // fallback languages which aren't configured are skipped, the language itself is kept
+        config( ['cms.locales' => ['en', 'de', 'zh-Hant-TW', 'zh']] );
+
+        $this->assertEquals( ['de-CH', 'de'], Utils::chain( 'de-CH' ) );
+        $this->assertEquals( ['zh-Hant-TW', 'zh'], Utils::chain( 'zh-Hant-TW' ) );
+
+        config( ['cms.translate.chains' => ['lb' => ['fr', 'de']]] );
+        $this->assertEquals( ['lb', 'de'], Utils::chain( 'lb' ) );
+    }
+
+
     public function testIsValidLang()
     {
         $this->assertTrue( Utils::isValidLang( 'de' ) );
