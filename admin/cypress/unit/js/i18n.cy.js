@@ -1,4 +1,4 @@
-import gettext, { load, match, mergeCatalog, pluginLabel, ready } from '../../../js/i18n'
+import gettext, { load, match, mergeCatalog, mergeFallback, pluginLabel, ready, typeLabel } from '../../../js/i18n'
 import { plugins } from '../../../js/config'
 
 describe('plugin translations', () => {
@@ -82,6 +82,81 @@ describe('plugin translations', () => {
     })
 
     cy.wait('@catalog')
+  })
+
+  it('merges the base theme catalog before the other themes', () => {
+    cy.intercept('GET', '/vendor/cms/aura/i18n/de.json', {
+      de: { title: { fn: 'Bezeichnung' }, profile: { st: 'Profil' } }
+    })
+    cy.intercept('GET', '/vendor/cms/theme/i18n/de.json', {
+      de: { title: { fn: 'Titel' } }
+    })
+
+    cy.then(() => {
+      plugins.i18n = {
+        aura: '/vendor/cms/aura/i18n/{locale}.json',
+        cms: '/vendor/cms/theme/i18n/{locale}.json'
+      }
+
+      return ready.then(() => load('de')).then(() => {
+        expect(gettext.$pgettext('fn', 'title')).to.equal('Titel')
+        expect(gettext.$pgettext('st', 'profile')).to.equal('Profil')
+      })
+    })
+  })
+
+  it('translates prefixed types by their unprefixed name as fallback', () => {
+    const translator = {
+      $pgettext: (context, msgid) => ({ 'st:profile': 'Profil', 'st:aura::card': 'Aura-Karte' })[`${context}:${msgid}`] || msgid
+    }
+
+    expect(typeLabel('aura::card', translator)).to.equal('Aura-Karte')
+    expect(typeLabel('aura::profile', translator)).to.equal('Profil')
+    expect(typeLabel('aura::other', translator)).to.equal('aura other')
+    expect(typeLabel('profile', translator)).to.equal('Profil')
+    expect(typeLabel('heading', translator)).to.equal('heading')
+    expect(typeLabel(undefined, translator)).to.equal('')
+  })
+
+  it('adds missing messages of the fallback language', () => {
+    const messages = {
+      Save: 'Salvar',
+      Close: { '': 'Fechar' },
+      title: { fn: 'Título' }
+    }
+    const fallback = {
+      Save: 'Guardar',
+      Close: { '': 'Fechar janela', dialog: 'Fechar diálogo' },
+      title: { fn: 'Titulo', fh: 'Título da página' },
+      Done: ['Concluído', 'Concluídos']
+    }
+
+    expect(mergeFallback(messages, fallback)).to.deep.equal({
+      Save: 'Salvar',
+      Close: { '': 'Fechar', dialog: 'Fechar diálogo' },
+      title: { fn: 'Título', fh: 'Título da página' },
+      Done: ['Concluído', 'Concluídos']
+    })
+    expect(messages.title).to.deep.equal({ fn: 'Título' })
+  })
+
+  it('uses the base language catalogs for missing regional messages', () => {
+    cy.intercept('GET', '/vendor/cms/fallback/i18n/pt-BR.json', {
+      'pt-BR': { title: { fn: 'Título' } }
+    })
+    cy.intercept('GET', '/vendor/cms/fallback/i18n/pt.json', {
+      pt: { title: { fn: 'Titulo PT' }, gallery: { fn: 'Galeria' } }
+    })
+
+    cy.then(() => {
+      plugins.i18n = { fallback: '/vendor/cms/fallback/i18n/{locale}.json' }
+
+      return ready.then(() => load('pt-BR')).then(() => {
+        expect(gettext.current).to.equal('pt-BR')
+        expect(gettext.$pgettext('fn', 'title')).to.equal('Título')
+        expect(gettext.$pgettext('fn', 'gallery')).to.equal('Galeria')
+      })
+    })
   })
 
   it('caches catalogs and applies only the latest language request', () => {

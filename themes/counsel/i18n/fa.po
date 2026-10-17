@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+
+#. config.firm
+#: schema.json
+msgctxt "st"
+msgid "counsel::firm"
+msgstr "دفتر حقوقی"
+
+#. config.firm.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the law firm"
+msgstr "نام شرکت حقوقی"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Firm type"
+msgstr "نوع دفتر حقوقی"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of legal practice shown to search engines"
+msgstr "نوعی از وکالت حقوقی که به موتورهای جستجو نمایش داده می‌شود"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Law firm"
+msgstr "دفتر حقوقی"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Attorney"
+msgstr "وکیل"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Notary"
+msgstr "دفتر اسناد رسمی"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other legal service"
+msgstr "سایر خدمات حقوقی"
+
+#. config.firm.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "آدرس خیابان"
+
+#. config.firm.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "شماره خیابان و خانه"
+
+#. config.firm.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "کد پستی"
+
+#. config.firm.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the office"
+msgstr "کد پستی اداره"
+
+#. config.firm.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "شهر"
+
+#. config.firm.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the office is located in"
+msgstr "شهری که دفتر در آن واقع شده است"
+
+#. config.firm.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "کد کشور"
+
+#. config.firm.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "کد کشور ایزو دو حرفی، مانند DE یا US"
+
+#. config.firm.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "تلفن"
+
+#. config.firm.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "شماره تلفن به فرمت بین‌المللی، که همچنین توسط دکمه تماس استفاده می‌شود"
+
+#. config.firm.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "ایمیل"
+
+#. config.firm.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for consultation requests"
+msgstr "آدرس ایمیل برای درخواست‌های مشاوره"
+
+#. config.firm.hotline
+#: schema.json
+msgctxt "fn"
+msgid "Hotline"
+msgstr "خط تماس فوری"
+
+#. config.firm.hotline
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for urgent legal matters, e.g. arrests or searches, shown at the top of every page"
+msgstr "شماره تلفن برای امور حقوقی فوری، مانند بازداشت یا تفتیش، در بالای هر صفحه نمایش داده می‌شود."
+
+#. config.firm.consultation
+#: schema.json
+msgctxt "fn"
+msgid "Consultation link"
+msgstr "لینک مشاوره"
+
+#. config.firm.consultation
+#: schema.json
+msgctxt "fh"
+msgid "Link to the contact page or online scheduling, shown as a button in the header"
+msgstr "لینک به صفحه تماس یا برنامه‌ریزی آنلاین، که به صورت یک دکمه در هدر نمایش داده می‌شود."
+
+#. config.firm.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "زبان‌ها"
+
+#. config.firm.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken by the attorneys, e.g. English, German, French"
+msgstr "فهرست کاما‌جدای‌شده زبان‌های مورد استفاده وکلای دادگستری، مانند انگلیسی، آلمانی، فرانسوی"
+
+#. config.firm.practice-areas
+#: schema.json
+msgctxt "fn"
+msgid "Practice areas"
+msgstr "حوزه‌های فعالیت"
+
+#. config.firm.practice-areas
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the practice areas, e.g. Employment law, Family law, Real estate law"
+msgstr "فهرست حوزه‌های تخصصی جداشده با ویرگول، مانند: حقوق کار، حقوق خانواده، حقوق املاک و مستغلات"
+
+#. config.firm.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "محدوده قیمت"
+
+#. config.firm.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Fee level of the firm, e.g. $$ or €€"
+msgstr "سطح دستمزد شرکت، مثلاً $$ یا €€"
+
+#. config.firm.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "نوار دکمه‌های سریع"
+
+#. config.firm.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show call and consultation buttons at the bottom of the screen on phones"
+msgstr "در گوشی‌ها، دکمه‌های تماس و مشاوره را در پایین صفحه نمایش دهید."
+
+#. config.firm.disclaimer
+#: schema.json
+msgctxt "fn"
+msgid "Disclaimer"
+msgstr "سلب مسئولیت"
+
+#. config.firm.disclaimer
+#: schema.json
+msgctxt "fh"
+msgid "Legal notice shown at the bottom of every page, e.g. that the website is no legal advice"
+msgstr "اخطار حقوقی که در پایین هر صفحه نمایش داده می‌شود، برای مثال اینکه این وب‌سایت مشاوره حقوقی ارائه نمی‌دهد."
+
+#. config.firm.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "ساعات اداری"
+
+#. config.firm.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week"
+msgstr "ساعات اداری برای هر روز هفته"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "روز"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "روز هفته"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "دوشنبه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "سه‌شنبه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "چهارشنبه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "پنجشنبه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "جمعه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "شنبه"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "یکشنبه"
+
+#. config.firm.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ساعت باز شدن"
+
+#. config.firm.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "زمان باز شدن به فرمت 24 ساعته، مثلاً 07:30"
+
+#. config.firm.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ساعت بسته شدن"
+
+#. config.firm.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "زمان پایان به فرمت 24 ساعته، مثلاً 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "counsel::theme"
+msgstr "پوسته"

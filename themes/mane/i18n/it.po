@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: it\n"
+
+#. config.salon
+#: schema.json
+msgctxt "st"
+msgid "mane::salon"
+msgstr "Salone"
+
+#. config.salon.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the salon, studio or barbershop"
+msgstr "Nome del salone, dello studio o del barbiere"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tipo di attività"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tipo di attività mostrato ai motori di ricerca"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Hair salon"
+msgstr "Parrucchiere"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Barbershop"
+msgstr "Barbiere"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Beauty salon"
+msgstr "Centro estetico"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Day spa"
+msgstr "Day spa"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Altra attività"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Via e numero civico"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Via e numero civico"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "CAP"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the salon"
+msgstr "CAP del salone"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Città"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the salon is located in"
+msgstr "Città in cui si trova il salone"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Codice paese"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Codice paese ISO a due lettere, ad es. DE o US"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefono"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Numero di telefono in formato internazionale, usato anche dal pulsante di chiamata"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, gift cards and press"
+msgstr "Indirizzo email per appuntamenti, buoni regalo e stampa"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Annuncio"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. New clients get a free consultation"
+msgstr "Breve nota in cima a ogni pagina, ad es. Consulenza gratuita per i nuovi clienti"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Link di prenotazione"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment booking page, shown as a button in the header"
+msgstr "Link alla pagina di prenotazione degli appuntamenti, mostrato come pulsante nell’intestazione"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Link al listino prezzi"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Link alla pagina con servizi e prezzi"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Fascia di prezzo"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the salon, e.g. $$ or €€"
+msgstr "Fascia di prezzo del salone, ad es. $$ o €€"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Avviso"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
+msgstr "Breve nota nel piè di pagina, ad es. Si prega di disdire almeno 24 ore prima dell’appuntamento."
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Barra delle azioni"
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Mostra i pulsanti per chiamare e prenotare in fondo allo schermo sui telefoni"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Orari di apertura"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Orari di apertura per ogni giorno della settimana, mostrati nel piè di pagina"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Giorno"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Giorno della settimana"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Lunedì"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Martedì"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Mercoledì"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Giovedì"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Venerdì"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sabato"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Domenica"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Orario di apertura"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 09:00"
+msgstr "Orario di apertura nel formato 24 ore, ad es. 09:00"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Orario di chiusura"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 19:00"
+msgstr "Orario di chiusura nel formato 24 ore, ad es. 19:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "mane::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Arrotondamento degli angoli come lunghezza CSS, ad esempio 1rem o 0 per angoli a spigolo vivo"

@@ -6,6 +6,7 @@ import ActionMenu from './ActionMenu.vue'
 import Fields from './Fields.vue'
 import { useDrawerStore, useSchemaStore } from '../stores'
 import { clone } from '../utils'
+import { typeLabel } from '../i18n'
 import {
   mdiCellphone,
   mdiClose,
@@ -81,6 +82,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     change() {
       this.modified = this.differs()
       this.element._changed = true
@@ -232,7 +237,7 @@ export default {
       </ActionMenu>
     </v-toolbar>
     <div class="element-info">
-      <span class="element-type">{{ $pgettext('st', element.type).replace('::', ' ') }}</span>
+      <span class="element-type">{{ typeLabel(element.type) }}</span>
       <v-spacer />
       <template v-if="actions && !readonly">
         <v-btn

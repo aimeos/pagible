@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+#. config.garage
+#: schema.json
+msgctxt "st"
+msgid "torque::garage"
+msgstr "Qaraj"
+
+#. config.garage.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the garage, workshop or dealership"
+msgstr "Qarajın, emalatxananın və ya dilerlik mərkəzinin adı"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Biznes növü"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Axtarış sistemlərinə göstərilən biznes növü"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car repair shop"
+msgstr "Avtomobil təmiri emalatxanası"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car dealer"
+msgstr "Avtomobil dileri"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Body shop"
+msgstr "Kuzov təmiri sexi"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Tyre shop"
+msgstr "Təkər mağazası"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Motorcycle repair"
+msgstr "Motosiklet təmiri"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other automotive business"
+msgstr "Digər avtomobil biznesi"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Küçə ünvanı"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Küçə və ev nömrəsi"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Poçt indeksi"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the garage"
+msgstr "Qarajın poçt indeksi"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Şəhər"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the garage is located in"
+msgstr "Qarajın yerləşdiyi şəhər"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Ölkə kodu"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "ISO ölkə kodu üçün iki hərfli kod, məsələn DE və ya US"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "telefon"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Beynəlxalq formatda telefon nömrəsi, zəng düyməsi üçün də istifadə olunur"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fn"
+msgid "Breakdown service"
+msgstr "Yol yardımı xidməti"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fh"
+msgid "Phone number of the breakdown and towing service, shown in the top bar"
+msgstr "Yol kənarı yardım və çəkmə xidməti telefon nömrəsi yuxarı panelde göstərilir."
+
+#. config.garage.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "e-poçt"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, quotes and vehicle enquiries"
+msgstr "Görüşlər, qiymət təklifləri və nəqliyyat vasitələri ilə bağlı sorğular üçün e-poçt ünvanı"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Elan"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Winter tyre season: book your tyre change now"
+msgstr "Hər səhifənin yuxarısında göstərilən qısa qeyd, məsələn: Qış təkərləri mövsümü: təkər dəyişimini indi sifariş edin"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervasiya linki"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the service booking page, shown as a button in the header"
+msgstr "Xidmət rezervasiyası səhifəsinə keçid, başlıqdakı düymə şəklində göstərilir"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Qiymət siyahısı linki"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Xidmətlər və qiymətlər səhifəsinə keçid"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Qiymət diapazonu"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the garage, e.g. $$ or €€"
+msgstr "Qarajın qiymət səviyyəsi, məsələn $$ və ya €€"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Bildiriş"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
+msgstr "Ayaqnotda göstərilən qısa qeyd, məsələn: Bütün təmir işləri hissələrə və əməyə görə 24 aylıq zəmanətlə təmin olunur."
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Fəaliyyət paneli"
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Telefonlarda ekranın aşağı hissəsində zəng və rezervasiya düymələrini göstərin"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "İş saatları"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Həftənin hər günü üçün açılış saatları, səhifənin alt hissəsində göstərilir."
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "gün"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Həftənin günü"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Bazar ertəsi"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Çərşənbə axşamı"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Çərşənbə"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Cümə axşamı"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Cümə"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Şənbə"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Bazar"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "açılma vaxtı"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Açılış vaxtı 24 saatlıq formatda, məsələn, 07:30"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "bağlanma vaxtı"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "24 saatlıq formatda bağlanma vaxtı, məsələn, 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "torque::theme"
+msgstr "Mövzu"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Künclərin yuvarlaşdırılması CSS uzunluğu kimi, məsələn, kəskin künclər üçün 1rem və ya 0"

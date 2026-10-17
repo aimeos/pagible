@@ -14,6 +14,10 @@ class LuxuryServiceProvider extends Provider
         Schema::register( $basedir, 'luxury' );
         View::addNamespace( 'luxury', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'luxury', '/vendor/cms/luxury/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/luxury' )], 'cms-theme' );
     }
 }

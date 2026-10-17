@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: et\n"
+
+#. config.cafe
+#: schema.json
+msgctxt "st"
+msgid "brew::cafe"
+msgstr "Kohvik"
+
+#. config.cafe.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the café, roastery or bakery"
+msgstr "Kohviku, kohvirösteri või pagariäri nimi"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tegevusala"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tegevusala, mida näidatakse otsingumootoritele"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Café or coffee shop"
+msgstr "Kohvik"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bakery"
+msgstr "Pagariäri"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Restoran"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business, e.g. roastery"
+msgstr "Muu ettevõte, nt kohvirösteri"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Aadress"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Tänav ja maja number"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postiindeks"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the café"
+msgstr "Kohviku postiindeks"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Linn"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the café is located in"
+msgstr "Linn, kus kohvik asub"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Riigikood"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Kahetäheline ISO riigikood, nt DE või US"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefoninumber rahvusvahelises vormingus, kasutatakse ka helistamisnupu jaoks"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-post"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for questions, catering and wholesale requests"
+msgstr "E-posti aadress küsimuste, toitlustuse ja hulgimüügi päringute jaoks"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Teadaanne"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Freshly roasted every Tuesday"
+msgstr "Lühike teade iga lehe ülaosas, nt Värskelt röstitud igal teisipäeval"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fn"
+msgid "Order link"
+msgstr "Tellimise link"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fh"
+msgid "Link to the online shop or order ahead page, shown as a button in the header"
+msgstr "Link e-poele või ettetellimise lehele, kuvatakse päises nupuna"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Menüü link"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the food and drinks menu"
+msgstr "Link toidu- ja joogimenüü lehele"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Köök"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
+msgstr "Komadega eraldatud loend sellest, mida pakute, nt Eripärakohv, Pagaritooted, Hommikusöök"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Hinnaklass"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the café, e.g. $ or €€"
+msgstr "Kohviku hinnatase, nt $ või €€"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Tegevusriba"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and order buttons at the bottom of the screen on phones"
+msgstr "Näita telefonides ekraani allservas helistamise ja tellimise nuppe"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Lahtiolekuajad"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Lahtiolekuajad iga nädalapäeva kohta, kuvatakse jaluses"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Päev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Nädalapäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Esmaspäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Teisipäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Kolmapäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Neljapäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Reede"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Laupäev"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Pühapäev"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Avamisaeg"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Avamisaeg 24-tunnises formaadis, nt 07:30"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Sulgemisaeg"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Sulgemisaeg 24-tunnises formaadis, nt 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "brew::theme"
+msgstr "Teema"

@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nl\n"
+
+#. config.garage
+#: schema.json
+msgctxt "st"
+msgid "torque::garage"
+msgstr "Garage"
+
+#. config.garage.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the garage, workshop or dealership"
+msgstr "Naam van de garage, werkplaats of autodealer"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Soort bedrijf"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Soort bedrijf dat aan zoekmachines wordt getoond"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car repair shop"
+msgstr "Autoreparatiebedrijf"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car dealer"
+msgstr "Autodealer"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Body shop"
+msgstr "Schadeherstelbedrijf"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Tyre shop"
+msgstr "Bandenservice"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Motorcycle repair"
+msgstr "Motorreparatie"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other automotive business"
+msgstr "Ander autobedrijf"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Straat en huisnummer"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Straat en huisnummer"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postcode"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the garage"
+msgstr "Postcode van de garage"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Stad"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the garage is located in"
+msgstr "Plaats waar de garage gevestigd is"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Landcode"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Tweeletterige ISO-landcode, bijv. DE of US"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefoon"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefoonnummer in internationaal formaat, ook gebruikt voor de belknop"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fn"
+msgid "Breakdown service"
+msgstr "Pechhulp"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fh"
+msgid "Phone number of the breakdown and towing service, shown in the top bar"
+msgstr "Telefoonnummer van de pechhulp- en sleepdienst, getoond in de bovenste balk"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-mail"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, quotes and vehicle enquiries"
+msgstr "E-mailadres voor afspraken, offertes en vragen over voertuigen"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Aankondiging"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Winter tyre season: book your tyre change now"
+msgstr "Korte melding bovenaan elke pagina, bijv. Winterbandenseizoen: plan nu je bandenwissel"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Reserveringslink"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the service booking page, shown as a button in the header"
+msgstr "Link naar de pagina voor het inplannen van onderhoud, getoond als knop in de header"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Link naar de prijslijst"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Link naar de pagina met diensten en prijzen"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Prijsklasse"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the garage, e.g. $$ or €€"
+msgstr "Prijsniveau van de garage, bijv. $$ of €€"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Mededeling"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
+msgstr "Korte melding in de footer, bijv. Op alle reparaties krijg je 24 maanden garantie op onderdelen en arbeid."
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Actiebalk"
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Bel- en afspraakknoppen onderaan het scherm tonen op telefoons"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Openingstijden"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Openingstijden voor elke dag van de week, getoond in de footer"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Dag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Dag van de week"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Maandag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Dinsdag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Woensdag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Donderdag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Vrijdag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Zaterdag"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Zondag"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Openingstijd"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Openingstijd in 24-uursnotatie, bijv. 07:30"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Sluitingstijd"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "Sluitingstijd in 24-uursnotatie, bijv. 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "torque::theme"
+msgstr "Thema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Afronding van hoeken als CSS-lengte, bijv. 1rem of 0 voor scherpe hoeken"

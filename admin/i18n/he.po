@@ -1,16 +1,16 @@
 msgid ""
 msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: he\n"
+"Language-Team: none\n"
+"Last-Translator: Automatically generated\n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
-"Language: he\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: js/ai.js:64
 msgid "Error transcribing file"
@@ -76,7 +76,8 @@ msgstr "הכרטיסייה הבאה"
 msgid "Show or hide side panel"
 msgstr "הצג או הסתר את הלוח הצדדי"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:160
+#: js/commands.js:115
+#: js/components/DetailAppBar.vue:160
 msgid "Back to list view"
 msgstr "חזרה לתצוגת רשימה"
 
@@ -104,9 +105,12 @@ msgstr "גזור דף"
 msgid "Paste page"
 msgstr "הדבק דף"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:106
-#: js/components/DetailRefs.vue:128 js/components/Navigation.vue:30
-#: js/views/PageList.vue:242 js/views/PageList.vue:259
+#: js/commands.js:178
+#: js/components/CommandPalette.vue:106
+#: js/components/DetailRefs.vue:128
+#: js/components/Navigation.vue:30
+#: js/views/PageList.vue:267
+#: js/views/PageList.vue:284
 msgid "Pages"
 msgstr "דפים"
 
@@ -114,10 +118,14 @@ msgstr "דפים"
 msgid "Go to pages"
 msgstr "עבור לדפים"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:298
-#: js/components/HistoryDialog.vue:300 js/components/Navigation.vue:31
-#: js/views/FileList.vue:51 js/views/FileList.vue:68
+#: js/commands.js:184
+#: js/components/CommandPalette.vue:107
+#: js/components/FileDialog.vue:25
+#: js/components/HistoryDialog.vue:303
+#: js/components/HistoryDialog.vue:305
+#: js/components/Navigation.vue:31
+#: js/views/FileList.vue:51
+#: js/views/FileList.vue:68
 msgid "Media"
 msgstr "מדיה"
 
@@ -125,8 +133,10 @@ msgstr "מדיה"
 msgid "Go to media"
 msgstr "עבור למדיה"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32 js/components/SchemaDialog.vue:48
+#: js/commands.js:190
+#: js/components/CommandPalette.vue:108
+#: js/components/Navigation.vue:32
+#: js/components/SchemaDialog.vue:48
 #: js/views/ElementList.vue:51
 msgid "Shared elements"
 msgstr "אלמנטים משותפים"
@@ -135,7 +145,8 @@ msgstr "אלמנטים משותפים"
 msgid "Go to shared elements"
 msgstr "עבור לאלמנטים משותפים"
 
-#: js/commands.js:196 js/components/Navigation.vue:33
+#: js/commands.js:196
+#: js/components/Navigation.vue:33
 #: js/views/AccessList.vue:253
 msgid "Users"
 msgstr "משתמשים"
@@ -164,7 +175,8 @@ msgstr "המשתמש נוצר"
 msgid "Error creating user"
 msgstr "שגיאה ביצירת המשתמש"
 
-#: js/components/AccessUsers.vue:306 js/components/PageAccess.vue:123
+#: js/components/AccessUsers.vue:306
+#: js/components/PageAccess.vue:123
 #: js/views/AccessList.vue:142
 msgid "Error fetching access roles"
 msgstr "שגיאה באחזור תפקידי הגישה"
@@ -173,7 +185,8 @@ msgstr "שגיאה באחזור תפקידי הגישה"
 msgid "Error fetching user access roles"
 msgstr "שגיאה באחזור תפקידי הגישה של המשתמש"
 
-#: js/components/AccessUsers.vue:379 js/components/AccessUsers.vue:380
+#: js/components/AccessUsers.vue:379
+#: js/components/AccessUsers.vue:380
 msgid "Create user"
 msgstr "יצירת משתמש"
 
@@ -185,11 +198,13 @@ msgstr "כתובת דוא״ל"
 msgid "Search user by email"
 msgstr "חיפוש משתמש לפי כתובת דוא״ל"
 
-#: js/components/AccessUsers.vue:408 js/components/AccessUsers.vue:409
+#: js/components/AccessUsers.vue:408
+#: js/components/AccessUsers.vue:409
 msgid "Search"
 msgstr "חיפוש"
 
-#: js/components/AccessUsers.vue:424 js/components/AccessUsers.vue:425
+#: js/components/AccessUsers.vue:424
+#: js/components/AccessUsers.vue:425
 #: js/components/DetailAppBar.vue:194
 msgid "Save"
 msgstr "שמור"
@@ -198,7 +213,8 @@ msgstr "שמור"
 msgid "Account"
 msgstr "חשבון"
 
-#: js/components/AccessUsers.vue:439 js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:439
+#: js/components/AccessUsers.vue:446
 msgid "Assigned frontend roles"
 msgstr "תפקידים שהוקצו באתר"
 
@@ -222,21 +238,25 @@ msgstr "תפקידים זמינים"
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "תפקידים שמגדירים מה המשתמש יכול לעשות בפאנל הניהול"
 
-#: js/components/AccessUsers.vue:481 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:191 js/views/AccessList.vue:325
+#: js/components/AccessUsers.vue:481
+#: js/components/ListStatus.vue:36
+#: js/components/SchemaItems.vue:196
+#: js/views/AccessList.vue:325
 msgid "No entries found"
 msgstr "לא נמצאו רשומות"
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:104
+#: js/components/ActionMenu.vue:25
+#: js/components/CommandPalette.vue:104
 msgid "Actions"
 msgstr "פעולות"
 
-#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:178
+#: js/components/ActionMenu.vue:60
+#: js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:183
 msgid "Close"
 msgstr "סגור"
 
-#: js/components/AsideCount.vue:41
+#: js/components/AsideCount.vue:46
 msgid "Used elements"
 msgstr "אלמנטים בשימוש"
 
@@ -244,21 +264,27 @@ msgstr "אלמנטים בשימוש"
 msgid "Filters"
 msgstr "מסננים"
 
-#: js/components/AsideList.vue:76 js/components/ListStatus.vue:43
+#: js/components/AsideList.vue:76
+#: js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "איפוס"
 
-#: js/components/AsideMeta.vue:21 js/components/DetailRefs.vue:133
-#: js/components/DetailRefs.vue:163 js/components/DetailRefs.vue:185
+#: js/components/AsideMeta.vue:21
+#: js/components/DetailRefs.vue:133
+#: js/components/DetailRefs.vue:163
+#: js/components/DetailRefs.vue:185
 msgid "ID"
 msgstr "ID"
 
-#: js/components/AsideMeta.vue:25 js/components/ListSort.vue:31
+#: js/components/AsideMeta.vue:25
+#: js/components/ListSort.vue:31
 #: js/fields/File.vue:340
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:29 js/fields/File.vue:341 js/listview.js:122
+#: js/components/AsideMeta.vue:29
+#: js/fields/File.vue:341
+#: js/listview.js:122
 msgid "editor"
 msgstr "עורך"
 
@@ -266,7 +292,8 @@ msgstr "עורך"
 msgid "created"
 msgstr "נוצר"
 
-#: js/components/AsideMeta.vue:34 js/fields/File.vue:342
+#: js/components/AsideMeta.vue:34
+#: js/fields/File.vue:342
 msgid "updated"
 msgstr "עודכן"
 
@@ -274,63 +301,69 @@ msgstr "עודכן"
 msgid "deleted"
 msgstr "נמחק"
 
-#: js/components/AsideMeta.vue:51 js/components/AsideMeta.vue:53
-#: js/components/HistoryDialog.vue:40
+#: js/components/AsideMeta.vue:51
+#: js/components/AsideMeta.vue:53
+#: js/components/HistoryDialog.vue:41
 msgid "Meta data"
 msgstr "מטא-נתונים"
 
-#: js/components/ChangesDialog.vue:57 js/components/ChangesDialog.vue:58
-#: js/components/HistoryDialog.vue:40
+#: js/components/ChangesDialog.vue:58
+#: js/components/ChangesDialog.vue:59
+#: js/components/HistoryDialog.vue:41
 msgid "Fields"
 msgstr "שדות"
 
-#: js/components/ChangesDialog.vue:59
+#: js/components/ChangesDialog.vue:60
 msgid "Meta tags"
 msgstr "תגי מטא"
 
-#: js/components/ChangesDialog.vue:60 js/components/HistoryDialog.vue:41
+#: js/components/ChangesDialog.vue:61
+#: js/components/HistoryDialog.vue:42
 msgid "Configuration"
 msgstr "הגדרות"
 
-#: js/components/ChangesDialog.vue:61 js/components/HistoryDialog.vue:41
-#: js/views/PageDetail.vue:823
+#: js/components/ChangesDialog.vue:62
+#: js/components/HistoryDialog.vue:42
+#: js/views/PageDetail.vue:821
 msgid "Content"
 msgstr "תוכן"
 
-#: js/components/ChangesDialog.vue:247
+#: js/components/ChangesDialog.vue:252
 msgid "Conflicts from %{editor}"
 msgstr "התנגשויות מאת %{editor}"
 
-#: js/components/ChangesDialog.vue:253
+#: js/components/ChangesDialog.vue:258
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:275 js/components/Fields.vue:286
-#: js/components/Fields.vue:319 js/components/FieldsAside.vue:248
+#: js/components/ChangesDialog.vue:280
+#: js/components/Fields.vue:286
+#: js/components/Fields.vue:319
+#: js/components/FieldsAside.vue:253
 msgid "Revert"
 msgstr "החזר"
 
-#: js/components/ChangesDialog.vue:278
+#: js/components/ChangesDialog.vue:283
 msgid "Changes"
 msgstr "שינויים"
 
-#: js/components/ChangesDialog.vue:297
+#: js/components/ChangesDialog.vue:302
 msgid "Removed"
 msgstr "הוסר"
 
-#: js/components/ChangesDialog.vue:304
+#: js/components/ChangesDialog.vue:309
 msgid "Added"
 msgstr "נוסף"
 
-#: js/components/ChangesDialog.vue:324
+#: js/components/ChangesDialog.vue:329
 msgid "Use theirs"
 msgstr "השתמש בשלהם"
 
-#: js/components/ChangesDialog.vue:330
+#: js/components/ChangesDialog.vue:335
 msgid "Keep mine"
 msgstr "שמור את שלי"
 
-#: js/components/ChangesDialog.vue:337
+#: js/components/ChangesDialog.vue:342
 msgid "Merge both"
 msgstr "מזג את שניהם"
 
@@ -346,12 +379,15 @@ msgstr "מצטערים, משהו השתבש."
 msgid "AI Assistant"
 msgstr "עוזר בינה מלאכותית"
 
-#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
+#: js/components/ChatDialog.vue:318
+#: js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "צ'אט חדש"
 
-#: js/components/ChatDialog.vue:330 js/views/ElementList.vue:74
-#: js/views/FileList.vue:74 js/views/PageList.vue:265
+#: js/components/ChatDialog.vue:330
+#: js/views/ElementList.vue:74
+#: js/views/FileList.vue:74
+#: js/views/PageList.vue:290
 msgid "What shall I do for you?"
 msgstr "מה אוכל לעשות עבורך?"
 
@@ -359,9 +395,11 @@ msgstr "מה אוכל לעשות עבורך?"
 msgid "Thinking ..."
 msgstr "חושב ..."
 
-#: js/components/ChatDialog.vue:353 js/components/PageDetailContentList.vue:745
-#: js/components/PageDetailContentList.vue:831
-#: js/components/PageListItems.vue:1813 js/fields/Items.vue:303
+#: js/components/ChatDialog.vue:353
+#: js/components/PageDetailContentList.vue:750
+#: js/components/PageDetailContentList.vue:836
+#: js/components/PageListItems.vue:1793
+#: js/fields/Items.vue:303
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "העתק"
@@ -370,21 +408,28 @@ msgstr "העתק"
 msgid "Send a message ..."
 msgstr "שלח הודעה..."
 
-#: js/components/ChatDialog.vue:382 js/components/ChatDialog.vue:383
-#: js/components/Fields.vue:279 js/components/FileAiDialog.vue:200
+#: js/components/ChatDialog.vue:382
+#: js/components/ChatDialog.vue:383
+#: js/components/Fields.vue:279
+#: js/components/FileAiDialog.vue:200
 #: js/components/FileDetailItem.vue:416
-#: js/components/PageDetailContentList.vue:716 js/fields/Items.vue:372
-#: js/views/ElementList.vue:107 js/views/FileList.vue:107
-#: js/views/PageList.vue:298
+#: js/components/PageDetailContentList.vue:721
+#: js/fields/Items.vue:372
+#: js/views/ElementList.vue:107
+#: js/views/FileList.vue:107
+#: js/views/PageList.vue:323
 msgid "Dictate"
 msgstr "הכתבה"
 
-#: js/components/ChatDialog.vue:393 js/components/ChatDialog.vue:394
+#: js/components/ChatDialog.vue:393
+#: js/components/ChatDialog.vue:394
 msgid "Stop"
 msgstr "עצור"
 
-#: js/components/ChatDialog.vue:403 js/components/ChatDialog.vue:404
-#: js/views/ElementList.vue:100 js/views/FileList.vue:100
+#: js/components/ChatDialog.vue:403
+#: js/components/ChatDialog.vue:404
+#: js/views/ElementList.vue:100
+#: js/views/FileList.vue:100
 msgid "Send"
 msgstr "שלח"
 
@@ -392,13 +437,17 @@ msgstr "שלח"
 msgid "Go to"
 msgstr "מעבר אל"
 
-#: js/components/CommandPalette.vue:226 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352 js/components/PageListItems.vue:1927
+#: js/components/CommandPalette.vue:226
+#: js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:352
+#: js/components/PageListItems.vue:1907
 msgid "New"
 msgstr "חדש"
 
-#: js/components/CommandPalette.vue:280 js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:77 js/components/ShortcutDialog.vue:38
+#: js/components/CommandPalette.vue:280
+#: js/components/CommandPalette.vue:303
+#: js/components/Navigation.vue:77
+#: js/components/ShortcutDialog.vue:38
 msgid "Commands"
 msgstr "פקודות"
 
@@ -410,7 +459,8 @@ msgstr "הקלד פקודה או חפש דפים, קבצים ואלמנטים"
 msgid "Command or search term"
 msgstr "פקודה או מונח חיפוש"
 
-#: js/components/CommandPalette.vue:322 js/components/ShortcutDialog.vue:98
+#: js/components/CommandPalette.vue:322
+#: js/components/ShortcutDialog.vue:98
 msgid "then"
 msgstr "ואז"
 
@@ -422,31 +472,38 @@ msgstr "החיפוש נכשל, נסה שוב"
 msgid "No results"
 msgstr "אין תוצאות"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ConfirmDialog.vue:23
+#: js/components/ConfirmDialog.vue:57
 #: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335 js/components/FileListItems.vue:309
-#: js/components/FileListItems.vue:457 js/components/PageListItems.vue:1599
-#: js/components/PageListItems.vue:1841 js/views/AccessList.vue:279
+#: js/components/ElementListItems.vue:335
+#: js/components/FileListItems.vue:314
+#: js/components/FileListItems.vue:462
+#: js/components/PageListItems.vue:1579
+#: js/components/PageListItems.vue:1821
+#: js/views/AccessList.vue:279
 msgid "Purge"
 msgstr "מחיקה לצמיתות"
 
 #: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
-msgid_plural ""
-"The following %{num} entries will be permanently deleted and cannot be "
-"restored:"
+msgid_plural "The following %{num} entries will be permanently deleted and cannot be restored:"
 msgstr[0] "הרשומה הבאה תימחק לצמיתות ולא ניתן יהיה לשחזר אותה:"
 msgstr[1] "%{num} הרשומות הבאות יימחקו לצמיתות ולא ניתן יהיה לשחזר אותן:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:597
-#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
+#: js/components/ConfirmDialog.vue:55
+#: js/components/FileDetailItemImage.vue:597
+#: js/components/TranslateDialog.vue:99
+#: js/components/UnsavedDialog.vue:56
 #: js/views/AccessList.vue:346
 msgid "Cancel"
 msgstr "ביטול"
 
-#: js/components/DetailAppBar.vue:156 js/views/AccessList.vue:231
-#: js/views/ElementList.vue:41 js/views/FileList.vue:41
-#: js/views/PageList.vue:232 js/views/PluginPanel.vue:66
+#: js/components/DetailAppBar.vue:156
+#: js/views/AccessList.vue:231
+#: js/views/ElementList.vue:41
+#: js/views/FileList.vue:41
+#: js/views/PageList.vue:257
+#: js/views/PluginPanel.vue:66
 msgid "Menu"
 msgstr "תפריט"
 
@@ -458,11 +515,15 @@ msgstr "הצג היסטוריה"
 msgid "View merge changes"
 msgstr "הצג שינויים במיזוג"
 
-#: js/components/DetailAppBar.vue:210 js/components/DetailAppBar.vue:226
-#: js/components/DetailAppBar.vue:230 js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304 js/components/FileListItems.vue:287
-#: js/components/FileListItems.vue:422 js/components/PageListItems.vue:1571
-#: js/components/PageListItems.vue:1777
+#: js/components/DetailAppBar.vue:210
+#: js/components/DetailAppBar.vue:226
+#: js/components/DetailAppBar.vue:230
+#: js/components/ElementListItems.vue:214
+#: js/components/ElementListItems.vue:304
+#: js/components/FileListItems.vue:292
+#: js/components/FileListItems.vue:427
+#: js/components/PageListItems.vue:1551
+#: js/components/PageListItems.vue:1757
 msgid "Publish"
 msgstr "פרסם"
 
@@ -470,7 +531,8 @@ msgstr "פרסם"
 msgid "Publish & Close"
 msgstr "פרסם וסגור"
 
-#: js/components/DetailAppBar.vue:238 js/components/DetailAppBar.vue:264
+#: js/components/DetailAppBar.vue:238
+#: js/components/DetailAppBar.vue:264
 msgid "Schedule"
 msgstr "תזמון"
 
@@ -478,8 +540,10 @@ msgstr "תזמון"
 msgid "Schedule & Close"
 msgstr "תזמן וסגור"
 
-#: js/components/DetailAppBar.vue:281 js/views/ElementList.vue:59
-#: js/views/FileList.vue:59 js/views/PageList.vue:250
+#: js/components/DetailAppBar.vue:281
+#: js/views/ElementList.vue:59
+#: js/views/FileList.vue:59
+#: js/views/PageList.vue:275
 #: js/views/PluginPanel.vue:83
 msgid "Toggle side menu"
 msgstr "הצג/הסתר תפריט צד"
@@ -492,26 +556,32 @@ msgstr "כן"
 msgid "no"
 msgstr "לא"
 
-#: js/components/DetailRefs.vue:134 js/components/FileUrlDialog.vue:219
+#: js/components/DetailRefs.vue:134
+#: js/components/FileUrlDialog.vue:219
 msgid "URL"
 msgstr "כתובת URL"
 
-#: js/components/DetailRefs.vue:135 js/components/DetailRefs.vue:165
-#: js/components/ElementDetailItem.vue:66 js/components/FileDetailItem.vue:326
+#: js/components/DetailRefs.vue:135
+#: js/components/DetailRefs.vue:165
+#: js/components/ElementDetailItem.vue:66
+#: js/components/FileDetailItem.vue:326
 #: js/components/ListSort.vue:32
 msgid "Name"
 msgstr "שם"
 
-#: js/components/DetailRefs.vue:147 js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:489
+#: js/components/DetailRefs.vue:147
+#: js/components/PageAccess.vue:176
+#: js/components/PageListItems.vue:475
 msgid "Restricted"
 msgstr "מוגבל"
 
-#: js/components/DetailRefs.vue:158 js/views/ElementList.vue:68
+#: js/components/DetailRefs.vue:158
+#: js/views/ElementList.vue:68
 msgid "Elements"
 msgstr "אלמנטים"
 
-#: js/components/DetailRefs.vue:164 js/components/DetailRefs.vue:186
+#: js/components/DetailRefs.vue:164
+#: js/components/DetailRefs.vue:186
 #: js/components/ListSort.vue:37
 msgid "Type"
 msgstr "סוג"
@@ -520,14 +590,19 @@ msgstr "סוג"
 msgid "Versions"
 msgstr "גרסאות"
 
-#: js/components/DetailRefs.vue:187 js/listview.js:106
+#: js/components/DetailRefs.vue:187
+#: js/listview.js:106
 msgid "Published"
 msgstr "פורסם"
 
-#: js/components/EditBulkDialog.vue:53 js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317 js/components/FileListItems.vue:290
-#: js/components/FileListItems.vue:432 js/components/PageBulkDialog.vue:133
-#: js/components/PageListItems.vue:1581 js/components/PageListItems.vue:1798
+#: js/components/EditBulkDialog.vue:53
+#: js/components/ElementListItems.vue:217
+#: js/components/ElementListItems.vue:317
+#: js/components/FileListItems.vue:295
+#: js/components/FileListItems.vue:437
+#: js/components/PageBulkDialog.vue:135
+#: js/components/PageListItems.vue:1561
+#: js/components/PageListItems.vue:1778
 msgid "Edit properties"
 msgstr "עריכת מאפיינים"
 
@@ -537,10 +612,13 @@ msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "החל את המאפיינים שנבחרו על רשומה אחת."
 msgstr[1] "החל את המאפיינים שנבחרו על %{num} רשומות."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:79
-#: js/components/FileDetailItem.vue:338 js/components/ListSort.vue:28
+#: js/components/EditBulkDialog.vue:71
+#: js/components/ElementDetailItem.vue:79
+#: js/components/FileDetailItem.vue:338
+#: js/components/ListSort.vue:28
 #: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1667 js/views/PageDetail.vue:755
+#: js/components/PageListItems.vue:1647
+#: js/views/PageDetail.vue:749
 msgid "Language"
 msgstr "שפה"
 
@@ -548,8 +626,9 @@ msgstr "שפה"
 msgid "Language of the content"
 msgstr "שפת התוכן"
 
-#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:236
+#: js/components/EditBulkDialog.vue:78
+#: js/components/PageAccess.vue:204
+#: js/components/PageBulkDialog.vue:250
 msgid "Apply"
 msgstr "החל"
 
@@ -585,62 +664,80 @@ msgstr "שגיאה בשמירת האלמנט המשותף"
 msgid "Error fetching shared elements"
 msgstr "שגיאה באחזור אלמנטים משותפים"
 
-#: js/components/ElementListItems.vue:196 js/components/FileListItems.vue:272
-#: js/components/PageDetailContentList.vue:732
-#: js/components/PageListItems.vue:1555 js/views/AccessList.vue:274
+#: js/components/ElementListItems.vue:196
+#: js/components/FileListItems.vue:277
+#: js/components/PageDetailContentList.vue:737
+#: js/components/PageListItems.vue:1535
+#: js/views/AccessList.vue:274
 #: js/views/AccessList.vue:318
 msgid "Toggle selection"
 msgstr "סמן/בטל סימון"
 
 #: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326 js/components/FileListItems.vue:303
-#: js/components/FileListItems.vue:448 js/components/PageListItems.vue:1593
-#: js/components/PageListItems.vue:1832
+#: js/components/ElementListItems.vue:326
+#: js/components/FileListItems.vue:308
+#: js/components/FileListItems.vue:453
+#: js/components/PageListItems.vue:1573
+#: js/components/PageListItems.vue:1812
 msgid "Delete"
 msgstr "מחיקה"
 
 #: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332 js/components/FileListItems.vue:306
-#: js/components/FileListItems.vue:454 js/components/PageListItems.vue:1596
-#: js/components/PageListItems.vue:1838
+#: js/components/ElementListItems.vue:332
+#: js/components/FileListItems.vue:311
+#: js/components/FileListItems.vue:459
+#: js/components/PageListItems.vue:1576
+#: js/components/PageListItems.vue:1818
 msgid "Restore"
 msgstr "שחזור"
 
 #: js/components/ElementListItems.vue:237
 #: js/components/ElementListItems.vue:380
-#: js/components/PageDetailContentList.vue:919
-#: js/components/PageDetailItemSection.vue:220 js/fields/Items.vue:410
+#: js/components/PageDetailContentList.vue:924
+#: js/components/PageDetailItemSection.vue:225
+#: js/fields/Items.vue:410
 msgid "Add element"
 msgstr "הוסף אלמנט"
 
-#: js/components/ElementListItems.vue:252 js/components/FileListItems.vue:343
-#: js/components/PageDetailContentList.vue:765
-#: js/components/PageListItems.vue:1676 js/components/SchemaItems.vue:140
+#: js/components/ElementListItems.vue:252
+#: js/components/FileListItems.vue:348
+#: js/components/PageDetailContentList.vue:770
+#: js/components/PageListItems.vue:1656
+#: js/components/SchemaItems.vue:145
 #: js/views/AccessList.vue:303
 msgid "Search for"
 msgstr "חפש"
 
-#: js/components/ElementListItems.vue:263 js/components/FileListItems.vue:356
+#: js/components/ElementListItems.vue:263
+#: js/components/FileListItems.vue:361
 msgid "Updated by another user"
 msgstr "עודכן על ידי משתמש אחר"
 
-#: js/components/ElementListItems.vue:269 js/components/FileListItems.vue:362
-#: js/components/PageListItems.vue:1694
+#: js/components/ElementListItems.vue:269
+#: js/components/FileListItems.vue:367
+#: js/components/PageListItems.vue:1674
 msgid "Refresh"
 msgstr "רענן"
 
-#: js/components/ElementListItems.vue:275 js/components/SchemaItems.vue:151
+#: js/components/ElementListItems.vue:275
+#: js/components/SchemaItems.vue:156
 msgid "Reload elements"
 msgstr "טען מחדש את האלמנטים"
 
-#: js/components/Fields.vue:242 js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1611 js/components/PageListItems.vue:1848
-#: js/components/TranslateDialog.vue:77 js/components/TranslateDialog.vue:128
-#: js/fields/Items.vue:337 js/fields/Items.vue:343
+#: js/components/Fields.vue:242
+#: js/components/Fields.vue:248
+#: js/components/PageListItems.vue:1591
+#: js/components/PageListItems.vue:1828
+#: js/components/TranslateDialog.vue:66
+#: js/components/TranslateDialog.vue:101
+#: js/fields/Items.vue:337
+#: js/fields/Items.vue:343
+#: js/views/PageDetail.vue:791
 msgid "Translate"
 msgstr "תרגם"
 
-#: js/components/Fields.vue:267 js/fields/Items.vue:361
+#: js/components/Fields.vue:267
+#: js/fields/Items.vue:361
 msgid "Generate text"
 msgstr "יצירת טקסט"
 
@@ -652,64 +749,74 @@ msgstr "עודכן על ידי עורך אחר"
 msgid "Overwritten"
 msgstr "נדרס"
 
-#: js/components/FieldsAside.vue:76
+#: js/components/FieldsAside.vue:77
 msgid "Mobile"
 msgstr "נייד"
 
-#: js/components/FieldsAside.vue:77
+#: js/components/FieldsAside.vue:78
 msgid "Tablet"
 msgstr "טאבלט"
 
-#: js/components/FieldsAside.vue:78
+#: js/components/FieldsAside.vue:79
 msgid "Computer"
 msgstr "מחשב"
 
-#: js/components/FieldsAside.vue:78
+#: js/components/FieldsAside.vue:79
 msgid "Full width"
 msgstr "רוחב מלא"
 
-#: js/components/FieldsAside.vue:171
+#: js/components/FieldsAside.vue:176
 msgid "Content Element"
 msgstr "אלמנט תוכן"
 
-#: js/components/FieldsAside.vue:184
+#: js/components/FieldsAside.vue:189
 msgid "Add element before"
 msgstr "הוסף אלמנט לפני"
 
-#: js/components/FieldsAside.vue:192
+#: js/components/FieldsAside.vue:197
 msgid "Add element after"
 msgstr "הוסף אלמנט אחרי"
 
-#: js/components/FieldsAside.vue:200
+#: js/components/FieldsAside.vue:205
 msgid "Remove element"
 msgstr "הסר אלמנט"
 
-#: js/components/FieldsAside.vue:208
+#: js/components/FieldsAside.vue:213
 msgid "Responsive preview"
 msgstr "תצוגה מקדימה רספונסיבית"
 
-#: js/components/FieldsAside.vue:240
-#: js/components/PageDetailContentList.vue:867
+#: js/components/FieldsAside.vue:245
+#: js/components/PageDetailContentList.vue:872
 msgid "Change to"
 msgstr "שינוי ל"
 
-#: js/components/FileActionMenu.vue:36 js/fields/File.vue:233
-#: js/fields/File.vue:234 js/fields/File.vue:258 js/fields/File.vue:259
+#: js/components/FileActionMenu.vue:36
+#: js/fields/File.vue:233
+#: js/fields/File.vue:234
+#: js/fields/File.vue:258
+#: js/fields/File.vue:259
 #: js/fields/Images.vue:271
 msgid "Edit"
 msgstr "ערוך"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:223
-#: js/components/FileAiDialog.vue:250 js/components/FileUrlDialog.vue:231
-#: js/components/PageDetailContentList.vue:757
-#: js/components/PageDetailContentList.vue:837 js/fields/Items.vue:305
-#: js/fields/Table.vue:182 js/fields/Table.vue:231
+#: js/components/FileActionMenu.vue:39
+#: js/components/FileAiDialog.vue:223
+#: js/components/FileAiDialog.vue:250
+#: js/components/FileUrlDialog.vue:231
+#: js/components/PageDetailContentList.vue:762
+#: js/components/PageDetailContentList.vue:842
+#: js/fields/Items.vue:305
+#: js/fields/Table.vue:182
+#: js/fields/Table.vue:231
 msgid "Remove"
 msgstr "הסר"
 
-#: js/components/FileAiDialog.vue:116 js/components/FileListItems.vue:153
-#: js/components/FileUrlDialog.vue:59 js/components/FileUrlDialog.vue:158
-#: js/fields/File.vue:102 js/fields/Images.vue:95
+#: js/components/FileAiDialog.vue:116
+#: js/components/FileListItems.vue:153
+#: js/components/FileUrlDialog.vue:59
+#: js/components/FileUrlDialog.vue:158
+#: js/fields/File.vue:102
+#: js/fields/Images.vue:95
 msgid "Error adding file %{path}"
 msgstr "שגיאה בהוספת קובץ %{path}"
 
@@ -753,8 +860,11 @@ msgstr "הועתק ללוח"
 msgid "Error describing file"
 msgstr "שגיאה בתיאור הקובץ"
 
-#: js/components/FileDetailItem.vue:174 js/components/FileListItems.vue:169
-#: js/fields/File.vue:184 js/fields/Images.vue:185 js/views/FileDetail.vue:218
+#: js/components/FileDetailItem.vue:174
+#: js/components/FileListItems.vue:169
+#: js/fields/File.vue:184
+#: js/fields/Images.vue:185
+#: js/views/FileDetail.vue:218
 msgid "Error saving file"
 msgstr "שגיאה בשמירת הקובץ"
 
@@ -778,7 +888,8 @@ msgstr "העתק את כתובת ה-URL"
 msgid "Descriptions"
 msgstr "תיאורים"
 
-#: js/components/FileDetailItem.vue:398 js/components/FileDetailItem.vue:456
+#: js/components/FileDetailItem.vue:398
+#: js/components/FileDetailItem.vue:456
 msgid "Translate text"
 msgstr "תרגם טקסט"
 
@@ -791,8 +902,7 @@ msgid "Description (%{lang})"
 msgstr "תיאור (%{lang})"
 
 #: js/components/FileDetailItem.vue:432
-msgid ""
-"Alternative text for screen readers and search engines, also used as caption"
+msgid "Alternative text for screen readers and search engines, also used as caption"
 msgstr "טקסט חלופי לקוראי מסך ומנועי חיפוש, המשמש גם ככיתוב"
 
 #: js/components/FileDetailItem.vue:448
@@ -943,7 +1053,8 @@ msgstr "הורדה"
 
 #: js/components/FileDetailItemImage.vue:783
 #: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:539 js/components/PageListItems.vue:723
+#: js/components/PageListItems.vue:525
+#: js/components/PageListItems.vue:715
 #: js/lists.js:247
 msgid "Undo"
 msgstr "בטל"
@@ -992,7 +1103,8 @@ msgstr "שגיאה בהעברת הקובץ לאשפה"
 msgid "Error restoring file"
 msgstr "שגיאה בשחזור הקובץ"
 
-#: js/components/FileListItems.vue:167 js/detail.js:55
+#: js/components/FileListItems.vue:167
+#: js/detail.js:55
 msgid "Error publishing file"
 msgstr "שגיאה בפרסום הקובץ"
 
@@ -1004,49 +1116,55 @@ msgstr "שגיאה במחיקה לצמיתות של הקובץ"
 msgid "Error fetching files"
 msgstr "שגיאה באחזור קבצים"
 
-#: js/components/FileListItems.vue:237
+#: js/components/FileListItems.vue:242
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "התיאורים של קובץ %{num} תורגמו"
 msgstr[1] "התיאורים של %{num} קבצים תורגמו"
 
-#: js/components/FileListItems.vue:247
+#: js/components/FileListItems.vue:252
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "שגיאה בתרגום התיאורים לאחר %{done} מתוך %{total} קבצים"
 
-#: js/components/FileListItems.vue:248
+#: js/components/FileListItems.vue:253
 msgid "Error translating descriptions"
 msgstr "שגיאה בתרגום התיאורים"
 
-#: js/components/FileListItems.vue:253
+#: js/components/FileListItems.vue:258
 msgid "No missing descriptions to translate"
 msgstr "אין תיאורים חסרים לתרגום"
 
-#: js/components/FileListItems.vue:299 js/components/FileListItems.vue:441
+#: js/components/FileListItems.vue:304
+#: js/components/FileListItems.vue:446
 msgid "Translate descriptions"
 msgstr "תרגם תיאורים"
 
-#: js/components/FileListItems.vue:319 js/components/FileListItems.vue:329
-#: js/components/FileListItems.vue:552 js/components/FileListItems.vue:562
-#: js/components/FileUrlDialog.vue:188 js/fields/Images.vue:297
+#: js/components/FileListItems.vue:324
+#: js/components/FileListItems.vue:334
+#: js/components/FileListItems.vue:557
+#: js/components/FileListItems.vue:567
+#: js/components/FileUrlDialog.vue:188
+#: js/fields/Images.vue:297
 #: js/fields/Images.vue:321
 msgid "Add files"
 msgstr "הוסף קבצים"
 
-#: js/components/FileListItems.vue:329 js/components/FileListItems.vue:522
-#: js/components/FileListItems.vue:562 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:334
+#: js/components/FileListItems.vue:527
+#: js/components/FileListItems.vue:567
+#: js/components/FileProtect.vue:45
 msgid "Protect access"
 msgstr "גישה מוגנת"
 
-#: js/components/FileListItems.vue:368
+#: js/components/FileListItems.vue:373
 msgid "Reload files"
 msgstr "טען מחדש את הקבצים"
 
-#: js/components/FileListItems.vue:377
+#: js/components/FileListItems.vue:382
 msgid "Grid view"
 msgstr "תצוגת רשת"
 
-#: js/components/FileListItems.vue:385
+#: js/components/FileListItems.vue:390
 msgid "List view"
 msgstr "תצוגת רשימה"
 
@@ -1066,11 +1184,13 @@ msgstr "לפחות קובץ אחד אינו מסוג \"%{mime}*\""
 msgid "The file is not of type \"%{mime}*\""
 msgstr "הקובץ אינו מסוג \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:180 js/fields/Images.vue:304
+#: js/components/FileUrlDialog.vue:180
+#: js/fields/Images.vue:304
 msgid "Add files from URLs"
 msgstr "הוספת קבצים מכתובות URL"
 
-#: js/components/FileUrlDialog.vue:188 js/fields/File.vue:284
+#: js/components/FileUrlDialog.vue:188
+#: js/fields/File.vue:284
 msgid "Add file"
 msgstr "הוסף קובץ"
 
@@ -1098,154 +1218,165 @@ msgstr "הקובץ מורד מכתובת ה-URL הזו ומתווסף לרשימ
 msgid "Size"
 msgstr "גודל"
 
-#: js/components/HistoryDialog.vue:62 js/components/HistoryDialog.vue:128
-#: js/components/PageDetailContentList.vue:880
+#: js/components/HistoryDialog.vue:67
+#: js/components/HistoryDialog.vue:133
+#: js/components/PageDetailContentList.vue:885
 msgid "Shared element"
 msgstr "אלמנט משותף"
 
-#: js/components/HistoryDialog.vue:63
+#: js/components/HistoryDialog.vue:68
 msgid "Content block"
 msgstr "בלוק תוכן"
 
-#: js/components/HistoryDialog.vue:68
+#: js/components/HistoryDialog.vue:73
 msgid "Group: %{group} · Position %{num}"
 msgstr "קבוצה: %{group} · מיקום %{num}"
 
-#: js/components/HistoryDialog.vue:76
+#: js/components/HistoryDialog.vue:81
 msgid "Moved from position %{from} to %{to}"
 msgstr "הועבר ממיקום %{from} ל-%{to}"
 
-#: js/components/HistoryDialog.vue:77 js/components/HistoryDialog.vue:166
+#: js/components/HistoryDialog.vue:82
+#: js/components/HistoryDialog.vue:171
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "שדה אחד השתנה"
 msgstr[1] "%{num} שדות השתנו"
 
-#: js/components/HistoryDialog.vue:78
+#: js/components/HistoryDialog.vue:83
 msgid "%{selected} of %{total} selected"
 msgstr "נבחרו %{selected} מתוך %{total}"
 
-#: js/components/HistoryDialog.vue:85
+#: js/components/HistoryDialog.vue:90
 msgid "Unknown date"
 msgstr "תאריך לא ידוע"
 
-#: js/components/HistoryDialog.vue:124
+#: js/components/HistoryDialog.vue:129
 msgid "Block position"
 msgstr "מיקום הבלוק"
 
-#: js/components/HistoryDialog.vue:129
+#: js/components/HistoryDialog.vue:134
 msgid "Value"
 msgstr "ערך"
 
-#: js/components/HistoryDialog.vue:173
+#: js/components/HistoryDialog.vue:178
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "בלוק אחד נוסף"
 msgstr[1] "נוספו %{num} בלוקים"
 
-#: js/components/HistoryDialog.vue:174
+#: js/components/HistoryDialog.vue:179
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "בלוק אחד הוסר"
 msgstr[1] "%{num} בלוקים הוסרו"
 
-#: js/components/HistoryDialog.vue:175
+#: js/components/HistoryDialog.vue:180
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "בלוק אחד השתנה"
 msgstr[1] "%{num} בלוקים השתנו"
 
-#: js/components/HistoryDialog.vue:176
+#: js/components/HistoryDialog.vue:181
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "בלוק אחד הועבר"
 msgstr[1] "%{num} בלוקים הועברו"
 
-#: js/components/HistoryDialog.vue:177
+#: js/components/HistoryDialog.vue:182
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "קובץ אחד השתנה"
 msgstr[1] "%{num} קבצים השתנו"
 
-#: js/components/HistoryDialog.vue:178 js/components/HistoryDialog.vue:207
-#: js/components/HistoryDialog.vue:303
+#: js/components/HistoryDialog.vue:183
+#: js/components/HistoryDialog.vue:212
+#: js/components/HistoryDialog.vue:308
 msgid "No changes"
 msgstr "אין שינויים"
 
-#: js/components/HistoryDialog.vue:192
+#: js/components/HistoryDialog.vue:197
 msgid "History"
 msgstr "היסטוריה"
 
-#: js/components/HistoryDialog.vue:200 js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:177
+#: js/components/HistoryDialog.vue:205
+#: js/components/ListSkeleton.vue:5
+#: js/components/ListStatus.vue:30
+#: js/fields/Autocomplete.vue:177
 #: js/fields/Url.vue:150
 msgid "Loading"
 msgstr "טוען"
 
-#: js/components/HistoryDialog.vue:203
+#: js/components/HistoryDialog.vue:208
 msgid "Error fetching versions"
 msgstr "שגיאה באחזור גרסאות"
 
-#: js/components/HistoryDialog.vue:204
+#: js/components/HistoryDialog.vue:209
 msgid "Retry"
 msgstr "נסה שוב"
 
-#: js/components/HistoryDialog.vue:218
+#: js/components/HistoryDialog.vue:223
 msgid "Current changes"
 msgstr "שינויים נוכחיים"
 
-#: js/components/HistoryDialog.vue:224 js/components/PageListItems.vue:1427
+#: js/components/HistoryDialog.vue:229
+#: js/components/PageListItems.vue:1407
 #: js/lists.js:476
 msgid "Scheduled for %{date}"
 msgstr "מתוזמן ל-%{date}"
 
-#: js/components/HistoryDialog.vue:232
+#: js/components/HistoryDialog.vue:237
 msgid "Select all"
 msgstr "בחר הכל"
 
-#: js/components/HistoryDialog.vue:246
+#: js/components/HistoryDialog.vue:251
 msgid "Block added"
 msgstr "בלוק נוסף"
 
-#: js/components/HistoryDialog.vue:247
+#: js/components/HistoryDialog.vue:252
 msgid "Block removed"
 msgstr "בלוק הוסר"
 
-#: js/components/HistoryDialog.vue:267
+#: js/components/HistoryDialog.vue:272
 msgid "Keep current position"
 msgstr "שמור על המיקום הנוכחי"
 
-#: js/components/HistoryDialog.vue:267 js/components/HistoryDialog.vue:287
+#: js/components/HistoryDialog.vue:272
+#: js/components/HistoryDialog.vue:292
 msgid "Keep current value"
 msgstr "שמור על הערך הנוכחי"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:318
 msgid "Previous version: Latest saved version"
 msgstr "גרסה קודמת: הגרסה האחרונה שנשמרה"
 
-#: js/components/HistoryDialog.vue:313
+#: js/components/HistoryDialog.vue:318
 msgid "Previous version: %{date}"
 msgstr "גרסה קודמת: %{date}"
 
-#: js/components/HistoryDialog.vue:314
+#: js/components/HistoryDialog.vue:319
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "%{selected} מתוך %{total} נבחרו להחזרה"
 
-#: js/components/HistoryDialog.vue:317
+#: js/components/HistoryDialog.vue:322
 msgid "Revert selected changes"
 msgstr "החזר את השינויים שנבחרו"
 
-#: js/components/HistoryDialog.vue:320
+#: js/components/HistoryDialog.vue:325
 msgid "Restore previous version"
 msgstr "שחזר את הגרסה הקודמת"
 
-#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:85
+#: js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133
+#: js/components/HistoryField.vue:153
 msgid "Previous value"
 msgstr "ערך קודם"
 
-#: js/components/HistoryField.vue:85 js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133 js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:85
+#: js/components/HistoryField.vue:121
+#: js/components/HistoryField.vue:133
+#: js/components/HistoryField.vue:153
 msgid "New value"
 msgstr "ערך חדש"
 
@@ -1253,12 +1384,15 @@ msgstr "ערך חדש"
 msgid "Enlarge %{name}"
 msgstr "הגדל את %{name}"
 
-#: js/components/HistoryField.vue:97 js/components/HistoryField.vue:124
+#: js/components/HistoryField.vue:97
+#: js/components/HistoryField.vue:124
 msgid "Loading preview"
 msgstr "טוען תצוגה מקדימה"
 
-#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:100
-#: js/components/HistoryField.vue:105 js/components/HistoryField.vue:125
+#: js/components/HistoryField.vue:98
+#: js/components/HistoryField.vue:100
+#: js/components/HistoryField.vue:105
+#: js/components/HistoryField.vue:125
 #: js/components/HistoryField.vue:127
 msgid "Preview unavailable"
 msgstr "תצוגה מקדימה לא זמינה"
@@ -1306,7 +1440,8 @@ msgstr "העריכה הישנה ביותר"
 msgid "Position"
 msgstr "מיקום"
 
-#: js/components/ListSort.vue:36 js/views/PageList.vue:104
+#: js/components/ListSort.vue:36
+#: js/views/PageList.vue:110
 msgid "Tree"
 msgstr "עץ"
 
@@ -1326,7 +1461,8 @@ msgstr "אין עדיין רשומות"
 msgid "Panels"
 msgstr "לוחות"
 
-#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:88
+#: js/components/Navigation.vue:78
+#: js/components/ShortcutDialog.vue:88
 msgid "Keyboard shortcuts"
 msgstr "קיצורי מקלדת"
 
@@ -1343,25 +1479,26 @@ msgid "Visibility"
 msgstr "נראות"
 
 #: js/components/PageAccess.vue:170
-msgid ""
-"Public pages are visible to everyone, others only to logged in users or "
-"users with the selected roles"
-msgstr ""
-"דפים ציבוריים גלויים לכולם, האחרים רק למשתמשים מחוברים או למשתמשים עם "
-"התפקידים שנבחרו"
+msgid "Public pages are visible to everyone, others only to logged in users or users with the selected roles"
+msgstr "דפים ציבוריים גלויים לכולם, האחרים רק למשתמשים מחוברים או למשתמשים עם התפקידים שנבחרו"
 
 #: js/components/PageAccess.vue:174
 msgid "Public"
 msgstr "ציבורי"
 
-#: js/components/PageAccess.vue:175 js/components/PageListItems.vue:493
+#: js/components/PageAccess.vue:175
+#: js/components/PageListItems.vue:479
 msgid "Authenticated users"
 msgstr "משתמשים מאומתים"
 
-#: js/components/PageAccess.vue:183 js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:492 js/components/PageListItems.vue:1584
-#: js/components/PageListItems.vue:1801 js/components/PageListItems.vue:1995
-#: js/views/AccessList.vue:240 js/views/AccessList.vue:249
+#: js/components/PageAccess.vue:183
+#: js/components/PageDetailItem.vue:108
+#: js/components/PageListItems.vue:478
+#: js/components/PageListItems.vue:1564
+#: js/components/PageListItems.vue:1781
+#: js/components/PageListItems.vue:1974
+#: js/views/AccessList.vue:240
+#: js/views/AccessList.vue:249
 msgid "Access"
 msgstr "גישה"
 
@@ -1369,224 +1506,250 @@ msgstr "גישה"
 msgid "Only visitors with one of these roles can view the page"
 msgstr "רק מבקרים בעלי אחד מהתפקידים האלה יכולים לצפות בדף"
 
-#: js/components/PageAccess.vue:193 js/components/PageBulkDialog.vue:250
+#: js/components/PageAccess.vue:193
+#: js/components/PageBulkDialog.vue:264
 msgid "Page bulk changes are limited to 1,000 pages"
 msgstr "שינויים בכמות גדולה של דפים מוגבלים ל-1,000 דפים"
 
-#: js/components/PageAccess.vue:213 js/components/PageBulkDialog.vue:244
+#: js/components/PageAccess.vue:213
+#: js/components/PageBulkDialog.vue:258
 msgid "Apply recursively"
 msgstr "החל באופן רקורסיבי"
 
-#: js/components/PageBulkDialog.vue:139
+#: js/components/PageBulkDialog.vue:141
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "החל את המאפיינים שנבחרו על דף אחד."
 msgstr[1] "החל את המאפיינים שנבחרו על %{num} דפים."
 
-#: js/components/PageBulkDialog.vue:150
+#: js/components/PageBulkDialog.vue:152
 msgid "Change status"
 msgstr "שנה סטטוס"
 
-#: js/components/PageBulkDialog.vue:155
+#: js/components/PageBulkDialog.vue:157
 #: js/components/PageDetailItemProps.vue:219
 msgid "Status"
 msgstr "סטטוס"
 
-#: js/components/PageBulkDialog.vue:155
+#: js/components/PageBulkDialog.vue:157
 #: js/components/PageDetailItemProps.vue:219
-msgid ""
-"Disabled pages are offline, hidden pages are online but not shown in the "
-"navigation"
-msgstr ""
-"דפים מושבתים אינם זמינים באינטרנט, דפים מוסתרים זמינים אך אינם מוצגים בניווט"
+msgid "Disabled pages are offline, hidden pages are online but not shown in the navigation"
+msgstr "דפים מושבתים אינם זמינים באינטרנט, דפים מוסתרים זמינים אך אינם מוצגים בניווט"
 
-#: js/components/PageBulkDialog.vue:164
+#: js/components/PageBulkDialog.vue:166
 msgid "Change cache time"
 msgstr "שנה את זמן המטמון"
 
-#: js/components/PageBulkDialog.vue:169
+#: js/components/PageBulkDialog.vue:171
 #: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1443
+#: js/components/PageListItems.vue:1423
 msgid "Cache time"
 msgstr "זמן מטמון"
 
-#: js/components/PageBulkDialog.vue:169
+#: js/components/PageBulkDialog.vue:171
 #: js/components/PageDetailItemProps.vue:337
 msgid "How long the generated page is cached before it is created again"
 msgstr "כמה זמן הדף שנוצר נשמר במטמון לפני שהוא נוצר מחדש"
 
-#: js/components/PageBulkDialog.vue:178
+#: js/components/PageBulkDialog.vue:180
+msgid "Change source language"
+msgstr "שינוי שפת המקור"
+
+#: js/components/PageBulkDialog.vue:185
+msgid "Source language"
+msgstr "שפת המקור"
+
+#: js/components/PageBulkDialog.vue:185
+msgid "Language of the source page content"
+msgstr "שפת תוכן דף המקור"
+
+#: js/components/PageBulkDialog.vue:192
 msgid "Change theme"
 msgstr "שינוי ערכת נושא"
 
-#: js/components/PageBulkDialog.vue:183
+#: js/components/PageBulkDialog.vue:197
 #: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1431
+#: js/components/PageListItems.vue:1411
 msgid "Theme"
 msgstr "ערכת נושא"
 
-#: js/components/PageBulkDialog.vue:183
+#: js/components/PageBulkDialog.vue:197
 #: js/components/PageDetailItemProps.vue:306
 msgid "Design used to display the page"
 msgstr "העיצוב המשמש להצגת הדף"
 
-#: js/components/PageBulkDialog.vue:190
+#: js/components/PageBulkDialog.vue:204
 msgid "Change page type"
 msgstr "שנה סוג דף"
 
-#: js/components/PageBulkDialog.vue:195
+#: js/components/PageBulkDialog.vue:209
 #: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1435
+#: js/components/PageListItems.vue:1415
 msgid "Page type"
 msgstr "סוג הדף"
 
-#: js/components/PageBulkDialog.vue:195
+#: js/components/PageBulkDialog.vue:209
 #: js/components/PageDetailItemProps.vue:315
 msgid "Template of the theme which defines the page layout"
 msgstr "תבנית בערכת הנושא שמגדירה את פריסת הדף"
 
-#: js/components/PageBulkDialog.vue:202
+#: js/components/PageBulkDialog.vue:216
 msgid "Change tag"
 msgstr "שנה תג"
 
-#: js/components/PageBulkDialog.vue:206
+#: js/components/PageBulkDialog.vue:220
 #: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1439
+#: js/components/PageListItems.vue:1419
 msgid "Page tag"
 msgstr "תג דף"
 
-#: js/components/PageBulkDialog.vue:206
+#: js/components/PageBulkDialog.vue:220
 #: js/components/PageDetailItemProps.vue:326
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "מזהה פנימי לאיתור הדף בתבניות, למשל blog"
 
-#: js/components/PageBulkDialog.vue:215
+#: js/components/PageBulkDialog.vue:229
 msgid "Change domain"
 msgstr "שנה דומיין"
 
-#: js/components/PageBulkDialog.vue:220
+#: js/components/PageBulkDialog.vue:234
 #: js/components/PageDetailItemProps.vue:291
 msgid "Domain"
 msgstr "דומיין"
 
-#: js/components/PageBulkDialog.vue:220
+#: js/components/PageBulkDialog.vue:234
 #: js/components/PageDetailItemProps.vue:291
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "הדומיין שבו הדף זמין, למשל example.com"
 
-#: js/components/PageDetailContentList.vue:190
-#: js/components/PageDetailContentList.vue:200
-#: js/components/PageDetailContentList.vue:604
+#: js/components/PageDetailContentList.vue:195
+#: js/components/PageDetailContentList.vue:205
+#: js/components/PageDetailContentList.vue:609
 msgid "Content element not found"
 msgstr "אלמנט תוכן לא נמצא"
 
-#: js/components/PageDetailContentList.vue:400
+#: js/components/PageDetailContentList.vue:405
 msgid "Error refining content"
 msgstr "שגיאה בשיפור התוכן"
 
-#: js/components/PageDetailContentList.vue:452
+#: js/components/PageDetailContentList.vue:457
 msgid "Element not found"
 msgstr "אלמנט לא נמצא"
 
-#: js/components/PageDetailContentList.vue:457
+#: js/components/PageDetailContentList.vue:462
 msgid "Element is already shared"
 msgstr "האלמנט כבר משותף"
 
-#: js/components/PageDetailContentList.vue:491
+#: js/components/PageDetailContentList.vue:496
 msgid "Unable to make element shared"
 msgstr "לא ניתן לשתף את האלמנט"
 
-#: js/components/PageDetailContentList.vue:524
+#: js/components/PageDetailContentList.vue:529
 msgid "Not available for this content element"
 msgstr "לא זמין עבור אלמנט תוכן זה"
 
-#: js/components/PageDetailContentList.vue:611
+#: js/components/PageDetailContentList.vue:616
 msgid "Element is not shared"
 msgstr "האלמנט אינו משותף"
 
-#: js/components/PageDetailContentList.vue:681
+#: js/components/PageDetailContentList.vue:686
 msgid "Describe the task you want to perform"
 msgstr "תאר את המשימה שברצונך לבצע"
 
-#: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:280
+#: js/components/PageDetailContentList.vue:700
+#: js/views/ElementList.vue:89
+#: js/views/FileList.vue:89
+#: js/views/PageList.vue:305
 msgid "Hide help"
 msgstr "הסתר עזרה"
 
-#: js/components/PageDetailContentList.vue:695 js/views/ElementList.vue:89
-#: js/views/FileList.vue:89 js/views/PageList.vue:280
+#: js/components/PageDetailContentList.vue:700
+#: js/views/ElementList.vue:89
+#: js/views/FileList.vue:89
+#: js/views/PageList.vue:305
 msgid "Show help"
 msgstr "הצג עזרה"
 
-#: js/components/PageDetailContentList.vue:707
+#: js/components/PageDetailContentList.vue:712
 msgid "Refining ..."
 msgstr "משפר..."
 
-#: js/components/PageDetailContentList.vue:707
+#: js/components/PageDetailContentList.vue:712
 msgid "Refine content based on prompt"
 msgstr "שפר את התוכן על סמך ההנחיה"
 
-#: js/components/PageDetailContentList.vue:724 js/views/ElementList.vue:115
-#: js/views/FileList.vue:115 js/views/PageList.vue:306
+#: js/components/PageDetailContentList.vue:729
+#: js/views/ElementList.vue:115
+#: js/views/FileList.vue:115
+#: js/views/PageList.vue:331
 msgid "Help"
 msgstr "עזרה"
 
-#: js/components/PageDetailContentList.vue:725
+#: js/components/PageDetailContentList.vue:730
 msgid "AI can add or improve content based on your input"
 msgstr "בינה מלאכותית יכולה להוסיף או לשפר תוכן על סמך הקלט שלך"
 
-#: js/components/PageDetailContentList.vue:726
+#: js/components/PageDetailContentList.vue:731
 msgid "It can take a long time depending on the task and content size"
 msgstr "זה יכול לקחת זמן רב, בהתאם למשימה ולגודל התוכן"
 
-#: js/components/PageDetailContentList.vue:748
-#: js/components/PageDetailContentList.vue:834
-#: js/components/PageListItems.vue:1810 js/fields/Items.vue:304
+#: js/components/PageDetailContentList.vue:753
+#: js/components/PageDetailContentList.vue:839
+#: js/components/PageListItems.vue:1790
+#: js/fields/Items.vue:304
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "גזור"
 
-#: js/components/PageDetailContentList.vue:751
-#: js/components/PageListItems.vue:401 js/components/PageListItems.vue:403
+#: js/components/PageDetailContentList.vue:756
+#: js/components/PageListItems.vue:388
+#: js/components/PageListItems.vue:390
 msgid "Paste"
 msgstr "הדבק"
 
-#: js/components/PageDetailContentList.vue:754
-#: js/components/PageDetailContentList.vue:873
+#: js/components/PageDetailContentList.vue:759
+#: js/components/PageDetailContentList.vue:878
 msgid "Merge"
 msgstr "מיזוג"
 
-#: js/components/PageDetailContentList.vue:809 js/fields/Items.vue:291
+#: js/components/PageDetailContentList.vue:814
+#: js/fields/Items.vue:291
 msgid "Move element"
 msgstr "הזז אלמנט"
 
-#: js/components/PageDetailContentList.vue:843 js/fields/Items.vue:307
+#: js/components/PageDetailContentList.vue:848
+#: js/fields/Items.vue:307
 msgid "Paste before"
 msgstr "הדבק לפני"
 
-#: js/components/PageDetailContentList.vue:846 js/fields/Items.vue:308
+#: js/components/PageDetailContentList.vue:851
+#: js/fields/Items.vue:308
 msgid "Paste after"
 msgstr "הדבק אחרי"
 
-#: js/components/PageDetailContentList.vue:849 js/fields/Items.vue:309
-#: js/fields/Table.vue:180 js/fields/Table.vue:229
+#: js/components/PageDetailContentList.vue:854
+#: js/fields/Items.vue:309
+#: js/fields/Table.vue:180
+#: js/fields/Table.vue:229
 msgid "Insert before"
 msgstr "הכנס לפני"
 
-#: js/components/PageDetailContentList.vue:852 js/fields/Items.vue:310
-#: js/fields/Table.vue:181 js/fields/Table.vue:230
+#: js/components/PageDetailContentList.vue:857
+#: js/fields/Items.vue:310
+#: js/fields/Table.vue:181
+#: js/fields/Table.vue:230
 msgid "Insert after"
 msgstr "הכנס אחרי"
 
-#: js/components/PageDetailContentList.vue:861
+#: js/components/PageDetailContentList.vue:866
 msgid "Make shared"
 msgstr "הפוך למשותף"
 
-#: js/components/PageDetailContentList.vue:864
+#: js/components/PageDetailContentList.vue:869
 msgid "Replace with local copy"
 msgstr "החלפה בעותק מקומי"
 
-#: js/components/PageDetailContentList.vue:870
+#: js/components/PageDetailContentList.vue:875
 msgctxt "text element"
 msgid "Split"
 msgstr "פיצול"
@@ -1623,7 +1786,8 @@ msgstr "הנתיב לא יכול להתחיל בסלאש (/)"
 msgid "URL is not valid"
 msgstr "כתובת ה-URL אינה חוקית"
 
-#: js/components/PageDetailItemProps.vue:68 js/views/Login.vue:54
+#: js/components/PageDetailItemProps.vue:68
+#: js/views/Login.vue:54
 #: js/views/Login.vue:57
 msgid "Field is required"
 msgstr "שדה חובה"
@@ -1668,11 +1832,11 @@ msgstr "כתובת URL להפניה"
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "מבקרים מועברים לכתובת ה-URL הזו במקום לראות את הדף"
 
-#: js/components/PageDetailItemSection.vue:60
+#: js/components/PageDetailItemSection.vue:65
 msgid "The element has already been added"
 msgstr "האלמנט כבר נוסף"
 
-#: js/components/PageDetailItemSection.vue:193
+#: js/components/PageDetailItemSection.vue:198
 msgid "Remove content element"
 msgstr "הסר אלמנט תוכן"
 
@@ -1808,221 +1972,246 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "מיקום"
 
-#: js/components/PageListItems.vue:407
+#: js/components/PageListItems.vue:394
 msgid "Insert"
 msgstr "הכנס"
 
-#: js/components/PageListItems.vue:415
+#: js/components/PageListItems.vue:402
 msgid "Before"
 msgstr "לפני"
 
-#: js/components/PageListItems.vue:416
+#: js/components/PageListItems.vue:403
 msgid "Into"
 msgstr "לתוך"
 
-#: js/components/PageListItems.vue:417
+#: js/components/PageListItems.vue:404
 msgid "After"
 msgstr "אחרי"
 
-#: js/components/PageListItems.vue:438 js/views/PageList.vue:205
+#: js/components/PageListItems.vue:425
+#: js/views/PageList.vue:212
 msgid "Error fetching translation states"
 msgstr "שגיאה בטעינת מצבי התרגום"
 
-#: js/components/PageListItems.vue:445
+#: js/components/PageListItems.vue:432
 msgid "Translating into %{langs}"
 msgstr "מתרגם ל-%{langs}"
 
-#: js/components/PageListItems.vue:453 js/components/PageListItems.vue:1911
-#: js/views/PageDetail.vue:777 js/views/PageList.vue:137
+#: js/components/PageListItems.vue:440
+#: js/components/PageListItems.vue:1891
+#: js/views/PageDetail.vue:776
+#: js/views/PageList.vue:143
 msgid "Needs update"
 msgstr "דורש עדכון"
 
-#: js/components/PageListItems.vue:454 js/views/PageList.vue:143
+#: js/components/PageListItems.vue:441
+#: js/views/PageList.vue:149
 msgid "Missing"
 msgstr "חסר"
 
-#: js/components/PageListItems.vue:455 js/views/PageList.vue:149
+#: js/components/PageListItems.vue:442
+#: js/views/PageList.vue:155
 msgid "AI draft"
 msgstr "טיוטת AI"
 
-#: js/components/PageListItems.vue:456
-msgid "Translating"
-msgstr "בתרגום"
-
-#: js/components/PageListItems.vue:459 js/views/PageDetail.vue:776
+#: js/components/PageListItems.vue:445
+#: js/views/PageDetail.vue:775
 msgid "Up to date"
 msgstr "מעודכן"
 
-#: js/components/PageListItems.vue:518
+#: js/components/PageListItems.vue:504
 msgid "Error adding root page"
 msgstr "שגיאה בהוספת דף שורש"
 
-#: js/components/PageListItems.vue:538
+#: js/components/PageListItems.vue:524
 msgid "Page moved"
 msgstr "הדף הועבר"
 
-#: js/components/PageListItems.vue:609
+#: js/components/PageListItems.vue:595
 msgid "Cache cleared"
 msgstr "המטמון נוקה"
 
-#: js/components/PageListItems.vue:610
+#: js/components/PageListItems.vue:596
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "המטמון נוקה עבור %{num} דף."
 msgstr[1] "המטמון נוקה עבור %{num} דפים."
 
-#: js/components/PageListItems.vue:620
+#: js/components/PageListItems.vue:606
 msgid "Error clearing cache"
 msgstr "שגיאה בניקוי המטמון"
 
-#: js/components/PageListItems.vue:676 js/views/PageDetail.vue:622
+#: js/components/PageListItems.vue:664
+#: js/views/PageDetail.vue:625
+#: js/views/PageDetail.vue:683
+msgid "Error translating page"
+msgstr "שגיאה בתרגום הדף"
+
+#: js/components/PageListItems.vue:668
+#: js/views/PageDetail.vue:614
 msgid "Error adding language"
 msgstr "שגיאה בהוספת שפה"
 
-#: js/components/PageListItems.vue:697
+#: js/components/PageListItems.vue:689
 msgid "Error trashing page"
 msgstr "שגיאה בהעברת הדף לאשפה"
 
-#: js/components/PageListItems.vue:725 js/variants.js:162
+#: js/components/PageListItems.vue:717
+#: js/variants.js:261
 msgid "Error restoring language"
 msgstr "שגיאה בשחזור השפה"
 
-#: js/components/PageListItems.vue:725 js/components/PageListItems.vue:870
+#: js/components/PageListItems.vue:717
+#: js/components/PageListItems.vue:862
 msgid "Error restoring page"
 msgstr "שגיאה בשחזור הדף"
 
-#: js/components/PageListItems.vue:734 js/lists.js:241
+#: js/components/PageListItems.vue:726
+#: js/lists.js:241
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "הועבר לאשפה"
 msgstr[1] "%{num} רשומות הועברו לאשפה"
 
-#: js/components/PageListItems.vue:786 js/components/PageListItems.vue:1184
+#: js/components/PageListItems.vue:778
+#: js/components/PageListItems.vue:1154
 msgid "Error fetching pages"
 msgstr "שגיאה באחזור הדפים"
 
-#: js/components/PageListItems.vue:842
+#: js/components/PageListItems.vue:834
 msgid "Error inserting page"
 msgstr "שגיאה בהכנסת הדף"
 
-#: js/components/PageListItems.vue:949
+#: js/components/PageListItems.vue:941
 msgid "Error moving page"
 msgstr "שגיאה בהעברת הדף"
 
-#: js/components/PageListItems.vue:1072 js/views/PageDetail.vue:282
+#: js/components/PageListItems.vue:1042
+#: js/views/PageDetail.vue:274
 msgid "Error fetching page"
 msgstr "שגיאה באחזור הדף"
 
-#: js/components/PageListItems.vue:1086
+#: js/components/PageListItems.vue:1056
 msgid "Error copying page"
 msgstr "שגיאה בהעתקת הדף"
 
-#: js/components/PageListItems.vue:1132 js/detail.js:61
+#: js/components/PageListItems.vue:1102
+#: js/detail.js:61
 msgid "Error publishing page"
 msgstr "שגיאה בפרסום הדף"
 
-#: js/components/PageListItems.vue:1151
+#: js/components/PageListItems.vue:1121
 msgid "All subpages of these pages will be purged as well."
 msgstr "כל דפי המשנה של דפים אלה יימחקו גם הם לצמיתות."
 
-#: js/components/PageListItems.vue:1160
+#: js/components/PageListItems.vue:1130
 msgid "Error purging page"
 msgstr "שגיאה במחיקה לצמיתות של הדף"
 
-#: js/components/PageListItems.vue:1338
+#: js/components/PageListItems.vue:1318
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "לא ניתן היה לעדכן דף אחד"
 msgstr[1] "לא ניתן היה לעדכן %{num} דפים"
 
-#: js/components/PageListItems.vue:1349 js/components/PageListItems.vue:1404
-#: js/views/PageDetail.vue:584
+#: js/components/PageListItems.vue:1329
+#: js/components/PageListItems.vue:1384
+#: js/views/PageDetail.vue:575
 msgid "Error saving page"
 msgstr "שגיאה בשמירת הדף"
 
-#: js/components/PageListItems.vue:1359
+#: js/components/PageListItems.vue:1339
 msgid "Error searching pages"
 msgstr "שגיאה בחיפוש דפים"
 
-#: js/components/PageListItems.vue:1443 js/utils.js:37
+#: js/components/PageListItems.vue:1423
+#: js/utils.js:37
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} דקה"
 msgstr[1] "%{num} דקות"
 
-#: js/components/PageListItems.vue:1574 js/components/PageListItems.vue:1784
+#: js/components/PageListItems.vue:1554
+#: js/components/PageListItems.vue:1764
 msgctxt "page status"
 msgid "Enable"
 msgstr "הפעל"
 
-#: js/components/PageListItems.vue:1577 js/components/PageListItems.vue:1790
+#: js/components/PageListItems.vue:1557
+#: js/components/PageListItems.vue:1770
 msgctxt "page status"
 msgid "Disable"
 msgstr "השבת"
 
-#: js/components/PageListItems.vue:1587 js/components/PageListItems.vue:1804
+#: js/components/PageListItems.vue:1567
+#: js/components/PageListItems.vue:1784
 msgid "Clear cache"
 msgstr "ניקוי המטמון"
 
-#: js/components/PageListItems.vue:1619 js/components/PageListItems.vue:1861
+#: js/components/PageListItems.vue:1599
+#: js/components/PageListItems.vue:1841
+#: js/views/PageDetail.vue:794
 msgid "Ignore changes"
 msgstr "התעלם מהשינויים"
 
-#: js/components/PageListItems.vue:1628 js/components/PageListItems.vue:1870
+#: js/components/PageListItems.vue:1608
+#: js/components/PageListItems.vue:1850
 msgid "Delete this language"
 msgstr "מחק שפה זו"
 
-#: js/components/PageListItems.vue:1636 js/components/PageListItems.vue:1878
+#: js/components/PageListItems.vue:1616
+#: js/components/PageListItems.vue:1858
 msgid "Restore this language"
 msgstr "שחזר שפה זו"
 
-#: js/components/PageListItems.vue:1644 js/components/PageListItems.vue:1886
+#: js/components/PageListItems.vue:1624
+#: js/components/PageListItems.vue:1866
 msgid "Purge this language"
 msgstr "מחק שפה זו לצמיתות"
 
-#: js/components/PageListItems.vue:1654 js/components/PageListItems.vue:1971
+#: js/components/PageListItems.vue:1634
+#: js/components/PageListItems.vue:1952
 msgid "Add page"
 msgstr "הוסף דף"
 
-#: js/components/PageListItems.vue:1688
+#: js/components/PageListItems.vue:1668
 msgid "Reload page tree"
 msgstr "טען מחדש את עץ הדפים"
 
-#: js/components/PageListItems.vue:1709
+#: js/components/PageListItems.vue:1689
 msgid "Translating %{done} of %{total}"
 msgstr "מתרגם %{done} מתוך %{total}"
 
-#: js/components/PageListItems.vue:1724
+#: js/components/PageListItems.vue:1704
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr ""
-"השתמש במקשי החצים כדי לנווט. לחץ על מקש Alt יחד עם מקשי החצים כדי לשנות את "
-"הסדר."
+msgstr "השתמש במקשי החצים כדי לנווט. לחץ על מקש Alt יחד עם מקשי החצים כדי לשנות את הסדר."
 
-#: js/components/PageListItems.vue:1726
+#: js/components/PageListItems.vue:1706
 msgid "Moved to position %{position} of %{total}"
 msgstr "הועבר למיקום %{position} מתוך %{total}"
 
-#: js/components/PageListItems.vue:1728
+#: js/components/PageListItems.vue:1708
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "ההזחה הוקטנה לרמה %{level}, מיקום %{position} מתוך %{total}"
 
-#: js/components/PageListItems.vue:1734
+#: js/components/PageListItems.vue:1714
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "ההזחה הוגדלה לרמה %{level}, מיקום %{position} מתוך %{total}"
 
-#: js/components/PageListItems.vue:1754
+#: js/components/PageListItems.vue:1734
 msgid "Toggle child nodes"
 msgstr "הצג/הסתר צמתי משנה"
 
-#: js/components/PageListItems.vue:1770
+#: js/components/PageListItems.vue:1750
 msgid "Create in %{lang}"
 msgstr "צור ב%{lang}"
 
-#: js/components/PageListItems.vue:1939 js/views/PageDetail.vue:779
+#: js/components/PageListItems.vue:1933
+#: js/views/PageDetail.vue:778
 msgid "Create"
 msgstr "צור"
 
-#: js/components/PageListItems.vue:1998
+#: js/components/PageListItems.vue:1977
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "החל את הגדרות הגישה על %{num} דף."
@@ -2032,8 +2221,10 @@ msgstr[1] "החל את הגדרות הגישה על %{num} דפים."
 msgid "You are not signed in yet"
 msgstr "עדיין לא התחברת"
 
-#: js/components/ReloginDialog.vue:99 js/components/ReloginDialog.vue:121
-#: js/stores.js:337 js/views/Login.vue:146
+#: js/components/ReloginDialog.vue:99
+#: js/components/ReloginDialog.vue:121
+#: js/stores.js:338
+#: js/views/Login.vue:146
 msgid "Login failed"
 msgstr "ההתחברות נכשלה"
 
@@ -2041,40 +2232,42 @@ msgstr "ההתחברות נכשלה"
 msgid "Session expired"
 msgstr "פג תוקף ההתחברות"
 
-#: js/components/ReloginDialog.vue:135 js/components/ReloginDialog.vue:207
+#: js/components/ReloginDialog.vue:135
+#: js/components/ReloginDialog.vue:207
 #: js/components/User.vue:134
 msgid "Logout"
 msgstr "התנתק"
 
 #: js/components/ReloginDialog.vue:148
-msgid ""
-"Please sign in again in the new tab and return here to continue. Your "
-"unsaved changes are kept."
-msgstr ""
-"יש להתחבר שוב בכרטיסייה החדשה ולחזור לכאן כדי להמשיך. השינויים שטרם נשמרו לא "
-"יאבדו."
+msgid "Please sign in again in the new tab and return here to continue. Your unsaved changes are kept."
+msgstr "יש להתחבר שוב בכרטיסייה החדשה ולחזור לכאן כדי להמשיך. השינויים שטרם נשמרו לא יאבדו."
 
 #: js/components/ReloginDialog.vue:154
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr "יש להתחבר שוב כדי להמשיך. השינויים שטרם נשמרו לא יאבדו."
 
-#: js/components/ReloginDialog.vue:167 js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:167
+#: js/views/Login.vue:237
 msgid "Sign in"
 msgstr "התחברות"
 
-#: js/components/ReloginDialog.vue:175 js/views/Login.vue:199
+#: js/components/ReloginDialog.vue:175
+#: js/views/Login.vue:199
 msgid "E-Mail"
 msgstr "דואר אלקטרוני"
 
-#: js/components/ReloginDialog.vue:183 js/views/Login.vue:209
+#: js/components/ReloginDialog.vue:183
+#: js/views/Login.vue:209
 msgid "Password"
 msgstr "סיסמה"
 
-#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+#: js/components/ReloginDialog.vue:191
+#: js/views/Login.vue:219
 msgid "Hide password"
 msgstr "הסתר סיסמה"
 
-#: js/components/ReloginDialog.vue:191 js/views/Login.vue:219
+#: js/components/ReloginDialog.vue:191
+#: js/views/Login.vue:219
 msgid "Show password"
 msgstr "הצג סיסמה"
 
@@ -2082,7 +2275,8 @@ msgstr "הצג סיסמה"
 msgid "Continue"
 msgstr "המשך"
 
-#: js/components/ReloginDialog.vue:217 js/views/Login.vue:240
+#: js/components/ReloginDialog.vue:217
+#: js/views/Login.vue:240
 msgid "Login"
 msgstr "התחבר"
 
@@ -2098,11 +2292,11 @@ msgstr "אלמנטים חדשים"
 msgid "Only elements in %{lang}"
 msgstr "רק אלמנטים ב%{lang}"
 
-#: js/components/SchemaItems.vue:106
+#: js/components/SchemaItems.vue:111
 msgid "Uncategorized"
 msgstr "ללא קטגוריה"
 
-#: js/components/SchemaItems.vue:119
+#: js/components/SchemaItems.vue:124
 msgid "Error fetching content elements"
 msgstr "שגיאה באחזור אלמנטי התוכן"
 
@@ -2178,42 +2372,23 @@ msgstr "שורה חדשה"
 msgid "Recall previous messages"
 msgstr "שחזר הודעות קודמות"
 
-#: js/components/TranslateDialog.vue:81
+#: js/components/TranslateDialog.vue:70
 msgid "Translate into"
 msgstr "תרגם ל"
 
-#: js/components/TranslateDialog.vue:83
+#: js/components/TranslateDialog.vue:72
 msgid "Languages"
 msgstr "שפות"
 
-#: js/components/TranslateDialog.vue:100
-msgid "Selected page (%{num})"
-msgid_plural "Selected pages (%{num})"
-msgstr[0] "דף נבחר (%{num})"
-msgstr[1] "דפים נבחרים (%{num})"
-
-#: js/components/TranslateDialog.vue:107
-msgid "All pages matching the filter (%{num})"
-msgstr "כל הדפים התואמים למסנן (%{num})"
-
-#: js/components/TranslateDialog.vue:108
-msgid "All pages (%{num})"
-msgstr "כל הדפים (%{num})"
-
-#: js/components/TranslateDialog.vue:114
+#: js/components/TranslateDialog.vue:87
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "נבחר %{num} דף."
 msgstr[1] "נבחרו %{num} דפים."
 
-#: js/components/TranslateDialog.vue:119
-msgid ""
-"Only missing and outdated translations are created. Pages in their source "
-"language and up to date translations are skipped. The translations run in "
-"the background and are saved as drafts for review."
-msgstr ""
-"רק תרגומים חסרים ומיושנים נוצרים. דפים בשפת המקור שלהם ותרגומים עדכניים "
-"מדולגים. התרגומים פועלים ברקע ונשמרים כטיוטות לבדיקה."
+#: js/components/TranslateDialog.vue:92
+msgid "Only missing and outdated translations are created. Pages in their source language and up to date translations are skipped. The translations run in the background and are saved as drafts for review."
+msgstr "רק תרגומים חסרים ומיושנים נוצרים. דפים בשפת המקור שלהם ותרגומים עדכניים מדולגים. התרגומים פועלים ברקע ונשמרים כטיוטות לבדיקה."
 
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
@@ -2239,7 +2414,8 @@ msgstr "לא ניתן לטעון את המשתמש"
 msgid "Toggle light/dark mode"
 msgstr "החלף מצב בהיר/כהה"
 
-#: js/components/User.vue:106 js/components/User.vue:111
+#: js/components/User.vue:106
+#: js/components/User.vue:111
 msgid "Switch language"
 msgstr "החלף שפה"
 
@@ -2275,7 +2451,8 @@ msgstr "הדף פורסם בהצלחה"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "הדף מתוזמן לפרסום ב-%{date}"
 
-#: js/detail.js:308 js/fields/Autocomplete.vue:176
+#: js/detail.js:308
+#: js/fields/Autocomplete.vue:176
 msgid "No data available"
 msgstr "אין נתונים זמינים"
 
@@ -2295,7 +2472,8 @@ msgstr "הקובץ נדרש"
 msgid "Add file from URL"
 msgstr "הוסף קובץ מכתובת URL"
 
-#: js/fields/File.vue:299 js/fields/Images.vue:314
+#: js/fields/File.vue:299
+#: js/fields/Images.vue:314
 msgid "Create file"
 msgstr "צור קובץ"
 
@@ -2347,7 +2525,8 @@ msgstr "הזז שורה"
 msgid "Row actions"
 msgstr "פעולות בשורה"
 
-#: js/fields/Url.vue:61 js/utils.js:280
+#: js/fields/Url.vue:61
+#: js/utils.js:280
 msgid "None"
 msgstr "אין"
 
@@ -2379,9 +2558,13 @@ msgstr "מאפיין קישור"
 msgid "publish"
 msgstr "פרסום"
 
-#: js/listview.js:105 js/listview.js:115 js/listview.js:124 js/utils.js:267
-#: js/views/PageList.vue:114 js/views/PageList.vue:124
-#: js/views/PageList.vue:135
+#: js/listview.js:105
+#: js/listview.js:115
+#: js/listview.js:124
+#: js/utils.js:267
+#: js/views/PageList.vue:120
+#: js/views/PageList.vue:130
+#: js/views/PageList.vue:141
 msgid "All"
 msgstr "הכל"
 
@@ -2465,1832 +2648,138 @@ msgid_plural "At most %{num} columns are allowed"
 msgstr[0] "מותרת לכל היותר %{num} עמודה"
 msgstr[1] "מותרות לכל היותר %{num} עמודות"
 
-#: js/stores.js:496
+#: js/stores.js:497
 msgid "Failed to save user settings"
 msgstr "שמירת הגדרות המשתמש נכשלה"
 
-#: js/stores.js:552
+#: js/stores.js:553
 msgid "Failed to load plugin"
 msgstr "טעינת הפלאגין נכשלה"
 
-#: js/stores.js:659
+#: js/stores.js:660
 msgid "Permission denied"
 msgstr "הגישה נדחתה"
 
-#: js/stores.js:1042
+#: js/stores.js:1062
 msgid "Error fetching translation progress"
 msgstr "שגיאה בטעינת התקדמות התרגום"
 
-#: js/stores.js:1076
+#: js/stores.js:1080
+msgid "Translation is still running in the background"
+msgstr "התרגום עדיין פועל ברקע"
+
+#: js/stores.js:1083
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "תרגום %{num} נכשל"
 msgstr[1] "%{num} תרגומים נכשלו"
 
-#: js/strings.js:32
+#: js/stores.js:1089
+msgid "Translation finished"
+msgstr "התרגום הסתיים"
+
+#: js/strings.js:37
 msgctxt "cs"
 msgid "main"
 msgstr "ראשי"
 
-#: js/strings.js:33
+#: js/strings.js:38
 msgctxt "cs"
 msgid "header"
 msgstr "כותרת עליונה"
 
-#: js/strings.js:34
+#: js/strings.js:39
 msgctxt "cs"
 msgid "footer"
 msgstr "כותרת תחתונה"
 
-#: js/strings.js:35
+#: js/strings.js:40
 msgctxt "cs"
 msgid "sidebar"
 msgstr "סרגל צד"
 
-#: js/strings.js:36
+#: js/strings.js:41
 msgctxt "cs"
 msgid "aside"
 msgstr "תוכן צדדי"
 
-#: js/strings.js:39
+#: js/strings.js:44
 msgctxt "sg"
 msgid "basic"
 msgstr "בסיסי"
 
-#: js/strings.js:40
+#: js/strings.js:45
 msgctxt "sg"
 msgid "content"
 msgstr "תוכן"
 
-#: js/strings.js:41
+#: js/strings.js:46
 msgctxt "sg"
 msgid "media"
 msgstr "מדיה"
 
-#: js/strings.js:42
+#: js/strings.js:47
 msgctxt "sg"
 msgid "forms"
 msgstr "טפסים"
 
-#: js/strings.js:45
+#: js/strings.js:50
 msgctxt "as"
 msgid "type"
 msgstr "סוג"
 
-#: js/strings.js:46
+#: js/strings.js:51
 msgctxt "as"
 msgid "state"
 msgstr "מצב"
 
-#: js/strings.js:49
+#: js/strings.js:54
 msgctxt "st"
 msgid "valid"
 msgstr "תקף"
 
-#: js/strings.js:50
+#: js/strings.js:55
 msgctxt "st"
 msgid "changed"
 msgstr "שונה"
 
-#: js/strings.js:51
+#: js/strings.js:56
 msgctxt "st"
 msgid "error"
 msgstr "שגיאה"
 
-#: js/strings.js:54
+#: js/strings.js:59
 msgctxt "st"
 msgid "reference"
 msgstr "הפניה"
 
-#: js/strings.js:55
-msgctxt "st"
-msgid "heading"
-msgstr "כותרת"
-
-#: js/strings.js:56
-msgctxt "st"
-msgid "text"
-msgstr "טקסט"
-
-#: js/strings.js:57
-msgctxt "st"
-msgid "image-text"
-msgstr "תמונה וטקסט"
-
-#: js/strings.js:58
-msgctxt "st"
-msgid "slideshow"
-msgstr "מצגת"
-
-#: js/strings.js:59
-msgctxt "st"
-msgid "before-after"
-msgstr "לפני-אחרי"
-
-#: js/strings.js:60
-msgctxt "st"
-msgid "code"
-msgstr "קוד"
-
-#: js/strings.js:61
-msgctxt "st"
-msgid "table"
-msgstr "טבלה"
-
 #: js/strings.js:62
-msgctxt "st"
-msgid "map"
-msgstr "מפה"
-
-#: js/strings.js:63
-msgctxt "st"
-msgid "html"
-msgstr "HTML"
-
-#: js/strings.js:64
-msgctxt "st"
-msgid "image"
-msgstr "תמונה"
-
-#: js/strings.js:65
-msgctxt "st"
-msgid "video"
-msgstr "וידאו"
-
-#: js/strings.js:66
-msgctxt "st"
-msgid "audio"
-msgstr "אודיו"
-
-#: js/strings.js:67
-msgctxt "st"
-msgid "file"
-msgstr "קובץ"
-
-#: js/strings.js:68
-msgctxt "st"
-msgid "hero"
-msgstr "הירו"
-
-#: js/strings.js:69
-msgctxt "st"
-msgid "CTA"
-msgstr "CTA"
-
-#: js/strings.js:70
-msgctxt "st"
-msgid "cards"
-msgstr "כרטיסים"
-
-#: js/strings.js:71
-msgctxt "st"
-msgid "blog"
-msgstr "בלוג"
-
-#: js/strings.js:72
-msgctxt "st"
-msgid "article"
-msgstr "מאמר"
-
-#: js/strings.js:73
-msgctxt "st"
-msgid "questions"
-msgstr "שאלות נפוצות"
-
-#: js/strings.js:74
-msgctxt "st"
-msgid "timeline"
-msgstr "ציר זמן"
-
-#: js/strings.js:75
-msgctxt "st"
-msgid "toc"
-msgstr "תוכן העניינים"
-
-#: js/strings.js:76
-msgctxt "st"
-msgid "contact"
-msgstr "צור קשר"
-
-#: js/strings.js:77
-msgctxt "st"
-msgid "meta-tags"
-msgstr "תגי מטא"
-
-#: js/strings.js:78
-msgctxt "st"
-msgid "social-media"
-msgstr "רשתות חברתיות"
-
-#: js/strings.js:79
-msgctxt "st"
-msgid "canonical"
-msgstr "כתובת URL קנונית"
-
-#: js/strings.js:80
-msgctxt "st"
-msgid "robots"
-msgstr "מנועי חיפוש"
-
-#: js/strings.js:81
-msgctxt "st"
-msgid "theme"
-msgstr "ערכת נושא"
-
-#: js/strings.js:82
-msgctxt "st"
-msgid "styles"
-msgstr "סגנונות"
-
-#: js/strings.js:83
-msgctxt "st"
-msgid "javascript"
-msgstr "JavaScript"
-
-#: js/strings.js:84
-msgctxt "st"
-msgid "heros"
-msgstr "דפי הירו"
-
-#: js/strings.js:85
-msgctxt "st"
-msgid "news"
-msgstr "חדשות"
-
-#: js/strings.js:86
-msgctxt "st"
-msgid "pricing"
-msgstr "תמחור"
-
-#: js/strings.js:87
-msgctxt "st"
-msgid "robots.txt"
-msgstr "robots.txt"
-
-#: js/strings.js:88
-msgctxt "st"
-msgid "security"
-msgstr "אבטחה"
-
-#: js/strings.js:89
-msgctxt "st"
-msgid "testimonial"
-msgstr "המלצות"
-
-#: js/strings.js:92
-msgctxt "sd"
-msgid "Section headline from H1 to H6"
-msgstr "כותרת מקטע מ-H1 עד H6"
-
-#: js/strings.js:93
-msgctxt "sd"
-msgid "Formatted text with paragraphs, lists and links"
-msgstr "טקסט מעוצב עם פסקאות, רשימות וקישורים"
-
-#: js/strings.js:94
-msgctxt "sd"
-msgid "Image next to formatted text"
-msgstr "תמונה לצד טקסט מעוצב"
-
-#: js/strings.js:95
-msgctxt "sd"
-msgid "Source code with syntax highlighting"
-msgstr "קוד מקור עם הדגשת תחביר"
-
-#: js/strings.js:96
-msgctxt "sd"
-msgid "Data table with optional header row or column"
-msgstr "טבלת נתונים עם שורת או עמודת כותרת אופציונלית"
-
-#: js/strings.js:97
-msgctxt "sd"
-msgid "Interactive map with location, text and link"
-msgstr "מפה אינטראקטיבית עם מיקום, טקסט וקישור"
-
-#: js/strings.js:98
-msgctxt "sd"
-msgid "Custom HTML markup for embeds and widgets"
-msgstr "HTML מותאם אישית להטמעות ווידג'טים"
-
-#: js/strings.js:99
-msgctxt "sd"
-msgid "Single responsive image"
-msgstr "תמונה רספונסיבית יחידה"
-
-#: js/strings.js:100
-msgctxt "sd"
-msgid "Rotating slides with multiple images"
-msgstr "שקופיות מתחלפות עם מספר תמונות"
-
-#: js/strings.js:101
-msgctxt "sd"
-msgid "Slider comparing two images before and after a change"
-msgstr "מחוון המשווה בין שתי תמונות לפני שינוי ואחריו"
-
-#: js/strings.js:102
-msgctxt "sd"
-msgid "Embedded video with player controls"
-msgstr "וידאו מוטמע עם פקדי הפעלה"
-
-#: js/strings.js:103
-msgctxt "sd"
-msgid "Embedded audio with player controls"
-msgstr "אודיו מוטמע עם פקדי הפעלה"
-
-#: js/strings.js:104
-msgctxt "sd"
-msgid "Downloadable file such as a PDF document"
-msgstr "קובץ להורדה, למשל מסמך PDF"
-
-#: js/strings.js:105
-msgctxt "sd"
-msgid "Large introduction with title, text, buttons and background"
-msgstr "פתיח גדול עם כותרת, טקסט, כפתורים ורקע"
-
-#: js/strings.js:106
-msgctxt "sd"
-msgid "Call to action with text and buttons"
-msgstr "קריאה לפעולה עם טקסט וכפתורים"
-
-#: js/strings.js:107
-msgctxt "sd"
-msgid "Grid of cards with image, title and text"
-msgstr "רשת כרטיסים עם תמונה, כותרת וטקסט"
-
-#: js/strings.js:108
-msgctxt "sd"
-msgid "Customer quotes with name, role and photo"
-msgstr "ציטוטי לקוחות עם שם, תפקיד ותמונה"
-
-#: js/strings.js:109
-msgctxt "sd"
-msgid "Article introduction with image gallery and author"
-msgstr "פתיח מאמר עם גלריית תמונות וכותב"
-
-#: js/strings.js:110
-msgctxt "sd"
-msgid "List of blog articles from a parent page"
-msgstr "רשימת מאמרי בלוג מדף אב"
-
-#: js/strings.js:111
-msgctxt "sd"
-msgid "List of news articles from a parent page"
-msgstr "רשימת חדשות מדף אב"
-
-#: js/strings.js:112
-msgctxt "sd"
-msgid "Featured subpage followed by further subpages"
-msgstr "דף משנה מודגש ואחריו דפי משנה נוספים"
-
-#: js/strings.js:113
-msgctxt "sd"
-msgid "Price plans with subscriptions or one-time payments"
-msgstr "תוכניות מחיר עם מנויים או תשלומים חד-פעמיים"
-
-#: js/strings.js:114
-msgctxt "sd"
-msgid "Frequently asked questions with answers"
-msgstr "שאלות נפוצות עם תשובות"
-
-#: js/strings.js:115
-msgctxt "sd"
-msgid "Numbered steps or events in chronological order"
-msgstr "שלבים או אירועים ממוספרים בסדר כרונולוגי"
-
-#: js/strings.js:116
-msgctxt "sd"
-msgid "Table of contents linking to page headings"
-msgstr "תוכן עניינים עם קישורים לכותרות הדף"
-
-#: js/strings.js:117
-msgctxt "sd"
-msgid "Contact form with configurable fields and optional file attachments"
-msgstr "טופס יצירת קשר עם שדות הניתנים להגדרה וקבצים מצורפים אופציונליים"
-
-#: js/strings.js:120
-msgctxt "fn"
-msgid "button"
-msgstr "כפתור"
-
-#: js/strings.js:121
-msgctxt "fn"
-msgid "buttons"
-msgstr "כפתורים"
-
-#: js/strings.js:122
-msgctxt "fn"
-msgid "cards"
-msgstr "כרטיסים"
-
-#: js/strings.js:123
-msgctxt "fn"
-msgid "description"
-msgstr "תיאור"
-
-#: js/strings.js:124
-msgctxt "fn"
-msgid "file"
-msgstr "קובץ"
-
-#: js/strings.js:125
 msgctxt "fn"
 msgid "files"
 msgstr "קבצים"
 
-#: js/strings.js:126
-msgctxt "fn"
-msgid "follow"
-msgstr "מעקב אחר קישורים"
-
-#: js/strings.js:127
-msgctxt "fn"
-msgid "header"
-msgstr "כותרת"
-
-#: js/strings.js:128
-msgctxt "fn"
-msgid "index"
-msgstr "הוספה לאינדקס"
-
-#: js/strings.js:129
-msgctxt "fn"
-msgid "keywords"
-msgstr "מילות מפתח"
-
-#: js/strings.js:130
+#: js/strings.js:63
 msgctxt "fn"
 msgid "language"
 msgstr "שפה"
 
-#: js/strings.js:131
-msgctxt "fn"
-msgid "label"
-msgstr "תווית"
-
-#: js/strings.js:132
-msgctxt "fn"
-msgid "level"
-msgstr "רמה"
-
-#: js/strings.js:133
-msgctxt "fn"
-msgid "limit"
-msgstr "מגבלה"
-
-#: js/strings.js:134
-msgctxt "fn"
-msgid "location"
-msgstr "מיקום"
-
-#: js/strings.js:135
+#: js/strings.js:64
 msgctxt "fn"
 msgid "main"
 msgstr "תמונה ראשית"
 
-#: js/strings.js:136
-msgctxt "fn"
-msgid "order"
-msgstr "סדר"
-
-#: js/strings.js:137
-msgctxt "fn"
-msgid "parent-page"
-msgstr "דף אב"
-
-#: js/strings.js:138
-msgctxt "fn"
-msgid "position"
-msgstr "מיקום"
-
-#: js/strings.js:139
-msgctxt "fn"
-msgid "text"
-msgstr "טקסט"
-
-#: js/strings.js:140
-msgctxt "fn"
-msgid "table"
-msgstr "טבלה"
-
-#: js/strings.js:141
-msgctxt "fn"
-msgid "title"
-msgstr "כותרת"
-
-#: js/strings.js:142
-msgctxt "fn"
-msgid "url"
-msgstr "כתובת URL"
-
-#: js/strings.js:144
-msgctxt "fn"
-msgid "image"
-msgstr "תמונה"
-
-#: js/strings.js:145
-msgctxt "fn"
-msgid "images"
-msgstr "תמונות"
-
-#: js/strings.js:146
-msgctxt "fn"
-msgid "before image"
-msgstr "תמונת לפני"
-
-#: js/strings.js:147
-msgctxt "fn"
-msgid "after image"
-msgstr "תמונת אחרי"
-
-#: js/strings.js:148
-msgctxt "fn"
-msgid "items"
-msgstr "פריטים"
-
-#: js/strings.js:149
-msgctxt "fn"
-msgid "introduction"
-msgstr "מבוא"
-
-#: js/strings.js:150
-msgctxt "fn"
-msgid "load immediately"
-msgstr "טעינה מיידית"
-
-#: js/strings.js:151
-msgctxt "fn"
-msgid "source code"
-msgstr "קוד מקור"
-
-#: js/strings.js:152
-msgctxt "fn"
-msgid "Frontend access role"
-msgstr "תפקיד גישה לאתר"
-
-#: js/strings.js:153
-msgctxt "fn"
-msgid "Payment prices"
-msgstr "מחירי תשלום"
-
-#: js/strings.js:154
-msgctxt "fn"
-msgid "Payment reference"
-msgstr "אסמכתת תשלום"
-
-#: js/strings.js:155
-msgctxt "fn"
-msgid "Currency"
-msgstr "מטבע"
-
-#: js/strings.js:156
-msgctxt "fn"
-msgid "Billing interval"
-msgstr "מרווח חיוב"
-
-#: js/strings.js:157
-msgctxt "fn"
-msgid "Price unit"
-msgstr "יחידת מחיר"
-
-#: js/strings.js:158
-msgctxt "fn"
-msgid "Target page or link"
-msgstr "דף יעד או קישור"
-
-#: js/strings.js:159
-msgctxt "fn"
-msgid "Form fields"
-msgstr "שדות הטופס"
-
-#: js/strings.js:160
-msgctxt "fn"
-msgid "Field"
-msgstr "שדה"
-
-#: js/strings.js:161
-msgctxt "fn"
-msgid "Required"
-msgstr "חובה"
-
-#: js/strings.js:162
-msgctxt "fn"
-msgid "Input type"
-msgstr "סוג קלט"
-
-#: js/strings.js:163
-msgctxt "fn"
-msgid "Choices"
-msgstr "אפשרויות"
-
-#: js/strings.js:164
-msgctxt "fn"
-msgid "Attachments"
-msgstr "קבצים מצורפים"
-
-#: js/strings.js:165
-msgctxt "fn"
-msgid "Link label"
-msgstr "טקסט הקישור"
-
-#: js/strings.js:166
-msgctxt "fn"
-msgid "Contact URL"
-msgstr "כתובת URL ליצירת קשר"
-
-#: js/strings.js:167
-msgctxt "fn"
-msgid "Contact email"
-msgstr "דוא״ל ליצירת קשר"
-
-#: js/strings.js:168
-msgctxt "fn"
-msgid "Description"
-msgstr "תיאור"
-
-#: js/strings.js:169
-msgctxt "fn"
-msgid "Displayed price"
-msgstr "המחיר המוצג"
-
-#: js/strings.js:170
-msgctxt "fn"
-msgid "Gallery"
-msgstr "גלריה"
-
-#: js/strings.js:171
-msgctxt "fn"
-msgid "Highlight text"
-msgstr "טקסט ההדגשה"
-
-#: js/strings.js:172
-msgctxt "fn"
-msgid "Highlighted"
-msgstr "מודגש"
-
-#: js/strings.js:173
-msgctxt "fn"
-msgid "Language"
-msgstr "שפה"
-
-#: js/strings.js:174
-msgctxt "fn"
-msgid "Payment type"
-msgstr "סוג התשלום"
-
-#: js/strings.js:175
-msgctxt "fn"
-msgid "Preferred languages"
-msgstr "שפות מועדפות"
-
-#: js/strings.js:176
-msgctxt "fn"
-msgid "Subtitle"
-msgstr "כותרת משנה"
-
-#: js/strings.js:177
-msgctxt "fn"
-msgid "acknowledgments"
-msgstr "תודות"
-
-#: js/strings.js:178
-msgctxt "fn"
-msgid "amount"
-msgstr "הסכום"
-
-#: js/strings.js:179
-msgctxt "fn"
-msgid "background"
-msgstr "רקע"
-
-#: js/strings.js:180
-msgctxt "fn"
-msgid "background animation"
-msgstr "אנימציית רקע"
-
-#: js/strings.js:181
-msgctxt "fn"
-msgid "button-alternative"
-msgstr "כפתור חלופי"
-
-#: js/strings.js:182
-msgctxt "fn"
-msgid "canonical"
-msgstr "כתובת URL קנונית"
-
-#: js/strings.js:183
-msgctxt "fn"
-msgid "columns"
-msgstr "עמודות"
-
-#: js/strings.js:184
-msgctxt "fn"
-msgid "csaf"
-msgstr "CSAF"
-
-#: js/strings.js:185
-msgctxt "fn"
-msgid "encryption"
-msgstr "הצפנה"
-
-#: js/strings.js:186
-msgctxt "fn"
-msgid "expires"
-msgstr "תאריך תפוגה"
-
-#: js/strings.js:187
-msgctxt "fn"
-msgid "features"
-msgstr "תכונות"
-
-#: js/strings.js:188
-msgctxt "fn"
-msgid "hiring"
-msgstr "גיוס"
-
-#: js/strings.js:189
-msgctxt "fn"
-msgid "layout"
-msgstr "פריסה"
-
-#: js/strings.js:190
-msgctxt "fn"
-msgid "name"
-msgstr "שם"
-
-#: js/strings.js:191
-msgctxt "fn"
-msgid "policy"
-msgstr "מדיניות"
-
-#: js/strings.js:192
-msgctxt "fn"
-msgid "ratio"
-msgstr "יחס"
-
-#: js/strings.js:193
-msgctxt "fn"
-msgid "role"
-msgstr "תפקיד"
-
-#: js/strings.js:194
-msgctxt "fn"
-msgid "subtitle"
-msgstr "כותרת משנה"
-
-#: js/strings.js:195
-msgctxt "fn"
-msgid "url-alternative"
-msgstr "קישור חלופי"
-
-#: js/strings.js:197
-msgctxt "fn"
-msgid "--pico-font-family-sans-serif"
-msgstr "גופן הטקסט"
-
-#: js/strings.js:198
-msgctxt "fn"
-msgid "--pico-font-family-display"
-msgstr "גופן הכותרות"
-
-#: js/strings.js:199
-msgctxt "fn"
-msgid "--pico-color"
-msgstr "צבע הטקסט"
-
-#: js/strings.js:200
-msgctxt "fn"
-msgid "--pico-background-color"
-msgstr "צבע הרקע"
-
-#: js/strings.js:201
-msgctxt "fn"
-msgid "--pico-text-selection-color"
-msgstr "צבע הבחירה"
-
-#: js/strings.js:202
-msgctxt "fn"
-msgid "--pico-contrast"
-msgstr "צבע ניגודיות"
-
-#: js/strings.js:203
-msgctxt "fn"
-msgid "--pico-contrast-hover"
-msgstr "צבע ניגודיות בריחוף"
-
-#: js/strings.js:204
-msgctxt "fn"
-msgid "--pico-contrast-inverse"
-msgstr "צבע טקסט הניגודיות"
-
-#: js/strings.js:205
-msgctxt "fn"
-msgid "--pico-primary"
-msgstr "צבע ראשי"
-
-#: js/strings.js:206
-msgctxt "fn"
-msgid "--pico-primary-background"
-msgstr "רקע ראשי"
-
-#: js/strings.js:207
-msgctxt "fn"
-msgid "--pico-primary-hover"
-msgstr "צבע ריחוף ראשי"
-
-#: js/strings.js:208
-msgctxt "fn"
-msgid "--pico-primary-hover-background"
-msgstr "רקע ריחוף ראשי"
-
-#: js/strings.js:209
-msgctxt "fn"
-msgid "--pico-secondary"
-msgstr "צבע משני"
-
-#: js/strings.js:210
-msgctxt "fn"
-msgid "--pico-secondary-background"
-msgstr "רקע משני"
-
-#: js/strings.js:211
-msgctxt "fn"
-msgid "--pico-secondary-hover"
-msgstr "צבע ריחוף משני"
-
-#: js/strings.js:212
-msgctxt "fn"
-msgid "--pico-secondary-hover-background"
-msgstr "רקע ריחוף משני"
-
-#: js/strings.js:213
-msgctxt "fn"
-msgid "--pico-border-radius"
-msgstr "עיגול פינות"
-
-#: js/strings.js:214
-msgctxt "fn"
-msgid "--pico-nav-breadcrumb-divider"
-msgstr "מפריד נתיב ניווט"
-
-#: js/strings.js:217
-msgctxt "fh"
-msgid "Text of the headline"
-msgstr "טקסט הכותרת"
-
-#: js/strings.js:218
-msgctxt "fh"
-msgid ""
-"Level 1 is the main page headline, higher levels structure the sections below"
-msgstr ""
-"רמה 1 היא הכותרת הראשית של הדף, רמות גבוהות יותר מארגנות את הקטעים שלהלן"
-
-#: js/strings.js:219
-msgctxt "fh"
-msgid "Formatted text with paragraphs, lists and links"
-msgstr "טקסט מעוצב עם פסקאות, רשימות וקישורים"
-
-#: js/strings.js:220
-msgctxt "fh"
-msgid "Formatted text shown next to the image"
-msgstr "טקסט מעוצב המוצג לצד התמונה"
-
-#: js/strings.js:221
-msgctxt "fh"
-msgid "Image shown next to the text"
-msgstr "תמונה המוצגת לצד הטקסט"
-
-#: js/strings.js:222
-msgctxt "fh"
-msgid "Position of the image relative to the text"
-msgstr "מיקום התמונה ביחס לטקסט"
-
-#: js/strings.js:223
-msgctxt "fh"
-msgid "Width ratio between image and text"
-msgstr "יחס הרוחב בין התמונה לטקסט"
-
-#: js/strings.js:224
-msgctxt "fh"
-msgid "Programming language used for syntax highlighting"
-msgstr "שפת התכנות המשמשת להדגשת התחביר"
-
-#: js/strings.js:225
-msgctxt "fh"
-msgid "Source code shown with syntax highlighting"
-msgstr "קוד מקור המוצג עם הדגשת תחביר"
-
-#: js/strings.js:226
-msgctxt "fh"
-msgid "Optional caption shown above the table"
-msgstr "כיתוב אופציונלי המוצג מעל הטבלה"
-
-#: js/strings.js:227
-msgctxt "fh"
-msgid "Use the first row, the first column or both as table headers"
-msgstr "השתמש בשורה הראשונה, בעמודה הראשונה או בשתיהן ככותרות הטבלה"
-
-#: js/strings.js:228
-msgctxt "fh"
-msgid "Enter data in the cells; add or remove rows and columns as needed"
-msgstr "הזן נתונים בתאים; הוסף או הסר שורות ועמודות לפי הצורך"
-
-#: js/strings.js:229
-msgctxt "fh"
-msgid "Optional headline shown above the map"
-msgstr "כותרת אופציונלית המוצגת מעל המפה"
-
-#: js/strings.js:230
-msgctxt "fh"
-msgid "Description shown next to the map, e.g. address or directions"
-msgstr "תיאור המוצג לצד המפה, למשל כתובת או הנחיות הגעה"
-
-#: js/strings.js:231
-msgctxt "fh"
-msgid "Search for a place or click on the map to set the location"
-msgstr "חפש מקום או לחץ על המפה כדי להגדיר את המיקום"
-
-#: js/strings.js:232
-msgctxt "fh"
-msgid "Text of the link that opens the location in a map service"
-msgstr "טקסט הקישור שפותח את המיקום בשירות מפות"
-
-#: js/strings.js:233
-msgctxt "fh"
-msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
-msgstr "קוד HTML המוכנס לדף כפי שהוא, למשל להטמעות ווידג'טים"
-
-#: js/strings.js:234
-msgctxt "fh"
-msgid "Image shown in full width of the content area"
-msgstr "תמונה המוצגת ברוחב המלא של אזור התוכן"
-
-#: js/strings.js:235
-msgctxt "fh"
-msgid "Load the image without delay if it is visible at the top of the page"
-msgstr "טען את התמונה ללא עיכוב אם היא גלויה בראש הדף"
-
-#: js/strings.js:236
-msgctxt "fh"
-msgid "Optional headline shown above the slideshow"
-msgstr "כותרת אופציונלית המוצגת מעל מצגת השקופיות"
-
-#: js/strings.js:237
-msgctxt "fh"
-msgid "Images shown one after another, drag to change the order"
-msgstr "תמונות המוצגות זו אחרי זו, גרור כדי לשנות את הסדר"
-
-#: js/strings.js:238
-msgctxt "fh"
-msgid ""
-"Load the first image without delay if it is visible at the top of the page"
-msgstr "טען את התמונה הראשונה ללא עיכוב אם היא גלויה בראש הדף"
-
-#: js/strings.js:239
-msgctxt "fh"
-msgid "Optional headline shown above the comparison"
-msgstr "כותרת אופציונלית המוצגת מעל ההשוואה"
-
-#: js/strings.js:240
-msgctxt "fh"
-msgid "Image showing the state before the change"
-msgstr "תמונה המציגה את המצב לפני השינוי"
-
-#: js/strings.js:241
-msgctxt "fh"
-msgid "Image showing the result, both images should have the same size"
-msgstr "תמונה המציגה את התוצאה, שתי התמונות צריכות להיות באותו גודל"
-
-#: js/strings.js:242
-msgctxt "fh"
-msgid ""
-"Load the images without delay if they are visible at the top of the page"
-msgstr "טעינת התמונות ללא השהיה אם הן גלויות בראש הדף"
-
-#: js/strings.js:243
-msgctxt "fh"
-msgid "Video file played in the page"
-msgstr "קובץ וידאו המתנגן בדף"
-
-#: js/strings.js:244
-msgctxt "fh"
-msgid "Audio file played in the page"
-msgstr "קובץ אודיו המתנגן בדף"
-
-#: js/strings.js:245
-msgctxt "fh"
-msgid "File offered for download"
-msgstr "קובץ המוצע להורדה"
-
-#: js/strings.js:246
-msgctxt "fh"
-msgid "Main headline of the page"
-msgstr "הכותרת הראשית של הדף"
-
-#: js/strings.js:247
-msgctxt "fh"
-msgid "Short line shown above the headline"
-msgstr "שורה קצרה המוצגת מעל הכותרת"
-
-#: js/strings.js:248
-msgctxt "fh"
-msgid "Introduction shown below the headline"
-msgstr "מבוא המוצג מתחת לכותרת"
-
-#: js/strings.js:249
-msgctxt "fh"
-msgid "Page or link the main button leads to"
-msgstr "הדף או הקישור שאליו מוביל הכפתור הראשי"
-
-#: js/strings.js:250
-msgctxt "fh"
-msgid "Text of the main button"
-msgstr "טקסט הכפתור הראשי"
-
-#: js/strings.js:251
-msgctxt "fh"
-msgid "Page or link the second button leads to"
-msgstr "הדף או הקישור שאליו מוביל הכפתור השני"
-
-#: js/strings.js:252
-msgctxt "fh"
-msgid "Text of the second button"
-msgstr "טקסט הכפתור השני"
-
-#: js/strings.js:253
-msgctxt "fh"
-msgid "Image shown behind the text"
-msgstr "תמונה המוצגת מאחורי הטקסט"
-
-#: js/strings.js:254
-msgctxt "fh"
-msgid "Animation effect of the background image"
-msgstr "אפקט האנימציה של תמונת הרקע"
-
-#: js/strings.js:255
-msgctxt "fh"
-msgid "Images shown next to the text"
-msgstr "תמונות המוצגות לצד הטקסט"
-
-#: js/strings.js:256
-msgctxt "fh"
-msgid "Headline catching the attention of visitors"
-msgstr "כותרת המושכת את תשומת לב המבקרים"
-
-#: js/strings.js:257
-msgctxt "fh"
-msgid "Text motivating visitors to take action"
-msgstr "טקסט המניע מבקרים לפעולה"
-
-#: js/strings.js:258
-msgctxt "fh"
-msgid "Buttons leading visitors to the next step"
-msgstr "כפתורים המובילים מבקרים לשלב הבא"
-
-#: js/strings.js:259
-msgctxt "fh"
-msgid "Text of the button"
-msgstr "טקסט הכפתור"
-
-#: js/strings.js:260
-msgctxt "fh"
-msgid "Page or link the button leads to"
-msgstr "הדף או הקישור שאליו מוביל הכפתור"
-
-#: js/strings.js:261
-msgctxt "fh"
-msgid "Optional headline shown above the cards"
-msgstr "כותרת אופציונלית המוצגת מעל הכרטיסים"
-
-#: js/strings.js:262
-msgctxt "fh"
-msgid "Number of cards per row, \"auto\" adapts to the screen width"
-msgstr "מספר הכרטיסים בכל שורה, \"auto\" מתאים את עצמו לרוחב המסך"
-
-#: js/strings.js:263
-msgctxt "fh"
-msgid ""
-"Show cards, small badges like certificates or large figures like key numbers"
-msgstr "הצגת כרטיסים, תגים קטנים כמו תעודות או מספרים גדולים כמו נתוני מפתח"
-
-#: js/strings.js:264
-msgctxt "fh"
-msgid "Cards shown in the grid"
-msgstr "כרטיסים המוצגים ברשת"
-
-#: js/strings.js:265
-msgctxt "fh"
-msgid "Headline of the card"
-msgstr "כותרת הכרטיס"
-
-#: js/strings.js:266
-msgctxt "fh"
-msgid "Image shown at the top of the card"
-msgstr "תמונה המוצגת בראש הכרטיס"
-
-#: js/strings.js:267
-msgctxt "fh"
-msgid "Text of the card"
-msgstr "טקסט הכרטיס"
-
-#: js/strings.js:268
-msgctxt "fh"
-msgid "Page or link the card leads to"
-msgstr "הדף או הקישור שאליו מוביל הכרטיס"
-
-#: js/strings.js:269
-msgctxt "fh"
-msgid "Optional headline shown above the quotes"
-msgstr "כותרת אופציונלית המוצגת מעל הציטוטים"
-
-#: js/strings.js:270
-msgctxt "fh"
-msgid "Quotes of customers or partners"
-msgstr "ציטוטים של לקוחות או שותפים"
-
-#: js/strings.js:271
-msgctxt "fh"
-msgid "Quote of the person"
-msgstr "הציטוט של האדם"
-
-#: js/strings.js:272
-msgctxt "fh"
-msgid "Name of the person"
-msgstr "שם האדם"
-
-#: js/strings.js:273
-msgctxt "fh"
-msgid "Position or company of the person"
-msgstr "התפקיד או החברה של האדם"
-
-#: js/strings.js:274
-msgctxt "fh"
-msgid "Photo of the person"
-msgstr "תמונה של האדם"
-
-#: js/strings.js:275
-msgctxt "fh"
-msgid "Introduction of the article shown below the page title"
-msgstr "מבוא המאמר המוצג מתחת לכותרת הדף"
-
-#: js/strings.js:276
-msgctxt "fh"
-msgid "Images of the article, the first one is used as preview image"
-msgstr "תמונות המאמר, הראשונה משמשת כתמונת תצוגה מקדימה"
-
-#: js/strings.js:277
-msgctxt "fh"
-msgid "Name of the author of the article"
-msgstr "שם הכותב של המאמר"
-
-#: js/strings.js:278
-msgctxt "fh"
-msgid "Link to the profile page of the author"
-msgstr "קישור לדף הפרופיל של הכותב"
-
-#: js/strings.js:279
-msgctxt "fh"
-msgid "Optional headline shown above the list"
-msgstr "כותרת אופציונלית המוצגת מעל הרשימה"
-
-#: js/strings.js:280
-msgctxt "fh"
-msgid "Display the pages as cards or as a compact list"
-msgstr "הצג את הדפים ככרטיסים או כרשימה קומפקטית"
-
-#: js/strings.js:281
-msgctxt "fh"
-msgid "Page whose subpages are listed"
-msgstr "הדף שדפי המשנה שלו מוצגים"
-
-#: js/strings.js:282
-msgctxt "fh"
-msgid "Sort order of the listed pages"
-msgstr "סדר המיון של הדפים המוצגים"
-
-#: js/strings.js:283
-msgctxt "fh"
-msgid "Maximum number of pages shown at once"
-msgstr "המספר המרבי של דפים המוצגים בבת אחת"
-
-#: js/strings.js:284
-msgctxt "fh"
-msgid "Display the further subpages as cards or as a compact list"
-msgstr "הצג את דפי המשנה הנוספים ככרטיסים או כרשימה קומפקטית"
-
-#: js/strings.js:285
-msgctxt "fh"
-msgid "Optional headline shown above the price plans"
-msgstr "כותרת אופציונלית המוצגת מעל תוכניות המחיר"
-
-#: js/strings.js:286
-msgctxt "fh"
-msgid "Short text shown below the headline"
-msgstr "טקסט קצר המוצג מתחת לכותרת"
-
-#: js/strings.js:287
-msgctxt "fh"
-msgid "Price plans shown side by side"
-msgstr "תוכניות מחיר המוצגות זו לצד זו"
-
-#: js/strings.js:288
-msgctxt "fh"
-msgid "Name of the price plan"
-msgstr "שם תוכנית המחיר"
-
-#: js/strings.js:289
-msgctxt "fh"
-msgid "Role granted to customers after the payment to access protected pages"
-msgstr "התפקיד המוענק ללקוחות לאחר התשלום לגישה לדפים מוגנים"
-
-#: js/strings.js:290
-msgctxt "fh"
-msgid "Prices of the plan, e.g. monthly and yearly"
-msgstr "מחירי התוכנית, למשל חודשי ושנתי"
-
-#: js/strings.js:291
-msgctxt "fh"
-msgid "Recurring subscription or one-time payment"
-msgstr "מנוי מתחדש או תשלום חד-פעמי"
-
-#: js/strings.js:292
-msgctxt "fh"
-msgid "Number of days between two payments, e.g. 30 for monthly"
-msgstr "מספר הימים בין שני תשלומים, למשל 30 עבור חודשי"
-
-#: js/strings.js:293
-msgctxt "fh"
-msgid "Three letter ISO currency code, e.g. EUR or USD"
-msgstr "קוד מטבע ISO בן שלוש אותיות, למשל EUR או USD"
-
-#: js/strings.js:294
-msgctxt "fh"
-msgid "Price ID or amount used by the payment provider"
-msgstr "מזהה המחיר או הסכום המשמש את ספק התשלומים"
-
-#: js/strings.js:295
-msgctxt "fh"
-msgid "Formatted price shown to visitors, e.g. €9.99"
-msgstr "מחיר מעוצב המוצג למבקרים, למשל €9.99"
-
-#: js/strings.js:296
-msgctxt "fh"
-msgid "Numeric price shown if no formatted price is set"
-msgstr "מחיר מספרי המוצג אם לא הוגדר מחיר מעוצב"
-
-#: js/strings.js:297
-msgctxt "fh"
-msgid "Text shown after the price, e.g. per month"
-msgstr "טקסט המוצג אחרי המחיר, למשל לחודש"
-
-#: js/strings.js:298
-msgctxt "fh"
-msgid "Short description of the price plan"
-msgstr "תיאור קצר של תוכנית המחיר"
-
-#: js/strings.js:299
-msgctxt "fh"
-msgid "List of the features included in the plan"
-msgstr "רשימת התכונות הכלולות בתוכנית"
-
-#: js/strings.js:300
-msgctxt "fh"
-msgid "Emphasize this plan compared to the others"
-msgstr "הדגש תוכנית זו בהשוואה לאחרות"
-
-#: js/strings.js:301
-msgctxt "fh"
-msgid "Short label shown on the highlighted plan, e.g. Popular"
-msgstr "תווית קצרה המוצגת על התוכנית המודגשת, למשל פופולרי"
-
-#: js/strings.js:302
-msgctxt "fh"
-msgid "Optional headline shown above the questions"
-msgstr "כותרת אופציונלית המוצגת מעל השאלות"
-
-#: js/strings.js:303
-msgctxt "fh"
-msgid "Questions and answers shown as expandable list"
-msgstr "שאלות ותשובות המוצגות כרשימה הניתנת להרחבה"
-
-#: js/strings.js:304
-msgctxt "fh"
-msgid "Question asked by visitors"
-msgstr "שאלה שנשאלת על ידי המבקרים"
-
-#: js/strings.js:305
-msgctxt "fh"
-msgid "Answer to the question"
-msgstr "תשובה לשאלה"
-
-#: js/strings.js:306
-msgctxt "fh"
-msgid "Optional headline shown above the timeline"
-msgstr "כותרת אופציונלית המוצגת מעל ציר הזמן"
-
-#: js/strings.js:307
-msgctxt "fh"
-msgid ""
-"Show the steps one below the other or side by side, side by side suits up to "
-"five steps"
-msgstr ""
-"הצגת השלבים זה מתחת לזה או זה לצד זה, תצוגה זה לצד זה מתאימה לעד חמישה שלבים"
-
-#: js/strings.js:308
-msgctxt "fh"
-msgid "Steps or events in the order they happen"
-msgstr "שלבים או אירועים לפי סדר התרחשותם"
-
-#: js/strings.js:309
-msgctxt "fh"
-msgid ""
-"Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
-msgstr ""
-"תאריך, תקופה או שלב אופציונליים המוצגים מעל הכותרת, למשל 2024 או שבוע 1"
-
-#: js/strings.js:310
-msgctxt "fh"
-msgid "Name of the step or event"
-msgstr "שם השלב או האירוע"
-
-#: js/strings.js:311
-msgctxt "fh"
-msgid "Description of the step or event"
-msgstr "תיאור השלב או האירוע"
-
-#: js/strings.js:312
-msgctxt "fh"
-msgid "Optional headline shown above the table of contents"
-msgstr "כותרת אופציונלית המוצגת מעל תוכן העניינים"
-
-#: js/strings.js:313
-msgctxt "fh"
-msgid "Optional headline shown above the contact form"
-msgstr "כותרת אופציונלית המוצגת מעל טופס יצירת הקשר"
-
-#: js/strings.js:314
-msgctxt "fh"
-msgid "Optional text shown between headline and contact form"
-msgstr "טקסט אופציונלי המוצג בין הכותרת לטופס יצירת הקשר"
-
-#: js/strings.js:315
-msgctxt "fh"
-msgid "Form fields shown to visitors in this order"
-msgstr "שדות הטופס המוצגים למבקרים בסדר זה"
-
-#: js/strings.js:316
-msgctxt "fh"
-msgid "Select a form field or enter your own name"
-msgstr "בחר שדה טופס או הזן שם משלך"
-
-#: js/strings.js:317
-msgctxt "fh"
-msgid "Visitors must fill out this field"
-msgstr "המבקרים חייבים למלא שדה זה"
-
-#: js/strings.js:318
-msgctxt "fh"
-msgid "Type of input shown to visitors"
-msgstr "סוג הקלט המוצג למבקרים"
-
-#: js/strings.js:319
-msgctxt "fh"
-msgid "Choices for selection inputs, one per line"
-msgstr "אפשרויות לשדות בחירה, אחת בכל שורה"
-
-#: js/strings.js:320
-msgctxt "fh"
-msgid ""
-"Maximum number of images or PDF files visitors can attach, 0 disables uploads"
-msgstr "המספר המרבי של תמונות או קובצי PDF שמבקרים יכולים לצרף, 0 משבית העלאות"
-
-#: js/strings.js:321
-msgctxt "fh"
-msgid ""
-"Summary of the page shown in search results, 150 to 160 characters "
-"recommended"
-msgstr "תקציר הדף המוצג בתוצאות החיפוש, מומלצים 150 עד 160 תווים"
-
-#: js/strings.js:322
-msgctxt "fh"
-msgid "Comma separated list of keywords describing the page"
-msgstr "רשימת מילות מפתח מופרדות בפסיקים המתארות את הדף"
-
-#: js/strings.js:323
-msgctxt "fh"
-msgid "Title shown when the page is shared in social media"
-msgstr "כותרת המוצגת כאשר הדף משותף ברשתות חברתיות"
-
-#: js/strings.js:324
-msgctxt "fh"
-msgid "Summary shown when the page is shared in social media"
-msgstr "תקציר המוצג כאשר הדף משותף ברשתות חברתיות"
-
-#: js/strings.js:325
-msgctxt "fh"
-msgid "Preview image shown when the page is shared in social media"
-msgstr "תמונת תצוגה מקדימה המוצגת כאשר הדף משותף ברשתות חברתיות"
-
-#: js/strings.js:326
-msgctxt "fh"
-msgid "Original URL if the same content is available at several addresses"
-msgstr "הכתובת המקורית אם אותו תוכן זמין במספר כתובות"
-
-#: js/strings.js:327
-msgctxt "fh"
-msgid "Allow or prevent search engines from listing this page"
-msgstr "אפשר או מנע ממנועי חיפוש להציג דף זה ברשימת התוצאות"
-
-#: js/strings.js:328
-msgctxt "fh"
-msgid "Allow or prevent search engines from following the links on this page"
-msgstr "אפשר או מנע ממנועי חיפוש לעקוב אחר הקישורים בדף זה"
-
-#: js/strings.js:329
-msgctxt "fh"
-msgid "Name of the website shown in the browser tab and search results"
-msgstr "שם האתר המוצג בכרטיסיית הדפדפן ובתוצאות החיפוש"
-
-#: js/strings.js:330
-msgctxt "fh"
-msgid "Logo shown in the page header"
-msgstr "לוגו המוצג בכותרת הדף"
-
-#: js/strings.js:331
-msgctxt "fh"
-msgid "Logo variant used for dark backgrounds"
-msgstr "גרסת הלוגו המשמשת לרקעים כהים"
-
-#: js/strings.js:332
-msgctxt "fh"
-msgid "Small square image shown in browser tabs and bookmarks"
-msgstr "תמונה מרובעת קטנה המוצגת בכרטיסיות הדפדפן ובסימניות"
-
-#: js/strings.js:333
-msgctxt "fh"
-msgid "Comma separated list of fonts used for the text"
-msgstr "רשימת גופנים מופרדים בפסיקים המשמשים לטקסט"
-
-#: js/strings.js:334
-msgctxt "fh"
-msgid "Default text color"
-msgstr "צבע הטקסט המוגדר כברירת מחדל"
-
-#: js/strings.js:335
-msgctxt "fh"
-msgid "Background color of the pages"
-msgstr "צבע הרקע של הדפים"
-
-#: js/strings.js:336
-msgctxt "fh"
-msgid "Background color of selected text"
-msgstr "צבע הרקע של טקסט מסומן"
-
-#: js/strings.js:337
-msgctxt "fh"
-msgid "Color of elements with strong contrast to the background"
-msgstr "צבע האלמנטים בעלי ניגודיות חזקה מול הרקע"
-
-#: js/strings.js:338
-msgctxt "fh"
-msgid "Contrast color when hovering or focusing an element"
-msgstr "צבע הניגודיות בעת מעבר עכבר או פוקוס על אלמנט"
-
-#: js/strings.js:339
-msgctxt "fh"
-msgid "Text color on elements using the contrast color"
-msgstr "צבע הטקסט על אלמנטים המשתמשים בצבע הניגודיות"
-
-#: js/strings.js:340
-msgctxt "fh"
-msgid "Main brand color used for links and buttons"
-msgstr "צבע המותג הראשי המשמש לקישורים ולכפתורים"
-
-#: js/strings.js:341
-msgctxt "fh"
-msgid "Background color of primary buttons and highlights"
-msgstr "צבע הרקע של הכפתורים הראשיים וההדגשות"
-
-#: js/strings.js:342
-msgctxt "fh"
-msgid "Primary color when hovering or focusing an element"
-msgstr "הצבע הראשי בעת מעבר עכבר או פוקוס על אלמנט"
-
-#: js/strings.js:343
-msgctxt "fh"
-msgid "Primary background color when hovering or focusing an element"
-msgstr "צבע הרקע הראשי בעת מעבר עכבר או פוקוס על אלמנט"
-
-#: js/strings.js:344
-msgctxt "fh"
-msgid "Additional color used for less important links and buttons"
-msgstr "צבע נוסף המשמש לקישורים וכפתורים פחות חשובים"
-
-#: js/strings.js:345
-msgctxt "fh"
-msgid "Background color of secondary buttons"
-msgstr "צבע הרקע של הכפתורים המשניים"
-
-#: js/strings.js:346
-msgctxt "fh"
-msgid "Secondary color when hovering or focusing an element"
-msgstr "הצבע המשני בעת מעבר עכבר או פוקוס על אלמנט"
-
-#: js/strings.js:347
-msgctxt "fh"
-msgid "Secondary background color when hovering or focusing an element"
-msgstr "צבע הרקע המשני בעת מעבר עכבר או פוקוס על אלמנט"
-
-#: js/strings.js:348
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
-msgstr "עיגול הפינות כאורך CSS, למשל 0.25rem או 0 לפינות חדות"
-
-#: js/strings.js:349
-msgctxt "fh"
-msgid "Character shown between the breadcrumb links"
-msgstr "תו המוצג בין קישורי פירורי הלחם"
-
-#: js/strings.js:350
-msgctxt "fh"
-msgid "HTTPS link to contact the security team, e.g. a form"
-msgstr "קישור HTTPS ליצירת קשר עם צוות האבטחה, למשל טופס"
-
-#: js/strings.js:351
-msgctxt "fh"
-msgid "E-mail address for reporting security issues"
-msgstr "כתובת דוא״ל לדיווח על בעיות אבטחה"
-
-#: js/strings.js:352
-msgctxt "fh"
-msgid "Date after which the security information is considered outdated"
-msgstr "התאריך שאחריו נחשב מידע האבטחה כמיושן"
-
-#: js/strings.js:353
-msgctxt "fh"
-msgid "HTTPS link to the public key for encrypted messages"
-msgstr "קישור HTTPS למפתח הציבורי להודעות מוצפנות"
-
-#: js/strings.js:354
-msgctxt "fh"
-msgid "HTTPS link to the page thanking security researchers"
-msgstr "קישור HTTPS לדף התודה לחוקרי האבטחה"
-
-#: js/strings.js:355
-msgctxt "fh"
-msgid "Comma separated language codes for security reports, e.g. en, de"
-msgstr "קודי שפה מופרדים בפסיקים לדוחות אבטחה, למשל en, de"
-
-#: js/strings.js:356
-msgctxt "fh"
-msgid "HTTPS URL where the security.txt file is published"
-msgstr "כתובת URL בפרוטוקול HTTPS שבה מפורסם קובץ ה-security.txt"
-
-#: js/strings.js:357
-msgctxt "fh"
-msgid "HTTPS link to the security and disclosure policy"
-msgstr "קישור HTTPS למדיניות האבטחה והגילוי"
-
-#: js/strings.js:358
-msgctxt "fh"
-msgid "HTTPS link to open security related jobs"
-msgstr "קישור HTTPS למשרות פנויות הקשורות לאבטחה"
-
-#: js/strings.js:359
-msgctxt "fh"
-msgid "HTTPS link to the CSAF provider metadata"
-msgstr "קישור HTTPS למטא-נתונים של ספק CSAF"
-
-#: js/strings.js:360
-msgctxt "fh"
-msgid "Additional rules added to the robots.txt file for web crawlers"
-msgstr "כללים נוספים המתווספים לקובץ robots.txt עבור סורקי אינטרנט"
-
-#: js/strings.js:361
-msgctxt "fh"
-msgid "Custom CSS code added to all pages"
-msgstr "קוד CSS מותאם אישית המתווסף לכל הדפים"
-
-#: js/strings.js:362
-msgctxt "fh"
-msgid "Custom JavaScript code added to all pages"
-msgstr "קוד JavaScript מותאם אישית המתווסף לכל הדפים"
-
-#: js/strings.js:363
-msgctxt "fh"
-msgid "Comma separated list of fonts used for headlines"
-msgstr "רשימת גופנים מופרדים בפסיקים המשמשים לכותרות"
-
-#: js/strings.js:366
-msgctxt "op"
-msgid "Name"
-msgstr "שם"
-
-#: js/strings.js:367
-msgctxt "op"
-msgid "Company"
-msgstr "חברה"
-
-#: js/strings.js:368
-msgctxt "op"
-msgid "Telephone"
-msgstr "טלפון"
-
-#: js/strings.js:369
-msgctxt "op"
-msgid "E-Mail"
-msgstr "דואר אלקטרוני"
-
-#: js/strings.js:370
-msgctxt "op"
-msgid "Subject"
-msgstr "נושא"
-
-#: js/strings.js:371
-msgctxt "op"
-msgid "Text"
-msgstr "טקסט"
-
-#: js/strings.js:372
-msgctxt "op"
-msgid "Text area"
-msgstr "אזור טקסט"
-
-#: js/strings.js:373
-msgctxt "op"
-msgid "Selection"
-msgstr "רשימת בחירה"
-
-#: js/strings.js:374
-msgctxt "op"
-msgid "Follow"
-msgstr "מעקב אחר קישורים"
-
-#: js/strings.js:375
-msgctxt "op"
-msgid "Index"
-msgstr "הוספה לאינדקס"
-
-#: js/strings.js:376
-msgctxt "op"
-msgid "No follow"
-msgstr "ללא מעקב אחר קישורים"
-
-#: js/strings.js:377
-msgctxt "op"
-msgid "No index"
-msgstr "ללא הוספה לאינדקס"
-
-#: js/strings.js:378
-msgctxt "op"
-msgid "Subscription"
-msgstr "מנוי"
-
-#: js/strings.js:379
-msgctxt "op"
-msgid "One-time payment"
-msgstr "תשלום חד-פעמי"
-
-#: js/strings.js:380
-msgctxt "op"
-msgid "Auto"
-msgstr "אוטומטי"
-
-#: js/strings.js:381
-msgctxt "op"
-msgid "Badges"
-msgstr "תגים"
-
-#: js/strings.js:382
-msgctxt "op"
-msgid "Cards"
-msgstr "כרטיסים"
-
-#: js/strings.js:383
-msgctxt "op"
-msgid "Default"
-msgstr "ברירת מחדל"
-
-#: js/strings.js:384
-msgctxt "op"
-msgid "End"
-msgstr "סוף"
-
-#: js/strings.js:385
-msgctxt "op"
-msgid "Figures"
-msgstr "מספרים"
-
-#: js/strings.js:386
-msgctxt "op"
-msgid "First column"
-msgstr "העמודה הראשונה"
-
-#: js/strings.js:387
-msgctxt "op"
-msgid "First row"
-msgstr "השורה הראשונה"
-
-#: js/strings.js:388
-msgctxt "op"
-msgid "First row and column"
-msgstr "השורה והעמודה הראשונה"
-
-#: js/strings.js:389
-msgctxt "op"
-msgid "Grid end"
-msgstr "סוף הרשת"
-
-#: js/strings.js:390
-msgctxt "op"
-msgid "Grid start"
-msgstr "תחילת הרשת"
-
-#: js/strings.js:391
-msgctxt "op"
-msgid "Horizontal"
-msgstr "אופקי"
-
-#: js/strings.js:392
-msgctxt "op"
-msgid "Latest"
-msgstr "החדש ביותר"
-
-#: js/strings.js:393
-msgctxt "op"
-msgid "List"
-msgstr "רשימה"
-
-#: js/strings.js:394
-msgctxt "op"
-msgid "None"
-msgstr "אין"
-
-#: js/strings.js:395
-msgctxt "op"
-msgid "Oldest"
-msgstr "הישן ביותר"
-
-#: js/strings.js:396
-msgctxt "op"
-msgid "Position"
-msgstr "מיקום"
-
-#: js/strings.js:397
-msgctxt "op"
-msgid "Start"
-msgstr "התחלה"
-
-#: js/strings.js:398
-msgctxt "op"
-msgid "Vertical"
-msgstr "אנכי"
-
-#: js/strings.js:399
-msgctxt "op"
-msgid "Zoom"
-msgstr "זום"
-
-#: js/strings.js:402
+#: js/strings.js:67
 msgctxt "ai"
 msgid "Done"
 msgstr "בוצע"
 
-#: js/strings.js:403
+#: js/strings.js:68
 msgctxt "ai"
 msgid "Already exists"
 msgstr "כבר קיים"
 
-#: js/strings.js:406
-msgctxt "sg"
-msgid "expert"
-msgstr "מתקדם"
-
-#: js/strings.js:407
-msgctxt "sg"
-msgid "theme"
-msgstr "ערכת נושא"
-
-#: js/strings.js:408
-msgctxt "st"
-msgid "website"
-msgstr "אתר אינטרנט"
-
-#: js/strings.js:409
-msgctxt "st"
-msgid "logo"
-msgstr "לוגו"
-
-#: js/strings.js:410
-msgctxt "st"
-msgid "logo-alternative"
-msgstr "לוגו חלופי"
-
-#: js/strings.js:411
-msgctxt "st"
-msgid "icon"
-msgstr "סמל"
-
-#: js/utils.js:36 js/views/PageList.vue:125
+#: js/utils.js:36
+#: js/views/PageList.vue:131
 msgid "No cache"
 msgstr "ללא מטמון"
 
@@ -4300,11 +2789,13 @@ msgid_plural "%{num} hours"
 msgstr[0] "%{num} שעה"
 msgstr[1] "%{num} שעות"
 
-#: js/utils.js:317 js/views/PageList.vue:117
+#: js/utils.js:317
+#: js/views/PageList.vue:123
 msgid "Disabled"
 msgstr "מושבת"
 
-#: js/utils.js:318 js/views/PageList.vue:115
+#: js/utils.js:318
+#: js/views/PageList.vue:121
 msgid "Enabled"
 msgstr "מופעל"
 
@@ -4312,48 +2803,43 @@ msgstr "מופעל"
 msgid "Hidden in navigation"
 msgstr "מוסתר בניווט"
 
-#: js/variants.js:115
+#: js/variants.js:214
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "דפים בשפת המקור שלהם נמחקים רק כדפים שלמים"
 
-#: js/variants.js:123
+#: js/variants.js:222
 msgid "Delete language"
 msgstr "מחק שפה"
 
-#: js/variants.js:124
+#: js/variants.js:223
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "להעביר דף %{num} ב-\"%{lang}\" לאשפה?"
 msgstr[1] "להעביר %{num} דפים ב-\"%{lang}\" לאשפה?"
 
-#: js/variants.js:132
+#: js/variants.js:231
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "דף %{num} בשפת המקור שלו מדולג."
 msgstr[1] "%{num} דפים בשפת המקור שלהם מדולגים."
 
-#: js/variants.js:146
+#: js/variants.js:245
 msgid "Error trashing language"
 msgstr "שגיאה בהעברת השפה לאשפה"
 
-#: js/variants.js:184
+#: js/variants.js:283
 msgid "Error purging language"
 msgstr "שגיאה במחיקה לצמיתות של השפה"
 
-#: js/variants.js:206
+#: js/variants.js:305
 msgid "Error ignoring changes"
 msgstr "שגיאה בהתעלמות מהשינויים"
 
-#: js/variants.js:275
-msgid ""
-"Nothing to translate, the pages are up to date or already being translated"
+#: js/variants.js:364
+msgid "Nothing to translate, the pages are up to date or already being translated"
 msgstr "אין מה לתרגם, הדפים עדכניים או כבר מתורגמים"
 
-#: js/variants.js:281
-msgid "Translation finished"
-msgstr "התרגום הסתיים"
-
-#: js/variants.js:284
+#: js/variants.js:371
 msgid "Error translating pages"
 msgstr "שגיאה בתרגום הדפים"
 
@@ -4362,24 +2848,25 @@ msgid "Error adding access value"
 msgstr "שגיאה בהוספת ערך גישה"
 
 #: js/views/AccessList.vue:184
-msgid ""
-"Existing restrictions are not changed and will continue to reference the "
-"purged access values."
-msgstr ""
-"ההגבלות הקיימות אינן משתנות וימשיכו להתייחס לערכי הגישה שנמחקו לצמיתות."
+msgid "Existing restrictions are not changed and will continue to reference the purged access values."
+msgstr "ההגבלות הקיימות אינן משתנות וימשיכו להתייחס לערכי הגישה שנמחקו לצמיתות."
 
 #: js/views/AccessList.vue:203
 msgid "Error purging access values"
 msgstr "שגיאה במחיקה לצמיתות של ערכי הגישה"
 
-#: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:236
+#: js/views/AccessList.vue:235
+#: js/views/ElementList.vue:45
+#: js/views/FileList.vue:45
+#: js/views/PageList.vue:261
 #: js/views/PluginPanel.vue:70
 msgid "Close navigation"
 msgstr "סגור ניווט"
 
-#: js/views/AccessList.vue:235 js/views/ElementList.vue:45
-#: js/views/FileList.vue:45 js/views/PageList.vue:236
+#: js/views/AccessList.vue:235
+#: js/views/ElementList.vue:45
+#: js/views/FileList.vue:45
+#: js/views/PageList.vue:261
 #: js/views/PluginPanel.vue:70
 msgid "Open navigation"
 msgstr "פתח ניווט"
@@ -4388,7 +2875,8 @@ msgstr "פתח ניווט"
 msgid "Roles"
 msgstr "תפקידים"
 
-#: js/views/AccessList.vue:289 js/views/AccessList.vue:334
+#: js/views/AccessList.vue:289
+#: js/views/AccessList.vue:334
 msgid "Add access value"
 msgstr "הוסף ערך גישה"
 
@@ -4416,17 +2904,20 @@ msgstr "האלמנט נשמר בהצלחה"
 msgid "Error saving element"
 msgstr "שגיאה בשמירת אלמנט"
 
-#: js/views/ElementDetail.vue:220 js/views/ElementDetail.vue:222
+#: js/views/ElementDetail.vue:220
+#: js/views/ElementDetail.vue:222
 #: js/views/ElementDetail.vue:227
 msgid "Element"
 msgstr "אלמנט"
 
-#: js/views/ElementDetail.vue:229 js/views/FileDetail.vue:255
+#: js/views/ElementDetail.vue:229
+#: js/views/FileDetail.vue:255
 msgid "Used by"
 msgstr "משמש על ידי"
 
-#: js/views/ElementList.vue:74 js/views/FileList.vue:74
-#: js/views/PageList.vue:265
+#: js/views/ElementList.vue:74
+#: js/views/FileList.vue:74
+#: js/views/PageList.vue:290
 msgid "Press Enter to open the chat"
 msgstr "לחץ על Enter כדי לפתוח את הצ׳אט"
 
@@ -4434,11 +2925,11 @@ msgstr "לחץ על Enter כדי לפתוח את הצ׳אט"
 msgid "AI can find and manage shared elements based on your input"
 msgstr "בינה מלאכותית יכולה למצוא ולנהל אלמנטים משותפים על סמך הקלט שלך"
 
-#: js/views/ElementList.vue:117 js/views/FileList.vue:117
-#: js/views/PageList.vue:316
+#: js/views/ElementList.vue:117
+#: js/views/FileList.vue:117
+#: js/views/PageList.vue:341
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr ""
-"לחץ על Enter או על החץ כדי לפתוח את עוזר הבינה המלאכותית ולשפר את התוכן בצ׳אט"
+msgstr "לחץ על Enter או על החץ כדי לפתוח את עוזר הבינה המלאכותית ולשפר את התוכן בצ׳אט"
 
 #: js/views/FileDetail.vue:123
 msgid "Error fetching file"
@@ -4448,7 +2939,8 @@ msgstr "שגיאה באחזור הקובץ"
 msgid "File saved successfully"
 msgstr "הקובץ נשמר בהצלחה"
 
-#: js/views/FileDetail.vue:246 js/views/FileDetail.vue:248
+#: js/views/FileDetail.vue:246
+#: js/views/FileDetail.vue:248
 #: js/views/FileDetail.vue:253
 msgid "File"
 msgstr "קובץ"
@@ -4473,126 +2965,87 @@ msgstr "גישה נדחתה"
 msgid "Error"
 msgstr "שגיאה"
 
-#: js/views/PageDetail.vue:200
-msgid ""
-"The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-"page\", use get-page with that ID."
-msgstr ""
-"המשתמש צופה בדף עם המזהה \"%{id}\". כשהוא מתייחס ל\"דף הזה\", השתמש ב-get-"
-"page עם המזהה הזה."
+#: js/views/PageDetail.vue:192
+msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
+msgstr "המשתמש צופה בדף עם המזהה \"%{id}\". כשהוא מתייחס ל\"דף הזה\", השתמש ב-get-page עם המזהה הזה."
 
-#: js/views/PageDetail.vue:513 js/views/PageDetail.vue:789
+#: js/views/PageDetail.vue:504
+#: js/views/PageDetail.vue:802
 msgid "Rate this page and suggest improvements"
 msgstr "דרג את הדף הזה והצע שיפורים"
 
-#: js/views/PageDetail.vue:569
+#: js/views/PageDetail.vue:560
 msgid "Page saved successfully"
 msgstr "הדף נשמר בהצלחה"
 
-#: js/views/PageDetail.vue:645
-msgid "Marked as up to date"
-msgstr "סומן כמעודכן"
-
-#: js/views/PageDetail.vue:648
-msgid "Error marking as up to date"
-msgstr "שגיאה בסימון כמעודכן"
-
-#: js/views/PageDetail.vue:669
-msgid ""
-"Nothing to translate, the page is up to date or already being translated"
-msgstr "אין מה לתרגם, הדף עדכני או כבר מתורגם"
-
-#: js/views/PageDetail.vue:675
+#: js/views/PageDetail.vue:624
+#: js/views/PageDetail.vue:679
 msgid "Translation saved as draft, review the changes"
 msgstr "התרגום נשמר כטיוטה, בדוק את השינויים"
 
-#: js/views/PageDetail.vue:677
-msgid "Error translating page"
-msgstr "שגיאה בתרגום הדף"
+#: js/views/PageDetail.vue:648
+msgid "Marked as up to date"
+msgstr "סומן כמעודכן"
 
-#: js/views/PageDetail.vue:752 js/views/PageDetail.vue:811
-#: js/views/PageDetail.vue:830
+#: js/views/PageDetail.vue:651
+msgid "Error marking as up to date"
+msgstr "שגיאה בסימון כמעודכן"
+
+#: js/views/PageDetail.vue:672
+msgid "Nothing to translate, the page is up to date or already being translated"
+msgstr "אין מה לתרגם, הדף עדכני או כבר מתורגם"
+
+#: js/views/PageDetail.vue:746
+#: js/views/PageDetail.vue:809
+#: js/views/PageDetail.vue:828
 msgid "Page"
 msgstr "דף"
 
-#: js/views/PageDetail.vue:774
+#: js/views/PageDetail.vue:773
 msgid "Source"
 msgstr "מקור"
 
-#: js/views/PageDetail.vue:778
+#: js/views/PageDetail.vue:777
 msgid "Trashed"
 msgstr "באשפה"
 
-#: js/views/PageDetail.vue:797
-msgid "Translate changes of the source language"
-msgstr "תרגם את השינויים של שפת המקור"
-
-#: js/views/PageDetail.vue:804
-msgid "Ignore changes of the source language"
-msgstr "התעלם מהשינויים של שפת המקור"
-
-#: js/views/PageDetail.vue:816
+#: js/views/PageDetail.vue:814
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "עורך תוכן"
 
-#: js/views/PageDetail.vue:833
+#: js/views/PageDetail.vue:831
 msgid "Metrics"
 msgstr "מדדים"
 
-#: js/views/PageList.vue:102
+#: js/views/PageList.vue:108
 msgid "view"
 msgstr "תצוגה"
 
-#: js/views/PageList.vue:105
+#: js/views/PageList.vue:111
 msgid "List"
 msgstr "רשימה"
 
-#: js/views/PageList.vue:112
+#: js/views/PageList.vue:118
 msgid "status"
 msgstr "סטטוס"
 
-#: js/views/PageList.vue:116
+#: js/views/PageList.vue:122
 msgid "Hidden"
 msgstr "מוסתר"
 
-#: js/views/PageList.vue:122
+#: js/views/PageList.vue:128
 msgid "cache"
 msgstr "מטמון"
 
-#: js/views/PageList.vue:133
+#: js/views/PageList.vue:139
 msgid "translation"
 msgstr "תרגום"
 
-#: js/views/PageList.vue:291
+#: js/views/PageList.vue:316
 msgid "Generate page based on prompt"
 msgstr "צור דף בהתבסס על ההנחיה"
 
-#: js/views/PageList.vue:309
-msgid ""
-"AI can create a page and content based on your input and add it to the page "
-"tree"
-msgstr ""
-"בינה מלאכותית יכולה ליצור דף ותוכן על סמך הקלט שלך ולהוסיף אותם לעץ הדפים"
-
-#~ msgid "Translation is still running in the background"
-#~ msgstr "התרגום עדיין פועל ברקע"
-
-#~ msgid "Change language"
-#~ msgstr "שנה שפה"
-
-#~ msgid "No page schema for \"content\" found"
-#~ msgstr "לא נמצאה סכימת דף עבור \"content\""
-
-#~ msgid "Translate page"
-#~ msgstr "תרגם דף"
-
-#~ msgctxt "sd"
-#~ msgid "Contact form with configurable fields"
-#~ msgstr "טופס יצירת קשר עם שדות הניתנים להגדרה"
-
-#~ msgid "%{name} (%{lang}, path: %{path}, domain: %{domain})"
-#~ msgstr "%{name} (%{lang}, נתיב: %{path}, דומיין: %{domain})"
-
-#~ msgid "%{name} (%{lang}, path: %{path})"
-#~ msgstr "%{name} (%{lang}, נתיב: %{path})"
+#: js/views/PageList.vue:334
+msgid "AI can create a page and content based on your input and add it to the page tree"
+msgstr "בינה מלאכותית יכולה ליצור דף ותוכן על סמך הקלט שלך ולהוסיף אותם לעץ הדפים"

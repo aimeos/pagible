@@ -6,6 +6,7 @@ import { filechanges, plaintext, restore, sections } from '../history'
 import CmsDialog from './Dialog.vue'
 import HistoryField from './HistoryField.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
+import { typeLabel } from '../i18n'
 
 export default {
   components: { CmsDialog, HistoryField, LoadingSpinner },
@@ -48,6 +49,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     apply(card) {
       if (this.readonly || !this.selected(card)) return
       const source = this.current || this.cards[0].after
@@ -60,7 +65,7 @@ export default {
       const element = Object.values((block.after ? card.after : card.before).elements || {}).find(element => element.id === item?.refid)
       const title = plaintext(element?.name || item?.data?.title || item?.data?.text || '').replace(/\s+/g, ' ').slice(0, 60)
       const type = item?.type === 'reference' ? this.$gettext('Shared element')
-        : this.$pgettext('st', this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block')).replace('::', ' ')
+        : this.typeLabel(this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block'))
       return type + (title ? ': ' + title : '')
     },
 

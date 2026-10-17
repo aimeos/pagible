@@ -1,0 +1,241 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Extracts the translatable strings of theme schema.json files and compiles the
+ * admin translation catalogs of the theme packages.
+ *
+ * The strings use the same contexts as the admin backend ("st" element names,
+ * "sd" element descriptions, "sg" groups, "fn" field names, "fh" field hints and
+ * "op" option labels). Strings the admin or the base theme catalog already contain
+ * are skipped because these catalogs are merged first and always win. Elements
+ * without label use their prefixed type as name (e.g. "aura::theme") like the admin.
+ *
+ * Usage:
+ *   php bin/schema-i18n extract theme themes/*   Updates <package>/i18n/messages.pot and <locale>.po
+ *   php bin/schema-i18n compile theme themes/*   Writes <package>/public/i18n/<locale>.json
+ *
+ * The base theme is always processed first. New .po entries are filled from existing
+ * translations of the package, the admin catalog and the base theme so translations
+ * aren't lost or translated again.
+ */
+
+use Gettext\Generator\PoGenerator;
+use Gettext\Loader\PoLoader;
+use Gettext\Translation;
+use Gettext\Translations;
+
+$root = realpath(__DIR__ . '/..');
+
+require $root . '/vendor/autoload.php';
+
+$admin = $root . '/admin/i18n';
+$base = $root . '/theme';
+$locales = preg_split('/\s+/', trim(file_get_contents($admin . '/LINGUAS')));
+
+[$command, $packages] = [$argv[1] ?? '', array_slice($argv, 2)];
+
+if (!in_array($command, ['extract', 'compile']) || empty($packages)) {
+    fwrite(STDERR, "Usage: php bin/schema-i18n extract|compile <package-dir> ...\n");
+    exit(1);
+}
+
+
+/**
+ * Adds the translatable strings of the schema fields to the list.
+ */
+function fields(array &$list, array $fields, string $path): void
+{
+    foreach ($fields as $code => $field) {
+        if (!is_array($field)) {
+            continue;
+        }
+
+        entry($list, 'fn', $field['label'] ?? $code, "$path.$code");
+        entry($list, 'fh', $field['hint'] ?? null, "$path.$code");
+
+        foreach ((array) ($field['options'] ?? []) as $option) {
+            entry($list, 'op', is_array($option) ? $option['label'] ?? null : null, "$path.$code");
+        }
+
+        if (is_array($field['item'] ?? null)) {
+            fields($list, $field['item'], "$path.$code");
+        }
+    }
+}
+
+
+/**
+ * Adds one string to the list, skipping strings without letters like "1" or "1:2".
+ */
+function entry(array &$list, string $context, mixed $msgid, string $path): void
+{
+    if (is_string($msgid) && preg_match('/\p{L}/u', $msgid)) {
+        $list[$context . "\x04" . $msgid] ??= [$context, $msgid, []];
+        $list[$context . "\x04" . $msgid][2][] = $path;
+    }
+}
+
+
+/**
+ * Returns the name the theme registers its schema with, e.g. "aura" for "aura::theme".
+ */
+function name(string $dir): string
+{
+    foreach (glob($dir . '/src/*ServiceProvider.php') as $file) {
+        if (preg_match('/Schema::register\(\s*[^,]+,\s*[\'"]([^\'"]+)[\'"]/', file_get_contents($file), $match)) {
+            return $match[1];
+        }
+    }
+
+    return basename($dir);
+}
+
+
+/**
+ * Returns the translatable strings of the schema.json file in the given package.
+ */
+function collect(string $dir, ?string $prefix): array
+{
+    $schema = json_decode(file_get_contents($dir . '/schema.json'), true, 512, JSON_THROW_ON_ERROR);
+    $list = [];
+
+    foreach (['content', 'meta', 'config'] as $section) {
+        foreach ($schema[$section] ?? [] as $key => $element) {
+            entry($list, 'st', $element['label'] ?? ($prefix ? "$prefix::$key" : $key), "$section.$key");
+            entry($list, 'sd', $element['description'] ?? null, "$section.$key");
+            entry($list, 'sg', $element['group'] ?? null, "$section.$key");
+            fields($list, $element['fields'] ?? [], "$section.$key");
+        }
+    }
+
+    return array_values($list);
+}
+
+
+/**
+ * Loads a .po file if it exists.
+ */
+function po(string $file): ?Translations
+{
+    return is_file($file) ? (new PoLoader())->loadFile($file) : null;
+}
+
+
+/**
+ * Returns the first existing translation of the string, obsolete entries included.
+ * Prefixed element names also use the translations of the unprefixed name.
+ */
+function seed(array $sources, string $context, string $msgid): ?string
+{
+    $name = str_contains($msgid, '::') ? substr($msgid, strrpos($msgid, '::') + 2) : $msgid;
+    $msgids = array_unique([$msgid, $name]);
+
+    foreach ($msgids as $id) {
+        foreach ($sources as $source) {
+            $value = $source instanceof Translations
+                ? $source->find($context, $id)?->getTranslation()
+                : $source[$id][$context] ?? null;
+
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+    }
+
+    return null;
+}
+
+
+/**
+ * Updates the messages.pot and the .po files of the package.
+ */
+function extractPackage(string $dir, array $locales, string $admin, string $base): void
+{
+    $isBase = realpath($dir) === realpath($base);
+    $owners = array_filter([po($admin . '/messages.pot'), $isBase ? null : po($base . '/i18n/messages.pot')]);
+    $catalog = Translations::create();
+
+    foreach (collect($dir, $isBase ? null : name($dir)) as [$context, $msgid, $paths]) {
+        foreach ($owners as $owner) {
+            if ($owner->find($context, $msgid)) {
+                continue 2; // owned by the admin or base theme catalog
+            }
+        }
+
+        $translation = Translation::create($context, $msgid);
+
+        $translation->getReferences()->add('schema.json');
+        $translation->getExtractedComments()->add(...$paths);
+
+        $catalog->add($translation);
+    }
+
+    @mkdir($dir . '/i18n', 0775, true);
+
+    $catalog->getHeaders()->set('Content-Type', 'text/plain; charset=UTF-8');
+    (new PoGenerator())->generateFile($catalog, $dir . '/i18n/messages.pot');
+
+    foreach ($locales as $locale) {
+        $file = $dir . '/i18n/' . $locale . '.po';
+        $json = $dir . '/public/i18n/' . $locale . '.json';
+
+        $sources = array_filter([
+            po($file),
+            is_file($json) ? json_decode(file_get_contents($json), true)[$locale] ?? [] : null,
+            po($admin . '/' . $locale . '.po'),
+            $isBase ? null : po($base . '/i18n/' . $locale . '.po'),
+        ]);
+
+        $translations = Translations::create();
+        $translations->getHeaders()->setLanguage($locale)->set('Content-Type', 'text/plain; charset=UTF-8');
+
+        foreach ($catalog as $entry) {
+            $translation = clone $entry;
+
+            if ($value = seed($sources, $entry->getContext(), $entry->getOriginal())) {
+                $translation->translate($value);
+            }
+
+            $translations->add($translation);
+        }
+
+        (new PoGenerator())->generateFile($translations, $file);
+    }
+}
+
+
+/**
+ * Compiles the .po files of the package to the JSON catalogs loaded by the admin backend.
+ */
+function compilePackage(string $dir, array $locales): void
+{
+    @mkdir($dir . '/public/i18n', 0775, true);
+
+    foreach ($locales as $locale) {
+        $messages = [];
+
+        foreach (po($dir . '/i18n/' . $locale . '.po') ?? [] as $translation) {
+            if (!$translation->isDisabled() && $translation->isTranslated()) {
+                $messages[$translation->getOriginal()][$translation->getContext() ?? ''] = $translation->getTranslation();
+            }
+        }
+
+        $content = json_encode([$locale => (object) $messages], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        file_put_contents($dir . '/public/i18n/' . $locale . '.json', $content);
+    }
+}
+
+
+$dirs = array_map(fn($package) => rtrim($package[0] === '/' ? $package : $root . '/' . $package, '/'), $packages);
+// the base theme is processed first because the other themes skip its strings
+usort($dirs, fn($a, $b) => (realpath($b) === realpath($base)) <=> (realpath($a) === realpath($base)));
+
+foreach ($dirs as $dir) {
+    if (!is_file($dir . '/schema.json')) {
+        continue;
+    }
+
+    $command === 'extract' ? extractPackage($dir, $locales, $admin, $base) : compilePackage($dir, $locales);
+    echo "$command: " . substr($dir, strlen($root) + 1) . "\n";
+}

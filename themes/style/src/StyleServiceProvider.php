@@ -14,6 +14,10 @@ class StyleServiceProvider extends Provider
         Schema::register( $basedir, 'style' );
         View::addNamespace( 'style', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'style', '/vendor/cms/style/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/style' )], 'cms-theme' );
     }
 }

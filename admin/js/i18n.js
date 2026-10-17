@@ -49,6 +49,24 @@ export function pluginLabel(panel, translator = gettext) {
     : translator.$gettext(panel.label)
 }
 
+/**
+ * Translates an element type name, e.g. "aura::profile". Prefixed theme types
+ * without a translation of their own use the translation of the unprefixed name.
+ */
+export function typeLabel(type, translator = gettext) {
+  if (!type) return ''
+
+  const label = translator.$pgettext('st', type)
+  const name = type.split('::').pop()
+
+  if (label === type && name !== type) {
+    const unprefixed = translator.$pgettext('st', name)
+    if (unprefixed !== name) return unprefixed
+  }
+
+  return label.replace('::', ' ')
+}
+
 function fetchCatalog(url) {
   if (!cache.has(url)) {
     const promise = fetch(url, {
@@ -69,11 +87,38 @@ function fetchCatalog(url) {
 }
 
 /**
- * Loads the host and package catalogs for one locale into the shared instance.
+ * Adds the messages of the fallback language which are missing in the regional
+ * catalog, e.g. "pt" messages to "pt-BR". Existing messages and contexts are kept.
  */
-export async function load(locale) {
-  const current = ++request
-  const entries = Object.entries(plugins.i18n || {})
+export function mergeFallback(messages, fallback) {
+  const merged = { ...messages }
+
+  for (const [id, value] of Object.entries(fallback || {})) {
+    if (merged[id] === undefined) {
+      merged[id] = value
+    } else if (object(merged[id]) || object(value)) {
+      const entry = object(merged[id]) ? merged[id] : { '': merged[id] }
+      merged[id] = { ...(object(value) ? value : { '': value }), ...entry }
+    }
+  }
+
+  return merged
+}
+
+/**
+ * Returns the base language of a regional locale if it's supported, e.g. "pt" for "pt-BR".
+ */
+function fallbackLocale(locale) {
+  const base = locale.split('-')[0]
+  return base !== locale && gettext.available?.[base] ? base : null
+}
+
+/**
+ * Returns the merged host and package messages of one locale.
+ */
+async function messages(locale) {
+  // the base theme catalog is merged first so its messages win over the other themes
+  const entries = Object.entries(plugins.i18n || {}).sort(([a], [b]) => (b === 'cms') - (a === 'cms'))
   const [core, results] = await Promise.all([
     import(`../i18n/${locale}.json`),
     Promise.allSettled(entries.map(([, url]) => fetchCatalog(url.replace('{locale}', locale))))
@@ -90,8 +135,20 @@ export async function load(locale) {
     }
   })
 
+  return translations[locale] || {}
+}
+
+/**
+ * Loads the host and package catalogs for one locale into the shared instance.
+ * Regional locales use the messages of their base language for missing ones.
+ */
+export async function load(locale) {
+  const current = ++request
+  const base = fallbackLocale(locale)
+  const [own, fallback] = await Promise.all([messages(locale), base ? messages(base) : null])
+
   if (current === request) {
-    gettext.translations = translations
+    gettext.translations = { [locale]: fallback ? mergeFallback(own, fallback) : own }
     gettext.current = locale
     return true
   }

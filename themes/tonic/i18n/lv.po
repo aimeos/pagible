@@ -1,0 +1,310 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lv\n"
+
+#. config.bar
+#: schema.json
+msgctxt "st"
+msgid "tonic::bar"
+msgstr "Bārs"
+
+#. config.bar.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the bar, pub or club"
+msgstr "Bāra, krodziņa vai kluba nosaukums"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Darbības veids"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Darbības veids, kas tiek rādīts meklētājprogrammām"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bar or pub"
+msgstr "Bārs vai krodziņš"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Night club"
+msgstr "Naktsklubs"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Brewery or taproom"
+msgstr "Alus darītava vai alus bārs"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Restorāns"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Cita veida uzņēmums"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adrese"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Iela un mājas numurs"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Pasta indekss"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the bar"
+msgstr "Bāra pasta indekss"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Pilsēta"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the bar is located in"
+msgstr "Pilsēta, kurā atrodas bārs"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Valsts kods"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Divu burtu ISO valsts kods, piemēram, DE vai US"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Tālrunis"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Tālruņa numurs starptautiskā formātā, tiek izmantots arī zvana pogai"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-pasts"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for reservations, private events and press"
+msgstr "E-pasta adrese rezervācijām, privātiem pasākumiem un presei"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Paziņojums"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+msgstr "Īss paziņojums katras lapas augšdaļā, piem., Bez rezervācijas gaidām līdz 23:00"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervācijas saite"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the table reservation page, shown as a button in the header"
+msgstr "Saite uz galdiņa rezervācijas lapu, tiek rādīta kā poga galvenē"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Ēdienkartes saite"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the drinks menu"
+msgstr "Saite uz lapu ar dzērienu karti"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Virtuve"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+msgstr "Ar komatiem atdalīts piedāvājuma saraksts, piem., Kokteiļi, Vīns, Uzkodas"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Cenu kategorija"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the bar, e.g. $$ or €€"
+msgstr "Bāra cenu līmenis, piem., $$ vai €€"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Piezīme"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+msgstr "Īss paziņojums kājenē, piem., Tikai no 18 gadiem. Lūdzu, lietojiet atbildīgi."
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Darbību josla"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Rādīt zvana un rezervācijas pogas ekrāna apakšā tālruņos"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Darba laiks"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Darba laiks katrai nedēļas dienai, tiek rādīts kājenē"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Diena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Nedēļas diena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pirmdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Otrdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Trešdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Ceturtdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Piektdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sestdiena"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Svētdiena"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Atvēršanas laiks"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 18:00"
+msgstr "Atvēršanas laiks 24 stundu formātā, piemēram, 18:00"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Slēgšanas laiks"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, also after midnight, e.g. 02:00"
+msgstr "Slēgšanas laiks 24 stundu formātā, arī pēc pusnakts, piem., 02:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "tonic::theme"
+msgstr "Tēma"

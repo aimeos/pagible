@@ -1,0 +1,310 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. config.bar
+#: schema.json
+msgctxt "st"
+msgid "tonic::bar"
+msgstr "酒吧"
+
+#. config.bar.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the bar, pub or club"
+msgstr "酒吧、酒館或夜店的名稱"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "營業類型"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "向搜尋引擎顯示的業務類型"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bar or pub"
+msgstr "酒吧或酒館"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Night club"
+msgstr "夜店"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Brewery or taproom"
+msgstr "啤酒廠或品酒室"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "餐廳"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "其他商家"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "街道地址"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "街道名稱與門牌號碼"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "郵遞區號"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the bar"
+msgstr "該酒吧的郵遞區號"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "城市"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the bar is located in"
+msgstr "酒吧所在的城市"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "國家代碼"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "由兩個字母組成的 ISO 國家代碼，例如 DE 或 US"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "電話"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "以國際格式顯示的電話號碼，亦用於撥號按鈕"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "電子郵件"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for reservations, private events and press"
+msgstr "用於預訂、私人活動及媒體聯絡的電子郵件地址"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "公告"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+msgstr "每頁頂端顯示的簡短說明，例如：歡迎直接前來，服務時間至 23:00"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "預訂連結"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the table reservation page, shown as a button in the header"
+msgstr "餐桌預訂頁面的連結，以按鈕形式顯示於頁首"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "菜單連結"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the drinks menu"
+msgstr "飲品菜單頁面的連結"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "餐飲類型"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+msgstr "以逗號分隔的供應項目清單，例如：雞尾酒、葡萄酒、酒吧小點"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "價格範圍"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the bar, e.g. $$ or €€"
+msgstr "該酒吧的價格水準，例如 $$ 或 €€"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "提示"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+msgstr "頁尾顯示的簡短說明，例如：「僅限 18 歲以上人士。請理性飲酒。」"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "操作列"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "在手機螢幕底部顯示「致電」和「預約」按鈕"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "營業時間"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "每週各天的營業時間，詳見頁尾"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "星期"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "星期幾"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "星期一"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "星期二"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "星期三"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "星期四"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "星期五"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "星期六"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "星期日"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "開門時間"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 18:00"
+msgstr "營業時間以 24 小時制表示，例如 18:00"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "打烊時間"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, also after midnight, e.g. 02:00"
+msgstr "以 24 小時制表示的打烊時間，包括午夜之後的時間，例如 02:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "tonic::theme"
+msgstr "主題"

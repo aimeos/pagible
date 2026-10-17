@@ -163,15 +163,18 @@
 			"@php vendor/bin/testbench package:discover --ansi"
 		],
 		"translate": [
-			"@php bin/translate ar bg cs da de el en es et fi fr he hu id it ja lt lv nb nl pl pt-br pt ro ru sk sl sv tr uk vi zh",
+			"@php bin/translate",
 			"npm run gettext:extract --prefix admin",
-			"mv admin/i18n/no.po admin/i18n/nb.po",
+			"@php bin/schema-i18n extract theme themes/*",
 			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
-			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
-			"mv admin/i18n/nb.po admin/i18n/no.po",
-			"npm run gettext:compile --prefix admin"
+			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --translator=bin/potrans-deepl.php --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
+			"npm run gettext:compile --prefix admin",
+			"for POFILE in `ls theme/i18n/*.po themes/*/i18n/*.po`; do vendor/bin/potrans deepl --translator=bin/potrans-deepl.php --only --pot=`dirname $POFILE`/messages.pot $POFILE; done",
+			"@php bin/schema-i18n compile theme themes/*"
 		],
 		"build": [
+			"@php bin/schema-i18n extract theme themes/*",
+			"@php bin/schema-i18n compile theme themes/*",
 			"npm run build --prefix admin",
 			"npm run build --prefix webhooks/admin"
 		],

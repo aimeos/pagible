@@ -4,6 +4,7 @@
 import { mdiMagnify, mdiRefresh } from '@mdi/js'
 import { useMessageStore, useSchemaStore, useUserStore } from '../stores'
 import ListSort from './ListSort.vue'
+import { typeLabel } from '../i18n'
 
 const SORT_OPTIONS = Object.freeze([
   { column: 'POSITION', order: 'ASC', label: 'Position' },
@@ -94,6 +95,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     add(item) {
       this.$emit('add', { type: item.type })
     },
@@ -107,7 +112,7 @@ export default {
     },
 
     label(item) {
-      return this.$pgettext('st', item.label || item.type).replace('::', ' ')
+      return this.typeLabel(item.label || item.type)
     },
 
     reload() {

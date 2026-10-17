@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "โครงการ"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "ชื่อโครงการซอฟต์แวร์"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "เวอร์ชัน"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "เวอร์ชันปัจจุบันที่แสดงข้างโลโก้ เช่น v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "หนึ่งประโยคที่อธิบายว่าซอฟต์แวร์ทำอะไร สำหรับเครื่องมือค้นหา"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "คลังโค้ด"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "ลิงก์ไปยังคลังซอร์สโค้ด เช่น https://github.com/acme/project แสดงเป็นไอคอนในส่วนหัว"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "ภาษาโปรแกรม"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "ภาษาโปรแกรมหลักของโครงการสำหรับเครื่องมือค้นหา เช่น PHP หรือ TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "สัญญาอนุญาต"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "สัญญาอนุญาตของซอฟต์แวร์ที่แสดงในส่วนท้าย เช่น MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "ธีม"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "การปัดมุมให้เป็นค่าความยาวใน CSS เช่น 0.5rem หรือ 0 สำหรับมุมที่คม"

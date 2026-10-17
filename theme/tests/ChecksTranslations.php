@@ -30,11 +30,19 @@ trait ChecksTranslations
             $this->assertTrue( isset( $en[$key] ) || in_array( $key, $sharedKeys, true ), sprintf( 'Key "%1$s" used in %2$s is missing in en.json', $key, $file ) );
         }
 
+        // keys translated dynamically which are added by bin/translate
+        foreach( $this->persistentKeys( $langDir ) as $key ) {
+            $this->assertTrue( isset( $en[$key] ), sprintf( 'Persistent key "%1$s" is missing in en.json', $key ) );
+        }
+
         $selector = new MessageSelector();
 
         foreach( glob( $langDir . '/*.json' ) ?: [] as $path )
         {
-            $lang = basename( $path, '.json' );
+            if( ( $lang = basename( $path, '.json' ) ) === 'persistent-strings' ) {
+                continue;
+            }
+
             $translations = $this->translations( $path );
 
             $this->assertEquals( [], array_diff( array_keys( $en ), array_keys( $translations ) ), $lang . ': missing keys' );
@@ -54,6 +62,21 @@ trait ChecksTranslations
                 }
             }
         }
+    }
+
+
+    /**
+     * Returns the keys from the persistent-strings.json file of the language directory.
+     *
+     * @return array<int, string>
+     */
+    private function persistentKeys( string $langDir ) : array
+    {
+        if( !file_exists( $path = $langDir . '/persistent-strings.json' ) ) {
+            return [];
+        }
+
+        return $this->translations( $path );
     }
 
 

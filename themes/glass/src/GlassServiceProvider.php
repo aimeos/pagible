@@ -14,6 +14,10 @@ class GlassServiceProvider extends Provider
         Schema::register( $basedir, 'glass' );
         View::addNamespace( 'glass', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'glass', '/vendor/cms/glass/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/glass' )], 'cms-theme' );
     }
 }

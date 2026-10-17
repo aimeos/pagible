@@ -1,0 +1,10 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh\n"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "premium::theme"
+msgstr "主题"
