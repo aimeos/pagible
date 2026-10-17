@@ -43,9 +43,6 @@ final class Hooks
     /** @var (\Closure(): array<string, array<string, mixed>>)|null Callback returning the dynamic themes */
     public ?\Closure $source = null;
 
-    /** @var array<string, array<string, bool>> Page IDs per tenant whose source variants must be reindexed */
-    public array $sources = [];
-
     /** @var array<string, array{owner: object, callbacks: list<\Closure>}> Callbacks deferred until the storage lock is released */
     public array $storage = [];
 
@@ -57,6 +54,9 @@ final class Hooks
 
     /** @var array<string, array<string, mixed>> Registered themes */
     public array $themes = [];
+
+    /** @var array<string, array{ids?: array<string, bool>, langs?: array<string, bool>}> Page IDs and changed languages per tenant whose variants must be reindexed after the commit */
+    public array $variants = [];
 
 
     /**

@@ -161,8 +161,9 @@ trait PageSearch
     /**
      * Returns the languages a page variant is listed for by searches with language fallback.
      *
-     * Variants are listed for their own language and source variants also for the languages
-     * from "cms.locales" the page has no variant for.
+     * Variants are listed for their own language and for the languages from "cms.locales"
+     * the page has no variant for if they are the first existing language of the fallback
+     * chain (see Utils::chain()). Source variants are used if no chain language exists.
      *
      * @param bool $trashed TRUE if trashed variants are listed too
      * @return array<int, string> Language codes
@@ -175,15 +176,20 @@ trait PageSearch
             return [];
         }
 
-        if( $lang !== (string) $this->source ) {
-            return [$lang];
-        }
-
         $variants = $this->languages;
         $existing = ( $trashed ? $variants : $variants->whereNull( 'deleted_at' ) )->pluck( 'lang' )->all();
-        $locales = Utils::locales();
+        $list = [$lang];
 
-        return array_values( array_unique( [$lang, ...array_diff( $locales, $existing )] ) );
+        foreach( array_diff( Utils::locales(), $existing ) as $locale )
+        {
+            $codes = array_values( array_intersect( Utils::chain( $locale ), $existing ) );
+
+            if( ( $codes[0] ?? (string) $this->source ) === $lang ) {
+                $list[] = $locale;
+            }
+        }
+
+        return $list;
     }
 
 

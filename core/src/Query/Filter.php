@@ -92,9 +92,9 @@ class Filter
      * "stale" are variants in the language which need an update, "missing" are pages without
      * a variant in the language and "ai" are variants whose latest draft was made by AI.
      *
-     * Each state selects variants of one language only, so the fallback is replaced by the
-     * variants of that language or the source variants of the pages without one. This avoids
-     * the fallback condition which can't use the indexes and would check all variants.
+     * "stale" and "ai" select variants of the language only, so the fallback is replaced by the
+     * variants of that language. "missing" keeps the fallback and lists the variants of the
+     * fallback languages (see Utils::chain()) or the source variants of the pages instead.
      *
      * @template TModel of Model
      * @param EloquentBuilder<TModel> $query Page query with the fallback of the language
@@ -115,18 +115,11 @@ class Filter
         $trashed = $base instanceof PageBuilder && ( $base->variant()[2] ?? false );
 
         if( $query instanceof PageQuery ) {
-            $state === 'missing' ? $query->language( null ) : $query->language( $lang, $trashed );
+            $state === 'missing' ? $query->fallback( $lang, $trashed ) : $query->language( $lang, $trashed );
         }
 
         match( $state ) {
-            'missing' => $query->where( $table . '.lang', '<>', $lang )
-                ->when( !$trashed, fn( $q ) => $q->whereNull( $table . '.variant_deleted_at' ) )
-                ->whereNotExists( fn( $q ) => $q->selectRaw( '1' )
-                    ->from( 'cms_page_variants as m' )
-                    ->whereColumn( 'm.page_id', $table . '.id' )
-                    ->where( 'm.lang', $lang )
-                    ->when( !$trashed, fn( $q ) => $q->whereNull( 'm.deleted_at' ) )
-                ),
+            'missing' => $query->where( $table . '.lang', '<>', $lang ),
             'stale' => $query->where( $table . '.lang', $lang )->where( $table . '.stale', true ),
             'ai' => $query->where( $table . '.lang', $lang )->whereExists( fn( $q ) => $q->selectRaw( '1' )
                 ->from( 'cms_versions' )

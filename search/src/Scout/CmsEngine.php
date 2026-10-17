@@ -5,7 +5,9 @@ namespace Aimeos\Cms\Scout;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Query\SearchQuery;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\LazyCollection;
 use Laravel\Scout\Builder;
 use Laravel\Scout\Engines\Engine;
@@ -153,7 +155,18 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
     public function paginateUsingDatabase( Builder $builder, $perPage, $pageName, $page )
     {
         $query = $this->buildSearchQuery( $builder );
-        return $query->paginate( $perPage, $this->paginateColumns( $query ), $pageName, $page );
+        $columns = $this->paginateColumns( $query );
+
+        // counting all pages matching variant columns or the search requires the joins of the language fallback
+        if( ( $base = $query->toBase() ) instanceof PageBuilder && !$base->countable() )
+        {
+            $result = $query->simplePaginate( $perPage, $columns, $pageName, $page );
+            $total = ( $result->currentPage() - 1 ) * $result->perPage() + $result->count() + (int) $result->hasMorePages();
+
+            return new LengthAwarePaginator( $result->items(), $total, $result->perPage(), $result->currentPage(), $result->getOptions() );
+        }
+
+        return $query->paginate( $perPage, $columns, $pageName, $page );
     }
 
 

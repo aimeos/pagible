@@ -23,10 +23,7 @@ class IndexModels implements ShouldQueue
     use SerializesModels;
 
 
-    /** @var bool TRUE to reindex only the source variants, defaults keep jobs queued by older versions working */
-    public bool $sources = false;
-
-    /** @var bool TRUE if the IDs are search keys (variant IDs for pages) */
+    /** @var bool TRUE if the IDs are search keys (variant IDs for pages), the default keeps jobs queued by older versions working */
     public bool $keys = false;
 
 
@@ -34,13 +31,10 @@ class IndexModels implements ShouldQueue
      * @param class-string<Base> $model
      * @param array<string> $ids
      * @param string $tenant Tenant ID
-     * @param bool $sources TRUE to reindex only the source variants of the pages
      * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public function __construct( public string $model, public array $ids, public string $tenant, bool $sources = false,
-        bool $keys = false )
+    public function __construct( public string $model, public array $ids, public string $tenant, bool $keys = false )
     {
-        $this->sources = $sources;
         $this->keys = $keys;
         $this->configureJob();
     }
@@ -48,6 +42,6 @@ class IndexModels implements ShouldQueue
 
     public function handle(): void
     {
-        Tenancy::run( $this->tenant, fn() => Scout::sync( $this->model, $this->ids, $this->sources, $this->keys ) );
+        Tenancy::run( $this->tenant, fn() => Scout::sync( $this->model, $this->ids, $this->keys ) );
     }
 }

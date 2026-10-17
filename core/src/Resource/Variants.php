@@ -211,7 +211,7 @@ class Variants
      * @param string $lang Language code of an existing variant
      * @param Authenticatable|null $user Authenticated user for editor tracking
      * @return PageView Page in the new source language
-     * @throws ModelNotFoundException If the page has no variant in that language
+     * @throws ModelNotFoundException If the page has no variant in that language or it's in the trash
      */
     public function setSource( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
@@ -219,16 +219,17 @@ class Variants
 
         $editor = Utils::editor( $user );
 
-        [$page, $changed] = DB::transaction( function() use ( $id, $lang ) {
+        [$page, $old] = DB::transaction( function() use ( $id, $lang ) {
 
+            // trashed variants can't be the source, the language fallback counts on the source variant of each page
             $page = PageView::withTrashed()->language( $lang )->lockForUpdate()->find( $id );
 
             if( !$page ) {
                 throw ( new ModelNotFoundException() )->setModel( PageView::class, [$id] );
             }
 
-            if( $page->source === $lang ) {
-                return [$page, false];
+            if( ( $old = (string) $page->source ) === $lang ) {
+                return [$page, null];
             }
 
             Sync::rebase( $page );
@@ -237,15 +238,13 @@ class Variants
 
             Sync::state( $page, [], stale: false )->forceFill( ['source' => $lang] )->syncOriginal();
 
-            return [$page, true];
+            return [$page, $old];
         } );
 
-        if( $changed )
+        if( $old !== null )
         {
             // the former and the new source variants are listed for the languages without variant
-            if( Scout::usesExternalSearch() ) {
-                Scout::reindex( PageView::class, [(string) $page->id] );
-            }
+            Scout::variants( [(string) $page->id], [$old, $lang] );
 
             $this->watch( VariantAction::Source, collect( [$page] ), $lang, $editor );
         }
@@ -406,7 +405,7 @@ class Variants
         // new variants have only one version
         $variant
             ? PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] )
-            : Scout::sources( [(string) $page->id] );
+            : Scout::variants( [(string) $page->id], [$lang] );
 
         $this->watch( $variant ? VariantAction::Translated : ContentAction::Added, collect( [$page] ), $lang, Utils::editor( $user ) );
 
@@ -512,8 +511,8 @@ class Variants
             }
         }
 
-        // pages in the source language are found by the languages of their variants
-        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+        // the languages listed for the other variants change too
+        Scout::variants( $pages->pluck( 'id' )->map( strval( ... ) )->all(), [$lang] );
         Invalidation::pages( $pages );
         $this->watch( LifecycleAction::Dropped, $pages, $lang, $editor );
 
@@ -557,7 +556,7 @@ class Variants
 
         // after commit to keep the index if the transaction fails
         Scout::unindex( PageView::class, $pages->pluck( 'variant_id' )->map( strval( ... ) )->all() );
-        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+        Scout::variants( $pages->pluck( 'id' )->map( strval( ... ) )->all(), [$lang] );
 
         // trashed variants were invalidated when they were dropped
         Invalidation::pages( $pages->filter( fn( PageView $page ) => $page->getAttribute( 'variant_deleted_at' ) === null ) );
@@ -618,7 +617,7 @@ class Variants
 
         // after commit to keep the index if the transaction fails
         Scout::index( PageView::class, $pages->pluck( 'variant_id' )->map( strval( ... ) )->all(), keys: true );
-        Scout::sources( $pages->pluck( 'id' )->map( strval( ... ) )->all() );
+        Scout::variants( $pages->pluck( 'id' )->map( strval( ... ) )->all(), [$lang] );
         Invalidation::pages( $pages );
         $this->watch( LifecycleAction::Restored, $pages, $lang, $editor );
 

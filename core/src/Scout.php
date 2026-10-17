@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\IndexModels;
-use Aimeos\Cms\Query\PageQuery;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Laravel\Scout\ModelObserver;
 use Illuminate\Database\Eloquent\Model;
@@ -27,17 +26,16 @@ class Scout
      *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Model IDs (page IDs for pages) or search keys (variant IDs for pages)
-     * @param bool $sources TRUE to reindex only the source variants of the pages
      * @param bool $keys TRUE if the IDs are search keys
      */
-    public static function index( string $model, array $ids, bool $sources = false, bool $keys = false ) : void
+    public static function index( string $model, array $ids, bool $keys = false ) : void
     {
         if( !$ids || !self::usesSearchIndex() ) {
             return;
         }
 
         if( !config( 'scout.queue' ) ) {
-            self::sync( $model, $ids, $sources, $keys );
+            self::sync( $model, $ids, $keys );
             return;
         }
 
@@ -45,7 +43,7 @@ class Scout
 
         foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
         {
-            dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $sources, $keys ) )
+            dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $keys ) )
                 ->onQueue( $instance->syncWithSearchUsingQueue() )
                 ->onConnection( $instance->syncWithSearchUsing() ) );
         }
@@ -86,14 +84,16 @@ class Scout
 
 
     /**
-     * Reindexes the source variants of the pages, which are listed for the languages without variant.
+     * Reindexes the variants of the pages whose listed languages change after language variants are added or removed.
      *
-     * Required after language variants are added or removed, only for external search engines.
-     * The pages are collected and reindexed once after the surrounding transaction commits.
+     * Variants are listed for the languages without variant whose fallback chain (see Utils::chain())
+     * leads to them. Only required for external search engines. The pages are collected and reindexed
+     * once after the surrounding transaction commits, e.g. if an import adds several variants of a page.
      *
      * @param array<string> $ids Page IDs
+     * @param array<string> $langs Languages of the added or removed variants or the former and new source languages
      */
-    public static function sources( array $ids ) : void
+    public static function variants( array $ids, array $langs ) : void
     {
         if( !$ids || !self::usesExternalSearch() ) {
             return;
@@ -103,7 +103,11 @@ class Scout
         $tenant = Tenancy::value();
 
         foreach( $ids as $id ) {
-            $hooks->sources[$tenant][(string) $id] = true;
+            $hooks->variants[$tenant]['ids'][(string) $id] = true;
+        }
+
+        foreach( $langs as $lang ) {
+            $hooks->variants[$tenant]['langs'][(string) $lang] = true;
         }
 
         // Registered per call because callbacks of rolled back transactions are discarded while
@@ -111,11 +115,11 @@ class Scout
         // and pages of rolled back transactions are reindexed with the next commit, which is harmless
         DB::connection()->afterCommit( function() {
             $hooks = Hooks::get();
-            $sources = $hooks->sources;
-            $hooks->sources = [];
+            $pending = $hooks->variants;
+            $hooks->variants = [];
 
-            foreach( $sources as $tenant => $ids ) {
-                Tenancy::run( (string) $tenant, fn() => self::index( Models\PageView::class, array_map( strval( ... ), array_keys( $ids ) ), sources: true ) );
+            foreach( $pending as $tenant => $entry ) {
+                Tenancy::run( (string) $tenant, fn() => self::index( Models\PageView::class, self::affected( $entry ), keys: true ) );
             }
         } );
     }
@@ -179,10 +183,9 @@ class Scout
      *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Model IDs or search keys
-     * @param bool $sources TRUE to reindex only the source variants of the pages
      * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
      */
-    public static function sync( string $model, array $ids, bool $sources = false, bool $keys = false ) : void
+    public static function sync( string $model, array $ids, bool $keys = false ) : void
     {
         if( !$ids || !self::usesSearchIndex() ) {
             return;
@@ -197,11 +200,6 @@ class Scout
         foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
         {
             $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
-
-            if( $sources && $query instanceof PageQuery ) {
-                $query->language( null );
-            }
-
             ( $keys ? $query->whereIn( $column, $chunk ) : $query->whereKey( $chunk ) )->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
         }
     }
@@ -269,5 +267,46 @@ class Scout
     public static function usesSearchIndex() : bool
     {
         return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
+    }
+
+
+    /**
+     * Returns the IDs of the variants whose listed languages can change by the changed languages.
+     *
+     * Only languages whose fallback chain contains a changed language get another variant. The
+     * variants of the chain languages and the source variants are the old and new candidates.
+     *
+     * @param array{ids?: array<string, bool>, langs?: array<string, bool>} $entry Pending page IDs and changed languages
+     * @return array<string> Variant IDs
+     */
+    private static function affected( array $entry ) : array
+    {
+        $codes = [];
+        $list = [];
+        // trashed pages and variants are only indexed if the search engine keeps them
+        $trashed = self::keepsTrashed();
+
+        foreach( array_keys( $entry['langs'] ?? [] ) as $lang )
+        {
+            foreach( [$lang, ...Utils::locales()] as $locale )
+            {
+                if( in_array( $lang, $chain = Utils::chain( $locale ), true ) ) {
+                    $codes = [...$codes, ...$chain];
+                }
+            }
+        }
+
+        foreach( array_chunk( array_keys( $entry['ids'] ?? [] ), Models\Base::CHUNK ) as $chunk )
+        {
+            $query = $trashed ? Models\PageView::withoutGlobalScope( SoftDeletingScope::class ) : Models\PageView::query();
+            $ids = $query->allVariants( trashed: $trashed )
+                ->whereIn( 'id', $chunk )
+                ->where( fn( $q ) => $q->whereIn( 'lang', array_values( array_unique( $codes ) ) )->orWhereColumn( 'lang', 'source' ) )
+                ->pluck( 'variant_id' )->map( strval( ... ) )->all();
+
+            $list = [...$list, ...$ids];
+        }
+
+        return $list;
     }
 }

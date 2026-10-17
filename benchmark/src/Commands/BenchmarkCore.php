@@ -332,6 +332,36 @@ class BenchmarkCore extends Command
                 ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
         }, readOnly: true, tries: $tries );
 
+        // paginated lists count the pages too, only page column filters use the cheaper count
+        $this->benchmark( 'Fallback paginate', function() use ( $lang ) {
+            PageView::fallback( $lang )->orderBy( NestedSet::LFT )->paginate( 100, page: 10 );
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Visible paginate', function() use ( $lang ) {
+            PageView::visible( $lang )->whereIn( 'status', [1, 2] )->orderBy( NestedSet::LFT )->paginate( 100, page: 10 );
+        }, readOnly: true, tries: $tries );
+
+        // lists filtered by variant columns fetch one more page instead of counting all pages
+        $this->benchmark( 'Visible simple', function() use ( $lang ) {
+            PageView::visible( $lang )->whereIn( 'status', [1, 2] )->orderBy( NestedSet::LFT )->simplePaginate( 100, page: 10 );
+        }, readOnly: true, tries: $tries );
+
+        // regional languages join the variants of their parent language too
+        $regional = $lang . '-CH';
+
+        $this->benchmark( 'Chain list', function() use ( $regional ) {
+            PageView::fallback( $regional )->orderBy( NestedSet::LFT )->skip( 500 )->take( 100 )->get();
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Chain paginate', function() use ( $regional ) {
+            PageView::fallback( $regional )->orderBy( NestedSet::LFT )->paginate( 100, page: 10 );
+        }, readOnly: true, tries: $tries );
+
+        $this->benchmark( 'Chain tree', function() use ( $root, $regional ) {
+            PageView::visible( $regional )->select( self::TREE_COLUMNS )
+                ->where( 'parent_id', $root->id )->with( ['children', 'latest'] )->get();
+        }, readOnly: true, tries: $tries );
+
         $this->benchmark( 'Variant add', function() use ( $missing, $lang ) {
             Variants::add( (string) $missing->id, $lang );
         }, tries: $tries );
