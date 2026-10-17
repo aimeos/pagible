@@ -386,6 +386,11 @@ class Variants
 
             $page = PageView::withTrashed()->language( $lang )->with( 'latest' )->lockForUpdate()->findOrFail( $source->id );
 
+            // untranslated copies get the translated slug in their path
+            if( $result['slug'] !== '' ) {
+                $result['data']['path'] = $this->variantPath( $page, $lang, $result['slug'], (string) ( $result['data']['path'] ?? '' ) )[1];
+            }
+
             // merges with drafts saved by editors in the meantime
             [$data, $aux, $diffs] = Merge::page( $page, $result['data'], $result['aux'], $variant->latest_id, $user );
 
@@ -704,9 +709,10 @@ class Variants
      * @param PageView $page Page with its source variant
      * @param string $lang Language code of the new variant
      * @param string $path Path of the source variant
+     * @param string|null $current Current path of an existing variant which can be reused
      * @return array{0: string, 1: string} Domain and path
      */
-    protected function variantPath( PageView $page, string $lang, string $path ) : array
+    protected function variantPath( PageView $page, string $lang, string $path, ?string $current = null ) : array
     {
         $db = DB::connection();
 
@@ -740,6 +746,10 @@ class Variants
 
         // the used candidates are loaded at once instead of one query per collision
         [$known, $loaded] = Paths::known( collect( [( new PageVariant() )->forceFill( ['domain' => $domain, 'path' => $path, 'lang' => $lang] )] ) );
+
+        if( $current !== null ) {
+            unset( $known[$domain][$current] );
+        }
 
         return [$domain, Paths::unique( $domain, $path, $lang, $known, $loaded )];
     }

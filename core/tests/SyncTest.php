@@ -212,6 +212,7 @@ class SyncTest extends CoreTestAbstract
         $this->assertTrue( $variant->stale );
         $this->assertSame( '', $variant->hashes['el:el1'] );
         $this->assertSame( '', $variant->hashes['page:title'] );
+        $this->assertSame( '', $variant->hashes['page:slug'] );
         $this->assertNotSame( '', $variant->hashes['page:order'] );
         $this->assertNotSame( '', $variant->hashes['page:type'] );
         $this->assertEquals( 'Hello', $de->latest->aux->content[0]->data->text );
@@ -223,7 +224,23 @@ class SyncTest extends CoreTestAbstract
 
         $this->assertEquals( '[de] Hello', $de->latest->aux->content[0]->data->text );
         $this->assertFalse( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'stale' ) );
-        $this->assertEquals( $page->path . '-de', PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->value( 'path' ) );
+        $this->assertArrayNotHasKey( 'page:slug', PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail()->hashes );
+
+        // the copied path gets the translated slug
+        $this->assertEquals( Utils::slugify( '[de] ' . str_replace( '-', ' ', $page->path ) ), $de->latest->data->path );
+    }
+
+
+    public function testTranslateUntranslatedCopyKeepsChangedPath()
+    {
+        $page = $this->page();
+        Variants::translate( $page->id, 'de', $this->user );
+        $this->savePage( $page->id, ['path' => 'eigener-pfad'], 'de' );
+
+        $de = Variants::translate( $page->id, 'de', $this->user, $this->translator() );
+
+        $this->assertEquals( '[de] Hello', $de->latest->aux->content[0]->data->text );
+        $this->assertEquals( 'eigener-pfad', $de->latest->data->path );
     }
 
 

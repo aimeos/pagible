@@ -66,16 +66,15 @@ class Sync
         $data = $variant ? $vdata : ['lang' => $lang, 'status' => 0] + $sdata;
         self::fields( $sdata, $data, $changed, $texts );
 
-        // translated slug of the path for new variants, empty if untranslated
-        $slug = ['slug' => $variant ? '' : str_replace( '-', ' ', basename( (string) ( $sdata['path'] ?? '' ) ) )];
+        // translated slug of the path for new variants and untranslated copies, empty if untranslated
+        $base = basename( (string) ( $sdata['path'] ?? '' ) );
+        $slug = ['slug' => self::copied( $base, $vdata, $vhashes, $lang, $variant ) ? str_replace( '-', ' ', $base ) : ''];
 
-        if( !$variant )
-        {
-            $texts->add( '', $slug, 'slug' );
+        // the empty hash of untranslated slugs marks copied paths for the next translation
+        $texts->add( 'page:slug', $slug, 'slug' );
 
-            if( isset( $data['to'] ) ) {
-                $texts->url( $data['to'] );
-            }
+        if( !$variant && isset( $data['to'] ) ) {
+            $texts->url( $data['to'] );
         }
 
         $content = self::content( $scontent, array_values( (array) ( $vaux->content ?? [] ) ), $vhashes, $changed, $texts );
@@ -89,7 +88,7 @@ class Sync
         $texts->links( fn( array $urls ) => self::links( $urls, (string) $source->domain, $lang ) );
 
         // untranslated texts get empty hashes so they still count as changed
-        $hashes = $translated ? $shashes : array_fill_keys( array_diff( $texts->keys(), [''] ), '' ) + $shashes;
+        $hashes = $translated ? $shashes : array_fill_keys( $texts->keys(), '' ) + $shashes;
 
         return [
             'data' => $data,
@@ -332,6 +331,34 @@ class Sync
         }
 
         return $targets;
+    }
+
+
+    /**
+     * Tests if the variant is new or still uses the untranslated path copied from the source.
+     *
+     * Copied paths are the source slug plus the "-<lang>-<num>" suffix added for used paths.
+     * Paths changed by editors in the meantime are kept.
+     *
+     * @param string $slug Last segment of the source path
+     * @param array<string, mixed> $data Version data of the target variant
+     * @param array<string, string> $hashes Hashes the target variant was last synced with
+     * @param string $lang Language code of the target variant
+     * @param PageView|null $variant Page with the target variant or NULL if it's new
+     * @return bool TRUE if the path needs a translated slug
+     */
+    protected static function copied( string $slug, array $data, array $hashes, string $lang, ?PageView $variant ) : bool
+    {
+        if( !$variant ) {
+            return true;
+        }
+
+        if( $slug === '' || ( $hashes['page:slug'] ?? null ) !== '' ) {
+            return false;
+        }
+
+        $regex = '/^' . preg_quote( $slug, '/' ) . '(-' . preg_quote( $lang, '/' ) . '(-\d+)?)?$/u';
+        return preg_match( $regex, basename( (string) ( $data['path'] ?? '' ) ) ) === 1;
     }
 
 
