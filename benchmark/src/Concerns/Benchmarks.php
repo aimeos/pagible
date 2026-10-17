@@ -112,8 +112,8 @@ trait Benchmarks
             $this->format( $stats['min'] ),
             $this->format( $stats['max'] ),
             $this->format( $stats['avg'] ),
-            $this->format( $stats['p95'] ),
-            $this->format( $stats['p99'] ),
+            $this->format( $stats['med'] ),
+            $this->format( $stats['p90'] ),
             $this->formatMem( $stats['peak'] ),
         ) );
 
@@ -129,8 +129,8 @@ trait Benchmarks
                     $this->format( $qStats['min'] ),
                     $this->format( $qStats['max'] ),
                     $this->format( $qStats['avg'] ),
-                    $this->format( $qStats['p95'] ),
-                    $this->format( $qStats['p99'] ),
+                    $this->format( $qStats['med'] ),
+                    $this->format( $qStats['p90'] ),
                 ) );
 
                 if( $this->output->isVeryVerbose() ) {
@@ -245,7 +245,7 @@ trait Benchmarks
 
 
     /**
-     * Compute min/max/avg/p90/p95/p99 from nanosecond durations.
+     * Compute min/max/avg/median/p90 from nanosecond durations.
      *
      * @param array<int, int|float> $durations Durations in nanoseconds
      * @param array<int, int|float> $peaks Peak memory usages in bytes
@@ -260,8 +260,8 @@ trait Benchmarks
             'min' => $durations[0],
             'max' => $durations[$count - 1],
             'avg' => array_sum( $durations ) / $count,
-            'p95' => $durations[(int) ceil( $count * 0.95 ) - 1],
-            'p99' => $durations[(int) ceil( $count * 0.99 ) - 1],
+            'med' => ( $durations[intdiv( $count - 1, 2 )] + $durations[intdiv( $count, 2 )] ) / 2,
+            'p90' => $durations[(int) ceil( $count * 0.9 ) - 1],
             'peak' => $peaks ? max( $peaks ) : 0,
         ];
     }
@@ -354,7 +354,7 @@ trait Benchmarks
         $this->line( '' );
         $this->line( sprintf(
             ' %-18s %9s %9s %9s %9s %9s %9s',
-            'Benchmark', 'Min', 'Max', 'Avg', 'P95', 'P99', 'Peak'
+            'Benchmark', 'Min', 'Max', 'Avg', 'Med', 'P90', 'Peak'
         ) );
         $this->line( ' ' . str_repeat( "\u{2500}", 78 ) );
     }
