@@ -2210,3 +2210,780 @@ msgstr "javascript"
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Pasirinktinis JavaScript kodas, pridedamas visiems puslapiams"
+
+#. aura::*
+#. estate::*
+#. folio::*
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Vieta"
+
+#. aura::*
+#. brew::*
+#. counsel::*
+#. flow::*
+#. folio::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "El. paštas"
+
+#. aura::*
+#. folio::*
+#. manual::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Kampų suapvalinimas kaip CSS ilgio vertė, pvz., 0.5rem arba 0, jei norima aštrių kampų"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Veiklos rūšis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Veiklos rūšis, rodoma paieškos sistemoms"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adresas"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gatvė ir namo numeris"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Pašto kodas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Įmonės pašto kodas"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Miestas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Miestas, kuriame įsikūrusi įmonė"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Šalies kodas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefonas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefono numeris tarptautiniu formatu, naudojamas ir skambinimo mygtukui"
+
+#. brew::*
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Pranešimas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Kainų kategorija"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. $$ or €€"
+msgstr "Įmonės kainų lygis, pvz., $$ arba €€"
+
+#. brew::*
+#. counsel::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Veiksmų juosta"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Darbo laikas"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Darbo laikas kiekvieną savaitės dieną"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Diena"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Savaitės diena"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pirmadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Antradienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Trečiadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Ketvirtadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Penktadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Šeštadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Sekmadienis"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Atidarymo laikas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Atidarymo laikas 24 valandų formatu, pvz., 07:30"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Uždarymo laikas"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Uždarymo laikas 24 valandų formatu, pvz., 17:00"
+
+#. counsel::*
+#. medical::*
+#. paws::*
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Kalbos"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Įmonės pavadinimas"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Šildymas ir oro kondicionavimas"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Statybos ir remonto įmonė"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Skubios pagalbos numeris"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Telefono numeris avarijoms, rodomas kiekvieno puslapio viršuje"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "El. pašto adresas užklausoms"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Aptarnaujamos vietovės"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Kableliais atskirtas miestų ir regionų, kuriuose dirbate, sąrašas, pvz., Leeds, Bradford, York"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Skambinimo mygtukas"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Rodyti skambinimo mygtuką ekrano apačioje telefonuose"
+
+#. glow::*
+#. mane::*
+#. tonic::*
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Kita veikla"
+
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervacijos nuoroda"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Kainoraščio nuoroda"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Nuoroda į paslaugų ir kainų puslapį"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Pastaba"
+
+#. glow::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Telefonuose rodyti skambinimo ir rezervacijos mygtukus ekrano apačioje"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Kampų suapvalinimas, nurodytas kaip CSS ilgio vienetas, pvz., 1rem arba 0 – jei norima aštrių kampų"
+
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "Elektrikas"

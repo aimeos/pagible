@@ -77,12 +77,6 @@ msgstr "Jedna veta popisujúca, čo produkt robí, pre vyhľadávače"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Oznámenie"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Krátka novinka zobrazená v hornej časti každej stránky, napr. Novinka: stránky stavu s vlastnými doménami"
@@ -155,12 +149,6 @@ msgstr "Počet recenzií, na ktorých je hodnotenie založené"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Upozornenie"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Krátka poznámka v päte, napr. certifikácia SOC 2 Type II, dáta hostované v EÚ"
@@ -170,9 +158,3 @@ msgstr "Krátka poznámka v päte, napr. certifikácia SOC 2 Type II, dáta host
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Téma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Zaoblenie rohov ako dĺžka v CSS, napr. 1rem alebo 0 pre ostré rohy"

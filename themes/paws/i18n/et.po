@@ -23,12 +23,6 @@ msgstr "Kliiniku tüüp"
 
 #. config.clinic.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of clinic shown to search engines"
-msgstr "Otsingumootoritele näidatav kliiniku liik"
-
-#. config.clinic.business-type
-#: schema.json
 msgctxt "op"
 msgid "Veterinary clinic"
 msgstr "Loomakliinik"
@@ -51,107 +45,17 @@ msgctxt "op"
 msgid "Other pet service"
 msgstr "Muu lemmikloomateenus"
 
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Aadress"
-
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Tänav ja maja number"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Postiindeks"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the clinic"
-msgstr "Kliiniku postiindeks"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Linn"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the clinic is located in"
-msgstr "Linn, kus kliinik asub"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Riigikood"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Kahetäheline ISO riigikood, nt DE või US"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefoninumber rahvusvahelises vormingus, kasutatakse ka helistamisnupu jaoks"
-
-#. config.clinic.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-post"
-
 #. config.clinic.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "E-posti aadress aja broneerimiseks"
 
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "Hädaabinumber"
-
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for pet emergencies, shown at the top of every page"
-msgstr "Lemmikloomade erakorralise abi telefoninumber, kuvatakse iga lehe ülaosas"
-
-#. config.clinic.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Broneerimislink"
-
 #. config.clinic.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "Link ajabroneerimise lehele või veebibroneeringule, kuvatakse päises nupuna"
-
-#. config.clinic.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Keeled"
 
 #. config.clinic.languages
 #: schema.json
@@ -182,120 +86,6 @@ msgstr "Uued kliendid"
 msgctxt "fh"
 msgid "Tell search engines that the clinic welcomes new clients"
 msgstr "Teavita otsingumootoreid, et kliinik võtab vastu uusi kliente"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Hinnaklass"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the clinic, e.g. $$ or €€"
-msgstr "Kliiniku hinnatase, nt $$ või €€"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Tegevusriba"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Näita telefonides ekraani allosas helistamise ja broneerimise nuppe"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Lahtiolekuajad"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Lahtiolekuajad iga nädalapäeva kohta"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Päev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Nädalapäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Esmaspäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Teisipäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Kolmapäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Neljapäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Reede"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Laupäev"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Pühapäev"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Avamisaeg"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Avamisaeg 24-tunnises formaadis, nt 07:30"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Sulgemisaeg"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Sulgemisaeg 24-tunnises formaadis, nt 17:00"
 
 #. config.theme
 #: schema.json

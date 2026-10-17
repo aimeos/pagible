@@ -74,9 +74,3 @@ msgstr "Lisensie van die sagteware wat in die voetskrif gewys word, bv. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Afgeronde hoeke as CSS-lengte, bv. 0.5rem of 0 vir skerp hoeke"

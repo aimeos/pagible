@@ -17,18 +17,6 @@ msgstr "ឈ្មោះបារ ភាប ឬក្លឹប"
 
 #. config.bar.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "ប្រភេទអាជីវកម្ម"
-
-#. config.bar.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "ប្រភេទអាជីវកម្មដែលបង្ហាញដល់ម៉ាស៊ីនស្វែងរក"
-
-#. config.bar.business-type
-#: schema.json
 msgctxt "op"
 msgid "Bar or pub"
 msgstr "បារ ឬភាប"
@@ -51,78 +39,6 @@ msgctxt "op"
 msgid "Restaurant"
 msgstr "ភោជនីយដ្ឋាន"
 
-#. config.bar.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "អាជីវកម្មផ្សេងទៀត"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "អាសយដ្ឋានផ្លូវ"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "ផ្លូវ និងលេខផ្ទះ"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "លេខកូដប្រៃសណីយ៍"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the bar"
-msgstr "លេខកូដប្រៃសណីយ៍របស់បារ"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "ទីក្រុង"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the bar is located in"
-msgstr "ទីក្រុងដែលបារស្ថិតនៅ"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "លេខកូដប្រទេស"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "លេខកូដប្រទេស ISO ពីរតួអក្សរ ឧ. DE ឬ US"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "ទូរស័ព្ទ"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "លេខទូរស័ព្ទជាទម្រង់អន្តរជាតិ ដែលប្រើសម្រាប់ប៊ូតុងហៅទូរស័ព្ទផងដែរ"
-
-#. config.bar.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "អ៊ីមែល"
-
 #. config.bar.email
 #: schema.json
 msgctxt "fh"
@@ -131,21 +47,9 @@ msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់កា
 
 #. config.bar.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "សេចក្តីប្រកាស"
-
-#. config.bar.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
 msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ ឧ. ស្វាគមន៍ភ្ញៀវដែលមិនបានកក់រហូតដល់ម៉ោង 23:00"
-
-#. config.bar.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "តំណកក់"
 
 #. config.bar.booking
 #: schema.json
@@ -177,125 +81,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
 msgstr "បញ្ជីអ្វីដែលអ្នកលក់ ដោយបំបែកដោយសញ្ញាក្បៀស ឧ. Cocktails, Wine, Bar snacks"
 
-#. config.bar.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "កម្រិតតម្លៃ"
-
-#. config.bar.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the bar, e.g. $$ or €€"
-msgstr "កម្រិតតម្លៃរបស់បារ ឧ. $$ ឬ €€"
-
-#. config.bar.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "សេចក្តីជូនដំណឹង"
-
 #. config.bar.notice
 #: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
 msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅបាតទំព័រ ឧ. សម្រាប់អាយុលើស 18 ឆ្នាំតែប៉ុណ្ណោះ។ សូមផឹកដោយទំនួលខុសត្រូវ។"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "របារសកម្មភាព"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "បង្ហាញប៊ូតុងហៅទូរស័ព្ទ និងកក់នៅផ្នែកខាងក្រោមនៃអេក្រង់លើទូរស័ព្ទ"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "ម៉ោងបើក"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "ម៉ោងបើកសម្រាប់ថ្ងៃនីមួយៗក្នុងសប្តាហ៍ ដែលបង្ហាញនៅបាតទំព័រ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "ថ្ងៃ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "ថ្ងៃនៃសប្តាហ៍"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "ថ្ងៃច័ន្ទ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "ថ្ងៃអង្គារ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "ថ្ងៃពុធ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "ថ្ងៃព្រហស្បតិ៍"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "ថ្ងៃសុក្រ"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "ថ្ងៃសៅរ៍"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "ថ្ងៃអាទិត្យ"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "ចាប់ពីម៉ោង"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 18:00"
-msgstr "ម៉ោងបើកជាទម្រង់ 24 ម៉ោង ឧ. 18:00"
-
-#. config.bar.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "ដល់ម៉ោង"
 
 #. config.bar.hours.closes
 #: schema.json

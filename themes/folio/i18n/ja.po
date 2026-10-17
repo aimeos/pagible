@@ -41,12 +41,6 @@ msgstr "勤務先の会社または組織。例: Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "所在地"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "住んでいる都市または地域。例: ドイツ、ベルリン"
@@ -74,12 +68,6 @@ msgstr "短い自己紹介"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "各記事の下に表示される一文の自己紹介。例: Laravelアプリを作り、データベースについて書いています"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "メールアドレス"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "プロフィールへのリンク。例: https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "テーマ"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "CSSの長さ単位としての角の丸め。例：0.5rem、または鋭角にする場合は0"

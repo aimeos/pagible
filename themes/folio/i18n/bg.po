@@ -41,12 +41,6 @@ msgstr "Компания или организация, в която работ
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Местоположение"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Град или регион, в който живеете, напр. Берлин, Германия"
@@ -74,12 +68,6 @@ msgstr "Кратка биография"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Едно изречение за вас под всяка публикация, напр. Създавам Laravel приложения и пиша за бази данни"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "Имейл"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Връзка към профила ви, напр. https://github.com/le
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Тема"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Закръгляване на ъглите като дължина в CSS, например 0.5rem или 0 за остри ъгли"

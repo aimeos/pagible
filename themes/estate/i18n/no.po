@@ -30,12 +30,6 @@ msgstr "Detaljert beskrivelse av eiendommen"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Sted"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Beskrivelse av nabolaget og omgivelsene"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adresse"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gate og husnummer"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Bydel"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Bydel eller nabolag i byen"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "By"
 
 #. content.property.city
 #: schema.json

@@ -77,12 +77,6 @@ msgstr "یک جمله که عملکرد محصول را توصیف می‌کند
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "اعلامیه"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "اخبار کوتاه که در بالای هر صفحه نمایش داده می‌شوند، مانند: جدید: صفحات وضعیت با دامنه‌های سفارشی"
@@ -155,12 +149,6 @@ msgstr "تعداد نقدهایی که رتبه‌بندی بر اساس آن‌
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "اطلاعیه"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "یادداشت کوتاه نمایش داده شده در پاورقی، مثلاً دارای گواهی SOC 2 نوع II، میزبانی داده‌ها در اتحادیه اروپا"
@@ -170,9 +158,3 @@ msgstr "یادداشت کوتاه نمایش داده شده در پاورقی،
 msgctxt "st"
 msgid "launch::theme"
 msgstr "پوسته"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "گرد کردن گوشه‌ها به‌عنوان مقدار طول در CSS، مثلاً 1rem یا 0 برای گوشه‌های تیز"

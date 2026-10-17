@@ -77,12 +77,6 @@ msgstr "Una frase che descrive cosa fa il prodotto, usata per i motori di ricerc
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Annuncio"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Breve notizia mostrata in alto in ogni pagina, ad es. Novità: pagine di stato con domini personalizzati"
@@ -155,12 +149,6 @@ msgstr "Numero di recensioni su cui si basa la valutazione"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Avviso"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Breve nota mostrata nel footer, ad es. certificato SOC 2 Type II, dati ospitati nell'UE"
@@ -170,9 +158,3 @@ msgstr "Breve nota mostrata nel footer, ad es. certificato SOC 2 Type II, dati o
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Arrotondamento degli angoli come lunghezza CSS, ad esempio 1rem o 0 per angoli a spigolo vivo"

@@ -41,12 +41,6 @@ msgstr "Uzņēmums vai organizācija, kurā strādājat, piem., Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Atrašanās vieta"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Pilsēta vai reģions, kurā dzīvojat, piem., Berlīne, Vācija"
@@ -74,12 +68,6 @@ msgstr "Īsa biogrāfija"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Viens teikums par jums zem katra raksta, piem., Es veidoju Laravel lietotnes un rakstu par datubāzēm"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-pasts"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Saite uz jūsu profilu, piem., https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Tēma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Stūru noapaļošana kā CSS garums, piemēram, 0.5rem vai 0, lai iegūtu asus stūrus"

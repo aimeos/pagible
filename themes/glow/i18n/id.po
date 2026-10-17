@@ -17,18 +17,6 @@ msgstr "Nama salon, studio, atau spa"
 
 #. config.salon.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Jenis usaha"
-
-#. config.salon.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Jenis usaha yang ditampilkan ke mesin pencari"
-
-#. config.salon.business-type
-#: schema.json
 msgctxt "op"
 msgid "Beauty salon"
 msgstr "Salon kecantikan"
@@ -51,89 +39,11 @@ msgctxt "op"
 msgid "Hair salon"
 msgstr "Salon rambut"
 
-#. config.salon.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "Usaha lain"
-
-#. config.salon.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Alamat"
-
-#. config.salon.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Nama jalan dan nomor rumah"
-
-#. config.salon.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Kode pos"
-
-#. config.salon.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the salon"
-msgstr "Kode pos salon"
-
-#. config.salon.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Kota"
-
-#. config.salon.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the salon is located in"
-msgstr "Kota tempat salon berada"
-
-#. config.salon.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Kode negara"
-
-#. config.salon.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Kode negara ISO dua huruf, misalnya DE atau US"
-
-#. config.salon.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telepon"
-
-#. config.salon.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Nomor telepon dalam format internasional, juga digunakan oleh tombol panggil"
-
-#. config.salon.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Email"
-
 #. config.salon.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, gift cards and press"
 msgstr "Alamat email untuk janji temu, kartu hadiah, dan pers"
-
-#. config.salon.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Pengumuman"
 
 #. config.salon.announcement
 #: schema.json
@@ -143,45 +53,9 @@ msgstr "Catatan singkat di bagian atas setiap halaman, mis. Konsultasi gratis un
 
 #. config.salon.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Tautan reservasi"
-
-#. config.salon.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the appointment booking page, shown as a button in the header"
 msgstr "Tautan ke halaman pemesanan janji temu, ditampilkan sebagai tombol di header"
-
-#. config.salon.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "Tautan daftar harga"
-
-#. config.salon.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "Tautan ke halaman layanan dan harga"
-
-#. config.salon.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Kisaran harga"
-
-#. config.salon.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the salon, e.g. $$ or €€"
-msgstr "Tingkat harga salon, mis. $$ atau €€"
-
-#. config.salon.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Catatan"
 
 #. config.salon.notice
 #: schema.json
@@ -189,116 +63,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
 msgstr "Catatan singkat di footer, mis. Harap batalkan paling lambat 24 jam sebelum janji temu Anda."
 
-#. config.salon.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Bilah tindakan"
-
-#. config.salon.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Tampilkan tombol telepon dan reservasi di bagian bawah layar pada ponsel"
-
-#. config.salon.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Jam buka"
-
-#. config.salon.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Jam buka untuk setiap hari dalam seminggu, ditampilkan di footer"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Hari"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Hari dalam seminggu"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Senin"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Selasa"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Rabu"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Kamis"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Jumat"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sabtu"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Minggu"
-
-#. config.salon.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Buka"
-
-#. config.salon.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 09:00"
-msgstr "Jam buka dalam format 24 jam, mis. 09:00"
-
-#. config.salon.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Tutup"
-
-#. config.salon.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 19:00"
-msgstr "Jam tutup dalam format 24 jam, mis. 19:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "glow::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Pembulatan sudut sebagai nilai panjang CSS, misalnya 1rem atau 0 untuk sudut tajam"

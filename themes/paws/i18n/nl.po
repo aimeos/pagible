@@ -23,12 +23,6 @@ msgstr "Soort kliniek"
 
 #. config.clinic.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of clinic shown to search engines"
-msgstr "Soort kliniek voor zoekmachines"
-
-#. config.clinic.business-type
-#: schema.json
 msgctxt "op"
 msgid "Veterinary clinic"
 msgstr "Dierenkliniek"
@@ -51,107 +45,17 @@ msgctxt "op"
 msgid "Other pet service"
 msgstr "Andere dierenservice"
 
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Straat en huisnummer"
-
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Straat en huisnummer"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Postcode"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the clinic"
-msgstr "Postcode van de kliniek"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Stad"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the clinic is located in"
-msgstr "Plaats waar de kliniek gevestigd is"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Landcode"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Tweeletterige ISO-landcode, bijv. DE of US"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefoon"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefoonnummer in internationaal formaat, ook gebruikt voor de belknop"
-
-#. config.clinic.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-mail"
-
 #. config.clinic.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "E-mailadres voor afspraakverzoeken"
 
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "Spoednummer"
-
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for pet emergencies, shown at the top of every page"
-msgstr "Telefoonnummer voor spoedgevallen met dieren, bovenaan elke pagina getoond"
-
-#. config.clinic.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Reserveringslink"
-
 #. config.clinic.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "Link naar de afsprakenpagina of online boeking, weergegeven als knop in de header"
-
-#. config.clinic.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Talen"
 
 #. config.clinic.languages
 #: schema.json
@@ -182,120 +86,6 @@ msgstr "Nieuwe klanten"
 msgctxt "fh"
 msgid "Tell search engines that the clinic welcomes new clients"
 msgstr "Zoekmachines laten weten dat de kliniek nieuwe klanten aanneemt"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Prijsklasse"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the clinic, e.g. $$ or €€"
-msgstr "Prijsniveau van de kliniek, bijv. $$ of €€"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Actiebalk"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Bel- en afspraakknoppen onderaan het scherm tonen op telefoons"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Openingstijden"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Openingstijden voor elke dag van de week"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Dag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Dag van de week"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Maandag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Dinsdag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Woensdag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Donderdag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Vrijdag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Zaterdag"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Zondag"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Openingstijd"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Openingstijd in 24-uursformaat, bijv. 07:30"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Sluitingstijd"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Sluitingstijd in 24-uursformaat, bijv. 17:00"
 
 #. config.theme
 #: schema.json

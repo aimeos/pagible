@@ -23,12 +23,6 @@ msgstr "Τύπος γραφείου"
 
 #. config.firm.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of legal practice shown to search engines"
-msgstr "Είδος νομικής πρακτικής που εμφανίζεται στις μηχανές αναζήτησης"
-
-#. config.firm.business-type
-#: schema.json
 msgctxt "op"
 msgid "Law firm"
 msgstr "Δικηγορικό γραφείο"
@@ -50,72 +44,6 @@ msgstr "Συμβολαιογράφος"
 msgctxt "op"
 msgid "Other legal service"
 msgstr "Άλλη νομική υπηρεσία"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Διεύθυνση"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Οδός και αριθμός"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Ταχυδρομικός κώδικας"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the office"
-msgstr "Ταχυδρομικός κώδικας του γραφείου"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Πόλη"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the office is located in"
-msgstr "Πόλη όπου βρίσκεται το γραφείο"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Κωδικός χώρας"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Διγράμματος κωδικός χώρας ISO, π.χ. DE ή US"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Τηλέφωνο"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Αριθμός τηλεφώνου σε διεθνή μορφή, χρησιμοποιείται και για το κουμπί κλήσης"
-
-#. config.firm.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Email"
 
 #. config.firm.email
 #: schema.json
@@ -149,12 +77,6 @@ msgstr "Σύνδεσμος προς τη σελίδα επικοινωνίας �
 
 #. config.firm.languages
 #: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Γλώσσες"
-
-#. config.firm.languages
-#: schema.json
 msgctxt "fh"
 msgid "Comma separated list of the languages spoken by the attorneys, e.g. English, German, French"
 msgstr "Λίστα γλωσσών που μιλούν οι δικηγόροι διαχωρισμένων με κόμμα, π.χ. Αγγλικά, Γερμανικά, Γαλλικά"
@@ -170,24 +92,6 @@ msgstr "Τομείς δικαίου"
 msgctxt "fh"
 msgid "Comma separated list of the practice areas, e.g. Employment law, Family law, Real estate law"
 msgstr "Λίστα τομέων δικαίου διαχωρισμένων με κόμμα, π.χ. Εργατικό δίκαιο, Οικογενειακό δίκαιο, Δίκαιο ακινήτων"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Επίπεδο τιμών"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Fee level of the firm, e.g. $$ or €€"
-msgstr "Επίπεδο αμοιβών του γραφείου, π.χ. $$ ή €€"
-
-#. config.firm.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Γραμμή ενεργειών"
 
 #. config.firm.call-button
 #: schema.json
@@ -218,84 +122,6 @@ msgstr "Ώρες γραφείου"
 msgctxt "fh"
 msgid "Office hours for each day of the week"
 msgstr "Ώρες λειτουργίας του γραφείου για κάθε ημέρα της εβδομάδας"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Ημέρα"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Ημέρα της εβδομάδας"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Δευτέρα"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Τρίτη"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Τετάρτη"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Πέμπτη"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Παρασκευή"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Σάββατο"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Κυριακή"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Ώρα ανοίγματος"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Ώρα έναρξης σε μορφή 24 ωρών, π.χ. 07:30"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Ώρα κλεισίματος"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Ώρα λήξης σε μορφή 24 ωρών, π.χ. 17:00"
 
 #. config.theme
 #: schema.json

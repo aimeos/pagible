@@ -17,18 +17,6 @@ msgstr "اسم الورشة أو مركز الصيانة أو معرض السي�
 
 #. config.garage.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "نوع النشاط"
-
-#. config.garage.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "نوع النشاط الذي يظهر لمحركات البحث"
-
-#. config.garage.business-type
-#: schema.json
 msgctxt "op"
 msgid "Car repair shop"
 msgstr "ورشة إصلاح سيارات"
@@ -63,66 +51,6 @@ msgctxt "op"
 msgid "Other automotive business"
 msgstr "نشاط آخر في مجال السيارات"
 
-#. config.garage.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "العنوان"
-
-#. config.garage.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "الشارع ورقم المنزل"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "الرمز البريدي"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the garage"
-msgstr "الرمز البريدي للورشة"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "المدينة"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the garage is located in"
-msgstr "المدينة التي تقع فيها الورشة"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "رمز الدولة"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "رمز دولة ISO من حرفين، مثل DE أو US"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "الهاتف"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "رقم الهاتف بالتنسيق الدولي، ويُستخدم أيضًا لزر الاتصال"
-
 #. config.garage.breakdown
 #: schema.json
 msgctxt "fn"
@@ -137,21 +65,9 @@ msgstr "رقم هاتف خدمة الأعطال والسحب، ويظهر في �
 
 #. config.garage.email
 #: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "البريد الإلكتروني"
-
-#. config.garage.email
-#: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, quotes and vehicle enquiries"
 msgstr "البريد الإلكتروني للمواعيد وعروض الأسعار والاستفسارات عن المركبات"
-
-#. config.garage.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "الإعلان"
 
 #. config.garage.announcement
 #: schema.json
@@ -161,45 +77,9 @@ msgstr "ملاحظة قصيرة تظهر أعلى كل صفحة، مثل: موس
 
 #. config.garage.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "رابط الحجز"
-
-#. config.garage.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the service booking page, shown as a button in the header"
 msgstr "رابط صفحة حجز الصيانة، ويظهر كزر في الترويسة"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "رابط قائمة الأسعار"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "رابط الصفحة التي تحتوي على الخدمات والأسعار"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "نطاق السعر"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the garage, e.g. $$ or €€"
-msgstr "مستوى أسعار الورشة، مثل $$ أو €€"
-
-#. config.garage.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "ملاحظة"
 
 #. config.garage.notice
 #: schema.json
@@ -207,116 +87,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
 msgstr "ملاحظة قصيرة تظهر في التذييل، مثل: جميع الإصلاحات مشمولة بضمان لمدة 24 شهرًا على القطع والعمالة."
 
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "شريط الإجراءات"
-
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "عرض زري الاتصال والحجز أسفل الشاشة على الهواتف"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "ساعات العمل"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "ساعات العمل لكل يوم من أيام الأسبوع، تظهر في التذييل"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "اليوم"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "يوم من أيام الأسبوع"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "الاثنين"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "الثلاثاء"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "الأربعاء"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "الخميس"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "الجمعة"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "السبت"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "الأحد"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "وقت الفتح"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "وقت الفتح بتنسيق 24 ساعة، مثل 07:30"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "وقت الإغلاق"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 18:00"
-msgstr "وقت الإغلاق بتنسيق 24 ساعة، مثل 18:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "torque::theme"
 msgstr "المظهر"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "تقريب الزوايا كطول في CSS، على سبيل المثال 1rem أو 0 للحصول على زوايا حادة"

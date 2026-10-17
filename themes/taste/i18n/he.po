@@ -15,54 +15,6 @@ msgctxt "fh"
 msgid "Name of the restaurant"
 msgstr "שם המסעדה"
 
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "כתובת"
-
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "רחוב ומספר בית"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "מיקוד"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the restaurant"
-msgstr "מיקוד המסעדה"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "עיר"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the restaurant is located in"
-msgstr "העיר שבה נמצאת המסעדה"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "קוד מדינה"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "קוד מדינה ISO בן שתי אותיות, למשל DE או US"
-
 #. config.restaurant.cuisine
 #: schema.json
 msgctxt "fn"
@@ -87,119 +39,11 @@ msgctxt "fh"
 msgid "Page or link to the menu"
 msgstr "הדף או הקישור לתפריט"
 
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "טווח מחירים"
-
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the restaurant, e.g. $$ or €€"
-msgstr "רמת המחירים של המסעדה, למשל $$ או €€"
-
-#. config.restaurant.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "טלפון"
-
 #. config.restaurant.telephone
 #: schema.json
 msgctxt "fh"
 msgid "Phone number for reservations in international format"
 msgstr "מספר טלפון להזמנות בפורמט בינלאומי"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "שעות פתיחה"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "שעות פתיחה לכל יום בשבוע"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "יום"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "יום בשבוע"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "שני"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "שלישי"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "רביעי"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "חמישי"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "שישי"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "שבת"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "ראשון"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "שעת פתיחה"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 11:30"
-msgstr "שעת הפתיחה בפורמט 24 שעות, למשל 11:30"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "שעת סגירה"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 22:00"
-msgstr "שעת הסגירה בפורמט 24 שעות, למשל 22:00"
 
 #. config.theme
 #: schema.json

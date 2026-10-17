@@ -30,12 +30,6 @@ msgstr "Λεπτομερής περιγραφή του ακινήτου"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Τοποθεσία"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Περιγραφή της γειτονιάς και της γύρω περιοχής"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Διεύθυνση"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Οδός και αριθμός"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Περιοχή"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Περιοχή ή γειτονιά της πόλης"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Πόλη"
 
 #. content.property.city
 #: schema.json

@@ -74,9 +74,3 @@ msgstr "Programinės įrangos licencija poraštėje, pvz., MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Kampų suapvalinimas kaip CSS ilgio vertė, pvz., 0.5rem arba 0, jei norima aštrių kampų"

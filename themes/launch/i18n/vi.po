@@ -77,12 +77,6 @@ msgstr "Một câu mô tả sản phẩm làm gì, dùng cho công cụ tìm ki�
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Thông báo"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Tin ngắn hiển thị ở đầu mỗi trang, ví dụ: Mới: trang trạng thái với miền tùy chỉnh"
@@ -155,12 +149,6 @@ msgstr "Số lượng đánh giá làm cơ sở cho điểm số"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Lưu ý"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Lưu ý ngắn hiển thị ở phần chân trang, ví dụ: đạt chứng nhận SOC 2 Type II, dữ liệu lưu trữ tại EU"
@@ -170,9 +158,3 @@ msgstr "Lưu ý ngắn hiển thị ở phần chân trang, ví dụ: đạt ch�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Giao diện"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Làm tròn góc dưới dạng đơn vị độ dài CSS, ví dụ: 1rem hoặc 0 để có các góc nhọn"

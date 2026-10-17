@@ -74,9 +74,3 @@ msgstr "页脚中显示的软件许可证，例如 MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "主题"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "将边角作为 CSS 长度进行圆角处理，例如 0.5rem 或 0 用于锐角"

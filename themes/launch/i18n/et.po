@@ -77,12 +77,6 @@ msgstr "Üks lause, mis kirjeldab, mida toode teeb, otsingumootoritele"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Teadaanne"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Lühike uudis igal lehel ülaosas, nt Uus: olekulehed kohandatud domeenidega"
@@ -155,12 +149,6 @@ msgstr "Arvustuste arv, millele hinnang põhineb"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Märkus"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Lühike märkus jaluses, nt SOC 2 Type II sertifikaadiga, andmed majutatud ELis"
@@ -170,9 +158,3 @@ msgstr "Lühike märkus jaluses, nt SOC 2 Type II sertifikaadiga, andmed majutat
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Teema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Nurgade ümardamine CSS-pikkusena, nt 1rem või 0 teravate nurkade puhul"

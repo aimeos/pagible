@@ -2210,3 +2210,780 @@ msgstr "javascript"
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Anpassad JavaScript-kod tillagd på alla sidor"
+
+#. aura::*
+#. estate::*
+#. folio::*
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Plats"
+
+#. aura::*
+#. brew::*
+#. counsel::*
+#. flow::*
+#. folio::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-post"
+
+#. aura::*
+#. folio::*
+#. manual::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Avrundning av hörn som CSS-längd, t.ex. 0.5rem eller 0 för skarpa hörn"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Verksamhetstyp"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Verksamhetstyp som visas för sökmotorer"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Gatuadress"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gata och husnummer"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postnummer"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Företagets postnummer"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Stad"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Ort där företaget finns"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Landskod"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Två bokstävers ISO-landskod, t.ex. DE eller US"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefonnummer i internationellt format, används även av ringknappen"
+
+#. brew::*
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Meddelande"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Prisnivå"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. $$ or €€"
+msgstr "Företagets prisnivå, t.ex. $$ eller €€"
+
+#. brew::*
+#. counsel::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Knappfält"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Öppettider"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Öppettider för varje veckodag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Dag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Veckodag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Måndag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Tisdag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Onsdag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Torsdag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Fredag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Lördag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Söndag"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Öppnar"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Öppningstid i 24-timmarsformat, t.ex. 07:30"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Stänger"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Stängningstid i 24-timmarsformat, t.ex. 17:00"
+
+#. counsel::*
+#. medical::*
+#. paws::*
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Språk"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Företagets namn"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Värme och luftkonditionering"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Bygg- och renoveringsföretag"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Journummer"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Telefonnummer för akuta ärenden, visas högst upp på varje sida"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "E-postadress för förfrågningar"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Verksamhetsområden"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Kommaseparerad lista över orter och regioner där du arbetar, t.ex. Leeds, Bradford, York"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Ringknapp"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Visa en ringknapp längst ned på skärmen på mobiler"
+
+#. glow::*
+#. mane::*
+#. tonic::*
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Annan verksamhet"
+
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Bokningslänk"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Länk till prislistan"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Länk till sidan med behandlingar och priser"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Anmärkning"
+
+#. glow::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Visa knappar för samtal och bordsbokning längst ned på skärmen i mobiler"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Avrundning av hörn som CSS-längd, t.ex. 1rem eller 0 för skarpa hörn"
+
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "Elektriker"

@@ -30,12 +30,6 @@ msgstr "Подробно описание на имота"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Местоположение"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Описание на квартала и околността"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Адрес"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Улица и номер на сграда"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Квартал"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Район или квартал на града"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Град"
 
 #. content.property.city
 #: schema.json

@@ -17,18 +17,6 @@ msgstr "Baro, aludės ar klubo pavadinimas"
 
 #. config.bar.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Veiklos rūšis"
-
-#. config.bar.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Veiklos rūšis, rodoma paieškos sistemoms"
-
-#. config.bar.business-type
-#: schema.json
 msgctxt "op"
 msgid "Bar or pub"
 msgstr "Baras ar aludė"
@@ -51,78 +39,6 @@ msgctxt "op"
 msgid "Restaurant"
 msgstr "Restoranas"
 
-#. config.bar.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "Kita veikla"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Adresas"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gatvė ir namo numeris"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Pašto kodas"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the bar"
-msgstr "Baro pašto kodas"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Miestas"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the bar is located in"
-msgstr "Miestas, kuriame yra baras"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Šalies kodas"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefonas"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefono numeris tarptautiniu formatu, naudojamas ir skambinimo mygtukui"
-
-#. config.bar.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "El. paštas"
-
 #. config.bar.email
 #: schema.json
 msgctxt "fh"
@@ -131,21 +47,9 @@ msgstr "El. pašto adresas rezervacijoms, privatiems renginiams ir žiniasklaida
 
 #. config.bar.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Pranešimas"
-
-#. config.bar.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
 msgstr "Trumpa žinutė kiekvieno puslapio viršuje, pvz., Be rezervacijos laukiame iki 23:00"
-
-#. config.bar.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Rezervacijos nuoroda"
 
 #. config.bar.booking
 #: schema.json
@@ -177,125 +81,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
 msgstr "Kableliais atskirtas siūlomų dalykų sąrašas, pvz., Kokteiliai, Vynas, Užkandžiai"
 
-#. config.bar.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Kainų kategorija"
-
-#. config.bar.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the bar, e.g. $$ or €€"
-msgstr "Baro kainų lygis, pvz., $$ arba €€"
-
-#. config.bar.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Pastaba"
-
 #. config.bar.notice
 #: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
 msgstr "Trumpa žinutė poraštėje, pvz., Tik vyresniems nei 18 metų. Vartokite atsakingai."
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Veiksmų juosta"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Telefonuose rodyti skambinimo ir rezervacijos mygtukus ekrano apačioje"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Darbo laikas"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Darbo laikas kiekvienai savaitės dienai, rodomas poraštėje"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Diena"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Savaitės diena"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pirmadienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Antradienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Trečiadienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Ketvirtadienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Penktadienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Šeštadienis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Sekmadienis"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Atidarymo laikas"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 18:00"
-msgstr "Atidarymo laikas 24 valandų formatu, pvz., 18:00"
-
-#. config.bar.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Uždarymo laikas"
 
 #. config.bar.hours.closes
 #: schema.json

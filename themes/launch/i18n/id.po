@@ -77,12 +77,6 @@ msgstr "Satu kalimat yang menjelaskan fungsi produk, digunakan untuk mesin penca
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Pengumuman"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Berita singkat yang ditampilkan di bagian atas setiap halaman, mis. Baru: halaman status dengan domain khusus"
@@ -155,12 +149,6 @@ msgstr "Jumlah ulasan yang menjadi dasar penilaian"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Catatan"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Catatan singkat yang ditampilkan di footer, mis. tersertifikasi SOC 2 Type II, data dihosting di UE"
@@ -170,9 +158,3 @@ msgstr "Catatan singkat yang ditampilkan di footer, mis. tersertifikasi SOC 2 Ty
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Pembulatan sudut sebagai nilai panjang CSS, misalnya 1rem atau 0 untuk sudut tajam"

@@ -41,12 +41,6 @@ msgstr "Įmonė ar organizacija, kurioje dirbate, pvz. Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Vieta"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Miestas ar regionas, kuriame gyvenate, pvz. Berlynas, Vokietija"
@@ -74,12 +68,6 @@ msgstr "Trumpas aprašymas"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Vienas sakinys apie jus po kiekvienu įrašu, pvz. Kuriu Laravel programas ir rašau apie duomenų bazes"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "El. paštas"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Nuoroda į jūsų profilį, pvz. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Kampų suapvalinimas kaip CSS ilgio vertė, pvz., 0.5rem arba 0, jei norima aštrių kampų"

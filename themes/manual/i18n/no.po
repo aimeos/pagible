@@ -74,9 +74,3 @@ msgstr "Programvarens lisens i bunnteksten, f.eks. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Avrunding av hjørner som CSS-lengde, f.eks. 0.5rem eller 0 for skarpe hjørner"

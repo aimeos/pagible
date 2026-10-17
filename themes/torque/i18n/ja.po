@@ -17,18 +17,6 @@ msgstr "整備工場、修理工場または販売店の名前"
 
 #. config.garage.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "業種"
-
-#. config.garage.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "検索エンジンに表示される業種"
-
-#. config.garage.business-type
-#: schema.json
 msgctxt "op"
 msgid "Car repair shop"
 msgstr "自動車整備工場"
@@ -63,66 +51,6 @@ msgctxt "op"
 msgid "Other automotive business"
 msgstr "その他の自動車関連事業"
 
-#. config.garage.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "住所"
-
-#. config.garage.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "番地と建物番号"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "郵便番号"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the garage"
-msgstr "整備工場の郵便番号"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "市区町村"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the garage is located in"
-msgstr "整備工場の所在地の市区町村"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "国コード"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "2文字のISO国コード（例：DEまたはUS）"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "電話番号"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "国際形式の電話番号（通話ボタンにも使用）"
-
 #. config.garage.breakdown
 #: schema.json
 msgctxt "fn"
@@ -137,21 +65,9 @@ msgstr "ロードサービス・レッカー移動の電話番号（上部のバ
 
 #. config.garage.email
 #: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "メール"
-
-#. config.garage.email
-#: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, quotes and vehicle enquiries"
 msgstr "予約、見積もり、車両に関するお問い合わせ用のメールアドレス"
-
-#. config.garage.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "お知らせ"
 
 #. config.garage.announcement
 #: schema.json
@@ -161,45 +77,9 @@ msgstr "各ページの上部に表示する短いお知らせ（例：スタッ
 
 #. config.garage.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "予約リンク"
-
-#. config.garage.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the service booking page, shown as a button in the header"
 msgstr "整備予約ページへのリンク（ヘッダーにボタンとして表示）"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "料金表へのリンク"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "サービスと料金のページへのリンク"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "価格帯"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the garage, e.g. $$ or €€"
-msgstr "整備工場の価格帯（例：$$ や €€）"
-
-#. config.garage.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "注記"
 
 #. config.garage.notice
 #: schema.json
@@ -207,116 +87,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
 msgstr "フッターに表示する短いお知らせ（例：すべての修理に部品と工賃の24か月保証が付きます。）"
 
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "アクションバー"
-
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "スマートフォンで画面下部に電話ボタンと予約ボタンを表示します"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "営業時間"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "各曜日の営業時間（フッターに表示）"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "月曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "火曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "水曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "木曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "金曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "土曜日"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "日曜日"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "開店時間"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "営業開始時刻（24時間表記、例：07:30）"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "閉店時間"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 18:00"
-msgstr "営業終了時刻（24時間表記、例：18:00）"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "torque::theme"
 msgstr "テーマ"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "CSSの長さ単位としての角の丸め。例：1rem、または鋭角にする場合は0"

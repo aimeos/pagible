@@ -77,12 +77,6 @@ msgstr "제품이 무엇을 하는지 설명하는 한 문장, 검색 엔진용"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "공지"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "모든 페이지 상단에 표시되는 짧은 소식, 예: 신규: 맞춤 도메인을 지원하는 상태 페이지"
@@ -155,12 +149,6 @@ msgstr "평점의 기준이 되는 리뷰 수"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "안내"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "푸터에 표시되는 짧은 안내, 예: SOC 2 Type II 인증, 데이터는 EU에서 호스팅"
@@ -170,9 +158,3 @@ msgstr "푸터에 표시되는 짧은 안내, 예: SOC 2 Type II 인증, 데이�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "테마"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "CSS 길이 단위로 모서리 둥글림 설정 (예: 날카로운 모서리의 경우 1rem 또는 0)"

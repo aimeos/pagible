@@ -30,12 +30,6 @@ msgstr "Gedetailleerde beschrijving van het pand"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Locatie"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Beschrijving van de buurt en omgeving"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adres"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Straat en huisnummer"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Wijk"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Wijk of buurt van de stad"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Stad"
 
 #. content.property.city
 #: schema.json

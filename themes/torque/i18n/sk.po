@@ -17,18 +17,6 @@ msgstr "Názov autoservisu, dielne alebo autopredajne"
 
 #. config.garage.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Druh podnikania"
-
-#. config.garage.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Druh podnikania zobrazený vyhľadávačom"
-
-#. config.garage.business-type
-#: schema.json
 msgctxt "op"
 msgid "Car repair shop"
 msgstr "Autoservis"
@@ -63,66 +51,6 @@ msgctxt "op"
 msgid "Other automotive business"
 msgstr "Iná automobilová firma"
 
-#. config.garage.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Ulica a číslo domu"
-
-#. config.garage.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Ulica a číslo domu"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "PSČ"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the garage"
-msgstr "PSČ autoservisu"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Mesto"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the garage is located in"
-msgstr "Mesto, v ktorom sa autoservis nachádza"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Kód krajiny"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dvojpísmenový ISO kód krajiny, napr. DE alebo US"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefón"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefónne číslo v medzinárodnom formáte, používa ho aj tlačidlo volania"
-
 #. config.garage.breakdown
 #: schema.json
 msgctxt "fn"
@@ -137,21 +65,9 @@ msgstr "Telefónne číslo asistenčnej a odťahovej služby, zobrazené v horno
 
 #. config.garage.email
 #: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-mail"
-
-#. config.garage.email
-#: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, quotes and vehicle enquiries"
 msgstr "E-mailová adresa na objednávky do servisu, cenové ponuky a otázky k vozidlám"
-
-#. config.garage.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Oznámenie"
 
 #. config.garage.announcement
 #: schema.json
@@ -161,45 +77,9 @@ msgstr "Krátke oznámenie v hornej časti každej stránky, napr. Sezóna zimn�
 
 #. config.garage.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Odkaz na rezerváciu"
-
-#. config.garage.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the service booking page, shown as a button in the header"
 msgstr "Odkaz na stránku objednávky do servisu, zobrazený ako tlačidlo v hlavičke"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "Odkaz na cenník"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "Odkaz na stránku so službami a cenami"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Cenové rozpätie"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the garage, e.g. $$ or €€"
-msgstr "Cenová úroveň autoservisu, napr. $$ alebo €€"
-
-#. config.garage.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Upozornenie"
 
 #. config.garage.notice
 #: schema.json
@@ -207,116 +87,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
 msgstr "Krátke upozornenie v pätičke, napr. Na všetky opravy poskytujeme 24-mesačnú záruku na diely aj prácu."
 
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Lišta tlačidiel"
-
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Zobraziť na telefónoch tlačidlá na volanie a objednanie v dolnej časti obrazovky"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Otváracie hodiny"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Otváracie hodiny pre každý deň v týždni, zobrazené v päte"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Deň"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Deň v týždni"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pondelok"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Utorok"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Streda"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Štvrtok"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Piatok"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sobota"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Nedeľa"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Čas otvorenia"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Čas otvorenia v 24-hodinovom formáte, napr. 07:30"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Čas zatvorenia"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 18:00"
-msgstr "Čas zatvorenia v 24-hodinovom formáte, napr. 18:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "torque::theme"
 msgstr "Téma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Zaoblenie rohov ako dĺžka v CSS, napr. 1rem alebo 0 pre ostré rohy"

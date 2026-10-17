@@ -41,12 +41,6 @@ msgstr "근무하는 회사 또는 조직, 예: Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "위치"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "거주하는 도시 또는 지역, 예: 독일 베를린"
@@ -74,12 +68,6 @@ msgstr "짧은 소개"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "모든 글 아래에 표시되는 한 문장 소개, 예: Laravel 앱을 만들고 데이터베이스에 대해 씁니다"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "이메일"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "프로필 링크, 예: https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "테마"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "CSS 길이 단위로 모서리 반경 지정: 예: 0.5rem 또는 날카로운 모서리를 원할 경우 0"

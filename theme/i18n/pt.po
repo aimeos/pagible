@@ -2210,3 +2210,780 @@ msgstr "javascript"
 msgctxt "fh"
 msgid "Custom JavaScript code added to all pages"
 msgstr "Código JavaScript personalizado adicionado a todas as páginas"
+
+#. aura::*
+#. estate::*
+#. folio::*
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Localização"
+
+#. aura::*
+#. brew::*
+#. counsel::*
+#. flow::*
+#. folio::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. aura::*
+#. folio::*
+#. manual::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Arredondamento de cantos como valor de comprimento em CSS, por exemplo, 0.5rem ou 0 para cantos bem definidos"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tipo de negócio"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tipo de negócio exibido para os mecanismos de busca"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Rua e número de porta"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Rua e número de porta"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Código postal"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Código postal da empresa"
+
+#. brew::*
+#. counsel::*
+#. estate::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Cidade"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Cidade onde a empresa está localizada"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Código do país"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Código de país ISO de duas letras, por exemplo, DE ou US"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefone"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Número de telefone em formato internacional, também usado pelo botão de chamada"
+
+#. brew::*
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Anúncio"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Faixa de preço"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. $$ or €€"
+msgstr "Nível de preços da empresa, p. ex. $$ ou €€"
+
+#. brew::*
+#. counsel::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Barra de ações"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Horário de funcionamento"
+
+#. brew::*
+#. flow::*
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Horário de funcionamento para cada dia da semana"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Dia"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Dia da semana"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Segunda-feira"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Terça-feira"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Quarta-feira"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Quinta-feira"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Sexta-feira"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sábado"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Domingo"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Abertura"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Hora de abertura em formato de 24 horas, por exemplo, 07:30"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. tonic::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Fecho"
+
+#. brew::*
+#. counsel::*
+#. flow::*
+#. glow::*
+#. grove::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. solar::*
+#. solid::*
+#. taste::*
+#. torque::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Hora de encerramento em formato de 24 horas, por exemplo, 17:00"
+
+#. counsel::*
+#. medical::*
+#. paws::*
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Idiomas"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Nome da empresa"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Aquecimento e ar condicionado"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Empresa de construção e remodelação"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Número de emergência"
+
+#. flow::*
+#. medical::*
+#. paws::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Número de telefone para emergências, mostrado no topo de cada página"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "Endereço de email para pedidos"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Zonas servidas"
+
+#. flow::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Lista separada por vírgulas das cidades e regiões onde trabalha, p. ex. Leeds, Bradford, York"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Botão de chamada"
+
+#. flow::*
+#. medical::*
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Mostrar um botão de chamada na parte inferior do ecrã nos telemóveis"
+
+#. glow::*
+#. mane::*
+#. tonic::*
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Outro negócio"
+
+#. glow::*
+#. mane::*
+#. medical::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Link de reservas"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Link para a tabela de preços"
+
+#. glow::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Link para a página com serviços e preços"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Aviso"
+
+#. glow::*
+#. mane::*
+#. paws::*
+#. tonic::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Mostrar botões de ligação e reserva na parte inferior da tela em celulares"
+
+#. glow::*
+#. grove::*
+#. launch::*
+#. mane::*
+#. torque::*
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Arredondamento de cantos como comprimento CSS, por exemplo, 1rem ou 0 para cantos bem definidos"
+
+#. solar::*
+#. solid::*
+#. volt::*
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "Eletricista"

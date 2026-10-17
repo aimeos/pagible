@@ -23,12 +23,6 @@ msgstr "诊所类型"
 
 #. config.practice.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of practice shown to search engines"
-msgstr "向搜索引擎显示的诊所类型"
-
-#. config.practice.business-type
-#: schema.json
 msgctxt "op"
 msgid "Dentist"
 msgstr "牙医"
@@ -124,107 +118,17 @@ msgctxt "op"
 msgid "Psychiatry"
 msgstr "精神科"
 
-#. config.practice.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "地址"
-
-#. config.practice.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "街道和门牌号"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "邮政编码"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the practice"
-msgstr "诊所的邮政编码"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "城市"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the practice is located in"
-msgstr "诊所所在的城市"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "国家代码"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "两位字母的ISO国家代码，例如DE或US"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "电话"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "国际格式的电话号码，也用于通话按钮"
-
-#. config.practice.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "电子邮件"
-
 #. config.practice.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "用于预约申请的电子邮件地址"
 
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "紧急电话"
-
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for emergencies, shown at the top of every page"
-msgstr "紧急情况联系电话，显示在每个页面顶部"
-
-#. config.practice.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "预约链接"
-
 #. config.practice.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "预约页面或在线预约的链接，在页眉中显示为按钮"
-
-#. config.practice.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "语言"
 
 #. config.practice.languages
 #: schema.json
@@ -243,120 +147,6 @@ msgstr "新患者"
 msgctxt "fh"
 msgid "Tell search engines that the practice accepts new patients"
 msgstr "告知搜索引擎该诊所接收新患者"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "价格区间"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the practice, e.g. $$ or €€"
-msgstr "诊所的价格水平，例如 $$ 或 €€"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "通话按钮"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "在手机屏幕底部显示通话按钮"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "营业时间"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "每周各天的营业时间"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "星期"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "星期几"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "星期一"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "星期二"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "星期三"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "星期四"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "星期五"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "星期六"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "星期日"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "开门时间"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "24小时制的开始营业时间，例如07:30"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "关门时间"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "24小时制的结束营业时间，例如17:00"
 
 #. config.theme
 #: schema.json

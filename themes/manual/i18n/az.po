@@ -74,9 +74,3 @@ msgstr "Ayaq yazısında göstərilən proqram təminatının lisenziyası, məs
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Mövzu"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Künclərin yuvarlaşdırılması CSS uzunluğu kimi, məsələn, kəskin künclər üçün 0.5rem və ya 0"

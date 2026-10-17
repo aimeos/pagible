@@ -15,54 +15,6 @@ msgctxt "fh"
 msgid "Name of the restaurant"
 msgstr "Restoranın adı"
 
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Küçə ünvanı"
-
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Küçə və ev nömrəsi"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Poçt indeksi"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the restaurant"
-msgstr "Restoranın poçt indeksi"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Şəhər"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the restaurant is located in"
-msgstr "Restoranın yerləşdiyi şəhər"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Ölkə kodu"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "ISO ölkə kodu üçün iki hərfli kod, məsələn DE və ya US"
-
 #. config.restaurant.cuisine
 #: schema.json
 msgctxt "fn"
@@ -87,119 +39,11 @@ msgctxt "fh"
 msgid "Page or link to the menu"
 msgstr "Səhifə və ya menyuya keçid"
 
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Qiymət diapazonu"
-
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the restaurant, e.g. $$ or €€"
-msgstr "Restoranın qiymət səviyyəsi, məsələn $$ və ya €€"
-
-#. config.restaurant.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "telefon"
-
 #. config.restaurant.telephone
 #: schema.json
 msgctxt "fh"
 msgid "Phone number for reservations in international format"
 msgstr "Rezervasiya üçün beynəlxalq formatda telefon nömrəsi"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "İş saatları"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Həftənin hər günü üçün açılış saatları"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "gün"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Həftənin günü"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Bazar ertəsi"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Çərşənbə axşamı"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Çərşənbə"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Cümə axşamı"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Cümə"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Şənbə"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Bazar"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "açılma vaxtı"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 11:30"
-msgstr "Açılış vaxtı 24 saat formatında, məsələn, 11:30"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "bağlanma vaxtı"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 22:00"
-msgstr "24 saatlıq formatda bağlanma vaxtı, məsələn, 22:00"
 
 #. config.theme
 #: schema.json

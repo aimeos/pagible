@@ -17,18 +17,6 @@ msgstr "Назва автосервісу, майстерні або автос�
 
 #. config.garage.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Вид діяльності"
-
-#. config.garage.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Вид діяльності, що показується пошуковим системам"
-
-#. config.garage.business-type
-#: schema.json
 msgctxt "op"
 msgid "Car repair shop"
 msgstr "Автосервіс"
@@ -63,66 +51,6 @@ msgctxt "op"
 msgid "Other automotive business"
 msgstr "Інший автомобільний бізнес"
 
-#. config.garage.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Адреса"
-
-#. config.garage.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Вулиця і номер будинку"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Поштовий індекс"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the garage"
-msgstr "Поштовий індекс автосервісу"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Місто"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the garage is located in"
-msgstr "Місто, в якому розташований автосервіс"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Код країни"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Дволітерний ISO-код країни, наприклад DE або US"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Телефон"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Номер телефону в міжнародному форматі, також використовується кнопкою дзвінка"
-
 #. config.garage.breakdown
 #: schema.json
 msgctxt "fn"
@@ -137,21 +65,9 @@ msgstr "Номер телефону служби техдопомоги та е�
 
 #. config.garage.email
 #: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Ел. пошта"
-
-#. config.garage.email
-#: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, quotes and vehicle enquiries"
 msgstr "Адреса електронної пошти для запису, розрахунку вартості та запитань щодо автомобілів"
-
-#. config.garage.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Оголошення"
 
 #. config.garage.announcement
 #: schema.json
@@ -161,45 +77,9 @@ msgstr "Коротке оголошення вгорі кожної сторін
 
 #. config.garage.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Посилання на бронювання"
-
-#. config.garage.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the service booking page, shown as a button in the header"
 msgstr "Посилання на сторінку запису на сервіс, відображається кнопкою в шапці"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "Посилання на прайс-лист"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "Посилання на сторінку з послугами та цінами"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Ціновий рівень"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the garage, e.g. $$ or €€"
-msgstr "Рівень цін автосервісу, наприклад $$ або €€"
-
-#. config.garage.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Примітка"
 
 #. config.garage.notice
 #: schema.json
@@ -207,116 +87,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
 msgstr "Коротка примітка в підвалі, наприклад: На всі види ремонту надається гарантія 24 місяці на запчастини та роботу."
 
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Панель дій"
-
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Показувати кнопки дзвінка та запису внизу екрана на телефонах"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Години роботи"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Години роботи для кожного дня тижня, показуються в нижньому колонтитулі"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "День"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "День тижня"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Понеділок"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Вівторок"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Середа"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Четвер"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "П'ятниця"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Субота"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Неділя"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Відкриття"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Час відкриття у 24-годинному форматі, наприклад 07:30"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Закриття"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 18:00"
-msgstr "Час закриття у 24-годинному форматі, наприклад 18:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "torque::theme"
 msgstr "Тема оформлення"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Згладжування кутів як значення довжини в CSS, наприклад 1rem або 0 для гострих кутів"

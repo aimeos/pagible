@@ -30,12 +30,6 @@ msgstr "ការពិពណ៌នាលម្អិតអំពីអចលន
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "ទីតាំង"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "ការពិពណ៌នាអំពីសង្កាត់ និងតំបន់ជុំវិញ"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "អាសយដ្ឋាន"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "ផ្លូវ និងលេខផ្ទះ"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "ខណ្ឌ"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "ខណ្ឌ ឬសង្កាត់នៃទីក្រុង"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "ទីក្រុង"
 
 #. content.property.city
 #: schema.json

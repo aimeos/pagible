@@ -74,9 +74,3 @@ msgstr "អាជ្ញាប័ណ្ណរបស់កម្មវិធីដ
 msgctxt "st"
 msgid "manual::theme"
 msgstr "រចនាប័ទ្ម"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 0.5rem ឬ 0 សម្រាប់ជ្រុងស្រួច"

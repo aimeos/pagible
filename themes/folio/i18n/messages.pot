@@ -40,12 +40,6 @@ msgstr ""
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr ""
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr ""
@@ -72,12 +66,6 @@ msgstr ""
 #: schema.json
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
-msgstr ""
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
 msgstr ""
 
 #. config.profile.email
@@ -114,10 +102,4 @@ msgstr ""
 #: schema.json
 msgctxt "st"
 msgid "folio::theme"
-msgstr ""
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
 msgstr ""

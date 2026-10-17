@@ -74,9 +74,3 @@ msgstr "Ohjelmiston lisenssi alatunnisteessa, esim. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Teema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Kulmien pyöristäminen CSS-pituutena, esim. 0.5rem tai 0 terävien kulmien tapauksessa"

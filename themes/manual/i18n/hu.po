@@ -74,9 +74,3 @@ msgstr "A szoftver licence a láblécben, pl. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Téma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "A sarkok lekerekítése CSS-hosszként, pl. 0.5rem vagy 0 az éles sarkok esetén"

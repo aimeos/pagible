@@ -17,18 +17,6 @@ msgstr "Tên quán bar, pub hoặc câu lạc bộ"
 
 #. config.bar.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Loại hình kinh doanh"
-
-#. config.bar.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Loại hình kinh doanh hiển thị cho công cụ tìm kiếm"
-
-#. config.bar.business-type
-#: schema.json
 msgctxt "op"
 msgid "Bar or pub"
 msgstr "Quán bar hoặc pub"
@@ -51,78 +39,6 @@ msgctxt "op"
 msgid "Restaurant"
 msgstr "Nhà hàng"
 
-#. config.bar.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "Loại hình khác"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Địa chỉ"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Tên đường và số nhà"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Mã bưu chính"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the bar"
-msgstr "Mã bưu chính của quán bar"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Thành phố"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the bar is located in"
-msgstr "Thành phố nơi quán bar tọa lạc"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Mã quốc gia"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Mã quốc gia ISO gồm hai chữ cái, ví dụ DE hoặc US"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Điện thoại"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Số điện thoại theo định dạng quốc tế, cũng dùng cho nút gọi"
-
-#. config.bar.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Email"
-
 #. config.bar.email
 #: schema.json
 msgctxt "fh"
@@ -131,21 +47,9 @@ msgstr "Địa chỉ email để đặt bàn, tổ chức sự kiện riêng và
 
 #. config.bar.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Thông báo"
-
-#. config.bar.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
 msgstr "Ghi chú ngắn hiển thị ở đầu mỗi trang, ví dụ: Không cần đặt trước đến 23:00"
-
-#. config.bar.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Liên kết đặt chỗ"
 
 #. config.bar.booking
 #: schema.json
@@ -177,125 +81,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
 msgstr "Danh sách những gì bạn phục vụ, phân tách bằng dấu phẩy, ví dụ: Cocktail, Rượu vang, Đồ ăn nhẹ"
 
-#. config.bar.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Mức giá"
-
-#. config.bar.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the bar, e.g. $$ or €€"
-msgstr "Mức giá của quán bar, ví dụ: $$ hoặc €€"
-
-#. config.bar.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Lưu ý"
-
 #. config.bar.notice
 #: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
 msgstr "Ghi chú ngắn hiển thị ở chân trang, ví dụ: Chỉ dành cho người trên 18 tuổi. Hãy uống có trách nhiệm."
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Thanh thao tác"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Hiển thị nút gọi và đặt bàn ở cuối màn hình trên điện thoại"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Giờ mở cửa"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Giờ mở cửa cho từng ngày trong tuần, hiển thị ở chân trang"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Ngày trong tuần"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Ngày trong tuần"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Thứ Hai"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Thứ Ba"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Thứ Tư"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Thứ Năm"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Thứ Sáu"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Thứ Bảy"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Chủ Nhật"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Mở cửa"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 18:00"
-msgstr "Giờ mở cửa theo định dạng 24 giờ, ví dụ 18:00"
-
-#. config.bar.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Đóng cửa"
 
 #. config.bar.hours.closes
 #: schema.json

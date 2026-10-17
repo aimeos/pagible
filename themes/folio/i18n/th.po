@@ -41,12 +41,6 @@ msgstr "บริษัทหรือองค์กรที่คุณทำ
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "ที่ตั้ง"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "เมืองหรือภูมิภาคที่คุณอาศัย เช่น เบอร์ลิน เยอรมนี"
@@ -74,12 +68,6 @@ msgstr "ประวัติย่อ"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "ประโยคสั้นๆ เกี่ยวกับคุณใต้ทุกบทความ เช่น ฉันสร้างแอป Laravel และเขียนเรื่องฐานข้อมูล"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "อีเมล"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "ลิงก์ไปยังโปรไฟล์ของคุณ �
 msgctxt "st"
 msgid "folio::theme"
 msgstr "ธีม"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "การปัดมุมให้เป็นค่าความยาวใน CSS เช่น 0.5rem หรือ 0 สำหรับมุมที่คม"

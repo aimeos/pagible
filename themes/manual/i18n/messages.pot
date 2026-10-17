@@ -73,9 +73,3 @@ msgstr ""
 msgctxt "st"
 msgid "manual::theme"
 msgstr ""
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr ""

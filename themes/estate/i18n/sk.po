@@ -30,12 +30,6 @@ msgstr "Podrobný popis nehnuteľnosti"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Lokalita"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Popis okolia a susedstva"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adresa"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Ulica a číslo domu"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Štvrť"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Mestská časť alebo štvrť"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Mesto"
 
 #. content.property.city
 #: schema.json

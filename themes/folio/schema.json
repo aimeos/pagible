@@ -55,7 +55,6 @@
                 },
                 "email": {
                     "type": "string",
-                    "label": "E-mail",
                     "hint": "E-mail address shown in the footer with a copy button"
                 },
                 "links": {

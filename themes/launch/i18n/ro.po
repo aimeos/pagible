@@ -77,12 +77,6 @@ msgstr "O propoziție care descrie ce face produsul, pentru motoarele de căutar
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Anunț"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Știre scurtă afișată în partea de sus a fiecărei pagini, de ex. Nou: pagini de stare cu domenii personalizate"
@@ -155,12 +149,6 @@ msgstr "Numărul de recenzii pe care se bazează evaluarea"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Notă"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Notă scurtă afișată în subsol, de ex. certificat SOC 2 Type II, date găzduite în UE"
@@ -170,9 +158,3 @@ msgstr "Notă scurtă afișată în subsol, de ex. certificat SOC 2 Type II, dat
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Temă"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Rotunjirea colțurilor ca valoare de lungime CSS, de exemplu 1rem sau 0 pentru colțuri ascuțite"

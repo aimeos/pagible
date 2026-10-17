@@ -23,12 +23,6 @@ msgstr "Vrsta pisarne"
 
 #. config.firm.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of legal practice shown to search engines"
-msgstr "Vrsta pravne dejavnosti, prikazana iskalnikom"
-
-#. config.firm.business-type
-#: schema.json
 msgctxt "op"
 msgid "Law firm"
 msgstr "Odvetniška pisarna"
@@ -50,72 +44,6 @@ msgstr "Notar"
 msgctxt "op"
 msgid "Other legal service"
 msgstr "Druga pravna storitev"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Ulica in hišna številka"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Ulica in hišna številka"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Poštna številka"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the office"
-msgstr "Poštna številka pisarne"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Mesto"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the office is located in"
-msgstr "Kraj, v katerem je pisarna"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Koda države"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dvomestna ISO koda države, npr. DE ali US"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefonska številka v mednarodni obliki, uporablja jo tudi gumb za klic"
-
-#. config.firm.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-pošta"
 
 #. config.firm.email
 #: schema.json
@@ -149,12 +77,6 @@ msgstr "Povezava do strani za stik ali spletnega naročanja, prikazana kot gumb 
 
 #. config.firm.languages
 #: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Jeziki"
-
-#. config.firm.languages
-#: schema.json
 msgctxt "fh"
 msgid "Comma separated list of the languages spoken by the attorneys, e.g. English, German, French"
 msgstr "Z vejicami ločen seznam jezikov, ki jih govorijo odvetniki, npr. angleščina, nemščina, francoščina"
@@ -170,24 +92,6 @@ msgstr "Pravna področja"
 msgctxt "fh"
 msgid "Comma separated list of the practice areas, e.g. Employment law, Family law, Real estate law"
 msgstr "Z vejicami ločen seznam pravnih področij, npr. Delovno pravo, Družinsko pravo, Nepremičninsko pravo"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Cenovni razred"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Fee level of the firm, e.g. $$ or €€"
-msgstr "Raven honorarjev pisarne, npr. $$ ali €€"
-
-#. config.firm.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Vrstica z gumbi"
 
 #. config.firm.call-button
 #: schema.json
@@ -218,84 +122,6 @@ msgstr "Uradne ure"
 msgctxt "fh"
 msgid "Office hours for each day of the week"
 msgstr "Uradne ure za vsak dan v tednu"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Dan"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Dan v tednu"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Ponedeljek"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Torek"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Sreda"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Četrtek"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Petek"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sobota"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Nedelja"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Ura odprtja"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Čas odprtja v 24-urni obliki, npr. 07:30"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Ura zaprtja"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Čas zaprtja v 24-urni obliki, npr. 17:00"
 
 #. config.theme
 #: schema.json

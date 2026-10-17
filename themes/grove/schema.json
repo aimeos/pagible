@@ -123,7 +123,7 @@
                 "price-range": {
                     "type": "string",
                     "label": "Price range",
-                    "hint": "Price level of the business, e.g. ££ or €€"
+                    "hint": "Price level of the business, e.g. $$ or €€"
                 },
                 "notice": {
                     "type": "string",
@@ -139,7 +139,7 @@
                 "hours": {
                     "type": "items",
                     "label": "Office hours",
-                    "hint": "Office hours for each day of the week, shown in the footer",
+                    "hint": "Office hours for each day of the week",
                     "identity": "id",
                     "item": {
                         "day": {
@@ -183,7 +183,7 @@
                         },
                         "closes": {
                             "type": "string",
-                            "hint": "Closing time in 24 hour format, e.g. 18:00",
+                            "hint": "Closing time in 24 hour format, e.g. 17:00",
                             "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
                         }
                     }

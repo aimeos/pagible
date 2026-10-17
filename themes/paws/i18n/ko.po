@@ -23,12 +23,6 @@ msgstr "병원 유형"
 
 #. config.clinic.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of clinic shown to search engines"
-msgstr "검색 엔진에 표시되는 병원 유형"
-
-#. config.clinic.business-type
-#: schema.json
 msgctxt "op"
 msgid "Veterinary clinic"
 msgstr "동물병원"
@@ -51,107 +45,17 @@ msgctxt "op"
 msgid "Other pet service"
 msgstr "기타 반려동물 서비스"
 
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "주소"
-
-#. config.clinic.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "도로명과 건물 번호"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "우편번호"
-
-#. config.clinic.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the clinic"
-msgstr "동물병원 우편번호"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "도시"
-
-#. config.clinic.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the clinic is located in"
-msgstr "동물병원이 위치한 도시"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "국가 코드"
-
-#. config.clinic.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "두 자리 ISO 국가 코드(예: DE 또는 US)"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "전화번호"
-
-#. config.clinic.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "국제 형식의 전화번호, 통화 버튼에도 사용됨"
-
-#. config.clinic.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "이메일"
-
 #. config.clinic.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "진료 예약 요청용 이메일 주소"
 
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "긴급 전화번호"
-
-#. config.clinic.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for pet emergencies, shown at the top of every page"
-msgstr "반려동물 응급 상황용 전화번호로, 모든 페이지 상단에 표시됩니다"
-
-#. config.clinic.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "예약 링크"
-
 #. config.clinic.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "예약 페이지 또는 온라인 예약 링크로, 헤더에 버튼으로 표시됩니다"
-
-#. config.clinic.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "언어"
 
 #. config.clinic.languages
 #: schema.json
@@ -182,120 +86,6 @@ msgstr "신규 보호자"
 msgctxt "fh"
 msgid "Tell search engines that the clinic welcomes new clients"
 msgstr "병원이 신규 보호자를 받고 있음을 검색 엔진에 알립니다"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "가격대"
-
-#. config.clinic.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the clinic, e.g. $$ or €€"
-msgstr "병원의 가격대, 예: $$ 또는 €€"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "액션 바"
-
-#. config.clinic.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "휴대폰 화면 하단에 전화 및 예약 버튼을 표시합니다"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "영업시간"
-
-#. config.clinic.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "요일별 영업시간"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "월요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "화요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "수요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "목요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "금요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "토요일"
-
-#. config.clinic.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "일요일"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "여는 시간"
-
-#. config.clinic.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "24시간 형식의 오픈 시간(예: 07:30)"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "닫는 시간"
-
-#. config.clinic.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "24시간 형식의 마감 시간(예: 17:00)"
 
 #. config.theme
 #: schema.json

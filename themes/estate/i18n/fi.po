@@ -30,12 +30,6 @@ msgstr "Kohteen yksityiskohtainen kuvaus"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Sijainti"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Kuvaus naapurustosta ja ympäristöstä"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Osoite"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Katu ja talon numero"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Kaupunginosa"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Kaupunginosa tai alue"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Kaupunki"
 
 #. content.property.city
 #: schema.json

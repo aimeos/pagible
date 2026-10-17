@@ -30,12 +30,6 @@ msgstr "Deskripsi rinci properti"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Lokasi"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Deskripsi lingkungan dan sekitarnya"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Alamat"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Nama jalan dan nomor rumah"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Distrik"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Distrik atau lingkungan kota"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Kota"
 
 #. content.property.city
 #: schema.json

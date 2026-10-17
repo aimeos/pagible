@@ -30,12 +30,6 @@ msgstr "Mülkün ayrıntılı açıklaması"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Konum"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Mahalle ve çevrenin açıklaması"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adres"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Sokak ve kapı numarası"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Semt"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Şehrin ilçesi veya semti"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Şehir"
 
 #. content.property.city
 #: schema.json

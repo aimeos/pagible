@@ -77,12 +77,6 @@ msgstr "En setning som beskriver hva produktet gjør, til søkemotorer"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Kunngjøring"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Kort nyhet vist øverst på hver side, f.eks. Nytt: statussider med egne domener"
@@ -155,12 +149,6 @@ msgstr "Antall vurderinger karakteren er basert på"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Merknad"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Kort merknad vist i footeren, f.eks. SOC 2 Type II-sertifisert, data hostet i EU"
@@ -170,9 +158,3 @@ msgstr "Kort merknad vist i footeren, f.eks. SOC 2 Type II-sertifisert, data hos
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Avrunding av hjørner som CSS-lengde, f.eks. 1rem eller 0 for skarpe hjørner"

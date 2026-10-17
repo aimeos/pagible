@@ -218,6 +218,7 @@
                 },
                 "city": {
                     "type": "string",
+                    "label": "City",
                     "hint": "City the property is located in"
                 },
                 "country": {

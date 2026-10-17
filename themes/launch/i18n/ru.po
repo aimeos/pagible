@@ -77,12 +77,6 @@ msgstr "Одно предложение, описывающее, что дела
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Объявление"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Короткая новость в верхней части каждой страницы, напр. Новое: страницы статуса с собственными доменами"
@@ -155,12 +149,6 @@ msgstr "Количество отзывов, на основе которых р
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Примечание"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Короткое примечание в подвале сайта, напр. сертифицировано по SOC 2 Type II, данные хранятся в ЕС"
@@ -170,9 +158,3 @@ msgstr "Короткое примечание в подвале сайта, на
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Тема оформления"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Скругление углов в качестве значения длины в CSS, например 1rem или 0 для острых углов"

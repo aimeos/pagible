@@ -15,54 +15,6 @@ msgctxt "fh"
 msgid "Name of the restaurant"
 msgstr "Restorano pavadinimas"
 
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Adresas"
-
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gatvė ir namo numeris"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Pašto kodas"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the restaurant"
-msgstr "Restorano pašto kodas"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Miestas"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the restaurant is located in"
-msgstr "Miestas, kuriame yra restoranas"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Šalies kodas"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
-
 #. config.restaurant.cuisine
 #: schema.json
 msgctxt "fn"
@@ -87,119 +39,11 @@ msgctxt "fh"
 msgid "Page or link to the menu"
 msgstr "Puslapis arba nuoroda į meniu"
 
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Kainų kategorija"
-
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the restaurant, e.g. $$ or €€"
-msgstr "Restorano kainų lygis, pvz., $$ arba €€"
-
-#. config.restaurant.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefonas"
-
 #. config.restaurant.telephone
 #: schema.json
 msgctxt "fh"
 msgid "Phone number for reservations in international format"
 msgstr "Telefono numeris rezervacijoms tarptautiniu formatu"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Darbo laikas"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Darbo laikas kiekvieną savaitės dieną"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Diena"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Savaitės diena"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pirmadienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Antradienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Trečiadienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Ketvirtadienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Penktadienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Šeštadienis"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Sekmadienis"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Atidarymo laikas"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 11:30"
-msgstr "Atidarymo laikas 24 valandų formatu, pvz., 11:30"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Uždarymo laikas"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 22:00"
-msgstr "Uždarymo laikas 24 valandų formatu, pvz., 22:00"
 
 #. config.theme
 #: schema.json

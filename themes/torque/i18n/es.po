@@ -17,18 +17,6 @@ msgstr "Nombre del taller, del centro de servicio o del concesionario"
 
 #. config.garage.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Tipo de negocio"
-
-#. config.garage.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Tipo de negocio que se muestra a los buscadores"
-
-#. config.garage.business-type
-#: schema.json
 msgctxt "op"
 msgid "Car repair shop"
 msgstr "Taller mecánico"
@@ -63,66 +51,6 @@ msgctxt "op"
 msgid "Other automotive business"
 msgstr "Otro negocio de automoción"
 
-#. config.garage.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Calle"
-
-#. config.garage.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Calle y número"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Código postal"
-
-#. config.garage.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the garage"
-msgstr "Código postal del taller"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Ciudad"
-
-#. config.garage.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the garage is located in"
-msgstr "Ciudad en la que se encuentra el taller"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Código de país"
-
-#. config.garage.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Código de país ISO de dos letras, por ejemplo DE o US"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Teléfono"
-
-#. config.garage.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Número de teléfono en formato internacional, también se usa para el botón de llamada"
-
 #. config.garage.breakdown
 #: schema.json
 msgctxt "fn"
@@ -137,21 +65,9 @@ msgstr "Número de teléfono de asistencia en carretera y grúa, se muestra en l
 
 #. config.garage.email
 #: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Correo electrónico"
-
-#. config.garage.email
-#: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, quotes and vehicle enquiries"
 msgstr "Correo electrónico para citas, presupuestos y consultas sobre vehículos"
-
-#. config.garage.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Anuncio"
 
 #. config.garage.announcement
 #: schema.json
@@ -161,45 +77,9 @@ msgstr "Nota breve en la parte superior de cada página, p. ej. Temporada de neu
 
 #. config.garage.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Enlace de reserva"
-
-#. config.garage.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the service booking page, shown as a button in the header"
 msgstr "Enlace a la página de reserva de servicio, se muestra como botón en la cabecera"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "Enlace a la lista de precios"
-
-#. config.garage.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "Enlace a la página con servicios y precios"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Rango de precios"
-
-#. config.garage.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the garage, e.g. $$ or €€"
-msgstr "Nivel de precios del taller, p. ej. $$ o €€"
-
-#. config.garage.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Aviso"
 
 #. config.garage.notice
 #: schema.json
@@ -207,116 +87,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
 msgstr "Nota breve en el pie de página, p. ej. Todas las reparaciones tienen 24 meses de garantía en piezas y mano de obra."
 
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Barra de acciones"
-
-#. config.garage.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Mostrar botones de llamada y reserva en la parte inferior de la pantalla en móviles"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Horario de apertura"
-
-#. config.garage.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Horario de apertura para cada día de la semana, se muestra en el pie de página"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Día"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Día de la semana"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Lunes"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Martes"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Miércoles"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Jueves"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Viernes"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sábado"
-
-#. config.garage.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Domingo"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Hora de apertura"
-
-#. config.garage.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Hora de apertura en formato de 24 horas, p. ej. 07:30"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Hora de cierre"
-
-#. config.garage.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 18:00"
-msgstr "Hora de cierre en formato de 24 horas, p. ej. 18:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "torque::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Redondeo de esquinas como longitud CSS; por ejemplo, 1rem o 0 para esquinas afiladas"

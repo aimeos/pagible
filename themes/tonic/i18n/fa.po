@@ -17,18 +17,6 @@ msgstr "نام بار، پاب یا کلاب"
 
 #. config.bar.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "نوع کسب‌وکار"
-
-#. config.bar.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "نوع کسب‌وکاری که به موتورهای جستجو نمایش داده می‌شود"
-
-#. config.bar.business-type
-#: schema.json
 msgctxt "op"
 msgid "Bar or pub"
 msgstr "بار یا میخانه"
@@ -51,78 +39,6 @@ msgctxt "op"
 msgid "Restaurant"
 msgstr "رستوران"
 
-#. config.bar.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "سایر کسب‌وکارها"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "آدرس خیابان"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "شماره خیابان و پلاک خانه"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "کد پستی"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the bar"
-msgstr "کد پستی بار"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "شهر"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the bar is located in"
-msgstr "شهری که بار در آن واقع شده است"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "کد کشور"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "کد کشور ایزو دو حرفی، مانند DE یا US"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "تلفن"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "شماره تلفن به فرمت بین‌المللی، که همچنین توسط دکمه تماس استفاده می‌شود"
-
-#. config.bar.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "ایمیل"
-
 #. config.bar.email
 #: schema.json
 msgctxt "fh"
@@ -131,21 +47,9 @@ msgstr "آدرس ایمیل برای رزرو، رویدادهای خصوصی و
 
 #. config.bar.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "اعلامیه"
-
-#. config.bar.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
 msgstr "یادداشت کوتاهی که در بالای هر صفحه نمایش داده می‌شود، مثلاً پذیرش مراجعین بدون نوبت تا ساعت ۲۳:۰۰"
-
-#. config.bar.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "لینک رزرو"
 
 #. config.bar.booking
 #: schema.json
@@ -177,125 +81,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
 msgstr "فهرست جداشده با ویرگول از آنچه ارائه می‌دهید، مانند کوکتل‌ها، شراب، تنقلات بار"
 
-#. config.bar.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "محدوده قیمت"
-
-#. config.bar.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the bar, e.g. $$ or €€"
-msgstr "سطح قیمت بار، مثلاً $$ یا €€"
-
-#. config.bar.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "اطلاعیه"
-
 #. config.bar.notice
 #: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
 msgstr "یادداشت کوتاه نمایش داده شده در پاورقی، مثلاً: فقط بالای ۱۸ سال. لطفاً مسئولانه بنوشید."
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "نوار دکمه‌های سریع"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "دکمه‌های تماس و رزرو را در پایین صفحه نمایش گوشی‌ها نمایش دهید."
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "ساعات کاری"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "ساعات کاری هر روز هفته در پاورقی نمایش داده شده است."
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "روز"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "روز هفته"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "دوشنبه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "سه‌شنبه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "چهارشنبه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "پنجشنبه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "جمعه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "شنبه"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "یکشنبه"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "ساعت باز شدن"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 18:00"
-msgstr "زمان باز شدن به فرمت 24 ساعته، مثلاً 18:00"
-
-#. config.bar.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "ساعت بسته شدن"
 
 #. config.bar.hours.closes
 #: schema.json

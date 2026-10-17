@@ -74,9 +74,3 @@ msgstr "Licența software-ului afișată în subsol, de ex. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Temă"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Rotunjirea colțurilor ca valoare de lungime CSS, de exemplu 0.5rem sau 0 pentru colțuri ascuțite"

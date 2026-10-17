@@ -74,9 +74,3 @@ msgstr "Licenca programske opreme v nogi, npr. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Zaokroževanje vogalov kot dolžina v CSS, npr. 0.5rem ali 0 za ostre vogale"

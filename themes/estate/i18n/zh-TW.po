@@ -30,12 +30,6 @@ msgstr "該物業的詳細說明"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "地點"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "社區及周邊環境的描述"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "地址"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "街道名稱與門牌號碼"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "區"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "該城市的行政區或社區"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "城市"
 
 #. content.property.city
 #: schema.json

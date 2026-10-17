@@ -29,12 +29,6 @@ msgstr ""
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr ""
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr ""
@@ -171,12 +165,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr ""
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr ""
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -289,12 +277,6 @@ msgstr ""
 #: schema.json
 msgctxt "fh"
 msgid "District or neighborhood of the city"
-msgstr ""
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
 msgstr ""
 
 #. content.property.city

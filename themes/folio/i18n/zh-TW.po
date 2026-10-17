@@ -41,12 +41,6 @@ msgstr "您任職的公司或組織，例如 Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "地點"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "您居住的城市或地區，例如：德國柏林"
@@ -74,12 +68,6 @@ msgstr "簡介"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "每篇貼文下方會顯示一句關於你的簡介，例如：我開發 Laravel 應用程式，並撰寫關於資料庫的文章"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "電子郵件"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "您的個人檔案連結，例如：https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "主題"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "將邊角圓角化作為 CSS 長度，例如 0.5rem 或 0 代表尖角"

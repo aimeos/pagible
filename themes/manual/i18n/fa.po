@@ -74,9 +74,3 @@ msgstr "مجوز نرم‌افزاری که در پاورقی نمایش داد�
 msgctxt "st"
 msgid "manual::theme"
 msgstr "پوسته"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "گرد کردن گوشه‌ها به صورت طول در CSS، مثلاً 0.5rem یا 0 برای گوشه‌های تیز"

@@ -30,12 +30,6 @@ msgstr "Išsamus turto aprašymas"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Vieta"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Rajono ir apylinkių aprašymas"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adresas"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gatvė ir namo numeris"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Rajonas"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Miesto rajonas ar apylinkė"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Miestas"
 
 #. content.property.city
 #: schema.json

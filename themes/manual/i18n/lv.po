@@ -74,9 +74,3 @@ msgstr "Programmatūras licence kājenē, piem., MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tēma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Stūru noapaļošana kā CSS garums, piemēram, 0.5rem vai 0, lai iegūtu asus stūrus"

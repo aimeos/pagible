@@ -34,13 +34,13 @@
                 "postal-code": {
                     "type": "string",
                     "label": "Postal code",
-                    "hint": "Postal code of the restaurant",
+                    "hint": "Postal code of the business",
                     "required": true
                 },
                 "locality": {
                     "type": "string",
                     "label": "City",
-                    "hint": "City the restaurant is located in",
+                    "hint": "City the business is located in",
                     "required": true
                 },
                 "country": {
@@ -68,7 +68,7 @@
                 "price-range": {
                     "type": "string",
                     "label": "Price range",
-                    "hint": "Price level of the restaurant, e.g. $$ or €€",
+                    "hint": "Price level of the business, e.g. $$ or €€",
                     "required": true
                 },
                 "telephone": {
@@ -96,12 +96,12 @@
                         },
                         "opens": {
                             "type": "string",
-                            "hint": "Opening time in 24 hour format, e.g. 11:30",
+                            "hint": "Opening time in 24 hour format, e.g. 07:30",
                             "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
                         },
                         "closes": {
                             "type": "string",
-                            "hint": "Closing time in 24 hour format, e.g. 22:00",
+                            "hint": "Closing time in 24 hour format, e.g. 17:00",
                             "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
                         }
                     }

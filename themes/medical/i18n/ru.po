@@ -23,12 +23,6 @@ msgstr "Тип клиники"
 
 #. config.practice.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of practice shown to search engines"
-msgstr "Тип клиники, показываемый поисковым системам"
-
-#. config.practice.business-type
-#: schema.json
 msgctxt "op"
 msgid "Dentist"
 msgstr "Стоматолог"
@@ -124,107 +118,17 @@ msgctxt "op"
 msgid "Psychiatry"
 msgstr "Психиатрия"
 
-#. config.practice.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Адрес"
-
-#. config.practice.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Улица и номер дома"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Почтовый индекс"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the practice"
-msgstr "Почтовый индекс клиники"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Город"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the practice is located in"
-msgstr "Город, в котором находится клиника"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Код страны"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Двухбуквенный ISO-код страны, например DE или US"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Телефон"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Номер телефона в международном формате, также используется кнопкой звонка"
-
-#. config.practice.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Эл. почта"
-
 #. config.practice.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "Адрес электронной почты для записи на приём"
 
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "Экстренный номер"
-
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for emergencies, shown at the top of every page"
-msgstr "Номер телефона для экстренных случаев, отображается вверху каждой страницы"
-
-#. config.practice.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Ссылка на бронирование"
-
 #. config.practice.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "Ссылка на страницу записи или онлайн-запись, отображается кнопкой в шапке"
-
-#. config.practice.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Языки"
 
 #. config.practice.languages
 #: schema.json
@@ -243,120 +147,6 @@ msgstr "Новые пациенты"
 msgctxt "fh"
 msgid "Tell search engines that the practice accepts new patients"
 msgstr "Сообщить поисковым системам, что клиника принимает новых пациентов"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Ценовой уровень"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the practice, e.g. $$ or €€"
-msgstr "Ценовой уровень клиники, например $$ или €€"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "Кнопка звонка"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "Показывать кнопку звонка внизу экрана на телефонах"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Часы работы"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Часы работы для каждого дня недели"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "День"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "День недели"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Понедельник"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Вторник"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Среда"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Четверг"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Пятница"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Суббота"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Воскресенье"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Открытие"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Время открытия в 24-часовом формате, например 07:30"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Закрытие"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Время закрытия в 24-часовом формате, например 17:00"
 
 #. config.theme
 #: schema.json

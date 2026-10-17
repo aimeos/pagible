@@ -23,12 +23,6 @@ msgstr "Muayenehane türü"
 
 #. config.practice.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of practice shown to search engines"
-msgstr "Arama motorlarına gösterilen muayenehane türü"
-
-#. config.practice.business-type
-#: schema.json
 msgctxt "op"
 msgid "Dentist"
 msgstr "Diş hekimi"
@@ -124,107 +118,17 @@ msgctxt "op"
 msgid "Psychiatry"
 msgstr "Psikiyatri"
 
-#. config.practice.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Adres"
-
-#. config.practice.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Sokak ve kapı numarası"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Posta kodu"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the practice"
-msgstr "Muayenehanenin posta kodu"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Şehir"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the practice is located in"
-msgstr "Muayenehanenin bulunduğu şehir"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Ülke kodu"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "İki harfli ISO ülke kodu, örn. DE veya US"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Uluslararası formatta telefon numarası, arama düğmesi için de kullanılır"
-
-#. config.practice.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-posta"
-
 #. config.practice.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "Randevu talepleri için e-posta adresi"
 
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "Acil durum numarası"
-
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for emergencies, shown at the top of every page"
-msgstr "Acil durumlar için telefon numarası, her sayfanın üstünde gösterilir"
-
-#. config.practice.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Rezervasyon bağlantısı"
-
 #. config.practice.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "Randevu sayfasına veya çevrimiçi randevuya bağlantı, başlıkta düğme olarak gösterilir"
-
-#. config.practice.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Diller"
 
 #. config.practice.languages
 #: schema.json
@@ -243,120 +147,6 @@ msgstr "Yeni hastalar"
 msgctxt "fh"
 msgid "Tell search engines that the practice accepts new patients"
 msgstr "Arama motorlarına muayenehanenin yeni hasta kabul ettiğini bildirin"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Fiyat aralığı"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the practice, e.g. $$ or €€"
-msgstr "Muayenehanenin fiyat seviyesi, ör. $$ veya €€"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "Arama düğmesi"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "Telefonlarda ekranın altında bir arama düğmesi göster"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Çalışma saatleri"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Haftanın her günü için çalışma saatleri"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Gün"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Haftanın günü"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pazartesi"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Salı"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Çarşamba"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Perşembe"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Cuma"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Cumartesi"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Pazar"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Açılış"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "24 saat formatında açılış saati, örn. 07:30"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Kapanış"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "24 saat formatında kapanış saati, örn. 17:00"
 
 #. config.theme
 #: schema.json

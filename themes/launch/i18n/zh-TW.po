@@ -77,12 +77,6 @@ msgstr "一句話描述產品的功能，供搜尋引擎使用"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "公告"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "顯示在每個頁面頂端的簡短新聞，例如：新功能：可自訂網域的狀態頁面"
@@ -155,12 +149,6 @@ msgstr "該評分所依據的評論數"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "提示"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "頁尾顯示的簡短說明，例如：已通過 SOC 2 Type II 認證，資料託管於歐盟"
@@ -170,9 +158,3 @@ msgstr "頁尾顯示的簡短說明，例如：已通過 SOC 2 Type II 認證，
 msgctxt "st"
 msgid "launch::theme"
 msgstr "主題"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "將邊角圓角化作為 CSS 長度，例如 1rem 或 0 代表銳角"

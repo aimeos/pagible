@@ -74,9 +74,3 @@ msgstr "ترخيص البرنامج المعروض في التذييل، مثل 
 msgctxt "st"
 msgid "manual::theme"
 msgstr "المظهر"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "تقريب الزوايا كقيمة طول في CSS، على سبيل المثال 0.5rem أو 0 للحصول على زوايا حادة"

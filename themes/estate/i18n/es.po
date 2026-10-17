@@ -30,12 +30,6 @@ msgstr "Descripción detallada del inmueble"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Ubicación"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Descripción del barrio y los alrededores"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Dirección"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Calle y número"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Barrio"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Distrito o barrio de la ciudad"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Ciudad"
 
 #. content.property.city
 #: schema.json

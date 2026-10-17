@@ -74,9 +74,3 @@ msgstr "頁尾所示軟體的授權條款，例如 MIT 授權"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "主題"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "將邊角圓角化作為 CSS 長度，例如 0.5rem 或 0 代表尖角"

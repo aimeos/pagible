@@ -30,12 +30,6 @@ msgstr "매물의 상세 설명"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "위치"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "주변 지역 및 환경 설명"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "주소"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "도로명과 건물 번호"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "지구"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "도시 내 지역 또는 동네"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "도시"
 
 #. content.property.city
 #: schema.json

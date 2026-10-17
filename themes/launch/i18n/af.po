@@ -77,12 +77,6 @@ msgstr "Een sin wat beskryf wat die produk doen, gebruik vir soekenjins"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Aankondiging"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Kort nuus wat bo-aan elke bladsy vertoon word, bv. Nuut: statusbladsye met pasgemaakte domeine"
@@ -155,12 +149,6 @@ msgstr "Aantal resensies waarop die beoordeling gebaseer is"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Kennisgewing"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Kort nota wat in die voetskrif vertoon word, bv. SOC 2 Tipe II-gesertifiseer, data gehos in die EU"
@@ -170,9 +158,3 @@ msgstr "Kort nota wat in die voetskrif vertoon word, bv. SOC 2 Tipe II-gesertifi
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Afgeronde hoeke as CSS-lengte, bv. 1rem of 0 vir skerp hoeke"

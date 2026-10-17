@@ -23,12 +23,6 @@ msgstr "Prakses veids"
 
 #. config.practice.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of practice shown to search engines"
-msgstr "Prakses veids, kas tiek rādīts meklētājprogrammām"
-
-#. config.practice.business-type
-#: schema.json
 msgctxt "op"
 msgid "Dentist"
 msgstr "Zobārsts"
@@ -124,107 +118,17 @@ msgctxt "op"
 msgid "Psychiatry"
 msgstr "Psihiatrija"
 
-#. config.practice.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Adrese"
-
-#. config.practice.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Iela un mājas numurs"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Pasta indekss"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the practice"
-msgstr "Prakses pasta indekss"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Pilsēta"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the practice is located in"
-msgstr "Pilsēta, kurā atrodas prakse"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Valsts kods"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Divu burtu ISO valsts kods, piemēram, DE vai US"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Tālrunis"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Tālruņa numurs starptautiskā formātā, tiek izmantots arī zvana pogai"
-
-#. config.practice.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-pasts"
-
 #. config.practice.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "E-pasta adrese pieraksta pieprasījumiem"
 
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "Ārkārtas tālrunis"
-
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for emergencies, shown at the top of every page"
-msgstr "Tālruņa numurs avārijas gadījumiem, tiek rādīts katras lapas augšdaļā"
-
-#. config.practice.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Rezervācijas saite"
-
 #. config.practice.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "Saite uz pieteikšanās lapu vai tiešsaistes rezervāciju, tiek rādīta kā poga galvenē"
-
-#. config.practice.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "Valodas"
 
 #. config.practice.languages
 #: schema.json
@@ -243,120 +147,6 @@ msgstr "Jauni pacienti"
 msgctxt "fh"
 msgid "Tell search engines that the practice accepts new patients"
 msgstr "Paziņot meklētājprogrammām, ka prakse pieņem jaunus pacientus"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Cenu kategorija"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the practice, e.g. $$ or €€"
-msgstr "Prakses cenu līmenis, piem., $$ vai €€"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "Zvana poga"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "Rādīt zvana pogu ekrāna apakšā tālruņos"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Darba laiks"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Darba laiks katrai nedēļas dienai"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Diena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Nedēļas diena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pirmdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Otrdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Trešdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Ceturtdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Piektdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sestdiena"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Svētdiena"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Atvēršanas laiks"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Atvēršanas laiks 24 stundu formātā, piemēram, 07:30"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Slēgšanas laiks"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Slēgšanas laiks 24 stundu formātā, piemēram, 17:00"
 
 #. config.theme
 #: schema.json

@@ -41,12 +41,6 @@ msgstr "Compania sau organizația la care lucrezi, de ex. Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Locație"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Orașul sau regiunea în care locuiești, de ex. Berlin, Germania"
@@ -74,12 +68,6 @@ msgstr "Scurtă biografie"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "O propoziție despre tine sub fiecare articol, de ex. Construiesc aplicații Laravel și scriu despre baze de date"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-mail"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Link către profilul tău, de ex. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Temă"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Rotunjirea colțurilor ca valoare de lungime CSS, de exemplu 0.5rem sau 0 pentru colțuri ascuțite"

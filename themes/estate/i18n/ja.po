@@ -30,12 +30,6 @@ msgstr "物件の詳細な説明"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "所在地"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "周辺地域や環境の説明"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "住所"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "番地と建物番号"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "地区"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "都市内の地区または地域"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "市区町村"
 
 #. content.property.city
 #: schema.json

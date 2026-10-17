@@ -77,12 +77,6 @@ msgstr "検索エンジン向けに、製品の機能を説明する一文"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "お知らせ"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "各ページの上部に表示される短いお知らせ、例：新着：カスタムドメイン対応のステータスページ"
@@ -155,12 +149,6 @@ msgstr "評価の基になったレビュー数"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "注記"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "フッターに表示される短い注記、例：SOC 2 Type II認証取得、データはEUでホスティング"
@@ -170,9 +158,3 @@ msgstr "フッターに表示される短い注記、例：SOC 2 Type II認証�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "テーマ"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "CSSの長さ単位としての角の丸め。例：1rem、または鋭角にする場合は0"

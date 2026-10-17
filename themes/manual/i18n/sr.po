@@ -74,9 +74,3 @@ msgstr "Лиценца софтвера приказана у подножју, 
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Тема"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Заобљавање углова као CSS дужина, нпр. 0.5rem или 0 за оштре углове"

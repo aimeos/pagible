@@ -15,54 +15,6 @@ msgctxt "fh"
 msgid "Name of the restaurant"
 msgstr "Ime restavracije"
 
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Ulica in hišna številka"
-
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Ulica in hišna številka"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Poštna številka"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the restaurant"
-msgstr "Poštna številka restavracije"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Mesto"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the restaurant is located in"
-msgstr "Mesto, v katerem se nahaja restavracija"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Koda države"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dvomestna ISO koda države, npr. DE ali US"
-
 #. config.restaurant.cuisine
 #: schema.json
 msgctxt "fn"
@@ -87,119 +39,11 @@ msgctxt "fh"
 msgid "Page or link to the menu"
 msgstr "Stran ali povezava do jedilnika"
 
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Cenovni razred"
-
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the restaurant, e.g. $$ or €€"
-msgstr "Cenovni razred restavracije, npr. $$ ali €€"
-
-#. config.restaurant.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
 #. config.restaurant.telephone
 #: schema.json
 msgctxt "fh"
 msgid "Phone number for reservations in international format"
 msgstr "Telefonska številka za rezervacije v mednarodni obliki"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Obratovalni čas"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Obratovalni čas za vsak dan v tednu"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Dan"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Dan v tednu"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Ponedeljek"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Torek"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Sreda"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Četrtek"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Petek"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sobota"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Nedelja"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Ura odprtja"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 11:30"
-msgstr "Čas odprtja v 24-urni obliki, npr. 11:30"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Ura zaprtja"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 22:00"
-msgstr "Čas zaprtja v 24-urni obliki, npr. 22:00"
 
 #. config.theme
 #: schema.json

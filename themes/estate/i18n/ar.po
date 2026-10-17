@@ -30,12 +30,6 @@ msgstr "وصف تفصيلي للعقار"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "الموقع"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "وصف الحي والمناطق المحيطة"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "العنوان"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "الشارع ورقم المنزل"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "الحي"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "حي أو منطقة المدينة"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "المدينة"
 
 #. content.property.city
 #: schema.json

@@ -15,54 +15,6 @@ msgctxt "fh"
 msgid "Name of the restaurant"
 msgstr "Názov reštaurácie"
 
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Ulica a číslo domu"
-
-#. config.restaurant.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Ulica a číslo domu"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "PSČ"
-
-#. config.restaurant.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the restaurant"
-msgstr "PSČ reštaurácie"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Mesto"
-
-#. config.restaurant.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the restaurant is located in"
-msgstr "Mesto, v ktorom sa reštaurácia nachádza"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Kód krajiny"
-
-#. config.restaurant.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Dvojpísmenový ISO kód krajiny, napr. DE alebo US"
-
 #. config.restaurant.cuisine
 #: schema.json
 msgctxt "fn"
@@ -87,119 +39,11 @@ msgctxt "fh"
 msgid "Page or link to the menu"
 msgstr "Stránka alebo odkaz na jedálny lístok"
 
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Cenové rozpätie"
-
-#. config.restaurant.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the restaurant, e.g. $$ or €€"
-msgstr "Cenová úroveň reštaurácie, napr. $$ alebo €€"
-
-#. config.restaurant.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefón"
-
 #. config.restaurant.telephone
 #: schema.json
 msgctxt "fh"
 msgid "Phone number for reservations in international format"
 msgstr "Telefónne číslo na rezervácie v medzinárodnom formáte"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Otváracie hodiny"
-
-#. config.restaurant.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Otváracie hodiny pre každý deň v týždni"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Deň"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Deň v týždni"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Pondelok"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Utorok"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Streda"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Štvrtok"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Piatok"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sobota"
-
-#. config.restaurant.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Nedeľa"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Čas otvorenia"
-
-#. config.restaurant.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 11:30"
-msgstr "Otváracia doba v 24-hodinovom formáte, napr. 11:30"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Čas zatvorenia"
-
-#. config.restaurant.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 22:00"
-msgstr "Zatváracia doba v 24-hodinovom formáte, napr. 22:00"
 
 #. config.theme
 #: schema.json

@@ -74,9 +74,3 @@ msgstr "フッターに表示されるソフトウェアのライセンス（例
 msgctxt "st"
 msgid "manual::theme"
 msgstr "テーマ"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "CSSの長さ単位としての角の丸め。例：0.5rem、または鋭角にする場合は0"

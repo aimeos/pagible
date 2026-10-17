@@ -68,13 +68,13 @@
                 "postal-code": {
                     "type": "string",
                     "label": "Postal code",
-                    "hint": "Postal code of the café",
+                    "hint": "Postal code of the business",
                     "required": true
                 },
                 "locality": {
                     "type": "string",
                     "label": "City",
-                    "hint": "City the café is located in",
+                    "hint": "City the business is located in",
                     "required": true
                 },
                 "country": {
@@ -119,7 +119,7 @@
                 "price-range": {
                     "type": "string",
                     "label": "Price range",
-                    "hint": "Price level of the café, e.g. $ or €€"
+                    "hint": "Price level of the business, e.g. $$ or €€"
                 },
                 "action-bar": {
                     "type": "switch",
@@ -130,7 +130,7 @@
                 "hours": {
                     "type": "items",
                     "label": "Opening hours",
-                    "hint": "Opening hours for each day of the week, shown in the footer",
+                    "hint": "Opening hours for each day of the week",
                     "identity": "id",
                     "item": {
                         "day": {

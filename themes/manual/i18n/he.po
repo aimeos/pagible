@@ -74,9 +74,3 @@ msgstr "רישיון התוכנה המוצג בכותרת התחתונה, למש
 msgctxt "st"
 msgid "manual::theme"
 msgstr "ערכת נושא"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "עיגול פינות כערך אורך ב-CSS, למשל 0.5rem או 0 לפינות חדות"

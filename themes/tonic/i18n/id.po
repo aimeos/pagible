@@ -17,18 +17,6 @@ msgstr "Nama bar, pub, atau klub"
 
 #. config.bar.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Jenis usaha"
-
-#. config.bar.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Jenis usaha yang ditampilkan ke mesin pencari"
-
-#. config.bar.business-type
-#: schema.json
 msgctxt "op"
 msgid "Bar or pub"
 msgstr "Bar atau pub"
@@ -51,78 +39,6 @@ msgctxt "op"
 msgid "Restaurant"
 msgstr "Restoran"
 
-#. config.bar.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "Usaha lain"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Alamat"
-
-#. config.bar.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Nama jalan dan nomor rumah"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Kode pos"
-
-#. config.bar.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the bar"
-msgstr "Kode pos bar"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Kota"
-
-#. config.bar.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the bar is located in"
-msgstr "Kota tempat bar berada"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Kode negara"
-
-#. config.bar.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Kode negara ISO dua huruf, misalnya DE atau US"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telepon"
-
-#. config.bar.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Nomor telepon dalam format internasional, juga digunakan oleh tombol panggil"
-
-#. config.bar.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Email"
-
 #. config.bar.email
 #: schema.json
 msgctxt "fh"
@@ -131,21 +47,9 @@ msgstr "Alamat email untuk reservasi, acara pribadi, dan pers"
 
 #. config.bar.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Pengumuman"
-
-#. config.bar.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
 msgstr "Catatan singkat di bagian atas setiap halaman, mis. Tanpa reservasi hingga 23:00"
-
-#. config.bar.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Tautan reservasi"
 
 #. config.bar.booking
 #: schema.json
@@ -177,125 +81,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
 msgstr "Daftar sajian yang dipisahkan koma, mis. Koktail, Anggur, Camilan bar"
 
-#. config.bar.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Kisaran harga"
-
-#. config.bar.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the bar, e.g. $$ or €€"
-msgstr "Tingkat harga bar, mis. $$ atau €€"
-
-#. config.bar.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Catatan"
-
 #. config.bar.notice
 #: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
 msgstr "Catatan singkat di footer, mis. Khusus usia 18 tahun ke atas. Minumlah secara bertanggung jawab."
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Bilah tindakan"
-
-#. config.bar.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Tampilkan tombol telepon dan reservasi di bagian bawah layar pada ponsel"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Jam buka"
-
-#. config.bar.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Jam buka untuk setiap hari dalam seminggu, ditampilkan di footer"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Hari"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Hari dalam seminggu"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Senin"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Selasa"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Rabu"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Kamis"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Jumat"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sabtu"
-
-#. config.bar.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Minggu"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Buka"
-
-#. config.bar.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 18:00"
-msgstr "Waktu buka dalam format 24 jam, misalnya 18:00"
-
-#. config.bar.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Tutup"
 
 #. config.bar.hours.closes
 #: schema.json

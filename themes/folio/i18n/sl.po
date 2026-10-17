@@ -41,12 +41,6 @@ msgstr "Podjetje ali organizacija, kjer delate, npr. Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Lokacija"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Mesto ali regija, kjer živite, npr. Berlin, Nemčija"
@@ -74,12 +68,6 @@ msgstr "Kratek opis"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "En stavek o vas pod vsako objavo, npr. Razvijam aplikacije Laravel in pišem o podatkovnih bazah"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-pošta"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Povezava do vašega profila, npr. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Zaokroževanje vogalov kot dolžina v CSS, npr. 0.5rem ali 0 za ostre vogale"

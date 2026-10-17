@@ -17,18 +17,6 @@ msgstr "Navn på salonen, studiet eller spaen"
 
 #. config.salon.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Virksomhedstype"
-
-#. config.salon.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Virksomhedstype, der vises for søgemaskiner"
-
-#. config.salon.business-type
-#: schema.json
 msgctxt "op"
 msgid "Beauty salon"
 msgstr "Skønhedssalon"
@@ -51,89 +39,11 @@ msgctxt "op"
 msgid "Hair salon"
 msgstr "Frisørsalon"
 
-#. config.salon.business-type
-#: schema.json
-msgctxt "op"
-msgid "Other business"
-msgstr "Anden virksomhed"
-
-#. config.salon.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Gadeadresse"
-
-#. config.salon.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gade og husnummer"
-
-#. config.salon.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Postnummer"
-
-#. config.salon.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the salon"
-msgstr "Salonens postnummer"
-
-#. config.salon.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "By"
-
-#. config.salon.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the salon is located in"
-msgstr "By, hvor salonen ligger"
-
-#. config.salon.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Landekode"
-
-#. config.salon.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "To-bogstavs ISO-landekode, f.eks. DE eller US"
-
-#. config.salon.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
-#. config.salon.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefonnummer i internationalt format, bruges også til opkaldsknappen"
-
-#. config.salon.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-mail"
-
 #. config.salon.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointments, gift cards and press"
 msgstr "E-mailadresse til tidsbestillinger, gavekort og presse"
-
-#. config.salon.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Meddelelse"
 
 #. config.salon.announcement
 #: schema.json
@@ -143,45 +53,9 @@ msgstr "Kort besked øverst på hver side, f.eks. Gratis konsultation for nye ku
 
 #. config.salon.booking
 #: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "Bookinglink"
-
-#. config.salon.booking
-#: schema.json
 msgctxt "fh"
 msgid "Link to the appointment booking page, shown as a button in the header"
 msgstr "Link til siden for tidsbestilling, vises som knap i headeren"
-
-#. config.salon.prices
-#: schema.json
-msgctxt "fn"
-msgid "Price list link"
-msgstr "Link til prisliste"
-
-#. config.salon.prices
-#: schema.json
-msgctxt "fh"
-msgid "Link to the page with services and prices"
-msgstr "Link til siden med behandlinger og priser"
-
-#. config.salon.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Prisniveau"
-
-#. config.salon.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the salon, e.g. $$ or €€"
-msgstr "Salonens prisniveau, f.eks. $$ eller €€"
-
-#. config.salon.notice
-#: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Bemærkning"
 
 #. config.salon.notice
 #: schema.json
@@ -189,116 +63,8 @@ msgctxt "fh"
 msgid "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
 msgstr "Kort besked i footeren, f.eks. Aflys venligst senest 24 timer før din tid."
 
-#. config.salon.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Knapbjælke"
-
-#. config.salon.action-bar
-#: schema.json
-msgctxt "fh"
-msgid "Show call and booking buttons at the bottom of the screen on phones"
-msgstr "Vis knapper til opkald og bordbestilling nederst på skærmen på telefoner"
-
-#. config.salon.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Åbningstider"
-
-#. config.salon.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Åbningstider for hver ugedag, vises i footeren"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Dag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Ugedag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Mandag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Tirsdag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Onsdag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Torsdag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Fredag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Lørdag"
-
-#. config.salon.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Søndag"
-
-#. config.salon.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Åbner"
-
-#. config.salon.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 09:00"
-msgstr "Åbningstid i 24-timers format, f.eks. 09:00"
-
-#. config.salon.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Lukker"
-
-#. config.salon.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 19:00"
-msgstr "Lukketid i 24-timers format, f.eks. 19:00"
-
 #. config.theme
 #: schema.json
 msgctxt "st"
 msgid "glow::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Afrunding af hjørner som CSS-længde, f.eks. 1rem eller 0 for skarpe hjørner"

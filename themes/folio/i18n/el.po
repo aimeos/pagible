@@ -41,12 +41,6 @@ msgstr "Εταιρεία ή οργανισμός όπου εργάζεστε, π
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Τοποθεσία"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Πόλη ή περιοχή όπου ζείτε, π.χ. Βερολίνο, Γερμανία"
@@ -74,12 +68,6 @@ msgstr "Σύντομο βιογραφικό"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Μία πρόταση για εσάς κάτω από κάθε άρθρο, π.χ. Φτιάχνω εφαρμογές Laravel και γράφω για βάσεις δεδομένων"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-mail"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Σύνδεσμος προς το προφίλ σας, π.χ. https://git
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Θέμα"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Στρογγυλοποίηση γωνιών ως μήκος CSS, π.χ. 0.5rem ή 0 για αιχμηρές γωνίες"

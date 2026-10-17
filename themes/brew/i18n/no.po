@@ -17,18 +17,6 @@ msgstr "Navn på kafeen, kaffebrenneriet eller bakeriet"
 
 #. config.cafe.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Bransje"
-
-#. config.cafe.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Bransje som vises for søkemotorer"
-
-#. config.cafe.business-type
-#: schema.json
 msgctxt "op"
 msgid "Café or coffee shop"
 msgstr "Kafé eller kaffebar"
@@ -51,83 +39,11 @@ msgctxt "op"
 msgid "Other business, e.g. roastery"
 msgstr "Annen virksomhet, f.eks. kaffebrenneri"
 
-#. config.cafe.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Gateadresse"
-
-#. config.cafe.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Gate og husnummer"
-
-#. config.cafe.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Postnummer"
-
-#. config.cafe.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the café"
-msgstr "Postnummer for kafeen"
-
-#. config.cafe.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "By"
-
-#. config.cafe.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the café is located in"
-msgstr "By der kafeen ligger"
-
-#. config.cafe.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Landkode"
-
-#. config.cafe.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "To bokstavers ISO-landkode, f.eks. DE eller US"
-
-#. config.cafe.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telefon"
-
-#. config.cafe.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Telefonnummer i internasjonalt format, brukes også av ringeknappen"
-
-#. config.cafe.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "E-post"
-
 #. config.cafe.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for questions, catering and wholesale requests"
 msgstr "E-postadresse for spørsmål, catering og engrosforespørsler"
-
-#. config.cafe.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Kunngjøring"
 
 #. config.cafe.announcement
 #: schema.json
@@ -171,119 +87,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
 msgstr "Kommaseparert liste over det dere serverer, f.eks. Spesialkaffe, Bakevarer, Frokost"
 
-#. config.cafe.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Prisnivå"
-
-#. config.cafe.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the café, e.g. $ or €€"
-msgstr "Prisnivå for kafeen, f.eks. $ eller €€"
-
-#. config.cafe.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Knapperad"
-
 #. config.cafe.action-bar
 #: schema.json
 msgctxt "fh"
 msgid "Show call and order buttons at the bottom of the screen on phones"
 msgstr "Vis ring- og bestillingsknapper nederst på skjermen på telefoner"
-
-#. config.cafe.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Åpningstider"
-
-#. config.cafe.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Åpningstider for hver ukedag, vises i bunnteksten"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Dag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Ukedag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Mandag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Tirsdag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Onsdag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Torsdag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Fredag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Lørdag"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Søndag"
-
-#. config.cafe.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Åpner"
-
-#. config.cafe.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Åpningstid i 24-timers format, f.eks. 07:30"
-
-#. config.cafe.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Stenger"
-
-#. config.cafe.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Stengetid i 24-timers format, f.eks. 17:00"
 
 #. config.theme
 #: schema.json

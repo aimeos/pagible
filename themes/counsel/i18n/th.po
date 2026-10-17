@@ -23,12 +23,6 @@ msgstr "ประเภทสำนักงาน"
 
 #. config.firm.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of legal practice shown to search engines"
-msgstr "ประเภทของงานด้านกฎหมายที่แสดงต่อเครื่องมือค้นหา"
-
-#. config.firm.business-type
-#: schema.json
 msgctxt "op"
 msgid "Law firm"
 msgstr "สำนักงานกฎหมาย"
@@ -50,72 +44,6 @@ msgstr "โนตารี"
 msgctxt "op"
 msgid "Other legal service"
 msgstr "บริการด้านกฎหมายอื่น ๆ"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "ที่อยู่"
-
-#. config.firm.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "ชื่อถนนและเลขที่บ้าน"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "รหัสไปรษณีย์"
-
-#. config.firm.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the office"
-msgstr "รหัสไปรษณีย์ของสำนักงาน"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "เมือง"
-
-#. config.firm.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the office is located in"
-msgstr "เมืองที่สำนักงานตั้งอยู่"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "รหัสประเทศ"
-
-#. config.firm.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "รหัสประเทศ ISO สองตัวอักษร เช่น DE หรือ US"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "โทรศัพท์"
-
-#. config.firm.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "หมายเลขโทรศัพท์ในรูปแบบสากล ใช้สำหรับปุ่มโทรด้วย"
-
-#. config.firm.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "อีเมล"
 
 #. config.firm.email
 #: schema.json
@@ -149,12 +77,6 @@ msgstr "ลิงก์ไปยังหน้าติดต่อหรือ
 
 #. config.firm.languages
 #: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "ภาษา"
-
-#. config.firm.languages
-#: schema.json
 msgctxt "fh"
 msgid "Comma separated list of the languages spoken by the attorneys, e.g. English, German, French"
 msgstr "รายการภาษาที่ทนายความพูดได้คั่นด้วยจุลภาค เช่น อังกฤษ, เยอรมัน, ฝรั่งเศส"
@@ -170,24 +92,6 @@ msgstr "สาขาความเชี่ยวชาญ"
 msgctxt "fh"
 msgid "Comma separated list of the practice areas, e.g. Employment law, Family law, Real estate law"
 msgstr "รายการสาขาความเชี่ยวชาญคั่นด้วยจุลภาค เช่น กฎหมายแรงงาน, กฎหมายครอบครัว, กฎหมายอสังหาริมทรัพย์"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "ช่วงราคา"
-
-#. config.firm.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Fee level of the firm, e.g. $$ or €€"
-msgstr "ระดับค่าบริการของสำนักงาน เช่น $$ หรือ €€"
-
-#. config.firm.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "แถบปุ่มลัด"
 
 #. config.firm.call-button
 #: schema.json
@@ -218,84 +122,6 @@ msgstr "เวลาทำการ"
 msgctxt "fh"
 msgid "Office hours for each day of the week"
 msgstr "เวลาทำการของสำนักงานสำหรับแต่ละวันในสัปดาห์"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "วัน"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "วันในสัปดาห์"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "วันจันทร์"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "วันอังคาร"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "วันพุธ"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "วันพฤหัสบดี"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "วันศุกร์"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "วันเสาร์"
-
-#. config.firm.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "วันอาทิตย์"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "เวลาเปิด"
-
-#. config.firm.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "เวลาเปิดในรูปแบบ 24 ชั่วโมง เช่น 07:30"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "เวลาปิด"
-
-#. config.firm.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "เวลาปิดในรูปแบบ 24 ชั่วโมง เช่น 17:00"
 
 #. config.theme
 #: schema.json

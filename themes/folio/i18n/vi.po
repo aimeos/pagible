@@ -41,12 +41,6 @@ msgstr "Công ty hoặc tổ chức bạn làm việc, ví dụ Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Vị trí"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Thành phố hoặc khu vực bạn sống, ví dụ Berlin, Đức"
@@ -74,12 +68,6 @@ msgstr "Tiểu sử ngắn"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Một câu về bạn dưới mỗi bài viết, ví dụ Tôi xây dựng ứng dụng Laravel và viết về cơ sở dữ liệu"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-mail"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Liên kết đến hồ sơ của bạn, ví dụ https://github.com/len
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Giao diện"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Làm tròn góc dưới dạng đơn vị độ dài CSS, ví dụ: 0.5rem hoặc 0 để có các góc nhọn"

@@ -77,12 +77,6 @@ msgstr "ប្រយោគមួយពិពណ៌នាអំពីអ្វី
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "សេចក្តីប្រកាស"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "ព័ត៌មានខ្លីដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ ឧ. ថ្មី៖ ទំព័រស្ថានភាពជាមួយដែនផ្ទាល់ខ្លួន"
@@ -155,12 +149,6 @@ msgstr "ចំនួនមតិវាយតម្លៃដែលការដា
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "សេចក្តីជូនដំណឹង"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅបាតទំព័រ ឧ. មានវិញ្ញាបនបត្រ SOC 2 Type II ទិន្នន័យរក្សាទុកនៅ EU"
@@ -170,9 +158,3 @@ msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញន
 msgctxt "st"
 msgid "launch::theme"
 msgstr "រចនាប័ទ្ម"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 1rem ឬ 0 សម្រាប់ជ្រុងស្រួច"

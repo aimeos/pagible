@@ -63,6 +63,21 @@ class AdminCatalogTest extends ThemeTestAbstract
 	}
 
 
+	public function testThemeCatalogsMoveCommonEntries() : void
+	{
+		$counts = [];
+
+		foreach( glob( dirname( __DIR__, 2 ) . '/themes/*/i18n/messages.pot' ) as $file )
+		{
+			foreach( $this->ids( $file ) as $id ) {
+				$counts[$id] = ( $counts[$id] ?? 0 ) + 1;
+			}
+		}
+
+		$this->assertSame( [], array_keys( array_filter( $counts, fn( $count ) => $count >= 3 ) ), "Entries used by three or more themes must be in the base theme catalog" );
+	}
+
+
 	public function testThemeCatalogsUsePrefixedTypes() : void
 	{
 		$file = dirname( __DIR__, 2 ) . '/themes/aura/i18n/messages.pot';

@@ -23,12 +23,6 @@ msgstr "診療所の種類"
 
 #. config.practice.business-type
 #: schema.json
-msgctxt "fh"
-msgid "Kind of practice shown to search engines"
-msgstr "検索エンジンに表示される診療所の種類"
-
-#. config.practice.business-type
-#: schema.json
 msgctxt "op"
 msgid "Dentist"
 msgstr "歯科医院"
@@ -124,107 +118,17 @@ msgctxt "op"
 msgid "Psychiatry"
 msgstr "精神科"
 
-#. config.practice.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "住所"
-
-#. config.practice.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "番地と建物番号"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "郵便番号"
-
-#. config.practice.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the practice"
-msgstr "診療所の郵便番号"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "市区町村"
-
-#. config.practice.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the practice is located in"
-msgstr "診療所の所在地の市区町村"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "国コード"
-
-#. config.practice.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "2文字のISO国コード（例：DEまたはUS）"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "電話番号"
-
-#. config.practice.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "国際形式の電話番号（通話ボタンにも使用）"
-
-#. config.practice.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "メール"
-
 #. config.practice.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for appointment requests"
 msgstr "予約受付用のメールアドレス"
 
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fn"
-msgid "Emergency number"
-msgstr "緊急連絡先"
-
-#. config.practice.emergency-phone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number for emergencies, shown at the top of every page"
-msgstr "緊急時の電話番号。すべてのページの上部に表示されます"
-
-#. config.practice.booking
-#: schema.json
-msgctxt "fn"
-msgid "Booking link"
-msgstr "予約リンク"
-
 #. config.practice.booking
 #: schema.json
 msgctxt "fh"
 msgid "Link to the appointment page or online booking, shown as a button in the header"
 msgstr "予約ページまたはオンライン予約へのリンク。ヘッダーにボタンとして表示されます"
-
-#. config.practice.languages
-#: schema.json
-msgctxt "fn"
-msgid "Languages"
-msgstr "対応言語"
 
 #. config.practice.languages
 #: schema.json
@@ -243,120 +147,6 @@ msgstr "新規患者"
 msgctxt "fh"
 msgid "Tell search engines that the practice accepts new patients"
 msgstr "新規患者を受け付けていることを検索エンジンに伝える"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "価格帯"
-
-#. config.practice.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the practice, e.g. $$ or €€"
-msgstr "診療所の価格帯（例: $$ や €€）"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "通話ボタン"
-
-#. config.practice.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "スマートフォンで画面下部に通話ボタンを表示"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "営業時間"
-
-#. config.practice.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "曜日ごとの営業時間"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "月曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "火曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "水曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "木曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "金曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "土曜日"
-
-#. config.practice.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "日曜日"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "開店時間"
-
-#. config.practice.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "24時間形式での開店時間（例：07:30）"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "閉店時間"
-
-#. config.practice.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "24時間形式での閉店時間（例：17:00）"
 
 #. config.theme
 #: schema.json

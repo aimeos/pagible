@@ -41,12 +41,6 @@ msgstr "Företag eller organisation du arbetar för, t.ex. Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Plats"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Stad eller region där du bor, t.ex. Berlin, Tyskland"
@@ -74,12 +68,6 @@ msgstr "Kort presentation"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "En mening om dig under varje inlägg, t.ex. Jag bygger Laravel-appar och skriver om databaser"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "E-post"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Länk till din profil, t.ex. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Avrundning av hörn som CSS-längd, t.ex. 0.5rem eller 0 för skarpa hörn"

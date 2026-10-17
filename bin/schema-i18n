@@ -8,16 +8,18 @@
  * The strings use the same contexts as the admin backend ("st" element names,
  * "sd" element descriptions, "sg" groups, "fn" field names, "fh" field hints and
  * "op" option labels). Strings the admin or the base theme catalog already contain
- * are skipped because these catalogs are merged first and always win. Elements
- * without label use their prefixed type as name (e.g. "aura::theme") like the admin.
+ * are skipped because these catalogs are merged first and always win. Strings used
+ * by at least three themes are moved to the base theme catalog, so they are only
+ * translated once. Elements without label use their prefixed type as name
+ * (e.g. "aura::theme") like the admin.
  *
  * Usage:
  *   php bin/schema-i18n extract theme themes/*   Updates <package>/i18n/messages.pot and <locale>.po
  *   php bin/schema-i18n compile theme themes/*   Writes <package>/public/i18n/<locale>.json
  *
  * The base theme is always processed first. New .po entries are filled from existing
- * translations of the package, the admin catalog and the base theme so translations
- * aren't lost or translated again.
+ * translations of the package, the admin catalog, the base theme and the other themes
+ * so translations aren't lost or translated again.
  */
 
 use Gettext\Generator\PoGenerator;
@@ -31,6 +33,8 @@ require $root . '/vendor/autoload.php';
 
 $admin = $root . '/admin/i18n';
 $base = $root . '/theme';
+$themes = glob($root . '/themes/*/schema.json');
+$shared = 3; // minimum number of themes using a string to move it to the base theme catalog
 $locales = preg_split('/\s+/', trim(file_get_contents($admin . '/LINGUAS')));
 
 [$command, $packages] = [$argv[1] ?? '', array_slice($argv, 2)];
@@ -114,11 +118,54 @@ function collect(string $dir, ?string $prefix): array
 
 
 /**
- * Loads a .po file if it exists.
+ * Returns the strings used by at least $min of the theme packages, owned ones excluded.
  */
-function po(string $file): ?Translations
+function common(array $dirs, array $owners, int $min): array
 {
-    return is_file($file) ? (new PoLoader())->loadFile($file) : null;
+    $list = [];
+
+    foreach ($dirs as $dir) {
+        $name = name($dir);
+
+        foreach (collect($dir, $name) as [$context, $msgid, $paths]) {
+            if (!owned($owners, $context, $msgid)) {
+                $list[$context . "\x04" . $msgid] ??= [$context, $msgid, []];
+                $list[$context . "\x04" . $msgid][2][$name] = $name;
+            }
+        }
+    }
+
+    return array_values(array_filter($list, fn($entry) => count($entry[2]) >= $min));
+}
+
+
+/**
+ * Tests if one of the catalogs already contains the string.
+ */
+function owned(array $owners, string $context, string $msgid): bool
+{
+    foreach ($owners as $owner) {
+        if ($owner->find($context, $msgid)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+/**
+ * Loads a .po file if it exists, cached until it is written again.
+ */
+function po(string $file, bool $reload = false): ?Translations
+{
+    static $cache = [];
+
+    if ($reload || !array_key_exists($file, $cache)) {
+        $cache[$file] = is_file($file) ? (new PoLoader())->loadFile($file) : null;
+    }
+
+    return $cache[$file];
 }
 
 
@@ -150,17 +197,28 @@ function seed(array $sources, string $context, string $msgid): ?string
 /**
  * Updates the messages.pot and the .po files of the package.
  */
-function extractPackage(string $dir, array $locales, string $admin, string $base): void
+function extractPackage(string $dir, array $locales, string $admin, string $base, array $themes, int $shared): void
 {
     $isBase = realpath($dir) === realpath($base);
     $owners = array_filter([po($admin . '/messages.pot'), $isBase ? null : po($base . '/i18n/messages.pot')]);
+    $others = array_filter(array_map('dirname', $themes), fn($theme) => realpath($theme) !== realpath($dir));
     $catalog = Translations::create();
+    $entries = collect($dir, $isBase ? null : name($dir));
 
-    foreach (collect($dir, $isBase ? null : name($dir)) as [$context, $msgid, $paths]) {
-        foreach ($owners as $owner) {
-            if ($owner->find($context, $msgid)) {
-                continue 2; // owned by the admin or base theme catalog
+    if ($isBase) {
+        // strings used by many themes are translated once in the base theme catalog
+        $own = array_fill_keys(array_map(fn($entry) => $entry[0] . "\x04" . $entry[1], $entries), true);
+
+        foreach (common($others, $owners, $shared) as [$context, $msgid, $names]) {
+            if (!isset($own[$context . "\x04" . $msgid])) {
+                $entries[] = [$context, $msgid, array_map(fn($name) => "$name::*", array_values($names))];
             }
+        }
+    }
+
+    foreach ($entries as [$context, $msgid, $paths]) {
+        if (owned($owners, $context, $msgid)) {
+            continue; // owned by the admin or base theme catalog
         }
 
         $translation = Translation::create($context, $msgid);
@@ -175,6 +233,7 @@ function extractPackage(string $dir, array $locales, string $admin, string $base
 
     $catalog->getHeaders()->set('Content-Type', 'text/plain; charset=UTF-8');
     (new PoGenerator())->generateFile($catalog, $dir . '/i18n/messages.pot');
+    po($dir . '/i18n/messages.pot', true);
 
     foreach ($locales as $locale) {
         $file = $dir . '/i18n/' . $locale . '.po';
@@ -185,6 +244,7 @@ function extractPackage(string $dir, array $locales, string $admin, string $base
             is_file($json) ? json_decode(file_get_contents($json), true)[$locale] ?? [] : null,
             po($admin . '/' . $locale . '.po'),
             $isBase ? null : po($base . '/i18n/' . $locale . '.po'),
+            ...array_map(fn($other) => po($other . '/i18n/' . $locale . '.po'), $others),
         ]);
 
         $translations = Translations::create();
@@ -201,6 +261,7 @@ function extractPackage(string $dir, array $locales, string $admin, string $base
         }
 
         (new PoGenerator())->generateFile($translations, $file);
+        po($file, true);
     }
 }
 
@@ -236,6 +297,6 @@ foreach ($dirs as $dir) {
         continue;
     }
 
-    $command === 'extract' ? extractPackage($dir, $locales, $admin, $base) : compilePackage($dir, $locales);
+    $command === 'extract' ? extractPackage($dir, $locales, $admin, $base, $themes, $shared) : compilePackage($dir, $locales);
     echo "$command: " . substr($dir, strlen($root) + 1) . "\n";
 }

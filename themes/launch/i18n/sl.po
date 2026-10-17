@@ -77,12 +77,6 @@ msgstr "En stavek, ki opisuje, kaj izdelek počne, za iskalnike"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Obvestilo"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Kratka novica na vrhu vsake strani, npr. Novo: strani s stanjem po meri z lastnimi domenami"
@@ -155,12 +149,6 @@ msgstr "Število ocen, na katerih temelji povprečna ocena"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Opomba"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Kratko obvestilo v nogi, npr. certificirano SOC 2 Type II, podatki gostovani v EU"
@@ -170,9 +158,3 @@ msgstr "Kratko obvestilo v nogi, npr. certificirano SOC 2 Type II, podatki gosto
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Zaokroževanje vogalov kot dolžina v CSS, npr. 1rem ali 0 za ostre vogale"

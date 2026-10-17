@@ -30,12 +30,6 @@ msgstr "Detalizēts īpašuma apraksts"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Atrašanās vieta"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Apkaimes un apkārtnes apraksts"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adrese"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Iela un mājas numurs"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Rajons"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Pilsētas rajons vai apkaime"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Pilsēta"
 
 #. content.property.city
 #: schema.json

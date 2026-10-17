@@ -77,12 +77,6 @@ msgstr "جملة واحدة تصف ما يقوم به المنتج، تُستخ�
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "الإعلان"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "خبر قصير يظهر في أعلى كل صفحة، مثل: جديد: صفحات حالة بنطاقات مخصصة"
@@ -155,12 +149,6 @@ msgstr "عدد التقييمات التي يعتمد عليها التقييم"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "ملاحظة"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "ملاحظة قصيرة تظهر في التذييل، مثل معتمد SOC 2 Type II، البيانات مستضافة في الاتحاد الأوروبي"
@@ -170,9 +158,3 @@ msgstr "ملاحظة قصيرة تظهر في التذييل، مثل معتمد
 msgctxt "st"
 msgid "launch::theme"
 msgstr "المظهر"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "تقريب الزوايا كطول في CSS، على سبيل المثال 1rem أو 0 للحصول على زوايا حادة"

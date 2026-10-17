@@ -17,18 +17,6 @@ msgstr "Име кафића, ростерске куће или пекаре"
 
 #. config.cafe.business-type
 #: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Врста делатности"
-
-#. config.cafe.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Врста пословања приказана претраживачима"
-
-#. config.cafe.business-type
-#: schema.json
 msgctxt "op"
 msgid "Café or coffee shop"
 msgstr "Кафе или кафић"
@@ -51,83 +39,11 @@ msgctxt "op"
 msgid "Other business, e.g. roastery"
 msgstr "Друга делатност, нпр. пржионица кафе"
 
-#. config.cafe.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Улична адреса"
-
-#. config.cafe.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Број улице и кућни број"
-
-#. config.cafe.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Поштански број"
-
-#. config.cafe.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the café"
-msgstr "Поштански број кафића"
-
-#. config.cafe.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Град"
-
-#. config.cafe.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the café is located in"
-msgstr "Град у којем се налази кафић"
-
-#. config.cafe.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Шифра земље"
-
-#. config.cafe.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Двословни ISO код земље, нпр. DE или US"
-
-#. config.cafe.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "телефон"
-
-#. config.cafe.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Број телефона у међународном формату, који се такође користи на дугмету за позив"
-
-#. config.cafe.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "е-пошта"
-
 #. config.cafe.email
 #: schema.json
 msgctxt "fh"
 msgid "Email address for questions, catering and wholesale requests"
 msgstr "Емаил адреса за питања, кетеринг и велепродајне захтеве"
-
-#. config.cafe.announcement
-#: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Обавештење"
 
 #. config.cafe.announcement
 #: schema.json
@@ -171,119 +87,11 @@ msgctxt "fh"
 msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
 msgstr "Листа раздвојена зарезом онога што нудите, нпр. специјалитетска кафа, пекара, доручак"
 
-#. config.cafe.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Ценовни распон"
-
-#. config.cafe.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the café, e.g. $ or €€"
-msgstr "Ценовни ниво кафића, нпр. $ или €€"
-
-#. config.cafe.action-bar
-#: schema.json
-msgctxt "fn"
-msgid "Action bar"
-msgstr "Трака са дугмадима"
-
 #. config.cafe.action-bar
 #: schema.json
 msgctxt "fh"
 msgid "Show call and order buttons at the bottom of the screen on phones"
 msgstr "Прикажи дугмад за позив и наруџбину на дну екрана на телефонима"
-
-#. config.cafe.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Радно време"
-
-#. config.cafe.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week, shown in the footer"
-msgstr "Радно време за сваки дан у недељи, приказано у подножју"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "дан"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Дан у недељи"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Понедељак"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Уторак"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Среда"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Четвртак"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Петак"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Субота"
-
-#. config.cafe.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Недеља"
-
-#. config.cafe.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Време отварања"
-
-#. config.cafe.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Време отварања у 24-часовни формату, нпр. 07:30"
-
-#. config.cafe.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Време затварања"
-
-#. config.cafe.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Време затварања у 24-часовни формату, нпр. 17:00"
 
 #. config.theme
 #: schema.json

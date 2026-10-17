@@ -77,12 +77,6 @@ msgstr "Yksi lause, joka kuvaa tuotteen toiminnan, hakukoneita varten"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Tiedote"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Lyhyt uutinen sivun yläosassa, esim. Uutta: tilasivut mukautetuilla verkkotunnuksilla"
@@ -155,12 +149,6 @@ msgstr "Arvostelujen määrä, joihin arvio perustuu"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Huomautus"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Lyhyt huomautus alatunnisteessa, esim. SOC 2 Type II -sertifioitu, data säilytetään EU:ssa"
@@ -170,9 +158,3 @@ msgstr "Lyhyt huomautus alatunnisteessa, esim. SOC 2 Type II -sertifioitu, data 
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Teema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Kulmien pyöristäminen CSS-pituutena, esim. 1rem tai 0 terävien kulmien tapauksessa"

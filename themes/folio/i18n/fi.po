@@ -41,12 +41,6 @@ msgstr "Yritys tai organisaatio, jossa työskentelet, esim. Northwind Labs"
 
 #. config.profile.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Sijainti"
-
-#. config.profile.location
-#: schema.json
 msgctxt "fh"
 msgid "City or region you live in, e.g. Berlin, Germany"
 msgstr "Kaupunki tai alue, jossa asut, esim. Berliini, Saksa"
@@ -74,12 +68,6 @@ msgstr "Lyhyt esittely"
 msgctxt "fh"
 msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
 msgstr "Yksi lause sinusta jokaisen kirjoituksen alla, esim. Rakennan Laravel-sovelluksia ja kirjoitan tietokannoista"
-
-#. config.profile.email
-#: schema.json
-msgctxt "fn"
-msgid "E-mail"
-msgstr "Sähköposti"
 
 #. config.profile.email
 #: schema.json
@@ -116,9 +104,3 @@ msgstr "Linkki profiiliisi, esim. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Teema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Kulmien pyöristäminen CSS-pituutena, esim. 0.5rem tai 0 terävien kulmien tapauksessa"

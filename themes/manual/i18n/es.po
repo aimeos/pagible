@@ -74,9 +74,3 @@ msgstr "Licencia del software mostrada en el pie de página, p. ej. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Redondeo de esquinas como longitud CSS; por ejemplo, 0.5rem o 0 para esquinas afiladas"

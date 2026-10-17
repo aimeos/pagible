@@ -9,35 +9,11 @@ msgctxt "st"
 msgid "solid::business"
 msgstr "Bisnis"
 
-#. config.business.name
-#: schema.json
-msgctxt "fh"
-msgid "Name of the company"
-msgstr "Nama perusahaan"
-
-#. config.business.business-type
-#: schema.json
-msgctxt "fn"
-msgid "Business type"
-msgstr "Jenis usaha"
-
-#. config.business.business-type
-#: schema.json
-msgctxt "fh"
-msgid "Kind of business shown to search engines"
-msgstr "Jenis usaha yang ditampilkan ke mesin pencari"
-
 #. config.business.business-type
 #: schema.json
 msgctxt "op"
 msgid "General contractor"
 msgstr "Kontraktor umum"
-
-#. config.business.business-type
-#: schema.json
-msgctxt "op"
-msgid "Home and construction business"
-msgstr "Usaha konstruksi dan renovasi rumah"
 
 #. config.business.business-type
 #: schema.json
@@ -48,20 +24,8 @@ msgstr "Kontraktor atap"
 #. config.business.business-type
 #: schema.json
 msgctxt "op"
-msgid "Electrician"
-msgstr "Teknisi listrik"
-
-#. config.business.business-type
-#: schema.json
-msgctxt "op"
 msgid "Plumber"
 msgstr "Tukang ledeng"
-
-#. config.business.business-type
-#: schema.json
-msgctxt "op"
-msgid "Heating and air conditioning"
-msgstr "Pemanas dan pendingin udara"
 
 #. config.business.business-type
 #: schema.json
@@ -80,204 +44,6 @@ msgstr "Tukang kunci"
 msgctxt "op"
 msgid "Moving company"
 msgstr "Jasa pindahan"
-
-#. config.business.street-address
-#: schema.json
-msgctxt "fn"
-msgid "Street address"
-msgstr "Alamat"
-
-#. config.business.street-address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Nama jalan dan nomor rumah"
-
-#. config.business.postal-code
-#: schema.json
-msgctxt "fn"
-msgid "Postal code"
-msgstr "Kode pos"
-
-#. config.business.postal-code
-#: schema.json
-msgctxt "fh"
-msgid "Postal code of the company"
-msgstr "Kode pos perusahaan"
-
-#. config.business.locality
-#: schema.json
-msgctxt "fn"
-msgid "City"
-msgstr "Kota"
-
-#. config.business.locality
-#: schema.json
-msgctxt "fh"
-msgid "City the company is located in"
-msgstr "Kota tempat perusahaan berada"
-
-#. config.business.country
-#: schema.json
-msgctxt "fn"
-msgid "Country code"
-msgstr "Kode negara"
-
-#. config.business.country
-#: schema.json
-msgctxt "fh"
-msgid "Two letter ISO country code, e.g. DE or US"
-msgstr "Kode negara ISO dua huruf, misalnya DE atau US"
-
-#. config.business.telephone
-#: schema.json
-msgctxt "fn"
-msgid "telephone"
-msgstr "Telepon"
-
-#. config.business.telephone
-#: schema.json
-msgctxt "fh"
-msgid "Phone number in international format, also used by the call button"
-msgstr "Nomor telepon dalam format internasional, juga digunakan oleh tombol panggil"
-
-#. config.business.email
-#: schema.json
-msgctxt "fn"
-msgid "email"
-msgstr "Email"
-
-#. config.business.email
-#: schema.json
-msgctxt "fh"
-msgid "Email address for enquiries"
-msgstr "Alamat email untuk pertanyaan"
-
-#. config.business.area
-#: schema.json
-msgctxt "fn"
-msgid "Places served"
-msgstr "Wilayah layanan"
-
-#. config.business.area
-#: schema.json
-msgctxt "fh"
-msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
-msgstr "Daftar kota dan wilayah tempat Anda bekerja, dipisahkan koma, mis. Leeds, Bradford, York"
-
-#. config.business.price-range
-#: schema.json
-msgctxt "fn"
-msgid "Price range"
-msgstr "Kisaran harga"
-
-#. config.business.price-range
-#: schema.json
-msgctxt "fh"
-msgid "Price level of the company, e.g. $$ or €€"
-msgstr "Tingkat harga perusahaan, mis. $$ atau €€"
-
-#. config.business.call-button
-#: schema.json
-msgctxt "fn"
-msgid "Call button"
-msgstr "Tombol panggil"
-
-#. config.business.call-button
-#: schema.json
-msgctxt "fh"
-msgid "Show a call button at the bottom of the screen on phones"
-msgstr "Tampilkan tombol panggil di bagian bawah layar pada ponsel"
-
-#. config.business.hours
-#: schema.json
-msgctxt "fn"
-msgid "Opening hours"
-msgstr "Jam buka"
-
-#. config.business.hours
-#: schema.json
-msgctxt "fh"
-msgid "Opening hours for each day of the week"
-msgstr "Jam buka untuk setiap hari dalam seminggu"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "fn"
-msgid "day"
-msgstr "Hari"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "fh"
-msgid "Day of the week"
-msgstr "Hari dalam seminggu"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Monday"
-msgstr "Senin"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Tuesday"
-msgstr "Selasa"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Wednesday"
-msgstr "Rabu"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Thursday"
-msgstr "Kamis"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Friday"
-msgstr "Jumat"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Saturday"
-msgstr "Sabtu"
-
-#. config.business.hours.day
-#: schema.json
-msgctxt "op"
-msgid "Sunday"
-msgstr "Minggu"
-
-#. config.business.hours.opens
-#: schema.json
-msgctxt "fn"
-msgid "opens"
-msgstr "Buka"
-
-#. config.business.hours.opens
-#: schema.json
-msgctxt "fh"
-msgid "Opening time in 24 hour format, e.g. 07:30"
-msgstr "Waktu buka dalam format 24 jam, misalnya 07:30"
-
-#. config.business.hours.closes
-#: schema.json
-msgctxt "fn"
-msgid "closes"
-msgstr "Tutup"
-
-#. config.business.hours.closes
-#: schema.json
-msgctxt "fh"
-msgid "Closing time in 24 hour format, e.g. 17:00"
-msgstr "Waktu tutup dalam format 24 jam, misalnya 17:00"
 
 #. config.theme
 #: schema.json

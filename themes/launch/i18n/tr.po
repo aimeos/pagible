@@ -77,12 +77,6 @@ msgstr "Ürünün ne yaptığını açıklayan bir cümle, arama motorları içi
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Duyuru"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Her sayfanın üstünde gösterilen kısa haber, örn. Yeni: özel alan adlarıyla durum sayfaları"
@@ -155,12 +149,6 @@ msgstr "Puanın dayandığı değerlendirme sayısı"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Not"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Alt bilgide gösterilen kısa not, örn. SOC 2 Type II sertifikalı, veriler AB'de barındırılır"
@@ -170,9 +158,3 @@ msgstr "Alt bilgide gösterilen kısa not, örn. SOC 2 Type II sertifikalı, ver
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Köşelerin yuvarlanması CSS uzunluk birimi olarak, örneğin keskin köşeler için 1rem veya 0"

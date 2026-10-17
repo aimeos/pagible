@@ -77,12 +77,6 @@ msgstr "Viens teikums, kas aprakstīta, ko produkts dara, meklētājprogrammām"
 
 #. config.product.announcement
 #: schema.json
-msgctxt "fn"
-msgid "Announcement"
-msgstr "Paziņojums"
-
-#. config.product.announcement
-#: schema.json
 msgctxt "fh"
 msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
 msgstr "Īsa ziņa, kas tiek rādīta katras lapas augšdaļā, piem. Jauns: statusa lapas ar pielāgotiem domēniem"
@@ -155,12 +149,6 @@ msgstr "Atsauksmju skaits, uz kura balstīts vērtējums"
 
 #. config.product.notice
 #: schema.json
-msgctxt "fn"
-msgid "Notice"
-msgstr "Piezīme"
-
-#. config.product.notice
-#: schema.json
 msgctxt "fh"
 msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
 msgstr "Īsa piezīme kājenē, piem. SOC 2 Type II sertificēts, dati tiek glabāti ES"
@@ -170,9 +158,3 @@ msgstr "Īsa piezīme kājenē, piem. SOC 2 Type II sertificēts, dati tiek glab
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tēma"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
-msgstr "Stūru noapaļošana kā CSS garums, piemēram, 1rem vai 0, lai iegūtu asus stūrus"

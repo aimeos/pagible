@@ -74,9 +74,3 @@ msgstr "Лицензия программы в подвале, например 
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Тема оформления"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "Скругление углов в виде значения длины в CSS, например 0.5rem или 0 для острых углов"

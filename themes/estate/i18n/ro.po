@@ -30,12 +30,6 @@ msgstr "Descrierea detaliată a proprietății"
 
 #. content.property.location
 #: schema.json
-msgctxt "fn"
-msgid "Location"
-msgstr "Locație"
-
-#. content.property.location
-#: schema.json
 msgctxt "fh"
 msgid "Description of the neighborhood and surroundings"
 msgstr "Descrierea cartierului și a împrejurimilor"
@@ -172,12 +166,6 @@ msgctxt "fn"
 msgid "Address"
 msgstr "Adresă"
 
-#. content.property.address
-#: schema.json
-msgctxt "fh"
-msgid "Street and house number"
-msgstr "Strada și numărul"
-
 #. content.property.zip_code
 #: schema.json
 msgctxt "fn"
@@ -291,12 +279,6 @@ msgstr "Cartier"
 msgctxt "fh"
 msgid "District or neighborhood of the city"
 msgstr "Sectorul sau cartierul orașului"
-
-#. content.property.city
-#: schema.json
-msgctxt "fn"
-msgid "city"
-msgstr "Oraș"
 
 #. content.property.city
 #: schema.json

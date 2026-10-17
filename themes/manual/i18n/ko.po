@@ -74,9 +74,3 @@ msgstr "푸터에 표시되는 소프트웨어 라이선스(예: MIT)"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "테마"
-
-#. config.theme.--pico-border-radius
-#: schema.json
-msgctxt "fh"
-msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
-msgstr "CSS 길이 단위로 모서리 반경 지정: 예: 0.5rem 또는 날카로운 모서리를 원할 경우 0"
