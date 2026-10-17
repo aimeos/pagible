@@ -190,6 +190,7 @@ function setupIntercept({
               id: op.variables?.id || '1',
               lang: page?.lang ?? null,
               source: page?.source ?? null,
+              stale: page?.stale ?? false,
               has: page?.has ?? 0,
               restricted: access !== null,
               latest: pageDetail,
@@ -252,10 +253,10 @@ function visitPageDetail(pageOverrides = {}, detailOverrides = {}, meResponse = 
   cy.get('.page-details').should('be.visible')
 }
 
-/** Opens the German translation of an English source page. */
+/** Opens the outdated German translation of an English source page. */
 function visitTranslationDetail(meResponse = ME_ADMIN) {
   const data = { ...JSON.parse(makePageDetail().data), lang: 'de' }
-  visitPageDetail({ lang: 'de', source: 'en' }, { data: JSON.stringify(data) }, meResponse)
+  visitPageDetail({ lang: 'de', source: 'en', stale: true }, { data: JSON.stringify(data) }, meResponse)
 }
 
 /** Shorthand to scope selectors to the detail view. */

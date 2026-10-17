@@ -267,9 +267,16 @@ describe('PageDetail', () => {
   })
 
   it('shows the translate button for variants with text:translate permission', () => {
-    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en', variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en', stale: true, variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'stale' }] })
     cy.get('.btn-lang-switch button').click()
     cy.get('button.btn-translate-page').should('exist')
+  })
+
+  it('hides the translate button for up to date variants', () => {
+    mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'de', source: 'en', stale: false, variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
+    cy.get('.btn-lang-switch button').click()
+    cy.get('[data-lang="de"]').should('exist')
+    cy.get('button.btn-translate-page').should('not.exist')
   })
 
   it('hides the translate button without text:translate permission', () => {

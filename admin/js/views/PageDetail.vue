@@ -780,7 +780,7 @@ export default {
               }}</span>
             </v-btn>
           </v-list-item>
-          <template v-if="isTranslation && user.can('page:save')">
+          <template v-if="isTranslation && item.stale && user.can('page:save')">
             <v-divider />
             <ActionItem
               v-if="user.can('text:translate')"
@@ -790,7 +790,7 @@ export default {
             >
               {{ $gettext('Translate') }}
             </ActionItem>
-            <ActionItem v-if="item.stale" @click="ignoreChanges()" :prepend-icon="mdiCheckAll" class="btn-ignore-changes">
+            <ActionItem @click="ignoreChanges()" :prepend-icon="mdiCheckAll" class="btn-ignore-changes">
               {{ $gettext('Ignore changes') }}
             </ActionItem>
           </template>
