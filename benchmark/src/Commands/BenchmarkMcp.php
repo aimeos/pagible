@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Utils;
 
 
 class BenchmarkMcp extends Command
