@@ -101,6 +101,17 @@ class GraphqlVariantTest extends GraphqlTestAbstract
         }' )->assertGraphQLErrorFree();
 
         $this->assertEquals( [['lang' => 'en', 'state' => 'current'], ['lang' => 'de', 'state' => 'trashed']], $response->json( 'data.page.variants' ) );
+
+        $response = $this->actingAs( $this->user )->graphQL( '{
+            pages(filter: {id: ["' . $page->id . '", "' . $other->id . '"]}, lang: "de") {
+                data { id variants(lang: "de") { lang state } }
+            }
+        }' )->assertGraphQLErrorFree();
+
+        $items = collect( $response->json( 'data.pages.data' ) )->keyBy( 'id' );
+
+        $this->assertEquals( [['lang' => 'de', 'state' => 'trashed']], $items[$page->id]['variants'] );
+        $this->assertEquals( [['lang' => 'de', 'state' => 'missing']], $items[$other->id]['variants'] );
     }
 
 

@@ -327,9 +327,10 @@ class PageView extends Base
      * the latest version of the variant is published.
      *
      * @param array<string, string> $pages Source language codes keyed by page ID
+     * @param string|null $lang Language of the returned variants or NULL for all configured locales
      * @return array<string, list<VariantState>> Variant lists keyed by page ID
      */
-    public static function variantLists( array $pages ) : array
+    public static function variantLists( array $pages, ?string $lang = null ) : array
     {
         $variants = [];
 
@@ -339,6 +340,7 @@ class PageView extends Base
             $list = PageVariant::withTrashed()
                 ->leftJoin( 'cms_versions', 'cms_versions.id', '=', 'cms_page_variants.latest_id' )
                 ->whereIn( 'cms_page_variants.page_id', $chunk )
+                ->when( $lang !== null, fn( $q ) => $q->where( 'cms_page_variants.lang', $lang ) )
                 ->orderBy( 'cms_page_variants.lang' )
                 ->get( [
                     'cms_page_variants.id', 'cms_page_variants.page_id', 'cms_page_variants.lang', 'cms_page_variants.stale',
@@ -350,7 +352,7 @@ class PageView extends Base
             }
         }
 
-        $locales = array_fill_keys( Utils::locales(), null );
+        $locales = array_fill_keys( $lang !== null ? [$lang] : Utils::locales(), null );
         $result = array_fill_keys( array_keys( $pages ), $locales );
 
         foreach( $variants as $variant )

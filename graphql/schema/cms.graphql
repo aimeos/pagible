@@ -400,8 +400,8 @@ type Page {
   "Date/time value when the page variant was deleted or NULL if it's available"
   variant_deleted_at: String
 
-  "Language variants of the page and missing languages from the configured locales"
-  variants: [PageLanguage!]! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\VariantResolver")
+  "Language variants of the page and missing languages from the configured locales, only the given language if 'lang' is passed"
+  variants(lang: String @rules(apply: ["nullable", "string", "cms_lang"])): [PageLanguage!]! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\VariantResolver")
 
   "Unique URL segment of the page"
   path: String

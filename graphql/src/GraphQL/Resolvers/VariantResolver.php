@@ -24,6 +24,9 @@ final class VariantResolver
     /** @var array<string, list<array<string, mixed>>>|null Variant lists keyed by page ID */
     private ?array $result = null;
 
+    /** @var string|null Language of the variants or NULL for all configured locales */
+    private ?string $lang = null;
+
 
     /**
      * Returns the variant list of the page, loaded together with the other pages at the same level.
@@ -32,12 +35,14 @@ final class VariantResolver
      */
     public function __invoke( PageView $page, array $args, GraphQLContext $context, ResolveInfo $info ) : Deferred
     {
-        $loader = BatchLoaderRegistry::instance( $info->path, fn() => new self() );
+        $lang = isset( $args['lang'] ) ? (string) $args['lang'] : null;
+        $loader = BatchLoaderRegistry::instance( [...$info->path, $lang ?? ''], fn() => new self() );
+        $loader->lang = $lang;
         $id = (string) $page->id;
         $loader->pages[$id] = (string) $page->source;
 
         return new Deferred( function() use ( $loader, $id ) {
-            return ( $loader->result ??= PageView::variantLists( $loader->pages ) )[$id] ?? [];
+            return ( $loader->result ??= PageView::variantLists( $loader->pages, $loader->lang ) )[$id] ?? [];
         } );
     }
 }

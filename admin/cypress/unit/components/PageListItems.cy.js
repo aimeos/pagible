@@ -948,6 +948,43 @@ describe('PageListItems', () => {
       })
     })
 
+    it('restores a trashed language instead of creating it', () => {
+      const query = cy.stub().resolves({
+        data: {
+          pages: {
+            data: [
+              {
+                id: 'page-1', parent_id: null, lang: 'en', source: 'en', stale: false,
+                created_at: '2026-01-01 00:00:00', deleted_at: null, variant_deleted_at: null,
+                editor: 'test@test.com', has: 0, restricted: false, variants: [{ state: 'trashed' }],
+                latest: { id: 'v1', published: true, publish_at: null, editor: 'test@test.com', created_at: '2026-01-01 00:00:00',
+                  data: JSON.stringify({ name: 'Home', path: 'home', lang: 'en', status: 1 }) },
+              },
+            ],
+            paginatorInfo: { currentPage: 1, lastPage: 1 },
+          },
+        },
+      })
+      const mutate = cy.stub().resolves({ data: { keepPage: [{ id: 'page-1' }] } })
+
+      mountList({}, { 'page:keep': true, 'page:view': true }, { query, mutate }, 'fr').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        cy.wrap(null).should(() => expect(vm.items).to.have.length(1))
+        cy.then(() => {
+          const stat = { _checked: true, data: { ...vm.items[0] } }
+          expect(stat.data.variant_trashed).to.equal(true)
+          expect(vm.restorable(stat.data)).to.equal(true)
+
+          vm.$refs.tree.statsFlat = [stat]
+          vm.count()
+          expect(vm.counts.langTrashed).to.equal(1)
+
+          vm.keepLang(stat)
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'fr' })
+        })
+      })
+    })
+
     it('queues the translation of a created language if the user can translate', () => {
       const query = cy.stub().resolves({
         data: {
@@ -1035,6 +1072,47 @@ describe('PageListItems', () => {
         // source pages can be translated into other languages, the server skips the source language
         expect(vm.counts.translate).to.equal(3)
         expect(vm.counts.stale).to.equal(1)
+      })
+    })
+
+    it('offers variant actions only with the permissions for them', () => {
+      mountList({}, { 'page:view': true }, {}, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const german = variant('page-1', 'de', 'en', { stale: true })
+        vm.$refs.tree.statsFlat = [german]
+
+        vm.count()
+
+        expect(vm.counts.stale).to.equal(0)
+        expect(vm.counts.langLive).to.equal(0)
+        expect(vm.counts.langPurge).to.equal(0)
+        expect(vm.langActions(german.data)).to.equal(false)
+
+        vm.user.me.permission = { 'page:view': true, 'page:drop': true }
+        vm.count()
+
+        expect(vm.counts.langLive).to.equal(1)
+        expect(vm.langActions(german.data)).to.equal(true)
+        expect(vm.langActions({ ...german.data, variant_deleted_at: '2026-01-01 00:00:00' })).to.equal(false)
+        expect(vm.langActions(variant('page-2', 'de', 'de').data)).to.equal(false)
+      })
+    })
+
+    it('purges whole pages in their source language and variants in the others', () => {
+      mountList({}, { 'page:view': true, 'page:purge': true }, {}, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const german = variant('page-1', 'de', 'en')
+        const source = variant('page-2', 'de', 'de')
+        const trashed = variant('page-3', 'en', 'en', { variant_trashed: true })
+        const missing = variant('page-4', 'en')
+        vm.$refs.tree.statsFlat = [german, source, trashed, missing]
+
+        vm.count()
+
+        expect(vm.counts.purge).to.equal(1)
+        expect(vm.counts.langPurge).to.equal(2)
+        expect(vm.langActions(trashed.data)).to.equal(true)
+        expect(vm.langActions(missing.data)).to.equal(false)
       })
     })
 

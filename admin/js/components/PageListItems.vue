@@ -185,6 +185,9 @@ const FETCH_PAGES = gql`
     ) {
       data {
         ${PAGE_FIELDS}
+        variants(lang: $lang) {
+          state
+        }
       }
       paginatorInfo {
         currentPage
@@ -627,14 +630,19 @@ export default {
       const items = this.selected().map((stat) => stat.data)
       const own = items.filter((item) => !this.missing(item))
 
+      const can = (action) => this.user.can('page:' + action)
+
       // variant actions only count the pages which have a variant in the current language
+      // and are zero without permission, so the language section is hidden if nothing is left
       this.counts = Object.assign(tally(items), {
         draft: own.filter((item) => !item.published).length,
         own: own.length,
-        langLive: own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length,
-        langVariant: own.filter((item) => item.lang !== item.source).length,
-        langTrashed: own.filter((item) => item.variant_deleted_at).length,
-        stale: own.filter((item) => this.isStale(item)).length,
+        langLive: can('drop') ? own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length : 0,
+        langPurge: can('purge') ? items.filter((item) => this.purgeable(item)).length : 0,
+        // whole pages are only purged while their source language is shown
+        purge: can('purge') ? items.filter((item) => item.source === this.lang).length : 0,
+        langTrashed: can('keep') ? items.filter((item) => this.restorable(item)).length : 0,
+        stale: can('save') ? own.filter((item) => this.isStale(item)).length : 0,
         translate: items.filter((item) => this.translatable(item)).length
       })
     },
@@ -797,7 +805,9 @@ export default {
         lang: entry.lang ?? item.lang ?? null,
         source: entry.source ?? null,
         stale: !!entry.stale,
-        variant_deleted_at: entry.variant_deleted_at || null
+        variant_deleted_at: entry.variant_deleted_at || null,
+        // the variant in the current language is in the trash and the source variant is shown instead
+        variant_trashed: entry.variants?.[0]?.state === 'trashed'
       })
     },
 
@@ -943,6 +953,14 @@ export default {
 
           return false
         })
+    },
+
+    // returns if the user can ignore, delete, restore or purge the variant of the page in the current language
+    langActions(node) {
+      if (!this.purgeable(node)) return false
+
+      const can = (action) => this.user.can('page:' + action)
+      return can('purge') || (can('save') && this.isStale(node)) || (node.variant_deleted_at ? can('keep') : !this.restorable(node) && can('drop'))
     },
 
     // returns if the page has no variant in the current language and the source variant is shown
@@ -1107,8 +1125,9 @@ export default {
       })
     },
 
+    // permanently removes the pages incl. all variants, only while their source language is shown
     async purge(stat) {
-      const list = this.allowed('purge') ? (stat ? [stat] : this.selected()) : []
+      const list = this.allowed('purge') ? (stat ? [stat] : this.selected((page) => page.source === this.lang)) : []
 
       if (
         !list.length ||
@@ -1575,11 +1594,11 @@ export default {
           <ActionItem v-if="counts.trashed && user.can('page:keep')" :prepend-icon="mdiDeleteRestore" @click="keep()">
             {{ $gettext('Restore') }} ({{ counts.trashed }})
           </ActionItem>
-          <ActionItem v-if="isChecked && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
-            {{ $gettext('Purge') }} ({{ counts.all }})
+          <ActionItem v-if="counts.purge" :prepend-icon="mdiDeleteForever" @click="purge()">
+            {{ $gettext('Purge') }} ({{ counts.purge }})
           </ActionItem>
 
-          <template v-if="counts.langVariant || counts.translate || counts.stale">
+          <template v-if="counts.translate || counts.stale || counts.langLive || counts.langTrashed || counts.langPurge">
             <v-divider></v-divider>
 
             <ActionItem
@@ -1591,7 +1610,7 @@ export default {
               {{ $gettext('Translate') }} ({{ counts.translate }})
             </ActionItem>
             <ActionItem
-              v-if="counts.stale && user.can('page:save')"
+              v-if="counts.stale"
               :prepend-icon="mdiCheckAll"
               class="action-ignore-changes"
               @click="ignore()"
@@ -1600,7 +1619,7 @@ export default {
             </ActionItem>
 
             <ActionItem
-              v-if="counts.langLive && user.can('page:drop')"
+              v-if="counts.langLive"
               :prepend-icon="mdiTranslateOff"
               class="action-drop-lang"
               @click="dropLang()"
@@ -1608,7 +1627,7 @@ export default {
               {{ $gettext('Delete this language') }} ({{ counts.langLive }})
             </ActionItem>
             <ActionItem
-              v-if="counts.langTrashed && user.can('page:keep')"
+              v-if="counts.langTrashed"
               :prepend-icon="mdiDeleteRestore"
               class="action-keep-lang"
               @click="keepLang()"
@@ -1616,12 +1635,12 @@ export default {
               {{ $gettext('Restore this language') }} ({{ counts.langTrashed }})
             </ActionItem>
             <ActionItem
-              v-if="counts.langVariant && user.can('page:purge')"
+              v-if="counts.langPurge"
               :prepend-icon="mdiDeleteForever"
               class="action-purge-lang"
               @click="purgeLang()"
             >
-              {{ $gettext('Purge this language') }} ({{ counts.langVariant }})
+              {{ $gettext('Purge language') }} ({{ counts.langPurge }})
             </ActionItem>
           </template>
         </ActionMenu>
@@ -1743,14 +1762,6 @@ export default {
               <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
             </template>
             <ActionItem
-              v-if="missing(node) && !node.deleted_at && user.can('page:add')"
-              :prepend-icon="mdiPlus"
-              class="action-create-lang"
-              @click="createLang(stat)"
-              >{{ $gettext('Create in %{lang}', { lang: languages.translate(lang) }) }}</ActionItem
-            >
-
-            <ActionItem
               v-if="!missing(node) && !node.deleted_at && !node.published && user.can('page:publish')"
               :prepend-icon="mdiPublish"
               @click="publish(stat)"
@@ -1771,7 +1782,7 @@ export default {
             >
 
             <v-divider
-              v-if="!node.deleted_at && (missing(node) ? user.can('page:add') : !node.published && user.can('page:publish'))"
+              v-if="!missing(node) && !node.deleted_at && !node.published && user.can('page:publish')"
             ></v-divider>
 
             <ActionItem v-if="!missing(node) && user.can('page:save')" :prepend-icon="mdiPencil" @click="editProps(stat)">
@@ -1817,7 +1828,7 @@ export default {
               @click="keep(stat)"
               >{{ $gettext('Restore') }}</ActionItem
             >
-            <ActionItem v-if="user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
+            <ActionItem v-if="node.source === lang && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
               {{ $gettext('Purge') }}
             </ActionItem>
 
@@ -1829,7 +1840,7 @@ export default {
               </ActionItem>
             </template>
 
-            <template v-if="!missing(node) && node.lang !== node.source">
+            <template v-if="langActions(node)">
               <v-divider></v-divider>
 
               <ActionItem
@@ -1842,7 +1853,7 @@ export default {
               </ActionItem>
 
               <ActionItem
-                v-if="!node.variant_deleted_at && user.can('page:drop')"
+                v-if="!restorable(node) && user.can('page:drop')"
                 :prepend-icon="mdiTranslateOff"
                 class="action-drop-lang"
                 @click="dropLang(stat)"
@@ -1863,7 +1874,7 @@ export default {
                 class="action-purge-lang"
                 @click="purgeLang(stat)"
               >
-                {{ $gettext('Purge this language') }}
+                {{ $gettext('Purge language') }}
               </ActionItem>
             </template>
           </ActionMenu>
@@ -1922,7 +1933,18 @@ export default {
             ➔ {{ node.to.substring(0, 50) + (node.to.length > 50 ? '...' : '') }}</span
           >
         </a>
-        <div v-else-if="!node.deleted_at && !embed && user.can('page:add')" class="item-create">
+        <div v-else-if="!node.deleted_at && !embed && node.variant_trashed && user.can('page:keep')" class="item-create">
+          <v-btn
+            @click="keepLang(stat)"
+            :prepend-icon="mdiDeleteRestore"
+            class="btn-keep-lang"
+            variant="tonal"
+            size="small"
+          >
+            {{ $gettext('Restore') }}
+          </v-btn>
+        </div>
+        <div v-else-if="!node.deleted_at && !embed && !node.variant_trashed && user.can('page:add')" class="item-create">
           <v-btn
             @click="createLang(stat)"
             :prepend-icon="mdiPlus"
@@ -2104,9 +2126,9 @@ export default {
 }
 
 .tree-node-inner .item-create {
-  align-self: center;
+  padding-inline-start: 8px;
   margin-inline-start: auto;
-  padding: 0 8px;
+  align-self: center;
 }
 
 .tree-node-inner .item-text {

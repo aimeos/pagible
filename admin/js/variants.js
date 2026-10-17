@@ -258,7 +258,7 @@ export const pageVariants = {
 
     // restores the trashed variants in the current language
     keepLang(stat = null) {
-      const list = this.allowed('keep') ? (stat ? [stat] : this.selected((page) => page.variant_deleted_at && !this.missing(page))) : []
+      const list = this.allowed('keep') ? (stat ? [stat] : this.selected((page) => this.restorable(page))) : []
 
       if (!list.length) {
         return
@@ -269,10 +269,9 @@ export const pageVariants = {
       })
     },
 
-    // permanently removes the variants in the current language, source variants are skipped
+    // permanently removes the variants in the current language incl. the trashed ones, source variants are skipped
     async purgeLang(stat = null) {
-      const list = (this.allowed('purge') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : [])
-        .filter((item) => item.data.lang !== item.data.source)
+      const list = (this.allowed('purge') ? (stat ? [stat] : this.selected()) : []).filter((item) => this.purgeable(item.data))
 
       if (
         !list.length ||
@@ -310,6 +309,16 @@ export const pageVariants = {
         .catch((error) => {
           this.messages.error(this.$gettext('Error ignoring changes'), error, list.map((item) => item.data.id))
         })
+    },
+
+    // variant in the current language which isn't the source, shown itself or trashed and replaced by the source variant
+    purgeable(page) {
+      return page.source !== this.lang && (this.missing(page) ? !!page.variant_trashed : true)
+    },
+
+    // trashed variant in the current language, shown itself or replaced by the source variant
+    restorable(page) {
+      return this.missing(page) ? !!page.variant_trashed : !!page.variant_deleted_at
     },
 
     // variant in the current language whose source changed since it was translated
